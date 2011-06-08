@@ -164,7 +164,7 @@ class TibiaPacket:
             self.uint8(0xFF)
         
     # Floor Description (the entier floor)
-    def floor_description(self, position, width, height, offset, skip=-1):
+    def floor_description(self, position, width, height, offset, skip):
         for x in range(0, width):
             for y in range(0, height):
                 tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
@@ -186,12 +186,13 @@ class TibiaPacket:
         if tile.itemId: # Tile can tecnhicly be 0
             self.item(tile)
 
+        
         if tile.creatures:
             for creature in tile.creatures:
                 print("Add creature on:")
                 print(pos)
                 self.add_creature(tile, creature, False)
-            
+        self.item(4526)
         # TODO: add bottom items
 
     # TODO: Outfit class?
@@ -216,11 +217,11 @@ class TibiaPacket:
             self.uint32(creature.clientId())
             self.string(creature.name())
         self.uint8(100) # Health %
-        self.uint8(0) # Direction
-        self.add_outfit(128, 0,0,0,0,0) # TODO: FIx outfits!
+        self.uint8(1) # Direction
+        self.add_outfit(302, 78,68,39,76,0) # TODO: FIx outfits!
         self.uint8(0xFF) # Light
         self.uint8(215) # Light
-        self.uint16(20) # Speed
+        self.uint16(0x0032) # Speed
         self.uint8(0) # Skull
         self.uint8(0) # Party/Shield
         if not known:

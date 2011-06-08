@@ -25,6 +25,7 @@ class TibiaPlayer:
         for slot in range(enum.SLOT_FIRST,enum.SLOT_LAST):
             stream.uint8(0x78)
             stream.uint8(slot)
+            stream.uint16(8444)
         
         self.stream_status(stream)
         self.stream_skills(stream)
@@ -32,24 +33,24 @@ class TibiaPlayer:
         stream.worldlight(enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.creaturelight(self.client.client_id, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.uint8(0xA2) # Icons
-        stream.uint16(0) # TODO: Icons
+        stream.uint16(386) # TODO: Icons
 
         stream.send(self.client)
         
     def stream_status(self, stream):
         stream.uint8(0xA0)
-        stream.uint16(self.data["health"])
-        stream.uint16(self.data["healthmax"])
-        stream.uint32(1000) # TODO: Capasity
-        stream.uint64(self.data["experience"]) # TODO: Virtual cap?
-        stream.uint16(self.data["level"]) # TODO: Virtual cap?
+        stream.uint16(150)
+        stream.uint16(150)
+        stream.uint32(10000) # TODO: Capasity
+        stream.uint64(65000) # TODO: Virtual cap?
+        stream.uint16(100) # TODO: Virtual cap?
         stream.uint8(0) # % to next level, TODO
-        stream.uint16(self.data["mana"])
-        stream.uint16(self.data["manamax"])
-        stream.uint8(self.data["maglevel"]) # TODO: Virtual cap?
+        stream.uint16(1000)
+        stream.uint16(1000)
+        stream.uint8(1) # TODO: Virtual cap?
         stream.uint8(0) # % to next level, TODO
-        stream.uint8(self.data["soul"]) # TODO: Virtual cap?
-        stream.uint16(self.data["stamina"] / 60000)
+        stream.uint8(100) # TODO: Virtual cap?
+        stream.uint16(1000)
 
     def stream_skills(self, stream):
         stream.uint8(0xA1) # Skill type

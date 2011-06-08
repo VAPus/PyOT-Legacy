@@ -1,6 +1,6 @@
 items = {}
 items[106] = {'cid':4526}
-items[107] = {'cid':4527}
+items[107] = {'cid':105}
 
 class BaseItem:
      def cid(self):

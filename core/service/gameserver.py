@@ -100,7 +100,7 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         
     def onPacket(self, packet):
         log.msg("Unhandled packet (type = {0}, length: {1})".format(hex(packet.uint8()), len(packet.data)))
-        self.transport.loseConnection()
+        #self.transport.loseConnection()
         
 class GameFactory(core.protocolbase.TibiaFactory):
     protocol = GameProtocol
