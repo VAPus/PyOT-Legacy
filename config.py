@@ -16,9 +16,9 @@ sqlPassword = ""
 sqlDatabase = "ot"
 
 # Versions:
-versionMin = 871
-versionMax = 871
-versionError = "You must use 8.71"
+versionMin = 900
+versionMax = 900
+versionError = "You must use 9.0"
 
 # MOTD
 motd = "PyOT, it's alive!"

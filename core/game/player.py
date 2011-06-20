@@ -5,6 +5,7 @@ class TibiaPlayer:
     def __init__(self, client, data):
         self.data = data
         self.client = client
+        self.creatureType = 0
 
     def name(self):
         return self.data["name"]
@@ -25,15 +26,26 @@ class TibiaPlayer:
         for slot in range(enum.SLOT_FIRST,enum.SLOT_LAST):
             stream.uint8(0x78)
             stream.uint8(slot)
-            stream.uint16(8444)
-        
+            if slot is 3:
+                stream.uint16(2853)
+            elif slot is 1:
+                stream.uint16(7992)
+            elif slot is 2:
+                stream.uint16(3008)
+            elif slot is 4:
+                stream.uint16(3357)
+            elif slot is 5:
+                stream.uint16(7449)
+            elif slot is 10:
+                stream.uint16(3449)
+                stream.uint8(20)
         self.stream_status(stream)
         self.stream_skills(stream)
         
         stream.worldlight(enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.creaturelight(self.client.client_id, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.uint8(0xA2) # Icons
-        stream.uint16(386) # TODO: Icons
+        stream.uint16(0) # TODO: Icons
 
         stream.send(self.client)
         
@@ -41,19 +53,25 @@ class TibiaPlayer:
         stream.uint8(0xA0)
         stream.uint16(150)
         stream.uint16(150)
-        stream.uint32(10000) # TODO: Capasity
-        stream.uint64(65000) # TODO: Virtual cap?
-        stream.uint16(100) # TODO: Virtual cap?
+        stream.uint32(10000) # TODO: Free Capasity
+        stream.uint32(8000) # TODO: Capasity
+        stream.uint64(65000) # TODO: Virtual cap? Experience
+        stream.uint16(100) # TODO: Virtual cap? Level
         stream.uint8(0) # % to next level, TODO
-        stream.uint16(1000)
-        stream.uint16(1000)
-        stream.uint8(1) # TODO: Virtual cap?
+        stream.uint16(1000) # mana
+        stream.uint16(1000) # mana max
+        stream.uint8(1) # TODO: Virtual cap? Manalevel
+        stream.uint8(1) # TODO: Virtual cap? ManaBase
         stream.uint8(0) # % to next level, TODO
-        stream.uint8(100) # TODO: Virtual cap?
-        stream.uint16(1000)
+        stream.uint8(0) # TODO: Virtual cap? Soul
+        stream.uint16(60) # Stamina minutes
+        stream.uint16(0x0032) # Speed
+        
+        stream.uint16(0x00) # Condition
 
     def stream_skills(self, stream):
         stream.uint8(0xA1) # Skill type
         for x in range(0,7): # 7 skill types
             stream.uint8(1) # Value / Level
+            stream.uint8(1) # Base
             stream.uint8(0) # %

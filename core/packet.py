@@ -207,6 +207,8 @@ class TibiaPacket:
         else:
             self.uint16(lookitem)
             
+        self.uint16(0x00) # Mount
+        
     def add_creature(self, tile, creature, known):
         if known:
             self.uint16(0x62)
@@ -215,6 +217,7 @@ class TibiaPacket:
             self.uint16(0x61)
             self.uint32(0) # Remove known
             self.uint32(creature.clientId())
+            self.uint8(creature.creatureType)
             self.string(creature.name())
         self.uint8(100) # Health %
         self.uint8(1) # Direction
