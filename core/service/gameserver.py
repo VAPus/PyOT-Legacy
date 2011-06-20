@@ -94,13 +94,28 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
             return
         
         self.player = TibiaPlayer(self, character[0])
-        placeCreature(self.player, self.position)
+        placeCreature(self.player, self.player.position)
 
         self.player.sendFirstPacket()
         
     def onPacket(self, packet):
-        log.msg("Unhandled packet (type = {0}, length: {1})".format(hex(packet.uint8()), len(packet.data)))
-        #self.transport.loseConnection()
+        packet.data = core.otcrypto.decryptXTEA(packet.getData(), self.xtea)
+        packet.pos = 0
+        packet.data = packet.data[2:2+packet.uint16()]
+        packet.pos = 0
+        
+        packetType = packet.uint8()
+        if packetType is 0x14: # Logout
+            self.transport.loseConnection()
+        elif packetType is 0x1E: # Keep alive
+            self.player.pong()
+        elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
+            self.player.turn(packetType - 0x6F)
+        elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
+            self.player.move(packetType - 0x65)
+        else:
+            log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+            #self.transport.loseConnection()
         
 class GameFactory(core.protocolbase.TibiaFactory):
     protocol = GameProtocol

@@ -28,17 +28,9 @@ class Tile(BaseItem):
 knownMap = {}
 mapSizeX = 250
 mapSizeY = 250
-r = 0
-"""for x in range (0, mapSizeX):
+
+for x in range (0, mapSizeX):
     knownMap[x] = {}
     for y in range(0, mapSizeY):
         knownMap[x][y] = {}
-        knownMap[x][y][7] = Tile(106 + r)
-        
-        if r:
-	    r = 0
-	else:
-	    r = 1
-"""
-knownMap[50] = {}
-knownMap[50][50] = {7:Tile(106)}
+        knownMap[x][y][7] = Tile(106)

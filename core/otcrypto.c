@@ -109,14 +109,18 @@ static PyObject* encryptXTEA(PyObject* self, PyObject* args) {
 }
  
 static PyObject* decryptXTEA(PyObject* self, PyObject* args) {
-        const char* stream;
+        PyObject* streamObj;
+	char* stream;
         uint32_t k[4];
-        int length, i, pos = 0;
-       
-        if (!PyArg_ParseTuple(args, "s#(kkkk)", &stream, &length, &k[0], &k[1], &k[2], &k[3]))
+	Py_ssize_t length = 0;
+	int i, pos = 0;
+
+        if (!PyArg_ParseTuple(args, "O(kkkk)", &streamObj, &k[0], &k[1], &k[2], &k[3]))
                 return NULL;
+	PyString_AsStringAndSize(streamObj, &stream, &length);
 
         uint32_t* buffer = (uint32_t*)stream;
+
         while(pos < (length / 4)) {
                 uint32_t v0=buffer[pos], v1=buffer[pos + 1], delta=0x9E3779B9, sum=delta * 32;
                 for (i=0; i < 32; i++) {
@@ -127,6 +131,7 @@ static PyObject* decryptXTEA(PyObject* self, PyObject* args) {
                 buffer[pos]=v0; buffer[pos + 1]=v1;
                 pos += 2;
         }
+
         return PyBytes_FromStringAndSize((char*)buffer, length);
 }
 

@@ -183,6 +183,7 @@ class TibiaPacket:
         return skip
 
     def tile_description(self, tile, pos=None):
+        self.uint16(0x00)
         if tile.itemId: # Tile can tecnhicly be 0
             self.item(tile)
 
@@ -220,7 +221,7 @@ class TibiaPacket:
             self.uint8(creature.creatureType)
             self.string(creature.name())
         self.uint8(100) # Health %
-        self.uint8(1) # Direction
+        self.uint8(creature.direction) # Direction
         self.add_outfit(302, 78,68,39,76,0) # TODO: FIx outfits!
         self.uint8(0xFF) # Light
         self.uint8(215) # Light

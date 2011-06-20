@@ -12,7 +12,6 @@ class TibiaProtocol(Protocol):
     def __init__(self):
         self.client_id = 0
         self.gotFirst = False
-        self.position = (50,50,7)
         self.xtea = ()
         
         self.onInit()

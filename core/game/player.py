@@ -6,6 +6,8 @@ class TibiaPlayer:
         self.data = data
         self.client = client
         self.creatureType = 0
+        self.direction = 0
+        self.position = [50,50,7]
 
     def name(self):
         return self.data["name"]
@@ -15,13 +17,13 @@ class TibiaPlayer:
     def sendFirstPacket(self):
         stream = TibiaPacket()
         stream.uint8(0x0A) # Packet type
-        stream.uint32(self.client.client_id) # Cid
+        stream.uint32(self.clientId()) # Cid
         stream.uint16(0x0032) # Speed
         stream.uint8(1) # Rule violations?
 
         stream.uint8(0x64) # Map description
-        stream.position(self.client.position)
-        stream.map_description((self.client.position[0] - 8, self.client.position[1] - 6, self.client.position[2]), 18, 14)
+        stream.position(self.position)
+        stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14)
 
         for slot in range(enum.SLOT_FIRST,enum.SLOT_LAST):
             stream.uint8(0x78)
@@ -75,3 +77,49 @@ class TibiaPlayer:
             stream.uint8(1) # Value / Level
             stream.uint8(1) # Base
             stream.uint8(0) # %
+            
+            
+    def turn(self, direction):
+        self.direction = direction
+        
+        # Make package
+        stream = TibiaPacket()
+        stream.uint8(0x6B) # Package type
+        stream.position(self.position)
+        stream.uint8(1)
+        stream.uint16(0x63)
+        stream.uint16(self.clientId())
+        stream.uint8(direction)
+		
+        # Send to everyone
+        # Actually, since we only got one player, jsut send to us
+        stream.send(self.client)
+
+    def move(self, direction):
+        self.direction = direction
+        
+        # Make packet
+        stream = TibiaPacket()
+        stream.uint8(0x6D)
+        stream.position(self.position)
+        stream.uint8(1)
+        
+        # Recalculate position
+        if direction is 0:
+           self.position[1] = self.position[1] - 1
+        elif direction is 1:
+           self.position[0] = self.position[0] + 1
+        elif direction is 2:
+           self.position[1] = self.position[1] + 1
+        else:
+           self.position[0] = self.position[0] - 1
+           
+        stream.position(self.position)
+        
+        # Send to everyone
+        stream.send(self.client)
+        
+    def pong(self):
+        stream = TibiaPacket()
+        stream.uint8(0x1E)
+        stream.send(self.client)
