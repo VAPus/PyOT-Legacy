@@ -109,6 +109,8 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
             self.transport.loseConnection()
         elif packetType is 0x1E: # Keep alive
             self.player.pong()
+        elif packetType is 0xA0: # Set modes
+            self.player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
         elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
             log.msg("Turn packet")
             self.player.turn(packetType - 0x6F)

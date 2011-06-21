@@ -10,6 +10,8 @@ class TibiaPlayer:
         self.creatureType = 0
         self.direction = 0
         self.position = [50,50,7]
+        self.modes = [0,0,0]
+        self.stackpos = 1
 
     def name(self):
         return self.data["name"]
@@ -17,8 +19,7 @@ class TibiaPlayer:
     def clientId(self):
         return self.client.client_id
     def sendFirstPacket(self):
-        stream = TibiaPacket()
-        stream.uint8(0x0A) # Packet type
+        stream = TibiaPacket(0x0A)
         stream.uint32(self.clientId()) # Cid
         stream.uint16(0x0032) # Speed
         stream.uint8(1) # Rule violations?
@@ -88,10 +89,9 @@ class TibiaPlayer:
         self.direction = direction
         
         # Make package
-        stream = TibiaPacket()
-        stream.uint8(0x6B) # Package type
+        stream = TibiaPacket(0x6B)
         stream.position(self.position)
-        stream.uint8(1)
+        stream.uint8(self.stackpos)
         stream.uint16(0x63)
         stream.uint16(self.clientId())
         stream.uint8(direction)
@@ -104,37 +104,47 @@ class TibiaPlayer:
         self.direction = direction
         
         # Make packet
-        stream = TibiaPacket()
-        stream.uint8(0x6D)
+        stream = TibiaPacket(0x6D)
         stream.position(self.position)
-        log.msg("Move on pos %d,%d" % (self.position[0], self.position[1]))
-        stream.uint8(1)
+        stream.uint8(self.stackpos)
         
         removeCreature(self, self.position)
         
         # Recalculate position
+        position = self.position[:] # Important not to remove the : here, we don't want a reference!
         if direction is 0:
-           self.position[1] = self.position[1] - 1
+           position[1] = self.position[1] - 1
         elif direction is 1:
-           self.position[0] = self.position[0] + 1
+           position[0] = self.position[0] + 1
         elif direction is 2:
-           self.position[1] = self.position[1] + 1
+           position[1] = self.position[1] + 1
         else:
-           self.position[0] = self.position[0] - 1
-           
-        stream.position(self.position)
-        log.msg("Move on dest %d,%d" % (self.position[0], self.position[1]))
-        placeCreature(self, self.position)
+           position[0] = self.position[0] - 1
+          
+        # We don't walk out of the map!
+        if position[0] <= 1 or position[1] <= 1:
+           self.cancelWalk()
+           return
         
+        if position[1] is 48:
+	   self.cancelWalk()
+	   self.message("Sorry, we don't allow you to walk up north :p")
+	   return
+        stream.position(position)
+        placeCreature(self, position)
+        
+        self.position = position
         # Send to everyone
         stream.send(self.client)
         
         self.updateMap(direction)
         
+        # Hack stackpos
+        if self.stackpos is 1:
+            self.stackpos += 1
+        
     def pong(self):
-        stream = TibiaPacket()
-        stream.uint8(0x1E)
-        stream.send(self.client)
+        TibiaPacket(0x1E).send(self.client)
         
     def updateMap(self, direction):
         stream = TibiaPacket()
@@ -148,4 +158,21 @@ class TibiaPlayer:
         elif direction is 3:
             stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14)
 
+        stream.send(self.client)
+        
+        
+    def setModes(self, attack, chase, secure):
+        self.modes[0] = attack
+        self.modes[1] = chase
+        self.modes[2] = secure
+        
+    def cancelWalk(self, direction=None):
+        stream = TibiaPacket(0xB5)
+        stream.uint8(direction if direction is not None else self.direction)
+        stream.send(self.client)
+        
+    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT):
+        stream = TibiaPacket(0xB4)
+        stream.uint8(msgType)
+        stream.string(message)
         stream.send(self.client)

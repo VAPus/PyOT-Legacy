@@ -71,9 +71,11 @@ class TibiaPacketReader:
         return self.data[self.pos:]
 
 class TibiaPacket:
-    def __init__(self):
+    def __init__(self, header=None):
         self.pos = 0
         self.data = b""
+        if header:
+            self.uint8(header)
 
     def clear(self):
         self.pos = 0
