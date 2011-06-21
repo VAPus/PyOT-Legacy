@@ -2,6 +2,7 @@ from core.packet import TibiaPacket
 from core.game import enum
 from core.game.map import placeCreature, removeCreature
 from twisted.python import log
+import config
 
 class TibiaPlayer:
     def __init__(self, client, data):
@@ -175,4 +176,31 @@ class TibiaPlayer:
         stream = TibiaPacket(0xB4)
         stream.uint8(msgType)
         stream.string(message)
+        stream.send(self.client)
+        
+        
+        
+        
+    # Compelx packets
+    def handleSay(self, packet):
+        channelType = packet.uint8()
+        channelId = 0
+        if channelType in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+            channelId = packet.uint16()
+            
+        text = packet.string()
+        if len(text) > config.maxLengthOfSay:
+            self.message("Message too long")
+            return
+        log.msg("chat  type %d" % channelType)
+        stream = TibiaPacket(0xAA)
+        stream.uint32(1)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"])
+        stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
+        if channelId:
+            stream.uint16(channelId)
+        else:
+            stream.position(self.position)
+        stream.string(text)
         stream.send(self.client)
