@@ -1,5 +1,7 @@
 from core.packet import TibiaPacket
 from core.game import enum
+from core.game.map import placeCreature, removeCreature
+from twisted.python import log
 
 class TibiaPlayer:
     def __init__(self, client, data):
@@ -80,6 +82,9 @@ class TibiaPlayer:
             
             
     def turn(self, direction):
+        if self.direction is direction:
+	    return
+	    
         self.direction = direction
         
         # Make package
@@ -102,7 +107,10 @@ class TibiaPlayer:
         stream = TibiaPacket()
         stream.uint8(0x6D)
         stream.position(self.position)
+        log.msg("Move on pos %d,%d" % (self.position[0], self.position[1]))
         stream.uint8(1)
+        
+        removeCreature(self, self.position)
         
         # Recalculate position
         if direction is 0:
@@ -115,11 +123,29 @@ class TibiaPlayer:
            self.position[0] = self.position[0] - 1
            
         stream.position(self.position)
+        log.msg("Move on dest %d,%d" % (self.position[0], self.position[1]))
+        placeCreature(self, self.position)
         
         # Send to everyone
         stream.send(self.client)
         
+        self.updateMap(direction)
+        
     def pong(self):
         stream = TibiaPacket()
         stream.uint8(0x1E)
+        stream.send(self.client)
+        
+    def updateMap(self, direction):
+        stream = TibiaPacket()
+        stream.uint8(0x65 + direction)
+        if direction is 0:
+            stream.map_description((self.position[0] - 8, self.position[1] - 5, self.position[2]), 18, 1)
+        elif direction is 1:
+            stream.map_description((self.position[0] + 8, self.position[1] - 6, self.position[2]), 1, 14)
+        elif direction is 2:
+            stream.map_description((self.position[0] - 8, self.position[1] + 6, self.position[2]), 18, 1)
+        elif direction is 3:
+            stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14)
+
         stream.send(self.client)

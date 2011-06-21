@@ -11,6 +11,12 @@ def placeCreature(creature, pos):
         return getTile(pos).placeCreature(creature)
     except:
         return False
+        
+def removeCreature(creature, pos):
+    try:
+        return getTile(pos).removeCreature(creature)
+    except:
+        return False  
 
 class Tile(BaseItem):
     def __init__(self, id):

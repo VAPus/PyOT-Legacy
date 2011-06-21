@@ -110,8 +110,10 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         elif packetType is 0x1E: # Keep alive
             self.player.pong()
         elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
+            log.msg("Turn packet")
             self.player.turn(packetType - 0x6F)
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
+            log.msg("Move packet")
             self.player.move(packetType - 0x65)
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
