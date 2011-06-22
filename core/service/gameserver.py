@@ -118,6 +118,12 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
             self.player.turn(packetType - 0x6F)
             
+        elif packetType is 0x64: # movement with multiple steps
+            self.player.handleAutoWalk(packet)
+    
+        elif packetType is 0x69:
+            self.player.stopAutoWalk()
+            
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
             self.player.move(packetType - 0x65)
         

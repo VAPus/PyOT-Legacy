@@ -1,8 +1,9 @@
 from core.packet import TibiaPacket
-from core.game import enum
+from core.game import enum, game
 from core.game.map import placeCreature, removeCreature
 from twisted.python import log
 import config
+from collections import deque
 
 class TibiaPlayer:
     def __init__(self, client, data):
@@ -13,12 +14,18 @@ class TibiaPlayer:
         self.position = [50,50,7]
         self.modes = [0,0,0]
         self.stackpos = 1
+        self.speed = 0x0032
+        self.inAutoWalk = False
 
     def name(self):
         return self.data["name"]
 
     def clientId(self):
         return self.client.client_id
+        
+    def stepDuration(self):
+        return (175 / self.speed) * 1 # TODO
+        
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
         stream.uint32(self.clientId()) # Cid
@@ -125,12 +132,12 @@ class TibiaPlayer:
         # We don't walk out of the map!
         if position[0] <= 1 or position[1] <= 1:
            self.cancelWalk()
-           return
+           return False
         
         if position[1] is 48:
 	   self.cancelWalk()
 	   self.message("Sorry, we don't allow you to walk up north :p")
-	   return
+	   return False
         stream.position(position)
         placeCreature(self, position)
         
@@ -144,6 +151,7 @@ class TibiaPlayer:
         if self.stackpos is 1:
             self.stackpos += 1
         
+        return True # Required for auto walkings
     def pong(self):
         TibiaPacket(0x1E).send(self.client)
         
@@ -178,8 +186,9 @@ class TibiaPlayer:
         stream.string(message)
         stream.send(self.client)
         
-        
-        
+    def stopAutoWalk(self):
+        self.inAutoWalk = False
+        self.cancelWalk(self.direction)
         
     # Compelx packets
     def handleSay(self, packet):
@@ -204,3 +213,24 @@ class TibiaPlayer:
             stream.position(self.position)
         stream.string(text)
         stream.send(self.client)
+        
+    def handleAutoWalk(self, packet):
+        steps = packet.uint8()
+        log.msg("Steps: %d" % steps)
+        walkPattern = deque()
+        for x in range(0, steps):
+            direction = packet.uint8()
+            log.msg("direction %d" % direction)
+            if direction is 1:
+                direction = 3
+            elif direction is 3:
+                direction = 0
+            elif direction is 5:
+                direction = 1
+            elif direction is 7:
+                direction = 2
+            else:
+                continue # We don't support them
+            walkPattern.append(direction)
+        game.autoWalkCreature(self, walkPattern)
+     
