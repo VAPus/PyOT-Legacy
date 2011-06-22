@@ -4,16 +4,20 @@ from twisted.internet.task import deferLater
 from twisted.internet import reactor
 from collections import deque
 
+walkerEvents = {}
+
 # First order of buisness, the autoWalker
 def autoWalkCreature(creature, walkPatterns):
-    reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
-
+    if creature.clientId() in walkerEvents: # The walker locks
+        walkerEvents[creature.clientId()].cancel()
+        #creature.cancelMove(creature.direction)
+        
+    walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
+    
 def handleAutoWalking(creature, walkPatterns):
-    if not creature.inAutoWalk:
-        return
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
-    if ret and creature.inAutoWalk and len(walkPatterns):
-        reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
+    if ret and len(walkPatterns):
+        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
     else:
-        creature.inAutoWalk = False
+        del walkerEvents[creature.clientId()]

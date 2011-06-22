@@ -15,7 +15,6 @@ class TibiaPlayer:
         self.modes = [0,0,0]
         self.stackpos = 1
         self.speed = 0x0032
-        self.inAutoWalk = False
 
     def name(self):
         return self.data["name"]
@@ -187,7 +186,11 @@ class TibiaPlayer:
         stream.send(self.client)
         
     def stopAutoWalk(self):
-        self.inAutoWalk = False
+        try:
+            core.game.game.walkerEvents[self.clientId()].cancel()
+            del core.game.game.walkerEvents[self.clientId()]
+        except:
+            pass
         self.cancelWalk(self.direction)
         
     # Compelx packets
@@ -222,15 +225,27 @@ class TibiaPlayer:
             direction = packet.uint8()
             log.msg("direction %d" % direction)
             if direction is 1:
-                direction = 3
+                walkPattern.append(3) # East
+            elif direction is 2:
+                walkPattern.append(0) # North
+                walkPattern.append(3) # East
             elif direction is 3:
-                direction = 0
+                walkPattern.append(0) # North
+            elif direction is 4:
+                walkPattern.append(0) # North
+                walkPattern.append(1) # West                
             elif direction is 5:
-                direction = 1
+                walkPattern.append(1) # West
+            elif direction is 6:
+                walkPattern.append(2) # South
+                walkPattern.append(1) # West
             elif direction is 7:
-                direction = 2
+                walkPattern.append(2) # South
+            elif direction is 8:
+                walkPattern.append(2) # South
+                walkPattern.append(3) # East               
             else:
                 continue # We don't support them
-            walkPattern.append(direction)
+                
         game.autoWalkCreature(self, walkPattern)
      
