@@ -1,6 +1,11 @@
 from distutils.core import setup, Extension
- 
-module1 = Extension('core/otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])
+import sys
+
+try:
+    sys.getwindowsversion()
+    module1 = Extension('otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])
+except:
+    module1 = Extension('core/otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])    
 
 setup (name = 'PyOT',
 	   version = '1.0',

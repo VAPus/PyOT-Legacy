@@ -1,20 +1,20 @@
 #!/usr/bin/env python
-import config
+import config, sys
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
     from twisted.internet import pollreactor
     pollreactor.install()
 
-elif config.reactorStyle is "epoll":
+elif config.reactorStyle is "epoll" and (sys.platform is 'linux2' or sys.platform is 'linux3'):
     from twisted.internet import epollreactor
     epollreactor.install()
 
-elif config.reactorStyle is "kqueue":
+elif config.reactorStyle is "kqueue" and sys.platform is 'freebsd':
     from twisted.internet import kqreactor
     kqreactor.install()
 
-elif config.reactorStyle is "iocp":
+elif config.reactorStyle is "iocp" and sys.platform is 'win32':
     from twisted.internet import iocpreactor
     iocpreactor.install()
 
