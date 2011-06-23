@@ -6,26 +6,12 @@ import config
 from collections import deque
 import core.game.scriptsystem
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
+from core.game.creature import Creature
 
-class TibiaPlayer:
+class TibiaPlayer(Creature):
     def __init__(self, client, data):
-        self.data = data
+        Creature.__init__(self, data, [50,50,7], client.client_id)
         self.client = client
-        self.creatureType = 0
-        self.direction = 0
-        self.position = [50,50,7]
-        self.modes = [0,0,0]
-        self.stackpos = 1
-        self.speed = 0x0032
-        self.scripts = {}
-    def name(self):
-        return self.data["name"]
-
-    def clientId(self):
-        return self.client.client_id
-        
-    def stepDuration(self):
-        return (175 / self.speed) * 1 # TODO
         
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
