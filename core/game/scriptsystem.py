@@ -20,7 +20,7 @@ class Scripts:
             if not (ok if ok is not None else True):
                break
         if (ok if ok is not None else True):
-            end(creature)
+            end()
 class TriggerScripts:
     def __init__(self):
         self.scripts = {}
@@ -41,13 +41,13 @@ class TriggerScripts:
     def _run(self, trigger, creature, end, *args, **kwargs):
         ok = True
         if not trigger in self.scripts:
-            return end(creature)
+            return end()
         for script in self.scripts[trigger]:
             ok = script(creature, *args, **kwargs)
             if not (ok if ok is not None else True):
                break
         if (ok if ok is not None else True):
-            end(creature)
+            end()
             
 # All global events can be initialized here
 globalScripts = {}

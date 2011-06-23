@@ -1,4 +1,4 @@
-from core.game.item import BaseItem
+from core.game.item import BaseThing
 
 def getTile(pos):
     try:
@@ -18,7 +18,7 @@ def removeCreature(creature, pos):
     except:
         return False  
 
-class Tile(BaseItem):
+class Tile(BaseThing):
     def __init__(self, id):
         self.itemId = id
         self.items = []
@@ -27,7 +27,7 @@ class Tile(BaseItem):
     def placeCreature(self, creature):
         return self.creatures.append(creature)
     
-    def removeCreature(self,player):
+    def removeCreature(self,creature):
         return self.creatures.remove(creature)
 
     

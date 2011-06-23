@@ -3,6 +3,7 @@ import core.otcrypto
 from zlib import adler32
 import copy
 from core.game.map import getTile
+from twisted.python import log
 
 class TibiaPacketReader:
     def __init__(self, data):
@@ -130,6 +131,19 @@ class TibiaPacket:
         self.uint16(position[1])
         self.uint8(position[2])
 
+    # Magic Effect
+    def magicEffect(self, pos, type):
+        self.uint8(0x83)
+        self.position(pos)
+        self.uint8(type)
+   
+    # Shoot
+    def shoot(self, fromPos, toPos, type):
+        self.uint8(0x85)
+        self.position(fromPos)
+        self.position(toPos)
+        self.uint8(type)
+
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
@@ -224,10 +238,10 @@ class TibiaPacket:
             self.string(creature.name())
         self.uint8(100) # Health %
         self.uint8(creature.direction) # Direction
-        self.add_outfit(302, 78,68,39,76,0) # TODO: FIx outfits!
+        self.add_outfit(creature.data["looktype"], creature.data["lookhead"],creature.data["lookbody"],creature.data["looklegs"],creature.data["lookfeet"],0) # TODO: FIx outfits!
         self.uint8(0xFF) # Light
         self.uint8(215) # Light
-        self.uint16(0x0032) # Speed
+        self.uint16(creature.speed) # Speed
         self.uint8(0) # Skull
         self.uint8(0) # Party/Shield
         if not known:
@@ -259,7 +273,6 @@ class TibiaPacket:
 
         self.data = struct.pack("<H", ol)+self.data
         ol += 2
-        print("Pre length: %d" % ol)
 
         if stream.xtea:
             self.data = core.otcrypto.encryptXTEA(self.data, stream.xtea)
@@ -271,3 +284,17 @@ class TibiaPacket:
         buffer = struct.pack("<HI", len(self.data)+4, adler)
         buffer += self.data
         stream.transport.write(buffer)
+        
+    def sendToList(self, list):
+        self.data = struct.pack("<H", len(self.data))+self.data
+        lenCache = 0
+        for client in list:
+             data = core.otcrypto.encryptXTEA(self.data, client.xtea)
+             adler = adler32(self.data)
+             if adler < 0:
+                 adler = adler & 0xffffffff
+             
+             if not lenCache:
+                 lenCache = len(data)+4
+             
+             client.transport.write(byte(struct.pack("<HI", lenCache, adler))+self.data)

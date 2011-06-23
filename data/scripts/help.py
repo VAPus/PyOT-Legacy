@@ -1,4 +1,5 @@
 import core.game.scriptsystem as scriptsystem
+from core.packet import TibiaPacket
 
 def callback(object, text):
     object.message("No you!!")

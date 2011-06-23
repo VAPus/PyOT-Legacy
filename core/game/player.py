@@ -137,7 +137,7 @@ class TibiaPlayer:
         
         if position[1] is 48:
             self.cancelWalk()
-            self.windowMessage("Sorry, we don't allow you to walk up north :p")
+            self.say("Sorry, I'm not allowed to walk up north :p")
             return False
           
         if position[1] is 52:
@@ -217,6 +217,26 @@ class TibiaPlayer:
         stream.string(message)
         stream.send(self.client)
         
+    def magicEffect(self, pos, type):
+        stream = TibiaPacket()
+        stream.magicEffect(pos, type)
+        stream.send(self.client)
+        
+    def shoot(self, fromPos, toPos, type):
+        stream = TibiaPacket()
+        stream.shoot(fromPos, toPos, type)
+        stream.send(self.client)
+        
+    def say(self, message):
+        stream = TibiaPacket(0xAA)
+        stream.uint32(1)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"])
+        stream.uint8(enum.MSG_SPEAK_SAY)
+        stream.position(self.position)
+        stream.string(message)
+        stream.send(self.client)
+        
     def stopAutoWalk(self):
         try:
             core.game.game.walkerEvents[self.clientId()].cancel()
@@ -238,7 +258,7 @@ class TibiaPlayer:
             channelId = packet.uint16()
             
         text = packet.string()
-        def endCallback(self):
+        def endCallback():
 	  if len(text) > config.maxLengthOfSay:
 	      self.message("Message too long")
 	      return
@@ -255,13 +275,13 @@ class TibiaPlayer:
 	  stream.string(text)
 	  stream.send(self.client)
 
-        def part1(self):
-            core.game.scriptsystem.get("talkaction").run(text, self, endCallback)
+        def part1():
+            core.game.scriptsystem.get("talkaction").run(text, self, endCallback, text)
             
         if len(text.split(" ")) > 1:
             core.game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
         else:
-            part1(self)
+            part1()
     def handleAutoWalk(self, packet):
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)
