@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 import config
+import sys
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
     from twisted.internet import pollreactor
     pollreactor.install()
 
-elif config.reactorStyle is "epoll" and (sys.platform is 'linux2' or sys.platform is 'linux3'):
+elif config.reactorStyle is "epoll":
     from twisted.internet import epollreactor
     epollreactor.install()
 

@@ -28,8 +28,8 @@ name = "PyOT dev server"
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 4 # sqlMinConnections + 1 is often good enough
-suggestedGameServerThreadPoolSize = 10 # This is the maximum amount of threads we can use, it should be 1 + sqlMaxConnections + (2*threads). For a core2duo with sqlMax = 5, this will be 1+7+2 = 10
-
+suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
+suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This is only for the scripts! 
 sqlMinConnections = 3
 sqlMaxConnections = 5
 

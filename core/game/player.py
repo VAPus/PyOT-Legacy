@@ -4,6 +4,8 @@ from core.game.map import placeCreature, removeCreature
 from twisted.python import log
 import config
 from collections import deque
+import core.game.scriptsystem
+from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
 
 class TibiaPlayer:
     def __init__(self, client, data):
@@ -15,7 +17,7 @@ class TibiaPlayer:
         self.modes = [0,0,0]
         self.stackpos = 1
         self.speed = 0x0032
-
+        self.scripts = {}
     def name(self):
         return self.data["name"]
 
@@ -63,20 +65,20 @@ class TibiaPlayer:
         
     def stream_status(self, stream):
         stream.uint8(0xA0)
-        stream.uint16(150)
-        stream.uint16(150)
+        stream.uint16(self.data["health"])
+        stream.uint16(self.data["healthmax"])
         stream.uint32(10000) # TODO: Free Capasity
-        stream.uint32(8000) # TODO: Capasity
-        stream.uint64(65000) # TODO: Virtual cap? Experience
-        stream.uint16(100) # TODO: Virtual cap? Level
+        stream.uint32(self.data["cap"]) # TODO: Cap
+        stream.uint64(self.data["experience"]) # TODO: Virtual cap? Experience
+        stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
         stream.uint8(0) # % to next level, TODO
-        stream.uint16(1000) # mana
-        stream.uint16(1000) # mana max
-        stream.uint8(1) # TODO: Virtual cap? Manalevel
+        stream.uint16(self.data["mana"]) # mana
+        stream.uint16(self.data["manamax"]) # mana max
+        stream.uint8(self.data["maglevel"]) # TODO: Virtual cap? Manalevel
         stream.uint8(1) # TODO: Virtual cap? ManaBase
         stream.uint8(0) # % to next level, TODO
-        stream.uint8(0) # TODO: Virtual cap? Soul
-        stream.uint16(60) # Stamina minutes
+        stream.uint8(self.data["soul"]) # TODO: Virtual cap? Soul
+        stream.uint16(self.data["stamina"] / (1000 * 60)) # Stamina minutes
         stream.uint16(0x0032) # Speed
         
         stream.uint16(0x00) # Condition
@@ -120,23 +122,28 @@ class TibiaPlayer:
         # Recalculate position
         position = self.position[:] # Important not to remove the : here, we don't want a reference!
         if direction is 0:
-           position[1] = self.position[1] - 1
+            position[1] = self.position[1] - 1
         elif direction is 1:
-           position[0] = self.position[0] + 1
+            position[0] = self.position[0] + 1
         elif direction is 2:
-           position[1] = self.position[1] + 1
+            position[1] = self.position[1] + 1
         else:
-           position[0] = self.position[0] - 1
+            position[0] = self.position[0] - 1
           
         # We don't walk out of the map!
-        if position[0] <= 1 or position[1] <= 1:
+        if position[0] < 0 or position[1] < 0:
            self.cancelWalk()
            return False
         
         if position[1] is 48:
-	   self.cancelWalk()
-	   self.message("Sorry, we don't allow you to walk up north :p")
-	   return False
+            self.cancelWalk()
+            self.windowMessage("Sorry, we don't allow you to walk up north :p")
+            return False
+          
+        if position[1] is 52:
+           self.message("Turbo speed in effect!")
+           self.setSpeed(0x9999)
+          
         stream.position(position)
         placeCreature(self, position)
         
@@ -174,9 +181,34 @@ class TibiaPlayer:
         self.modes[1] = chase
         self.modes[2] = secure
         
+    def setSpeed(self, speed):
+        if speed is not self.speed:
+            self.speed = speed
+            stream = TibiaPacket(0x8F)
+            stream.uint32(self.clientId())
+            stream.uint16(speed)
+            stream.send(self.client)
+            
+    def setTarget(self, targetId=0):
+        stream = TibiaPacket(0xA3)
+        stream.uint32(targetId)
+        stream.send(self.client)
+        
     def cancelWalk(self, direction=None):
         stream = TibiaPacket(0xB5)
         stream.uint8(direction if direction is not None else self.direction)
+        stream.send(self.client)
+        
+    def tutorial(self, tutorialId):
+        stream = TibiaPacket(0xDC)
+        stream.uint8(tutorialId)
+        stream.send(self.client)
+        
+    def mapMarker(self, position, typeId, desc=""):
+        stream = TibiaPacket(0xDD)
+        stream.position(position)
+        stream.uint8(typeId)
+        stream.string(desc)
         stream.send(self.client)
         
     def message(self, message, msgType=enum.MSG_STATUS_DEFAULT):
@@ -192,6 +224,11 @@ class TibiaPlayer:
         except:
             pass
         self.cancelWalk(self.direction)
+    
+    def windowMessage(self, text):
+        stream = TibiaPacket(0x15)
+        stream.string(text)
+        stream.send(self.client)
         
     # Compelx packets
     def handleSay(self, packet):
@@ -201,22 +238,30 @@ class TibiaPlayer:
             channelId = packet.uint16()
             
         text = packet.string()
-        if len(text) > config.maxLengthOfSay:
-            self.message("Message too long")
-            return
-        log.msg("chat  type %d" % channelType)
-        stream = TibiaPacket(0xAA)
-        stream.uint32(1)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"])
-        stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
-        if channelId:
-            stream.uint16(channelId)
+        def endCallback(self):
+	  if len(text) > config.maxLengthOfSay:
+	      self.message("Message too long")
+	      return
+	  log.msg("chat  type %d" % channelType)
+	  stream = TibiaPacket(0xAA)
+	  stream.uint32(1)
+	  stream.string(self.data["name"])
+	  stream.uint16(self.data["level"])
+	  stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
+	  if channelId:
+	      stream.uint16(channelId)
+	  else:
+	      stream.position(self.position)
+	  stream.string(text)
+	  stream.send(self.client)
+
+        def part1(self):
+            core.game.scriptsystem.get("talkaction").run(text, self, endCallback)
+            
+        if len(text.split(" ")) > 1:
+            core.game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
         else:
-            stream.position(self.position)
-        stream.string(text)
-        stream.send(self.client)
-        
+            part1(self)
     def handleAutoWalk(self, packet):
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)

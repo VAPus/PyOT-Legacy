@@ -21,3 +21,9 @@ def handleAutoWalking(creature, walkPatterns):
         walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
     else:
         del walkerEvents[creature.clientId()]
+        
+        
+
+# Last order of buisness, the script system
+import core.game.scriptsystem
+from data.scripts import *
