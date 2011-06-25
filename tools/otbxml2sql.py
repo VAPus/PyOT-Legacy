@@ -202,6 +202,25 @@ if True:
         else:
             lastRealItem.alsoKnownAs.append(item.sid)
 
+import json, xml.dom.minidom as dom
+
+data = {}
+dom = dom.parse("items.xml")
+for xItem in dom.getElementsByTagName("item"):
+     xId = xItem.getAttribute("id")
+     xFromId = xItem.getAttribute("fromid")
+     xToId = xItem.getAttribute("toid")
+     xName = xItem.getAttribute("name")
+     if xId:
+         data[int(xId)] = {"name":xName}
+     elif xFromId and xToId:
+         for x in range(int(xFromId), int(xToId)+1):
+             data[int(x)] = {"name":xName}
+print data
+# Current suggested format:
+# sid, cid, name, refids, flags, description, weight, worth, slot, duration, decayTo, floorchange
 for item in items:
-    print "Item sid: %s, cid: %s:" % (item.sid, item.cid)
-    print "\t", str(item.flags), str(item.alsoKnownAs) if item.alsoKnownAs else ""
+    if item.sid in data and item.alsoKnownAs:
+        print("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s');" % (item.sid, item.cid, data[item.sid]["name"], json.dumps(item.alsoKnownAs, separators=(',', ':')) if item.alsoKnownAs else "", json.dumps(item.flags, separators=(',', ':'))))
+    else:
+        print("---WARNING, item with sid=%d not no data!" % item.sid)
