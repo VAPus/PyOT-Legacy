@@ -139,9 +139,6 @@ class TibiaPlayer(Creature):
         
         self.updateMap(direction)
         
-        # Hack stackpos
-        if self.stackpos is 1:
-            self.stackpos += 1
         
         return True # Required for auto walkings
     def pong(self):

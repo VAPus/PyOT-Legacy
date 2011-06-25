@@ -216,11 +216,17 @@ for xItem in dom.getElementsByTagName("item"):
      elif xFromId and xToId:
          for x in range(int(xFromId), int(xToId)+1):
              data[int(x)] = {"name":xName}
-print data
+#print data
 # Current suggested format:
 # sid, cid, name, refids, flags, description, weight, worth, slot, duration, decayTo, floorchange
+id = input("ID? ")
+if id:
+    for item in items:
+        if item.sid is id:
+            items = [item]
+            break
 for item in items:
-    if item.sid in data and item.alsoKnownAs:
-        print("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s');" % (item.sid, item.cid, data[item.sid]["name"], json.dumps(item.alsoKnownAs, separators=(',', ':')) if item.alsoKnownAs else "", json.dumps(item.flags, separators=(',', ':'))))
-    else:
-        print("---WARNING, item with sid=%d not no data!" % item.sid)
+    if item.sid in data:
+        print("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s);" % (item.sid, item.cid, data[item.sid]["name"], json.dumps(item.alsoKnownAs, separators=(',', ':')) if item.alsoKnownAs else "", json.dumps(item.flags, separators=(',', ':')), item.speed if item.speed else "NULL"))
+    #else:
+        #print("---WARNING, item with sid=%d not no data!" % item.sid)

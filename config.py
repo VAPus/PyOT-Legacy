@@ -10,10 +10,10 @@ loginMaxConnections = 20
 gameMaxConnections = 100
 
 # SQL:
-sqlModule = "MySQLdb"
+sqlModule = "MySQLdb" # Can be "MySQLdb" or "sqlite3"
 sqlUsername = "root"
 sqlPassword = ""
-sqlDatabase = "ot"
+sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 
 # Versions:
 versionMin = 900

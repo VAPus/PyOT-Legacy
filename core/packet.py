@@ -209,7 +209,7 @@ class TibiaPacket:
                 print("Add creature on:")
                 print(pos)
                 self.add_creature(tile, creature, False)
-        self.item(4526)
+        #self.item(4526)
         # TODO: add bottom items
 
     # TODO: Outfit class?

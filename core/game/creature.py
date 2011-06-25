@@ -22,4 +22,4 @@ class Creature:
         return self.cid
         
     def stepDuration(self):
-        return (175 / self.speed) * 1 # TODO
+        return (1000 * 140 / self.speed) * 1 # TODO
