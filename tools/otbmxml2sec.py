@@ -88,6 +88,7 @@ class Item:
      def __init__(self, id):
         self.id = id
         self.data = {}
+        self.items = [] # container
         
 otbmFile = open("map.otbm")
 otbm = Reader(otbmFile.read())
@@ -101,7 +102,7 @@ otbm = Reader(otbmFile.read())
 nLen = 0
 nData = b""
 escape = ""
-"""for x in range(0, otbm.length):
+""""for x in range(0, otbm.length):
     char = otbm.uint8()
     if char is not 0xFD or not otbm.peekUint8() in (0xFD, 0xFE, 0xFF):
         nData += struct.pack("<B", char)
@@ -142,6 +143,50 @@ tiles = []
 mapTiles = {}
 totTiles = 0
 # Read shit
+
+
+def itemRunner(mainitem):
+    while otbm.peekUint8() is 0xFE:
+        otbm.uint8() # 0xFE
+        attr = otbm.uint8()
+        if attr is 6:
+            # Items
+            itemid = otbm.uint16()
+            _item = Item(itemid)
+
+            while otbm.peekUint8() in (3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,30,31,33,34,35,36,37,38,39,40,41,42,43,128):
+			unseri = otbm.uint8()
+			if unseri is 15:
+			  _item.data["count"] = otbm.uint8()
+			elif unseri is 6:
+			  _item.data["text"] = otbm.string()
+			elif unseri is 7:
+			  _item.data["desc"] = otbm.string()
+			elif unseri in (4,5):
+			  n = otbm.uint16() # Action id or unique id, we don't even support convertion of those!
+			  if n == 65535: # Bugfix
+				print "action id / unique id = 0"
+				otbm.pos -= 2
+				break
+			elif unseri is 8: # teleport is a tile matter
+				tile.data["teleportto"] = (otbm.uint16(), otbm.uint16(), otbm.uint8())
+			elif unseri in (20, 21): # Beds
+                            n = otbm.uint16()
+                            if n == 65535: # Bugfix
+				print "bed sleeper / guid = 0"
+				otbm.pos -= 2
+				break
+			elif unseri is 17:
+				 n = otbm.uint8() # Decay status, will be supported soon!
+			else:
+				print "Unsupported unseri %d" % unseri
+				quit()
+            if otbm.peekUint8() is 0xFE:
+                itemRunner(_item)
+            mainitem.items.append(_item)
+        else:
+            print "Wrong stuff 2"
+        otbm.uint8() #0xFF
 if True:
     while otbm.pos < otbm.length:
         if otbm.uint8() is not 0xFE: # this ain't suppose to happend, but if you fuck the file up, then sure :p
@@ -179,40 +224,14 @@ if True:
 
                     #otbm.uint8() # 0xFF
                     if otbm.peekUint8() is 0xFE:
-                            while otbm.peekUint8() is 0xFE:
-                                otbm.uint8() # 0xFE
-                                attr = otbm.uint8()
-                                if attr is 6:
-                                    # Items
-                                    itemid = otbm.uint16()
-                                    _item = Item(itemid)
-
-                                    while otbm.peekUint8() in (3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,30,31,33,34,35,36,37,38,39,40,41,42,43,128):
-                                        unseri = otbm.uint8()
-                                        if unseri is 15:
-                                            _item.data["count"] = otbm.uint8()
-                                        elif unseri is 6:
-                                            _item.data["text"] = otbm.string()
-                                        elif unseri is 7:
-                                            _item.data["desc"] = otbm.string()
-                                        elif unseri in (4,5):
-                                            n = otbm.uint16() # Action id or unique id, we don't even support convertion of those!
-                                            if n is 0xFFFF: # Bugfix
-					      otbm.pos -= 2
-					      break
-                                        elif unseri is 8: # teleport is a tile matter
-                                            tile.data["teleportto"] = (otbm.uint16(), otbm.uint16(), otbm.uint8())
-                                        else:
-                                            print "Unsupported unseri %d" % unseri
-                                            quit()
-                                    tile.items.append(Item(itemid))
-                                else:
-                                    print "Wrong stuff 2"
-                                otbm.uint8() #0xFF
+                        itemRunner(tile)
                     char = otbm.uint8()
                     if char is not 0xFF:
-		       print "Terrible error! %d (on %d)" % (char, otbm.pos) # 0xFF
-		       quit()
+		       print "Terrible error! %d (on %s)" % (char, hex(otbm.pos)) # 0xFF
+		       otbm.pos -= 3
+		       if otbm.uint8() != 0xFF:
+			 otbm.pos += 2
+			 quit()
                     tiles.append(tile)
                     if not tile.x in mapTiles:
                         mapTiles[tile.x] = {}
