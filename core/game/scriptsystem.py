@@ -12,15 +12,19 @@ class Scripts:
         
     def unreg(self, callback):
         self.scripts.remove(callback)
+
+    def run(self, creature, end=None, *args, **kwargs):
+        scriptPool.callInThread(self._run, creature, end, *args, **kwargs)
         
-    def _run(self, creature, end, *args, **kwargs):
+    def _run(self, creature, end=None, *args, **kwargs):
         ok = True
         for script in self.scripts:
             ok = script(creature, *args, **kwargs)
             if not (ok if ok is not None else True):
                break
-        if (ok if ok is not None else True):
+        if end and (ok if ok is not None else True):
             end()
+            
 class TriggerScripts:
     def __init__(self):
         self.scripts = {}
@@ -36,8 +40,9 @@ class TriggerScripts:
         if not len(self.scripts[trigger]):
             del self.scripts[trigger]
         
-    def run(self, trigger, creature, end, *args, **kwargs):
+    def run(self, trigger, creature, end=None, *args, **kwargs):
         scriptPool.callInThread(self._run, trigger, creature, end, *args, **kwargs)
+        
     def _run(self, trigger, creature, end, *args, **kwargs):
         ok = True
         if not trigger in self.scripts:
@@ -46,13 +51,15 @@ class TriggerScripts:
             ok = script(creature, *args, **kwargs)
             if not (ok if ok is not None else True):
                break
-        if (ok if ok is not None else True):
+        if end and (ok if ok is not None else True):
             end()
             
 # All global events can be initialized here
 globalScripts = {}
 globalScripts["talkaction"] = TriggerScripts()
 globalScripts["talkactionFirstWord"] = TriggerScripts()
+globalScripts["login"] = Scripts()
+globalScripts["logout"] = Scripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)

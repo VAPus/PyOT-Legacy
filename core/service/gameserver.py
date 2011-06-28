@@ -9,7 +9,7 @@ import config
 import hashlib
 from core.game.player import TibiaPlayer
 from core.game.map import placeCreature
-
+import core.game.scriptsystem
 class GameProtocol(core.protocolbase.TibiaProtocol):
 
     def onInit(self):
@@ -95,8 +95,12 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         
         self.player = TibiaPlayer(self, character[0])
         placeCreature(self.player, self.player.position)
-
+        
         self.player.sendFirstPacket()
+        
+        # Call the login script
+        core.game.scriptsystem.get("login").run(self.player)
+        
         
     def onPacket(self, packet):
         packet.data = core.otcrypto.decryptXTEA(packet.getData(), self.xtea)
@@ -133,6 +137,9 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()
+
+    def onConnectionLost(self):
+        core.game.scriptsystem.get("logout").run(self.player)
         
 class GameFactory(core.protocolbase.TibiaFactory):
     protocol = GameProtocol
