@@ -3,7 +3,7 @@ import sys
 
 try:
     sys.getwindowsversion()
-    module1 = Extension('otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])
+    module1 = Extension('otcrypto', sources = ['core/otcrypto.c'], libraries = ["eay32"])
 except:
     module1 = Extension('core/otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])    
 

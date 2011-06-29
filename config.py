@@ -33,7 +33,7 @@ suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This 
 sqlMinConnections = 3
 sqlMaxConnections = 5
 
-reactorStyle = "epoll" # Can be "select" (Default, work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs)
+reactorStyle = "select" # Can be "select" (Default, work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs)
 
 RSAKeys = {"n":"109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413",
 "e":"65537",

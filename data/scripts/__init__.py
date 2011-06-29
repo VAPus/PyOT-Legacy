@@ -1,10 +1,11 @@
 # This file is quite important because it handles the script loading!
 
-import glob
+import glob, os
 from twisted.python import log
+
 __all__ = []
 for mod in glob.glob("data/scripts/*.py"):
- modm = mod.split('/')[-1].replace('.py', '')
+ modm = mod.split(os.sep)[-1].replace('.py', '')
  if modm is "__init__":
    continue
 

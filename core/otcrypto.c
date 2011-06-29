@@ -2,21 +2,16 @@
 #include <openssl/rsa.h>
 #include <openssl/bn.h>
 #include <openssl/err.h>
-#include <stdbool.h>
 #include <stdint.h>
 
-// TODO: Multiple objects support!
-// TODO: Encrypt support!
 
-// our "global RSA object"
 RSA* g_RSA;
-bool gotkey;
+char gotkey;
 
 static PyObject* setkeys(PyObject* self, PyObject* args) {
         if(gotkey)
                 Py_RETURN_NONE;
 
-        // Arguments
         const char* n;
         const char* e;
         const char* d;
@@ -25,7 +20,6 @@ static PyObject* setkeys(PyObject* self, PyObject* args) {
         if (!PyArg_ParseTuple(args, "sssss", &n, &e, &d, &p, &q))
                 return NULL;
 
-        // Convert from char* to BN
         int retno;
         retno = BN_dec2bn(&g_RSA->n, n);
         if(retno)
@@ -37,23 +31,19 @@ static PyObject* setkeys(PyObject* self, PyObject* args) {
         if(retno)
                 retno = BN_dec2bn(&g_RSA->q, q);
 
-        // Errors:
         ERR_load_crypto_strings();
 
-        // This check will verify keys
         if(retno && RSA_check_key(g_RSA)) {
-                // Ok
         } else {
                 printf(ERR_error_string(ERR_get_error(), NULL));
                 printf("\n");          
         }
  
-        gotkey = true;
+        gotkey = 1;
         Py_RETURN_NONE;
 }
 
 static PyObject* decryptRSA(PyObject* self, PyObject* args) {
-        // Arguments
         const unsigned char* stream;
         int length;
 
@@ -157,7 +147,7 @@ static struct PyModuleDef otrsamodule = {
 /*PyMODINIT_FUNC
 PyInit_otrsa(void)*/
 PyMODINIT_FUNC initotcrypto(void) {
-        gotkey = false;
+        gotkey = 0;
         g_RSA = RSA_new();
         (void)Py_InitModule("otcrypto", otcryptoMethods);
 }
