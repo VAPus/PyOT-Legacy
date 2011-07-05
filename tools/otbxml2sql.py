@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
-import struct
+import struct, sys
 
 # The reader class:
 class Reader:
@@ -81,8 +83,6 @@ class Item:
         self.attr = {}
         self.cid = 0
         self.sid = 0
-        self.speed = 0
-        self.order = 0
         self.alsoKnownAs = []
         self.junk = False
 otbFile = open("items.otb")
@@ -96,7 +96,6 @@ otb = Reader(otbFile.read())
 # This code is probably 50%+ of the entier execution time
 nLen = 0
 nData = b""
-escape = ""
 for x in range(0, otb.length):
     char = otb.uint8()
     if char is not 0xFD or not otb.peekUint8() in (0xFD, 0xFE, 0xFF):
@@ -117,12 +116,11 @@ if otb.uint8() == 0xFE:
     nodeType = otb.uint8()
     if nodeType == 0x01:
         dataLen = otb.uint16()
-        print "DEBUG len: %d" % dataLen
         majorVersion = otb.uint32()
         minorVersion = otb.uint32()
         buildVersion = otb.uint32()
         
-        print "OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
+        print "--OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
 # Cheat the position to avoid junk
 otb.pos = 13 + dataLen
 items = []
@@ -184,18 +182,23 @@ if True:
                 elif attr is 0x11:
                     item.cid = otb.uint16()
                 elif attr is 0x14:
-                    item.speed = otb.uint16()
+                    item.flags["speed"] = otb.uint16()
                 elif attr is 0x37:
                     item.flags["order"] = otb.uint8()
                 else:
-                    otb.pos += datalen
+                    if attr is 0xFE:
+                        otb.pos -= 4
+                        break
+                    else:
+                        otb.pos += datalen
                     
         except:
             pass
         try:
             otb.uint8() # 0xFF
         except:
-            print "End parsing on %d (out of %d)" % (otb.pos, otb.length)
+            pass
+             # Fix a bug with last closing
         if item.cid:
             items.append(item)
             lastRealItem = item
@@ -211,22 +214,40 @@ for xItem in dom.getElementsByTagName("item"):
      xFromId = xItem.getAttribute("fromid")
      xToId = xItem.getAttribute("toid")
      xName = xItem.getAttribute("name")
+     xAttributes = xItem.getElementsByTagName("attribute")
+
+     prep = {"name":xName}
+     for attr in xAttributes:
+         prep[attr.getAttribute("key")] = attr.getAttribute("value")
+         
      if xId:
-         data[int(xId)] = {"name":xName}
+         data[int(xId)] = prep
+
      elif xFromId and xToId:
          for x in range(int(xFromId), int(xToId)+1):
-             data[int(x)] = {"name":xName}
+             data[int(x)] = prep
+             
 #print data
 # Current suggested format:
 # sid, cid, name, refids, flags, description, weight, worth, slot, duration, decayTo, floorchange
-id = input("ID? ")
+#id = raw_input("ID? ")
+id = 0
 if id:
     for item in items:
         if item.sid is id:
             items = [item]
             break
+
+print "CREATE TABLE IF NOT EXISTS `items` (`sid` INT( 8 ) NOT NULL ,`cid` INT( 8 ) NOT NULL ,`name` VARCHAR( 32 ) NOT NULL ,`known_as` MEDIUMTEXT NULL DEFAULT NULL ,`attributes` TEXT NULL DEFAULT NULL ,PRIMARY KEY ( `sid` ) ,INDEX ( `cid` )) ENGINE = MYISAM ;"
 for item in items:
-    if item.sid in data and item.speed:
-        print("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s);" % (item.sid, item.cid, data[item.sid]["name"], json.dumps(item.alsoKnownAs, separators=(',', ':')) if item.alsoKnownAs else "", json.dumps(item.flags, separators=(',', ':')), item.speed if item.speed else "NULL"))
+    if item.sid in data:
+        # Dirty way to fix the attributes:
+        item.flags.update(data[item.sid])
+        if "name" in item.flags:
+            del item.flags["name"]
+        
+        if "solid" in item.flags and "speed" in item.flags:
+            del item.flags["speed"]
+        print(("INSERT INTO items VALUES(%d, %d, '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
     #else:
-        #print("---WARNING, item with sid=%d not no data!" % item.sid)
+    #    print("---WARNING, item with sid=%d not no data!" % item.sid)

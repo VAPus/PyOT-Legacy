@@ -1,4 +1,5 @@
 from core.game.item import BaseThing
+
 import cjson, zlib
 
 def getTile(pos):
@@ -84,3 +85,4 @@ def unload(sectorX, sectorY):
     for x in range(sectorX * 64, (sectorX * 64) + 64):
         for x in range(sectorY * 64, (sectorY * 64) + 64):
             del knownMap[x][y]
+    

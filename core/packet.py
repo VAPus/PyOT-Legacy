@@ -147,15 +147,9 @@ class TibiaPacket:
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
-        if type(item) is int:
-            self.uint16(item)
-            if count:
-                self.uint8(count)
-        else:
-            self.uint16(item.cid())
-
-            #if item.stackable:
-            #    self.uint8(count if count else item.subtype)
+        self.uint16(item)
+        if count:
+            self.uint8(count)
 
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
@@ -173,14 +167,14 @@ class TibiaPacket:
 
         # Run the steps by appending the floor
         for z in range(start, (end+step), step):
-            skip = self.floor_description((position[0], position[1], z), width, height, position[2] - z, skip)
+            skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip)
 
         if skip >= 0:
             self.uint8(skip)
             self.uint8(0xFF)
         
     # Floor Description (the entier floor)
-    def floor_description(self, position, width, height, offset, skip):
+    def floorDescription(self, position, width, height, offset, skip):
         for x in range(0, width):
             for y in range(0, height):
                 tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
@@ -189,8 +183,7 @@ class TibiaPacket:
                         self.uint8(skip)
                         self.uint8(0xFF)
                     skip = 0
-                    print position
-                    self.tile_description(tile, (position[0] + x + offset, position[1] + y + offset, position[2]))
+                    self.tileDescription(tile)
                 else:
                     skip += 1
                     if skip is 0xFF:
@@ -199,7 +192,7 @@ class TibiaPacket:
                         skip = -1
         return skip
 
-    def tile_description(self, tile, pos=None):
+    def tileDescription(self, tile):
         self.uint16(0x00)
         if tile.items: # Tile can tecnhicly be 0
             for item in tile.items:
@@ -208,10 +201,8 @@ class TibiaPacket:
         
         if tile.creatures:
             for creature in tile.creatures:
-                print("Add creature on:")
-                print(pos)
                 self.add_creature(tile, creature, False)
-        #self.item(4526)
+
         # TODO: add bottom items
 
     # TODO: Outfit class?
@@ -280,9 +271,9 @@ class TibiaPacket:
             self.data = core.otcrypto.encryptXTEA(self.data, stream.xtea)
 
         adler = adler32(self.data)
+        # Fix a bug in Python2?
         if adler < 0:
              adler = adler & 0xffffffff
-        print("Length: %d" % (len(self.data)))
         buffer = struct.pack("<HI", len(self.data)+4, adler)
         buffer += self.data
         stream.transport.write(buffer)
