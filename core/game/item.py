@@ -9,3 +9,11 @@ class BaseThing:
 
 class Item(BaseThing):
      pass
+
+def cid(itemid):
+    try:
+        return items[itemid]["cid"]
+    except:
+        return None
+        
+        

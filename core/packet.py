@@ -4,7 +4,7 @@ from zlib import adler32
 import copy
 from core.game.map import getTile
 from twisted.python import log
-
+from core.game.item import cid
 class TibiaPacketReader:
     def __init__(self, data):
         self.length = len(data)
@@ -189,6 +189,7 @@ class TibiaPacket:
                         self.uint8(skip)
                         self.uint8(0xFF)
                     skip = 0
+                    print position
                     self.tile_description(tile, (position[0] + x + offset, position[1] + y + offset, position[2]))
                 else:
                     skip += 1
@@ -200,8 +201,9 @@ class TibiaPacket:
 
     def tile_description(self, tile, pos=None):
         self.uint16(0x00)
-        if tile.itemId: # Tile can tecnhicly be 0
-            self.item(tile)
+        if tile.items: # Tile can tecnhicly be 0
+            for item in tile.items:
+                self.item(cid(item))
 
         
         if tile.creatures:

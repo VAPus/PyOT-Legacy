@@ -27,8 +27,12 @@ class Reader:
 
     # 16bit - 2bytes, C type: short
     def uint16(self):
+        if self.peekUint8() == 0xFD and self.peekUint8(2) >= 0xFE:
+            self.pos += 1
         self.pos += 2
+
         return struct.unpack("<H", self.data[self.pos-2:self.pos])[0]
+        
     def int16(self):
         self.pos += 2
         return struct.unpack("<h", self.data[self.pos-2:self.pos])[0]
@@ -99,18 +103,18 @@ otbm = Reader(otbmFile.read())
 
 # Now, we could naturally just read shit, but some idiot figured we should use some junky escape system in the file, since we don't, we just got to remove the escape system entierly
 # This code is probably 50%+ of the entier execution time
-nLen = 0
+"""nLen = 0
 nData = b""
 escape = ""
-""""for x in range(0, otbm.length):
+for x in range(0, otbm.length):
     char = otbm.uint8()
     if char is not 0xFD or not otbm.peekUint8() in (0xFD, 0xFE, 0xFF):
         nData += struct.pack("<B", char)
         nLen += 1      
 
 otbm.data = nData
-otbm.length = nLen"""
-
+otbm.length = nLen
+"""
 # Skip the first 4bytes, they're just NULLs
 otbm.pos = 4
 
@@ -152,6 +156,7 @@ def itemRunner(mainitem):
         if attr is 6:
             # Items
             itemid = otbm.uint16()
+            print itemid
             _item = Item(itemid)
 
             while otbm.peekUint8() in (3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,30,31,33,34,35,36,37,38,39,40,41,42,43,128):
@@ -185,8 +190,9 @@ def itemRunner(mainitem):
                 itemRunner(_item)
             mainitem.items.append(_item)
         else:
-            print "Wrong stuff 2"
+            print "Wrong stuff %d" % attr
         otbm.uint8() #0xFF
+    print "leaving on %s" % hex(otbm.pos)
 if True:
     while otbm.pos < otbm.length:
         if otbm.uint8() is not 0xFE: # this ain't suppose to happend, but if you fuck the file up, then sure :p
@@ -224,6 +230,7 @@ if True:
 
                     #otbm.uint8() # 0xFF
                     if otbm.peekUint8() is 0xFE:
+                        print "enter runloop on %s" % hex(otbm.pos)
                         itemRunner(tile)
                     char = otbm.uint8()
                     if char is not 0xFF:

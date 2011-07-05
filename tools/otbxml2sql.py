@@ -226,7 +226,7 @@ if id:
             items = [item]
             break
 for item in items:
-    if item.sid in data:
+    if item.sid in data and item.speed:
         print("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s);" % (item.sid, item.cid, data[item.sid]["name"], json.dumps(item.alsoKnownAs, separators=(',', ':')) if item.alsoKnownAs else "", json.dumps(item.flags, separators=(',', ':')), item.speed if item.speed else "NULL"))
     #else:
         #print("---WARNING, item with sid=%d not no data!" % item.sid)
