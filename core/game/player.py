@@ -47,6 +47,7 @@ class TibiaPlayer(Creature):
         stream.uint8(0xA2) # Icons
         stream.uint16(0) # TODO: Icons
 
+        stream.magicEffect(self.position, 0x02)
         stream.send(self.client)
         
     def stream_status(self, stream):
@@ -137,6 +138,26 @@ class TibiaPlayer(Creature):
         
         
         return True # Required for auto walkings
+        
+    def teleport(self, position):
+        # 4 steps, remove item (creature), send new map and cords, and effects 
+        stream = TibiaPacket(0x6C)
+        stream.position(self.position)
+        stream.uint8(1)
+        
+        stream.uint8(0x64)
+        stream.position(position)
+        removeCreature(self, self.position)
+        placeCreature(self, position)
+        stream.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14)
+        
+        
+        self.position = position
+        
+        
+        stream.magicEffect(self.position, 0x02)
+        
+        stream.send(self.client)
     def pong(self):
         TibiaPacket(0x1E).send(self.client)
         

@@ -5,6 +5,8 @@ from twisted.internet import reactor
 from collections import deque
 from twisted.python import log
 import time
+from core.packet import TibiaPacket
+import core.game.map
 
 walkerEvents = {}
 
@@ -44,18 +46,20 @@ def getSpectators(pos):
     for x in range(pos[0]-9, pos[0]+9):
         for y in range(pos[1]-7, pos[1]+7):
             try:
-                for creature in knownMap[x][y][7].creatures:
+                for creature in core.game.map.knownMap[x][y][7].creatures:
                     # TODO: Check for player
-                    players.append(creature)
+                    players.append(creature.client)
             except:
                 pass # Tile isn't loaded
+
     return players
     
 def updateTile(pos, tile):
     stream = TibiaPacket(0x69)
-    stream.pos(pos)
+    stream.position(pos)
     stream.tileDescription(tile)
-    stream.uint16(0x00FF)
+    stream.uint8(0x00)
+    stream.uint8(0xFF)
     stream.sendto(getSpectators(pos))
     
 # Last order of buisness, the script system

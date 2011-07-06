@@ -201,7 +201,7 @@ class TibiaPacket:
         
         if tile.creatures:
             for creature in tile.creatures:
-                self.add_creature(tile, creature, False)
+                self.creature(creature, False)
 
         # TODO: add bottom items
 
@@ -219,7 +219,7 @@ class TibiaPacket:
             
         self.uint16(0x00) # Mount
         
-    def add_creature(self, tile, creature, known):
+    def creature(self, creature, known):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -278,16 +278,16 @@ class TibiaPacket:
         buffer += self.data
         stream.transport.write(buffer)
         
-    def sendToList(self, list):
+    def sendto(self, list):
         self.data = struct.pack("<H", len(self.data))+self.data
         lenCache = 0
         for client in list:
              data = core.otcrypto.encryptXTEA(self.data, client.xtea)
-             adler = adler32(self.data)
+             adler = adler32(data)
              if adler < 0:
                  adler = adler & 0xffffffff
              
              if not lenCache:
                  lenCache = len(data)+4
              
-             client.transport.write(byte(struct.pack("<HI", lenCache, adler))+self.data)
+             client.transport.write(bytes(struct.pack("<HI", lenCache, adler))+data)
