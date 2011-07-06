@@ -1,0 +1,24 @@
+You need:
+* Python 2
+* Twisted 10+
+ * zope.interface
+* MySqlDb
+* cjson
+
+You also need to compile otcrypto:
+python setup.py build # You can also choose install here, but it might conflict on some systems
+cp build/*/*.so core
+
+There is a precompiled version inside the WINDOWS folder.
+
+Links for Windows:
+http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi
+http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
+http://www.codegood.com/download/10/
+http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
+And grab:
+zope.interface-3.6.4.win32-py2.7.exe
+and
+Base-11.5.23.win32-py2.7.exe
+from:
+http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
