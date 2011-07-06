@@ -1,6 +1,6 @@
 from core.game.item import BaseThing
-
-import cjson, zlib
+from twisted.internet import threads
+import cjson, zlib, threading
 
 def getTile(pos):
     try:
@@ -49,22 +49,27 @@ def loadTiles(x,y, walk=True):
     
     # An idea by soul4soul. To be better implanted into walk sections really
     if walk:
-        load(sectorX+1, sectorY)
-        load(sectorX-1, sectorY)
-        load(sectorX, sectorY+1)
-        load(sectorX, sectorY-1)
-        load(sectorX-1, sectorY-1)
-        load(sectorX+1, sectorY+1)
-        load(sectorX-1, sectorY+1)
-        load(sectorX+1, sectorY-1)
-    return load(sectorX, sectorY)
+        commands = [(load, [sectorX+1, sectorY], {})]
+        commands.append((load, [sectorX-1, sectorY], {}))
+        commands.append((load, [sectorX, sectorY+1], {}))
+        commands.append((load, [sectorX, sectorY-1], {}))
+        commands.append((load, [sectorX-1, sectorY-1], {}))
+        commands.append((load, [sectorX+1, sectorY+1], {}))
+        commands.append((load, [sectorX-1, sectorY+1], {}))
+        commands.append((load, [sectorX+1, sectorY-1], {}))
+    # This locks walking until it's done if it isn't already loaded, which is should be!
+    load(sectorX, sectorY)
+    # Perform the loading in threadpool, this hold one thread
+    if walk:
+        threads.callMultipleInThread(commands)
     
 def load(sectorX, sectorY):
     if sectorX < 0 or sectorY < 0 or (sectorX in sectors and sectorY in sectors[sectorX]):
         return None
-        
+
     if not sectorX in sectors:
         sectors[sectorX] = {}
+        
     sectors[sectorX][sectorY] = True
     
     mapy = cjson.decode(zlib.decompress(open("data/map/map_%d_%d.sec" % (sectorX, sectorY), "rb").read()))
