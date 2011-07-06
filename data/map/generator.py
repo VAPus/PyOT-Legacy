@@ -3,8 +3,8 @@ import json, zlib
 
 
 # Make 128 tiles
-x = 0
-y = 0
+x = 1
+y = 1
 for n in range(0, 16):
 	for m in range(0, 16):
 		map = {}
@@ -14,7 +14,7 @@ for n in range(0, 16):
 				map[xx][yy] = {}
 			
 				# We only make one level for now, 7
-				map[xx][yy][7] = ([106], {}, ()) # Format being ( [ground, items], {tile flags/options}, (Monster names) )
+				map[xx][yy][7] = ([106], {}) # Format being ( [ground, items], {tile flags/options}, (Monster names) )
 	
 		open("map_%d_%d.sec" % (n,m), "w+b").write(zlib.compress( json.dumps(map, separators=(',', ':'), indent=0).replace("\n", ''), 1 ))
 		y += 64

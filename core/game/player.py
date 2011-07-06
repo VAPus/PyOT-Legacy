@@ -96,6 +96,7 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
 
     def move(self, direction):
+        import data.map.info
         self.direction = direction
         
         # Make packet
@@ -117,14 +118,9 @@ class TibiaPlayer(Creature):
             position[0] = self.position[0] - 1
           
         # We don't walk out of the map!
-        if position[0] < 0 or position[1] < 0:
+        if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
            self.cancelWalk()
            return False
-        
-        if position[1] is 48:
-            self.cancelWalk()
-            self.say("Sorry, I'm not allowed to walk up north :p")
-            return False
           
         if position[1] is 52:
            self.message("Turbo speed in effect!")

@@ -67,6 +67,9 @@ def load(sectorX, sectorY):
     if sectorX < 0 or sectorY < 0 or (sectorX in sectors and sectorY in sectors[sectorX]):
         return None
 
+    if sectorX*data.map.info.sectorSize[0] > data.map.info.height or sectorY*data.map.info.sectorSize[1] > data.map.info.width:
+        return None
+        
     if not sectorX in sectors:
         sectors[sectorX] = {}
         
