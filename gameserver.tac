@@ -8,15 +8,15 @@ if config.reactorStyle is "poll":
     from twisted.internet import pollreactor
     pollreactor.install()
 
-elif config.reactorStyle is "epoll":
+elif config.reactorStyle is "epoll" or (sys.platform == "linux2" and config.reactorStyle is "default"):
     from twisted.internet import epollreactor
     epollreactor.install()
 
-elif config.reactorStyle is "kqueue" and sys.platform is 'freebsd':
+elif config.reactorStyle is "kqueue" or (sys.platform.find("freebsd") and config.reactorStyle is "default"):
     from twisted.internet import kqreactor
     kqreactor.install()
 
-elif config.reactorStyle is "iocp" and sys.platform is 'win32':
+elif config.reactorStyle is "iocp" or (sys.platform == "win32" and config.reactorStyle is "default"):
     from twisted.internet import iocpreactor
     iocpreactor.install()
 

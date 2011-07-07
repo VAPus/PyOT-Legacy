@@ -282,6 +282,7 @@ class TibiaPlayer(Creature):
             core.game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
         else:
             part1()
+
     def handleAutoWalk(self, packet):
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)

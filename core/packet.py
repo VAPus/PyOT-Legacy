@@ -276,6 +276,7 @@ class TibiaPacket:
              adler = adler & 0xffffffff
         buffer = struct.pack("<HI", len(self.data)+4, adler)
         buffer += self.data
+
         stream.transport.write(buffer)
         
     def sendto(self, list):
