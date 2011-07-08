@@ -29,10 +29,30 @@ class Tile(BaseThing):
         self.creatures = []
 
     def placeCreature(self, creature):
-        return self.creatures.append(creature)
+        return self.creatures.append(creature) # return stackpos
     
     def removeCreature(self,creature):
-        return self.creatures.remove(creature)
+        return self.creatures.remove(creature) # return stackpos
+        
+    def placeItem(self, item):
+        self.items.append(item)
+        return len(self.items)-1
+    def removeItem(self, item):
+        return self.items.remove(item) # return stackpos
+        
+    def removeClientItem(self, cid, stackpos=None):
+        import core.game.item
+        sid = core.game.item.reverseItems[cid]
+        if stackpos and self.items[stackpos] is sid:
+            self.items.pop(stackpos-1)
+            
+        else:
+            return self.items.remove(sid)
+            
+    def placeClientItem(self, cid):
+        import core.game.item
+        sid = core.game.item.reverseItems[cid]
+        return self.placeItem(sid)
 
     
 knownMap = {}

@@ -125,14 +125,17 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         elif packetType is 0x64: # movement with multiple steps
             self.player.handleAutoWalk(packet)
     
-        elif packetType is 0x69:
+        elif packetType is 0x69: # Stop autowalking
             self.player.stopAutoWalk()
             
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
             self.player.move(packetType - 0x65)
         
-        elif packetType is 0x96:
+        elif packetType is 0x96: # Say
             self.player.handleSay(packet)
+            
+        elif packetType is 0x78: # Throw/move item
+            self.player.handleMoveItem(packet)
     
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))

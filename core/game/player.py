@@ -315,3 +315,57 @@ class TibiaPlayer(Creature):
                 
         game.autoWalkCreature(self, walkPattern)
      
+    def handleMoveItem(self, packet):
+        fromPosition = [packet.uint16()]
+        fromMap = False
+        toMap = False
+        if fromPosition[0] == 0xFFFF:
+            # From hands
+            fromInventoryPos = packet.uint8()
+            packet.pos += 2 # 0x0000
+
+        else:
+            # From map
+            fromMap = True
+            fromPosition.append(packet.uint16())
+            fromPosition.append(packet.uint8())
+        
+        cid = packet.uint16()
+        fromStackPos = packet.uint8()
+        toPosition = [packet.uint16()]
+        if toPosition[0] == 0xFFFF:
+            # to hands
+            toInventoryPos = packet.uint8()
+            packet.pos += 2
+        else:
+            toMap = True
+            toPosition.append(packet.uint16())
+            toPosition.append(packet.uint8())            
+
+        count = packet.uint8()
+        
+        # Remove item:
+        if fromMap:
+            stream = TibiaPacket()
+            stream.removeTileItem(fromPosition, fromStackPos)
+            core.game.map.getTile(fromPosition).removeClientItem(cid, fromStackPos)
+            print "taking stackpos = %d" % fromStackPos
+            stream.sendto(game.getSpectators(fromPosition))
+            
+        else:
+            stream = TibiaPacket()
+            stream.removeInventoryItem(fromInventoryPos)
+            stream.send(self.client)
+        if toMap:
+            stream = TibiaPacket()
+            toStackPos = core.game.map.getTile(toPosition).placeClientItem(cid)
+            stream.addTileItem(toPosition, toStackPos, cid)
+            print core.game.map.getTile(toPosition).items
+            print "Sending stackpos = %d" % toStackPos
+            stream.sendto(game.getSpectators(toPosition))
+
+        else:
+            stream = TibiaPacket()
+            stream.addInventoryItem(toInventoryPos, cid)
+            stream.send(self.client)
+        

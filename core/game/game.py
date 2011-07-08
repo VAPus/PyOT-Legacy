@@ -62,6 +62,12 @@ def updateTile(pos, tile):
     stream.uint8(0xFF)
     stream.sendto(getSpectators(pos))
     
+# The development debug system
+def explainPacket(packet):
+    currPos = packet.pos
+    packet.pos = 0
+    log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+    packet.pos = currPos
 # Last order of buisness, the script system
 import core.game.scriptsystem
 from data.scripts import *

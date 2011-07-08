@@ -3,6 +3,7 @@ import core.sql, cjson
 from twisted.python import log
 
 items = {}
+reverseItems = {}
 
 class BaseThing:
      def cid(self):
@@ -32,4 +33,5 @@ def loadItems():
             items[item["sid"]] = {}
         items[item["sid"]]["name"] = item["name"]
         items[item["sid"]]["cid"] = item["cid"]
+        reverseItems[item["cid"]] = item["sid"]
     log.msg("%d Items loaded" % len(items))

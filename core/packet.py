@@ -71,6 +71,9 @@ class TibiaPacketReader:
     def getData(self):
         return self.data[self.pos:]
 
+    def position(self):
+        return [self.uint16(), self.uint16(), self.uint8()]
+        
 class TibiaPacket:
     def __init__(self, header=None):
         self.pos = 0
@@ -251,6 +254,32 @@ class TibiaPacket:
         self.uint8(level)
         self.uint8(color)
 
+    def removeInventoryItem(self, pos):
+        self.uint8(0x79)
+        self.uint8(pos)
+        
+    def addInventoryItem(self, pos, item):
+        self.uint8(0x78)
+        self.uint8(pos)
+        self.item(item)
+
+    def addTileItem(self, pos, stackpos, item):
+        self.uint8(0x6A)
+        self.position(pos)
+        self.uint8(stackpos)
+        self.item(item)
+        
+    def updateTileItem(self, pos, stackpos, item):
+        self.uint8(0x6B)
+        self.position(pos)
+        self.uint8(stackpos)
+        self.item(item)
+        
+    def removeTileItem(self, pos, stackpos):
+        self.uint8(0x6C)
+        self.position(pos)
+        self.uint8(stackpos)
+        
     def string(self, string):
         self.uint16(len(string))
         self.pos += len(string)
