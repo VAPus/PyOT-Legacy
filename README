@@ -4,6 +4,7 @@ You need:
  * zope.interface
 * MySqlDb
 * cjson
+* pywin32 if you intend to use IOCP (default on windows)
 
 You also need to compile otcrypto:
 python setup.py build # You can also choose install here, but it might conflict on some systems
@@ -16,6 +17,7 @@ http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi
 http://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11.win32-py2.7.exe#md5=57e1e64f6b7c7f1d2eddfc9746bbaf20
 http://www.codegood.com/download/10/
 http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
+http://downloads.sourceforge.net/project/pywin32/pywin32/Build216/pywin32-216.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild216%2F&ts=1310085256&use_mirror=netcologne
 And grab:
 zope.interface-3.6.4.win32-py2.7.exe
 and

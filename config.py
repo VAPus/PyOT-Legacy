@@ -17,8 +17,8 @@ sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 
 # Versions:
 versionMin = 900
-versionMax = 900
-versionError = "You must use 9.0"
+versionMax = 910
+versionError = "You must use 9.x"
 
 # MOTD
 motd = "PyOT, it's alive!"

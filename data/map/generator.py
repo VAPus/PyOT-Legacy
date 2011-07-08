@@ -19,3 +19,4 @@ for n in range(0, 16):
 		open("map_%d_%d.sec" % (n,m), "w+b").write(zlib.compress( json.dumps(map, separators=(',', ':'), indent=0).replace("\n", ''), 1 ))
 		y += 64
 	x += 64
+	y = 1
