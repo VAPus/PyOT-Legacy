@@ -89,7 +89,7 @@ class TibiaPlayer(Creature):
         stream.position(self.position)
         stream.uint8(self.stackpos)
         stream.uint16(0x63)
-        stream.uint16(self.clientId())
+        stream.uint32(self.clientId())
         stream.uint8(direction)
 		
         # Send to everyone
