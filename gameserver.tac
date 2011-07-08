@@ -12,7 +12,7 @@ elif config.reactorStyle is "epoll" or (sys.platform == "linux2" and config.reac
     from twisted.internet import epollreactor
     epollreactor.install()
 
-elif config.reactorStyle is "kqueue" or (sys.platform.find("freebsd") and config.reactorStyle is "default"):
+elif config.reactorStyle is "kqueue" or ('freebsd' in sys.platform and config.reactorStyle is "default"):
     from twisted.internet import kqreactor
     kqreactor.install()
 
