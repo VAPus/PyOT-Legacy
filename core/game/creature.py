@@ -15,6 +15,7 @@ class Creature:
         self.speed = 0x0032
         self.scripts = {}
         self.cid = cid
+        
     def name(self):
         return self.data["name"]
 

@@ -150,9 +150,14 @@ class TibiaPacket:
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
-        self.uint16(item)
-        if count:
-            self.uint8(count)
+        if isinstance(item, (list, tuple)):
+            self.uint16(item[0])
+            if len(item) > 1:
+                self.uint8(item[1])
+        else:
+            self.uint16(item)
+            if count:
+                self.uint8(count)
 
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?

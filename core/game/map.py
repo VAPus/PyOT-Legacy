@@ -24,21 +24,28 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(BaseThing):
-    def __init__(self, items):
-        self.items = items
-        self.creatures = []
+    def __init__(self, items, bottomItems = []):
+        self.things = items
+        self.topItems = len(items)
+        self.creatures = 0
+        self.bottomItems = len(bottomItems)
+        self.things.extend()
 
     def placeCreature(self, creature):
-        return self.creatures.append(creature) # return stackpos
+        self.things.insert(self.topItems+self.creature, creature)
+        self.creatures += 1
     
     def removeCreature(self,creature):
-        return self.creatures.remove(creature) # return stackpos
+        self.creatures -= 1
+        return self.things.remove(creature) # return stackpos
         
     def placeItem(self, item):
+        self.bottomItems += 1
         self.items.append(item)
-        return len(self.items)-1
+        return len(self.things)-1
     def removeItem(self, item):
-        return self.items.remove(item) # return stackpos
+        self.bottomItems -= 1
+        return self.things.remove(item) # return stackpos
         
     def removeClientItem(self, cid, stackpos=None):
         import core.game.item

@@ -12,6 +12,7 @@ class TibiaPlayer(Creature):
     def __init__(self, client, data):
         Creature.__init__(self, data, [50,50,7], client.client_id)
         self.client = client
+        self.inventory = [7992, 3008, 2853, 3357, 7449, None, None, None, None, [3449, 20]]
         
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
@@ -26,19 +27,9 @@ class TibiaPlayer(Creature):
         for slot in range(enum.SLOT_FIRST,enum.SLOT_LAST):
             stream.uint8(0x78)
             stream.uint8(slot)
-            if slot is 3:
-                stream.uint16(2853)
-            elif slot is 1:
-                stream.uint16(7992)
-            elif slot is 2:
-                stream.uint16(3008)
-            elif slot is 4:
-                stream.uint16(3357)
-            elif slot is 5:
-                stream.uint16(7449)
-            elif slot is 10:
-                stream.uint16(3449)
-                stream.uint8(20)
+            if self.inventory[slot-1]:
+                stream.item(self.inventory[slot-1])
+                
         self.stream_status(stream)
         self.stream_skills(stream)
         
