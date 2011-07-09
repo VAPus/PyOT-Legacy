@@ -136,7 +136,8 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
             
         elif packetType is 0x78: # Throw/move item
             self.player.handleMoveItem(packet)
-    
+        elif packetType is 0x8C:
+            self.player.handleLookAt(packet)
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()

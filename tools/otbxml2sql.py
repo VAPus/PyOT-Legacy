@@ -135,42 +135,40 @@ if True:
         item = Item()
         item.type = otb.uint8()
         flags = otb.uint32()
-        # Ugly! And likely slow too
-        flags = str(bin(flags)).replace("0b", "")
-        numFlags = len(flags)
-        if numFlags > 0 and int(flags[0]):
+
+        if (flags & 1) == 1:
             item.flags["solid"] = True
-        if numFlags > 1 and int(flags[1]):
+        if (flags & 2) == 2:
             item.flags["blockprojectile"] = True
-        if numFlags > 2 and int(flags[2]):
+        if (flags & 4) == 4:
             item.flags["blockpath"] = True
-        if numFlags > 3 and int(flags[3]):
+        if (flags & 8) == 8:
             item.flags["hasheight"] = True
-        if numFlags > 4 and int(flags[4]):
+        if (flags & 16) == 16:
             item.flags["usable"] = True
-        if numFlags > 5 and int(flags[5]):
+        if (flags & 32) == 32:
             item.flags["pickable"] = True
-        if numFlags > 6 and int(flags[6]):
+        if (flags & 64) == 64:
             item.flags["movable"] = True
-        if numFlags > 7 and int(flags[7]):
+        if (flags & 128) == 128:
             item.flags["stackable"] = True
-        if numFlags > 8 and int(flags[8]):
+        if (flags & 256) == 256:
             item.flags["ontop"] = True
-        if numFlags > 9 and int(flags[9]):
+        if (flags & 512) == 512:
             item.flags["vertical"] = True
-        if numFlags > 10 and int(flags[10]):
+        if (flags & 1024) == 1024:
             item.flags["horizontal"] = True
-        if numFlags > 11 and int(flags[11]):
+        if (flags & 2048) == 2048:
             item.flags["hangable"] = True
-        if numFlags > 12 and int(flags[12]):
+        if (flags & 4096) == 4096:
             item.flags["distanceread"] = True
-        if numFlags > 13 and int(flags[13]):
+        if (flags & 8192) == 8192:
             item.flags["rotatable"] = True
-        if numFlags > 14 and int(flags[14]):
+        if (flags & 16384) == 16384:
             item.flags["readable"] = True
-        if numFlags > 15 and int(flags[15]):
+        if (flags & 32768) == 32768:
             item.flags["charges"] = True
-        if numFlags > 16 and int(flags[16]):
+        if (flags & 65536) == 65536:
             item.flags["lookthrough"] = True
         try:
             while otb.peekUint8() != 0xFF:
@@ -214,9 +212,11 @@ for xItem in dom.getElementsByTagName("item"):
      xFromId = xItem.getAttribute("fromid")
      xToId = xItem.getAttribute("toid")
      xName = xItem.getAttribute("name")
+     xArticle = xItem.getAttribute("article")
+     xPlural = xItem.getAttribute("plural")
      xAttributes = xItem.getElementsByTagName("attribute")
 
-     prep = {"name":xName}
+     prep = {"name":xName, "plural":xPlural, "article":xArticle}
      for attr in xAttributes:
          prep[attr.getAttribute("key")] = attr.getAttribute("value")
          
@@ -238,7 +238,8 @@ if id:
             items = [item]
             break
 
-print "CREATE TABLE IF NOT EXISTS `items` (`sid` INT( 8 ) NOT NULL ,`cid` INT( 8 ) NOT NULL ,`name` VARCHAR( 32 ) NOT NULL ,`known_as` MEDIUMTEXT NULL DEFAULT NULL ,`attributes` TEXT NULL DEFAULT NULL ,PRIMARY KEY ( `sid` ) ,INDEX ( `cid` )) ENGINE = MYISAM ;"
+import copy
+print "CREATE TABLE IF NOT EXISTS `items` (`sid` INT( 8 ) NOT NULL ,`cid` INT( 8 ) NOT NULL ,`name` VARCHAR( 32 ), `article` VARCHAR(3), `plural` VARCHAR( 32 ) ,`known_as` MEDIUMTEXT NULL DEFAULT NULL ,`attributes` TEXT NULL DEFAULT NULL ,PRIMARY KEY ( `sid` ) ,INDEX ( `cid` )) ENGINE = MYISAM ;"
 for item in items:
     if item.sid in data:
         # Dirty way to fix the attributes:
@@ -248,6 +249,16 @@ for item in items:
         
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
-        print(("INSERT INTO items VALUES(%d, %d, '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
+            
+        article = ""
+        if "article" in item.flags:
+            article = copy.deepcopy(item.flags["article"])
+            del item.flags["article"]
+        
+        plural = ""
+        if "plural" in item.flags:
+            plural = copy.deepcopy(item.flags["plural"])
+            del item.flags["plural"]            
+        print(("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), article, plural.replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
     #else:
     #    print("---WARNING, item with sid=%d not no data!" % item.sid)

@@ -241,6 +241,9 @@ class TibiaPlayer(Creature):
         stream = TibiaPacket(0x15)
         stream.string(text)
         stream.send(self.client)
+    
+    def notPossible(self):
+        self.message("Sorry, not possible.", enum.MSG_STATUS_SMALL)
         
     # Compelx packets
     def handleSay(self, packet):
@@ -374,4 +377,35 @@ class TibiaPlayer(Creature):
                 stream.addInventoryItem(fromInventoryPos, cid(restoreItem))
                 self.inventory[fromInventoryPos-1] = restoreItem
             stream.send(self.client)
-        
+    
+    def handleLookAt(self, packet):
+        from core.game.item import sid, cid, items
+        position = [packet.uint16()]
+        map = False
+        if position[0] == 0xFFFF:
+            # From hands
+            inventoryPos = packet.uint8()
+            packet.pos += 2 # 0x0000
+
+        else:
+            # From map
+            map = True
+            position.append(packet.uint16())
+            position.append(packet.uint8())    
+            
+        clientId = packet.uint16()
+        stackpos = packet.uint8()
+        itemId = sid(clientId)
+        if not itemId:
+            return self.notPossible()
+            
+        if not map and inventoryPos and self.inventory[inventoryPos-1]:
+            if itemId != self.inventory[inventoryPos-1]:
+                print "cid / sid missmatch %d / %d should be %d" % (clientId, itemId, self.inventory[inventoryPos-1])
+                return self.notPossible()
+            
+            # TODO propper description handling
+            self.message("You see %s%s. %s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else ""))
+        else:
+            # TODO: is the item there?
+            self.message("You see %s%s. %s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else ""))

@@ -24,6 +24,8 @@ def sid(itemid):
         return reverseItems[itemid]
     except:
         return None
+        
+            
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")
@@ -37,6 +39,10 @@ def loadItems():
         else:
             items[item["sid"]] = {}
         items[item["sid"]]["name"] = item["name"]
+        if item["plural"]:
+            items[item["sid"]]["plural"] = item["plural"]
+        items[item["sid"]]["article"] = item["article"] or None
+        
         items[item["sid"]]["cid"] = item["cid"]
         reverseItems[item["cid"]] = item["sid"]
     log.msg("%d Items loaded" % len(items))
