@@ -409,3 +409,15 @@ class TibiaPlayer(Creature):
         else:
             # TODO: is the item there?
             self.message("You see %s%s. %s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else ""))
+            
+            
+    def handleRotateItem(self, packet):
+        from core.game.item import sid, items
+        position = packet.position() # Yes, we don't support backpack rotations
+        clientId = packet.uint16()
+        stackpos = packet.uint8()
+        
+        # TODO: WalkTo
+        serverId = sid(clientId)
+        rotateTo = items[sid(clientId)]["rotateTo"]
+        core.game.game.transformItem(serverId, rotateTo, position, stackpos)

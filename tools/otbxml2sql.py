@@ -120,7 +120,7 @@ if otb.uint8() == 0xFE:
         minorVersion = otb.uint32()
         buildVersion = otb.uint32()
         
-        print "--OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
+        print "-- OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
 # Cheat the position to avoid junk
 otb.pos = 13 + dataLen
 items = []
@@ -218,8 +218,10 @@ for xItem in dom.getElementsByTagName("item"):
 
      prep = {"name":xName, "plural":xPlural, "article":xArticle}
      for attr in xAttributes:
-         prep[attr.getAttribute("key")] = attr.getAttribute("value")
-         
+         try:
+            prep[attr.getAttribute("key")] = int(attr.getAttribute("value"))
+         except:
+            prep[attr.getAttribute("key")] = attr.getAttribute("value")
      if xId:
          data[int(xId)] = prep
 
