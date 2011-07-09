@@ -18,7 +18,12 @@ def cid(itemid):
         return items[itemid]["cid"]
     except:
         return None
-  
+
+def sid(itemid):
+    try:
+        return reverseItems[itemid]
+    except:
+        return None
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")

@@ -202,16 +202,16 @@ class TibiaPacket:
 
     def tileDescription(self, tile):
         self.uint16(0x00)
-        if tile.items: # Tile can tecnhicly be 0
-            for item in tile.items:
-                self.item(cid(item))
+        for item in tile.topItems():
+            self.item(cid(item))
 
         
-        if tile.creatures:
-            for creature in tile.creatures:
-                self.creature(creature, False)
+        for creature in tile.creatures():
+            self.creature(creature, False)
+            
 
-        # TODO: add bottom items
+        for item in tile.bottomItems():
+            self.item(cid(item))
 
     # TODO: Outfit class?
     def add_outfit(self, looktype, head=None, body=None, legs=None, feet=None, addons=None,lookitem=None):

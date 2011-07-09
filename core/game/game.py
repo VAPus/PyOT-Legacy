@@ -46,7 +46,7 @@ def getSpectators(pos):
     for x in range(pos[0]-9, pos[0]+9):
         for y in range(pos[1]-7, pos[1]+7):
             try:
-                for creature in core.game.map.knownMap[x][y][7].creatures:
+                for creature in core.game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player
                     players.append(creature.client)
             except:

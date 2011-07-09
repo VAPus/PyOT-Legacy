@@ -7,6 +7,7 @@ from collections import deque
 import core.game.scriptsystem
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
 from core.game.creature import Creature
+import copy
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
@@ -307,6 +308,7 @@ class TibiaPlayer(Creature):
         game.autoWalkCreature(self, walkPattern)
      
     def handleMoveItem(self, packet):
+        from core.game.item import sid, cid
         fromPosition = [packet.uint16()]
         fromMap = False
         toMap = False
@@ -321,7 +323,7 @@ class TibiaPlayer(Creature):
             fromPosition.append(packet.uint16())
             fromPosition.append(packet.uint8())
         
-        cid = packet.uint16()
+        clientId = packet.uint16()
         fromStackPos = packet.uint8()
         toPosition = [packet.uint16()]
         if toPosition[0] == 0xFFFF:
@@ -334,29 +336,42 @@ class TibiaPlayer(Creature):
             toPosition.append(packet.uint8())            
 
         count = packet.uint8()
+        restoreItem = None
         
         # Remove item:
         if fromMap:
             stream = TibiaPacket()
             stream.removeTileItem(fromPosition, fromStackPos)
-            core.game.map.getTile(fromPosition).removeClientItem(cid, fromStackPos)
+            core.game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
             print "taking stackpos = %d" % fromStackPos
             stream.sendto(game.getSpectators(fromPosition))
             
         else:
             stream = TibiaPacket()
+            if not toMap and self.inventory[toInventoryPos-1]:
+                # Store item for the last switch action
+                restoreItem = copy.deepcopy(self.inventory[toInventoryPos-1]) # Note, since python will assume reference, we got to use copy here
+                stream.removeInventoryItem(toInventoryPos)
+                self.inventory[toInventoryPos-1] = None
+            
+            self.inventory[fromInventoryPos-1] = None
             stream.removeInventoryItem(fromInventoryPos)
+            
             stream.send(self.client)
         if toMap:
             stream = TibiaPacket()
-            toStackPos = core.game.map.getTile(toPosition).placeClientItem(cid)
-            stream.addTileItem(toPosition, toStackPos, cid)
-            print core.game.map.getTile(toPosition).items
+            toStackPos = core.game.map.getTile(toPosition).placeClientItem(clientId)
+            stream.addTileItem(toPosition, toStackPos, clientId)
+            print core.game.map.getTile(toPosition).things
             print "Sending stackpos = %d" % toStackPos
             stream.sendto(game.getSpectators(toPosition))
 
         else:
             stream = TibiaPacket()
-            stream.addInventoryItem(toInventoryPos, cid)
+            stream.addInventoryItem(toInventoryPos, clientId)
+            self.inventory[toInventoryPos-1] = sid(clientId)
+            if not fromMap and restoreItem:
+                stream.addInventoryItem(fromInventoryPos, cid(restoreItem))
+                self.inventory[fromInventoryPos-1] = restoreItem
             stream.send(self.client)
         

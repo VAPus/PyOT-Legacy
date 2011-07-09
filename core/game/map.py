@@ -26,34 +26,45 @@ def removeCreature(creature, pos):
 class Tile(BaseThing):
     def __init__(self, items, bottomItems = []):
         self.things = items
-        self.topItems = len(items)
-        self.creatures = 0
-        self.bottomItems = len(bottomItems)
-        self.things.extend()
+        self.topItemCount = len(items)
+        self.creatureCount = 0
+        self.bottomItemCount = len(bottomItems)
+        self.things.extend(bottomItems)
 
     def placeCreature(self, creature):
-        self.things.insert(self.topItems+self.creature, creature)
-        self.creatures += 1
+        self.things.insert(self.topItemCount+self.creatureCount, creature)
+        self.creatureCount += 1
     
     def removeCreature(self,creature):
-        self.creatures -= 1
+        self.creatureCount -= 1
         return self.things.remove(creature) # return stackpos
         
     def placeItem(self, item):
-        self.bottomItems += 1
-        self.items.append(item)
+        self.bottomItemCount += 1
+        self.things.append(item)
         return len(self.things)-1
+        
+    def bottomItems(self):
+        return self.things[self.topItemCount+self.creatureCount:]
+        
+    def topItems(self):
+        return self.things[:self.topItemCount]
+        
+    def creatures(self):
+        return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
     def removeItem(self, item):
-        self.bottomItems -= 1
+        self.bottomItemCount -= 1
         return self.things.remove(item) # return stackpos
         
     def removeClientItem(self, cid, stackpos=None):
         import core.game.item
         sid = core.game.item.reverseItems[cid]
-        if stackpos and self.items[stackpos] is sid:
-            self.items.pop(stackpos-1)
+        if stackpos and self.things[stackpos] is sid:
+            self.bottomItemCount -= 1
+            return self.things.pop(stackpos)
             
         else:
+            self.bottomItemCount -= 1
             return self.items.remove(sid)
             
     def placeClientItem(self, cid):
