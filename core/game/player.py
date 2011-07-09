@@ -354,7 +354,6 @@ class TibiaPlayer(Creature):
         if not isCreature:
             # Remove item:
             if fromMap:
-                
                 stream = TibiaPacket()
                 if "stackable" in core.game.item.items[sid(clientId)] and count < 100:
                     oldItem = core.game.map.getTile(fromPosition).getThing(fromStackPos)

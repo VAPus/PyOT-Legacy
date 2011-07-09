@@ -28,13 +28,13 @@ def autoWalkCreature(creature, walkPatterns):
         walkerEvents[creature.clientId()].cancel()
         #creature.cancelMove(creature.direction)
         
-    walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
+    walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(core.game.map.getTile(creature.position)), handleAutoWalking, creature, walkPatterns)
     
 def handleAutoWalking(creature, walkPatterns):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
     if ret and len(walkPatterns):
-        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(), handleAutoWalking, creature, walkPatterns)
+        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(core.game.map.getTile(creature.position)), handleAutoWalking, creature, walkPatterns)
     else:
         del walkerEvents[creature.clientId()]
         
