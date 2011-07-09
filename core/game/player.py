@@ -388,15 +388,17 @@ class TibiaPlayer(Creature):
             stream.send(self.client)
         if toMap:
             stream = TibiaPacket()
+
+            newItem = Item(sid(clientId), count)
             findItem = core.game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
             if findItem and "stackable" in core.game.item.items[sid(clientId)] and count < 100 and findItem[1].count + count <= 100:
-                findItem[1].count += count
-                stream.updateTileItem(toPosition, findItem[0], findItem[1])
-            else:
-                newItem = Item(sid(clientId), count)
-                toStackPos = core.game.map.getTile(toPosition).placeItem(newItem)
-                stream.addTileItem(toPosition, toStackPos, newItem )
-                print "Sending stackpos = %d" % toStackPos
+                newItem.count += findItem[1].count
+                stream.removeTileItem(toPosition, findItem[0])
+                core.game.map.getTile(toPosition).removeItem(findItem[1])
+                
+            toStackPos = core.game.map.getTile(toPosition).placeItem(newItem)
+            stream.addTileItem(toPosition, toStackPos, newItem )
+            print "Sending stackpos = %d" % toStackPos
             stream.sendto(game.getSpectators(toPosition))
 
         else:
