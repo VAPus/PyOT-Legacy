@@ -79,7 +79,18 @@ class Tile(BaseThing):
             return self.things[stackpos]
         except:
             return None
+            
+    def findItem(self, sid):
+        for x in self.bottomItems():
+            if x.itemId == sid:
+                return x
 
+    def findClientItem(self, cid, stackpos=None):
+        for x in self.bottomItems():
+            if x.cid == cid:
+                if stackpos:
+                    return (self.things.index(x), x)
+                return x
     
 knownMap = {}
 sectors = {}
