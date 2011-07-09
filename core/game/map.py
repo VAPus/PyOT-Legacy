@@ -35,7 +35,8 @@ class Tile(BaseThing):
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount, creature)
         self.creatureCount += 1
-    
+        return self.topItemCount
+        
     def removeCreature(self,creature):
         self.creatureCount -= 1
         return self.things.remove(creature)
@@ -75,7 +76,11 @@ class Tile(BaseThing):
                     self.things.remove(x)
                     self.bottomItemCount -= 1
                     break
-            
+    
+    def removeClientCreature(self, stackpos=None):
+        if stackpos and self.things[stackpos]:
+            self.creatureCount -= 1
+            return self.things.pop(stackpos)      
     def placeClientItem(self, cid):
         import core.game.item
         item = core.game.item.Item(core.game.item.sid(cid))
@@ -86,7 +91,10 @@ class Tile(BaseThing):
             return self.things[stackpos]
         except:
             return None
-            
+    
+    def setThing(self, stackpos, item):
+        self.things[stackpos] = item
+        
     def findItem(self, sid):
         for x in self.bottomItems():
             if x.itemId == sid:
@@ -131,7 +139,7 @@ def load(sectorX, sectorY):
     if sectorX < 0 or sectorY < 0 or (sectorX in sectors and sectorY in sectors[sectorX]):
         return None
 
-    if sectorX*data.map.info.sectorSize[0] > data.map.info.height or sectorY*data.map.info.sectorSize[1] > data.map.info.width:
+    if sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1:
         return None
         
     if not sectorX in sectors:

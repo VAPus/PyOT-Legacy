@@ -43,12 +43,13 @@ def handleAutoWalking(creature, walkPatterns):
 def getSpectators(pos):
     # At the moment, we only do one floor
     players = []
-    for x in range(pos[0]-9, pos[0]+9):
-        for y in range(pos[1]-7, pos[1]+7):
+    for x in range(pos[0]-10, pos[0]+10):
+        for y in range(pos[1]-8, pos[1]+8):
             try:
                 for creature in core.game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player
-                    players.append(creature.client)
+                    if creature.creatureType == 0:
+                        players.append(creature.client)
             except:
                 pass # Tile isn't loaded
 
@@ -73,7 +74,7 @@ def transformItem(item, transformTo, pos, stack):
 def explainPacket(packet):
     currPos = packet.pos
     packet.pos = 0
-    log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+    log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
     packet.pos = currPos
 # Last order of buisness, the script system
 import core.game.scriptsystem

@@ -215,7 +215,7 @@ class TibiaPacket:
             self.item(item)
 
     # TODO: Outfit class?
-    def add_outfit(self, looktype, head=None, body=None, legs=None, feet=None, addons=None,lookitem=None):
+    def add_outfit(self, looktype, head=0, body=None, legs=0, feet=0, addons=0,lookitem=0):
         self.uint16(looktype)
         if looktype is not 0:
             self.uint8(head)
@@ -274,6 +274,12 @@ class TibiaPacket:
         self.position(pos)
         self.uint8(stackpos)
         self.item(item)
+
+    def addTileCreature(self, pos, stackpos, creature):
+        self.uint8(0x6A)
+        self.position(pos)
+        self.uint8(stackpos)
+        self.creature(creature, False)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
