@@ -1,6 +1,7 @@
 from core.game.item import BaseThing
 from twisted.internet import threads
 import cjson, zlib, threading
+import core.game.item
 
 def getTile(pos):
     try:
@@ -24,12 +25,11 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(BaseThing):
-    def __init__(self, items, bottomItems = []):
+    def __init__(self, items):
         self.things = items
         self.topItemCount = len(items)
         self.creatureCount = 0
-        self.bottomItemCount = len(bottomItems)
-        self.things.extend(bottomItems)
+        self.bottomItemCount = 0
 
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount+self.creatureCount, creature)
@@ -37,9 +37,10 @@ class Tile(BaseThing):
     
     def removeCreature(self,creature):
         self.creatureCount -= 1
-        return self.things.remove(creature) # return stackpos
+        return self.things.remove(creature)
         
     def placeItem(self, item):
+        item.tile = self
         self.bottomItemCount += 1
         self.things.append(item)
         return len(self.things)-1
@@ -54,23 +55,30 @@ class Tile(BaseThing):
         return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
     def removeItem(self, item):
         self.bottomItemCount -= 1
-        return self.things.remove(item) # return stackpos
+        item.tile = None
+        return self.things.remove(item)
         
     def removeClientItem(self, cid, stackpos=None):
-        import core.game.item
-        sid = core.game.item.reverseItems[cid]
-        if stackpos and self.things[stackpos] is sid:
+        if stackpos and self.things[stackpos].cid == cid:
             self.bottomItemCount -= 1
             return self.things.pop(stackpos)
-            
         else:
-            self.bottomItemCount -= 1
-            return self.items.remove(sid)
+            for x in self.bottomItems():
+                if x.cid == cid:
+                    self.things.remove(x)
+                    self.bottomItemCount -= 1
+                    break
             
     def placeClientItem(self, cid):
         import core.game.item
-        sid = core.game.item.reverseItems[cid]
-        return self.placeItem(sid)
+        item = core.game.item.Item(core.game.item.sid(cid))
+        return self.placeItem(item)
+        
+    def getThing(self, stackpos):
+        try:
+            return self.things[stackpos]
+        except:
+            return None
 
     
 knownMap = {}
@@ -125,7 +133,8 @@ def load(sectorX, sectorY):
                 knownMap[x][y] = {}
             for zz in mapy[xx][yy]:
                 z = int(zz)
-                knownMap[x][y][z] = Tile(mapy[xx][yy][zz][0])
+                tileItems = map(core.game.item.Item, mapy[xx][yy][zz][0])
+                knownMap[x][y][z] = Tile(tileItems)
 
 def unload(sectorX, sectorY):
     for x in range(sectorX * 64, (sectorX * 64) + 64):

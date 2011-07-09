@@ -10,9 +10,31 @@ class BaseThing:
          return items[self.itemId]['cid']
 
 
-class Item(BaseThing):
-     pass
+class Item:
+    def __init__(self, itemid, count=None):
+        self.itemId = itemid
+        self.count = count if self.stackable else None
 
+    def __getattr__(self, name):
+        if name and name in items[self.itemId]:
+            return items[self.itemId][name]
+        elif not "__" in name:
+            return None
+        raise AttributeError, name
+        
+    def name(self):
+        if self.count > 1 and "plural" in items[self.itemId]:
+            return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["plural"]
+        else:
+            return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["name"]
+            
+    def attributes(self):
+        return items[self.itemId]
+        
+    def reduceCount(self, count):
+        self.count -= count
+        if self.count <= 0:
+            pass # TODO: remove
 def cid(itemid):
     try:
         return items[itemid]["cid"]

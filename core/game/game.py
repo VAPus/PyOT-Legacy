@@ -62,10 +62,11 @@ def updateTile(pos, tile):
     stream.uint8(0xFF)
     stream.sendto(getSpectators(pos))
 
-def transformItem(itemId, transformTo, pos, stack):
+def transformItem(item, transformTo, pos, stack):
     from core.game.item import cid
     stream = TibiaPacket()
     stream.updateTileItem(pos, stack, cid(transformTo))
+    item.itemId = transformTo
     stream.sendto(getSpectators(pos))
     
 # The development debug system

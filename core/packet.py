@@ -4,7 +4,7 @@ from zlib import adler32
 import copy
 from core.game.map import getTile
 from twisted.python import log
-from core.game.item import cid
+
 class TibiaPacketReader:
     def __init__(self, data):
         self.length = len(data)
@@ -150,10 +150,11 @@ class TibiaPacket:
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
-        if isinstance(item, (list, tuple)):
-            self.uint16(item[0])
-            if len(item) > 1:
-                self.uint8(item[1])
+        import core.game.item
+        if isinstance(item, core.game.item.Item):
+            self.uint16(item.cid)
+            if item.count is not None:
+                self.uint8(item.count)
         else:
             self.uint16(item)
             if count:
@@ -203,7 +204,7 @@ class TibiaPacket:
     def tileDescription(self, tile):
         self.uint16(0x00)
         for item in tile.topItems():
-            self.item(cid(item))
+            self.item(item)
 
         
         for creature in tile.creatures():
@@ -211,7 +212,7 @@ class TibiaPacket:
             
 
         for item in tile.bottomItems():
-            self.item(cid(item))
+            self.item(item)
 
     # TODO: Outfit class?
     def add_outfit(self, looktype, head=None, body=None, legs=None, feet=None, addons=None,lookitem=None):
