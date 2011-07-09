@@ -2,6 +2,7 @@ from core.game.item import BaseThing
 from twisted.internet import threads
 import cjson, zlib, threading
 import core.game.item
+from collections import deque
 
 def getTile(pos):
     try:
@@ -32,7 +33,7 @@ class Tile(BaseThing):
         self.bottomItemCount = 0
 
     def placeCreature(self, creature):
-        self.things.insert(self.topItemCount+self.creatureCount, creature)
+        self.things.insert(self.topItemCount, creature)
         self.creatureCount += 1
     
     def removeCreature(self,creature):
@@ -40,6 +41,12 @@ class Tile(BaseThing):
         return self.things.remove(creature)
         
     def placeItem(self, item):
+        item.tile = self
+        self.bottomItemCount += 1
+        self.things.insert(self.topItemCount+self.creatureCount, item)
+        return self.topItemCount+self.creatureCount
+    
+    def placeItemEnd(self, item):
         item.tile = self
         self.bottomItemCount += 1
         self.things.append(item)
