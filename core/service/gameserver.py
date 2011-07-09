@@ -8,7 +8,7 @@ import core.otcrypto
 import config
 import hashlib
 from core.game.player import TibiaPlayer
-from core.game.map import placeCreature
+from core.game.map import removeCreature, placeCreature
 import core.game.scriptsystem
 class GameProtocol(core.protocolbase.TibiaProtocol):
 
@@ -147,6 +147,7 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
             #self.transport.loseConnection()
 
     def onConnectionLost(self):
+        removeCreature(self.player, self.player.position)
         core.game.scriptsystem.get("logout").run(self.player)
         
 class GameFactory(core.protocolbase.TibiaFactory):
