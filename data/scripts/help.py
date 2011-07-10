@@ -1,8 +1,8 @@
-import core.game.scriptsystem as scriptsystem
-from core.packet import TibiaPacket
-from core.game.map import placeCreature, getTile
-import core.game.game, core.game.item
-from core.game.creature import Creature
+import game.scriptsystem as scriptsystem
+from packet import TibiaPacket
+from game.map import placeCreature, getTile
+import game.engine, game.item
+from game.creature import Creature
 
 def callback(object, text):
     object.message("No you!!")
@@ -26,14 +26,14 @@ def tiler(object, text):
             pos = [int(x),int(y),int(z)]
             id = int(text.split(" ")[1])
             
-        if not id in core.game.item.items:
+        if not id in game.item.items:
             object.message("Item not found!")
             return False
-        item = core.game.item.Item( id )
+        item = game.item.Item( id )
 
         getTile(pos).setThing(0, item)
 
-        core.game.game.updateTile(pos, getTile(pos))
+        game.engine.updateTile(pos, getTile(pos))
         object.magicEffect(pos, 0x03)
     #except:
     #    object.message("Not possible!")
@@ -46,7 +46,7 @@ def dummyCreature(object, text):
     stackpos = getTile(pos).placeCreature(creature)
     stream = TibiaPacket()
     stream.addTileCreature(pos, stackpos, creature)
-    stream.sendto(core.game.game.getSpectators(pos))
+    stream.sendto(game.engine.getSpectators(pos))
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)

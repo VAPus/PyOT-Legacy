@@ -1,7 +1,7 @@
-from core.game.item import BaseThing
+from game.item import BaseThing
 from twisted.internet import threads
 import cjson, zlib, threading
-import core.game.item
+import game.item
 from collections import deque
 
 def getTile(pos):
@@ -82,8 +82,8 @@ class Tile(BaseThing):
             self.creatureCount -= 1
             return self.things.pop(stackpos)      
     def placeClientItem(self, cid):
-        import core.game.item
-        item = core.game.item.Item(core.game.item.sid(cid))
+        import game.item
+        item = game.item.Item(game.item.sid(cid))
         return self.placeItem(item)
         
     def getThing(self, stackpos):
@@ -159,7 +159,7 @@ def load(sectorX, sectorY):
                 knownMap[x][y] = {}
             for zz in mapy[xx][yy]:
                 z = int(zz)
-                tileItems = map(core.game.item.Item, mapy[xx][yy][zz][0])
+                tileItems = map(game.item.Item, mapy[xx][yy][zz][0])
                 knownMap[x][y][z] = Tile(tileItems)
 
 def unload(sectorX, sectorY):

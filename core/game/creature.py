@@ -1,6 +1,6 @@
-from core.game.game import getSpectators
-from core.packet import TibiaPacket
-from core.game.map import placeCreature, removeCreature
+from game.engine import getSpectators
+from packet import TibiaPacket
+from game.map import placeCreature, removeCreature
 class Creature:
     idsTaken = 0
     def __init__(self, data, position, cid=None):
@@ -24,7 +24,7 @@ class Creature:
         return 0x10000001 + self.idsTaken
         
     def stepDuration(self, tile):
-        return (1000 * tile.speed / self.speed) * 1 # TODO
+        return (tile.speed / self.speed) # TODO
 
     def move(self, direction):
         import data.map.info

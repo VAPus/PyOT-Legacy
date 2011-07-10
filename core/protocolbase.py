@@ -4,7 +4,7 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.internet import reactor
 from twisted.python import log
 from twisted.application.service import Service
-from core.packet import TibiaPacketReader, TibiaPacket
+from packet import TibiaPacketReader, TibiaPacket
 from zlib import adler32
 
 class TibiaProtocol(Protocol):

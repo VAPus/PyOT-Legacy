@@ -2,6 +2,7 @@
 
 import config
 import sys
+sys.path.append('core')
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
@@ -30,12 +31,12 @@ from twisted.internet import reactor
 reactor.suggestThreadPoolSize(config.suggestedGameServerThreadPoolSize)
 
 #### Initialize OTCrypto module ####
-import core.otcrypto
-core.otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
+import otcrypto
+otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
 
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from core.service.gameserver import GameProtocol, GameFactory, GameService
+from service.gameserver import GameProtocol, GameFactory, GameService
 import time
 
 startTime = time.time()
@@ -54,5 +55,5 @@ topService.setServiceParent(application)
 
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
-import core.game.game
-reactor.callLater(0, core.game.game.loader, startTime)
+import game.engine
+reactor.callLater(0, game.engine.loader, startTime)

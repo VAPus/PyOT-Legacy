@@ -1,8 +1,7 @@
 import struct
-import core.otcrypto
+import otcrypto
 from zlib import adler32
 import copy
-from core.game.map import getTile
 from twisted.python import log
 
 class TibiaPacketReader:
@@ -150,8 +149,8 @@ class TibiaPacket:
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
-        import core.game.item
-        if isinstance(item, core.game.item.Item):
+        import game.item
+        if isinstance(item, game.item.Item):
             self.uint16(item.cid)
             if item.count is not None:
                 self.uint8(item.count)
@@ -184,6 +183,7 @@ class TibiaPacket:
         
     # Floor Description (the entier floor)
     def floorDescription(self, position, width, height, offset, skip):
+        from game.map import getTile
         for x in range(0, width):
             for y in range(0, height):
                 tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
@@ -309,7 +309,7 @@ class TibiaPacket:
         ol += 2
 
         if stream.xtea:
-            self.data = core.otcrypto.encryptXTEA(self.data, stream.xtea)
+            self.data = otcrypto.encryptXTEA(self.data, stream.xtea)
 
         adler = adler32(self.data)
         # Fix a bug in Python2?
@@ -324,7 +324,7 @@ class TibiaPacket:
         self.data = struct.pack("<H", len(self.data))+self.data
         lenCache = 0
         for client in list:
-             data = core.otcrypto.encryptXTEA(self.data, client.xtea)
+             data = otcrypto.encryptXTEA(self.data, client.xtea)
              adler = adler32(data)
              if adler < 0:
                  adler = adler & 0xffffffff

@@ -1,14 +1,14 @@
-import core.protocolbase
+import protocolbase
 
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred
 from twisted.python import log
-from core.packet import TibiaPacket
-import core.sql
-import core.otcrypto
+from packet import TibiaPacket
+import sql
+import otcrypto
 import config
 import hashlib
 
-class LoginProtocol(core.protocolbase.TibiaProtocol):
+class LoginProtocol(protocolbase.TibiaProtocol):
     @deferredGenerator
     def onFirstPacket(self, packet):
         packet.pos += 1
@@ -18,7 +18,7 @@ class LoginProtocol(core.protocolbase.TibiaProtocol):
         packet.pos += 12 # Checksum for files
          
         if (packet.length - packet.pos) is 128: # RSA 1024 is always 128
-            packet.data = core.otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
+            packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
             packet.pos = 0 # Reset position
 
         else:
@@ -51,7 +51,7 @@ class LoginProtocol(core.protocolbase.TibiaProtocol):
         pkg = TibiaPacket()
 
         # Our funny way of doing async SQL
-        d = waitForDeferred(core.sql.conn.runQuery("SELECT `id`, `name`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
+        d = waitForDeferred(sql.conn.runQuery("SELECT `id`, `name`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
 
         yield d # Tell the core to come back to use once the query above is finished
 
@@ -61,7 +61,7 @@ class LoginProtocol(core.protocolbase.TibiaProtocol):
             self.exitWithError("Invalid username or password")
             return
 
-        d = waitForDeferred(core.sql.conn.runQuery("SELECT `name` FROM `players` WHERE account_id = %s", (account[0]['id'])))
+        d = waitForDeferred(sql.conn.runQuery("SELECT `name` FROM `players` WHERE account_id = %s", (account[0]['id'])))
 
         yield d # Tell the core to come back to use once the query above is finished
 
@@ -86,8 +86,8 @@ class LoginProtocol(core.protocolbase.TibiaProtocol):
         pkg.uint16(account[0]['premdays'])
         pkg.send(self) # Send
             
-class LoginFactory(core.protocolbase.TibiaFactory):
+class LoginFactory(protocolbase.TibiaFactory):
     protocol = LoginProtocol
 
-class LoginService(core.protocolbase.TibiaService):
+class LoginService(protocolbase.TibiaService):
     pass

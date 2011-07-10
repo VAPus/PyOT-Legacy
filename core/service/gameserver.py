@@ -1,16 +1,16 @@
-import core.protocolbase
+import protocolbase
 
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred
 from twisted.python import log
-from core.packet import TibiaPacket
-import core.sql
-import core.otcrypto
+from packet import TibiaPacket
+import sql
+import otcrypto
 import config
 import hashlib
-from core.game.player import TibiaPlayer
-from core.game.map import removeCreature, placeCreature
-import core.game.scriptsystem
-class GameProtocol(core.protocolbase.TibiaProtocol):
+from game.player import TibiaPlayer
+from game.map import removeCreature, placeCreature
+import game.scriptsystem
+class GameProtocol(protocolbase.TibiaProtocol):
 
     def onInit(self):
         self.player = None
@@ -30,7 +30,7 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         version = packet.uint16() # Version int
          
         if (packet.length - packet.pos) is 128: # RSA 1024 is always 128
-            packet.data = core.otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
+            packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
             packet.pos = 0 # Reset position
 
         else:
@@ -69,7 +69,7 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         pkg = TibiaPacket()
 
         # Our funny way of doing async SQL
-        d = waitForDeferred(core.sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
+        d = waitForDeferred(sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
 
         yield d # Tell the core to come back to use once the query above is finished
 
@@ -79,7 +79,7 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
             self.exitWithError("Invalid username or password")
             return
 
-        d = waitForDeferred(core.sql.conn.runQuery("SELECT * FROM `players` WHERE account_id = %s", (account[0]['id'])))
+        d = waitForDeferred(sql.conn.runQuery("SELECT * FROM `players` WHERE account_id = %s", (account[0]['id'])))
 
         yield d # Tell the core to come back to use once the query above is finished
 
@@ -99,11 +99,11 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
         self.player.sendFirstPacket()
         
         # Call the login script
-        core.game.scriptsystem.get("login").run(self.player)
+        game.scriptsystem.get("login").run(self.player)
         
         
     def onPacket(self, packet):
-        packet.data = core.otcrypto.decryptXTEA(packet.getData(), self.xtea)
+        packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 0
         packet.data = packet.data[2:2+packet.uint16()]
         packet.pos = 0
@@ -148,10 +148,10 @@ class GameProtocol(core.protocolbase.TibiaProtocol):
 
     def onConnectionLost(self):
         removeCreature(self.player, self.player.position)
-        core.game.scriptsystem.get("logout").run(self.player)
+        game.scriptsystem.get("logout").run(self.player)
         
-class GameFactory(core.protocolbase.TibiaFactory):
+class GameFactory(protocolbase.TibiaFactory):
     protocol = GameProtocol
 
-class GameService(core.protocolbase.TibiaService):
+class GameService(protocolbase.TibiaService):
     pass

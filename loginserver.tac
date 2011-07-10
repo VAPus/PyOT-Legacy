@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import config, sys
+sys.path.append('core')
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
@@ -28,12 +29,12 @@ from twisted.internet import reactor
 reactor.suggestThreadPoolSize(config.suggestedLoginServerThreadPoolSize)
 
 #### Initialize OTCrypto module ####
-import core.otcrypto
-core.otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
+import otcrypto
+otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
 
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from core.service.loginserver import LoginProtocol, LoginFactory, LoginService
+from service.loginserver import LoginProtocol, LoginFactory, LoginService
 
 
 

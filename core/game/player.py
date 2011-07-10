@@ -1,13 +1,13 @@
-from core.packet import TibiaPacket
-from core.game import enum, game
-from core.game.map import placeCreature, removeCreature, getTile
+from packet import TibiaPacket
+from game import enum, engine
+from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import config
 from collections import deque
-import core.game.scriptsystem
-from core.game.item import Item
+import game.scriptsystem
+from game.item import Item
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
-from core.game.creature import Creature
+from game.creature import Creature
 import copy
 
 class TibiaPlayer(Creature):
@@ -236,8 +236,8 @@ class TibiaPlayer(Creature):
         
     def stopAutoWalk(self):
         try:
-            core.game.game.walkerEvents[self.clientId()].cancel()
-            del core.game.game.walkerEvents[self.clientId()]
+            engine.walkerEvents[self.clientId()].cancel()
+            del engine.walkerEvents[self.clientId()]
         except:
             pass
         self.cancelWalk(self.direction)
@@ -276,10 +276,10 @@ class TibiaPlayer(Creature):
 	  stream.send(self.client)
 
         def part1():
-            core.game.scriptsystem.get("talkaction").run(text, self, endCallback, text)
+            game.scriptsystem.get("talkaction").run(text, self, endCallback, text)
             
         if len(text.split(" ")) > 1:
-            core.game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
+            game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
         else:
             part1()
 
@@ -291,7 +291,7 @@ class TibiaPlayer(Creature):
             direction = packet.uint8()
             log.msg("direction %d" % direction)
             if direction is 1:
-                walkPattern.append(3) # East
+                walkPattern.append(1) # East
             elif direction is 2:
                 walkPattern.append(0) # North
                 walkPattern.append(3) # East
@@ -301,7 +301,7 @@ class TibiaPlayer(Creature):
                 walkPattern.append(0) # North
                 walkPattern.append(1) # West                
             elif direction is 5:
-                walkPattern.append(1) # West
+                walkPattern.append(3) # West
             elif direction is 6:
                 walkPattern.append(2) # South
                 walkPattern.append(1) # West
@@ -313,10 +313,10 @@ class TibiaPlayer(Creature):
             else:
                 continue # We don't support them
                 
-        game.autoWalkCreature(self, walkPattern)
+        game.engine.autoWalkCreature(self, walkPattern)
      
     def handleMoveItem(self, packet):
-        from core.game.item import Item, sid, items
+        from game.item import Item, sid, items
         fromPosition = [packet.uint16()]
         fromMap = False
         toMap = False
@@ -348,28 +348,27 @@ class TibiaPlayer(Creature):
         oldItem = None
         
         isCreature = False
-        core.game.game.explainPacket(packet)
-        if clientId < 13568:
+        if clientId < 100:
             isCreature = True
         if not isCreature:
             # Remove item:
             if fromMap:
                 stream = TibiaPacket()
-                if "stackable" in core.game.item.items[sid(clientId)] and count < 100:
-                    oldItem = core.game.map.getTile(fromPosition).getThing(fromStackPos)
+                if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                    oldItem = game.map.getTile(fromPosition).getThing(fromStackPos)
                     oldItem.reduceCount(count)
                     if oldItem.count:
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem)
                     else:
                         stream.removeTileItem(fromPosition, fromStackPos)
-                        core.game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
+                        game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
                         print "taking stackpos = %d" % fromStackPos
                 else:
                     
                     stream.removeTileItem(fromPosition, fromStackPos)
-                    core.game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
+                    game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
                     print "taking stackpos = %d" % fromStackPos
-                stream.sendto(game.getSpectators(fromPosition))
+                stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
                 stream = TibiaPacket()
@@ -380,7 +379,7 @@ class TibiaPlayer(Creature):
                     self.inventory[toInventoryPos-1] = None
                 
                 
-                if "stackable" in core.game.item.items[sid(clientId)] and count < 100:
+                if "stackable" in game.item.items[sid(clientId)] and count < 100:
                     oldItem = self.inventory[fromInventoryPos-1]
                     oldItem.reduceCount(count)
                     if oldItem.count:
@@ -397,20 +396,20 @@ class TibiaPlayer(Creature):
                 stream = TibiaPacket()
 
                 newItem = Item(sid(clientId), count)
-                findItem = core.game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
-                if findItem and "stackable" in core.game.item.items[sid(clientId)] and count < 100 and findItem[1].count + count <= 100:
+                findItem = game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
+                if findItem and "stackable" in game.item.items[sid(clientId)] and count < 100 and findItem[1].count + count <= 100:
                     newItem.count += findItem[1].count
                     stream.removeTileItem(toPosition, findItem[0])
-                    core.game.map.getTile(toPosition).removeItem(findItem[1])
+                    game.map.getTile(toPosition).removeItem(findItem[1])
                     
-                toStackPos = core.game.map.getTile(toPosition).placeItem(newItem)
+                toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                 stream.addTileItem(toPosition, toStackPos, newItem )
                 print "Sending stackpos = %d" % toStackPos
-                stream.sendto(game.getSpectators(toPosition))
+                stream.sendto(game.engine.getSpectators(toPosition))
 
             else:
                 stream = TibiaPacket()
-                if "stackable" in core.game.item.items[sid(clientId)] and self.inventory[toInventoryPos-1] and (self.inventory[toInventoryPos-1].count + count <= 100):
+                if "stackable" in game.item.items[sid(clientId)] and self.inventory[toInventoryPos-1] and (self.inventory[toInventoryPos-1].count + count <= 100):
                     self.inventory[toInventoryPos-1].count += count
                 else:       
                     self.inventory[toInventoryPos-1] = Item(sid(clientId), count)
@@ -421,14 +420,11 @@ class TibiaPlayer(Creature):
                     self.inventory[fromInventoryPos-1] = restoreItem
                 stream.send(self.client)
         else:
-            stream = TibiaPacket()
-            #stream.removeTileItem(fromPosition, fromStackPos)
-            #core.game.map.getTile(fromPosition).removeClientCreature(fromStackPos)
-            #stream.
-            creature = core.game.map.getTile(fromPosition).getThing(fromStackPos)
-            creature.move(1)
+            creature = game.map.getTile(fromPosition).getThing(fromStackPos)
+            game.engine.autoWalkCreatureTo(creature, toPosition)
+            
     def handleLookAt(self, packet):
-        from core.game.item import sid, cid, items
+        from game.item import sid, cid, items
         position = [packet.uint16()]
         map = False
         if position[0] == 0xFFFF:
@@ -465,7 +461,7 @@ class TibiaPlayer(Creature):
         stackpos = packet.uint8()
         
         # TODO: WalkTo
-        item = core.game.map.getTile(position).getThing(stackpos)
-        core.game.game.transformItem(item, item.rotateTo, position, stackpos)
+        item = game.map.getTile(position).getThing(stackpos)
+        game.engine.transformItem(item, item.rotateTo, position, stackpos)
         
     

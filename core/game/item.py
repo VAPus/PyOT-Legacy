@@ -1,5 +1,5 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
-import core.sql, cjson
+import sql, cjson
 from twisted.python import log
 
 items = {}
@@ -51,7 +51,7 @@ def sid(itemid):
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")
-    d = waitForDeferred(core.sql.conn.runQuery("SELECT * FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT * FROM items"))
     yield d
     
     result = d.getResult()
