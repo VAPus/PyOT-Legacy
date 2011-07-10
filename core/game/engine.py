@@ -36,18 +36,18 @@ def autoWalkCreatureTo(creature, to):
     
     # First x walk
     if creature.position[0] > to[0]:
-        for x in range(0, creature.position[0]-to[0]):
+        for x in xrange(0, creature.position[0]-to[0]):
             pattern.append(3)
     elif creature.position[0] < to[0]:
-        for x in range(0, to[0]-creature.position[0]):
+        for x in xrange(0, to[0]-creature.position[0]):
             pattern.append(1)
     
     # Then y walking
     if creature.position[1] > to[1]:
-        for x in range(0, creature.position[1]-to[1]):
+        for x in xrange(0, creature.position[1]-to[1]):
             pattern.append(0)
     elif creature.position[1] < to[1]:
-        for x in range(0, to[1]-creature.position[1]):
+        for x in xrange(0, to[1]-creature.position[1]):
             pattern.append(2)
     print pattern
     if pattern:
@@ -65,8 +65,8 @@ def handleAutoWalking(creature, walkPatterns):
 def getSpectators(pos):
     # At the moment, we only do one floor
     players = []
-    for x in range(pos[0]-10, pos[0]+10):
-        for y in range(pos[1]-8, pos[1]+8):
+    for x in xrange(pos[0]-10, pos[0]+10):
+        for y in xrange(pos[1]-8, pos[1]+8):
             try:
                 for creature in game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player

@@ -27,7 +27,7 @@ class TibiaPlayer(Creature):
         stream.position(self.position)
         stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14)
 
-        for slot in range(enum.SLOT_FIRST,enum.SLOT_LAST):
+        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
@@ -67,7 +67,7 @@ class TibiaPlayer(Creature):
 
     def stream_skills(self, stream):
         stream.uint8(0xA1) # Skill type
-        for x in range(0,7): # 7 skill types
+        for x in xrange(0,7): # 7 skill types
             stream.uint8(1) # Value / Level
             stream.uint8(1) # Base
             stream.uint8(0) # %
@@ -287,7 +287,7 @@ class TibiaPlayer(Creature):
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)
         walkPattern = deque()
-        for x in range(0, steps):
+        for x in xrange(0, steps):
             direction = packet.uint8()
             log.msg("direction %d" % direction)
             if direction is 1:

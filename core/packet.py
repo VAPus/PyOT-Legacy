@@ -174,7 +174,7 @@ class TibiaPacket:
             step = 1
 
         # Run the steps by appending the floor
-        for z in range(start, (end+step), step):
+        for z in xrange(start, (end+step), step):
             skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip)
 
         if skip >= 0:
@@ -184,8 +184,8 @@ class TibiaPacket:
     # Floor Description (the entier floor)
     def floorDescription(self, position, width, height, offset, skip):
         from game.map import getTile
-        for x in range(0, width):
-            for y in range(0, height):
+        for x in xrange(0, width):
+            for y in xrange(0, height):
                 tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
                 if tile:
                     if skip >= 0:

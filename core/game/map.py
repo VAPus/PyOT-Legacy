@@ -163,7 +163,7 @@ def load(sectorX, sectorY):
                 knownMap[x][y][z] = Tile(tileItems)
 
 def unload(sectorX, sectorY):
-    for x in range(sectorX * 64, (sectorX * 64) + 64):
-        for x in range(sectorY * 64, (sectorY * 64) + 64):
+    for x in xrange(sectorX * 64, (sectorX * 64) + 64):
+        for x in xrange(sectorY * 64, (sectorY * 64) + 64):
             del knownMap[x][y]
     

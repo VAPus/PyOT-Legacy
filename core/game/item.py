@@ -51,7 +51,7 @@ def sid(itemid):
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")
-    d = waitForDeferred(sql.conn.runQuery("SELECT * FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,attributes,plural,article FROM items"))
     yield d
     
     result = d.getResult()
