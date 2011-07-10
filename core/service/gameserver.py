@@ -140,8 +140,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType is 0x85: # Rotate item
             self.player.handleRotateItem(packet)
             
-        elif packetType is 0x8C:
+        elif packetType is 0x8C: # Look at
             self.player.handleLookAt(packet)
+            
+        elif packetType is 0xD2: # Request outfit
+            self.player.outfitWindow()
+            
+        elif packetType is 0xD3: # Set outfit
+            self.player.handleSetOutfit(packet)
+        
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()

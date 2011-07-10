@@ -215,18 +215,19 @@ class TibiaPacket:
             self.item(item)
 
     # TODO: Outfit class?
-    def add_outfit(self, looktype, head=0, body=None, legs=0, feet=0, addons=0,lookitem=0):
-        self.uint16(looktype)
-        if looktype is not 0:
-            self.uint8(head)
-            self.uint8(body)
-            self.uint8(legs)
-            self.uint8(feet)
-            self.uint8(addons)
+    def outfit(self, look, addon=0, mount=0x00):
+        
+        self.uint16(look[0])
+        if look[0] is not 0:
+            self.uint8(look[1])
+            self.uint8(look[2])
+            self.uint8(look[3])
+            self.uint8(look[4])
+            self.uint8(addon)
         else:
-            self.uint16(lookitem)
+            self.uint16(look[1])
             
-        self.uint16(0x00) # Mount
+        self.uint16(mount) # Mount
         
     def creature(self, creature, known):
         if known:
@@ -240,7 +241,7 @@ class TibiaPacket:
             self.string(creature.name())
         self.uint8(100) # Health %
         self.uint8(creature.direction) # Direction
-        self.add_outfit(creature.data["looktype"], creature.data["lookhead"],creature.data["lookbody"],creature.data["looklegs"],creature.data["lookfeet"],0) # TODO: FIx outfits!
+        self.outfit(creature.outfit, creature.addon, creature.mount)
         self.uint8(0xFF) # Light
         self.uint8(215) # Light
         self.uint16(creature.speed) # Speed

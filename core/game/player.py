@@ -9,6 +9,7 @@ from game.item import Item
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
 from game.creature import Creature
 import copy
+import game.resource
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
@@ -16,7 +17,8 @@ class TibiaPlayer(Creature):
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]
-        
+        self.gender = 0
+
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
         stream.uint32(self.clientId()) # Cid
@@ -233,6 +235,26 @@ class TibiaPlayer(Creature):
         stream.position(self.position)
         stream.string(message)
         stream.send(self.client)
+    
+    def outfitWindow(self):
+        stream = TibiaPacket(0xC8)
+        
+        # First the current outfit
+        stream.outfit(self.outfit)
+        looks = []
+        for outfit in game.resource.outfits:
+            # TODO, can wear
+            looks.append(outfit)
+                
+        stream.uint8(len(looks))
+        for outfit in looks:
+            look = outfit.getLook(self.gender)
+            stream.uint16(look[0])
+            stream.string(outfit.name)
+            stream.uint8(3) # TODO addons
+        
+        stream.uint8(0) # TODO mounts
+        stream.send(self.client)
         
     def stopAutoWalk(self):
         try:
@@ -249,6 +271,12 @@ class TibiaPlayer(Creature):
     
     def notPossible(self):
         self.message("Sorry, not possible.", enum.MSG_STATUS_SMALL)
+    
+    def refreshOutfit(self):
+        stream = TibiaPacket(0x8E)
+        stream.uint32(self.clientId())
+        stream.outfit(self.outfit, self.addon, self.mount)
+        stream.sendto(game.engine.getSpectators(self.position))
         
     # Compelx packets
     def handleSay(self, packet):
@@ -464,4 +492,9 @@ class TibiaPlayer(Creature):
         item = game.map.getTile(position).getThing(stackpos)
         game.engine.transformItem(item, item.rotateTo, position, stackpos)
         
-    
+    def handleSetOutfit(self, packet):
+        self.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
+        self.addon = packet.uint8()
+        self.mount = packet.uint16() # Not really supported
+        self.refreshOutfit()
+        
