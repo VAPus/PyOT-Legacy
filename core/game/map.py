@@ -42,13 +42,11 @@ class Tile(BaseThing):
         return self.things.remove(creature)
         
     def placeItem(self, item):
-        item.tile = self
         self.bottomItemCount += 1
         self.things.insert(self.topItemCount+self.creatureCount, item)
         return self.topItemCount+self.creatureCount
     
     def placeItemEnd(self, item):
-        item.tile = self
         self.bottomItemCount += 1
         self.things.append(item)
         return len(self.things)-1
@@ -61,9 +59,9 @@ class Tile(BaseThing):
         
     def creatures(self):
         return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
+        
     def removeItem(self, item):
         self.bottomItemCount -= 1
-        item.tile = None
         return self.things.remove(item)
         
     def removeClientItem(self, cid, stackpos=None):
@@ -80,7 +78,8 @@ class Tile(BaseThing):
     def removeClientCreature(self, stackpos=None):
         if stackpos and self.things[stackpos]:
             self.creatureCount -= 1
-            return self.things.pop(stackpos)      
+            return self.things.pop(stackpos)  
+            
     def placeClientItem(self, cid):
         import game.item
         item = game.item.Item(game.item.sid(cid))
