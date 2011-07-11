@@ -1,2 +1,2 @@
 #!/bin/sh
-twistd --nodaemon --python loginserver.tac --pidfile loginserver.pid
+python2.7 -OO /usr/bin/twistd --nodaemon --python loginserver.tac --pidfile loginserver.pid

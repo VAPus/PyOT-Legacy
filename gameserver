@@ -1,2 +1,2 @@
 #!/bin/sh
-twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+python2.7 -OO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid

@@ -149,7 +149,8 @@ def load(sectorX, sectorY):
         
     sectors[sectorX][sectorY] = True
     
-    mapy = cjson.decode(zlib.decompress(open("data/map/map_%d_%d.sec" % (sectorX, sectorY), "rb").read()))
+    with open("data/map/map_%d_%d.sec" % (sectorX, sectorY), "rb") as f:
+        mapy = cjson.decode(zlib.decompress(f.read()))
     
     for xx in mapy:
         x = int(xx)
