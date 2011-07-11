@@ -270,6 +270,7 @@ class TibiaPacket:
 
     def removeInventoryItem(self, pos):
         self.uint8(0x79)
+        assert pos < 0
         self.uint8(pos)
         
     def addInventoryItem(self, pos, item):
@@ -277,6 +278,21 @@ class TibiaPacket:
         self.uint8(pos)
         self.item(item)
 
+    def addContainerItem(self, openId, item):
+        self.uint8(0x70)
+        self.uint8(openId)
+        self.item(item)
+        
+    def updateContainerItem(self, openId, slot, item):
+        self.uint8(0x71)
+        self.uint8(openId)
+        self.uint8(slot)
+       
+    def removeContainerItem(self, openId, slot):
+        self.uint8(0x72)
+        self.uint8(openId)
+        self.uint8(slot)
+        
     def addTileItem(self, pos, stackpos, item):
         self.uint8(0x6A)
         self.position(pos)

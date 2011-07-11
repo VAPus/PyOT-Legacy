@@ -28,6 +28,9 @@ class Container:
     def getThing(self, pos):
         return self.items[pos]
         
+    def findSlot(self, item):
+        return self.items.index(item)
+        
 ### Item ###
 class Item:
     def __init__(self, itemid, count=None):

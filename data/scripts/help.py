@@ -68,8 +68,16 @@ scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 
 # First use of actions :p
 def testContainer(player, item, position):
-    # Each time you open it, add a crystal necklece. I use this code to test max capasity stuff
-    item.container.placeItem(game.item.Item(2125))
+    # Each time you open it, add a bag. I use this code to test max capasity stuff
+    if position[1] is 3:
+        bag1 = game.item.Item(1987)
+        bag1.container.placeItem(game.item.Item(1987))
+        bag1.container.placeItem(game.item.Item(1987))
+        bag2 = game.item.Item(1987)
+        bag2.container.placeItem(game.item.Item(1987))
+        bag2.container.placeItem(game.item.Item(1987))
+        item.container.placeItem(bag1)
+        item.container.placeItem(bag2)
     
     player.openContainer(item)
     
