@@ -32,7 +32,7 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
     
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
-    pattern = deque()
+    pattern = []
     
     # First diagonal if possible
     if abs(creature.position[0] - to[0]) == 1 and abs(creature.position[1] - to[1]) == 1:
@@ -62,11 +62,11 @@ def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
         elif creature.position[1] < to[1]:
             for x in xrange(0, to[1]-creature.position[1]):
                 pattern.append(2)
-    if pattern and skipFields:
-        for x in xrange(0, skipFields): pattern.popleft()
-        print pattern
+    if pattern and skipFields != 0:
+        pattern = pattern[:skipFields]
+
     if pattern:
-        autoWalkCreature(creature, pattern, callback)
+        autoWalkCreature(creature, deque(pattern), callback)
 def handleAutoWalking(creature, walkPatterns, callback=None):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
