@@ -195,9 +195,9 @@ class TibiaPlayer(Creature):
         if direction is 0:
             stream.map_description((self.position[0] - 8, self.position[1] - 5, self.position[2]), 18, 1, self)
         elif direction is 1:
-            stream.map_description((self.position[0] + 8, self.position[1] - 6, self.position[2]), 1, 14, self)
+            stream.map_description((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
         elif direction is 2:
-            stream.map_description((self.position[0] - 8, self.position[1] + 6, self.position[2]), 18, 1, self)
+            stream.map_description((self.position[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
         elif direction is 3:
             stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14, self)
 
@@ -494,6 +494,9 @@ class TibiaPlayer(Creature):
                     self.inventory[fromInventoryPos-1] = restoreItem
                 stream.send(self.client)
         else:
+            print fromStackPos
+            print fromPosition
+            print game.map.getTile(fromPosition).things
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
             if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
                 game.engine.autoWalkCreatureTo(self, creature.position, -1, lambda: game.engine.autoWalkCreatureTo(creature, toPosition, 1))
