@@ -240,7 +240,7 @@ class TibiaPlayer(Creature):
         stream = TibiaPacket(0xC8)
         
         # First the current outfit
-        stream.outfit(self.outfit)
+        stream.outfit(self.outfit, self.addon, self.mount)
         looks = []
         for outfit in game.resource.outfits:
             # TODO, can wear
