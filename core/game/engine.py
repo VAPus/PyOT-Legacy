@@ -32,41 +32,11 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
     
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
-    pattern = []
-    
-    # First diagonal if possible
-    if abs(creature.position[0] - to[0]) == 1 and abs(creature.position[1] - to[1]) == 1:
-        if creature.position[1] > to[1]:
-            base = 6
-        else:
-            base = 4
-            
-        if creature.position[0] < to[0]:
-            base += 1
-            
-        pattern.append(base)
-        
-    else:
-        # First x walk
-        if creature.position[0] > to[0]:
-            for x in xrange(0, creature.position[0]-to[0]):
-                pattern.append(3)
-        elif creature.position[0] < to[0]:
-            for x in xrange(0, to[0]-creature.position[0]):
-                pattern.append(1)
-        
-        # Then y walking
-        if creature.position[1] > to[1]:
-            for x in xrange(0, creature.position[1]-to[1]):
-                pattern.append(0)
-        elif creature.position[1] < to[1]:
-            for x in xrange(0, to[1]-creature.position[1]):
-                pattern.append(2)
-    if pattern and skipFields != 0:
-        pattern = pattern[:skipFields]
 
+    pattern = calculateWalkPattern(creature.position, to, skipFields)
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
+        
 def handleAutoWalking(creature, walkPatterns, callback=None):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
@@ -76,6 +46,44 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         del walkerEvents[creature.clientId()]
     if callback and ret and not len(walkPatterns):    
         reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)
+
+# Calculate walk patterns
+def calculateWalkPattern(fromPos, to, skipFields=None):
+    pattern = []
+    
+    # First diagonal if possible
+    if abs(fromPos[0] - to[0]) == 1 and abs(fromPos[1] - to[1]) == 1:
+        if fromPos[1] > to[1]:
+            base = 6
+        else:
+            base = 4
+            
+        if fromPos[0] < to[0]:
+            base += 1
+            
+        pattern.append(base)
+        
+    else:
+        # First x walk
+        if fromPos[0] > to[0]:
+            for x in xrange(0, fromPos[0]-to[0]):
+                pattern.append(3)
+        elif fromPos[0] < to[0]:
+            for x in xrange(0, to[0]-fromPos[0]):
+                pattern.append(1)
+        
+        # Then y walking
+        if fromPos[1] > to[1]:
+            for x in xrange(0, fromPos[1]-to[1]):
+                pattern.append(0)
+        elif fromPos[1] < to[1]:
+            for x in xrange(0, to[1]-fromPos[1]):
+                pattern.append(2)
+    if pattern and skipFields != 0:
+        pattern = pattern[:skipFields]
+        
+    return pattern
+    
 # Spectator list
 def getSpectators(pos):
     # At the moment, we only do one floor

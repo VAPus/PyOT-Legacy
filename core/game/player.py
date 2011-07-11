@@ -330,7 +330,10 @@ class TibiaPlayer(Creature):
     
     def notPossible(self):
         self.message("Sorry, not possible.", enum.MSG_STATUS_SMALL)
-    
+
+    def outOfRange(self):
+        self.message("Destination is out of range.", enum.MSG_STATUS_SMALL)
+        
     def refreshOutfit(self):
         stream = TibiaPacket(0x8E)
         stream.uint32(self.clientId())
@@ -553,7 +556,11 @@ class TibiaPlayer(Creature):
             print game.map.getTile(fromPosition).things
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
             if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
-                game.engine.autoWalkCreatureTo(self, creature.position, -1, lambda: game.engine.autoWalkCreatureTo(creature, toPosition, 1))
+                walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
+                if len(walkPattern) > 1:
+                    self.outOfRange()
+                else:
+                    game.engine.autoWalkCreatureTo(self, creature.position, -1, lambda: game.engine.autoWalkCreature(creature, walkPattern))
             else:
                 game.engine.autoWalkCreatureTo(creature, toPosition)
             
