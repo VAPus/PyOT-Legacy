@@ -19,6 +19,8 @@ class TibiaPlayer(Creature):
         self.modes = [0,0,0]
         self.gender = 0
         self.knownCreatures = []
+        self.openContainers = []
+        
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
         stream.uint32(self.clientId()) # Cid
@@ -296,6 +298,22 @@ class TibiaPlayer(Creature):
             stream.string(mount.name)
 
         stream.send(self.client)
+    
+    def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", date=""):
+        stream = TibiaPacket(0x96)
+        stream.uint32(0x100)
+        stream.uint16(item.itemId)
+        if canWrite:
+            stream.uint16(len(text)+maxLen)
+            stream.string(text)
+        else:
+            stream.uint16(len(text))
+            stream.string(text)
+        
+        stream.string(writtenBy)
+        stream.string(date)
+        
+        stream.send(self.client)
         
     def stopAutoWalk(self):
         try:
@@ -327,7 +345,43 @@ class TibiaPlayer(Creature):
             if mount.speed:
                 self.setSpeed((self.speed + mount.speed) if mounted else (self.speed - mount.speed))
             self.refreshOutfit()
+    
+    def updateContainer(self, container, parent=False, update=True):
+        self.openContainer(self, container, parent, update)
         
+    def openContainer(self, container, parent=False, update=False):
+        if update or not container in self.openContainers:
+            stream = TibiaPacket(0x6E)
+            container.openId = len(self.openContainers)
+            self.openContainers.append(container)
+            
+            stream.uint8(container.openId)
+            
+            stream.uint16(container.cid)
+            stream.string(container.name())
+            
+            stream.uint8(container.containerSize)
+            stream.uint8(parent)
+            stream.uint8(len(container.container.items))
+            
+            for item in container.container.items:
+                stream.item(item)
+                
+            stream.send(self.client)
+            
+    def closeContainer(self, container):
+        if container in self.openContainers:
+            stream = TibiaPacket(0x6F)
+            stream.uint8(container.openId)
+            self.openContainers.remove(container)
+            stream.send(self.client)
+
+    def closeContainerId(self, openId):
+        for container in self.openContainers:
+            if container.openId is openId:
+                self.closeContainer(container)
+                break
+                
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -521,6 +575,7 @@ class TibiaPlayer(Creature):
         clientId = packet.uint16()
         stackpos = packet.uint8()
         itemId = sid(clientId)
+        print itemId
         if not itemId:
             return self.notPossible()
             
@@ -556,11 +611,17 @@ class TibiaPlayer(Creature):
             self.changeMountStatus(mount)
         else:
             self.outfitWindow()
+            
     def handleUseItem(self, packet):
         position = packet.position()
         print position
-        clientId = packet.uint16()
+        clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
-        junk = packet.uint8() # To be supported
+        junk = packet.uint8() # To be supported, i guess
         if position[0] == 0xFFFF:
-            print self.inventory[position[1]-1].attributes()
+            item = self.inventory[position[1]-1]
+        else:
+            item = game.map.getTile(position).getThing(stackpos)
+            
+        game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position)
+        

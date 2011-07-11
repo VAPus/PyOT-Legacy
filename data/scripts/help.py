@@ -4,22 +4,22 @@ from game.map import placeCreature, getTile
 import game.engine, game.item
 from game.creature import Creature, Monster
 
-def callback(object, text):
-    object.message("No you!!")
+def callback(player, text):
+    player.message("No you!!")
     
-def repeater(object, text):
-    object.message(text)
+def repeater(player, text):
+    player.message(text)
     
-def teleporter(object, text):
+def teleporter(player, text):
     x,y,z = text.split(',')
     pos = [int(x),int(y),int(z)]
-    object.teleport(pos)
-    object.message("Welcome to %s" % text)
+    player.teleport(pos)
+    player.message("Welcome to %s" % text)
     
-def tiler(object, text):
+def tiler(player, text):
     #try:
         if len(text.split(" ")) < 2:
-            pos = object.position
+            pos = player.position
             id = int(text.split(" ")[0])
         else:
             x,y,z = text.split(" ")[0].split(',')
@@ -27,20 +27,20 @@ def tiler(object, text):
             id = int(text.split(" ")[1])
             
         if not id in game.item.items:
-            object.message("Item not found!")
+            player.message("Item not found!")
             return False
         item = game.item.Item( id )
 
         getTile(pos).setThing(0, item)
 
         game.engine.updateTile(pos, getTile(pos))
-        object.magicEffect(pos, 0x03)
+        player.magicEffect(pos, 0x03)
     #except:
-    #    object.message("Not possible!")
+    #    player.message("Not possible!")
         return False
         
-def dummyCreature(object, text):
-    pos = [object.position[0]+1, object.position[1], 7]
+def dummyCreature(player, text):
+    pos = [player.position[0]+1, player.position[1], 7]
     monsterData = {"name": "Dummy", "health":1000, "looktype": 59, "lookhead":0, "looklegs":0, "lookbody":0, "lookfeet":0} # A mal
     creature = Monster(monsterData, pos)
     stackpos = getTile(pos).placeCreature(creature)
@@ -55,9 +55,20 @@ scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
 scriptsystem.get("talkactionFirstWord").reg('set', tiler)
 scriptsystem.get("talkaction").reg('spawn', dummyCreature)
 
-def speedsetter(object, text):
+def speedsetter(player, text):
     try:
-        object.setSpeed(int(text))
+        player.setSpeed(int(text))
     except:
-        object.message("Invalid speed!")
+        player.message("Invalid speed!")
 scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
+
+
+
+# First use of actions :p
+def testContainer(player, item, position):
+    # Each time you open it, add a crystal necklece. I use this code to test max capasity stuff
+    item.container.placeItem(game.item.Item(2125))
+    
+    player.openContainer(item)
+    
+scriptsystem.get("useItem").reg(1987, testContainer)

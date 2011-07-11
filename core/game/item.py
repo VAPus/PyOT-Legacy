@@ -9,13 +9,35 @@ class BaseThing:
      def cid(self):
          return items[self.itemId]['cid']
 
-
+### Container class ###
+class Container:
+    def __init__(self, size):
+        self.items = []
+        self.maxSize = size
+        self.openId = None
+        
+    def placeItem(self, item):
+        length = len(self.items)
+        if length < self.maxSize:
+            self.items.append(item)
+        return length-2
+        
+    def removeItem(self, item):
+        return self.items.remove(item)
+        
+    def getThing(self, pos):
+        return self.items[pos]
+        
+### Item ###
 class Item:
     def __init__(self, itemid, count=None):
         self.itemId = itemid
         self.count = count if self.stackable else None
         
-
+        # Extend items such as containers, beds and doors
+        if "containerSize" in self.attributes():
+            self.container = Container(self.containerSize)
+            
     def __getattr__(self, name):
         if name and name in items[self.itemId]:
             return items[self.itemId][name]

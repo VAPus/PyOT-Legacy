@@ -143,6 +143,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType is 0x85: # Rotate item
             self.player.handleRotateItem(packet)
             
+        elif packetType is 0x87: # Close container
+            self.player.closeContainerId(packet.uint8())
+            
         elif packetType is 0x8C: # Look at
             self.player.handleLookAt(packet)
             
