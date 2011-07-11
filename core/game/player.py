@@ -320,10 +320,13 @@ class TibiaPlayer(Creature):
         stream.sendto(game.engine.getSpectators(self.position))
 
     def changeMountStatus(self, mounted):
-        self.mounted = mounted
-        if game.resource.reverseMounts[self.mount].speed:
-            self.setSpeed((self.speed + game.resource.reverseMounts[self.mount].speed) if mounted else (self.speed - game.resource.reverseMounts[self.mount].speed))
-        self.refreshOutfit()
+        mount = game.resource.getMount(self.mount)
+        if mount:
+            self.mounted = mounted
+        
+            if mount.speed:
+                self.setSpeed((self.speed + mount.speed) if mounted else (self.speed - mount.speed))
+            self.refreshOutfit()
         
     # Compelx packets
     def handleSay(self, packet):
@@ -545,9 +548,11 @@ class TibiaPlayer(Creature):
         self.refreshOutfit()
     
     def handleSetMounted(self, packet):
-        mount = packet.uint8() != 0
-        self.changeMountStatus(mount)
-        
+        if self.mount:
+            mount = packet.uint8() != 0
+            self.changeMountStatus(mount)
+        else:
+            self.outfitWindow()
     def handleUseItem(self, packet):
         position = packet.position()
         print position

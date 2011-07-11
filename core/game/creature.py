@@ -79,6 +79,6 @@ class Creature:
         
         return True # Required for auto walkings
 class Monster(Creature):
-    def __init__(self, position, cid=None):
+    def __init__(self, data, position, cid=None):
         Creature.__init__(self, data, position, cid)
         self.creatureType = 1

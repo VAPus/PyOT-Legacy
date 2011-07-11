@@ -2,7 +2,7 @@ import game.scriptsystem as scriptsystem
 from packet import TibiaPacket
 from game.map import placeCreature, getTile
 import game.engine, game.item
-from game.creature import Creature
+from game.creature import Creature, Monster
 
 def callback(object, text):
     object.message("No you!!")
@@ -42,7 +42,7 @@ def tiler(object, text):
 def dummyCreature(object, text):
     pos = [object.position[0]+1, object.position[1], 7]
     monsterData = {"name": "Dummy", "health":1000, "looktype": 59, "lookhead":0, "looklegs":0, "lookbody":0, "lookfeet":0} # A mal
-    creature = Creature(monsterData, pos)
+    creature = Monster(monsterData, pos)
     stackpos = getTile(pos).placeCreature(creature)
     stream = TibiaPacket()
     stream.addTileCreature(pos, stackpos, creature)
