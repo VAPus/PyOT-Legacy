@@ -14,6 +14,7 @@ class Creature:
         self.cid = cid if cid else self.generateClientID()
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
         self.mount = 0
+        self.mounted = 0
         self.addon = 0
     def name(self):
         return self.data["name"]

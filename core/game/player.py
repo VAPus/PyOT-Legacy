@@ -253,7 +253,16 @@ class TibiaPlayer(Creature):
             stream.string(outfit.name)
             stream.uint8(3) # TODO addons
         
-        stream.uint8(0) # TODO mounts
+        mounts = []
+        for mount in game.resource.mounts:
+            # TODO, can use
+            mounts.append(mount)
+            
+        stream.uint8(len(mounts))
+        for mount in mounts:
+            stream.uint16(mount.cid)
+            stream.string(mount.name)
+
         stream.send(self.client)
         
     def stopAutoWalk(self):
@@ -275,8 +284,22 @@ class TibiaPlayer(Creature):
     def refreshOutfit(self):
         stream = TibiaPacket(0x8E)
         stream.uint32(self.clientId())
-        stream.outfit(self.outfit, self.addon, self.mount)
+        stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
         stream.sendto(game.engine.getSpectators(self.position))
+
+    def mount(self):
+        if not self.mounted:
+            self.mounted = True
+            self.refreshOutfit()
+            
+    def dismount(self):
+        if self.mounted:
+            self.mounted = True
+            self.refreshOutfit()
+
+    def changeMountStatus(self, mounted):
+        self.mounted = mounted
+        self.refreshOutfit()
         
     # Compelx packets
     def handleSay(self, packet):
@@ -497,4 +520,7 @@ class TibiaPlayer(Creature):
         self.addon = packet.uint8()
         self.mount = packet.uint16() # Not really supported
         self.refreshOutfit()
-        
+    
+    def handleSetMounted(self, packet):
+        mount = packet.uint8() != 0
+        self.changeMountStatus(mount)

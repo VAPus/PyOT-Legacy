@@ -241,7 +241,7 @@ class TibiaPacket:
             self.string(creature.name())
         self.uint8(100) # Health %
         self.uint8(creature.direction) # Direction
-        self.outfit(creature.outfit, creature.addon, creature.mount)
+        self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0xFF) # Light
         self.uint8(215) # Light
         self.uint16(creature.speed) # Speed
