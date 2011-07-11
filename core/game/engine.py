@@ -28,27 +28,40 @@ def autoWalkCreature(creature, walkPatterns):
         walkerEvents[creature.clientId()].cancel()
         #creature.cancelMove(creature.direction)
         
-    walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns)
+    walkerEvents[creature.clientId()] = reactor.callLater(0, handleAutoWalking, creature, walkPatterns)
     
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to):
     pattern = deque()
     
-    # First x walk
-    if creature.position[0] > to[0]:
-        for x in xrange(0, creature.position[0]-to[0]):
-            pattern.append(3)
-    elif creature.position[0] < to[0]:
-        for x in xrange(0, to[0]-creature.position[0]):
-            pattern.append(1)
-    
-    # Then y walking
-    if creature.position[1] > to[1]:
-        for x in xrange(0, creature.position[1]-to[1]):
-            pattern.append(0)
-    elif creature.position[1] < to[1]:
-        for x in xrange(0, to[1]-creature.position[1]):
-            pattern.append(2)
+    # First diagonal if possible
+    if abs(creature.position[0] - to[0]) == 1 and abs(creature.position[1] - to[1]) == 1:
+        if creature.position[1] > to[1]:
+            base = 6
+        else:
+            base = 4
+            
+        if creature.position[0] < to[0]:
+            base += 1
+            
+        pattern.append(base)
+        
+    else:
+        # First x walk
+        if creature.position[0] > to[0]:
+            for x in xrange(0, creature.position[0]-to[0]):
+                pattern.append(3)
+        elif creature.position[0] < to[0]:
+            for x in xrange(0, to[0]-creature.position[0]):
+                pattern.append(1)
+        
+        # Then y walking
+        if creature.position[1] > to[1]:
+            for x in xrange(0, creature.position[1]-to[1]):
+                pattern.append(0)
+        elif creature.position[1] < to[1]:
+            for x in xrange(0, to[1]-creature.position[1]):
+                pattern.append(2)
     print pattern
     if pattern:
         autoWalkCreature(creature, pattern)

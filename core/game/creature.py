@@ -48,22 +48,34 @@ class Creature:
             position[0] = self.position[0] + 1
         elif direction is 2:
             position[1] = self.position[1] + 1
-        else:
+        elif direction is 3:
             position[0] = self.position[0] - 1
-          
+        elif direction is 4:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] - 1
+        elif direction is 5:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] + 1
+        elif direction is 6:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] - 1
+        elif direction is 7:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] + 1
+            
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
+           self.cancelWalk()
            return False
-          
-          
+                    
         stream.position(position)
         placeCreature(self, position)
         
         self.position = position
-        # Send to everyone
-        stream.sendto(getSpectators(position))
         
         
+        # Send to everyone        
+        stream.sendto(getSpectators(position)) 
         
         return True # Required for auto walkings
 class Monster(Creature):

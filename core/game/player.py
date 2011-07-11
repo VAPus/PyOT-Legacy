@@ -112,9 +112,21 @@ class TibiaPlayer(Creature):
             position[0] = self.position[0] + 1
         elif direction is 2:
             position[1] = self.position[1] + 1
-        else:
+        elif direction is 3:
             position[0] = self.position[0] - 1
-          
+        elif direction is 4:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] - 1
+        elif direction is 5:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] + 1
+        elif direction is 6:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] - 1
+        elif direction is 7:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] + 1
+            
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
            self.cancelWalk()
@@ -123,17 +135,34 @@ class TibiaPlayer(Creature):
         if position[1] is 52:
            self.message("Turbo speed in effect!")
            self.setSpeed(1500)
+           
           
         stream.position(position)
         placeCreature(self, position)
         
         self.position = position
-        # Send to everyone
-        stream.send(self.client)
-        
-        self.updateMap(direction)
         
         
+        # Send to everyone        
+        stream.sendto(game.engine.getSpectators(position)) 
+        
+        if direction < 4:
+            self.updateMap(direction)
+        else:
+            stream = TibiaPacket()
+            if direction & 2 == 2:
+                # North
+                self.updateMap(0, stream)
+            else:
+                # South
+                self.updateMap(2, stream)
+            if direction & 1 == 1:
+                # East
+                self.updateMap(1, stream)
+            else:
+                # West
+                self.updateMap(3, stream)
+            stream.send(self.client)
         return True # Required for auto walkings
         
     def teleport(self, position):
@@ -158,8 +187,10 @@ class TibiaPlayer(Creature):
     def pong(self):
         TibiaPacket(0x1E).send(self.client)
         
-    def updateMap(self, direction):
-        stream = TibiaPacket()
+    def updateMap(self, direction, streamX=None):
+        stream = streamX
+        if not streamX:
+            stream = TibiaPacket()
         stream.uint8(0x65 + direction)
         if direction is 0:
             stream.map_description((self.position[0] - 8, self.position[1] - 5, self.position[2]), 18, 1)
@@ -170,7 +201,8 @@ class TibiaPlayer(Creature):
         elif direction is 3:
             stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14)
 
-        stream.send(self.client)
+        if not streamX:
+            stream.send(self.client)
         
         
     def setModes(self, attack, chase, secure):
@@ -287,18 +319,10 @@ class TibiaPlayer(Creature):
         stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
         stream.sendto(game.engine.getSpectators(self.position))
 
-    def mount(self):
-        if not self.mounted:
-            self.mounted = True
-            self.refreshOutfit()
-            
-    def dismount(self):
-        if self.mounted:
-            self.mounted = True
-            self.refreshOutfit()
-
     def changeMountStatus(self, mounted):
         self.mounted = mounted
+        if game.resource.reverseMounts[self.mount].speed:
+            self.setSpeed((self.speed + game.resource.reverseMounts[self.mount].speed) if mounted else (self.speed - game.resource.reverseMounts[self.mount].speed))
         self.refreshOutfit()
         
     # Compelx packets
@@ -344,23 +368,19 @@ class TibiaPlayer(Creature):
             if direction is 1:
                 walkPattern.append(1) # East
             elif direction is 2:
-                walkPattern.append(0) # North
-                walkPattern.append(3) # East
+                walkPattern.append(7) # Northeast
             elif direction is 3:
                 walkPattern.append(0) # North
             elif direction is 4:
-                walkPattern.append(0) # North
-                walkPattern.append(1) # West                
+                walkPattern.append(6) # Northwest          
             elif direction is 5:
                 walkPattern.append(3) # West
             elif direction is 6:
-                walkPattern.append(2) # South
-                walkPattern.append(1) # West
+                walkPattern.append(4) # Southwest
             elif direction is 7:
                 walkPattern.append(2) # South
             elif direction is 8:
-                walkPattern.append(2) # South
-                walkPattern.append(3) # East               
+                walkPattern.append(5) # Southeast           
             else:
                 continue # We don't support them
                 
