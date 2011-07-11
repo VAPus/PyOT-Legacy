@@ -544,3 +544,12 @@ class TibiaPlayer(Creature):
     def handleSetMounted(self, packet):
         mount = packet.uint8() != 0
         self.changeMountStatus(mount)
+        
+    def handleUseItem(self, packet):
+        position = packet.position()
+        print position
+        clientId = packet.uint16()
+        stackpos = packet.uint8()
+        junk = packet.uint8() # To be supported
+        if position[0] == 0xFFFF:
+            print self.inventory[position[1]-1].attributes()

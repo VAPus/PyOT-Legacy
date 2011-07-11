@@ -137,6 +137,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType is 0x78: # Throw/move item
             self.player.handleMoveItem(packet)
         
+        elif packetType is 0x82:
+            self.player.handleUseItem(packet)
+            
         elif packetType is 0x85: # Rotate item
             self.player.handleRotateItem(packet)
             

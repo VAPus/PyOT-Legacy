@@ -14,6 +14,7 @@ class Item:
     def __init__(self, itemid, count=None):
         self.itemId = itemid
         self.count = count if self.stackable else None
+        
 
     def __getattr__(self, name):
         if name and name in items[self.itemId]:
@@ -56,6 +57,8 @@ def loadItems():
     
     result = d.getResult()
     for item in result:
+        item["cid"] = int(item["cid"]) # no long
+        item["sid"] = int(item["sid"]) # no long
         if item["attributes"]:
             items[item["sid"]] = cjson.decode(item["attributes"])
         else:
