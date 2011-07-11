@@ -111,6 +111,8 @@ knownMap = {}
 sectors = {}
 
 import data.map.info
+dummyTiles = {} # solid items like mountains will stay here
+dummyItems = {} # Ground items etc
 
 def loadTiles(x,y, walk=True):
     if x > data.map.info.height or y > data.map.info.width:
@@ -159,8 +161,17 @@ def load(sectorX, sectorY):
                 knownMap[x][y] = {}
             for zz in mapy[xx][yy]:
                 z = int(zz)
-                tileItems = map(game.item.Item, mapy[xx][yy][zz][0])
-                knownMap[x][y][z] = Tile(tileItems)
+                tileItems = []
+                for id in mapy[xx][yy][zz][0]:
+                    if not id in dummyItems:
+                        dummyItems[id] = game.item.Item(id)
+                    tileItems.append(dummyItems[id])
+                if tileItems[0].solid:
+                    if not tileItems[0] in dummyTiles:
+                        dummyTiles[tileItems[0]] = Tile(tileItems)
+                        knownMap[x][y][z] = dummyTiles[tileItems[0]]
+                else:         
+                    knownMap[x][y][z] = Tile(tileItems)
 
 def unload(sectorX, sectorY):
     for x in xrange(sectorX * 64, (sectorX * 64) + 64):
