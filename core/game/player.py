@@ -492,7 +492,10 @@ class TibiaPlayer(Creature):
                 stream.send(self.client)
         else:
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
-            game.engine.autoWalkCreatureTo(creature, toPosition)
+            if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
+                game.engine.autoWalkCreatureTo(self, creature.position, 1, lambda: game.engine.autoWalkCreatureTo(creature, toPosition))
+            else:
+                game.engine.autoWalkCreatureTo(creature, toPosition)
             
     def handleLookAt(self, packet):
         from game.item import sid, cid, items

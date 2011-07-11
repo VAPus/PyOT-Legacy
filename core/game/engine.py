@@ -23,15 +23,15 @@ def loader(timer):
     d.addCallback(printer, timer)
 
 # First order of buisness, the autoWalker
-def autoWalkCreature(creature, walkPatterns):
+def autoWalkCreature(creature, walkPatterns, callback=None):
     if creature.clientId() in walkerEvents: # The walker locks
         walkerEvents[creature.clientId()].cancel()
         #creature.cancelMove(creature.direction)
         
-    walkerEvents[creature.clientId()] = reactor.callLater(0, handleAutoWalking, creature, walkPatterns)
+    walkerEvents[creature.clientId()] = reactor.callLater(0, handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
-def autoWalkCreatureTo(creature, to):
+def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
     pattern = deque()
     
     # First diagonal if possible
@@ -62,18 +62,20 @@ def autoWalkCreatureTo(creature, to):
         elif creature.position[1] < to[1]:
             for x in xrange(0, to[1]-creature.position[1]):
                 pattern.append(2)
-    print pattern
+    if pattern and skipFields:
+        for x in xrange(0, skipFields): pattern.popleft()
+        print pattern
     if pattern:
-        autoWalkCreature(creature, pattern)
-def handleAutoWalking(creature, walkPatterns):
+        autoWalkCreature(creature, pattern, callback)
+def handleAutoWalking(creature, walkPatterns, callback=None):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
     if ret and len(walkPatterns):
-        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns)
+        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
     else:
         del walkerEvents[creature.clientId()]
-        
-        
+    if callback and ret and not len(walkPatterns):    
+        reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)
 # Spectator list
 def getSpectators(pos):
     # At the moment, we only do one floor
