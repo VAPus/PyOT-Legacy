@@ -18,7 +18,7 @@ class TibiaPlayer(Creature):
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]
         self.gender = 0
-
+        self.knownCreatures = []
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
         stream.uint32(self.clientId()) # Cid
@@ -27,7 +27,7 @@ class TibiaPlayer(Creature):
 
         stream.uint8(0x64) # Map description
         stream.position(self.position)
-        stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14)
+        stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14, self)
 
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
@@ -175,7 +175,7 @@ class TibiaPlayer(Creature):
         stream.position(position)
         removeCreature(self, self.position)
         placeCreature(self, position)
-        stream.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14)
+        stream.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
         
         
         self.position = position
@@ -193,13 +193,13 @@ class TibiaPlayer(Creature):
             stream = TibiaPacket()
         stream.uint8(0x65 + direction)
         if direction is 0:
-            stream.map_description((self.position[0] - 8, self.position[1] - 5, self.position[2]), 18, 1)
+            stream.map_description((self.position[0] - 8, self.position[1] - 5, self.position[2]), 18, 1, self)
         elif direction is 1:
-            stream.map_description((self.position[0] + 8, self.position[1] - 6, self.position[2]), 1, 14)
+            stream.map_description((self.position[0] + 8, self.position[1] - 6, self.position[2]), 1, 14, self)
         elif direction is 2:
-            stream.map_description((self.position[0] - 8, self.position[1] + 6, self.position[2]), 18, 1)
+            stream.map_description((self.position[0] - 8, self.position[1] + 6, self.position[2]), 18, 1, self)
         elif direction is 3:
-            stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14)
+            stream.map_description((self.position[0] - 7, self.position[1] - 6, self.position[2]), 1, 14, self)
 
         if not streamX:
             stream.send(self.client)

@@ -44,9 +44,11 @@ def dummyCreature(object, text):
     monsterData = {"name": "Dummy", "health":1000, "looktype": 59, "lookhead":0, "looklegs":0, "lookbody":0, "lookfeet":0} # A mal
     creature = Creature(monsterData, pos)
     stackpos = getTile(pos).placeCreature(creature)
-    stream = TibiaPacket()
-    stream.addTileCreature(pos, stackpos, creature)
-    stream.sendto(game.engine.getSpectators(pos))
+    list = game.engine.getSpectators(pos)
+    for client in list:
+        stream = TibiaPacket()
+        stream.addTileCreature(pos, stackpos, creature, client.player)
+        stream.send(client)
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)

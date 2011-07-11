@@ -161,7 +161,7 @@ class TibiaPacket:
 
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
-    def map_description(self, position, width, height):
+    def map_description(self, position, width, height, player=None):
         skip = -1
         start = 7
         end = 0
@@ -175,14 +175,14 @@ class TibiaPacket:
 
         # Run the steps by appending the floor
         for z in xrange(start, (end+step), step):
-            skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip)
+            skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip, player)
 
         if skip >= 0:
             self.uint8(skip)
             self.uint8(0xFF)
         
     # Floor Description (the entier floor)
-    def floorDescription(self, position, width, height, offset, skip):
+    def floorDescription(self, position, width, height, offset, skip, player=None):
         from game.map import getTile
         for x in xrange(0, width):
             for y in xrange(0, height):
@@ -192,7 +192,7 @@ class TibiaPacket:
                         self.uint8(skip)
                         self.uint8(0xFF)
                     skip = 0
-                    self.tileDescription(tile)
+                    self.tileDescription(tile, player)
                 else:
                     skip += 1
                     if skip is 0xFF:
@@ -201,14 +201,21 @@ class TibiaPacket:
                         skip = -1
         return skip
 
-    def tileDescription(self, tile):
+    def tileDescription(self, tile, player=None):
         self.uint16(0x00)
         for item in tile.topItems():
             self.item(item)
 
         
         for creature in tile.creatures():
-            self.creature(creature, False)
+            known = False
+            if player and creature is not player:
+                known = creature.cid in player.knownCreatures
+                
+                if not known:
+                    player.knownCreatures.append(creature.cid)
+  
+            self.creature(creature, known)
             
 
         for item in tile.bottomItems():
@@ -276,11 +283,18 @@ class TibiaPacket:
         self.uint8(stackpos)
         self.item(item)
 
-    def addTileCreature(self, pos, stackpos, creature):
+    def addTileCreature(self, pos, stackpos, creature, player=None):
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
-        self.creature(creature, False)
+        known = False
+        if player and creature is not player:
+            known = creature.cid in player.knownCreatures
+                
+            if not known:
+                player.knownCreatures.append(creature.cid)
+ 
+        self.creature(creature, known)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
