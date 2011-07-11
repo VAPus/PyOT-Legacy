@@ -46,7 +46,7 @@ class TibiaPlayer(Creature):
         stream.uint8(0xA2) # Icons
         stream.uint16(0) # TODO: Icons
 
-        stream.magicEffect(self.position, 0x02)
+        stream.magicEffect(self.position, 0x03)
         stream.send(self.client)
         
     def stream_status(self, stream):
@@ -333,6 +333,9 @@ class TibiaPlayer(Creature):
 
     def outOfRange(self):
         self.message("Destination is out of range.", enum.MSG_STATUS_SMALL)
+
+    def notEnoughRoom(self):
+        self.message("There is not enough room.", enum.MSG_STATUS_SMALL)
         
     def refreshOutfit(self):
         stream = TibiaPacket(0x8E)
@@ -551,10 +554,9 @@ class TibiaPlayer(Creature):
                     self.inventory[fromInventoryPos-1] = restoreItem
                 stream.send(self.client)
         else:
-            print fromStackPos
-            print fromPosition
-            print game.map.getTile(fromPosition).things
-            creature = game.map.getTile(fromPosition).getThing(fromStackPos)
+            if game.map.getTile(toPosition).creatures():
+                return self.notEnoughRoom()
+            creature = game.map.getTile(fromPosition).getThing(fromStackPos)    
             if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
                 walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
                 if len(walkPattern) > 1:

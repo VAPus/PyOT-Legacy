@@ -47,7 +47,9 @@ def dummyCreature(player, text):
     list = game.engine.getSpectators(pos)
     for client in list:
         stream = TibiaPacket()
+        stream.magicEffect(pos, 0x03)
         stream.addTileCreature(pos, stackpos, creature, client.player)
+        
         stream.send(client)
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
