@@ -20,8 +20,21 @@ class Container:
         length = len(self.items)
         if length < self.maxSize:
             self.items.appendleft(item)
-        return 0
-        
+            return 0
+        else:
+            return None
+
+    def placeItemRecursive(self, item):
+        length = len(self.items)
+        if length < self.maxSize:
+            self.items.appendleft(item)
+            return 0
+        else:
+            for itemX in self.items:
+                if itemX.containerSize:
+                    if itemX.container.placeItemRecursive(item) == 0:
+                        return itemX
+
     def removeItem(self, item):
         return self.items.remove(item)
         

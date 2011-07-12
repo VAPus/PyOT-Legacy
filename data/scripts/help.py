@@ -73,6 +73,9 @@ def testContainer(player, item, position):
         bag1 = game.item.Item(1987)
         item.container.placeItem(bag1)
     
-    player.openContainer(item)
-    
+    if item.openId == None:
+        player.openContainer(item)
+    else:
+        player.closeContainer(item)
+        
 scriptsystem.get("useItem").reg(1987, testContainer)

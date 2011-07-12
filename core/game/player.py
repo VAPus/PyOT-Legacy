@@ -209,7 +209,26 @@ class TibiaPlayer(Creature):
 
         # Option 4, find any item the player might posess
         if sid:
-            return None # TODO
+            # Inventory
+            bags = []
+            itemFound = None
+            for item in self.inventory:
+                if item.itemId is sid:
+                    itemFound = item
+                    break
+                elif item.containerSize:
+                    bags.append(item)
+                    
+            # Bags
+            for bag in bags.pop(0):
+                for item in bag.items:
+                    if item.itemId is sid:
+                        itemFound = item
+                        break
+                    elif item.containerSize:
+                        bags.append(item)
+                        
+            return itemFound
             
     def findItemWithPlacement(self, position, stackpos=1, sid=None):
         # Option 1, from the map:
@@ -546,7 +565,7 @@ class TibiaPlayer(Creature):
                     walking = [True]
                     game.engine.autoWalkCreature(self, deque(walkPattern), lambda: walking.pop())
                     while walking:
-                            yield waitForDeferred(sleep(0.05))
+                        yield waitForDeferred(sleep(0.05))
                             
                     
                 stream = TibiaPacket()
@@ -634,10 +653,10 @@ class TibiaPlayer(Creature):
                                 if not count:
                                     break
                     if count:
-                        currItem[1].container.placeItem(Item(sid(clientId), count))
+                        containerX = currItem[1].container.placeItemRecursive(Item(sid(clientId), count))
                         
-                    if currItem[1].openId != None:
-                        self.updateContainer(currItem[1])
+                    if (containerX and containerX.openId != None) or (not containerX and currItem[1].openId != None):
+                        self.updateContainer(containerX if containerX else currItem[1])
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
