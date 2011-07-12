@@ -26,8 +26,11 @@ class Container:
         return self.items.remove(item)
         
     def getThing(self, pos):
-        return self.items[pos]
-        
+        try:
+            return self.items[pos]
+        except:
+            return None
+            
     def findSlot(self, item):
         return self.items.index(item)
         
