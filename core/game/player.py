@@ -677,8 +677,20 @@ class TibiaPlayer(Creature):
 
                         if "stackable" in game.item.items[sid(clientId)] and container.container.getThing(toPosition[2]) and container.container.getThing(toPosition[2]).itemId == sid(clientId)  and (container.container.getThing(toPosition[2]).count + count <= 100):
                             container.container.getThing(toPosition[2]).count += count
-                            self.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.getThing(toPosition[2]))
-                        else:
+                            count = 0
+                            stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.getThing(toPosition[2]))
+                        elif "stackable" in game.item.items[sid(clientId)]:
+                            # Find item to stack with:
+                            index = 0
+                            for item in container.container.items:
+                                if item.itemId == sid(clientId):
+                                    total = (item.count + count)
+                                    item.count = min(item.count + count, 100)
+                                    stream.updateContainerItem(toPosition[1]-64, index, item)
+                                    count = total - item.count
+                                    if not count:
+                                        break                                    
+                        if count:
                             citem = Item(sid(clientId), count) if renew else oldItem[1]
                             container.container.placeItem(citem)
                             stream.addContainerItem(toPosition[1]-64, citem)                    

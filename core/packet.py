@@ -286,6 +286,7 @@ class TibiaPacket:
         self.uint8(0x71)
         self.uint8(openId)
         self.uint8(slot)
+        self.item(item)
        
     def removeContainerItem(self, openId, slot):
         self.uint8(0x72)
