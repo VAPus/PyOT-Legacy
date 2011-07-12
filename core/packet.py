@@ -270,7 +270,6 @@ class TibiaPacket:
 
     def removeInventoryItem(self, pos):
         self.uint8(0x79)
-        assert pos < 0
         self.uint8(pos)
         
     def addInventoryItem(self, pos, item):

@@ -57,7 +57,6 @@ class Tile(BaseThing):
         return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
         
     def removeItem(self, item):
-        self.bottomItemCount -= 1
         return self.things.remove(item)
         
     def removeClientItem(self, cid, stackpos=None):
