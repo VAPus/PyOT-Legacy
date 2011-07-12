@@ -546,6 +546,7 @@ class TibiaPlayer(Creature):
         restoreItem = None
         oldItem = None
         renew = False
+        stack = True
         
         isCreature = False
         if clientId < 100:
@@ -609,7 +610,7 @@ class TibiaPlayer(Creature):
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
                         elif oldItem[0] == 2:
-                            stream.addContainerItem(oldItem[2].openId, oldItem[1])
+                            stream.updateContainerItem(oldItem[2].openId, fromPosition[2], oldItem[1])
                     else:
                         if oldItem[0] == 1:
                             self.inventory[fromPosition[1]-1] = None
@@ -625,6 +626,9 @@ class TibiaPlayer(Creature):
                         oldItem[2].container.removeItem(oldItem[1])
                         stream.removeContainerItem(oldItem[2].openId, fromPosition[2])
                 
+                if toPosition[1] == fromPosition[1]:
+                    stack = False
+                    
                 stream.send(self.client)
             if toMap:
                 stream = TibiaPacket()
@@ -649,7 +653,7 @@ class TibiaPlayer(Creature):
             else:
                 
                 if currItem and currItem[1].containerSize:
-                    if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                    if stack and "stackable" in game.item.items[sid(clientId)] and count < 100:
                         for item in currItem[1].container.items:
                             if item.itemId == sid(clientId) and item.count < 100:
                                 total = (item.count + count)
@@ -675,11 +679,11 @@ class TibiaPlayer(Creature):
                     else:
                         container = self.getContainer(toPosition[1]-64)
 
-                        if "stackable" in game.item.items[sid(clientId)] and container.container.getThing(toPosition[2]) and container.container.getThing(toPosition[2]).itemId == sid(clientId)  and (container.container.getThing(toPosition[2]).count + count <= 100):
+                        if stack and "stackable" in game.item.items[sid(clientId)] and container.container.getThing(toPosition[2]) and container.container.getThing(toPosition[2]).itemId == sid(clientId)  and (container.container.getThing(toPosition[2]).count + count <= 100):
                             container.container.getThing(toPosition[2]).count += count
                             count = 0
                             stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.getThing(toPosition[2]))
-                        elif "stackable" in game.item.items[sid(clientId)]:
+                        elif stack and "stackable" in game.item.items[sid(clientId)]:
                             # Find item to stack with:
                             index = 0
                             for item in container.container.items:
