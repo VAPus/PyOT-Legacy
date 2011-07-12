@@ -342,7 +342,7 @@ class TibiaPlayer(Creature):
         stream.position(self.position)
         stream.string(message)
         stream.send(self.client)
-    
+
     def outfitWindow(self):
         stream = TibiaPacket(0xC8)
         
@@ -435,6 +435,7 @@ class TibiaPlayer(Creature):
                 container.openId = len(self.openContainers)
             self.openContainers.append(container)
             
+            print container.openId
             stream.uint8(container.openId)
             
             stream.uint16(container.cid)
@@ -462,7 +463,21 @@ class TibiaPlayer(Creature):
             if container.openId is openId:
                 self.closeContainer(container)
                 break
+
+    def arrowUpContainer(self, openId):
+        bagFound = None
+        for bag in self.openContainers:
+            if bag.openId == openId:
+                bagFound = bag
+                break
                 
+        if bagFound.parent:
+            bagFound.parent.openId = bag.openId
+            bagFound.openId = None
+            self.openContainers.remove(bagFound)
+            self.updateContainer(bagFound.parent, True if bagFound.parent.parent else False)
+
+                    
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -772,4 +787,5 @@ class TibiaPlayer(Creature):
         
         if item:
             game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
+            
         

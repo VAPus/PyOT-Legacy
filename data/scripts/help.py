@@ -78,18 +78,23 @@ def testContainer(player, item, position, index):
     if item.openId == None:
         # Open a bag inside a bag?
         open = True
+        bagFound = None
         for bag in player.openContainers:
             if bag.openId == index:
-                # Virtual close
-                player.openContainers[index].openId = None
+                bagFound = bag
+        
+        if bagFound:
+            # Virtual close
+            player.openContainers[index].openId = None
                 
-                # Virtual switch
-                item.openId = index
-                player.openContainers[index] = item
+            # Virtual switch
+            item.openId = index
+            item.parent = player.openContainers[index]
+            player.openContainers[index] = item
                 
-                # Update the container
-                player.updateContainer(item)
-                open = False
+            # Update the container
+            player.updateContainer(item, parent=1)
+            open = False
         
         if open:
             # Open a new one
