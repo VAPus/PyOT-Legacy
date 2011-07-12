@@ -79,6 +79,22 @@ def calculateWalkPattern(fromPos, to, skipFields=None):
         elif fromPos[1] < to[1]:
             for x in xrange(0, to[1]-fromPos[1]):
                 pattern.append(2)
+                
+    # Fix for diagonal things like items
+    if len(pattern) > 2:
+        last, last2 = pattern[len(pattern)-2:len(pattern)]
+        if abs(last-last2) == 1:
+            del pattern[len(pattern)-2:len(pattern)]
+            if last == 0: # last = north, last2 must be east/west
+                last = 6 + (0 if last2 == 3 else 1)
+            elif last == 2: # last = south, last2 must be east/west
+                last = 4 + (0 if last2 == 3 else 1)
+                
+            elif last == 1: # last = east, last2 must be 
+                last = 1 + (6 if last2 == 0 else 4)
+            elif last == 3: # last = west, last2 must be 
+                last = 0 + (6 if last2 == 0 else 4)
+            pattern.append(last)
     if pattern and skipFields != 0:
         pattern = pattern[:skipFields]
         
