@@ -7,6 +7,7 @@ from collections import deque
 import game.scriptsystem
 from game.item import Item
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
+from twisted.internet import reactor
 from game.creature import Creature
 import copy
 import game.resource
@@ -498,7 +499,8 @@ class TibiaPlayer(Creature):
                 continue # We don't support them
                 
         game.engine.autoWalkCreature(self, walkPattern)
-     
+    
+    @deferredGenerator
     def handleMoveItem(self, packet):
         from game.item import Item, sid, items
         fromPosition = packet.position()
@@ -530,9 +532,23 @@ class TibiaPlayer(Creature):
             print "--h--"
             print currItem
             if currItem and not (currItem[1].stackable or currItem[1].containerSize):
-                return self.notPossible()
-
+                self.notPossible()
+                return
             if fromMap:
+                
+                walkPattern = game.engine.calculateWalkPattern(self.position, fromPosition, -1)
+                if len(walkPattern):
+                    def sleep(seconds):
+                        d = Deferred()
+                        reactor.callLater(seconds, d.callback, seconds)
+                        return d
+                    
+                    walking = [True]
+                    game.engine.autoWalkCreature(self, deque(walkPattern), lambda: walking.pop())
+                    while walking:
+                            yield waitForDeferred(sleep(0.05))
+                            
+                    
                 stream = TibiaPacket()
                 oldItem = self.findItemWithPlacement(fromPosition)  
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
@@ -648,7 +664,9 @@ class TibiaPlayer(Creature):
                     stream.send(self.client)
         else:
             if game.map.getTile(toPosition).creatures():
-                return self.notEnoughRoom()
+                self.notEnoughRoom()
+                return
+                
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)    
             if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
                 walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
