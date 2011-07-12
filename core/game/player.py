@@ -745,13 +745,14 @@ class TibiaPlayer(Creature):
             self.outfitWindow()
             
     def handleUseItem(self, packet):
+        game.engine.explainPacket(packet)
         position = packet.position()
         print position
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
-        junk = packet.uint8() # To be supported, i guess
+        index = packet.uint8()
         item = self.findItem(position, stackpos)
         
         if item:
-            game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position)
+            game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
         
