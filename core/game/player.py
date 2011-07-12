@@ -476,7 +476,65 @@ class TibiaPlayer(Creature):
             self.openContainers.remove(bagFound)
             self.updateContainer(bagFound.parent, True if bagFound.parent.parent else False)
 
+    # Item to container
+    def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
+        stream = streamX
+        if not streamX:
+            stream = TibiaPacket()
+        
+        if not count:
+            count = item.count
+        
+        # Find item to stack with
+        if stack and item.stackable and count < 100:
+            slot = 0
+            bags = [container]
+            for bag in bags:
+                for itemX in container.container.items:
+                    if itemX.itemId == item.itemId and itemX.count < 100:
+                        total = itemX.count + count
+                        itemX.count = min(itemX.count + count, 100)
+                        count = total - itemX.count
+                        
+                        # Is it a open container, if so, send item update
+                        if container in self.openContainers:
+                            stream.updateContainerItem(container.openId, slot, itemX)
+                            
+                        if not count:
+                            break
                     
+                    elif recursive and itemX.containerSize:
+                        bags.append(itemX) # Found a container for recursive
+                    
+                    slot += 1
+                
+                if not count:
+                    break
+                    
+                slot = 0
+            
+        if count:
+            # Add item
+            if recursive:
+                info = container.container.placeItemRecursive(item)
+            else:
+                info = container.container.placeItem(item)
+                
+            if info == None:
+                return # Not possible
+                
+            if recursive and info and info.openId != None:
+                stream.addContainerItem(info.openId, item)
+                    
+            else:
+                if container.openId != None:
+                    stream.addContainerItem(container.openId, item)
+        
+        if not streamX:
+            stream.send(self.client)
+            
+        return True
+        
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -660,20 +718,8 @@ class TibiaPlayer(Creature):
             else:
                 
                 if currItem and currItem[1].containerSize:
-                    if stack and "stackable" in game.item.items[sid(clientId)] and count < 100:
-                        for item in currItem[1].container.items:
-                            if item.itemId == sid(clientId) and item.count < 100:
-                                total = (item.count + count)
-                                item.count = min(item.count + count, 100)
-                                count = total - item.count
-                                if not count:
-                                    break
-                    containerX = None
-                    if count:
-                        containerX = currItem[1].container.placeItemRecursive(Item(sid(clientId), count))
-                        
-                    if (containerX and containerX.openId != None) or (not containerX and currItem[1].openId != None):
-                        self.updateContainer(containerX if containerX else currItem[1])
+                    ret = self.itemToContainer(currItem[1], oldItem[1], count=count, stack=stack)
+
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
@@ -685,25 +731,7 @@ class TibiaPlayer(Creature):
                     else:
                         container = self.getContainer(toPosition[1]-64)
 
-                        if stack and "stackable" in game.item.items[sid(clientId)] and container.container.getThing(toPosition[2]) and container.container.getThing(toPosition[2]).itemId == sid(clientId)  and (container.container.getThing(toPosition[2]).count + count <= 100):
-                            container.container.getThing(toPosition[2]).count += count
-                            count = 0
-                            stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.getThing(toPosition[2]))
-                        elif stack and "stackable" in game.item.items[sid(clientId)]:
-                            # Find item to stack with:
-                            index = 0
-                            for item in container.container.items:
-                                if item.itemId == sid(clientId):
-                                    total = (item.count + count)
-                                    item.count = min(item.count + count, 100)
-                                    stream.updateContainerItem(toPosition[1]-64, index, item)
-                                    count = total - item.count
-                                    if not count:
-                                        break                                    
-                        if count:
-                            citem = Item(sid(clientId), count) if renew else oldItem[1]
-                            container.container.placeItem(citem)
-                            stream.addContainerItem(toPosition[1]-64, citem)                    
+                        self.itemToContainer(container, oldItem[1], count=count, stack=stack, streamX=stream)                  
                     if not fromMap and restoreItem:
                         stream.addInventoryItem(fromPosition[1], restoreItem[1])
                         self.inventory[fromPosition[1]-1] = restoreItem[1]

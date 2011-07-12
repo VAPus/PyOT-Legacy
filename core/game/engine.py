@@ -114,7 +114,7 @@ def transformItem(item, transformTo, pos, stack):
     stream.updateTileItem(pos, stack, cid(transformTo))
     item.itemId = transformTo
     stream.sendto(getSpectators(pos))
-    
+                
 # The development debug system
 def explainPacket(packet):
     currPos = packet.pos
