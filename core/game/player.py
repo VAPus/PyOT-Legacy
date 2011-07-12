@@ -239,7 +239,7 @@ class TibiaPlayer(Creature):
         # Option 1, from the map:
         if position:
             if position[0] != 0xFFFF:
-                return (0, game.map.getTile(position).getThing(stackpos), game.map.getTile(position)) if game.map.getTile(position).getThing(stackpos) else None
+                return (0, game.map.getTile(position).getThing(stackpos), game.map.getTile(position)) if isinstance(game.map.getTile(position).getThing(stackpos), game.item.Item) else None
             
             # Option 2, the inventory
             elif position[1] < 64:
