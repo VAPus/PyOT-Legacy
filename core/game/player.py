@@ -556,8 +556,8 @@ class TibiaPlayer(Creature):
             print "--h--"
             print currItem
             if currItem and not (currItem[1].stackable or currItem[1].containerSize):
-                self.notPossible()
-                return
+                currItem = None
+                
             if fromMap:
                 
                 walkPattern = game.engine.calculateWalkPattern(self.position, fromPosition, -1)
