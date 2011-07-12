@@ -435,7 +435,6 @@ class TibiaPlayer(Creature):
                 container.openId = len(self.openContainers)
             self.openContainers.append(container)
             
-            print container.openId
             stream.uint8(container.openId)
             
             stream.uint16(container.cid)
@@ -595,11 +594,9 @@ class TibiaPlayer(Creature):
                     else:
                         stream.removeTileItem(fromPosition, fromStackPos)
                         game.map.getTile(fromPosition).removeItem(oldItem[1])
-                        print "taking stackpos = %d" % fromStackPos
                 else:
                     stream.removeTileItem(fromPosition, fromStackPos)
                     game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
-                    print "taking stackpos = %d" % fromStackPos
                 stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
@@ -655,7 +652,6 @@ class TibiaPlayer(Creature):
                     
                 toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                 stream.addTileItem(toPosition, toStackPos, newItem )
-                print "Sending stackpos = %d" % toStackPos
                 
                 if not renew and newItem.containerSize and newItem.openId is not None:
                     self.closeContainer(newItem)
@@ -681,7 +677,6 @@ class TibiaPlayer(Creature):
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
-                        print game.item.items[sid(clientId)]
                         if "stackable" in game.item.items[sid(clientId)] and self.inventory[toPosition[1]-1] and self.inventory[toPosition[1]-1].itemId == sid(clientId) and (self.inventory[toPosition[1]-1].count + count <= 100):
                             self.inventory[toPosition[1]-1].count += count
                         else:       
@@ -710,7 +705,6 @@ class TibiaPlayer(Creature):
                             container.container.placeItem(citem)
                             stream.addContainerItem(toPosition[1]-64, citem)                    
                     if not fromMap and restoreItem:
-                        print restoreItem
                         stream.addInventoryItem(fromPosition[1], restoreItem[1])
                         self.inventory[fromPosition[1]-1] = restoreItem[1]
                     stream.send(self.client)
@@ -740,8 +734,6 @@ class TibiaPlayer(Creature):
         stackpos = packet.uint8()
         itemId = sid(clientId)
         
-        
-        print itemId
         if not itemId:
             return self.notPossible()
         item = self.findItem(position, stackpos)    
@@ -779,7 +771,7 @@ class TibiaPlayer(Creature):
     def handleUseItem(self, packet):
         game.engine.explainPacket(packet)
         position = packet.position()
-        print position
+
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         index = packet.uint8()
