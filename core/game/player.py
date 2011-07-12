@@ -540,8 +540,6 @@ class TibiaPlayer(Creature):
         if toPosition[0] != 0xFFFF:
             toMap = True
            
-        print fromPosition
-        print toPosition
         count = packet.uint8()
         restoreItem = None
         oldItem = None
@@ -554,8 +552,7 @@ class TibiaPlayer(Creature):
         if not isCreature:
             # Remove item:
             currItem = self.findItemWithPlacement(toPosition)
-            print "--h--"
-            print currItem
+
             if currItem and not (currItem[1].stackable or currItem[1].containerSize):
                 currItem = None
                 
@@ -575,9 +572,8 @@ class TibiaPlayer(Creature):
                             
                     
                 stream = TibiaPacket()
-                oldItem = self.findItemWithPlacement(fromPosition)  
+                oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)  
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
-                    
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
