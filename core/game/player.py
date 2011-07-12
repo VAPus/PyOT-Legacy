@@ -574,10 +574,10 @@ class TibiaPlayer(Creature):
                     
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
-                        stream[1].updateTileItem(fromPosition, fromStackPos, oldItem)
+                        stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
                     else:
-                        stream[1].removeTileItem(fromPosition, fromStackPos)
-                        game.map.getTile(fromPosition).removeItem(oldItem)
+                        stream.removeTileItem(fromPosition, fromStackPos)
+                        game.map.getTile(fromPosition).removeItem(oldItem[1])
                         print "taking stackpos = %d" % fromStackPos
                 else:
                     stream.removeTileItem(fromPosition, fromStackPos)
@@ -652,6 +652,7 @@ class TibiaPlayer(Creature):
                                 count = total - item.count
                                 if not count:
                                     break
+                    containerX = None
                     if count:
                         containerX = currItem[1].container.placeItemRecursive(Item(sid(clientId), count))
                         
