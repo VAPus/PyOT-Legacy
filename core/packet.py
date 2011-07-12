@@ -342,10 +342,10 @@ class TibiaPacket:
         if stream.xtea:
             self.data = otcrypto.encryptXTEA(self.data, stream.xtea)
 
-        adler = adler32(self.data)
+        adler = adler32(self.data) & 0xffffffff
         # Fix a bug in Python2?
-        if adler < 0:
-             adler = adler & 0xffffffff
+        #if adler < 0:
+        #     adler = adler
         buffer = struct.pack("<HI", len(self.data)+4, adler)
         buffer += self.data
 
@@ -356,9 +356,9 @@ class TibiaPacket:
         lenCache = 0
         for client in list:
              data = otcrypto.encryptXTEA(self.data, client.xtea)
-             adler = adler32(data)
-             if adler < 0:
-                 adler = adler & 0xffffffff
+             adler = adler32(data) & 0xffffffff
+             #if adler < 0:
+             #    adler = adler
              
              if not lenCache:
                  lenCache = len(data)+4
