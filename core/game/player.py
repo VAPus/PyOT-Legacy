@@ -401,12 +401,13 @@ class TibiaPlayer(Creature):
             self.refreshOutfit()
     
     def updateContainer(self, container, parent=False, update=True):
-        self.openContainer(self, container, parent, update)
+        self.openContainer(container, parent, update)
         
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
             stream = TibiaPacket(0x6E)
-            container.openId = len(self.openContainers)
+            if not update:
+                container.openId = len(self.openContainers)
             self.openContainers.append(container)
             
             stream.uint8(container.openId)
@@ -428,6 +429,7 @@ class TibiaPlayer(Creature):
             stream = TibiaPacket(0x6F)
             stream.uint8(container.openId)
             self.openContainers.remove(container)
+            container.openId = None
             stream.send(self.client)
 
     def closeContainerId(self, openId):
@@ -525,29 +527,27 @@ class TibiaPlayer(Creature):
         if not isCreature:
             # Remove item:
             currItem = self.findItemWithPlacement(toPosition)
+            print "--h--"
             print currItem
             if currItem and not (currItem[1].stackable or currItem[1].containerSize):
                 return self.notPossible()
+
             if fromMap:
                 stream = TibiaPacket()
-
-                if currItem and not (currItem[1].stackable or currItem[1].containerSize):
-                    return self.notPossible()
-                    
+                oldItem = self.findItemWithPlacement(fromPosition)  
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
-                    oldItem = game.map.getTile(fromPosition).getThing(fromStackPos)
-                    oldItem.reduceCount(count)
-                    if oldItem.count:
-                        stream.updateTileItem(fromPosition, fromStackPos, oldItem)
+                    
+                    oldItem[1].reduceCount(count)
+                    if oldItem[1].count:
+                        stream[1].updateTileItem(fromPosition, fromStackPos, oldItem)
                     else:
-                        stream.removeTileItem(fromPosition, fromStackPos)
-                        game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
+                        stream[1].removeTileItem(fromPosition, fromStackPos)
+                        game.map.getTile(fromPosition).removeItem(oldItem)
                         print "taking stackpos = %d" % fromStackPos
                 else:
-                    return self.notPossible()
-                    """stream.removeTileItem(fromPosition, fromStackPos)
+                    stream.removeTileItem(fromPosition, fromStackPos)
                     game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
-                    print "taking stackpos = %d" % fromStackPos"""
+                    print "taking stackpos = %d" % fromStackPos
                 stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
@@ -601,13 +601,27 @@ class TibiaPlayer(Creature):
                 toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                 stream.addTileItem(toPosition, toStackPos, newItem )
                 print "Sending stackpos = %d" % toStackPos
+                
+                if not renew and newItem.containerSize and newItem.openId is not None:
+                    self.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
 
             else:
                 
-                
                 if currItem and currItem[1].containerSize:
-                    currItem[1].container.placeItem(Item(sid(clientId), count))
+                    if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                        for item in currItem[1].container.items:
+                            if item.itemId == sid(clientId) and item.count < 100:
+                                total = (item.count + count)
+                                item.count = min(item.count + count, 100)
+                                count = total - item.count
+                                if not count:
+                                    break
+                    if count:
+                        currItem[1].container.placeItem(Item(sid(clientId), count))
+                        
+                    if currItem[1].openId != None:
+                        self.updateContainer(currItem[1])
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
@@ -615,16 +629,16 @@ class TibiaPlayer(Creature):
                         if "stackable" in game.item.items[sid(clientId)] and self.inventory[toPosition[1]-1] and self.inventory[toPosition[1]-1].itemId == sid(clientId) and (self.inventory[toPosition[1]-1].count + count <= 100):
                             self.inventory[toPosition[1]-1].count += count
                         else:       
-                            self.inventory[toPosition[1]-1] = Item(sid(clientId), count)
+                            self.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
                         stream.addInventoryItem(toPosition[1], self.inventory[toPosition[1]-1])
                     else:
                         container = self.getContainer(toPosition[1]-64)
-                        
-                        if "stackable" in game.item.items[sid(clientId)] and container.getThing(toPosition[2]) and container.getThing(toPosition[2]) == sid(clientId)  and (container.getThing(toPosition[2]).count + count <= 100):
-                            container.getThing(toPosition[2]).count += count
-                            self.updateContainerItem(toPosition[1]-64, toPosition[2], container.getThing(toPosition[2]))
+
+                        if "stackable" in game.item.items[sid(clientId)] and container.container.getThing(toPosition[2]) and container.container.getThing(toPosition[2]).itemId == sid(clientId)  and (container.container.getThing(toPosition[2]).count + count <= 100):
+                            container.container.getThing(toPosition[2]).count += count
+                            self.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.getThing(toPosition[2]))
                         else:
-                            citem = Item(sid(clientId), count)
+                            citem = Item(sid(clientId), count) if renew else oldItem[1]
                             container.container.placeItem(citem)
                             stream.addContainerItem(toPosition[1]-64, citem)                    
                     if not fromMap and restoreItem:

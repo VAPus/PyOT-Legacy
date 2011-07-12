@@ -1,7 +1,7 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
 import sql, cjson
 from twisted.python import log
-
+from collections import deque
 items = {}
 reverseItems = {}
 
@@ -12,15 +12,15 @@ class BaseThing:
 ### Container class ###
 class Container:
     def __init__(self, size):
-        self.items = []
+        self.items = deque()
         self.maxSize = size
         self.openId = None
         
     def placeItem(self, item):
         length = len(self.items)
         if length < self.maxSize:
-            self.items.append(item)
-        return length-2
+            self.items.appendleft(item)
+        return 0
         
     def removeItem(self, item):
         return self.items.remove(item)
