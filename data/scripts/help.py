@@ -77,6 +77,7 @@ def testContainer(player, item, position, index):
     
     if item.openId == None:
         # Open a bag inside a bag?
+        open = True
         for bag in player.openContainers:
             if bag.openId == index:
                 # Virtual close
@@ -88,11 +89,15 @@ def testContainer(player, item, position, index):
                 
                 # Update the container
                 player.updateContainer(item)
-                return
+                open = False
         
-        # Open a new one
-        player.openContainer(item)
+        if open:
+            # Open a new one
+            player.openContainer(item)
 
+        # Opened from ground, close it on next step :)
+        if position[0] != 0xFFFF:
+            player.scripts["onNextStep"].append(lambda: player.closeContainer(item))
     else:
         player.closeContainer(item)
         

@@ -145,7 +145,12 @@ class TibiaPlayer(Creature):
         
         self.position = position
         
-        
+        if len(self.scripts["onNextStep"]):
+            for script in self.scripts["onNextStep"]:
+                script()
+                self.scripts["onNextStep"].remove(script)
+                
+            
         # Send to everyone        
         stream.sendto(game.engine.getSpectators(position)) 
         

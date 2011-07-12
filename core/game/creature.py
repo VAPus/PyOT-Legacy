@@ -10,7 +10,7 @@ class Creature:
         self.position = position
         self.stackpos = 1
         self.speed = 0x0032
-        self.scripts = {}
+        self.scripts = {"onWalk":None, "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
         self.mount = 0
@@ -73,7 +73,9 @@ class Creature:
         
         self.position = position
         
-        
+        if self.scripts["onWalk"]:
+            self.scripts["onWalk"]()
+            del self.scripts["onWalk"]
         # Send to everyone        
         stream.sendto(getSpectators(position)) 
         
