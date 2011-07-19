@@ -1,6 +1,7 @@
 from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature
+import threading
 class Creature:
     idsTaken = 0
     def __init__(self, data, position, cid=None):
@@ -16,6 +17,8 @@ class Creature:
         self.mount = 0
         self.mounted = 0
         self.addon = 0
+        self.action = None
+        self.actionLock = threading.Lock()
     def name(self):
         return self.data["name"]
 
@@ -80,6 +83,13 @@ class Creature:
         stream.sendto(getSpectators(position)) 
         
         return True # Required for auto walkings
+        
+    def stopAction(self):
+        try:
+            self.action.cancel()
+        except:
+            pass
+        del self.action
 class Monster(Creature):
     def __init__(self, data, position, cid=None):
         Creature.__init__(self, data, position, cid)

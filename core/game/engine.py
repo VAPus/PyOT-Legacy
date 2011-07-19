@@ -20,15 +20,29 @@ def loader(timer):
     # This is called once we are done with all loading, we got to use deferred on all future rutines too
     def printer(d, timer):
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
+        
     d.addCallback(printer, timer)
 
+# The action decorator :)
+def action(forced=False, delay=0):
+    def decor(f):
+        def new_f(creature, *args, **argw):
+            creature.actionLock.acquire()
+            if creature.action: # + forced
+                creature.action.cancel()
+            else:
+                pass # TODO
+            
+            # (forced actions are released first when their done
+            f(creature, *args, **argw)
+            if not forced:
+                creature.actionLock.release()
+        return new_f
+    return decor
 # First order of buisness, the autoWalker
-def autoWalkCreature(creature, walkPatterns, callback=None):
-    if creature.clientId() in walkerEvents: # The walker locks
-        walkerEvents[creature.clientId()].cancel()
-        #creature.cancelMove(creature.direction)
-        
-    walkerEvents[creature.clientId()] = reactor.callLater(0, handleAutoWalking, creature, walkPatterns, callback)
+@action()
+def autoWalkCreature(creature, walkPatterns, callback=None): 
+    creature.action = reactor.callLater(0, handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
@@ -41,9 +55,12 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
     if ret and len(walkPatterns):
-        walkerEvents[creature.clientId()] = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+        creature.actionLock.acquire()
+        creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+        creature.actionLock.release()
     else:
-        del walkerEvents[creature.clientId()]
+        del creature.action
+        
     if callback and ret and not len(walkPatterns):    
         reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)
 

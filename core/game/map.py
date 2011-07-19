@@ -1,6 +1,6 @@
 from game.item import BaseThing
 from twisted.internet import threads
-import cjson, zlib
+import otjson, zlib
 import game.item
 
 def getTile(pos):
@@ -142,7 +142,7 @@ def load(sectorX, sectorY):
     sectors[sectorX][sectorY] = True
     
     with open("data/map/map_%d_%d.sec" % (sectorX, sectorY), "rb") as f:
-        mapy = cjson.decode(zlib.decompress(f.read()))
+        mapy = otjson.loads(zlib.decompress(f.read()))
     
     for xx in mapy:
         x = int(xx)

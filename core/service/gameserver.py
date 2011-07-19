@@ -161,6 +161,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType is 0xD4: # Set mount status
             self.player.handleSetMounted(packet)
             
+        elif packetType is 0xBE: # Stop action
+            self.player.stopAction()
+            
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()

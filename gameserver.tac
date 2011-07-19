@@ -2,7 +2,8 @@
 
 import config
 import sys
-sys.path.append('core')
+
+sys.path.insert(1, 'core')
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
@@ -21,11 +22,12 @@ elif config.reactorStyle is "iocp" or (sys.platform == "win32" and config.reacto
     from twisted.internet import iocpreactor
     iocpreactor.install()
 
-else: # This is the default reactor, "select"
+elif not hasattr(sys, 'pypy_translation_info'): # This is the default reactor, "select"
     from twisted.internet import selectreactor
     selectreactor.install()
 
 from twisted.internet import reactor
+
 
 #### Suggest reactor thread pool size ####
 reactor.suggestThreadPoolSize(config.suggestedGameServerThreadPoolSize)

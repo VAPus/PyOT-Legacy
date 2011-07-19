@@ -107,3 +107,20 @@ def testContainer(player, item, position, index):
         player.closeContainer(item)
         
 scriptsystem.get("useItem").reg(1987, testContainer)
+
+
+def makeitem(player, text):
+     try:
+        text = int(text)
+        if text >= 1000:
+            newitem = game.item.Item(text, 1)
+            bag = player.inventory[2]
+            player.itemToContainer(bag, newitem)
+        else:
+            raise NameError()
+     except:
+         player.message("Invalid Item!")
+         
+     return False
+
+scriptsystem.get("talkactionFirstWord").reg('i', makeitem)

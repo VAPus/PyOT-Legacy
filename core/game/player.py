@@ -483,7 +483,7 @@ class TibiaPlayer(Creature):
             stream = TibiaPacket()
         
         if not count:
-            count = item.count
+            count = 1 if item.count == None else item.count
         
         # Find item to stack with
         if stack and item.stackable and count < 100:
@@ -534,7 +534,25 @@ class TibiaPlayer(Creature):
             stream.send(self.client)
             
         return True
+
+    # Item To inventory slot
+    def itemToInventory(self, item, slot=None, stack=True):
+        if slot == None:
+            slot = item.slotId()
+            if not slot:
+                return False
         
+        if stack and item.stackable and item.itemId == self.inventory[slot-1].itemId and self.inventory[slot-1].count+item.count <= 100:
+            self.inventory[slot-1].count += item.count
+        else:
+            self.inventory[slot-1] = item
+            
+        stream = TibiaPacket()
+        stream.addInventoryItem(slot, self.inventory[slot-1])
+        stream.send(self.client)
+        
+        return True
+              
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -644,7 +662,13 @@ class TibiaPlayer(Creature):
                             
                     
                 stream = TibiaPacket()
-                oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)  
+                oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)
+                
+                # Before we remove it, can it be placed there?
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != oldItem[1].slotId():
+                    self.notPossible()
+                    return
+                    
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
@@ -658,17 +682,15 @@ class TibiaPlayer(Creature):
                 stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
-
                 stream = TibiaPacket()
-                """if not toMap and restoreItem:
-                    if restoreItem[0] == 1:
-                        stream.removeInventoryItem(toPosition[1])
-                        self.inventory[toPosition[1]-1] = None
-                    elif restoreItem[0] == 2:
-                        stream.removeContainerItem(restoreItem[2], toPosition[2])
-                        restoreItem[2].removeItem(restoreItem[1])"""
                         
                 oldItem = self.findItemWithPlacement(fromPosition)
+                
+                # Before we remove it, can it be placed there?
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != oldItem[1].slotId():
+                    self.notPossible()
+                    return
+                    
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
                     renew = True
                     oldItem[1].reduceCount(count)

@@ -1,7 +1,9 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
-import sql, cjson
+import sql, otjson
 from twisted.python import log
 from collections import deque
+import game.enum
+
 items = {}
 reverseItems = {}
 
@@ -77,6 +79,34 @@ class Item:
         self.count -= count
         if self.count <= 0:
             pass # TODO: remove
+            
+    def slotId(self):
+        if not self.slotType:
+            return None
+        else:
+            if self.slotType == "head":
+                return game.enum.SLOT_HEAD
+            elif self.slotType == "necklace":
+                return game.enum.SLOT_NECKLACE
+            elif self.slotType == "backpack":
+                return game.enum.SLOT_BACKPACK
+            elif self.slotType == "body":
+                return game.enum.SLOT_ARMOR
+            elif self.slotType == "two-handed":
+                return game.enum.SLOT_LEFT
+            elif self.slotType == "legs":
+                return game.enum.SLOT_LEGS
+            elif self.slotType == "feet":
+                return game.enum.SLOT_FEET
+            elif self.slotType == "ring":
+                return game.enum.SLOT_RING
+            elif self.slotType == "ammo":
+                return game.enum.SLOT_AMMO
+            else:
+                if self.weaponType:
+                    return game.enum.SLOT_LEFT if self.weaponType in ('sword', 'rod', 'ward') else game.enum.SLOT_RIGHT
+                else:
+                    return None
 def cid(itemid):
     try:
         return items[itemid]["cid"]
@@ -93,22 +123,37 @@ def sid(itemid):
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")
+    
+    global items
+    global reverseItems
+
+    # Async SQL
     d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,attributes,plural,article FROM items"))
     yield d
-    
+       
+    # Make two new values while we are loading
+    loadItems = {}
+    reverseLoadItems = {}
+
     result = d.getResult()
+
     for item in result:
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
         if item["attributes"]:
-            items[item["sid"]] = cjson.decode(item["attributes"])
+            loadItems[item["sid"]] = otjson.loads(item["attributes"])
         else:
-            items[item["sid"]] = {}
-        items[item["sid"]]["name"] = item["name"]
+            loadItems[item["sid"]] = {}
+        loadItems[item["sid"]]["name"] = item["name"]
         if item["plural"]:
-            items[item["sid"]]["plural"] = item["plural"]
-        items[item["sid"]]["article"] = item["article"] or None
+            loadItems[item["sid"]]["plural"] = item["plural"]
+        loadItems[item["sid"]]["article"] = item["article"] or None
         
-        items[item["sid"]]["cid"] = item["cid"]
-        reverseItems[item["cid"]] = item["sid"]
+        loadItems[item["sid"]]["cid"] = item["cid"]
+        reverseLoadItems[item["cid"]] = item["sid"]
+
+    # Replace the existing items
+    items = loadItems
+    reverseItems = reverseLoadItems
+
     log.msg("%d Items loaded" % len(items))
