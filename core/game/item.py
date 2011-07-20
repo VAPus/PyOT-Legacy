@@ -127,14 +127,14 @@ def loadItems():
     global items
     global reverseItems
 
-    # Async SQL
+    # Async SQL (it's funny isn't it?)
     d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,plural,article,subtypes,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,charges FROM items"))
+    d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
-    result = d.getResult()
+    yield d2
 
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
-    yield d
-    result2 = d.getResult()
+    result = d.getResult()
+    result2 = d2.getResult()
     
     # Make two new values while we are loading
     loadItems = {}
@@ -144,6 +144,7 @@ def loadItems():
     for item in result:
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
+        item["speed"] = int(item["speed"]) # No long
         for key in item:
             if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','charges'):
                 item[key] = bool(item[key])
@@ -152,13 +153,8 @@ def loadItems():
         reverseLoadItems[item["cid"]] = item["sid"]
 
     for data in result2:
-        try:
-            if data["key"] in ('allowpickupable', 'blockprojectile', 'writeable', 'stopduration', 'showduration', 'showcharges', 'showattributes', 'invisible', 'readable'):
-                loadItems[data["sid"]][data["key"]] = bool(int(data["value"]))
-            else:
-                loadItems[data["sid"]][data["key"]] = int(data["value"])
-        except:
-            loadItems[data["sid"]][data["key"]] = data["value"]
+        loadItems[int(data["sid"])][data["key"]] = game.engine.autoCastValue(data["value"])
+ 
     # Replace the existing items
     items = loadItems
     reverseItems = reverseLoadItems

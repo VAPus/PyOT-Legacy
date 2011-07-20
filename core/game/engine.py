@@ -154,6 +154,23 @@ def explainPacket(packet):
     packet.pos = 0
     log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
     packet.pos = currPos
+
+# The auto type caster
+def autoCastValue(data): # We get a string, then find the simplest possible value for it
+    if not data:
+        return None
+
+    try:
+        data = int(data)
+        if data == 1:
+            return True
+        elif data == 0:
+            return False
+        else:
+            return data
+
+    except:
+        return data
 # Last order of buisness, the script system
 import game.scriptsystem
 from data.scripts import *

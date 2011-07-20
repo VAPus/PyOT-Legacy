@@ -130,8 +130,12 @@ lastRealItem = None
 if True:
     while otb.pos < otb.length:
         if otb.uint8() is not 0xFE: # this ain't suppose to happend, but if you fuck the file up, then sure :p
-            print "DEBUG: Not 0xFE opening, next byte is: %d" % otb.peekUint8()
-            continue
+            b = otb.peekUint8()
+            if b:
+                print "DEBUG: Not 0xFE opening, next byte is: %d" % b
+                continue
+            else:
+                break
         item = Item()
         item.type = otb.uint8()
         flags = otb.uint32()
