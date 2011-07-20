@@ -120,7 +120,7 @@ if otb.uint8() == 0xFE:
         minorVersion = otb.uint32()
         buildVersion = otb.uint32()
         
-        print "-- OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
+        #print "-- OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
 # Cheat the position to avoid junk
 otb.pos = 13 + dataLen
 items = []
@@ -137,39 +137,39 @@ if True:
         flags = otb.uint32()
 
         if (flags & 1) == 1:
-            item.flags["solid"] = True
+            item.flags["solid"] = 1
         if (flags & 2) == 2:
-            item.flags["blockprojectile"] = True
+            item.flags["blockprojectile"] = 1
         if (flags & 4) == 4:
-            item.flags["blockpath"] = True
+            item.flags["blockpath"] = 1
         if (flags & 8) == 8:
-            item.flags["hasheight"] = True
+            item.flags["hasheight"] = 1
         if (flags & 16) == 16:
-            item.flags["usable"] = True
+            item.flags["usable"] = 1
         if (flags & 32) == 32:
-            item.flags["pickable"] = True
+            item.flags["pickable"] = 1
         if (flags & 64) == 64:
-            item.flags["movable"] = True
+            item.flags["movable"] = 1
         if (flags & 128) == 128:
-            item.flags["stackable"] = True
+            item.flags["stackable"] = 1
         if (flags & 256) == 256:
-            item.flags["ontop"] = True
+            item.flags["ontop"] = 1
         if (flags & 512) == 512:
-            item.flags["vertical"] = True
+            item.flags["vertical"] = 1
         if (flags & 1024) == 1024:
-            item.flags["horizontal"] = True
+            item.flags["horizontal"] = 1
         if (flags & 2048) == 2048:
-            item.flags["hangable"] = True
+            item.flags["hangable"] = 1
         if (flags & 4096) == 4096:
-            item.flags["distanceread"] = True
+            item.flags["distanceread"] = 1
         if (flags & 8192) == 8192:
-            item.flags["rotatable"] = True
+            item.flags["rotatable"] = 1
         if (flags & 16384) == 16384:
-            item.flags["readable"] = True
+            item.flags["readable"] = 1
         if (flags & 32768) == 32768:
-            item.flags["charges"] = True
+            item.flags["charges"] = 1
         if (flags & 65536) == 65536:
-            item.flags["lookthrough"] = True
+            item.flags["lookthrough"] = 1
         try:
             while otb.peekUint8() != 0xFF:
                 attr = otb.uint8()
@@ -221,13 +221,19 @@ for xItem in dom.getElementsByTagName("item"):
          try:
             prep[attr.getAttribute("key")] = int(attr.getAttribute("value"))
          except:
-            prep[attr.getAttribute("key")] = attr.getAttribute("value")
+            prep[attr.getAttribute("key")] = attr.getAttribute("value").replace("'", "\\'")
      if xId:
          data[int(xId)] = prep
 
      elif xFromId and xToId:
          for x in range(int(xFromId), int(xToId)+1):
-             data[int(x)] = prep
+             data[int(x)] = {"name":xName, "plural":xPlural, "article":xArticle}
+             for attr in xAttributes:
+                 try:
+                    data[int(x)][attr.getAttribute("key")] = int(attr.getAttribute("value"))
+                 except:
+                    data[int(x)][attr.getAttribute("key")] = attr.getAttribute("value").replace("'", "\\'")
+             
              
 #print data
 # Current suggested format:
@@ -241,26 +247,63 @@ if id:
             break
 
 import copy
-print "CREATE TABLE IF NOT EXISTS `items` (`sid` INT( 8 ) NOT NULL ,`cid` INT( 8 ) NOT NULL ,`name` VARCHAR( 32 ), `article` VARCHAR(3), `plural` VARCHAR( 32 ) ,`known_as` MEDIUMTEXT NULL DEFAULT NULL ,`attributes` TEXT NULL DEFAULT NULL ,PRIMARY KEY ( `sid` ) ,INDEX ( `cid` )) ENGINE = MYISAM ;"
+print "CREATE TABLE `items` ( \n\
+`sid` SMALLINT NOT NULL,\n\
+`cid` SMALLINT NOT NULL,\n\
+`subtypes` TINYINT NOT NULL, \n\
+`name` VARCHAR( 32 ) NOT NULL,\n\
+`article` CHAR( 3 ) NOT NULL DEFAULT '',\n\
+`plural` VARCHAR( 32 ) NOT NULL DEFAULT '',\n\
+`speed` SMALLINT NOT NULL, \n\
+`solid` BOOL NOT NULL DEFAULT 0,\n\
+`blockprojectile` BOOL NOT NULL DEFAULT 0,\n\
+`blockpath` BOOL NOT NULL DEFAULT 0,\n\
+`hasheight` BOOL NOT NULL DEFAULT 0,\n\
+`usable` BOOL NOT NULL DEFAULT 0,\n\
+`pickable` BOOL NOT NULL DEFAULT 0,\n\
+`movable` BOOL NOT NULL DEFAULT 0,\n\
+`stackable` BOOL NOT NULL DEFAULT 0,\n\
+`ontop` BOOL NOT NULL DEFAULT 0,\n\
+`vertical` BOOL NOT NULL DEFAULT 0,\n\
+`horizontal` BOOL NOT NULL DEFAULT 0,\n\
+`hangable` BOOL NOT NULL DEFAULT 0,\n\
+`distanceread` BOOL NOT NULL DEFAULT 0,\n\
+`rotatable` BOOL NOT NULL DEFAULT 0,\n\
+`readable` BOOL NOT NULL DEFAULT 0,\n\
+`charges` BOOL NOT NULL DEFAULT 0,\n\
+`lookthrough` BOOL NOT NULL DEFAULT 0,\n\
+`custom` BOOL NOT NULL DEFAULT 0,\n\
+PRIMARY KEY ( `sid` )\n\
+) ENGINE = MYISAM; \n\
+CREATE TABLE `item_attributes` ( \n\
+`sid` SMALLINT NOT NULL ,\n\
+`key` VARCHAR( 20 ) NOT NULL ,\n\
+`value` VARCHAR( 64 ) NOT NULL ,\n\
+`custom` BOOL NOT NULL DEFAULT '0'\n\
+) ENGINE = MYISAM ;"
 for item in items:
     if item.sid in data:
         # Dirty way to fix the attributes:
-        item.flags.update(data[item.sid])
-        if "name" in item.flags:
-            del item.flags["name"]
+        #item.flags.update(data[item.sid])
         
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
-            
-        article = ""
-        if "article" in item.flags:
-            article = copy.deepcopy(item.flags["article"])
-            del item.flags["article"]
+
+        print ("INSERT INTO items (`sid`, `cid`, `name`%s%s%s%s) VALUES(%d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subtypes`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
+
+        del data[item.sid]["name"]
+        del data[item.sid]["plural"]
+        del data[item.sid]["article"]
         
-        plural = ""
-        if "plural" in item.flags:
-            plural = copy.deepcopy(item.flags["plural"])
-            del item.flags["plural"]            
-        print(("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), article, plural.replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
+        if data[item.sid]:
+            print "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
+            k = False
+            for key in data[item.sid]:
+                print "%s(%d, '%s', '%s')" % (',' if k else '', item.sid, key, data[item.sid][key])
+                if not k:
+                    k = True
+            print ';'
+        print ''
+        #print(("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), article, plural.replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
     #else:
     #    print("---WARNING, item with sid=%d not no data!" % item.sid)
