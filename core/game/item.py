@@ -128,30 +128,37 @@ def loadItems():
     global reverseItems
 
     # Async SQL
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,attributes,plural,article FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,plural,article,subtypes,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,charges FROM items"))
     yield d
-       
+    result = d.getResult()
+
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
+    yield d
+    result2 = d.getResult()
+    
     # Make two new values while we are loading
     loadItems = {}
     reverseLoadItems = {}
 
-    result = d.getResult()
 
     for item in result:
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
-        if item["attributes"]:
-            loadItems[item["sid"]] = otjson.loads(item["attributes"])
-        else:
-            loadItems[item["sid"]] = {}
-        loadItems[item["sid"]]["name"] = item["name"]
-        if item["plural"]:
-            loadItems[item["sid"]]["plural"] = item["plural"]
-        loadItems[item["sid"]]["article"] = item["article"] or None
+        for key in item:
+            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','charges'):
+                item[key] = bool(item[key])
+        loadItems[item["sid"]] = item
         
-        loadItems[item["sid"]]["cid"] = item["cid"]
         reverseLoadItems[item["cid"]] = item["sid"]
 
+    for data in result2:
+        try:
+            if data["key"] in ('allowpickupable', 'blockprojectile', 'writeable', 'stopduration', 'showduration', 'showcharges', 'showattributes', 'invisible', 'readable'):
+                loadItems[data["sid"]][data["key"]] = bool(int(data["value"]))
+            else:
+                loadItems[data["sid"]][data["key"]] = int(data["value"])
+        except:
+            loadItems[data["sid"]][data["key"]] = data["value"]
     # Replace the existing items
     items = loadItems
     reverseItems = reverseLoadItems
