@@ -8,8 +8,6 @@ import time
 from packet import TibiaPacket
 import game.map
 
-walkerEvents = {}
-
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")

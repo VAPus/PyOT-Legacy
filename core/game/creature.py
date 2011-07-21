@@ -2,8 +2,20 @@ from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature
 import threading
-class Creature:
+
+# Unique ids, thread safe too
+def __uid():
     idsTaken = 0
+    while True:
+        idsTaken += 1
+        yield idsTaken
+        
+uniqueId = __uid().next
+
+allCreatures = {}
+
+class Creature:
+    
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0
@@ -19,6 +31,10 @@ class Creature:
         self.addon = 0
         self.action = None
         self.actionLock = threading.Lock()
+        
+        # We are trackable
+        allCreatures[self.cid] = self
+        
     def name(self):
         return self.data["name"]
 
@@ -26,8 +42,7 @@ class Creature:
         return self.cid
 
     def generateClientID(self):
-        self.idsTaken = self.idsTaken + 1
-        return 0x10000001 + self.idsTaken
+        raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, tile):
         return (tile.speed / self.speed) # TODO

@@ -107,7 +107,7 @@ import data.map.info
 dummyTiles = {} # solid items like mountains will stay here
 dummyItems = {} # Ground items etc
 
-def loadTiles(x,y, walk=True):
+def loadTiles(x,y, walk=False):
     if x > data.map.info.height or y > data.map.info.width:
         return None
         
