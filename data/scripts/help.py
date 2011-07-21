@@ -2,7 +2,7 @@ import game.scriptsystem as scriptsystem
 from packet import TibiaPacket
 from game.map import placeCreature, getTile
 import game.engine, game.item
-from game.creature import Creature, Monster
+from game.creature import Creature
 
 def callback(player, text):
     player.message("No you!!")
@@ -39,23 +39,11 @@ def tiler(player, text):
     #    player.message("Not possible!")
         return False
         
-def dummyCreature(player, text):
-    pos = [player.position[0]+1, player.position[1], 7]
-    monsterData = {"name": "Dummy", "health":1000, "looktype": 59, "lookhead":0, "looklegs":0, "lookbody":0, "lookfeet":0} # A mal
-    creature = Monster(monsterData, pos)
-    stackpos = getTile(pos).placeCreature(creature)
-    list = game.engine.getSpectators(pos)
-    for client in list:
-        stream = TibiaPacket()
-        stream.magicEffect(pos, 0x03)
-        stream.addTileCreature(pos, stackpos, creature, client.player)
-        
-        stream.send(client)
+
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
 scriptsystem.get("talkactionFirstWord").reg('set', tiler)
-scriptsystem.get("talkaction").reg('spawn', dummyCreature)
 
 def speedsetter(player, text):
     try:

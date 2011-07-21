@@ -101,6 +101,7 @@ class Tile(BaseThing):
     
 knownMap = {}
 sectors = {}
+callbacks = {}
 
 import data.map.info
 dummyTiles = {} # solid items like mountains will stay here
@@ -162,12 +163,28 @@ def load(sectorX, sectorY):
                 if tileItems[0].solid:
                     if not tileItems[0] in dummyTiles:
                         dummyTiles[tileItems[0]] = Tile(tileItems)
-                        knownMap[x][y][z] = dummyTiles[tileItems[0]]
+                    knownMap[x][y][z] = dummyTiles[tileItems[0]]
                 else:         
                     knownMap[x][y][z] = Tile(tileItems)
+                    
+                if len(mapy[xx][yy][zz]) > 2 and len(mapy[xx][yy][zz][2]):
+                    #import game.monster
+                    for monsterName in mapy[xx][yy][zz][2]:
+                        game.monster.getMonster(monsterName).spawn([x,y,z])
 
+    # Do callbacks
+    m = str(sectorX).zfill(3)+str(sectorY).zfill(3)
+    if m in callbacks:
+        for func in callbacks[m]:
+            func()
 def unload(sectorX, sectorY):
     for x in xrange(sectorX * 64, (sectorX * 64) + 64):
         for x in xrange(sectorY * 64, (sectorY * 64) + 64):
             del knownMap[x][y]
+    
+def regPostLoadSector(x,y,callback):
+    m = str(x).zfill(3)+str(y).zfill(3)
+    if not m in callbacks:
+        callbacks[m] = []
+    callbacks[m].append(callback)
     

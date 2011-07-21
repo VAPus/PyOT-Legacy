@@ -90,7 +90,4 @@ class Creature:
         except:
             pass
         del self.action
-class Monster(Creature):
-    def __init__(self, data, position, cid=None):
-        Creature.__init__(self, data, position, cid)
-        self.creatureType = 1
+        
