@@ -26,7 +26,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         from packet import TibiaPacket
         from game.player import TibiaPlayer
-        from game.map import removeCreature, placeCreature
+        from game.map import placeCreature
         import game.scriptsystem
         
         packet.pos += 1 # Packet Type, we don't really care about it in the first packet
@@ -115,58 +115,58 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         packetType = packet.uint8()
         
-        if packetType is 0x14: # Logout
+        if packetType == 0x14: # Logout
             self.transport.loseConnection()
             
-        elif packetType is 0x1E: # Keep alive
+        elif packetType == 0x1E: # Keep alive
             self.player.pong()
             
-        elif packetType is 0xA0: # Set modes
+        elif packetType == 0xA0: # Set modes
             self.player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
             
         elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
             self.player.turn(packetType - 0x6F)
             
-        elif packetType is 0x64: # movement with multiple steps
+        elif packetType == 0x64: # movement with multiple steps
             self.player.handleAutoWalk(packet)
     
-        elif packetType is 0x69: # Stop autowalking
+        elif packetType == 0x69: # Stop autowalking
             self.player.stopAutoWalk()
             
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
             self.player.move(packetType - 0x65)
         
-        elif packetType is 0x96: # Say
+        elif packetType == 0x96: # Say
             self.player.handleSay(packet)
             
-        elif packetType is 0x78: # Throw/move item
+        elif packetType == 0x78: # Throw/move item
             self.player.handleMoveItem(packet)
         
-        elif packetType is 0x82:
+        elif packetType == 0x82:
             self.player.handleUseItem(packet)
             
-        elif packetType is 0x85: # Rotate item
+        elif packetType == 0x85: # Rotate item
             self.player.handleRotateItem(packet)
             
-        elif packetType is 0x87: # Close container
+        elif packetType == 0x87: # Close container
             self.player.closeContainerId(packet.uint8())
             
-        elif packetType is 0x88: # Arrow up container
+        elif packetType == 0x88: # Arrow up container
             self.player.arrowUpContainer(packet.uint8())
             
-        elif packetType is 0x8C: # Look at
+        elif packetType == 0x8C: # Look at
             self.player.handleLookAt(packet)
             
-        elif packetType is 0xD2: # Request outfit
+        elif packetType == 0xD2: # Request outfit
             self.player.outfitWindow()
             
-        elif packetType is 0xD3: # Set outfit
+        elif packetType == 0xD3: # Set outfit
             self.player.handleSetOutfit(packet)
         
-        elif packetType is 0xD4: # Set mount status
+        elif packetType == 0xD4: # Set mount status
             self.player.handleSetMounted(packet)
             
-        elif packetType is 0xBE: # Stop action
+        elif packetType == 0xBE: # Stop action
             self.player.stopAction()
             
         else:
@@ -175,7 +175,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onConnectionLost(self):
         import game.scriptsystem
-        from game.map import removeCreature, placeCreature
+        from game.map import removeCreature
         removeCreature(self.player, self.player.position)
         game.scriptsystem.get("logout").run(self.player)
         

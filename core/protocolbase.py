@@ -64,8 +64,8 @@ class TibiaProtocol(Protocol):
     def onConnectionLost(self):
         pass
 
-    def onFirstPacket(self):
-        self.onPacket()
+    def onFirstPacket(self, packet):
+        self.onPacket(packet)
 
     def onPacket(self, packet):
         pass

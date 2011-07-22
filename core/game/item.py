@@ -157,7 +157,10 @@ def loadItems():
         reverseLoadItems[item["cid"]] = item["sid"]
 
     for data in result2:
-        loadItems[int(data["sid"])][data["key"]] = game.engine.autoCastValue(data["value"])
+        val = game.engine.autoCastValue(data["value"])
+        if val:
+            loadItems[int(data["sid"])][data["key"]] = val
+            
  
     # Replace the existing items
     items = loadItems

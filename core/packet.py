@@ -1,7 +1,6 @@
 import struct
 import otcrypto
 from zlib import adler32
-import copy
 from twisted.python import log
 from twisted.internet import reactor
 
@@ -230,7 +229,7 @@ class TibiaPacket:
     def outfit(self, look, addon=0, mount=0x00):
         
         self.uint16(look[0])
-        if look[0] is not 0:
+        if look[0] != 0:
             self.uint8(look[1])
             self.uint8(look[2])
             self.uint8(look[3])
