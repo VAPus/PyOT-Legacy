@@ -1,5 +1,5 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
-import sql, otjson
+import sql, otjson, copy
 from twisted.python import log
 from collections import deque
 import game.enum
@@ -54,6 +54,8 @@ class Item:
     def __init__(self, itemid, count=None):
         self.itemId = itemid
         self.count = count if self.stackable else None
+        
+        print self.stackable
         
         # Extend items such as containers, beds and doors
         if "containerSize" in self.attributes():
@@ -145,9 +147,12 @@ def loadItems():
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
         item["speed"] = int(item["speed"]) # No long
-        for key in item:
+        for key in copy.deepcopy(item):
             if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable'):
-                item[key] = bool(item[key])
+                if bool(item[key]):
+                    item[key] = True
+                else:
+                    del item[key]
         loadItems[item["sid"]] = item
         
         reverseLoadItems[item["cid"]] = item["sid"]

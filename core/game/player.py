@@ -660,11 +660,12 @@ class TibiaPlayer(Creature):
                 oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)
                 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != oldItem[1].slotId():
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     self.notPossible()
                     return
                     
                 if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                    renew = True
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
@@ -682,7 +683,7 @@ class TibiaPlayer(Creature):
                 oldItem = self.findItemWithPlacement(fromPosition)
                 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != oldItem[1].slotId():
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     self.notPossible()
                     return
                     
