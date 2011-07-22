@@ -8,22 +8,26 @@ import game.scriptsystem
 from game.item import Item
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
-from game.creature import Creature
+from game.creature import Creature, uniqueId
 import copy
 import game.resource
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
-        Creature.__init__(self, data, [50,50,7], client.client_id)
+        Creature.__init__(self, data, [50,50,7])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]
         self.gender = 0
         self.knownCreatures = []
         self.openContainers = []
+
+    def generateClientID(self):
+        return 0x10000000 + uniqueId()
         
     def sendFirstPacket(self):
         stream = TibiaPacket(0x0A)
+
         stream.uint32(self.clientId()) # Cid
         stream.uint16(0x0032) # Speed
         stream.uint8(1) # Rule violations?
@@ -43,7 +47,7 @@ class TibiaPlayer(Creature):
         self.stream_skills(stream)
         
         stream.worldlight(enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
-        stream.creaturelight(self.client.client_id, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
+        stream.creaturelight(self.cid, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.uint8(0xA2) # Icons
         stream.uint16(0) # TODO: Icons
 
@@ -103,7 +107,7 @@ class TibiaPlayer(Creature):
         # Make packet
         stream = TibiaPacket(0x6D)
         stream.position(self.position)
-        stream.uint8(self.stackpos)
+        stream.uint8(getTile(self.position).findCreatureStackpos(self))
         
         removeCreature(self, self.position)
         

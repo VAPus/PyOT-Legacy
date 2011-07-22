@@ -98,6 +98,10 @@ class Tile(BaseThing):
                 if stackpos:
                     return (self.things.index(x), x)
                 return x
+                
+    def findCreatureStackpos(self, creature):
+        return self.things.index(creature)
+                
     
 knownMap = {}
 sectors = {}

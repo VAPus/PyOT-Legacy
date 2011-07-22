@@ -10,7 +10,6 @@ from zlib import adler32
 class TibiaProtocol(Protocol):
 
     def __init__(self):
-        self.client_id = 0
         self.gotFirst = False
         self.xtea = ()
         
@@ -93,22 +92,18 @@ class TibiaFactory(Factory):
     protocol = None # This HAVE to be overrided!
     def __init__(self, service):
         self.service = service
-        self.clients = {}
+        self.clients = []
         self.clientCount = 0
         self.idsTaken = 0
 
     def addClient(self, client):
-        client.client_id = self.generateClientID()
-        self.clients[client.client_id] = client
+        self.clients.append(client)
         self.clientCount = self.clientCount + 1
         
-    def generateClientID(self):
-        self.idsTaken = self.idsTaken + 1
-        return 0x40000001 + self.idsTaken
 
     def removeClient(self, client):
-        if client.client_id in self.clients:
-            del self.clients[client.client_id]
+        if client in self.clients:
+            self.clients.remove(client)
         self.clientCount = self.clientCount - 1
 
 class TibiaService(Service):

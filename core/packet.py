@@ -3,7 +3,12 @@ import otcrypto
 from zlib import adler32
 import copy
 from twisted.python import log
+from twisted.internet import reactor
 
+def inThread(f):
+    def func(*argc, **argw):
+        reactor.callInThread(f, *argc, **argw)
+    return func
 class TibiaPacketReader:
     def __init__(self, data):
         self.length = len(data)
@@ -332,6 +337,7 @@ class TibiaPacket:
         self.pos += len(string)
         self.data += struct.pack("%ds" % len(string), str(string))
 
+    @inThread
     def send(self, stream):
         buffer = b""
         ol = len(self.data)
@@ -350,8 +356,12 @@ class TibiaPacket:
         buffer += self.data
 
         stream.transport.write(buffer)
-        
+    
+    @inThread
     def sendto(self, list):
+        if not list:
+            return # Noone to send to
+            
         self.data = struct.pack("<H", len(self.data))+self.data
         lenCache = 0
         for client in list:

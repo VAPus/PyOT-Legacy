@@ -1,12 +1,12 @@
 from game.engine import getSpectators
 from packet import TibiaPacket
-from game.map import placeCreature, removeCreature
+from game.map import placeCreature, removeCreature, getTile
 import threading
 import game.enum as enum
 
 # Unique ids, thread safe too
 def __uid():
-    idsTaken = 0
+    idsTaken = 1000
     while True:
         idsTaken += 1
         yield idsTaken
@@ -28,7 +28,6 @@ class Creature:
         self.creatureType = 0
         self.direction = 0
         self.position = position
-        self.stackpos = 1
         self.speed = 0x0032
         self.scripts = {"onWalk":None, "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
@@ -54,16 +53,16 @@ class Creature:
     def stepDuration(self, tile):
         return (tile.speed / self.speed) # TODO
 
-    def move(self, direction):
+    def move(self, direction, spectators=None):
         import data.map.info
+        
         self.direction = direction
         
         # Make packet
         stream = TibiaPacket(0x6D)
         stream.position(self.position)
-        stream.uint8(self.stackpos)
+        stream.uint8(getTile(self.position).findCreatureStackpos(self))
         
-        removeCreature(self, self.position)
         
         # Recalculate position
         position = self.position[:] # Important not to remove the : here, we don't want a reference!
@@ -93,6 +92,13 @@ class Creature:
            return False
                     
         stream.position(position)
+        print position
+        newTile = getTile(position)
+        
+        if newTile.creatures(): # Dont walk to creatures
+            return False
+            
+        removeCreature(self, self.position)
         placeCreature(self, position)
         
         self.position = position
@@ -100,8 +106,18 @@ class Creature:
         if self.scripts["onWalk"]:
             self.scripts["onWalk"]()
             del self.scripts["onWalk"]
-        # Send to everyone        
-        stream.sendto(getSpectators(position)) 
+        # Send to everyone   
+        if not spectators:
+            spectators = getSpectators(position)
+        for spectator in spectators:
+            if not self.cid in spectator.player.knownCreatures:
+                stream2 = TibiaPacket()
+                print "My pos (and creature %d): " % self.cid, spectator.player.position
+                stream2.addTileCreature(position, 1, self, spectator.player)
+                stream2.send(spectator)
+                spectators.remove(spectator)
+        
+        stream.sendto(spectators) 
         
         return True # Required for auto walkings
 
@@ -131,4 +147,8 @@ class Creature:
         except:
             pass
         del self.action
+        
+    def canSee(self, position):
+        if abs(position[0]-self.position[0]) < 9 and abs(position[1]-self.position[1]) < 7:
+            return True
         

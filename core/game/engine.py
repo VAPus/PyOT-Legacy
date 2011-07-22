@@ -120,8 +120,8 @@ def calculateWalkPattern(fromPos, to, skipFields=None):
 def getSpectators(pos):
     # At the moment, we only do one floor
     players = []
-    for x in xrange(pos[0]-10, pos[0]+10):
-        for y in xrange(pos[1]-8, pos[1]+8):
+    for x in xrange(pos[0]-9, pos[0]+9):
+        for y in xrange(pos[1]-7, pos[1]+7):
             try:
                 for creature in game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player
