@@ -146,7 +146,7 @@ def loadItems():
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
         item["speed"] = int(item["speed"]) # No long
-        for key in copy.deepcopy(item):
+        for key in copy.copy(item):
             if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable'):
                 if bool(item[key]):
                     item[key] = True
