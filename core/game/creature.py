@@ -2,6 +2,7 @@ from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature
 import threading
+import game.enum as enum
 
 # Unique ids, thread safe too
 def __uid():
@@ -98,6 +99,26 @@ class Creature:
         stream.sendto(getSpectators(position)) 
         
         return True # Required for auto walkings
+
+    def say(self, message):
+        stream = TibiaPacket(0xAA)
+        stream.uint32(00)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"] if "level" in self.data else 0)
+        stream.uint8(enum.MSG_SPEAK_SAY)
+        stream.position(self.position)
+        stream.string(message)
+        stream.sendto(getSpectators(self.position))
+
+    def yell(self, message):
+        stream = TibiaPacket(0xAA)
+        stream.uint32(00)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"] if "level" in self.data else 0)
+        stream.uint8(enum.MSG_SPEAK_YELL)
+        stream.position(self.position)
+        stream.string(message)
+        stream.sendto(getSpectators(self.position))
         
     def stopAction(self):
         try:

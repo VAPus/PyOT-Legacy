@@ -1,7 +1,8 @@
 from game.creature import Creature, uniqueId
 import game.engine, game.map
 from packet import TibiaPacket
-import copy
+import copy, random
+from twisted.internet.task import LoopingCall
 
 monsters = {}
 
@@ -19,13 +20,15 @@ class Monster(Creature):
 
 
 class MonsterBase:
-    def __init__(self, data, monsterData):
+    def __init__(self, data, brain, monsterData):
         self.data = data
         self.monsterData = monsterData
         self.voiceslist = []
+        self.brain = brain
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
+        self.brain.beginThink(monster) # begin the heavy thought process!
         if place:
             stackpos = game.map.getTile(position).placeCreature(monster)
             list = game.engine.getSpectators(position)
@@ -53,6 +56,27 @@ class MonsterBase:
         self.death = death
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
+
+class MonsterBrain:
+    def beginThink(self, monster):
+        monster.actionThink = LoopingCall(self.handleThink, monster)
+        monster.actionThink.start(0.1) # TODO: Support config
+        if monster.base.voiceslist:
+            monster.actionTalk = LoopingCall(self.handleTalk, monster)
+            monster.actionTalk.start(5) # TODO support config
+            
+    def handleThink(self, monster):
+        pass # Monster is braindead!
+        
+    def handleTalk(self, monster):
+        if 10 > random.randint(0, 100): # 10%. TODO: Support config
+            text = random.choice(monster.base.voiceslist)
+            if text.isupper():
+                monster.yell(text)
+            else:
+                monster.say(text)
+brains = {}
+brains["default"] = MonsterBrain()
 def genMonster(name, look, description="", speed=200, experience=100, race="blood", brain="default", template="default"):
     # First build the common creature data
     if template in monsters:
@@ -62,7 +86,7 @@ def genMonster(name, look, description="", speed=200, experience=100, race="bloo
     data["looktype"] = look[0]
     data["name"] = name
     # Then monster only data
-    monsters[name] = MonsterBase(data, None)
+    monsters[name] = MonsterBase(data, brains[brain], None)
     return monsters[name]
 
 def getMonster(name):

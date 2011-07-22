@@ -57,7 +57,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
         creature.actionLock.release()
     else:
-        del creature.action
+        creature.action = None
         
     if callback and ret and not len(walkPatterns):    
         reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)

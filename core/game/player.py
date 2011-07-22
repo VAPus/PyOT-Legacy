@@ -333,15 +333,6 @@ class TibiaPlayer(Creature):
         stream.shoot(fromPos, toPos, type)
         stream.send(self.client)
         
-    def say(self, message):
-        stream = TibiaPacket(0xAA)
-        stream.uint32(1)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"])
-        stream.uint8(enum.MSG_SPEAK_SAY)
-        stream.position(self.position)
-        stream.string(message)
-        stream.send(self.client)
 
     def outfitWindow(self):
         stream = TibiaPacket(0xC8)

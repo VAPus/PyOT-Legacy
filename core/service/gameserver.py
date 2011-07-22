@@ -2,20 +2,16 @@ import protocolbase
 
 from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred
 from twisted.python import log
-from packet import TibiaPacket
-import sql
-import otcrypto
 import config
 import hashlib
-from game.player import TibiaPlayer
-from game.map import removeCreature, placeCreature
-import game.scriptsystem
+
 class GameProtocol(protocolbase.TibiaProtocol):
 
     def onInit(self):
         self.player = None
 
     def onConnect(self):
+        from packet import TibiaPacket
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
         pkg.uint16(0xFFFF)
@@ -25,6 +21,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     @deferredGenerator
     def onFirstPacket(self, packet):
+        import sql
+        import otcrypto
+        
+        from packet import TibiaPacket
+        from game.player import TibiaPlayer
+        from game.map import removeCreature, placeCreature
+        import game.scriptsystem
+        
         packet.pos += 1 # Packet Type, we don't really care about it in the first packet
         packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
@@ -103,6 +107,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         
     def onPacket(self, packet):
+        import otcrypto
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 0
         packet.data = packet.data[2:2+packet.uint16()]
@@ -169,6 +174,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
             #self.transport.loseConnection()
 
     def onConnectionLost(self):
+        import game.scriptsystem
+        from game.map import removeCreature, placeCreature
         removeCreature(self.player, self.player.position)
         game.scriptsystem.get("logout").run(self.player)
         
