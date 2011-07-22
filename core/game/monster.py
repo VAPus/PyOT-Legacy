@@ -3,7 +3,7 @@ import game.engine, game.map
 from packet import TibiaPacket
 import copy, random
 from twisted.internet import reactor
-
+from twisted.internet.task import LoopingCall
 monsters = {}
 
 monsters["default"] = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
@@ -60,15 +60,17 @@ class MonsterBase:
 
 class MonsterBrain:
     def beginThink(self, monster):
-        monster.actionThink = reactor.callLater(1, lambda: reactor.callInThread(self.handleThink, monster))
+        monster.actionThink = LoopingCall(self.handleThink, monster)
+        monster.actionThink.start(1, False)
         if monster.base.voiceslist:
-            monster.actionTalk = reactor.callLater(5, lambda: reactor.callInThread(self.handleTalk, monster))
+            monster.actionTalk = LoopingCall(self.handleTalk, monster)
+            monster.actionTalk.start(5, False)
             
     def handleThink(self, monster):
         # Walking
         if 33 > random.randint(0, 100):
             self.walkRandomStep(monster)
-        monster.actionThink = reactor.callLater(1, lambda: reactor.callInThread(self.handleThink, monster))
+            
     def handleTalk(self, monster):
         if 10 > random.randint(0, 100): # 10%. TODO: Support config
             text = random.choice(monster.base.voiceslist)
@@ -76,7 +78,7 @@ class MonsterBrain:
                 monster.yell(text)
             else:
                 monster.say(text)
-        monster.actionTalk = reactor.callLater(5, lambda: reactor.callInThread(self.handleTalk, monster))    
+                
     def walkRandomStep(self, monster):
         spectators = game.engine.getSpectatorList(monster.position)
         if not spectators:
