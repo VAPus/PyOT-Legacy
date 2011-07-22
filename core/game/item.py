@@ -55,7 +55,6 @@ class Item:
         self.itemId = itemid
         self.count = count if self.stackable else None
         
-        print self.stackable
         
         # Extend items such as containers, beds and doors
         if "containerSize" in self.attributes():
