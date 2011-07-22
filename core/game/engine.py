@@ -37,6 +37,7 @@ def action(forced=False, delay=0):
                 creature.actionLock.release()
         return new_f
     return decor
+    
 # First order of buisness, the autoWalker
 @action()
 def autoWalkCreature(creature, walkPatterns, callback=None): 
@@ -169,6 +170,7 @@ def autoCastValue(data): # We get a string, then find the simplest possible valu
 
     except:
         return data
+        
 # Last order of buisness, the script system
 import game.scriptsystem
 from data.scripts import *

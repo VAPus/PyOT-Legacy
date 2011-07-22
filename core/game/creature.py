@@ -11,7 +11,13 @@ def __uid():
         idsTaken += 1
         yield idsTaken
         
-uniqueId = __uid().next
+__uniqueId = __uid().next
+__uniqueLock = threading.Lock()
+def uniqueId():
+    __uniqueLock.acquire()
+    id = __uniqueId()
+    __uniqueLock.release()
+    return id
 
 allCreatures = {}
 
@@ -84,7 +90,6 @@ class Creature:
             
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
-           self.cancelWalk()
            return False
                     
         stream.position(position)

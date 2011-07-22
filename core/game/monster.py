@@ -2,7 +2,7 @@ from game.creature import Creature, uniqueId
 import game.engine, game.map
 from packet import TibiaPacket
 import copy, random
-from twisted.internet.task import LoopingCall
+from twisted.internet import reactor
 
 monsters = {}
 
@@ -29,6 +29,7 @@ class MonsterBase:
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
         self.brain.beginThink(monster) # begin the heavy thought process!
+
         if place:
             stackpos = game.map.getTile(position).placeCreature(monster)
             list = game.engine.getSpectators(position)
@@ -59,15 +60,15 @@ class MonsterBase:
 
 class MonsterBrain:
     def beginThink(self, monster):
-        monster.actionThink = LoopingCall(self.handleThink, monster)
-        monster.actionThink.start(0.1) # TODO: Support config
+        monster.actionThink = reactor.callLater(1, lambda: reactor.callInThread(self.handleThink, monster))
         if monster.base.voiceslist:
-            monster.actionTalk = LoopingCall(self.handleTalk, monster)
-            monster.actionTalk.start(5) # TODO support config
+            monster.actionTalk = reactor.callLater(5, lambda: reactor.callInThread(self.handleTalk, monster))
             
     def handleThink(self, monster):
-        pass # Monster is braindead!
-        
+        # Walking
+        if 33 > random.randint(0, 100):
+            self.walkRandomStep(monster)
+        monster.actionThink = reactor.callLater(1, lambda: reactor.callInThread(self.handleThink, monster))
     def handleTalk(self, monster):
         if 10 > random.randint(0, 100): # 10%. TODO: Support config
             text = random.choice(monster.base.voiceslist)
@@ -75,6 +76,15 @@ class MonsterBrain:
                 monster.yell(text)
             else:
                 monster.say(text)
+        monster.actionTalk = reactor.callLater(5, lambda: reactor.callInThread(self.handleTalk, monster))    
+    def walkRandomStep(self, monster):
+        steps = [0,1,2,3]
+        random.shuffle(steps)
+        for step in steps:
+            if monster.move(step):
+                return True
+        return False
+        
 brains = {}
 brains["default"] = MonsterBrain()
 def genMonster(name, look, description="", speed=200, experience=100, race="blood", brain="default", template="default"):
