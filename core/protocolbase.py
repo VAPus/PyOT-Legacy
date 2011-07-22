@@ -1,6 +1,4 @@
 from twisted.internet.protocol import Protocol, Factory
-from twisted.internet.threads import deferToThread
-from twisted.internet.defer import inlineCallbacks
 from twisted.internet import reactor
 from twisted.python import log
 from twisted.application.service import Service
@@ -76,12 +74,11 @@ class TibiaProtocol(Protocol):
         pass
 
     #### Some simplefiers ####
-    @inlineCallbacks
     def exitWithError(self, message, error = 0x0A):
         packet = TibiaPacket()
         packet.uint8(error) # Error code
         packet.string(message) # Error message
-        yield packet.send(self)
+        packet.send(self)
         self.loseConnection()
 
     def loseConnection(self):

@@ -1,6 +1,6 @@
 import protocolbase
 
-from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred
+from twisted.internet.defer import deferredGenerator, waitForDeferred
 from twisted.python import log
 from packet import TibiaPacket
 import sql

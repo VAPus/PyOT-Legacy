@@ -6,10 +6,10 @@ import config
 from collections import deque
 import game.scriptsystem
 from game.item import Item
-from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
+from twisted.internet.defer import deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
 from game.creature import Creature, uniqueId
-import copy
+
 import game.resource
 
 class TibiaPlayer(Creature):

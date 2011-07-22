@@ -1,7 +1,7 @@
 from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
-import threading
+import thread
 import game.enum as enum
 
 # Unique ids, thread safe too
@@ -12,7 +12,7 @@ def __uid():
         yield idsTaken
         
 __uniqueId = __uid().next
-__uniqueLock = threading.Lock()
+__uniqueLock = thread.allocate_lock()
 def uniqueId():
     __uniqueLock.acquire()
     id = __uniqueId()
@@ -36,7 +36,7 @@ class Creature:
         self.mounted = 0
         self.addon = 0
         self.action = None
-        self.actionLock = threading.Lock()
+        self.actionLock = thread.allocate_lock()
         
         # We are trackable
         allCreatures[self.cid] = self

@@ -1,6 +1,4 @@
 # This act as the core event system
-from twisted.internet.defer import inlineCallbacks, returnValue
-from twisted.internet.task import deferLater
 from twisted.internet import reactor
 from collections import deque
 from twisted.python import log
