@@ -78,7 +78,7 @@ class MonsterBrain:
                 monster.say(text)
         monster.actionTalk = reactor.callLater(5, lambda: reactor.callInThread(self.handleTalk, monster))    
     def walkRandomStep(self, monster):
-        spectators = game.engine.getSpectators(monster.position)
+        spectators = game.engine.getSpectatorList(monster.position)
         if not spectators:
             return False
             

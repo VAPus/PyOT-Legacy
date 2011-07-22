@@ -117,7 +117,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None):
     return pattern
     
 # Spectator list
-def getSpectators(pos):
+def getSpectatorList(pos):
     # At the moment, we only do one floor
     players = []
     for x in xrange(pos[0]-9, pos[0]+9):
@@ -131,6 +131,21 @@ def getSpectators(pos):
                 pass # Tile isn't loaded
 
     return players
+
+# Spectator list using yield
+def getSpectators(pos):
+    # At the moment, we only do one floor
+    for x in xrange(pos[0]-9, pos[0]+9):
+        for y in xrange(pos[1]-7, pos[1]+7):
+            try:
+                for creature in game.map.knownMap[x][y][7].creatures():
+                    # TODO: Check for player
+                    if creature.creatureType == 0:
+                        yield creature.client
+            except:
+                raise StopIteration
+    raise StopIteration
+
     
 def updateTile(pos, tile):
     stream = TibiaPacket(0x69)
