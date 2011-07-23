@@ -134,7 +134,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.player.stopAutoWalk()
             
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
-            self.player.move(packetType - 0x65)
+            self.player.handleWalk(packetType - 0x65)
         
         elif packetType == 0x96: # Say
             self.player.handleSay(packet)
@@ -159,6 +159,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         elif packetType == 0xA1: # Attack
             self.player.handleAttack(packet)
+
+        elif packetType == 0xA2: # Attack
+            self.player.handleFollow(packet)
             
         elif packetType == 0xD2: # Request outfit
             self.player.outfitWindow()

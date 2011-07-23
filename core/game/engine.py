@@ -115,7 +115,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None):
     return pattern
     
 # Spectator list
-def getSpectatorList(pos):
+def getSpectatorList(pos, radius=(10,8)):
     # At the moment, we only do one floor
     players = []
     for x in xrange(pos[0]-10, pos[0]+10):
@@ -130,10 +130,10 @@ def getSpectatorList(pos):
     return players
 
 # Spectator list using yield
-def getSpectators(pos):
+def getSpectators(pos, radius=(10,8)):
     # At the moment, we only do one floor
-    for x in xrange(pos[0]-10, pos[0]+10):
-        for y in xrange(pos[1]-8, pos[1]+8):
+    for x in xrange(pos[0]-radius[0], pos[0]+radius[0]):
+        for y in xrange(pos[1]-radius[0], pos[1]+radius[0]):
             try:
                 for creature in game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player

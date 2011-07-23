@@ -15,6 +15,7 @@ class Monster(Creature):
         Creature.__init__(self, base.data, position, cid)
         self.base = base
         self.creatureType = 1
+        self.spawnPosition = position[:]
 
     
 
@@ -83,10 +84,27 @@ class MonsterBrain:
         spectators = game.engine.getSpectatorList(monster.position)
         if not spectators:
             return False
-            
+        
+        steps = []
+        xFrom = monster.position[0]-monster.spawnPosition[0]
+        yFrom = monster.position[1]-monster.spawnPosition[1]
+        
         steps = [0,1,2,3]
         random.shuffle(steps)
         for step in steps:
+            if step is 0:
+                if monster.spawnPosition[1]-(monster.position[1]-1) > 5:
+                    continue
+            elif step is 1:
+                if monster.spawnPosition[0]-(monster.position[0]+1) > -5:
+                    continue
+            elif step is 2:
+                if monster.spawnPosition[1]-(monster.position[1]+1) > -5:
+                    continue
+            elif step is 3:
+                if monster.spawnPosition[0]-(monster.position[0]-1) > 5:
+                    continue
+                
             if monster.move(step, spectators):
                 return True
         return False

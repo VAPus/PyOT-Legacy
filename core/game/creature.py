@@ -29,7 +29,7 @@ class Creature:
         self.direction = 0
         self.position = position
         self.speed = 0x0032
-        self.scripts = {"onWalk":None, "onNextStep":[]}
+        self.scripts = { "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
         self.mount = 0
@@ -37,6 +37,7 @@ class Creature:
         self.addon = 0
         self.action = None
         self.actionLock = thread.allocate_lock()
+        self.target = None # target for follow/attacks based on modes
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -105,9 +106,11 @@ class Creature:
         oldPosition = self.position[:]
         self.position = position
         
-        if self.scripts["onWalk"]:
-            self.scripts["onWalk"]()
-            del self.scripts["onWalk"]
+        if len(self.scripts["onNextStep"]):
+            for script in self.scripts["onNextStep"]:
+                script()
+                self.scripts["onNextStep"].remove(script)
+                
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)

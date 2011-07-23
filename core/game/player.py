@@ -608,7 +608,10 @@ class TibiaPlayer(Creature):
                 continue # We don't support them
                 
         game.engine.autoWalkCreature(self, walkPattern)
-    
+
+    def handleWalk(self, direction):
+        game.engine.autoWalkCreature(self, deque([direction]))
+        
     @deferredGenerator
     def handleMoveItem(self, packet):
         from game.item import Item, sid, items
@@ -827,10 +830,19 @@ class TibiaPlayer(Creature):
             game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
             
     def handleAttack(self, packet):
-        cid = packet.unt32()
+        cid = packet.uint32()
         print "CreatureID %d" %  cid
         if cid in allCreatures:
             print allCreatures[cid].position
+        else:
+            self.notPossible()
+            
+    def  handleFollow(self, packet):
+        cid = packet.uint32()
+        if cid in allCreatures:
+            self.target = allCreatures[cid]
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1)
+            self.target.scripts["onNextStep"].append(lambda: game.engine.autoWalkCreatureTo(self, self.target.position, -1))
         else:
             self.notPossible()
         
