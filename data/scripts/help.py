@@ -90,7 +90,7 @@ def testContainer(player, item, position, index):
 
         # Opened from ground, close it on next step :)
         if position[0] != 0xFFFF:
-            player.scripts["onNextStep"].append(lambda: player.closeContainer(item))
+            player.scripts["onNextStep"].append(lambda who: player.closeContainer(item))
     else:
         player.closeContainer(item)
         

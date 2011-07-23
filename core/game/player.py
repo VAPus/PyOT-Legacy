@@ -139,11 +139,6 @@ class TibiaPlayer(Creature):
            self.cancelWalk()
            return False
           
-        if position[1] is 52:
-           self.message("Turbo speed in effect!")
-           self.setSpeed(1500)
-           
-          
         stream.position(position)
         placeCreature(self, position)
         
@@ -151,7 +146,7 @@ class TibiaPlayer(Creature):
         
         if len(self.scripts["onNextStep"]):
             for script in self.scripts["onNextStep"]:
-                script()
+                script(self)
                 self.scripts["onNextStep"].remove(script)
                 
             
@@ -582,6 +577,9 @@ class TibiaPlayer(Creature):
             part1()
 
     def handleAutoWalk(self, packet):
+        if self.target:
+            self.target = None
+            
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)
         walkPattern = deque()
@@ -610,6 +608,8 @@ class TibiaPlayer(Creature):
         game.engine.autoWalkCreature(self, walkPattern)
 
     def handleWalk(self, direction):
+        if self.target:
+            self.target = None
         game.engine.autoWalkCreature(self, deque([direction]))
         
     @deferredGenerator
@@ -836,13 +836,19 @@ class TibiaPlayer(Creature):
             print allCreatures[cid].position
         else:
             self.notPossible()
+
+    def __followCallback(self, who):
+        if self.target == who:
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
+            self.target.scripts["onNextStep"].append(self.__followCallback)
             
-    def  handleFollow(self, packet):
+    def handleFollow(self, packet):
         cid = packet.uint32()
         if cid in allCreatures:
             self.target = allCreatures[cid]
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1)
-            self.target.scripts["onNextStep"].append(lambda: game.engine.autoWalkCreatureTo(self, self.target.position, -1))
+            
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
+            self.target.scripts["onNextStep"].append(self.__followCallback)
         else:
             self.notPossible()
         

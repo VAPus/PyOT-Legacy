@@ -108,7 +108,7 @@ class Creature:
         
         if len(self.scripts["onNextStep"]):
             for script in self.scripts["onNextStep"]:
-                script()
+                script(self)
                 self.scripts["onNextStep"].remove(script)
                 
         # Send to everyone   

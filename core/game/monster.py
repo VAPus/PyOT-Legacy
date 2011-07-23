@@ -1,7 +1,7 @@
 from game.creature import Creature, uniqueId
 import game.engine, game.map
 from packet import TibiaPacket
-import copy, random
+import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 monsters = {}
@@ -16,7 +16,7 @@ class Monster(Creature):
         self.base = base
         self.creatureType = 1
         self.spawnPosition = position[:]
-
+        self.lastStep = 0
     
 
 
@@ -26,6 +26,7 @@ class MonsterBase:
         self.monsterData = monsterData
         self.voiceslist = []
         self.brain = brain
+        
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -69,7 +70,7 @@ class MonsterBrain:
             
     def handleThink(self, monster):
         # Walking
-        if 33 > random.randint(0, 100):
+        if time.time() - monster.lastStep > 3:
             self.walkRandomStep(monster)
             
     def handleTalk(self, monster):
@@ -94,18 +95,27 @@ class MonsterBrain:
         for step in steps:
             if step is 0:
                 if monster.spawnPosition[1]-(monster.position[1]-1) > 5:
+                    print "Stop by north"
+                    print monster.position, " vs ", monster.spawnPosition
                     continue
             elif step is 1:
-                if monster.spawnPosition[0]-(monster.position[0]+1) > -5:
+                if (monster.position[0]+1)-monster.spawnPosition[0] > 5:
+                    print "Stop by east"
+                    print monster.position, " vs ", monster.spawnPosition
                     continue
             elif step is 2:
-                if monster.spawnPosition[1]-(monster.position[1]+1) > -5:
+                if (monster.position[1]+1)-monster.spawnPosition[1] > 5:
+                    print "Stop by south"
+                    print monster.position, " vs ", monster.spawnPosition
                     continue
             elif step is 3:
                 if monster.spawnPosition[0]-(monster.position[0]-1) > 5:
+                    print monster.position, " vs ", monster.spawnPosition
+                    print "Stop by west"
                     continue
                 
             if monster.move(step, spectators):
+                monster.lastStep = time.time()
                 return True
         return False
         

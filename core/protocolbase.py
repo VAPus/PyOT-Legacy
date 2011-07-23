@@ -10,7 +10,6 @@ class TibiaProtocol(Protocol):
     def __init__(self):
         self.gotFirst = False
         self.xtea = ()
-        
         self.onInit()
 
     def connectionMade(self):
@@ -38,8 +37,9 @@ class TibiaProtocol(Protocol):
         packet = TibiaPacketReader(data)
 
         # Length
-        if len(data)-2 is not packet.uint16():
-            log.msg("Packet length is invalid")
+        gotLength = packet.uint16()
+        if len(data)-2 != gotLength:
+            log.msg("Packet length is invalid (exptected %d, got %d)" % (gotLength, len(data)-2))
             self.transport.loseConnection()
             return
 

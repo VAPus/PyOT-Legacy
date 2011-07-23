@@ -42,9 +42,9 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
     creature.action = reactor.callLater(0, handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
-def autoWalkCreatureTo(creature, to, skipFields=0, callback=None):
+def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
 
-    pattern = calculateWalkPattern(creature.position, to, skipFields)
+    pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
         
@@ -62,7 +62,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)
 
 # Calculate walk patterns
-def calculateWalkPattern(fromPos, to, skipFields=None):
+def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     pattern = []
     
     # First diagonal if possible
@@ -95,7 +95,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None):
                 pattern.append(2)
                 
     # Fix for diagonal things like items
-    if len(pattern) > 2:
+    if len(pattern) > 2 and diagonal == True:
         last, last2 = pattern[len(pattern)-2:len(pattern)]
         if abs(last-last2) == 1:
             del pattern[len(pattern)-2:len(pattern)]

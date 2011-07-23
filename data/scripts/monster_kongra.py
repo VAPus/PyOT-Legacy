@@ -6,9 +6,9 @@ kongra.voices("Hugah!", "Ungh! Ungh!", "Huaauaauaauaa!")
 kongra.setDefense(18, 14, 1,2, 1.1, 1.05, 1, 0.95) # armor, defense, fire, earth, energy, ice, holy, death
 
 # Note, kongra is not spawned on map, so we spawn it ourself for test purposes
-"""import game.map
+import game.map
 
 def onPostLoadSector():
-    game.monster.getMonster("Kongra").spawn([75,75,7])
+    game.monster.getMonster("Kongra").spawn([52,52,7])
 
-game.map.regPostLoadSector(2,2, onPostLoadSector)"""
+game.map.regPostLoadSector(1,1, onPostLoadSector)
