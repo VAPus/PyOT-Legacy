@@ -156,6 +156,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             
         elif packetType == 0x8C: # Look at
             self.player.handleLookAt(packet)
+        
+        elif packetType == 0xA1: # Attack
+            self.player.handleAttack(packet)
             
         elif packetType == 0xD2: # Request outfit
             self.player.outfitWindow()
@@ -174,10 +177,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
             #self.transport.loseConnection()
 
     def onConnectionLost(self):
-        import game.scriptsystem
-        from game.map import removeCreature
-        removeCreature(self.player, self.player.position)
-        game.scriptsystem.get("logout").run(self.player)
+        if self.player:
+            import game.scriptsystem
+            from game.map import removeCreature
+            removeCreature(self.player, self.player.position)
+            game.scriptsystem.get("logout").run(self.player)
         
 class GameFactory(protocolbase.TibiaFactory):
     protocol = GameProtocol

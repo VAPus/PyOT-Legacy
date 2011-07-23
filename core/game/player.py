@@ -8,7 +8,7 @@ import game.scriptsystem
 from game.item import Item
 from twisted.internet.defer import deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
-from game.creature import Creature, uniqueId
+from game.creature import Creature, uniqueId, allCreatures
 
 import game.resource
 
@@ -826,4 +826,11 @@ class TibiaPlayer(Creature):
         if item:
             game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
             
+    def handleAttack(self, packet):
+        cid = packet.unt32()
+        print "CreatureID %d" %  cid
+        if cid in allCreatures:
+            print allCreatures[cid].position
+        else:
+            self.notPossible()
         

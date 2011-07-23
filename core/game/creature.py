@@ -61,6 +61,8 @@ class Creature:
         # Make packet
         stream = TibiaPacket(0x6D)
         stream.position(self.position)
+        
+        oldStackpos = getTile(self.position).findCreatureStackpos(self)
         stream.uint8(getTile(self.position).findCreatureStackpos(self))
         
         
@@ -92,7 +94,6 @@ class Creature:
            return False
                     
         stream.position(position)
-        print position
         newTile = getTile(position)
         
         if newTile.creatures(): # Dont walk to creatures
@@ -101,6 +102,7 @@ class Creature:
         removeCreature(self, self.position)
         placeCreature(self, position)
         
+        oldPosition = self.position[:]
         self.position = position
         
         if self.scripts["onWalk"]:
@@ -109,14 +111,30 @@ class Creature:
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
+            
         for spectator in spectators:
-            if not self.cid in spectator.player.knownCreatures:
+            canSeeNew = spectator.player.canSee(position)
+            canSeeOld = spectator.player.canSee(oldPosition)
+            if not canSeeOld and canSeeNew:
                 stream2 = TibiaPacket()
-                print "My pos (and creature %d): " % self.cid, spectator.player.position
-                stream2.addTileCreature(position, 1, self, spectator.player)
+                stream2.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
                 stream2.send(spectator)
                 spectators.remove(spectator)
-        
+                
+            elif canSeeOld and not canSeeNew:
+                stream2 = TibiaPacket()
+                if self.cid in spectator.player.knownCreatures:
+                    spectator.player.knownCreatures.remove(self.cid) # Remove him from the known list
+                    
+                stream2.removeTileItem(oldPosition, oldStackpos)
+                stream2.send(spectator)
+                spectators.remove(spectator)
+                
+            elif not canSeeOld and not canSeeNew: # Happend on the last 4 squares in the +1 rim, cause a debug with etc rx=-1 (also a ry, but tibia fail to meansion it)
+                if self.cid in spectator.player.knownCreatures:
+                    spectator.player.knownCreatures.remove(self.cid) # Also remove him from the known list. This check is probably not needed, but who knowns, teleports? :P
+                spectators.remove(spectator)
+                
         stream.sendto(spectators) 
         
         return True # Required for auto walkings
