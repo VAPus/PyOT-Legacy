@@ -5,6 +5,7 @@ import thread
 import game.enum as enum
 import config
 import time
+import copy
 
 # Unique ids, thread safe too
 def __uid():
@@ -55,7 +56,9 @@ class Creature:
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground):
-        return (ground.speed / self.speed) # TODO
+        if time.time() - self.lastStep < 1: 
+            return (ground.speed / self.speed) # TODO
+        return 1
 
     def move(self, direction, spectators=None):
         import data.map.info
@@ -67,7 +70,7 @@ class Creature:
         stream.position(self.position)
         
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
-        stream.uint8(getTile(self.position).findCreatureStackpos(self))
+        stream.uint8(oldStackpos)
         
         
         # Recalculate position
@@ -121,8 +124,27 @@ class Creature:
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
-            
+        
         for spectator in spectators:
+            streamX = stream
+            if spectator.player == self:
+                streamX = copy.copy(stream)
+                if direction < 4:
+                    self.updateMap(direction, streamX)
+                else:
+                    if direction & 2 == 2:
+                        # North
+                        self.updateMap(0, streamX)
+                    else:
+                        # South
+                        self.updateMap(2, streamX)
+                    if direction & 1 == 1:
+                        # East
+                        self.updateMap(1, streamX)
+                    else:
+                        # West
+                        self.updateMap(3, streamX)
+            
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
             if not canSeeOld and canSeeNew:
@@ -144,11 +166,52 @@ class Creature:
                 if self.cid in spectator.player.knownCreatures:
                     spectator.player.knownCreatures.remove(self.cid) # Also remove him from the known list. This check is probably not needed, but who knowns, teleports? :P
                 spectators.remove(spectator)
-                
-        stream.sendto(spectators) 
+            else:
+                streamX.send(spectator) 
         
         return True # Required for auto walkings
 
+    def teleport(self, position):
+        # 4 steps, remove item (creature), send new map and cords, and effects 
+        removeCreature(self, self.position)
+        stream = TibiaPacket()
+        stream.removeTileItem(self.position, getTile(self.position).findCreatureStackpos(self))
+        stream.sendto(getSpectators(self.position))
+        
+        stream = TibiaPacket(0x6C)
+        stream.position(self.position)
+        stream.uint8(1)
+        
+        stream.uint8(0x64)
+        stream.position(position)
+        stream.magicEffect(self.position, 0x02)
+        placeCreature(self, position)
+        
+        for spectator in spectators:
+            streamX = copy.copy(stream)
+            if spectator.player == self:
+                streamX.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
+            streamX.send(spectator)
+        
+        self.position = position
+
+    def turn(self, direction):
+        if self.direction is direction:
+            return
+            
+        self.direction = direction
+        
+        # Make package
+        stream = TibiaPacket(0x6B)
+        stream.position(self.position)
+        stream.uint8(getTile(self.position).findCreatureStackpos(self))
+        stream.uint16(0x63)
+        stream.uint32(self.clientId())
+        stream.uint8(direction)
+                
+        # Send to everyone
+        stream.sendto(getSpectators(self.position))
+        
     def say(self, message):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)
