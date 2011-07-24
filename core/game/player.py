@@ -206,9 +206,8 @@ class TibiaPlayer(Creature):
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
-                openId = position[1] - 64
                 try:
-                    bag = self.openContainers[openId]
+                    bag = self.openContainers[position[1] - 64]
                 except:
                     return
                     
@@ -251,19 +250,22 @@ class TibiaPlayer(Creature):
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
-                openId = position[1] - 64
-                for bag in self.openContainers:
-                    if bag.openId == openId and bag.container.getThing(position[2]):
-                        return (2, bag.container.getThing(position[2]), bag)
+                try:
+                    bag = self.openContainers[position[1] - 64]
+                except:
+                    return
+                item = bag.container.getThing(position[2])
+                return (2, item, bag)
 
         # Option 4, find any item the player might posess
         if sid:
             return None # TODO
             
     def getContainer(self, openId):
-         for bag in self.openContainers:
-             if bag.openId == openId:
-                 return bag
+        try:
+            return self.openContainers[openId]
+        except:
+            return
                  
     def updateMap(self, direction, streamX=None):
         stream = streamX
@@ -499,7 +501,7 @@ class TibiaPlayer(Creature):
                         
                         # Is it a open container, if so, send item update
                         if container in self.openContainers:
-                            stream.updateContainerItem(container.openId, slot, itemX)
+                            stream.updateContainerItem(self.openContainers.index(container), slot, itemX)
                             
                         if not count:
                             break
@@ -524,12 +526,11 @@ class TibiaPlayer(Creature):
             if info == None:
                 return # Not possible
                 
-            if recursive and info and info.openId != None:
-                stream.addContainerItem(info.openId, item)
+            if recursive and info and info.opened:
+                stream.addContainerItem(self.openContainers.index(info), item)
                     
-            else:
-                if container.openId != None:
-                    stream.addContainerItem(container.openId, item)
+            elif container.opened:
+                stream.addContainerItem(self.openContainers.index(container), item)
         
         if not streamX:
             stream.send(self.client)
@@ -708,21 +709,21 @@ class TibiaPlayer(Creature):
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
                         elif oldItem[0] == 2:
-                            stream.updateContainerItem(oldItem[2].openId, fromPosition[2], oldItem[1])
+                            stream.updateContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2], oldItem[1])
                     else:
                         if oldItem[0] == 1:
                             self.inventory[fromPosition[1]-1] = None
                             stream.removeInventoryItem(fromPosition[1])
                         elif oldItem[0] == 2:
                             oldItem[2].container.removeItem(oldItem[1])
-                            stream.removeContainerItem(oldItem[2].openId, fromPosition[2])
+                            stream.removeContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2])
                 else:
                     if oldItem[0] == 1:
                         self.inventory[fromPosition[1]-1] = None
                         stream.removeInventoryItem(fromPosition[1])
                     elif oldItem[0] == 2:
                         oldItem[2].container.removeItem(oldItem[1])
-                        stream.removeContainerItem(oldItem[2].openId, fromPosition[2])
+                        stream.removeContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2])
                 
                 if toPosition[1] == fromPosition[1]:
                     stack = False
@@ -743,7 +744,7 @@ class TibiaPlayer(Creature):
                 toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                 stream.addTileItem(toPosition, toStackPos, newItem )
                 
-                if not renew and newItem.containerSize and newItem.openId is not None:
+                if not renew and newItem.containerSize and newItem.opened is not None:
                     self.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
 

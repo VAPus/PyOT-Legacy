@@ -63,14 +63,9 @@ def testContainer(player, item, position, index):
     
     
     if not item.opened:
-        print "Not open"
         # Open a bag inside a bag?
         open = True
-        try:
-            bagFound = player.openContainers[index]
-            print "Bag found"
-        except:
-            bagFound = None       
+        bagFound = player.getContainer(index)    
             
         if bagFound:
             # Virtual close
