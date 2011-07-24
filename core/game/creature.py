@@ -3,6 +3,7 @@ from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
 import thread
 import game.enum as enum
+import config
 
 # Unique ids, thread safe too
 def __uid():
@@ -150,7 +151,7 @@ class Creature:
         stream.uint8(enum.MSG_SPEAK_SAY)
         stream.position(self.position)
         stream.string(message)
-        stream.sendto(getSpectators(self.position))
+        stream.sendto(getSpectators(self.position, config.sayRange))
 
     def yell(self, message):
         stream = TibiaPacket(0xAA)
@@ -160,7 +161,7 @@ class Creature:
         stream.uint8(enum.MSG_SPEAK_YELL)
         stream.position(self.position)
         stream.string(message)
-        stream.sendto(getSpectators(self.position))
+        stream.sendto(getSpectators(self.position, config.yellRange))
         
     def stopAction(self):
         try:
