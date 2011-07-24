@@ -4,6 +4,7 @@ from game.map import placeCreature, removeCreature, getTile
 import thread
 import game.enum as enum
 import config
+import time
 
 # Unique ids, thread safe too
 def __uid():
@@ -38,6 +39,7 @@ class Creature:
         self.addon = 0
         self.action = None
         self.actionLock = thread.allocate_lock()
+        self.lastStep = 0
         self.target = None # target for follow/attacks based on modes
         
         # We are trackable
@@ -52,8 +54,8 @@ class Creature:
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
-    def stepDuration(self, tile):
-        return (tile.speed / self.speed) # TODO
+    def stepDuration(self, ground):
+        return (ground.speed / self.speed) # TODO
 
     def move(self, direction, spectators=None):
         import data.map.info
@@ -98,6 +100,10 @@ class Creature:
         stream.position(position)
         newTile = getTile(position)
         
+        if self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+            print "DEBUG!!!!!!! Creature"
+        else:
+            self.lastStep = time.time()
         if newTile.creatures(): # Dont walk to creatures
             return False
             
@@ -168,7 +174,7 @@ class Creature:
             self.action.cancel()
         except:
             pass
-        del self.action
+        self.action = None
         
     def canSee(self, position):
         if abs(position[0]-self.position[0]) < 9 and abs(position[1]-self.position[1]) < 7:

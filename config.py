@@ -45,6 +45,8 @@ RSAKeys = {"n":"1091201329673994292788609605089955415282375029027981291234687579
 maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
+checkAdler32 = True # Disable this might speed things up a bit
+
 sayRange = (10,8)
 yellRange = (18, 14)
 

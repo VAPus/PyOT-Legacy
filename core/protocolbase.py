@@ -4,12 +4,14 @@ from twisted.python import log
 from twisted.application.service import Service
 from packet import TibiaPacketReader, TibiaPacket
 from zlib import adler32
+import config, thread
 
 class TibiaProtocol(Protocol):
 
     def __init__(self):
         self.gotFirst = False
         self.xtea = ()
+        self.sendLock = thread.allocate_lock()
         self.onInit()
 
     def connectionMade(self):
@@ -44,12 +46,15 @@ class TibiaProtocol(Protocol):
             return
 
         # Adler32:
-        adler = packet.uint32()
-        calcAdler = adler32(packet.getData()) & 0xffffffff
-        if adler != calcAdler:
-            log.msg("Adler32 missmatch, it's %s, should be: %s" % (calcAdler, adler))
-            self.transport.loseConnection()
-            return
+        if config.checkAdler32:
+            adler = packet.uint32()
+            calcAdler = adler32(packet.getData()) & 0xffffffff
+            if adler != calcAdler:
+                log.msg("Adler32 missmatch, it's %s, should be: %s" % (calcAdler, adler))
+                self.transport.loseConnection()
+                return
+        else:
+            packet.pos += 4
 
         if self.gotFirst:
             self.onPacket(packet)
@@ -83,7 +88,8 @@ class TibiaProtocol(Protocol):
 
     def loseConnection(self):
         self.onConnectionLost()
-        reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings to happend
+        self.sendLock.acquire() # Yes, no new writings can happend. We might risk a deadlock here or exception in send()
+        reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
 class TibiaFactory(Factory):
     protocol = None # This HAVE to be overrided!

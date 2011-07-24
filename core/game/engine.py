@@ -24,13 +24,14 @@ def action(forced=False, delay=0):
     def decor(f):
         def new_f(creature, *args, **argw):
             creature.actionLock.acquire()
-            if creature.action: # + forced
+            if creature.action and forced: # + forced
                 creature.action.cancel()
+            elif creature.action:
+                creature.action.addCallback(f, creature, *args, **argw)
             else:
-                pass # TODO
-            
+                f(creature, *args, **argw)
+                
             # (forced actions are released first when their done
-            f(creature, *args, **argw)
             if not forced:
                 creature.actionLock.release()
         return new_f

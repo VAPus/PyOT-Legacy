@@ -9,6 +9,7 @@ from game.item import Item
 from twisted.internet.defer import deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
 from game.creature import Creature, uniqueId, allCreatures
+import time
 
 import game.resource
 
@@ -143,7 +144,11 @@ class TibiaPlayer(Creature):
         placeCreature(self, position)
         
         self.position = position
-        
+
+        if self.lastStep+self.stepDuration(getTile(self.position).getThing(0)) > time.time():
+            print "DEBUG!!!!!!!"
+        else:
+            self.lastStep = time.time()
         if len(self.scripts["onNextStep"]):
             for script in self.scripts["onNextStep"]:
                 script(self)
