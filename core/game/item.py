@@ -16,7 +16,7 @@ class Container:
     def __init__(self, size):
         self.items = deque()
         self.maxSize = size
-        self.openId = None
+        self.opened = False
         
     def placeItem(self, item):
         length = len(self.items)

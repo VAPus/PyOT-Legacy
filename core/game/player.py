@@ -207,9 +207,13 @@ class TibiaPlayer(Creature):
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
                 openId = position[1] - 64
-                for bag in self.openContainers:
-                    if bag.openId == openId and bag.container.getThing(position[2]):
-                        return bag.container.getThing(position[2])
+                try:
+                    bag = self.openContainers[openId]
+                except:
+                    return
+                    
+                item = bag.container.getThing(position[2])
+                return item
 
         # Option 4, find any item the player might posess
         if sid:
@@ -416,16 +420,19 @@ class TibiaPlayer(Creature):
             self.refreshOutfit()
     
     def updateContainer(self, container, parent=False, update=True):
+        if parent and update:
+            self.openContainers[self.openContainers.index(container.parent)] = container # Replace it in structure
         self.openContainer(container, parent, update)
-        
+
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
             stream = TibiaPacket(0x6E)
-            if not update:
-                container.openId = len(self.openContainers)
-            self.openContainers.append(container)
             
-            stream.uint8(container.openId)
+            if not update:
+                container.opened = True
+                self.openContainers.append(container)
+            
+            stream.uint8(self.openContainers.index(container))
             
             stream.uint16(container.cid)
             stream.string(container.name())
@@ -440,31 +447,35 @@ class TibiaPlayer(Creature):
             stream.send(self.client)
             
     def closeContainer(self, container):
-        if container in self.openContainers:
-            stream = TibiaPacket(0x6F)
-            stream.uint8(container.openId)
-            self.openContainers.remove(container)
-            container.openId = None
-            stream.send(self.client)
+        index = self.openContainers.index(container)
+        stream = TibiaPacket(0x6F)
+        stream.uint8(index)
+        del self.openContainers[index]
+        container.opened = False
+        stream.send(self.client)
+
 
     def closeContainerId(self, openId):
-        for container in self.openContainers:
-            if container.openId is openId:
-                self.closeContainer(container)
-                break
+        try:
+            container = self.openContainers[openId]
+            stream = TibiaPacket(0x6F)
+            stream.uint8(openId)
+            del self.openContainers[openId]
+            container.opened = False
+            stream.send(self.client)
+            return True
+            
+        except:
+            return False
 
     def arrowUpContainer(self, openId):
-        bagFound = None
-        for bag in self.openContainers:
-            if bag.openId == openId:
-                bagFound = bag
-                break
+        bagFound = self.openContainers[openId]
                 
         if bagFound.parent:
-            bagFound.parent.openId = bag.openId
-            bagFound.openId = None
-            self.openContainers.remove(bagFound)
-            self.updateContainer(bagFound.parent, True if bagFound.parent.parent else False)
+            bagFound.parent.opened = True
+            bagFound.opened = False
+            self.openContainers[openId] = bagFound.parent
+            self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
 
     # Item to container
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
@@ -825,7 +836,7 @@ class TibiaPlayer(Creature):
         stackpos = packet.uint8()
         index = packet.uint8()
         item = self.findItem(position, stackpos)
-        
+
         if item:
             game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
             

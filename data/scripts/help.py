@@ -62,23 +62,23 @@ def testContainer(player, item, position, index):
         item.container.placeItem(bag1)
     
     
-    
-    if item.openId == None:
+    if not item.opened:
+        print "Not open"
         # Open a bag inside a bag?
         open = True
-        bagFound = None
-        for bag in player.openContainers:
-            if bag.openId == index:
-                bagFound = bag
-        
+        try:
+            bagFound = player.openContainers[index]
+            print "Bag found"
+        except:
+            bagFound = None       
+            
         if bagFound:
             # Virtual close
-            player.openContainers[index].openId = None
+            player.openContainers[index].opened = False
                 
             # Virtual switch
-            item.openId = index
+            item.opened = True
             item.parent = player.openContainers[index]
-            player.openContainers[index] = item
                 
             # Update the container
             player.updateContainer(item, parent=1)
@@ -86,7 +86,14 @@ def testContainer(player, item, position, index):
         
         if open:
             # Open a new one
-            player.openContainer(item)
+            parent = 0
+            print position
+            print player.openContainers
+
+            if position[0] == 0xFFFF and position[1] >= 64:
+                parent = 1
+                item.parent = player.openContainers[position[2]-64]
+            player.openContainer(item, parent=parent)
 
         # Opened from ground, close it on next step :)
         if position[0] != 0xFFFF:
