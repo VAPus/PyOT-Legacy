@@ -34,7 +34,7 @@ sqlMinConnections = 3
 sqlMaxConnections = 5
 
 reactorStyle = "default" # Can be "select" (Default, work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs). Pypy ignore this one!
-jsonLibrary = "ujson" # Can be ujson, cjson, simplejson or just json (slowest)
+jsonLibrary = "json" # Can be ujson, cjson, simplejson or just json (slowest)
 
 RSAKeys = {"n":"109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413",
 "e":"65537",
@@ -45,7 +45,7 @@ RSAKeys = {"n":"1091201329673994292788609605089955415282375029027981291234687579
 maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
-checkAdler32 = True # Disable this might speed things up a bit
+checkAdler32 = False # Disable this might speed things up a bit
 
 sayRange = (10,8)
 yellRange = (18, 14)

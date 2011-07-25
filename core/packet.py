@@ -1,8 +1,8 @@
 import struct
 import otcrypto
-from zlib import adler32
 from twisted.python import log
 from twisted.internet import reactor
+from zlib import adler32
 
 def inThread(f):
     def func(*argc, **argw):
@@ -354,9 +354,7 @@ class TibiaPacket:
         buffer = struct.pack("<HI", len(self.data)+4, adler)
         buffer += self.data
         
-        stream.sendLock.acquire()
         stream.transport.write(buffer)
-        stream.sendLock.release()
     
     @inThread
     def sendto(self, list):
@@ -374,6 +372,4 @@ class TibiaPacket:
              if not lenCache:
                  lenCache = len(data)+4
              
-             client.sendLock.acquire() # TODO: Don't make people wait for this lock, send to them, then loop it in a seperate loop below
              client.transport.write(bytes(struct.pack("<HI", lenCache, adler))+data)
-             client.sendLock.release()

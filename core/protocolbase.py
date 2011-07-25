@@ -3,15 +3,13 @@ from twisted.internet import reactor
 from twisted.python import log
 from twisted.application.service import Service
 from packet import TibiaPacketReader, TibiaPacket
-from zlib import adler32
-import config, thread
+import config
 
 class TibiaProtocol(Protocol):
 
     def __init__(self):
         self.gotFirst = False
         self.xtea = ()
-        self.sendLock = thread.allocate_lock()
         self.onInit()
 
     def connectionMade(self):
@@ -47,6 +45,7 @@ class TibiaProtocol(Protocol):
 
         # Adler32:
         if config.checkAdler32:
+            from zlib import adler32
             adler = packet.uint32()
             calcAdler = adler32(packet.getData()) & 0xffffffff
             if adler != calcAdler:
@@ -88,7 +87,6 @@ class TibiaProtocol(Protocol):
 
     def loseConnection(self):
         self.onConnectionLost()
-        self.sendLock.acquire() # Yes, no new writings can happend. We might risk a deadlock here or exception in send()
         reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
 class TibiaFactory(Factory):
