@@ -27,6 +27,7 @@ class TibiaPlayer(Creature):
         return 0x10000000 + uniqueId()
         
     def sendFirstPacket(self):
+        
         stream = TibiaPacket(0x0A)
 
         stream.uint32(self.clientId()) # Cid

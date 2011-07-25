@@ -2,7 +2,7 @@ from game.item import BaseThing
 from twisted.internet import threads
 import otjson, zlib
 import game.item
-import time
+import time, copy
 
 def getTile(pos):
     try:
@@ -112,7 +112,7 @@ import data.map.info
 dummyTiles = {} # solid items like mountains will stay here
 dummyItems = {} # Ground items etc
 
-def loadTiles(x,y, walk=True):
+def loadTiles(x,y, walk=False):
     if x > data.map.info.height or y > data.map.info.width:
         return None
         
@@ -120,7 +120,7 @@ def loadTiles(x,y, walk=True):
     sectorY = int(y / data.map.info.sectorSize[1])
     
     # An idea by soul4soul. To be better implanted into walk sections really
-    if walk:
+    """if walk:
         commands = [(load, [sectorX+1, sectorY], {})]
         commands.append((load, [sectorX-1, sectorY], {}))
         commands.append((load, [sectorX, sectorY+1], {}))
@@ -128,12 +128,12 @@ def loadTiles(x,y, walk=True):
         commands.append((load, [sectorX-1, sectorY-1], {}))
         commands.append((load, [sectorX+1, sectorY+1], {}))
         commands.append((load, [sectorX-1, sectorY+1], {}))
-        commands.append((load, [sectorX+1, sectorY-1], {}))
+        commands.append((load, [sectorX+1, sectorY-1], {}))"""
     # This locks walking until it's done if it isn't already loaded, which is should be!
     load(sectorX, sectorY)
     # Perform the loading in threadpool, this hold one thread
-    if walk:
-        threads.callMultipleInThread(commands)
+    """if walk:
+        threads.callMultipleInThread(commands)"""
     
 def load(sectorX, sectorY):
 
@@ -159,14 +159,15 @@ def load(sectorX, sectorY):
         if not itemId in dummyItems:
             dummyItems[itemId] = game.item.Item(itemId)
         return dummyItems[itemId]
-    
+    def r(to):
+        return xrange(0,to)
     dd = {}
-    range = xrange # Faster, yet Py3 compatible when we disable this later :)
+    N = None # Shortform
     execfile("data/map/map_%d_%d.sec" % (sectorX, sectorY), locals(), dd)
-    _map_ = dd["_map_"]
+    _map_ = dd["M"]
 
-    xPos = sectorX*32
-    yPos = sectorY*32
+    xPos = (sectorX*32)
+    yPos = (sectorY*32)
     
     for x in _map_:
         if not xPos in knownMap:
@@ -175,12 +176,12 @@ def load(sectorX, sectorY):
             if not yPos in knownMap[xPos]:
                 knownMap[xPos][yPos] = {} 
             for z in y:
-                for zPos in z:
-                    knownMap[xPos][yPos][zPos] = Tile(z[zPos])
+                knownMap[xPos][yPos][z] = Tile(copy.copy(y[z]))
+
             yPos += 1    
         yPos = sectorY*32
-        xPos += 1            
-                        
+        xPos += 1
+
     print "Loading took: %f to load sector %d_%d" % (time.time() - begin, sectorX, sectorY)
     # Do callbacks
     m = str(sectorX).zfill(3)+str(sectorY).zfill(3)
