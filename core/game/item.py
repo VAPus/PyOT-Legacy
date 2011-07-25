@@ -151,9 +151,12 @@ def loadItems():
                     item[key] = True
                 else:
                     del item[key]
-        loadItems[item["sid"]] = item
+                    
+        reverseLoadItems[item["cid"]] = copy.copy(item["sid"])
+        del item["sid"]
+        loadItems[reverseLoadItems[item["cid"]]] = item
         
-        reverseLoadItems[item["cid"]] = item["sid"]
+        
 
     for data in result2:
         val = game.engine.autoCastValue(data["value"])

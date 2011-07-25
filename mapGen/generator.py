@@ -13,7 +13,10 @@ class Map:
         for x in xrange(0, xA+1):
             self.area.append([])
             for y in xrange(0, yA+1):
-                self.area[x].append({7: [Item(ground)]})
+                if isinstance(ground, int):
+                    self.area[x].append({7: [Item(ground)]})
+                else:
+                    self.area[x].append({7: [ground]})
 
     def merge(self, obj, offsetX, offsetY, overrideLevel=None):
         xO = offsetX
@@ -23,6 +26,7 @@ class Map:
             for y in x:
                 for z in y:
                     self.area[xO][yO][z if not overrideLevel else overrideLevel] = y[z]
+
                 yO += 1
             yO = offsetY
             xO += 1
@@ -37,6 +41,7 @@ class Map:
 
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
+                
                 sector = []
                 extras = []
                 for xS in xrange(0, areas[0]):
@@ -44,10 +49,10 @@ class Map:
                     
                     for yS in xrange(0, areas[1]):
                         sector[xS].append([])
-                        for zS in self.area[xS][yS]:
+                        for zS in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS]:
                             sector[xS][yS] = {7:[]}
-                            for thing in self.area[xS][yS][zS]:
-                                e,extras = thing.gen(xS, yS, zS, extras)
+                            for thing in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS][zS]:
+                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS, zS, extras)
                                 if e:
                                     sector[xS][yS][zS].append(e)
                 
@@ -55,12 +60,12 @@ class Map:
                 xCom = []
                 xCount = 0
                 global opR
-                opR = "="
+                opR = "m="
                 def opM():
                     global opR
-                    if opR == "=":
-                        opR = "+="
-                        return "="
+                    if opR == "m=":
+                        opR = "+"
+                        return "m="
                     return opR
                        
                 # Level 2, y compare:
@@ -74,15 +79,16 @@ class Map:
                             xCom.remove(y)
                         else:
                             if yCount > 1:
-                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d," % yCount
+                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d+" % yCount
                             elif yCount:
-                                output += str(yCom).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+","
+                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"+"
                             yCom = y
                             yCount = 1
                     if yCount > 1:
-                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d," % yCount
-                    
-                    return output[:-1]
+                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d+" % yCount
+                    elif yCount:
+                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"+"
+                    return "["+output[:-1]+"]"
                 output = ""
                 # Level 1, X compare
                 for x in copy.copy(sector):
@@ -92,16 +98,45 @@ class Map:
                     else:
                         if xCount > 1:
                             # Begin building
-                            output += "M%s["%opM()+yComp(xCom)+"]*%d\n" % xCount
+                            output += "%s"%opM()+yComp(xCom)+"*%d" % xCount
                         elif xCount:
-                            output += "M%s["%opM()+yComp(xCom)+"]\n"
+                            output += "%s"%opM()+yComp(xCom)+""
                         xCom = x
                         xCount = 1
                 if xCount > 1:
-                    output += "M%s["%opM()+yComp(xCom)+"]*%d\n" % xCount
+                    output += "%s"%opM()+yComp(xCom)+"*%d" % xCount
+                elif xCount:
+                    output += "%s"%opM()+yComp(xCom)+""
+                    
+                if extras:
+                    # Monster ops
+                    # TODO: Reorder monsters first!
+                    monsters = {}
+                    curr = ""
+                    for x in extras:
+                        if x[0] == "M":
+                            subs = x.split("'")
+                            if not subs[1] in monsters:
+                                monsters[subs[1]] = 1
+                            else:
+                                monsters[subs[1]] += 1
+                    # Run two, with new count 
+                    pos = 0
+                    for x in copy.copy(extras):
+                        if x[0] == "M":
+                            subs = x.split("'")
+                            if monsters[subs[1]] > 1:
+                                if not curr == subs[1]:
+                                    extras.insert(pos, "c='%s'" % subs[1])
+                                    pos += 1
+                                    curr = subs[1]
+                                subs[1] = "c"
+                                extras[extras.index(x)] = ''.join(subs)
+                        pos += 1
+                        
+                    output += "\n"+'\n'.join(extras)
 
-                output += '\n'.join(extras)
-                open('map_%d_%d.sec' % (xA, yA), 'wb').write(output[:-1])
+                open('map_%d_%d.sec' % (xA, yA), 'wb').write(output)
         
 class Area:
     def __init__(self, xA, yA, ground=100, level=7):
@@ -110,7 +145,10 @@ class Area:
         for x in xrange(0, xA+1):
             self.area.append([])
             for y in xrange(0, yA+1):
-                self.area[x].append({level: [Item(ground)]})
+                if isinstance(ground, int):
+                    self.area[x].append({level: [Item(ground)]})
+                else:
+                    self.area[x].append({level: [ground]})
     def add(self, x,y,thing):
         self.area[x][y][self.z].append(thing)
         
@@ -125,10 +163,18 @@ class Item:
         self.id = id
     def gen(self, x,y,z,extras):
         return ('I(%d)' % self.id, extras)
-        
+
+class RSItem:
+    def __init__(self, *argc):
+        self.ids = argc
+    def gen(self, x,y,z,extras):
+        import random
+        return ('I(%d)' % random.choice(self.ids), extras)    
 class Monster:
     def __init__(self, name):
         self.name = name
+
+            
     def gen(self, x,y,z, extras):
         extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != z else ''))
         return (None, extras)

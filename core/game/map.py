@@ -157,13 +157,12 @@ def load(sectorX, sectorY):
         if not itemId in dummyItems:
             dummyItems[itemId] = game.item.Item(itemId)
         return dummyItems[itemId]
-    def r(to):
-        return xrange(0,to)
+
     dd = {}
     N = None # Shortform
     execfile("data/map/map_%d_%d.sec" % (sectorX, sectorY), locals(), dd)
-    _map_ = dd["M"]
-
+    _map_ = dd["m"]
+    
     xPos = (sectorX*32)
     yPos = (sectorY*32)
     
@@ -172,10 +171,10 @@ def load(sectorX, sectorY):
             knownMap[xPos] = {}
         for y in x:
             if not yPos in knownMap[xPos]:
-                knownMap[xPos][yPos] = {} 
+                knownMap[xPos][yPos] = {}
+
             for z in y:
                 knownMap[xPos][yPos][z] = Tile(y[z][:])
-
             yPos += 1    
         yPos = sectorY*32
         xPos += 1

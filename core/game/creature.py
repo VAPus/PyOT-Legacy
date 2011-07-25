@@ -173,27 +173,33 @@ class Creature:
 
     def teleport(self, position):
         # 4 steps, remove item (creature), send new map and cords, and effects 
-        removeCreature(self, self.position)
+        
         stream = TibiaPacket()
         stream.removeTileItem(self.position, getTile(self.position).findCreatureStackpos(self))
+        stream.magicEffect(self.position, 0x02)
         stream.sendto(getSpectators(self.position))
         
-        stream = TibiaPacket(0x6C)
-        stream.position(self.position)
-        stream.uint8(1)
-        
-        stream.uint8(0x64)
-        stream.position(position)
-        stream.magicEffect(self.position, 0x02)
+        removeCreature(self, self.position)
         placeCreature(self, position)
+        if self.creatureType == 0:
+            stream = TibiaPacket(0x6C)
+            stream.position(self.position)
+            stream.uint8(1)
+            stream.uint8(0x64)
+            stream.position(position)
+            stream.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
+            stream.magicEffect(position, 0x02)
+            stream.send(self.client)
+            
+        self.position = position  
         
-        for spectator in spectators:
-            streamX = copy.copy(stream)
-            if spectator.player == self:
-                streamX.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
-            streamX.send(spectator)
+        for spectator in getSpectators(position):
+            if spectator.player != self:
+                stream.addTileCreature(position, 1, self, spectator.player)
+                stream.magicEffect(position, 0x02)
+                stream.send(spectator)
+                
         
-        self.position = position
 
     def turn(self, direction):
         if self.direction is direction:

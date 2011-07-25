@@ -156,8 +156,10 @@ class TibiaPacket:
         import game.item
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
-            if item.count is not None:
+            if item.stackable:
                 self.uint8(item.count)
+            if item.fluidSource:
+                self.uint8(1)
         else:
             self.uint16(item)
             if count:
