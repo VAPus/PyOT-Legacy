@@ -85,127 +85,138 @@ class Item:
         self.sid = 0
         self.alsoKnownAs = []
         self.junk = False
+
+class L:
+    def __init__(self, val):
+        self.value = val
+class Node:
+    def __init__(self, otb, level):
+        self.data = b""
+        self.nodes = []
+        byte = otb.uint8()
+        nextIsEscaped = False
+        while byte != None:
+            if byte == 0xFE and not nextIsEscaped:
+                node = self.handleBlock(otb, level)
+
+            elif byte == 0xFF and not nextIsEscaped:
+                level.value -= 1
+                if level.value < 0:
+                    print "DEBUG!"
+                break
+                
+            elif byte == 0xFD and not nextIsEscaped:
+                nextIsEscaped = True
+                
+            else:
+                nextIsEscaped = False 
+                self.data += struct.pack("<B", byte)
+                
+            byte = otb.uint8()
+        self.data = Reader(self.data)
+    def handleBlock(self, otb, level):
+        level.value += 1
+        node = Node(otb, level)
+        self.nodes.append(node)
+        return node
+        
+    def next(self):
+        if self.nodes:
+            return self.nodes.pop(0)
+        else:
+            return None
+            
 otbFile = open("items.otb")
 otb = Reader(otbFile.read())
 
-# This file is somewhat designed as a XMl file
+otb.pos += 5
+node = Node(otb, L(1)) # We use 1 here since we skip the "root"
 
+node.data.uint8() # 0x00
+node.data.uint32() # 0x00
+node.data.uint8() # 0x01
+node.data.uint16() # Really unimportant
+majorVersion = node.data.uint32()
+minorVersion = node.data.uint32()
+buildVersion = node.data.uint32()
+stringVersion = node.data.getXString(128)
 
+print "-- "
+print "-- OTB version %d.%d (Client: %s, build: %d)" % (majorVersion, minorVersion, stringVersion[12:16], buildVersion)
 
-# Now, we could naturally just read shit, but some idiot figured we should use some junky escape system in the file, since we don't, we just got to remove the escape system entierly
-# This code is probably 50%+ of the entier execution time
-nLen = 0
-nData = b""
-for x in range(0, otb.length):
-    char = otb.uint8()
-    if char is not 0xFD or not otb.peekUint8() in (0xFD, 0xFE, 0xFF):
-        nData += struct.pack("<B", char)
-        nLen += 1      
-
-otb.data = nData
-otb.length = nLen
-
-# Skip the first 4bytes, they're just NULLs
-otb.pos = 4
-
-# The root node
-if otb.uint8() == 0xFE:
-    # The get props code:
-    otb.uint8() # Yet anther NULL byte
-    flags = otb.uint32()
-    nodeType = otb.uint8()
-    if nodeType == 0x01:
-        dataLen = otb.uint16()
-        majorVersion = otb.uint32()
-        minorVersion = otb.uint32()
-        buildVersion = otb.uint32()
-        
-        #print "-- OTB version %d.%d (client: 9.0, build: %d)" % (majorVersion, minorVersion, buildVersion)
-# Cheat the position to avoid junk
-otb.pos = 13 + dataLen
 items = []
 lastRealItem = None
 
-# A new node, the item nodes
-if True:
-    while otb.pos < otb.length:
-        if otb.uint8() is not 0xFE: # this ain't suppose to happend, but if you fuck the file up, then sure :p
-            b = otb.peekUint8()
-            if b:
-                print "DEBUG: Not 0xFE opening, next byte is: %d" % b
-                continue
-            else:
-                break
-        item = Item()
-        item.type = otb.uint8()
-        flags = otb.uint32()
-
-        if (flags & 1) == 1:
-            item.flags["solid"] = 1
-        if (flags & 2) == 2:
-            item.flags["blockprojectile"] = 1
-        if (flags & 4) == 4:
-            item.flags["blockpath"] = 1
-        if (flags & 8) == 8:
-            item.flags["hasheight"] = 1
-        if (flags & 16) == 16:
-            item.flags["usable"] = 1
-        if (flags & 32) == 32:
-            item.flags["pickable"] = 1
-        if (flags & 64) == 64:
-            item.flags["movable"] = 1
-        if (flags & 128) == 128:
-            item.flags["stackable"] = 1
-        if (flags & 256) == 256:
-            item.flags["ontop"] = 1
-        if (flags & 512) == 512:
-            item.flags["vertical"] = 1
-        if (flags & 1024) == 1024:
-            item.flags["horizontal"] = 1
-        if (flags & 2048) == 2048:
-            item.flags["hangable"] = 1
-        if (flags & 4096) == 4096:
-            item.flags["distanceread"] = 1
-        if (flags & 8192) == 8192:
-            item.flags["rotatable"] = 1
-        if (flags & 16384) == 16384:
-            item.flags["readable"] = 1
-        if (flags & 32768) == 32768:
-            item.flags["charges"] = 1
-        if (flags & 65536) == 65536:
-            item.flags["lookthrough"] = 1
-        try:
-            while otb.peekUint8() != 0xFF:
-                attr = otb.uint8()
-                datalen = otb.uint16()
-                if attr is 0x10:
-                    item.sid = otb.uint16()
+child = node.next()
+while child:
+    item = Item()
+    item.type = child.data.uint8()
+    flags = child.data.uint32()
+    
+    if (flags & 1) == 1:
+        item.flags["solid"] = 1
+    if (flags & 2) == 2:
+        item.flags["blockprojectile"] = 1
+    if (flags & 4) == 4:
+        item.flags["blockpath"] = 1
+    if (flags & 8) == 8:
+        item.flags["hasheight"] = 1
+    if (flags & 16) == 16:
+        item.flags["usable"] = 1
+    if (flags & 32) == 32:
+        item.flags["pickable"] = 1
+    if (flags & 64) == 64:
+        item.flags["movable"] = 1
+    if (flags & 128) == 128:
+        item.flags["stackable"] = 1
+    if (flags & 8192) == 8192:
+        item.flags["ontop"] = 1
+    if (flags & 131072) == 131072:
+        item.flags["vertical"] = 1
+    if (flags & 262144) == 262144:
+        item.flags["horizontal"] = 1
+    if (flags & 65536) == 65536:
+        item.flags["hangable"] = 1
+    if (flags & 1048576) == 1048576:
+        item.flags["distanceread"] = 1
+    if (flags & 32768) == 32768:
+        item.flags["rotatable"] = 1
+    if (flags & 16384) == 16384:
+        item.flags["readable"] = 1
+    if (flags & 8388608) == 8388608:
+        item.flags["lookthrough"] = 1
+    if (flags & 16777216) == 16777216:
+        item.flags["animation"] = 1
+    
+    sub = child.next()
+    while child.data.peekUint8():
+        attr = child.data.uint8()
+        datalen = child.data.uint16()
+        if attr is 0x10:
+            item.sid = child.data.uint16()
                     
-                elif attr is 0x11:
-                    item.cid = otb.uint16()
-                elif attr is 0x14:
-                    item.flags["speed"] = otb.uint16()
-                elif attr is 0x37:
-                    item.flags["order"] = otb.uint8()
-                else:
-                    if attr is 0xFE:
-                        otb.pos -= 4
-                        break
-                    else:
-                        otb.pos += datalen
-                    
-        except:
-            pass
-        try:
-            otb.uint8() # 0xFF
-        except:
-            pass
-             # Fix a bug with last closing
-        if item.cid:
-            items.append(item)
-            lastRealItem = item
+        elif attr is 0x11:
+            item.cid = child.data.uint16()
+            
+        elif attr is 0x14:
+            item.flags["speed"] = child.data.uint16()
+            
+        elif attr is 0x37:
+            item.flags["order"] = child.data.uint8()
+            
         else:
-            lastRealItem.alsoKnownAs.append(item.sid)
+            child.data.pos += datalen        
+
+    if item.cid:
+        items.append(item)
+        lastRealItem = item
+    else:
+        lastRealItem.alsoKnownAs.append(item.sid)
+    
+    child = node.next()
+print "-- Got a total of %d items!" % len(items)
+print "-- "
+print ""
 
 import json, xml.dom.minidom as dom
 
@@ -252,13 +263,14 @@ if id:
 
 import copy
 print "CREATE TABLE `items` ( \n\
-`sid` SMALLINT NOT NULL,\n\
-`cid` SMALLINT NOT NULL,\n\
+`sid` SMALLINT UNSIGNED NOT NULL,\n\
+`cid` SMALLINT UNSIGNED NOT NULL,\n\
 `subtypes` TINYINT NOT NULL, \n\
 `name` VARCHAR( 32 ) NOT NULL,\n\
 `article` CHAR( 3 ) NOT NULL DEFAULT '',\n\
 `plural` VARCHAR( 32 ) NOT NULL DEFAULT '',\n\
 `speed` SMALLINT NOT NULL, \n\
+`order` TINYINT NOT NULL, \n\
 `solid` BOOL NOT NULL DEFAULT 0,\n\
 `blockprojectile` BOOL NOT NULL DEFAULT 0,\n\
 `blockpath` BOOL NOT NULL DEFAULT 0,\n\
@@ -274,22 +286,20 @@ print "CREATE TABLE `items` ( \n\
 `distanceread` BOOL NOT NULL DEFAULT 0,\n\
 `rotatable` BOOL NOT NULL DEFAULT 0,\n\
 `readable` BOOL NOT NULL DEFAULT 0,\n\
-`charges` BOOL NOT NULL DEFAULT 0,\n\
+`animation` BOOL NOT NULL DEFAULT 0,\n\
 `lookthrough` BOOL NOT NULL DEFAULT 0,\n\
 `custom` BOOL NOT NULL DEFAULT 0,\n\
 PRIMARY KEY ( `sid` )\n\
 ) ENGINE = MYISAM; \n\
 CREATE TABLE `item_attributes` ( \n\
-`sid` SMALLINT NOT NULL ,\n\
+`sid` SMALLINT UNSIGNED NOT NULL ,\n\
 `key` VARCHAR( 20 ) NOT NULL ,\n\
 `value` VARCHAR( 64 ) NOT NULL ,\n\
 `custom` BOOL NOT NULL DEFAULT '0'\n\
 ) ENGINE = MYISAM ;"
+
 for item in items:
     if item.sid in data:
-        # Dirty way to fix the attributes:
-        #item.flags.update(data[item.sid])
-        
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
 
@@ -300,14 +310,12 @@ for item in items:
         del data[item.sid]["article"]
         
         if data[item.sid]:
-            print "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
-            k = False
+            output = "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
             for key in data[item.sid]:
-                print "%s(%d, '%s', '%s')" % (',' if k else '', item.sid, key, data[item.sid][key])
-                if not k:
-                    k = True
-            print ';'
-        print ''
-        #print(("INSERT INTO items VALUES(%d, %d, '%s', '%s', '%s', %s, %s);" % (item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), article, plural.replace("'", "\\'"), "'"+json.dumps(item.alsoKnownAs, separators=(',', ':'))+"'" if item.alsoKnownAs else "NULL", "'"+json.dumps(item.flags, separators=(',', ':')).replace("'", "\\'")+"'" if item.flags else "NULL")).encode("utf-8"))
+                output += "(%d, '%s', '%s'),\n" % (item.sid, key, data[item.sid][key])
+            print output[:-2]+";\n"
+            
+
     #else:
     #    print("---WARNING, item with sid=%d not no data!" % item.sid)
+    
