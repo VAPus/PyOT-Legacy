@@ -152,15 +152,23 @@ def load(sectorX, sectorY):
     def M(name,x,y,z=7):
         game.monster.getMonster(name).spawn([x,y,z])
     
-    def I(itemId):
+    def MM(name, *argc):
+        z = 7
+        if len(argc) % 2:
+            z = argc[-1]
+            
+        for count in xrange(0,len(argc), 2):
+            game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
+            
+    def I(itemId, **argw):
         global dummyItems
         if not itemId in dummyItems:
-            dummyItems[itemId] = game.item.Item(itemId)
+            dummyItems[itemId] = game.item.Item(itemId, **argw)
         return dummyItems[itemId]
 
     dd = {}
-    N = None # Shortform
-    execfile("data/map/map_%d_%d.sec" % (sectorX, sectorY), locals(), dd)
+    O = None # Shortform
+    execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
     _map_ = dd["m"]
     
     xPos = (sectorX*32)

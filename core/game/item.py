@@ -159,7 +159,12 @@ def loadItems():
         
 
     for data in result2:
-        val = game.engine.autoCastValue(data["value"])
+        if data["key"] == "fluidSource":
+            val = getattr(game.enum, 'FLUID_'+data["value"].upper())
+        elif data["key"] == "floorChange":
+            val = game.enum.FLOORCHANGE_DOWN if data["value"]=="down" else game.enum.FLOORCHANGE_UP
+        else:
+            val = game.engine.autoCastValue(data["value"])
         if val:
             loadItems[int(data["sid"])][data["key"]] = val
             

@@ -1,8 +1,10 @@
 import copy
+
 # Ops:
 """
     I: Item
     M: Monster
+    MM: Multimonster
 """
 
 class Map:
@@ -112,31 +114,39 @@ class Map:
                     # Monster ops
                     # TODO: Reorder monsters first!
                     monsters = {}
-                    curr = ""
+                    monsterPos = {}
+                    handled = []
                     for x in extras:
                         if x[0] == "M":
-                            subs = x.split("'")
+                            args = x.split('(')[1].split(')')[0].split(',')
+                            if len(args) > 3:
+                                # TODO: Diffrent ground level then 7
+                                continue
+                            
+                            subs = args[0].split("'")
                             if not subs[1] in monsters:
                                 monsters[subs[1]] = 1
+                                monsterPos[subs[1]] = [args[1], args[2]]
                             else:
                                 monsters[subs[1]] += 1
+                                monsterPos[subs[1]].append(args[1])
+                                monsterPos[subs[1]].append(args[2])
                     # Run two, with new count 
-                    pos = 0
                     for x in copy.copy(extras):
                         if x[0] == "M":
                             subs = x.split("'")
                             if monsters[subs[1]] > 1:
-                                if not curr == subs[1]:
-                                    extras.insert(pos, "c='%s'" % subs[1])
-                                    pos += 1
+                                
+                                if not subs[1] in handled:
+                                    extras[extras.index(x)] = "MM('%s',%s)" % ( subs[1], ','.join(monsterPos[subs[1]]) )
+                                    handled.append(subs[1])
                                     curr = subs[1]
-                                subs[1] = "c"
-                                extras[extras.index(x)] = ''.join(subs)
-                        pos += 1
-                        
+                                else:
+                                    del extras[extras.index(x)]
+                                    
                     output += "\n"+'\n'.join(extras)
 
-                open('map_%d_%d.sec' % (xA, yA), 'wb').write(output)
+                open('%d.%d.sec' % (xA, yA), 'w').write(output)
         
 class Area:
     def __init__(self, xA, yA, ground=100, level=7):

@@ -72,3 +72,45 @@ MSG_REPORT 			= 0x24
 MSG_HOTKEY_USE			= 0x25
 MSG_TUTORIAL_HINT		= 0x26
 MSG_STATUS_CONSOLE_BLUE		= 0xFF
+
+
+# Fluids
+FLUID_EMPTY                     = 0x00
+FLUID_BLUE                      = 0x01
+FLUID_RED                       = 0x02
+FLUID_BROWN                     = 0x03
+FLUID_GREEN                     = 0x04
+FLUID_YELLOW                    = 0x05
+FLUID_WHITE                     = 0x06
+FLUID_PURPLE                    = 0x07
+
+FLUID_NONE                      = FLUID_EMPTY,
+FLUID_WATER                     = FLUID_BLUE,
+FLUID_BLOOD                     = FLUID_RED,
+FLUID_BEER                      = FLUID_BROWN,
+FLUID_SLIME                     = FLUID_GREEN,
+FLUID_LEMONADE                  = FLUID_YELLOW,
+FLUID_MILK                      = FLUID_WHITE,
+FLUID_MANA                      = FLUID_PURPLE,
+
+FLUID_LIFE                      = FLUID_RED + 8,
+FLUID_OIL                       = FLUID_BROWN + 8,
+FLUID_URINE                     = FLUID_YELLOW + 8,
+FLUID_COCONUTMILK               = FLUID_WHITE + 8,
+FLUID_WINE                      = FLUID_PURPLE + 8,
+
+FLUID_MUD                       = FLUID_BROWN + 16,
+FLUID_FRUITJUICE                = FLUID_YELLOW + 16,
+
+FLUID_LAVA                      = FLUID_RED + 24,
+FLUID_RUM                       = FLUID_BROWN + 24,
+FLUID_SWAMP                     = FLUID_GREEN + 24,
+
+FLUID_TEA                       = FLUID_BROWN + 32,
+FLUID_MEAD                      = FLUID_BROWN + 40
+
+reversFluids = [FLUID_EMPTY, FLUID_WATER, FLUID_MANA, FLUID_BEER, FLUID_EMPTY, FLUID_BLOOD, FLUID_SLIME, FLUID_EMPTY, FLUID_LEMONADE, FLUID_MILK]
+
+# Floorchange
+FLOORCHANGE_DOWN                = 0x00
+FLOORCHANGE_UP                  = 0x01
