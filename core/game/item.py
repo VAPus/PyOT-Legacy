@@ -1,5 +1,5 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
-import sql, otjson, copy
+import sql, copy
 from twisted.python import log
 from collections import deque
 import game.enum

@@ -15,7 +15,7 @@ import game.resource
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
-        Creature.__init__(self, data, [50,50,7])
+        Creature.__init__(self, data, [46,46,7])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]

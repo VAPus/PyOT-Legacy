@@ -1,6 +1,5 @@
 from game.item import BaseThing
 from twisted.internet import threads
-import otjson, zlib
 import game.item
 import time, copy
 

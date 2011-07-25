@@ -54,7 +54,15 @@ class Map:
                 # Begin by rebuilding ranges of tiles in x,y,z
                 xCom = []
                 xCount = 0
-                
+                global opR
+                opR = "="
+                def opM():
+                    global opR
+                    if opR == "=":
+                        opR = "+="
+                        return "="
+                    return opR
+                       
                 # Level 2, y compare:
                 def yComp(xCom):
                     yCom = []
@@ -66,16 +74,16 @@ class Map:
                             xCom.remove(y)
                         else:
                             if yCount > 1:
-                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+" for y in range(0,%d)," % yCount
+                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d," % yCount
                             elif yCount:
                                 output += str(yCom).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+","
                             yCom = y
                             yCount = 1
                     if yCount > 1:
-                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+" for y in range(0,%d)," % yCount
+                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d," % yCount
                     
                     return output[:-1]
-                output = "_map_=[]\n"
+                output = ""
                 # Level 1, X compare
                 for x in copy.copy(sector):
                     if xCom == x:
@@ -84,16 +92,16 @@ class Map:
                     else:
                         if xCount > 1:
                             # Begin building
-                            output += "_map_+=[["+yComp(xCom)+"] for x in range(0,%d)]\n" % xCount
+                            output += "M%s["%opM()+yComp(xCom)+"]*%d\n" % xCount
                         elif xCount:
-                            output += "_map_+=["+yComp(xCom)+"]\n"
+                            output += "M%s["%opM()+yComp(xCom)+"]\n"
                         xCom = x
                         xCount = 1
                 if xCount > 1:
-                    output += "_map_+=[["+yComp(xCom)+"] for x in range(0,%d)]\n" % xCount
+                    output += "M%s["%opM()+yComp(xCom)+"]*%d\n" % xCount
 
                 output += '\n'.join(extras)
-                open('map_%d_%d.sec' % (xA, yA), 'wb').write(output)
+                open('map_%d_%d.sec' % (xA, yA), 'wb').write(output[:-1])
         
 class Area:
     def __init__(self, xA, yA, ground=100, level=7):
