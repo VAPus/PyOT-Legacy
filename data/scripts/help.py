@@ -16,8 +16,10 @@ def teleporter(player, text):
     player.teleport(pos)
     player.message("Welcome to %s" % text)
     
+last = 0
 def tiler(player, text):
     #try:
+        global last
         if len(text.split(" ")) < 2:
             pos = player.position
             id = int(text.split(" ")[0])
@@ -30,7 +32,7 @@ def tiler(player, text):
             player.message("Item not found!")
             return False
         item = game.item.Item( id )
-
+        last = id
         getTile(pos).setThing(0, item)
 
         game.engine.updateTile(pos, getTile(pos))
@@ -39,12 +41,16 @@ def tiler(player, text):
     #    player.message("Not possible!")
         return False
         
-
+global last
+def tilerE(player, text):
+    global last
+    last += 1
+    return tiler(player, str(last))
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
 scriptsystem.get("talkactionFirstWord").reg('set', tiler)
-
+scriptsystem.get("talkaction").reg('t', tilerE)
 def speedsetter(player, text):
     try:
         player.setSpeed(int(text))

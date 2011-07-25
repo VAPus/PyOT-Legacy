@@ -1,6 +1,7 @@
 from game.item import BaseThing
 import game.item
 import time
+from twisted.internet import threads
 
 def getTile(pos):
     try:
@@ -110,7 +111,7 @@ import data.map.info
 dummyTiles = {} # solid items like mountains will stay here
 dummyItems = {} # Ground items etc
 
-def loadTiles(x,y, walk=False):
+def loadTiles(x,y, walk=True):
     if x > data.map.info.height or y > data.map.info.width:
         return None
         
@@ -118,7 +119,7 @@ def loadTiles(x,y, walk=False):
     sectorY = int(y / data.map.info.sectorSize[1])
     
     # An idea by soul4soul. To be better implanted into walk sections really
-    """if walk:
+    if walk:
         commands = [(load, [sectorX+1, sectorY], {})]
         commands.append((load, [sectorX-1, sectorY], {}))
         commands.append((load, [sectorX, sectorY+1], {}))
@@ -126,12 +127,12 @@ def loadTiles(x,y, walk=False):
         commands.append((load, [sectorX-1, sectorY-1], {}))
         commands.append((load, [sectorX+1, sectorY+1], {}))
         commands.append((load, [sectorX-1, sectorY+1], {}))
-        commands.append((load, [sectorX+1, sectorY-1], {}))"""
+        commands.append((load, [sectorX+1, sectorY-1], {}))
     # This locks walking until it's done if it isn't already loaded, which is should be!
     load(sectorX, sectorY)
     # Perform the loading in threadpool, this hold one thread
-    """if walk:
-        threads.callMultipleInThread(commands)"""
+    if walk:
+        threads.callMultipleInThread(commands)
     
 def load(sectorX, sectorY):
 

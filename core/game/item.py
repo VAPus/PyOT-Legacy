@@ -153,10 +153,17 @@ def loadItems():
                     del item[key]
                     
         reverseLoadItems[item["cid"]] = copy.copy(item["sid"])
-        del item["sid"]
+        
         loadItems[reverseLoadItems[item["cid"]]] = item
         
-        
+        for x in xrange(1, item["subtypes"]+1):
+            newItem = copy.copy(item)
+            newItem["cid"] = item["cid"]+x
+            reverseLoadItems[newItem["cid"]] = item["sid"]+x
+            
+            loadItems[reverseLoadItems[newItem["cid"]]] = newItem
+            
+        del item["sid"] # Unneeded
 
     for data in result2:
         if data["key"] == "fluidSource":

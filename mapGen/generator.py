@@ -7,6 +7,29 @@ import copy
     MM: Multimonster
 """
 
+# Behavior
+def replacer(old, new):
+    if new:
+        return new
+    return old
+    
+def keeper(old, new):
+    if old:
+        return old
+    return new
+
+def merger(old, new):
+    for i in new:
+        old.append(i)
+    return old
+# I replace ground, and put old stuff onto new ground
+def iReplacer(old, new):
+    old[0] = new[0]
+    if len(new) > 1:
+        for i in new[1:]:
+            old.append(i)
+    return old
+    
 class Map:
     def __init__(self, xA, yA, ground=100):
         self.area = []
@@ -167,6 +190,43 @@ class Area:
             for y in obj.area[x]:
                 for z in obj.area[x][y]:
                     self.area[x+offsetX][y+offsetY][self.z] = obj.area[x][y][z] 
+
+    def border(self, offset=0, north=None,south=None,east=None,west=None,northeast=None,northwest=None,southeast=None,southwest=None,behavior=iReplacer):
+        # Run East
+        if east:
+            for sideY in self.area[offset][offset:(offset*-1)-1]:
+                sideY[self.z] = behavior(sideY[self.z], east if isinstance(east, tuple) else [east])
+        
+        # Run West
+        if west:
+            for sideY in self.area[(offset*-1)-1][offset:(offset*-1)-1]:
+                sideY[self.z] = behavior(sideY[self.z], west if isinstance(west, tuple) else [west])
+                
+        # Run North
+        if north:
+            for sideX in self.area[offset:(offset*-1)-1]:
+                sideX[offset][self.z] = behavior(sideX[offset][self.z], north if isinstance(east, tuple) else [north])
+        
+        # Run South
+        if south:
+            for sideX in self.area[offset:(offset*-1)-1]:
+                sideX[(offset*-1)-1][self.z] = behavior(sideX[(offset*-1)-1][self.z], south if isinstance(south, tuple) else [south])
+                
+        # Run northeast
+        if northeast:
+            self.area[(offset*-1)-1][offset][self.z] = behavior(self.area[(offset*-1)-1][offset][self.z], northeast if isinstance(northeast, tuple) else [northeast])
+            
+        # Run southeast
+        if southeast:
+            self.area[(offset*-1)-1][(offset*-1)-1][self.z] = behavior(self.area[(offset*-1)-1][(offset*-1)-1][self.z], southeast if isinstance(southeast, tuple) else [southeast])
+            
+        # Run northwest
+        if northwest:
+            self.area[offset][offset][self.z] = behavior(self.area[offset][offset][self.z], northwest if isinstance(northwest, tuple) else [northwest])
+            
+        # Run southwest
+        if southwest:
+            self.area[offset][(offset*-1)-1][self.z] = behavior(self.area[offset][(offset*-1)-1][self.z], southewst if isinstance(southwest, tuple) else [southwest])     
 
 class Item:
     def __init__(self, id):
