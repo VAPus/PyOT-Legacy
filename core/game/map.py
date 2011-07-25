@@ -1,7 +1,6 @@
 from game.item import BaseThing
-from twisted.internet import threads
 import game.item
-import time, copy
+import time
 
 def getTile(pos):
     try:
@@ -175,7 +174,7 @@ def load(sectorX, sectorY):
             if not yPos in knownMap[xPos]:
                 knownMap[xPos][yPos] = {} 
             for z in y:
-                knownMap[xPos][yPos][z] = Tile(copy.copy(y[z]))
+                knownMap[xPos][yPos][z] = Tile(y[z][:])
 
             yPos += 1    
         yPos = sectorY*32

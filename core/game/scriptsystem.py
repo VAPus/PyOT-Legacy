@@ -1,6 +1,5 @@
 # The script system
-from twisted.internet.defer import inlineCallbacks, deferredGenerator, waitForDeferred, Deferred
-from twisted.internet import reactor, threads
+from twisted.internet import reactor
 from twisted.python.threadpool import ThreadPool
 import config
 class Scripts:
