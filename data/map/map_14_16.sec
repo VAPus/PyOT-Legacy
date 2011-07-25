@@ -1,7 +1,2 @@
-xíœ1rÂ0EïâšK²L¸BŽÀP¤J—Ì¤e¸{`©Ð~RÙ±e½ŠþâI»Ú¿âÒ¥ôÖ/ÝÐÇûËØO§~ŸÏ»Ëõ|ÝÝ†“ôpÖÃ·UŸ}ÐÃö@îIÂ^¾;ôz8èa­2h•A«ZeÐ*ƒS¹;uïß_Ÿ?ÝÙæ8hÁQŽZpÔ‚£µà¨G-8jÁÑ	6•Q«LZeÒ*“V™´Ê$TÞ Nƒ}'È‹59òp¾ç¶ˆà¼EÎË ÓÊÖnä[Dþ‘fÌ“Â¸å´¢lÆ’ùç£[…Y{¹Ê^&ð–Øƒ<ÈW¼­—œ[0ƒs8ß8çV`‚s8ß8çV1…s8ß8çfÀ9œoœs«Á9œ¯sWL™Ä;Íx§Ãÿ¶à.áf¼S8q­ÂªúŸ%ÆŒa
-ç-pŽK
-ç-pŽ5ºÎËãí¼¾»|švÞ<«KZþŽ½îzîu×s¯û„¶ÓÌ^ëé´üY«mfÏÓx§å|ôºçúý.Æý?'3Ýßx¢ô~•#ã¨®#Ý±8@Ž#VÂ4ewU8oáøŠ£:çO±óvµ×_L­5—Ä}.[ÿmÔGu.ä@ë“9Y»ÈUæ¼u=â¨Ây)Ìˆ£
-ç-p¾„£Z&±”Ý}§
-ãçd§iÄ\ekoakŸÆQu›u}žR)¡ÂÖßRÂšÿ)Ì=«¶Ï—h§ñY­$¹ê#4åH?'‹pŽ£JŽÓBŽƒ£
-ç-pŽ£
-çp~ÀF…ó­s~ýÑ5ôÅ
+_map_=[]
+_map_+=[[[{7:[I(106)]}] for y in range(0,32)] for x in range(0,32)]

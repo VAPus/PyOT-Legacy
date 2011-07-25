@@ -1,4 +1,2 @@
-xíœ9nÃ0Eï¢Ú…¹DY®#.R¥K€´†ïgbò»äE½Ê¡æSŸÃ™¡vCMÃËnëúççð³Iëq»Úí·ûÕ0®ŸåpÒO§¤ŸÎz¸èáª‡ôð¨‡MU''=é§µÊ¬Uf­2k•Y«ÌZeÖ*³V™µÊ¬Uf­²h•E«,ZeÑ*‹VY´Ê¢U­²h•E¨<\ýÕÃ¹Xäâ|µ^??Þ¿Þ†­y	È÷þzYäm)\ùö­'íI;CÒÎ´3øÞ…ËÿÝ±—íòneWFÞÜÎ{w#šéçä<ÑŒÇ p~½h†æQ»ªàÎóÑN§ž%€s8ÿå¼=H…CÞN€ ò¿È[ŒŽsKiÀ9œçÜrtpçÁ9·rœÃypÎ­¾
-çpœó[TI)Ñ jCºÌ}ž’‘÷ùLöó6-µÔž¯vÂ·µ‚ï¶ÌL“‚[¸î’KºKŽÞóâôtD·8Ý¢Œêkä‰åcÇòÞ†<Î[; ãQ˜¿xékï§êT_»·ØÏy‰ô¶GgoÿNá¼Ÿ““œSF“¸Ûr¸¤u¡û¶šIÓDõ®u¦4eÔypÞÆoqª¶°gt5Ï!§Óà§S*ªó°vlôUC®Z‹€çW­=„ÇÏñóØ~îßÌ€ócÎ»¸Y_‚¯hŸÕwågªW«w‚ü1òOÀy÷%†»í¨VÀŸÌyë…Km–ñ¢›"ú$µ³FRl—ÌAVÛ‡&Óooäû—×#ïDWÎH<ö3xž\{å
-*	ÊE»‚Z©Âù8§v
-çKàœ+¨p¾Î)˜ÂytÎ÷ß¾ýèÜ
+_map_=[]
+_map_+=[[[{7:[I(106)]}] for y in range(0,32)] for x in range(0,32)]

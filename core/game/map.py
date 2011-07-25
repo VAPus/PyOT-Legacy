@@ -2,6 +2,7 @@ from game.item import BaseThing
 from twisted.internet import threads
 import otjson, zlib
 import game.item
+import time
 
 def getTile(pos):
     try:
@@ -135,6 +136,7 @@ def loadTiles(x,y, walk=True):
         threads.callMultipleInThread(commands)
     
 def load(sectorX, sectorY):
+
     if sectorX < 0 or sectorY < 0 or (sectorX in sectors and sectorY in sectors[sectorX]):
         return None
 
@@ -146,41 +148,46 @@ def load(sectorX, sectorY):
         
     sectors[sectorX][sectorY] = True
     
-    with open("data/map/map_%d_%d.sec" % (sectorX, sectorY), "rb") as f:
-        mapy = otjson.loads(zlib.decompress(f.read()))
+    begin = time.time() 
     
-    for xx in mapy:
-        x = int(xx)
-        if not x in knownMap:
-            knownMap[x] = {}
-        for yy in mapy[xx]:
-            y = int(yy)
-            if not y in knownMap[x]:
-                knownMap[x][y] = {}
-            for zz in mapy[xx][yy]:
-                z = int(zz)
-                tileItems = []
-                for id in mapy[xx][yy][zz][0]:
-                    if not id in dummyItems:
-                        dummyItems[id] = game.item.Item(id)
-                    tileItems.append(dummyItems[id])
-                if tileItems[0].solid:
-                    if not tileItems[0] in dummyTiles:
-                        dummyTiles[tileItems[0]] = Tile(tileItems)
-                    knownMap[x][y][z] = dummyTiles[tileItems[0]]
-                else:         
-                    knownMap[x][y][z] = Tile(tileItems)
-                    
-                if len(mapy[xx][yy][zz]) > 2 and len(mapy[xx][yy][zz][2]):
-                    #import game.monster
-                    for monsterName in mapy[xx][yy][zz][2]:
-                        game.monster.getMonster(monsterName).spawn([x,y,z])
+    # Ops codes
+    def M(name,x,y,z=7):
+        game.monster.getMonster(name).spawn([x,y,z])
+    
+    def I(itemId):
+        global dummyItems
+        if not itemId in dummyItems:
+            dummyItems[itemId] = game.item.Item(itemId)
+        return dummyItems[itemId]
+    
+    dd = {}
+    range = xrange # Faster, yet Py3 compatible when we disable this later :)
+    execfile("data/map/map_%d_%d.sec" % (sectorX, sectorY), locals(), dd)
+    _map_ = dd["_map_"]
 
+    xPos = sectorX*32
+    yPos = sectorY*32
+    
+    for x in _map_:
+        if not xPos in knownMap:
+            knownMap[xPos] = {}
+        for y in x:
+            if not yPos in knownMap[xPos]:
+                knownMap[xPos][yPos] = {} 
+            for z in y:
+                for zPos in z:
+                    knownMap[xPos][yPos][zPos] = Tile(z[zPos])
+            yPos += 1    
+        yPos = sectorY*32
+        xPos += 1            
+                        
+    print "Loading took: %f to load sector %d_%d" % (time.time() - begin, sectorX, sectorY)
     # Do callbacks
     m = str(sectorX).zfill(3)+str(sectorY).zfill(3)
     if m in callbacks:
         for func in callbacks[m]:
             func()
+
 def unload(sectorX, sectorY):
     for x in xrange(sectorX * 64, (sectorX * 64) + 64):
         for x in xrange(sectorY * 64, (sectorY * 64) + 64):

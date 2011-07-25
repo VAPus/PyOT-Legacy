@@ -1,12 +1,2 @@
-xíÙÁ­Â0„á^|æ€a×ZAT¥÷ÇÛb`ç?!­"Å#}‰ƒg+ÇcórÿÿÙÆãùœçõ:íÇë8y=ëñÔã‹_õ8ô¸ô½’¥¯~_¨Ö}Óc2tÊÐ)C§2tÊÐ)C§2tÊÐ)S§L2uÊÔ)S§L2uÊÔ)S§Lr‰”oÉ«n	sñ¬Àüû½÷³Ìë‚9Ì?÷ñnoóÚ`óÞÌëæ0oÍ|«Ov˜Ã¼7óú£s˜÷f^G0‡yoæu
-s˜÷f^û0‡yoæ´ “Tô@½ZÐæb+kVm´ 07`N
-sæ´ 0ïÏüF
-sæ´ 07`N
-sæ´ 07`N
-sæ´ 07`N
-sæ´ 07`N
-sæ´ 0ïÏüN
-sæ´ 07`N
-sæ´ 07`N
-sæ´ 07`N
-óîÌ?'”¬z
+_map_=[]
+_map_+=[[[{7:[I(106)]}] for y in range(0,32)] for x in range(0,32)]

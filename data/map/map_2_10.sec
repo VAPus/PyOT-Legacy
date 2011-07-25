@@ -1,6 +1,2 @@
-xíÙÁ‚`Dá^8{@w¥B%„ÞÅ½§wÞÉäQ'ùõÃ<ë1Äãþ¹Y†uÛîã¼ßŽs?o×ñC‡>N}\OñûØ³¾÷uGõJžúø%cÔÇzeè•¡W†^zeè•¡W†^zeê•©W¦^™zeê•©W¦^™zeê•©WNzå¤WNbå%y®sñÎ‚ùïçÞß2¯7Ìaþ}ïöi^˜Ã¼7óúBs˜·f¾Ô|˜Ã¼7óúÁ
-s˜÷f^ÀÀæ½™×ß¦0‡yoæ•`óÞÌ© A¨W]¨ 0—²fyh¡‚ÂÜ€9æÌ© 0ïÏüI…¹s*(Ì˜SAanÀœ
-
-sæTP˜0§‚ÂÜ€9æÌ© 07`N…¹s*(Ìû3QAanÀœ
-
-sæTP˜0§‚ÂÜ€9æÌ© 07`N…ywæçÂd°š
+_map_=[]
+_map_+=[[[{7:[I(106)]}] for y in range(0,32)] for x in range(0,32)]
