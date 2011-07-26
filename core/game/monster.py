@@ -67,9 +67,38 @@ class MonsterBrain:
         if monster.base.voiceslist:
             monster.actionTalk = LoopingCall(self.handleTalk, monster)
             monster.actionTalk.start(5, False)
-            
+
+    
     def handleThink(self, monster):
         # Walking
+        if monster.target:
+            if not monster.canSee(monster.target.position):
+                monster.target = None
+                
+            return
+        elif not monster.target:
+            spectators = game.engine.getSpectatorList(monster.position)
+            if spectators:
+                target = None
+                if len(spectators) > 1:
+                    bestDist = 0
+                    for x in spectators:
+                        dist = monster.distanceStepsTo(x.position)
+                        if dist < bestDist:
+                            bestDist = dist
+                            target = x.player
+                else:
+                    target = spectators[0].player
+                monster.target = target
+                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1, False)
+                def __followCallback(who):
+                    if monster.target == who:
+                        monster.stopAction()
+                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1, False)
+                        monster.target.scripts["onNextStep"].append(__followCallback)
+                        
+                monster.target.scripts["onNextStep"].append(__followCallback)
+                return
         if time.time() - monster.lastStep > 3:
             self.walkRandomStep(monster)
             

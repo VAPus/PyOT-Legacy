@@ -31,7 +31,7 @@ class Creature:
         self.creatureType = 0
         self.direction = 0
         self.position = position
-        self.speed = 0x0032
+        self.speed = 100
         self.scripts = { "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
@@ -255,4 +255,6 @@ class Creature:
         if (position[0] >= self.position[0] - 8 + offsetz) and (position[0] <= self.position[0] + 9 + offsetz) and (position[1] >= self.position[1] - 6 + offsetz) and (position[1] <= self.position[1] + 7 + offsetz):
             return True
         return False
-        
+    
+    def distanceStepsTo(self, position):
+        return abs(self.position[0]-position[0])+abs(self.position[1]-position[1])

@@ -26,10 +26,12 @@ def action(forced=False, delay=0):
             creature.actionLock.acquire()
             if creature.action and forced: # + forced
                 creature.action.cancel()
-            elif creature.action:
-                creature.action.addCallback(f, creature, *args, **argw)
-            else:
-                f(creature, *args, **argw)
+            elif creature.action and creature.action.active():
+                # This will bug
+                #creature.action.addCallback(f, creature, *args, **argw)
+                reature.action.cancel()
+            #else:
+            f(creature, *args, **argw)
                 
             # (forced actions are released first when their done
             if not forced:
