@@ -33,14 +33,14 @@ class MonsterBase:
         self.brain.beginThink(monster) # begin the heavy thought process!
 
         if place:
-            stackpos = game.map.getTile(position).placeCreature(monster)
-            list = game.engine.getSpectators(position)
-            for client in list:
-                stream = TibiaPacket()
-                stream.magicEffect(position, 0x03)
-                stream.addTileCreature(position, stackpos, monster, client.player)
-        
-                stream.send(client)
+                stackpos = game.map.getTile(position).placeCreature(monster)
+                list = game.engine.getSpectators(position)
+                for client in list:
+                    stream = TibiaPacket()
+                    stream.magicEffect(position, 0x03)
+                    stream.addTileCreature(position, stackpos, monster, client.player)
+            
+                    stream.send(client)
         return monster
     def setHealth(self, health, healthmax=None):
         if not healthmax:
@@ -124,7 +124,7 @@ brains["default"] = MonsterBrain()
 def genMonster(name, look, description="", speed=200, experience=100, race="blood", brain="default", template="default"):
     # First build the common creature data
     if template in monsters:
-        data = copy.deepcopy(monsters[template])
+        data = copy.copy(monsters[template])
 
     data["speed"] = speed
     data["looktype"] = look[0]

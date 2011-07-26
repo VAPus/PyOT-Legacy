@@ -1,7 +1,7 @@
 from game.item import BaseThing
 import game.item
 import time
-from twisted.internet import threads
+from twisted.internet import threads, reactor
 
 def getTile(pos):
     try:
@@ -119,7 +119,7 @@ def loadTiles(x,y, walk=True):
     sectorY = int(y / data.map.info.sectorSize[1])
     
     # An idea by soul4soul. To be better implanted into walk sections really
-    if walk:
+    """if walk:
         commands = [(load, [sectorX+1, sectorY], {})]
         commands.append((load, [sectorX-1, sectorY], {}))
         commands.append((load, [sectorX, sectorY+1], {}))
@@ -127,12 +127,12 @@ def loadTiles(x,y, walk=True):
         commands.append((load, [sectorX-1, sectorY-1], {}))
         commands.append((load, [sectorX+1, sectorY+1], {}))
         commands.append((load, [sectorX-1, sectorY+1], {}))
-        commands.append((load, [sectorX+1, sectorY-1], {}))
+        commands.append((load, [sectorX+1, sectorY-1], {}))"""
     # This locks walking until it's done if it isn't already loaded, which is should be!
     load(sectorX, sectorY)
     # Perform the loading in threadpool, this hold one thread
-    if walk:
-        threads.callMultipleInThread(commands)
+    """if walk:
+        threads.callMultipleInThread(commands)"""
     
 def load(sectorX, sectorY):
 
@@ -147,7 +147,10 @@ def load(sectorX, sectorY):
         
     sectors[sectorX][sectorY] = True
     
-    begin = time.time() 
+    begin = time.time()
+    
+    xPos = (sectorX*32)
+    yPos = (sectorY*32)    
     
     # Ops codes
     def M(name,x,y,z=7):
@@ -170,12 +173,8 @@ def load(sectorX, sectorY):
     dd = {}
     O = None # Shortform
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
-    _map_ = dd["m"]
     
-    xPos = (sectorX*32)
-    yPos = (sectorY*32)
-    
-    for x in _map_:
+    for x in dd["m"]:
         if not xPos in knownMap:
             knownMap[xPos] = {}
         for y in x:
@@ -187,7 +186,10 @@ def load(sectorX, sectorY):
             yPos += 1    
         yPos = sectorY*32
         xPos += 1
-
+        
+    if "l" in dd:    
+        reactor.callInThread(dd["l"])
+        
     print "Loading took: %f to load sector %d_%d" % (time.time() - begin, sectorX, sectorY)
     # Do callbacks
     m = str(sectorX).zfill(3)+str(sectorY).zfill(3)

@@ -116,7 +116,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
     
 # Spectator list
-def getSpectatorList(pos, radius=(9,7), extra=[]):
+def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
     # At the moment, we only do one floor
     players = []
 
@@ -124,12 +124,12 @@ def getSpectatorList(pos, radius=(9,7), extra=[]):
         for creature in extra:
             if creature.creatureType == 0:
                 players.append(creature.client)
-            
+
     for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
                 for creature in game.map.knownMap[x][y][7].creatures():
-                    if creature.creatureType == 0:
+                    if creature.creatureType == 0 and not creature in ignore:
                         players.append(creature.client)
             except:
                 pass # Tile isn't loaded
@@ -137,7 +137,7 @@ def getSpectatorList(pos, radius=(9,7), extra=[]):
     return players
 
 # Spectator list using yield
-def getSpectators(pos, radius=(9,7), extra=[]):
+def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
     # At the moment, we only do one floor
     
     if extra:
@@ -150,7 +150,7 @@ def getSpectators(pos, radius=(9,7), extra=[]):
             try:
                 for creature in game.map.knownMap[x][y][7].creatures():
                     # TODO: Check for player
-                    if creature.creatureType == 0:
+                    if creature.creatureType == 0 and not creature in ignore:
                         yield creature.client
             except:
                 raise StopIteration

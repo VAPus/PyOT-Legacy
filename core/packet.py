@@ -343,30 +343,31 @@ class TibiaPacket:
         buffer = b""
         ol = len(self.data)
 
-        self.data = struct.pack("<H", ol)+self.data
+        data = struct.pack("<H", ol)+self.data
         ol += 2
 
         if stream.xtea:
-            self.data = otcrypto.encryptXTEA(self.data, stream.xtea)
+            data = otcrypto.encryptXTEA(data, stream.xtea)
 
-        adler = adler32(self.data) & 0xffffffff
+        adler = adler32(data) & 0xffffffff
         # Fix a bug in Python2?
         #if adler < 0:
         #     adler = adler
-        buffer = struct.pack("<HI", len(self.data)+4, adler)
-        buffer += self.data
+        buffer = struct.pack("<HI", len(data)+4, adler)
+        buffer += data
         
-        stream.transport.write(buffer)
+        
+        reactor.callFromThread(stream.transport.write, buffer)
     
     @inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
             
-        self.data = struct.pack("<H", len(self.data))+self.data
+        data = struct.pack("<H", len(self.data))+self.data
         lenCache = 0
         for client in list:
-             data = otcrypto.encryptXTEA(self.data, client.xtea)
+             data = otcrypto.encryptXTEA(data, client.xtea)
              adler = adler32(data) & 0xffffffff
              #if adler < 0:
              #    adler = adler
@@ -374,4 +375,5 @@ class TibiaPacket:
              if not lenCache:
                  lenCache = len(data)+4
              
-             client.transport.write(bytes(struct.pack("<HI", lenCache, adler))+data)
+             
+             reactor.callFromThread(client.transport.write, bytes(struct.pack("<HI", lenCache, adler))+data)

@@ -104,7 +104,8 @@ class Creature:
         newTile = getTile(position)
         
         if self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
-            print "DEBUG!!!!!!! Creature"
+            return False
+            
         else:
             self.lastStep = time.time()
         if newTile.creatures(): # Dont walk to creatures
@@ -115,12 +116,7 @@ class Creature:
         
         oldPosition = self.position[:]
         self.position = position
-        
-        if len(self.scripts["onNextStep"]):
-            for script in self.scripts["onNextStep"]:
-                script(self)
-                self.scripts["onNextStep"].remove(script)
-                
+              
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
@@ -151,24 +147,25 @@ class Creature:
                 stream2 = TibiaPacket()
                 stream2.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
                 stream2.send(spectator)
-                spectators.remove(spectator)
                 
             elif canSeeOld and not canSeeNew:
                 stream2 = TibiaPacket()
-                if self.cid in spectator.player.knownCreatures:
-                    spectator.player.knownCreatures.remove(self.cid) # Remove him from the known list
+                #if self.cid in spectator.player.knownCreatures:
+                #    spectator.player.knownCreatures.remove(self.cid) # Remove him from the known list
                     
                 stream2.removeTileItem(oldPosition, oldStackpos)
                 stream2.send(spectator)
-                spectators.remove(spectator)
                 
             elif not canSeeOld and not canSeeNew: # Happend on the last 4 squares in the +1 rim, cause a debug with etc rx=-1 (also a ry, but tibia fail to meansion it)
-                if self.cid in spectator.player.knownCreatures:
-                    spectator.player.knownCreatures.remove(self.cid) # Also remove him from the known list. This check is probably not needed, but who knowns, teleports? :P
-                spectators.remove(spectator)
+                pass
             else:
                 streamX.send(spectator) 
-        
+
+        if len(self.scripts["onNextStep"]):
+            for script in self.scripts["onNextStep"]:
+                script(self)
+                self.scripts["onNextStep"].remove(script)
+                
         return True # Required for auto walkings
 
     def teleport(self, position):
@@ -177,7 +174,7 @@ class Creature:
         stream = TibiaPacket()
         stream.removeTileItem(self.position, getTile(self.position).findCreatureStackpos(self))
         stream.magicEffect(self.position, 0x02)
-        stream.sendto(getSpectators(self.position))
+        stream.sendto(getSpectators(self.position, ignore=[self]))
         
         removeCreature(self, self.position)
         placeCreature(self, position)
@@ -193,11 +190,11 @@ class Creature:
             
         self.position = position  
         
-        for spectator in getSpectators(position):
-            if spectator.player != self:
-                stream.addTileCreature(position, 1, self, spectator.player)
-                stream.magicEffect(position, 0x02)
-                stream.send(spectator)
+        for spectator in getSpectators(position, ignore=[self]):
+            stream = TibiaPacket()
+            stream.addTileCreature(position, 1, self, spectator.player)
+            stream.magicEffect(position, 0x02)
+            stream.send(spectator)
                 
         
 
@@ -246,6 +243,16 @@ class Creature:
         self.action = None
         
     def canSee(self, position):
-        if abs(position[0]-self.position[0]) < 9 and abs(position[1]-self.position[1]) < 7:
+        if self.position[2] <= 7: # We are on ground level
+            if position[2] > 7:
+                return False # We can't see underground
+                
+        elif self.position[2] >= 8: # We are undergorund
+            if abs(self.position[2]-position[2]) > 2: # We may only see 2 floors
+                return False
+        
+        offsetz = self.position[2]-position[2]
+        if (position[0] >= self.position[0] - 8 + offsetz) and (position[0] <= self.position[0] + 9 + offsetz) and (position[1] >= self.position[1] - 6 + offsetz) and (position[1] <= self.position[1] + 7 + offsetz):
             return True
+        return False
         

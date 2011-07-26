@@ -77,7 +77,7 @@ class Map:
                         for zS in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS]:
                             sector[xS][yS] = {7:[]}
                             for thing in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS][zS]:
-                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS, zS, extras)
+                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,zS,xS, yS, extras)
                                 if e:
                                     sector[xS][yS][zS].append(e)
                 
@@ -167,7 +167,7 @@ class Map:
                                 else:
                                     del extras[extras.index(x)]
                                     
-                    output += "\n"+'\n'.join(extras)
+                    output += "\ndef l():"+';'.join(extras)
 
                 open('%d.%d.sec' % (xA, yA), 'w').write(output)
         
@@ -231,13 +231,13 @@ class Area:
 class Item:
     def __init__(self, id):
         self.id = id
-    def gen(self, x,y,z,extras):
+    def gen(self, x,y,z,rx,ry,extras):
         return ('I(%d)' % self.id, extras)
 
 class RSItem:
     def __init__(self, *argc):
         self.ids = argc
-    def gen(self, x,y,z,extras):
+    def gen(self, x,y,z,rx,ry,extras):
         import random
         return ('I(%d)' % random.choice(self.ids), extras)    
 class Monster:
@@ -245,7 +245,7 @@ class Monster:
         self.name = name
 
             
-    def gen(self, x,y,z, extras):
+    def gen(self, x,y,z,rx,ry, extras):
         extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != z else ''))
         return (None, extras)
         
