@@ -148,10 +148,7 @@ def load(sectorX, sectorY):
     sectors[sectorX][sectorY] = True
     
     begin = time.time()
-    
-    xPos = (sectorX*32)
-    yPos = (sectorY*32)    
-    
+
     # Ops codes
     def M(name,x,y,z=7):
         game.monster.getMonster(name).spawn([x,y,z])
@@ -173,19 +170,19 @@ def load(sectorX, sectorY):
     dd = {}
     O = None # Shortform
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
-    
-    for x in dd["m"]:
-        if not xPos in knownMap:
-            knownMap[xPos] = {}
-        for y in x:
-            if not yPos in knownMap[xPos]:
-                knownMap[xPos][yPos] = {}
-
-            for z in y:
-                knownMap[xPos][yPos][z] = Tile(y[z][:])
-            yPos += 1    
-        yPos = sectorY*32
-        xPos += 1
+    for z in dd["m"]:
+        xPos = (sectorX*32)
+        yPos = (sectorY*32)  
+        for x in dd["m"][z]:
+            if not xPos in knownMap:
+                knownMap[xPos] = {}
+            for items in x:
+                if not yPos in knownMap[xPos]:
+                    knownMap[xPos][yPos] = {}
+                knownMap[xPos][yPos][z] = Tile(items[:])
+                yPos += 1    
+            yPos = sectorY*32
+            xPos += 1
         
     if "l" in dd:    
         reactor.callInThread(dd["l"])

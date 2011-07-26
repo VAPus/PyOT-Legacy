@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
 
-import struct
+import struct, sys
 
 # The reader class:
 class Reader:
@@ -13,11 +15,10 @@ class Reader:
         self.pos += 1
         return struct.unpack("<B", self.data[self.pos-1:self.pos])[0]
         
-    def peekUint8(self, pos=1):
+    def peekUint8(self):
         try:
-            self.pos += pos-1
             a = self.uint8()
-            self.pos -= pos
+            self.pos -= 1
             return a
         except:
             return None
@@ -27,12 +28,8 @@ class Reader:
 
     # 16bit - 2bytes, C type: short
     def uint16(self):
-        if self.peekUint8() == 0xFD and self.peekUint8(2) >= 0xFE:
-            self.pos += 1
         self.pos += 2
-
         return struct.unpack("<H", self.data[self.pos-2:self.pos])[0]
-        
     def int16(self):
         self.pos += 2
         return struct.unpack("<h", self.data[self.pos-2:self.pos])[0]
@@ -79,202 +76,204 @@ class Reader:
     def getData(self):
         return self.data[self.pos:]
     
-class Tile:
-    def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.z = 0
-        self.houseid = 0
-        self.data = {}
-        self.items = [] # 0 is ground id
-
 class Item:
-     def __init__(self, id):
-        self.id = id
-        self.data = {}
-        self.items = [] # container
+    def __init__(self):
+        self.type = 0
+        self.flags = {}
+        self.attr = {}
+        self.cid = 0
+        self.sid = 0
+        self.alsoKnownAs = []
+        self.junk = False
+
+class L:
+    def __init__(self, val):
+        self.value = val
+        
+class Node:
+    def __init__(self, otbm, level):
+        self.data = b""
+        self.nodes = []
+        byte = otbm.uint8()
+        nextIsEscaped = False
+        while byte != None:
+            if byte == 0xFE and not nextIsEscaped:
+                node = self.handleBlock(otbm, level)
+
+            elif byte == 0xFF and not nextIsEscaped:
+                level.value -= 1
+                if level.value < 0:
+                    print "DEBUG!"
+                break
+                
+            elif byte == 0xFD and not nextIsEscaped:
+                nextIsEscaped = True
+                
+            else:
+                nextIsEscaped = False 
+                self.data += struct.pack("<B", byte)
+                
+            byte = otbm.uint8()
+        self.data = Reader(self.data)
+    def handleBlock(self, otbm, level):
+        level.value += 1
+        node = Node(otbm, level)
+        self.nodes.append(node)
+        return node
+        
+    def next(self):
+        if self.nodes:
+            return self.nodes.pop(0)
+        else:
+            return None
+
+_map_ = []
         
 otbmFile = open("map.otbm")
 otbm = Reader(otbmFile.read())
 
-# This file is somewhat designed as a XMl file
+otbm.pos += 5
+root = Node(otbm, L(1)) # Begin on level 1
+root.data.pos += 1
 
+version = root.data.uint32()
+width = root.data.uint16()
+height = root.data.uint16()
+majorVersionItems = root.data.uint32()
+minorVersionItems = root.data.uint32()
 
+# Prepopulate _map_
+print "OTBM v%d, %dx%d" % (version, width, height) 
+_map_ = [[{}]*height]*width
 
-# Now, we could naturally just read shit, but some idiot figured we should use some junky escape system in the file, since we don't, we just got to remove the escape system entierly
-# This code is probably 50%+ of the entier execution time
-"""nLen = 0
-nData = b""
-escape = ""
-for x in range(0, otbm.length):
-    char = otbm.uint8()
-    if char is not 0xFD or not otbm.peekUint8() in (0xFD, 0xFE, 0xFF):
-        nData += struct.pack("<B", char)
-        nLen += 1      
+nodes = root.next()
+nodes.data.pos += 1
+description = ""
+spawns = ""
+house = ""
 
-otbm.data = nData
-otbm.length = nLen
-"""
-# Skip the first 4bytes, they're just NULLs
-otbm.pos = 4
-
-# The root node
-if otbm.uint8() == 0xFE:
-    # The get props code:
-    otbm.uint8() #0x00
-    version = otbm.uint32()
-    width = otbm.uint16()
-    height = otbm.uint16()
-    itemVersion1 = otbm.uint32()
-    itemVersion2 = otbm.uint32()
-    print "OTBM version %d (OTB V: %d.%d, size: %dx%d)" % (version, itemVersion1, itemVersion2, width, height)
-
-otbm.uint8() #0xFE
-otbm.uint8() # 0x02
-while otbm.peekUint8() != 0xFE:
-    attr = otbm.uint8()
-
-    if attr is 1:
-        description = otbm.string()
-    elif attr is 11:
-        spawnFile = otbm.string()
-    elif attr is 13:
-        houseFile = otbm.string()
+while nodes.data.peekUint8():
+    attr = nodes.data.uint8()
+    if attr == 1:
+        description = nodes.data.string()
+        print description+"\n"
+    elif attr == 11:
+        spawns = nodes.data.string()
+    elif attr == 13:
+        house = nodes.data.string()
     else:
-        print "Unknown byte in info (%d)!" % attr
-print "DEBUG: Begin tiles on %d" % otbm.pos
-tiles = []
-mapTiles = {}
-totTiles = 0
-# Read shit
+        print "Unknown nodes data"
 
+node = nodes.next()
 
-def itemRunner(mainitem):
-    while otbm.peekUint8() is 0xFE:
-        otbm.uint8() # 0xFE
-        attr = otbm.uint8()
-        if attr is 6:
-            # Items
-            itemid = otbm.uint16()
-            print itemid
-            _item = Item(itemid)
-
-            while otbm.peekUint8() in (3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,30,31,33,34,35,36,37,38,39,40,41,42,43,128):
-			unseri = otbm.uint8()
-			if unseri is 15:
-			  _item.data["count"] = otbm.uint8()
-			elif unseri is 6:
-			  _item.data["text"] = otbm.string()
-			elif unseri is 7:
-			  _item.data["desc"] = otbm.string()
-			elif unseri in (4,5):
-			  n = otbm.uint16() # Action id or unique id, we don't even support convertion of those!
-			  if n == 65535: # Bugfix
-				print "action id / unique id = 0"
-				otbm.pos -= 2
-				break
-			elif unseri is 8: # teleport is a tile matter
-				tile.data["teleportto"] = (otbm.uint16(), otbm.uint16(), otbm.uint8())
-			elif unseri in (20, 21): # Beds
-                            n = otbm.uint16()
-                            if n == 65535: # Bugfix
-				print "bed sleeper / guid = 0"
-				otbm.pos -= 2
-				break
-			elif unseri is 17:
-				 n = otbm.uint8() # Decay status, will be supported soon!
-			else:
-				print "Unsupported unseri %d" % unseri
-				quit()
-            if otbm.peekUint8() is 0xFE:
-                itemRunner(_item)
-            mainitem.items.append(_item)
-        else:
-            print "Wrong stuff %d" % attr
-        otbm.uint8() #0xFF
-    print "leaving on %s" % hex(otbm.pos)
-if True:
-    while otbm.pos < otbm.length:
-        if otbm.uint8() is not 0xFE: # this ain't suppose to happend, but if you fuck the file up, then sure :p
-            #print "DEBUG: Not 0xFE opening, next byte is: %s" % otbm.peekUint8()
-            continue
-        type = otbm.uint8()
-        if type is 4:
-            baseX = otbm.uint16()
-            baseY = otbm.uint16()
-            baseZ = otbm.uint8()
-
-            while otbm.peekUint8() is 0xFE:
-                otbm.uint8() # 0xFE
-                tileType = otbm.uint8()
-                tileX = baseX + otbm.uint8()
-                tileY = baseY + otbm.uint8()
-                if tileType is 5 or tileType is 14:
-                    tile = Tile()
-                    tile.x = tileX
-                    tile.y = tileY
-                    tile.z = baseZ
-                    if tileType is 14: # Houses
-                        tile.houseid = otbm.uint32()
+while node:
+    type = node.data.uint8()
+    if type == 4: # Tile area
+        baseX = node.data.uint16()
+        baseY = node.data.uint16()
+        baseZ = node.data.uint8()
+        
+        tile = node.next()
+        while tile:
+            tileType = tile.data.uint8()
+            if tileType == 5 or tileType == 14: # Tile
+                tileX = tile.data.uint8() + baseZ
+                tileY = tile.data.uint8() + baseY
+                if tileType == 14:
+                    # TODO
+                    tile.data.uint32()
                     
-                    while otbm.peekUint8() not in (0xFF, 0XFE):
-                        attr = otbm.uint8()
-                        if attr is 3:
-                            flags = otbm.uint32() # TODO: Fix flags
-                        elif attr is 9:
-                            # Items
-                            itemid = otbm.uint16()
-                            tile.items.append(Item(itemid))
-                        else:
-                            print "Wrong stuff"
-
-                    #otbm.uint8() # 0xFF
-                    if otbm.peekUint8() is 0xFE:
-                        print "enter runloop on %s" % hex(otbm.pos)
-                        itemRunner(tile)
-                    char = otbm.uint8()
-                    if char is not 0xFF:
-		       print "Terrible error! %d (on %s)" % (char, hex(otbm.pos)) # 0xFF
-		       otbm.pos -= 3
-		       if otbm.uint8() != 0xFF:
-			 otbm.pos += 2
-			 quit()
-                    tiles.append(tile)
-                    if not tile.x in mapTiles:
-                        mapTiles[tile.x] = {}
-                    if not tile.y in mapTiles[tile.x]:
-                        mapTiles[tile.x][tile.y] = {}
-                    if not tile.z in mapTiles[tile.x][tile.y]:
-                        mapTiles[tile.x][tile.y][tile.y] = []
-                    mapTiles[tile.x][tile.y][tile.y].append(tile)
-                    totTiles += 1
-
-            print "Leaving on pos %d (next was: %d %d %d)" % (otbm.pos, otbm.peekUint8(), otbm.peekUint8(2), otbm.peekUint8(3))
+                # Attributes
+                while tile.data.peekUint8():
+                    attr = tile.data.uint8()
+                    if attr == 3: # OTBM_ATTR_TILE_FLAGS
+                        flags = tile.data.uint32() # TODO, parse those
+                        
+                    elif attr == 9: # ITEM, ground item
+                        itemId = tile.data.uint16() # TODO, parse item
+                        
+                    else:
+                        print "Unknown tile attrubute"
+                        
+                
+                item = tile.next()
+                while item:
+                    if item.data.uint8() == 6: # more items
+                        itemId = item.data.uint16()
+                        
+                        # Unserialie attributes
+                        while item.data.peekUint8():
+                            attr = item.data.uint8()
+                            if attr == 10: # depotId
+                                item.data.uint16() # TODO: care?
+                            elif attr == 14: # houseDoorId
+                                item.data.uint8() # TODO: care? We can autodetect it
+                            elif attr == 20: # Sleeperguid
+                                item.data.uint32() # TODO: care?
+                            elif attr == 21: # sleepstart
+                                item.data.uint32()
+                            elif attr == 8: # Teleport destination
+                                teleDest = [item.data.uint16(),item.data.uint16(),item.data.uint8()]
+                            elif attr == 15: # Item count
+                                count = item.data.uint8()
+                            elif attr == 4: # action id
+                                actionId = item.data.uint16()
+                            elif attr == 5:
+                                uniqueId = item.data.uint16() # We don't support this
+                            elif attr == 6:
+                                text = item.data.string()
+                            elif attr == 18:
+                                writtenDate = item.data.uint32()
+                            elif attr == 19:
+                                writenBy = item.data.string()
+                            elif attr == 7:
+                                specialDescription = item.data.string() # It will probably work diffrently
+                            elif attr == 12:
+                                runeCharges = item.data.uint8()
+                            elif attr == 22:
+                                charges = item.data.uint8()
+                            elif attr == 16:
+                                duration = item.data.uint32()
+                            elif attr == 17:
+                                decayState = item.data.uint8()
+                            elif attr == 23:
+                                count = item.data.uint32()
+                                break # All after this is container items
+                            else:
+                                print "Unknown item attribute %d" % attr
+                                
+                    else:
+                        print "Unknown item header"
+                    item = tile.next()
+            else:
+                print "Unknown tile node"
+            tile = node.next()
             
-        elif type is 12:
-            while otbm.peekUint8() is 0xFE:
-                otbm.uint8() # 0xFE
-                otbm.uint8() # 13
-                otbm.uint32()
-                otbm.string()
-                otbm.uint16()
-                otbm.uint16()
-                otbm.uint8()
-                otbm.uint8() # 0xFF
-            otbm.uint8() # 0xFF
-        elif type is 15:
-            print "Buggy thing!"
-            while otbm.peekUint8() is 0xFE:
-                otbm.uint8() # 0xFE
-                otbm.uint8() # 16
-                otbm.uint32()
-                otbm.string()
-                otbm.uint16()
-                otbm.uint16()
-                otbm.uint8()
-                otbm.uint8() # 0xFF
-            otbm.uint8() # 0xFF         
-        else:
-            print "Unsupported type %d " % type
-                    
-print totTiles
+    elif type == 12: # Towns
+        town = node.next()
+        
+        while town:
+            townType = town.data.uint8()
+            if townType == 13:
+                townId = town.data.uint32()
+                townName = town.data.string()
+                temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
+            else:
+                print "Unknown town node"
+                
+            town = node.next()
+            
+            
+    elif type == 15 and version >= 2: # Waypoints
+        waypoint = node.next()
+        
+        while waypoint:
+            waypointType = waypoint.data.uint8()
+            if waypointType == 16:
+                name = waypoint.data.string()
+                cords = [waypoint.data.uint16(),waypoint.data.uint16(),waypoint.data.uint8()]
+            else:
+                print "Unknown waypoint type"
+            waypoint = node.next()
+    node = nodes.next()
+print "DONE!"    

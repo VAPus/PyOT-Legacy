@@ -32,25 +32,27 @@ def iReplacer(old, new):
     
 class Map:
     def __init__(self, xA, yA, ground=100):
-        self.area = []
+        self.area = {7:[]}
         self.size = (xA, yA)
         
         for x in xrange(0, xA+1):
-            self.area.append([])
+            self.area[7].append([])
             for y in xrange(0, yA+1):
+                self.area[7][x].append([])
                 if isinstance(ground, int):
-                    self.area[x].append({7: [Item(ground)]})
+                    self.area[7][x][y] = [Item(ground)]
                 else:
-                    self.area[x].append({7: [ground]})
+                    self.area[7][x][y] = [ground]
 
     def merge(self, obj, offsetX, offsetY, overrideLevel=None):
         xO = offsetX
         yO = offsetY
-        
+        if not (7 if not overrideLevel else overrideLevel) in self.area:
+            self.area[7 if not overrideLevel else overrideLevel] = []
         for x in obj.area:
             for y in x:
                 for z in y:
-                    self.area[xO][yO][z if not overrideLevel else overrideLevel] = y[z]
+                    self.area[7 if not overrideLevel else overrideLevel][xO][yO] = y[z]
 
                 yO += 1
             yO = offsetY
@@ -67,23 +69,18 @@ class Map:
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
                 
-                sector = []
+                sector = {7:[]}
                 extras = []
                 for xS in xrange(0, areas[0]):
-                    sector.append([])
-                    
+                    sector[7].append([])
                     for yS in xrange(0, areas[1]):
-                        sector[xS].append([])
-                        for zS in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS]:
-                            sector[xS][yS] = {7:[]}
-                            for thing in self.area[(xA*areas[0])+xS][(yA*areas[1])+yS][zS]:
-                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,zS,xS, yS, extras)
-                                if e:
-                                    sector[xS][yS][zS].append(e)
+                        sector[7][xS].append([])
+                        for thing in self.area[7][(xA*areas[0])+xS][(yA*areas[1])+yS]:
+                            e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,7,xS,yS, extras)
+                            if e:
+                                sector[7][xS][yS].append(e)
                 
                 # Begin by rebuilding ranges of tiles in x,y,z
-                xCom = []
-                xCount = 0
                 global opR
                 opR = "m="
                 def opM():
@@ -93,7 +90,7 @@ class Map:
                         return "m="
                     return opR
                        
-                # Level 2, y compare:
+                # Level 3, y compare:
                 def yComp(xCom):
                     yCom = []
                     yCount = 0
@@ -114,25 +111,38 @@ class Map:
                     elif yCount:
                         output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"+"
                     return "["+output[:-1]+"]"
-                output = ""
-                # Level 1, X compare
-                for x in copy.copy(sector):
-                    if xCom == x:
-                        xCount += 1
-                        sector.remove(x)
-                    else:
-                        if xCount > 1:
-                            # Begin building
-                            output += "%s"%opM()+yComp(xCom)+"*%d" % xCount
-                        elif xCount:
-                            output += "%s"%opM()+yComp(xCom)+""
-                        xCom = x
-                        xCount = 1
-                if xCount > 1:
-                    output += "%s"%opM()+yComp(xCom)+"*%d" % xCount
-                elif xCount:
-                    output += "%s"%opM()+yComp(xCom)+""
+                
+                # Level 2, X compare
+                def xComp(zCom):
+                    xCom = []
+                    xCount = 0
+                    output = ""
+                    for x in copy.copy(zCom):
+                        if xCom == x:
+                            xCount += 1
+                            zCom.remove(x)
+                        else:
+                            if xCount > 1:
+                                # Begin building
+                                output += yComp(xCom)+"*%d+" % xCount
+                            elif xCount:
+                                output += yComp(xCom)+"+"
+                            xCom = x
+                            xCount = 1
+
+                    if xCount > 1:
+                        output += yComp(xCom)+"*%d+" % xCount
+                    elif xCount:
+                        output += yComp(xCom)+"+"
                     
+                    return output[:-1]
+                
+                output = "{"
+                for zPos in sector:
+                    output += "7:"+xComp(sector[zPos])
+                output += "}"
+                output = "m="+output
+                
                 if extras:
                     # Monster ops
                     # TODO: Reorder monsters first!
