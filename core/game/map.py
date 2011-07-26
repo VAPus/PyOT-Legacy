@@ -1,7 +1,7 @@
 from game.item import BaseThing
 import game.item
 import time
-from twisted.internet import threads, reactor
+from twisted.internet import reactor
 
 def getTile(pos):
     try:
@@ -102,7 +102,17 @@ class Tile(BaseThing):
     def findCreatureStackpos(self, creature):
         return self.things.index(creature)
                 
-    
+    def topCopy(self):
+        # Could only be called under load or on pure static ground items, this WILL bug all kinds of tiles with creatures and bottomitems
+        # This approch is twice as fast as copy.copy is, might use more memory tho since it won't guaranty that self.*Count is a reference on creation
+        # TODO, deal with stacking on entierly solid objects, multilayer
+        
+        # This might bug, disable GM walks (in current code)
+        # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
+        if self.topItemCount and self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
+            return self # Reference, or own kind of auto tile stack, very very unsafe
+        return Tile(self.things[:])
+        
 knownMap = {}
 sectors = {}
 callbacks = {}
@@ -161,12 +171,15 @@ def load(sectorX, sectorY):
         for count in xrange(0,len(argc), 2):
             game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
             
-    def I(itemId, **argw):
+    def I(itemId, **kwargs):
         global dummyItems
         if not itemId in dummyItems:
-            dummyItems[itemId] = game.item.Item(itemId, **argw)
+            dummyItems[itemId] = game.item.Item(itemId, **kwargs)
         return dummyItems[itemId]
 
+    def T(*args, **kwargs):
+        return Tile(list(args), **kwargs)
+        
     dd = {}
     O = None # Shortform
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
@@ -176,10 +189,11 @@ def load(sectorX, sectorY):
         for x in dd["m"][z]:
             if not xPos in knownMap:
                 knownMap[xPos] = {}
-            for items in x:
+            for tile in x:
                 if not yPos in knownMap[xPos]:
                     knownMap[xPos][yPos] = {}
-                knownMap[xPos][yPos][z] = Tile(items[:])
+
+                knownMap[xPos][yPos][z] = tile.topCopy()
                 yPos += 1    
             yPos = sectorY*32
             xPos += 1

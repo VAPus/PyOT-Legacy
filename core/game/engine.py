@@ -29,7 +29,7 @@ def action(forced=False, delay=0):
             elif creature.action and creature.action.active():
                 # This will bug
                 #creature.action.addCallback(f, creature, *args, **argw)
-                reature.action.cancel()
+                creature.action.cancel()
             #else:
             f(creature, *args, **argw)
                 

@@ -101,16 +101,16 @@ class Map:
                             xCom.remove(y)
                         else:
                             if yCount > 1:
-                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d+" % yCount
+                                output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
                             elif yCount:
-                                output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"+"
+                                output += "(T("+(','.join(yCom))+"),)+"
                             yCom = y
                             yCount = 1
                     if yCount > 1:
-                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"*%d+" % yCount
+                        output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
                     elif yCount:
-                        output += str([yCom]).replace(': ', ':').replace(', ', ',').replace("'I", 'I').replace(")'", ')')+"+"
-                    return "["+output[:-1]+"]"
+                        output += "(T("+(','.join(yCom))+"),)+"
+                    return "("+output[:-1]+",)"
                 
                 # Level 2, X compare
                 def xComp(zCom):
