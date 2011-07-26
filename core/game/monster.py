@@ -1,4 +1,4 @@
-from game.creature import Creature, uniqueId
+from game.creature import Creature, CreatureBase, uniqueId
 import game.engine, game.map, game.scriptsystem
 from packet import TibiaPacket
 import copy, random, time
@@ -20,7 +20,7 @@ class Monster(Creature):
     
 
 
-class MonsterBase:
+class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
         self.data = data
         self.monsterData = monsterData
@@ -61,26 +61,6 @@ class MonsterBase:
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-    def regOnFollow(self, function):
-        self.scripts["onFollow"].append(function)
-        
-    def unregOnFollow(self, function):
-        self.scripts["onFollow"].remove(function)
-        
-    def onFollow(self, target):
-        for func in self.scripts["onFollow"]:
-            game.scriptsystem.scriptPool.callInThread(func, self, target)
-
-    def regOnTargetLost(self, function):
-        self.scripts["onTargetLost"].append(function)
-
-    def unregOnTargetLost(self, function):
-        self.scripts["onTargetLost"].remove(function)
-        
-    def onTargetLost(self, target):
-        for func in self.scripts["onTargetLost"]:
-            game.scriptsystem.scriptPool.callInThread(func, self, target)
-            
 class MonsterBrain:
     def beginThink(self, monster):
         monster.actionThink = LoopingCall(self.handleThink, monster)

@@ -8,10 +8,13 @@ import game.scriptsystem
 from game.item import Item
 from twisted.internet.defer import deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
-from game.creature import Creature, uniqueId, allCreatures
+from game.creature import Creature, CreatureBase, uniqueId, allCreatures
 import time
 
 import game.resource
+
+global anyPlayer
+anyPlayer = CreatureBase()
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
@@ -20,6 +23,7 @@ class TibiaPlayer(Creature):
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]
         self.gender = 0
+        self.base = anyPlayer
         self.knownCreatures = []
         self.openContainers = []
 

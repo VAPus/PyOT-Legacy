@@ -6,6 +6,7 @@ import game.enum as enum
 import config
 import time
 import copy
+import game.scriptsystem
 
 # Unique ids, thread safe too
 def __uid():
@@ -24,6 +25,30 @@ def uniqueId():
 
 allCreatures = {}
 
+class CreatureBase:
+    def __init__(self):
+        self.scripts = {"onFollow":[], "onTargetLost":[]}
+        
+    def regOnFollow(self, function):
+        self.scripts["onFollow"].append(function)
+        
+    def unregOnFollow(self, function):
+        self.scripts["onFollow"].remove(function)
+        
+    def onFollow(self, target):
+        for func in self.scripts["onFollow"]:
+            game.scriptsystem.scriptPool.callInThread(func, self, target)
+
+    def regOnTargetLost(self, function):
+        self.scripts["onTargetLost"].append(function)
+
+    def unregOnTargetLost(self, function):
+        self.scripts["onTargetLost"].remove(function)
+        
+    def onTargetLost(self, target):
+        for func in self.scripts["onTargetLost"]:
+            game.scriptsystem.scriptPool.callInThread(func, self, target)
+            
 class Creature:
     
     def __init__(self, data, position, cid=None):
