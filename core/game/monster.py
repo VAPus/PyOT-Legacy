@@ -1,5 +1,5 @@
 from game.creature import Creature, uniqueId
-import game.engine, game.map
+import game.engine, game.map, game.scriptsystem
 from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor
@@ -26,7 +26,7 @@ class MonsterBase:
         self.monsterData = monsterData
         self.voiceslist = []
         self.brain = brain
-        
+        self.scripts = {"onFollow":[], "onTargetLost":[]}
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -57,9 +57,30 @@ class MonsterBase:
         self.ice = ice
         self.holy = holy
         self.death = death
+
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
+    def regOnFollow(self, function):
+        self.scripts["onFollow"].append(function)
+        
+    def unregOnFollow(self, function):
+        self.scripts["onFollow"].remove(function)
+        
+    def onFollow(self, target):
+        for func in self.scripts["onFollow"]:
+            game.scriptsystem.scriptPool.callInThread(func, self, target)
+
+    def regOnTargetLost(self, function):
+        self.scripts["onTargetLost"].append(function)
+
+    def unregOnTargetLost(self, function):
+        self.scripts["onTargetLost"].remove(function)
+        
+    def onTargetLost(self, target):
+        for func in self.scripts["onTargetLost"]:
+            game.scriptsystem.scriptPool.callInThread(func, self, target)
+            
 class MonsterBrain:
     def beginThink(self, monster):
         monster.actionThink = LoopingCall(self.handleThink, monster)
@@ -73,6 +94,7 @@ class MonsterBrain:
         # Walking
         if monster.target:
             if not monster.canSee(monster.target.position):
+                monster.base.onTargetLost(monster.target)
                 monster.target = None
                 
             return
@@ -90,6 +112,7 @@ class MonsterBrain:
                 else:
                     target = spectators[0].player
                 monster.target = target
+                monster.base.onFollow(monster.target)
                 game.engine.autoWalkCreatureTo(monster, monster.target.position, -1, False)
                 def __followCallback(who):
                     if monster.target == who:
