@@ -173,7 +173,7 @@ class TibiaPacket:
         end = 0
         step = -1
 
-        # Higher then ground level
+        # Lower then ground level
         if position[2] > 7:
             start = position[2] - 2
             end = min(15, position[2] + 2) # Choose the smallest of 15 (MAX - 1) and z + 2
