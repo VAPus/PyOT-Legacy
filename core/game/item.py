@@ -175,7 +175,7 @@ def loadItems():
 
     for data in result2:
         if data["key"] == "fluidSource":
-            val = getattr(game.enum, 'FLUID_'+data["value"].upper())[0]
+            val = getattr(game.enum, 'FLUID_'+data["value"].upper())
         elif data["key"] == "floorChange":
             val = game.enum.FLOORCHANGE_DOWN if data["value"]=="down" else game.enum.FLOORCHANGE_UP
         else:

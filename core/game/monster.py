@@ -60,7 +60,7 @@ class MonsterBase(CreatureBase):
         return self
 
     def bloodType(self, color="blood"):
-        self.blood = getattr(game.enum, 'FLUID_'+color.upper())[0]
+        self.blood = getattr(game.enum, 'FLUID_'+color.upper())
         
     def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
         self.armor = armor
