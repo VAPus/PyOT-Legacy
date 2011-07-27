@@ -171,6 +171,7 @@ def load(sectorX, sectorY):
                 game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+            
     def I(itemId, **kwargs):
         global dummyItems
         if not itemId in dummyItems:

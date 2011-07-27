@@ -8,7 +8,7 @@ import game.enum
 
 monsters = {}
 
-monsters["default"] = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
+monsters["default"] = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "experience":0,"speed":100}
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
@@ -35,7 +35,7 @@ class MonsterBase(CreatureBase):
         self.setImmunity()
         self.walkAround()
         self.bloodType()
-        self.setDefense()
+        self.setDefence()
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -62,7 +62,7 @@ class MonsterBase(CreatureBase):
     def bloodType(self, color="blood"):
         self.blood = getattr(game.enum, 'FLUID_'+color.upper())
         
-    def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
+    def setDefence(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
         self.armor = armor
         self.fire = fire
         self.earth = earth
