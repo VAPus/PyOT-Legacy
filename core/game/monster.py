@@ -33,6 +33,7 @@ class MonsterBase(CreatureBase):
         self.setImmunity()
         self.walkAround()
         self.setRace()
+        self.setDefense()
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -59,9 +60,8 @@ class MonsterBase(CreatureBase):
     def setRace(self, race="blood"):
         self.race = race
         
-    def setDefense(self, armor, defense, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
+    def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
         self.armor = armor
-        self.defense = defense
         self.fire = fire
         self.earth = earth
         self.energy = energy
