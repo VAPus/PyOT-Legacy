@@ -200,4 +200,7 @@ def autoCastValue(data): # We get a string, then find the simplest possible valu
         
 # Last order of buisness, the script system
 import game.scriptsystem
+from data.spells import *
+from data.monsters import *
+from data.npcs import *
 from data.scripts import *
