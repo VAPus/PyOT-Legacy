@@ -8,4 +8,4 @@ for mod in glob.glob("data/spells/*.py"):
     if modm is "__init__":
         continue
 
- __all__.append(modm)
+    __all__.append(modm)
