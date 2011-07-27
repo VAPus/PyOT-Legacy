@@ -42,6 +42,7 @@ def tiler(player, text):
         return False
         
 global last
+last = 0
 def tilerE(player, text):
     global last
     last += 1
