@@ -5,9 +5,11 @@ import copy
     I: Item
     M: Monster
     MM: Multimonster
+    T: Tile
+    N: None
 """
 
-# Behavior
+### Behavior
 def replacer(old, new):
     if new:
         return new
@@ -29,21 +31,30 @@ def iReplacer(old, new):
         for i in new[1:]:
             old.append(i)
     return old
-    
+
+### Mainmap
 class Map:
     def __init__(self, xA, yA, ground=100):
         self.area = {7:[]}
         self.size = (xA, yA)
-        
+        self._author = ""
+        self._description = ""
         for x in xrange(0, xA+1):
             self.area[7].append([])
             for y in xrange(0, yA+1):
                 self.area[7][x].append([])
-                if isinstance(ground, int):
+                if ground == None:
+                    self.area[7][x][y] = []
+                elif isinstance(ground, int):
                     self.area[7][x][y] = [Item(ground)]
                 else:
                     self.area[7][x][y] = [ground]
 
+    def author(self, name):
+        self._author = name
+    
+    def description(self, desc):
+        self._description = desc
     def merge(self, obj, offsetX, offsetY, overrideLevel=None):
         xO = offsetX
         yO = offsetY
@@ -57,10 +68,43 @@ class Map:
                 yO += 1
             yO = offsetY
             xO += 1
-    def add(x,y,thing,level=7):
-        self.area[x][y][level].append(gen)
+
+    def _level(self, level, ground=None):
+        if not level in self.area:
+            self.area[level] = []
+            for x in xrange(0, self.size[0]+1):
+                self.area[level].append([])
+                for y in xrange(0, self.size[1]+1):
+                    self.area[level][x].append([])
+                    if ground == None:
+                        self.area[level][x][y] = []
+                    elif isinstance(ground, int):
+                        self.area[level][x][y] = [Item(ground)]
+                    else:
+                        self.area[level][x][y] = [ground]
+                        
+    def addTo(self,x,y,thing,level=7):
+        self._level(level)
+        self.area[level][x][y] = thing.area[thing.x][thing.y][thing.level]
         
+    def add(self, thing):
+        # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
+        self._level(thing.level)
+        self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
+
+    def _levelsTo(self, x, y): # Rather heavy!
+        levels = []
+
+        for level in self.area.keys():
+            try:
+                len(self.area[level][x][y]) # Raise a error, then it's skipped
+                levels.append(level)
+            except:
+                pass
+            
+        return levels
     def compile(self, areas=(32,32)):
+        print "Begin compilation"
         areaX = 0
         areaY = 0
         toX = self.size[0] / areas[0]
@@ -69,16 +113,25 @@ class Map:
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
                 
-                sector = {7:[]}
+                sector = {}
                 extras = []
+                
                 for xS in xrange(0, areas[0]):
-                    sector[7].append([])
                     for yS in xrange(0, areas[1]):
-                        sector[7][xS].append([])
-                        for thing in self.area[7][(xA*areas[0])+xS][(yA*areas[1])+yS]:
-                            e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,7,xS,yS, extras)
-                            if e:
-                                sector[7][xS][yS].append(e)
+                        for level in self._levelsTo((xA*areas[0])+xS, (yA*areas[1])+yS):
+                            if not level in sector:
+                                sector[level] = []
+
+                            if len(sector[level]) <= xS:
+                                sector[level].append([])
+                            
+                            if len(sector[level][xS]) <= yS:
+                                sector[level][xS].append([])
+
+                            for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
+                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
+                                if e:
+                                    sector[level][xS][yS].append(e)
                 
                 # Begin by rebuilding ranges of tiles in x,y,z
                 global opR
@@ -95,6 +148,7 @@ class Map:
                     yCom = []
                     yCount = 0
                     output = ""
+
                     for y in copy.copy(xCom):
                         if yCom == y:
                             yCount += 1
@@ -137,11 +191,16 @@ class Map:
                     
                     return output[:-1]
                 
-                output = "{"
+                output = ""
                 for zPos in sector:
-                    output += "7:"+xComp(sector[zPos])
-                output += "}"
-                output = "m="+output
+                    data = xComp(sector[zPos])
+                    if data == "((T(),)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
+                        continue
+                    output += str(zPos)+":"+data+","
+                if output:
+                    output = "m={"+output[:-1]+"}"
+                else: # A very big load of nothing
+                    output = "m={}"
                 
                 if extras:
                     # Monster ops
@@ -180,10 +239,21 @@ class Map:
                     output += "\ndef l():"+';'.join(extras)
 
                 open('%d.%d.sec' % (xA, yA), 'w').write(output)
-        
+                
+                print "-Wrote %d.%d.sec" % (xA, yA)
+        output = ""
+        output += "width = %d\n" % self.size[0]
+        output += "height = %d\n" % self.size[1]
+        output += "author = '%s'\n" % self._author
+        output += "description = '%s'\n" % self._description
+        output += "sectorSize = (%d, %d)\n" % (areas[0], areas[1])
+        open('info.py', "w").write(output)
+        print "---Wrote info.py"
+
+### Areas
 class Area:
     def __init__(self, xA, yA, ground=100, level=7):
-        self.z = level
+        self.level = level
         self.area = []
         for x in xrange(0, xA+1):
             self.area.append([])
@@ -193,51 +263,69 @@ class Area:
                 else:
                     self.area[x].append({level: [ground]})
     def add(self, x,y,thing):
-        self.area[x][y][self.z].append(thing)
+        self.area[x][y][self.level].append(thing)
         
     def merge(self, obj, offsetX, offsetY):
         for x in obj.area:
             for y in obj.area[x]:
                 for z in obj.area[x][y]:
-                    self.area[x+offsetX][y+offsetY][self.z] = obj.area[x][y][z] 
+                    self.area[x+offsetX][y+offsetY][self.level] = obj.area[x][y][z] 
 
     def border(self, offset=0, north=None,south=None,east=None,west=None,northeast=None,northwest=None,southeast=None,southwest=None,behavior=iReplacer):
         # Run East
         if east:
             for sideY in self.area[offset][offset:(offset*-1)-1]:
-                sideY[self.z] = behavior(sideY[self.z], east if isinstance(east, tuple) else [east])
+                sideY[self.level] = behavior(sideY[self.level], east if isinstance(east, tuple) else [east])
         
         # Run West
         if west:
             for sideY in self.area[(offset*-1)-1][offset:(offset*-1)-1]:
-                sideY[self.z] = behavior(sideY[self.z], west if isinstance(west, tuple) else [west])
+                sideY[self.level] = behavior(sideY[self.level], west if isinstance(west, tuple) else [west])
                 
         # Run North
         if north:
             for sideX in self.area[offset:(offset*-1)-1]:
-                sideX[offset][self.z] = behavior(sideX[offset][self.z], north if isinstance(east, tuple) else [north])
+                sideX[offset][self.level] = behavior(sideX[offset][self.level], north if isinstance(east, tuple) else [north])
         
         # Run South
         if south:
             for sideX in self.area[offset:(offset*-1)-1]:
-                sideX[(offset*-1)-1][self.z] = behavior(sideX[(offset*-1)-1][self.z], south if isinstance(south, tuple) else [south])
+                sideX[(offset*-1)-1][self.level] = behavior(sideX[(offset*-1)-1][self.level], south if isinstance(south, tuple) else [south])
                 
         # Run northeast
         if northeast:
-            self.area[(offset*-1)-1][offset][self.z] = behavior(self.area[(offset*-1)-1][offset][self.z], northeast if isinstance(northeast, tuple) else [northeast])
+            self.area[(offset*-1)-1][offset][self.level] = behavior(self.area[(offset*-1)-1][offset][self.level], northeast if isinstance(northeast, tuple) else [northeast])
             
         # Run southeast
         if southeast:
-            self.area[(offset*-1)-1][(offset*-1)-1][self.z] = behavior(self.area[(offset*-1)-1][(offset*-1)-1][self.z], southeast if isinstance(southeast, tuple) else [southeast])
+            self.area[(offset*-1)-1][(offset*-1)-1][self.level] = behavior(self.area[(offset*-1)-1][(offset*-1)-1][self.level], southeast if isinstance(southeast, tuple) else [southeast])
             
         # Run northwest
         if northwest:
-            self.area[offset][offset][self.z] = behavior(self.area[offset][offset][self.z], northwest if isinstance(northwest, tuple) else [northwest])
+            self.area[offset][offset][self.level] = behavior(self.area[offset][offset][self.level], northwest if isinstance(northwest, tuple) else [northwest])
             
         # Run southwest
         if southwest:
-            self.area[offset][(offset*-1)-1][self.z] = behavior(self.area[offset][(offset*-1)-1][self.z], southewst if isinstance(southwest, tuple) else [southwest])     
+            self.area[offset][(offset*-1)-1][self.level] = behavior(self.area[offset][(offset*-1)-1][self.level], southewst if isinstance(southwest, tuple) else [southwest])     
 
+class Tile:
+    def __init__(self, x,y, ground=100, level=7):
+        self.x = x
+        self.y = y
+        self.level = level
+        if isinstance(ground, int):
+            self.area = {x: {y: {level: [Item(ground)]}}}
+        elif ground:
+            self.area = {x: {y: {level: [ground]}}}
+        else:
+            self.area = {x: {y: {level: []}}}
+    def add(self, thing):
+        self.area[self.x][self.y][self.level].append(thing)
+        
+    def get(self): # Unique for tiles i presume
+        return self.area[self.x][self.y][self.level]
+        
+### Things
 class Item:
     def __init__(self, id):
         self.id = id
@@ -258,12 +346,4 @@ class Monster:
     def gen(self, x,y,z,rx,ry, extras):
         extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != z else ''))
         return (None, extras)
-        
-class Tile:
-    def __init__(self, x,y, ground=100, level=7):
-        self.x = x
-        self.y = y
-        self.z = level
-        self.area = {x: {y: {level: [Item(ground)]}}}
-    def add(self, thing):
-        self.area[self.x][self.y][self.z].append(thing)
+       

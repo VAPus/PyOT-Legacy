@@ -2,11 +2,11 @@
 # -*- coding: latin-1 -*-
 
 import struct, sys
+import generator
 
 # The reader class:
 class Reader:
     def __init__(self, data):
-        self.length = len(data)
         self.pos = 0
         self.data = data
 
@@ -76,15 +76,6 @@ class Reader:
     def getData(self):
         return self.data[self.pos:]
     
-class Item:
-    def __init__(self):
-        self.type = 0
-        self.flags = {}
-        self.attr = {}
-        self.cid = 0
-        self.sid = 0
-        self.alsoKnownAs = []
-        self.junk = False
 
 class L:
     def __init__(self, val):
@@ -125,10 +116,18 @@ class Node:
         if self.nodes:
             return self.nodes.pop(0)
         else:
+            del self.data
+            del self.nodes
+            del self # It's rather safe to assume we don't be around anymore
+            
             return None
 
-_map_ = []
-        
+dummyItems = {}
+def genItem(itemid, *argc, **kwargs):
+    if not itemid in dummyItems:
+        dummyItems[itemid] = generator.Item(itemid, *argc, **kwargs)
+    return dummyItems[itemid]
+    
 otbmFile = open("map.otbm")
 otbm = Reader(otbmFile.read())
 
@@ -142,9 +141,11 @@ height = root.data.uint16()
 majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
-# Prepopulate _map_
 print "OTBM v%d, %dx%d" % (version, width, height) 
-_map_ = [[{}]*height]*width
+
+# Prepopulate map with a ground level of voids
+
+_map = generator.Map(width,height)
 
 nodes = root.next()
 nodes.data.pos += 1
@@ -152,11 +153,13 @@ description = ""
 spawns = ""
 house = ""
 
+_map.author("OTBMXML2sec generator")
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
         description = nodes.data.string()
         print description+"\n"
+        _map.description(description)
     elif attr == 11:
         spawns = nodes.data.string()
     elif attr == 13:
@@ -182,7 +185,9 @@ while node:
                 if tileType == 14:
                     # TODO
                     tile.data.uint32()
-                    
+                
+                mapTile = generator.Tile(tileX, tileY, ground=None, level=baseZ)
+                
                 # Attributes
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
@@ -190,7 +195,7 @@ while node:
                         flags = tile.data.uint32() # TODO, parse those
                         
                     elif attr == 9: # ITEM, ground item
-                        itemId = tile.data.uint16() # TODO, parse item
+                        mapTile.add(genItem(tile.data.uint16())) # TODO, parse item
                         
                     else:
                         print "Unknown tile attrubute"
@@ -241,12 +246,19 @@ while node:
                                 break # All after this is container items
                             else:
                                 print "Unknown item attribute %d" % attr
-                                
+                        
+                        mapTile.add(genItem(itemId))
                     else:
                         print "Unknown item header"
                     item = tile.next()
             else:
                 print "Unknown tile node"
+            if mapTile.get():
+                _map.add(mapTile)
+            else:
+                del mapTile # Serious memory saver when dealing with big chucks of nothingness
+            
+            del tile
             tile = node.next()
             
     elif type == 12: # Towns
@@ -275,5 +287,7 @@ while node:
             else:
                 print "Unknown waypoint type"
             waypoint = node.next()
+    del node
     node = nodes.next()
-print "DONE!"    
+
+_map.compile()

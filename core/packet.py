@@ -193,7 +193,7 @@ class TibiaPacket:
         for x in xrange(0, width):
             for y in xrange(0, height):
                 tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
-                if tile:
+                if tile and tile.things:
                     if skip >= 0:
                         self.uint8(skip)
                         self.uint8(0xFF)
