@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 import config, sys
-sys.path.append('core')
+sys.path.insert(1, 'core')
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
@@ -27,6 +26,10 @@ from twisted.internet import reactor
 
 #### Suggest reactor thread pool size ####
 reactor.suggestThreadPoolSize(config.suggestedLoginServerThreadPoolSize)
+
+### Override sql:
+config.sqlMinConnections = 1
+config.sqlMaxConnections = 2
 
 #### Initialize OTCrypto module ####
 import otcrypto

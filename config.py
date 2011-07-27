@@ -27,7 +27,7 @@ motd = "PyOT, it's alive!"
 name = "PyOT dev server"
 
 ########## Advance settings #########
-suggestedLoginServerThreadPoolSize = 4 # sqlMinConnections + 1 is often good enough
+suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
 suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This is only for the scripts! 
 sqlMinConnections = 3
