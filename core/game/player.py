@@ -144,11 +144,10 @@ class TibiaPlayer(Creature):
             
             # Option 2, the inventory
             elif position[1] < 64:
-                
                 return (1, self.inventory[position[1]-1]) if self.inventory[position[1]-1] else None
             
             # Option 3, the bags, if there is one ofcource
-            elif self.inventory[2]:
+            else:
                 try:
                     bag = self.openContainers[position[1] - 64]
                 except:
@@ -405,7 +404,7 @@ class TibiaPlayer(Creature):
                         if not count:
                             break
                     
-                    elif recursive and itemX.containerSize:
+                    elif recursive and itemX.containerSize and itemX != bag:
                         bags.append(itemX) # Found a container for recursive
                     
                     slot += 1
@@ -553,8 +552,8 @@ class TibiaPlayer(Creature):
             # Remove item:
             currItem = self.findItemWithPlacement(toPosition)
 
-            if currItem and not (currItem[1].stackable or currItem[1].containerSize):
-                currItem = None
+            if currItem and currItem[1] and not (currItem[1].stackable or currItem[1].containerSize):
+                currItem[1] = None
                 
             if fromMap:
                 
@@ -573,7 +572,7 @@ class TibiaPlayer(Creature):
                     
                 stream = TibiaPacket()
                 oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)
-                
+
                 # Before we remove it, can it be placed there?
                 if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     self.notPossible()
@@ -650,9 +649,11 @@ class TibiaPlayer(Creature):
 
             else:
                 
-                if currItem and currItem[1].containerSize:
-                    ret = self.itemToContainer(currItem[1], oldItem[1], count=count, stack=stack)
+                if currItem and currItem[1] and currItem[1].containerSize:
+                    ret = self.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
+                elif (currItem == 2) and not currItem[1] and currItem[2]:
+                    ret = self.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
@@ -664,7 +665,7 @@ class TibiaPlayer(Creature):
                     else:
                         container = self.getContainer(toPosition[1]-64)
 
-                        self.itemToContainer(container, oldItem[1], count=count, stack=stack, streamX=stream)                  
+                        self.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
                     if not fromMap and restoreItem:
                         stream.addInventoryItem(fromPosition[1], restoreItem[1])
                         self.inventory[fromPosition[1]-1] = restoreItem[1]

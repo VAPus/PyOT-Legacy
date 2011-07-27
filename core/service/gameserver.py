@@ -136,6 +136,18 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
             self.player.handleWalk(packetType - 0x65)
         
+        elif packetType == 0x6A: # Northeast
+            self.player.handleWalk(7)
+            
+        elif packetType == 0x6B: # Southeast
+            self.player.handleWalk(5)
+
+        elif packetType == 0x6C: # Northwest
+            self.player.handleWalk(4)
+            
+        elif packetType == 0x6D: # Southwest
+            self.player.handleWalk(6)
+            
         elif packetType == 0x96: # Say
             self.player.handleSay(packet)
             
