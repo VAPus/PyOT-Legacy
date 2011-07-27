@@ -17,6 +17,7 @@ class Monster(Creature):
         self.creatureType = 1
         self.spawnPosition = position[:]
         self.lastStep = 0
+        self.speed = self.base.data["speed"]
     
 
 
@@ -27,6 +28,11 @@ class MonsterBase(CreatureBase):
         self.voiceslist = []
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
+        
+        self.setBehavior()
+        self.setImmunity()
+        self.walkAround()
+        self.setRace()
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -47,7 +53,12 @@ class MonsterBase(CreatureBase):
             healthmax = health
         self.data["health"] = health
         self.data["healthmax"] = healthmax
+        
+        return self
 
+    def setRace(self, race="blood"):
+        self.race = race
+        
     def setDefense(self, armor, defense, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
         self.armor = armor
         self.defense = defense
@@ -58,6 +69,34 @@ class MonsterBase(CreatureBase):
         self.holy = holy
         self.death = death
 
+    def setExperience(self, experience):
+        self.data["experience"] = experience
+        
+    def setSpeed(self, speed):
+        self.data["speed"] = 200
+        
+    def setBehavior(self, summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0):
+        self.summonable = summonable
+        self.attackable = attackable
+        self.hostile = hostile
+        self.illusionable = illusionable
+        self.convinceable = convinceable
+        self.pushable = pushable
+        self.pushItems = pushItems
+        self.pushCreaturse = pushCreatures
+        self.targetDistance = targetDistance
+        self.runOnHealth = runOnHealth
+        
+    def walkAround(self, energy=0, fire=0, poison=0):
+        self.ignoreEnergy = energy
+        self.ignoreFire = fire
+        self.ignorePoison = poison
+        
+    def setImmunity(self, paralyze=1, invisible=1, lifedrain=1):
+        self.paralyze = paralyze
+        self.invisible = invisible
+        self.lifedrain = lifedrain
+        
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
@@ -67,7 +106,7 @@ class MonsterBrain:
         monster.actionThink.start(1, False)
         if monster.base.voiceslist:
             monster.actionTalk = LoopingCall(self.handleTalk, monster)
-            monster.actionTalk.start(5, False)
+            monster.actionTalk.start(2, False)
 
     
     def handleThink(self, monster):
@@ -153,16 +192,16 @@ class MonsterBrain:
         
 brains = {}
 brains["default"] = MonsterBrain()
-def genMonster(name, look, description="", speed=200, experience=100, race="blood", brain="default", template="default"):
+def genMonster(name, look, description="", brain="default", template="default"):
     # First build the common creature data
     if template in monsters:
         data = copy.copy(monsters[template])
 
-    data["speed"] = speed
     data["looktype"] = look[0]
     data["name"] = name
     # Then monster only data
     monsters[name] = MonsterBase(data, brains[brain], None)
+
     return monsters[name]
 
 def getMonster(name):
