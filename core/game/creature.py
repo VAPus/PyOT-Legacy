@@ -87,7 +87,6 @@ class Creature:
 
     def move(self, direction, spectators=None):
         import data.map.info
-        
         self.direction = direction
         
         # Make packet

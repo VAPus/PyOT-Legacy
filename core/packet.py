@@ -156,6 +156,7 @@ class TibiaPacket:
         import game.item
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
+
             if item.stackable:
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
@@ -195,7 +196,7 @@ class TibiaPacket:
         from game.map import getTile
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = getTile((position[0] + x , position[1] + y + offset, position[2]))
+                tile = getTile((position[0] + x, position[1] + y + offset, position[2]))
                 if tile and tile.things:
                     if skip >= 0:
                         self.uint8(skip)
@@ -204,7 +205,7 @@ class TibiaPacket:
                     self.tileDescription(tile, player)
                 else:
                     skip += 1
-                    if skip is 0xFF:
+                    if skip == 0xFF:
                         self.uint8(0xFF)
                         self.uint8(0xFF)
                         skip = -1
@@ -212,10 +213,10 @@ class TibiaPacket:
 
     def tileDescription(self, tile, player=None):
         self.uint16(0x00)
+        
         for item in tile.topItems():
             self.item(item)
 
-        
         for creature in tile.creatures():
             known = False
             if player and creature is not player:
@@ -230,7 +231,6 @@ class TibiaPacket:
         for item in tile.bottomItems():
             self.item(item)
 
-    # TODO: Outfit class?
     def outfit(self, look, addon=0, mount=0x00):
         
         self.uint16(look[0])

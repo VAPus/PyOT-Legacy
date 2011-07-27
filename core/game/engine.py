@@ -130,7 +130,7 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
     for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
-                for creature in game.map.knownMap[x][y][7].creatures():
+                for creature in game.map.getTile([x,y,pos[2]]).creatures():
                     if creature.creatureType == 0 and not creature in ignore:
                         players.append(creature.client)
             except:
@@ -150,12 +150,12 @@ def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
     for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
-                for creature in game.map.knownMap[x][y][7].creatures():
-                    # TODO: Check for player
+                for creature in game.map.getTile([x,y,pos[2]]).creatures():
                     if creature.creatureType == 0 and not creature in ignore:
                         yield creature.client
             except:
                 raise StopIteration
+                
     raise StopIteration
 
     

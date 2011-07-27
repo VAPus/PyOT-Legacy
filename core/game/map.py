@@ -27,6 +27,7 @@ def removeCreature(creature, pos):
 class Tile(BaseThing):
     def __init__(self, items):
         self.things = items
+
         self.topItemCount = len(items)
         self.creatureCount = 0
 
