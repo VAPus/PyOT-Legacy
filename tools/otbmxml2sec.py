@@ -270,6 +270,7 @@ while node:
                 townId = town.data.uint32()
                 townName = town.data.string()
                 temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
+                print temple
             else:
                 print "Unknown town node"
                 

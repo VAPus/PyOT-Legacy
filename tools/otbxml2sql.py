@@ -187,6 +187,8 @@ while child:
         item.flags["lookthrough"] = 1
     if (flags & 16777216) == 16777216:
         item.flags["animation"] = 1
+    if (flags & 4194304) == 4194304:
+        item.flags["charges"] = 1
     
     sub = child.next()
     while child.data.peekUint8():
@@ -265,12 +267,13 @@ import copy
 print "CREATE TABLE `items` ( \n\
 `sid` SMALLINT UNSIGNED NOT NULL,\n\
 `cid` SMALLINT UNSIGNED NOT NULL,\n\
-`subtypes` TINYINT NOT NULL, \n\
+`type` TINYINT UNSIGNED NOT NULL, \n\
+`subs` TINYINT UNSIGNED NOT NULL, \n\
 `name` VARCHAR( 32 ) NOT NULL,\n\
 `article` CHAR( 3 ) NOT NULL DEFAULT '',\n\
 `plural` VARCHAR( 32 ) NOT NULL DEFAULT '',\n\
-`speed` SMALLINT NOT NULL, \n\
-`order` TINYINT NOT NULL, \n\
+`speed` SMALLINT UNSIGNED NOT NULL, \n\
+`order` TINYINT UNSIGNED NOT NULL, \n\
 `solid` BOOL NOT NULL DEFAULT 0,\n\
 `blockprojectile` BOOL NOT NULL DEFAULT 0,\n\
 `blockpath` BOOL NOT NULL DEFAULT 0,\n\
@@ -286,6 +289,7 @@ print "CREATE TABLE `items` ( \n\
 `distanceread` BOOL NOT NULL DEFAULT 0,\n\
 `rotatable` BOOL NOT NULL DEFAULT 0,\n\
 `readable` BOOL NOT NULL DEFAULT 0,\n\
+`charges` BOOL NOT NULL DEFAULT 0,\n\
 `animation` BOOL NOT NULL DEFAULT 0,\n\
 `lookthrough` BOOL NOT NULL DEFAULT 0,\n\
 `custom` BOOL NOT NULL DEFAULT 0,\n\
@@ -303,7 +307,7 @@ for item in items:
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
 
-        print ("INSERT INTO items (`sid`, `cid`, `name`%s%s%s%s) VALUES(%d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subtypes`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
+        print ("INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
 
         del data[item.sid]["name"]
         del data[item.sid]["plural"]

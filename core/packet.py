@@ -157,9 +157,11 @@ class TibiaPacket:
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
             if item.stackable:
-                self.uint8(item.count)
-            if item.fluidSource:
-                self.uint8(1)
+                self.uint8(item.count or 1)
+            elif item.type == 11 or item.type == 12:
+                self.uint8(int(item.fluidSource))
+            if item.animation:
+                self.uint8(0xFE)
         else:
             self.uint16(item)
             if count:
@@ -192,7 +194,7 @@ class TibiaPacket:
         from game.map import getTile
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = getTile((position[0] + x + offset , position[1] + y + offset, position[2]))
+                tile = getTile((position[0] + x , position[1] + y + offset, position[2]))
                 if tile and tile.things:
                     if skip >= 0:
                         self.uint8(skip)

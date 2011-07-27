@@ -128,7 +128,7 @@ def loadItems():
     global reverseItems
 
     # Async SQL (it's funny isn't it?)
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,plural,article,subtypes,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,charges,animation FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
     yield d2
@@ -145,8 +145,16 @@ def loadItems():
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
         item["speed"] = int(item["speed"]) # No long
+        item["type"] = int(item["type"]) # No long
+        item["subs"] = int(item["subs"]) # No long
+        if not item["speed"]:
+            del item["speed"]
+        if not item["type"]:
+            del item["type"]
+        if not item["subs"]:
+            del item["subs"]            
         for key in copy.copy(item):
-            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable'):
+            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','charges','animation'):
                 if bool(item[key]):
                     item[key] = True
                 else:
@@ -155,19 +163,19 @@ def loadItems():
         reverseLoadItems[item["cid"]] = copy.copy(item["sid"])
         
         loadItems[reverseLoadItems[item["cid"]]] = item
-        
-        for x in xrange(1, item["subtypes"]+1):
-            newItem = copy.copy(item)
-            newItem["cid"] = item["cid"]+x
-            reverseLoadItems[newItem["cid"]] = item["sid"]+x
-            
-            loadItems[reverseLoadItems[newItem["cid"]]] = newItem
+        if "subs" in item:
+            for x in xrange(1, item["subs"]+1):
+                newItem = copy.copy(item)
+                newItem["cid"] = item["cid"]+x
+                reverseLoadItems[newItem["cid"]] = item["sid"]+x
+                del newItem["sid"]
+                loadItems[reverseLoadItems[newItem["cid"]]] = newItem
             
         del item["sid"] # Unneeded
 
     for data in result2:
         if data["key"] == "fluidSource":
-            val = getattr(game.enum, 'FLUID_'+data["value"].upper())
+            val = getattr(game.enum, 'FLUID_'+data["value"].upper())[0]
         elif data["key"] == "floorChange":
             val = game.enum.FLOORCHANGE_DOWN if data["value"]=="down" else game.enum.FLOORCHANGE_UP
         else:
