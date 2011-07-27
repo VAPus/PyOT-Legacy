@@ -162,6 +162,7 @@ class TibiaPacket:
                 self.uint8(int(item.fluidSource))
             if item.animation:
                 self.uint8(0xFE)
+
         else:
             self.uint16(item)
             if count:

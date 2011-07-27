@@ -47,11 +47,16 @@ def tilerE(player, text):
     global last
     last += 1
     return tiler(player, str(last))
+    
+def mypos(player, text):
+    player.say("My position is: "+str(player.position))
+    print str(player.position) # Print to console to be sure
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
 scriptsystem.get("talkactionFirstWord").reg('set', tiler)
 scriptsystem.get("talkaction").reg('t', tilerE)
+scriptsystem.get("talkaction").reg('mypos', mypos)
 def speedsetter(player, text):
     try:
         player.setSpeed(int(text))

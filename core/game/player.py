@@ -18,7 +18,7 @@ anyPlayer = CreatureBase()
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
-        Creature.__init__(self, data, [data['posx'],data['posy'],data['posz']])
+        Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         self.modes = [0,0,0]
@@ -489,7 +489,7 @@ class TibiaPlayer(Creature):
     def handleAutoWalk(self, packet):
         if self.target:
             self.target = None
-            
+        self.stopAction()    
         steps = packet.uint8()
         log.msg("Steps: %d" % steps)
         walkPattern = deque()
@@ -520,6 +520,7 @@ class TibiaPlayer(Creature):
     def handleWalk(self, direction):
         if self.target:
             self.target = None
+        
         game.engine.autoWalkCreature(self, deque([direction]))
         
     @deferredGenerator
