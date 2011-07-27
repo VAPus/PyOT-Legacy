@@ -1,6 +1,7 @@
 from game.item import BaseThing
 import game.item
 from twisted.internet import reactor
+from twisted.python import log
 
 def getTile(pos):
     try:
@@ -155,16 +156,21 @@ def load(sectorX, sectorY):
 
     # Ops codes
     def M(name,x,y,z=7):
-        game.monster.getMonster(name).spawn([x,y,z])
+        try:
+            game.monster.getMonster(name).spawn([x,y,z])
+        except:
+            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     
     def MM(name, *argc):
-        z = 7
-        if len(argc) % 2:
-            z = argc[-1]
-            
-        for count in xrange(0,len(argc), 2):
-            game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
-            
+        try:
+            z = 7
+            if len(argc) % 2:
+                z = argc[-1]
+                
+            for count in xrange(0,len(argc), 2):
+                game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
+        except:
+            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     def I(itemId, **kwargs):
         global dummyItems
         if not itemId in dummyItems:

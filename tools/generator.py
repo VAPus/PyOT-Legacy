@@ -39,6 +39,9 @@ class Map:
         self.size = (xA, yA)
         self._author = ""
         self._description = ""
+        self.towns = {}
+        self.waypoints = {}
+        
         for x in xrange(0, xA+1):
             self.area[7].append([])
             for y in xrange(0, yA+1):
@@ -55,6 +58,13 @@ class Map:
     
     def description(self, desc):
         self._description = desc
+        
+    def town(self, id, name, pos):
+        self.towns[id] = (name, pos)
+        
+    def waypoint(self, name, pos):
+        self.waypoints[name] = pos
+        
     def merge(self, obj, offsetX, offsetY, overrideLevel=None):
         xO = offsetX
         yO = offsetY
@@ -85,7 +95,7 @@ class Map:
                         
     def addTo(self,x,y,thing,level=7):
         self._level(level)
-        self.area[level][x][y] = thing.area[thing.x][thing.y][thing.level]
+        self.area[level][x][y].append(thing)
         
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
@@ -104,7 +114,7 @@ class Map:
             
         return levels
     def compile(self, areas=(32,32)):
-        print "Begin compilation"
+        print "--Begin compilation"
         areaX = 0
         areaY = 0
         toX = self.size[0] / areas[0]
@@ -207,31 +217,39 @@ class Map:
                     # TODO: Reorder monsters first!
                     monsters = {}
                     monsterPos = {}
-                    handled = []
+                    handled = {}
                     for x in extras:
                         if x[0] == "M":
-                            args = x.split('(')[1].split(')')[0].split(',')
-                            if len(args) > 3:
-                                # TODO: Diffrent ground level then 7
-                                continue
+                            args = list(x.split('(')[1].split(')')[0].split(','))
+                            if len(args) == 3:
+                                args.append('7')
                             
                             subs = args[0].split("'")
                             if not subs[1] in monsters:
-                                monsters[subs[1]] = 1
-                                monsterPos[subs[1]] = [args[1], args[2]]
+                                monsters[subs[1]] = {}
+                                monsterPos[subs[1]] = {}
+                            if not args[3] in monsterPos[subs[1]]:
+                                monsters[subs[1]][args[3]] = 1
+                                monsterPos[subs[1]][args[3]] = [args[1], args[2]]
                             else:
-                                monsters[subs[1]] += 1
-                                monsterPos[subs[1]].append(args[1])
-                                monsterPos[subs[1]].append(args[2])
+                                monsters[subs[1]][args[3]] += 1
+                                monsterPos[subs[1]][args[3]].append(args[1])
+                                monsterPos[subs[1]][args[3]].append(args[2])
+                                
                     # Run two, with new count 
                     for x in copy.copy(extras):
                         if x[0] == "M":
-                            subs = x.split("'")
-                            if monsters[subs[1]] > 1:
-                                
-                                if not subs[1] in handled:
-                                    extras[extras.index(x)] = "MM('%s',%s)" % ( subs[1], ','.join(monsterPos[subs[1]]) )
-                                    handled.append(subs[1])
+                            args = list(x.split('(')[1].split(')')[0].split(','))
+                            if len(args) == 3:
+                                args.append('7')
+                            subs = args[0].split("'")
+                            if monsters[subs[1]][args[3]] > 1:
+                                if not args[3] in handled:
+                                    handled[args[3]] = []
+                                    
+                                if not subs[1] in handled[args[3]]:
+                                    extras[extras.index(x)] = "MM('%s',%s%s)" % ( subs[1], ','.join(monsterPos[subs[1]][args[3]]), ','+args[3] if int(args[3]) != 7 else '' )
+                                    handled[args[3]].append(subs[1])
                                     curr = subs[1]
                                 else:
                                     del extras[extras.index(x)]
@@ -247,6 +265,9 @@ class Map:
         output += "author = '%s'\n" % self._author
         output += "description = '%s'\n" % self._description
         output += "sectorSize = (%d, %d)\n" % (areas[0], areas[1])
+        output += "towns = %s\n" % str(self.towns)
+        output += "waypoints = %s\n" % str(self.waypoints)
+        
         open('info.py', "w").write(output)
         print "---Wrote info.py"
 
@@ -344,6 +365,6 @@ class Monster:
 
             
     def gen(self, x,y,z,rx,ry, extras):
-        extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != z else ''))
+        extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
         return (None, extras)
        

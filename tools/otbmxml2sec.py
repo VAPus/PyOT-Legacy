@@ -197,7 +197,6 @@ spawns = ""
 house = ""
 
 _map.author("OTBMXML2sec generator")
-print len(nodes.data.data)
 
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
@@ -213,7 +212,7 @@ while nodes.data.peekUint8():
         print "Unknown nodes data"
 
 node = nodes.next()
-
+print "--Begin OTBM nodes"
 while node:
     type = node.data.uint8()
     if type == 4: # Tile area
@@ -312,7 +311,7 @@ while node:
                 townId = town.data.uint32()
                 townName = town.data.string()
                 temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
-                print temple
+                _map.town(townId, townName, temple)
             else:
                 print "Unknown town node"
                 
@@ -327,10 +326,43 @@ while node:
             if waypointType == 16:
                 name = waypoint.data.string()
                 cords = [waypoint.data.uint16(),waypoint.data.uint16(),waypoint.data.uint8()]
+                _map.waypoint(name, cords)
             else:
                 print "Unknown waypoint type"
             waypoint = node.next()
     del node
     node = nodes.next()
+
+print "---Done with all OTBM nodes"
+
+del nodes
+del root
+del otbm
+
+### Begin XML reading
+import xml.dom.minidom as dom
+dom = dom.parse(spawns)
+monsters = {}
+
+print "---Begin spawns"
+for xSpawn in dom.getElementsByTagName("spawn"):
+    baseX = int(xSpawn.getAttribute("centerx"))
+    baseY = int(xSpawn.getAttribute("centery"))
+    baseZ = int(xSpawn.getAttribute("centerz"))
+    
+    for xMonster in xSpawn.getElementsByTagName("monster"):
+        monsterX = int(xMonster.getAttribute("x")) + baseX
+        monsterY = int(xMonster.getAttribute("y")) + baseY
+        monsterZ  = int(xMonster.getAttribute("z"))
+        if monsterZ != baseZ:
+            print "UNSUPPORTED spawns!"
+        
+        monsterName = xMonster.getAttribute("name")
+        if not monsterName in monsters:
+            monsters[monsterName] = generator.Monster(monsterName)
+            
+        _map.addTo(monsterX, monsterY, monsters[monsterName], monsterZ)
+
+print "---Done with spawns"
 
 _map.compile()
