@@ -4,6 +4,8 @@ from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
+import game.enum
+
 monsters = {}
 
 monsters["default"] = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
@@ -32,7 +34,7 @@ class MonsterBase(CreatureBase):
         self.setBehavior()
         self.setImmunity()
         self.walkAround()
-        self.setRace()
+        self.bloodType()
         self.setDefense()
         
     def spawn(self, position, place=True):
@@ -57,8 +59,8 @@ class MonsterBase(CreatureBase):
         
         return self
 
-    def setRace(self, race="blood"):
-        self.race = race
+    def bloodType(self, color="blood"):
+        self.blood = getattr(game.enum, 'FLUID_'+color.upper())[0]
         
     def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
         self.armor = armor
