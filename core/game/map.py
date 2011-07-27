@@ -1,6 +1,5 @@
 from game.item import BaseThing
 import game.item
-import time
 from twisted.internet import reactor
 
 def getTile(pos):
@@ -25,10 +24,19 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(BaseThing):
-    def __init__(self, items):
-        self.things = items
+    def __init__(self, items, unsafeOrder=True):
+        if unsafeOrder:
+            self.things = []
+            self.topItemCount = 0
+            for item in items[:]:
+                if item.ontop or item.type == 1:
+                    self.things.append(item)
+                    self.topItemCount += 1
+                    items.remove(item)
+            
+            for item in items[:]:
+                self.things.append(item)
 
-        self.topItemCount = len(items)
         self.creatureCount = 0
 
     def placeCreature(self, creature):
@@ -129,21 +137,7 @@ def loadTiles(x,y, walk=True):
     sectorX = int(x / data.map.info.sectorSize[0])
     sectorY = int(y / data.map.info.sectorSize[1])
     
-    # An idea by soul4soul. To be better implanted into walk sections really
-    """if walk:
-        commands = [(load, [sectorX+1, sectorY], {})]
-        commands.append((load, [sectorX-1, sectorY], {}))
-        commands.append((load, [sectorX, sectorY+1], {}))
-        commands.append((load, [sectorX, sectorY-1], {}))
-        commands.append((load, [sectorX-1, sectorY-1], {}))
-        commands.append((load, [sectorX+1, sectorY+1], {}))
-        commands.append((load, [sectorX-1, sectorY+1], {}))
-        commands.append((load, [sectorX+1, sectorY-1], {}))"""
-    # This locks walking until it's done if it isn't already loaded, which is should be!
     load(sectorX, sectorY)
-    # Perform the loading in threadpool, this hold one thread
-    """if walk:
-        threads.callMultipleInThread(commands)"""
     
 def load(sectorX, sectorY):
 
@@ -158,7 +152,6 @@ def load(sectorX, sectorY):
         
     sectors[sectorX][sectorY] = True
     
-    begin = time.time()
 
     # Ops codes
     def M(name,x,y,z=7):
@@ -179,6 +172,11 @@ def load(sectorX, sectorY):
         return dummyItems[itemId]
 
     def T(*args, **kwargs):
+        if args and args[0].solid and args[0].type == 1:
+            if not args[0].cid in dummyTiles:
+                dummyTiles[args[0].cid] = Tile(list(args), **kwargs)
+            return dummyTiles[args[0].cid]
+            
         return Tile(list(args), **kwargs)
         
     dd = {}
@@ -202,7 +200,6 @@ def load(sectorX, sectorY):
     if "l" in dd:    
         reactor.callInThread(dd["l"])
         
-    print "Loading took: %f to load sector %d_%d" % (time.time() - begin, sectorX, sectorY)
     # Do callbacks
     m = str(sectorX).zfill(3)+str(sectorY).zfill(3)
     if m in callbacks:

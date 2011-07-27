@@ -81,9 +81,9 @@ class Creature:
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground):
-        if time.time() - self.lastStep < 1: 
+        if time.time() - self.lastStep < 1.5: 
             return (ground.speed / self.speed) # TODO
-        return 1
+        return 1.5
 
     def move(self, direction, spectators=None):
         import data.map.info

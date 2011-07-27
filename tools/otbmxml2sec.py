@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys
+import struct, sys, copy
 import generator
 
 # The reader class:
@@ -82,15 +82,22 @@ class L:
         self.value = val
         
 class Node:
-    def __init__(self, otbm, level):
+    def __init__(self, begin, size=None):
         self.data = b""
         self.nodes = []
+        self.begin = begin
+        self.size = size
+            
+
+    def parse(self):
+        otbm.pos = self.begin
         byte = otbm.uint8()
         nextIsEscaped = False
-        while byte != None:
+        while otbm.pos < (self.begin + self.size):
             if byte == 0xFE and not nextIsEscaped:
-                node = self.handleBlock(otbm, level)
-
+                blockSize = self.sizer()
+                node = self.handleBlock(copy.copy(otbm.pos), blockSize)
+                otbm.pos += blockSize
             elif byte == 0xFF and not nextIsEscaped:
                 level.value -= 1
                 if level.value < 0:
@@ -106,20 +113,55 @@ class Node:
                 
             byte = otbm.uint8()
         self.data = Reader(self.data)
-    def handleBlock(self, otbm, level):
+
+    def sizer(self):
+        oldPos = copy.copy(otbm.pos)
+        global subLevels
+        subLevels = 0
+        
+        def leveler():
+            global subLevels
+            subLevels += 1
+            byte = otbm.uint8()
+            nextIsEscaped = False
+            while byte != None:
+                if byte == 0xFE and not nextIsEscaped:
+                    leveler()
+
+                elif byte == 0xFF and not nextIsEscaped:
+                    subLevels -= 1
+                    if subLevels < 0:
+                        print "DEBUG!"
+                    break
+                    
+                elif byte == 0xFD and not nextIsEscaped:
+                    nextIsEscaped = True
+                    
+                else:
+                    nextIsEscaped = False 
+                    
+                byte = otbm.uint8()            
+        leveler()
+        size = otbm.pos - oldPos
+        otbm.pos = oldPos
+        return size
+    def handleBlock(self, begin, size):
         level.value += 1
-        node = Node(otbm, level)
+        node = Node(begin, size)
         self.nodes.append(node)
         return node
         
     def next(self):
         if self.nodes:
-            return self.nodes.pop(0)
+            try:
+                del self.data
+            except:
+                pass
+            node = self.nodes.pop(0)
+            node.parse()
+            return node
         else:
-            del self.data
-            del self.nodes
             del self # It's rather safe to assume we don't be around anymore
-            
             return None
 
 dummyItems = {}
@@ -131,8 +173,9 @@ def genItem(itemid, *argc, **kwargs):
 otbmFile = open("map.otbm")
 otbm = Reader(otbmFile.read())
 
-otbm.pos += 5
-root = Node(otbm, L(1)) # Begin on level 1
+level = L(1)
+root = Node(5, len(otbm.data)) # Begin on level 1
+root.parse()
 root.data.pos += 1
 
 version = root.data.uint32()
@@ -154,6 +197,8 @@ spawns = ""
 house = ""
 
 _map.author("OTBMXML2sec generator")
+print len(nodes.data.data)
+
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
@@ -255,10 +300,7 @@ while node:
                 print "Unknown tile node"
             if mapTile.get():
                 _map.add(mapTile)
-            else:
-                del mapTile # Serious memory saver when dealing with big chucks of nothingness
             
-            del tile
             tile = node.next()
             
     elif type == 12: # Towns
