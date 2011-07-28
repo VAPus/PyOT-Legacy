@@ -30,12 +30,13 @@ class MonsterBase(CreatureBase):
         self.voiceslist = []
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
+        self.summons = []
         
         self.setBehavior()
         self.setImmunity()
         self.walkAround()
         self.bloodType()
-        self.setDefence()
+        self.setTargetChance()
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -62,7 +63,7 @@ class MonsterBase(CreatureBase):
     def bloodType(self, color="blood"):
         self.blood = getattr(game.enum, 'FLUID_'+color.upper())
         
-    def setDefence(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1):
+    def setDefence(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
         self.armor = armor
         self.fire = fire
         self.earth = earth
@@ -70,7 +71,15 @@ class MonsterBase(CreatureBase):
         self.ice = ice
         self.holy = holy
         self.death = death
+        self.drown = drown
+        self.physical = physical
 
+    def setTargetChance(self, chance=10):
+        self.targetChance = chance
+    
+    def setSummon(self, monster=None, chance=10, max=1):
+        self.summons.append([monster, chance, max]) 
+        
     def setExperience(self, experience):
         self.data["experience"] = experience
         
@@ -105,7 +114,7 @@ class MonsterBase(CreatureBase):
 class MonsterBrain:
     def beginThink(self, monster):
         monster.actionThink = LoopingCall(self.handleThink, monster)
-        monster.actionThink.start(1, False)
+        monster.actionThink.start(2, False)
         if monster.base.voiceslist:
             monster.actionTalk = LoopingCall(self.handleTalk, monster)
             monster.actionTalk.start(2, False)
