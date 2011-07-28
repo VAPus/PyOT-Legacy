@@ -178,12 +178,7 @@ def load(sectorX, sectorY):
             dummyItems[itemId] = game.item.Item(itemId, **kwargs)
         return dummyItems[itemId]
 
-    def T(*args, **kwargs):
-        if args and args[0].solid and args[0].type == 1:
-            if not args[0].cid in dummyTiles:
-                dummyTiles[args[0].cid] = Tile(list(args), **kwargs)
-            return dummyTiles[args[0].cid]
-            
+    def T(*args, **kwargs): 
         return Tile(list(args), **kwargs)
         
     dd = {}

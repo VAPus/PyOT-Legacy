@@ -163,7 +163,7 @@ class TibiaPacket:
                 self.uint8(int(item.fluidSource) or 0)
             if item.animation:
                 self.uint8(0xFE)
-
+            
         else:
             self.uint16(item)
             if count:
@@ -320,6 +320,30 @@ class TibiaPacket:
                 player.knownCreatures.append(creature.cid)
  
         self.creature(creature, known)
+
+    def moveUpCreature(self, player, oldPos, newPos):
+        self.uint8(0xBF)
+        if newPos[2] == 6:
+            # TODO
+            pass
+
+        self.uint8(0x68) # West
+        self.map_description((oldPos[0] - 8, oldPos[1] + 1 - 6, newPos[2]), 1, 14, player)
+        
+        self.uint8(0x65) # North
+        self.map_description((oldPos[0] - 8, oldPos[1] - 6, newPos[2]), 18, 1, player)
+        
+        
+    def moveDownCreature(self, player, oldPos, newPos):
+        self.uint8(0xBF)
+        if newPos[2] == 8:
+            # TODO
+            pass
+
+        self.uint8(0x66) # East
+        self.map_description((oldPos[0] + 9, oldPos[1] - 1 - 6, newPos[2]), 1, 14, player)
+        self.uint8(0x67) # South
+        self.map_description((oldPos[0] - 8, oldPos[1] + 7, newPos[2]), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)

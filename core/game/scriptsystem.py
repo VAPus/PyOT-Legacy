@@ -97,6 +97,7 @@ globalScripts["talkactionFirstWord"] = TriggerScripts()
 globalScripts["login"] = Scripts()
 globalScripts["logout"] = Scripts()
 globalScripts["useItem"] = ThingScripts()
+globalScripts["walkOn"] = ThingScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)

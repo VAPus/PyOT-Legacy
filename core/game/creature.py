@@ -85,7 +85,7 @@ class Creature:
             return (ground.speed / self.speed) # TODO
         return 1.5
 
-    def move(self, direction, spectators=None):
+    def move(self, direction, spectators=None, level=0):
         import data.map.info
         self.direction = direction
         
@@ -119,6 +119,8 @@ class Creature:
         elif direction is 7:
             position[1] = self.position[1] - 1
             position[0] = self.position[0] + 1
+
+        position[2] = self.position[2] + level
             
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
@@ -149,21 +151,28 @@ class Creature:
             streamX = stream
             if spectator.player == self:
                 streamX = copy.copy(stream)
+                
+                if oldPosition[2] > self.position[2]:
+                    streamX.moveUpCreature(self, oldPosition, self.position)
+                    
+                elif oldPosition[2] < self.position[2]:
+                    streamX.moveDownCreature(self, oldPosition, self.position)
+                    
                 if direction < 4:
                     self.updateMap(direction, streamX)
                 else:
                     if direction & 2 == 2:
                         # North
-                        self.updateMap(0, streamX)
+                        self.updateMap(0, streamX, level=level)
                     else:
                         # South
-                        self.updateMap(2, streamX)
+                        self.updateMap(2, streamX, level=level)
                     if direction & 1 == 1:
                         # East
-                        self.updateMap(1, streamX)
+                        self.updateMap(1, streamX, level=level)
                     else:
                         # West
-                        self.updateMap(3, streamX)
+                        self.updateMap(3, streamX, level=level)
             
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
@@ -189,7 +198,10 @@ class Creature:
             for script in self.scripts["onNextStep"]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
-                
+        
+        for item in newTile.topItems(): # Scripts
+            game.scriptsystem.get('walkOn').run(item.itemId, self, None, item, position)
+            
         return True # Required for auto walkings
 
     def teleport(self, position):

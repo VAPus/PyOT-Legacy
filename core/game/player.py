@@ -165,19 +165,19 @@ class TibiaPlayer(Creature):
         except:
             return
                  
-    def updateMap(self, direction, streamX=None):
+    def updateMap(self, direction, streamX=None, level=0):
         stream = streamX
         if not streamX:
             stream = TibiaPacket()
         stream.uint8(0x65 + direction)
         if direction is 0:
-            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
+            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 18, 1, self)
         elif direction is 1:
-            stream.map_description((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
+            stream.map_description((self.position[0] + 9, self.position[1] - 6, self.position[2]+level), 1, 14, self)
         elif direction is 2:
-            stream.map_description((self.position[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
+            stream.map_description((self.position[0] - 8, self.position[1] + 7, self.position[2]+level), 18, 1, self)
         elif direction is 3:
-            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
+            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 1, 14, self)
 
         if not streamX:
             stream.send(self.client)
@@ -703,8 +703,11 @@ class TibiaPlayer(Creature):
             if itemId != item.itemId:
                 return self.notPossible()
             
+            extra = ""
             # TODO propper description handling
-            self.message("You see %s%s. %s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else ""))
+            if config.debugItems:
+                extra = "(ItemId: %d, Cid: %d)" % (game.item.reverseItems[clientId], clientId)
+            self.message("You see %s%s. %s%s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else "", extra))
         else:
             self.notPossible()
             
