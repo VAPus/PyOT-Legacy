@@ -25,7 +25,7 @@ def removeCreature(creature, pos):
     except:
         return False  
 
-class Tile:
+class Tile(object):
     def __init__(self, items):
         workItems = items[:]
         self.things = [workItems.pop(0)]

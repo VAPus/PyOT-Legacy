@@ -111,7 +111,7 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-class MonsterBrain:
+class MonsterBrain(object):
     def beginThink(self, monster):
         monster.actionThink = LoopingCall(self.handleThink, monster)
         monster.actionThink.start(2, False)

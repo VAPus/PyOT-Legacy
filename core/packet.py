@@ -8,7 +8,7 @@ def inThread(f):
     def func(*argc, **argw):
         reactor.callInThread(f, *argc, **argw)
     return func
-class TibiaPacketReader:
+class TibiaPacketReader(object):
     def __init__(self, data):
         self.length = len(data)
         self.pos = 0
@@ -77,7 +77,7 @@ class TibiaPacketReader:
     def position(self):
         return [self.uint16(), self.uint16(), self.uint8()]
         
-class TibiaPacket:
+class TibiaPacket(object):
     def __init__(self, header=None):
         self.bytes = []
         if header:

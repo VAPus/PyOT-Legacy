@@ -25,7 +25,7 @@ def uniqueId():
 
 allCreatures = {}
 
-class CreatureBase:
+class CreatureBase(object):
     def __init__(self):
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         
@@ -49,7 +49,7 @@ class CreatureBase:
         for func in self.scripts["onTargetLost"]:
             game.scriptsystem.scriptPool.callInThread(func, self, target)
             
-class Creature:
+class Creature(object):
     
     def __init__(self, data, position, cid=None):
         self.data = data

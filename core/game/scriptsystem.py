@@ -2,7 +2,7 @@
 from twisted.internet import reactor
 from twisted.python.threadpool import ThreadPool
 import config
-class Scripts:
+class Scripts(object):
     def __init__(self):
         self.scripts = []
         
@@ -24,7 +24,7 @@ class Scripts:
         if end and (ok if ok is not None else True):
             end()
             
-class TriggerScripts:
+class TriggerScripts(object):
     def __init__(self):
         self.scripts = {}
         
@@ -54,7 +54,7 @@ class TriggerScripts:
             end()
 
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
-class ThingScripts:
+class ThingScripts(object):
     def __init__(self):
         self.scripts = {}
         

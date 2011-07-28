@@ -33,7 +33,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
          
-        if (packet.length - packet.pos) is 128: # RSA 1024 is always 128
+        if (packet.length - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
             packet.pos = 0 # Reset position
 

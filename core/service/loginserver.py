@@ -17,7 +17,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         
         packet.pos += 12 # Checksum for files
          
-        if (packet.length - packet.pos) is 128: # RSA 1024 is always 128
+        if (packet.length - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
             packet.pos = 0 # Reset position
 

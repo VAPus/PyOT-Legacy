@@ -4,7 +4,7 @@
 ### Outfits ###
 outfits = []
 reverseOutfits = {}
-class Outfit:
+class Outfit(object):
     def __init__(self, name="", premium=False):
         self.premium = premium
         self.name = name
@@ -36,7 +36,7 @@ def genOutfit(name, premium=False):
 mounts = []
 reverseMounts = {} # id and name
 
-class Mount:
+class Mount(object):
     def __init__(self, name, cid, speed=0, premium=False):
         self.premium = premium
         self.name = name

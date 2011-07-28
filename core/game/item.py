@@ -8,7 +8,7 @@ items = {}
 reverseItems = {}
 
 ### Container class ###
-class Container:
+class Container(object):
     def __init__(self, size):
         self.items = deque()
         self.maxSize = size
@@ -45,7 +45,7 @@ class Container:
         return self.items.index(item)
         
 ### Item ###
-class Item:
+class Item(object):
     def __init__(self, itemid, count=None):
         self.itemId = itemid
         self.count = count if self.stackable else None
