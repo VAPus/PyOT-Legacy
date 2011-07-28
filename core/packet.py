@@ -160,7 +160,7 @@ class TibiaPacket:
             if item.stackable:
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
-                self.uint8(int(item.fluidSource) or 0)
+                self.uint8(item.fluidSource or 0)
             if item.animation:
                 self.uint8(0xFE)
             
@@ -176,13 +176,13 @@ class TibiaPacket:
         start = 7
         end = 0
         step = -1
-
+        beginRelative = 7
         # Lower then ground level
         if position[2] > 7:
             start = position[2] - 2
             end = min(15, position[2] + 2) # Choose the smallest of 15 (MAX - 1) and z + 2
             step = 1
-
+            beginRelative = position[2]
         # Run the steps by appending the floor
         for z in xrange(start, (end+step), step):
             skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip, player)
@@ -196,7 +196,7 @@ class TibiaPacket:
         from game.map import getTile
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = getTile((position[0] + x, position[1] + y + offset, position[2]))
+                tile = getTile((position[0] + x + offset, position[1] + y + offset, position[2]))
                 if tile and tile.things:
                     if skip >= 0:
                         self.uint8(skip)
@@ -322,7 +322,7 @@ class TibiaPacket:
         self.creature(creature, known)
 
     def moveUpCreature(self, player, oldPos, newPos):
-        self.uint8(0xBF)
+        self.uint8(0xBE)
         if newPos[2] == 6:
             # TODO
             pass

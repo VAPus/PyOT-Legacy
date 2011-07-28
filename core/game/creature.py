@@ -200,8 +200,9 @@ class Creature:
                 self.scripts["onNextStep"].remove(script)
         
         for item in newTile.topItems(): # Scripts
+            print item.itemId
             game.scriptsystem.get('walkOn').run(item.itemId, self, None, item, position)
-            
+        print "Move ok"
         return True # Required for auto walkings
 
     def teleport(self, position):

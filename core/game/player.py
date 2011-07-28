@@ -688,21 +688,21 @@ class TibiaPlayer(Creature):
     def handleLookAt(self, packet):
         from game.item import sid, cid, items
         position = packet.position()
+        print position
         map = False
         if position[0] != 0xFFFF:
             map = True 
             
         clientId = packet.uint16()
         stackpos = packet.uint8()
+        print stackpos
         itemId = sid(clientId)
         
         if not itemId:
             return self.notPossible()
-        item = self.findItem(position, stackpos)    
+        item = self.findItem(position, stackpos)   
+
         if item:
-            if itemId != item.itemId:
-                return self.notPossible()
-            
             extra = ""
             # TODO propper description handling
             if config.debugItems:

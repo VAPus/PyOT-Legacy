@@ -5,11 +5,11 @@ from twisted.python import log
 
 def getTile(pos):
     try:
-        return knownMap[ pos[0] ][ pos[1] ][ pos[2] ]
+        return knownMap[ pos[0] - (7-pos[2]) ][ pos[1] ][ pos[2] ]
     except:
-        loadTiles(pos[0], pos[1])
+        loadTiles(pos[0] - (7-pos[2]), pos[1])
         try:
-            return knownMap[ pos[0] ][ pos[1] ][ pos[2] ]
+            return knownMap[ pos[0] - (7-pos[2]) ][ pos[1] ][ pos[2] ]
         except:
             return None
 def placeCreature(creature, pos):
