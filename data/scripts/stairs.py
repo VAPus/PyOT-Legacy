@@ -32,5 +32,7 @@ scriptsystem.get("walkOn").reg(3678, floorup)
 scriptsystem.get("walkOn").reg(8599, floorup)
 scriptsystem.get("walkOn").reg(10035, floorup)
 
+scriptsystem.get("walkOn").reg(408, floordown)
 scriptsystem.get("walkOn").reg(427, floordown)
 scriptsystem.get("walkOn").reg(8284, floordown)
+scriptsystem.get("walkOn").reg(8279, floordown)

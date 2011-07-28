@@ -700,8 +700,11 @@ class TibiaPlayer(Creature):
         
         if not itemId:
             return self.notPossible()
-        item = self.findItem(position, stackpos)   
+          
 
+        for item in game.map.getTile(position).things:
+            print item.itemId
+        item = self.findItem(position, stackpos)     
         if item:
             extra = ""
             # TODO propper description handling

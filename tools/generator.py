@@ -6,7 +6,7 @@ import copy
     M: Monster
     MM: Multimonster
     T: Tile
-    N: None
+    V: Alias for a precached (reference) version of T(I(100))
 """
 
 ### Behavior
@@ -174,7 +174,8 @@ class Map:
                         output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
                     elif yCount:
                         output += "(T("+(','.join(yCom))+"),)+"
-                    return "("+output[:-1]+",)"
+                        
+                    return "("+output[:-1].replace("T()", "None").replace("T(I(100))", 'V')+",)" # None is waay faster then T(), T(I(100)) is also known as V
                 
                 # Level 2, X compare
                 def xComp(zCom):
@@ -204,7 +205,8 @@ class Map:
                 output = ""
                 for zPos in sector:
                     data = xComp(sector[zPos])
-                    if data == "((T(),)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
+                    if data == "((None,)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
+                        print "--Note: %d is a level of nothingness, ignore it" % zPos
                         continue
                     output += str(zPos)+":"+data+","
                 if output:
@@ -258,7 +260,7 @@ class Map:
 
                 open('%d.%d.sec' % (xA, yA), 'w').write(output)
                 
-                print "-Wrote %d.%d.sec" % (xA, yA)
+                print "--Wrote %d.%d.sec\n" % (xA, yA)
         output = ""
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]

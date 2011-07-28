@@ -124,7 +124,7 @@ def loadItems():
     global reverseItems
 
     # Async SQL (it's funny isn't it?)
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,charges,animation FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,animation FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
     yield d2
@@ -150,7 +150,7 @@ def loadItems():
         if not item["subs"]:
             del item["subs"]            
         for key in copy.copy(item):
-            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','charges','animation'):
+            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation'):
                 if bool(item[key]):
                     item[key] = True
                 else:
@@ -179,15 +179,11 @@ def loadItems():
         if val:
             loadItems[data["sid"]][data["key"]] = val
             
- 
+    log.msg("%d Items loaded" % len(loadItems))
+    
     # Replace the existing items
     items = loadItems
     reverseItems = reverseLoadItems
     
-    # Those items is big, delete them to save memory before gc does it
-    del result
-    del result2
-    del d
-    del d2
     
-    log.msg("%d Items loaded" % len(items))
+    

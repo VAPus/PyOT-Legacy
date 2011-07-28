@@ -6,11 +6,11 @@ import platform
 
 def getTile(pos):
     try:
-        return knownMap[ pos[0] - (7-pos[2]) ][ pos[1] ][ pos[2] ]
+        return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
     except:
         loadTiles(pos[0] - (7-pos[2]), pos[1])
         try:
-            return knownMap[ pos[0] - (7-pos[2]) ][ pos[1] ][ pos[2] ]
+            return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
         except:
             return None
 def placeCreature(creature, pos):
@@ -27,17 +27,20 @@ def removeCreature(creature, pos):
 
 class Tile:
     def __init__(self, items):
-        self.things = []
-        self.topItemCount = 0
-        for item in items[:]:
-            if item.ontop or item.type == 1:
-                self.things.append(item)
-                self.topItemCount += 1
-                items.remove(item)
-            
-        self.things.extend(items)
-
+        workItems = items[:]
+        self.things = [workItems.pop(0)]
+        self.topItemCount = 1
         self.creatureCount = 0
+        
+        if workItems:
+            for item in workItems:
+                if item.ontop:
+                    self.things.append(item)
+                    self.topItemCount += 1
+                    workItems.remove(item)
+        
+        if workItems:
+            self.things.extend(workItems)
 
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount, creature)
@@ -118,7 +121,7 @@ class Tile:
         
         # This might bug, disable GM walks (in current code)
         # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
-        if self.topItemCount and self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
+        if self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
             return self # Reference, or own kind of auto tile stack, very very unsafe
         return Tile(self.things[:])
         
@@ -178,8 +181,14 @@ def load(sectorX, sectorY):
             dummyItems[itemId] = game.item.Item(itemId, **kwargs)
             return dummyItems[itemId]
 
-    def T(*args, **kwargs): 
-        return Tile(list(args), **kwargs)
+    def T(*args, **kwargs):
+        try:
+            if args[0].solid:
+                return dummyTiles[args[0].itemId]
+            return Tile(list(args), **kwargs)
+        except:
+            dummyTiles[args[0].itemId] = Tile(list(args), **kwargs)
+        return dummyTiles[args[0].itemId]
     
     if platform.system() == "Windows":
         begin = time.clock()
@@ -187,26 +196,41 @@ def load(sectorX, sectorY):
     else:
         timer = time.time
         begin = time.time()
+    
+    try:
+        V = dummyTiles[100] 
+    except:
+        dummyTiles[100] = T(I(100))
+        dummyTiles[100].static = True
+        V = dummyTiles[100] 
         
     dd = {}
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
     
+    currZ = None
     currX = None
     for z in dd["m"]:
         xPos = (sectorX*32)
         yPos = (sectorY*32)  
-        
+        try:
+            currZ = knownMap[z]
+        except:
+            knownMap[z] = {}
+            currZ = knownMap[z]
+            
         for x in dd["m"][z]:
             try:
-                currX = knownMap[xPos]
+                currX = currZ[xPos]
             except:
-                knownMap[xPos] = {}
-                currX = knownMap[xPos]
+                currZ[xPos] = {}
+                currX = currZ[xPos]
+                
             for tile in x:
-                try:
-                    currX[yPos][z] = tile.topCopy()
-                except:    
-                    currX[yPos] = {z: tile.topCopy()}
+                if tile:
+                    currX[yPos] = tile.topCopy()
+                else:
+                    currX[yPos] = None
+                    
                 yPos += 1    
             yPos = sectorY*32
             xPos += 1

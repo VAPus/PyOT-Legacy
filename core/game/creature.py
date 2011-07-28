@@ -94,6 +94,7 @@ class Creature:
         stream.position(self.position)
         
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
+        print "Found stackpos %d" % oldStackpos
         stream.uint8(oldStackpos)
         
         
@@ -200,8 +201,9 @@ class Creature:
                 self.scripts["onNextStep"].remove(script)
         
         for item in newTile.topItems(): # Scripts
+            print item.itemId
             game.scriptsystem.get('walkOn').run(item.itemId, self, None, item, position)
-
+        print "Move"
         return True # Required for auto walkings
 
     def teleport(self, position):
