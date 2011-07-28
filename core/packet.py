@@ -79,56 +79,44 @@ class TibiaPacketReader:
         
 class TibiaPacket:
     def __init__(self, header=None):
-        self.pos = 0
-        self.data = b""
+        self.bytes = []
         if header:
             self.uint8(header)
 
     def clear(self):
-        self.pos = 0
-        self.data = b""
+        self.bytes = []
 
     # 8bit - 1byte, C type: char
     def uint8(self, data):
-        self.pos += 1
-        self.data += struct.pack("<B", data)
+        self.bytes.append(struct.pack("<B", data))
     def int8(self, data):
-        self.pos += 1
-        self.data += struct.pack("<b", data)
+        self.bytes.append(struct.pack("<b", data))
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
-        self.pos += 2
-        self.data += struct.pack("<H", data)
+        self.bytes.append(struct.pack("<H", data))
     def int16(self, data):
-        self.pos += 2
-        self.data += struct.pack("<h", data)
+        self.bytes.append(struct.pack("<h", data))
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data):
-        self.pos += 4
-        self.data += struct.pack("<I", data)
+        self.bytes.append(struct.pack("<I", data))
     def int32(self, data):
-        self.pos += 4
-        self.data += struct.pack("<i", data)
+        self.bytes.append(struct.pack("<i", data))
 
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        self.pos += 8
-        self.data += struct.pack("<Q", data)
+        self.bytes.append(struct.pack("<Q", data))
     def int64(self, data):
-        self.pos += 8
-        self.data += struct.pack("<q", data)
+        self.bytes.append(struct.pack("<q", data))
 
     # 32bit - 4bytes, C type: float
     def float(self, data):
-        self.pos += 4
-        self.data += struct.pack("<f", data)
+        self.bytes.append(struct.pack("<f", data))
 
     # 64bit - 8bytes, C type: double
     def double(self, data):
-        self.pos += 8
-        self.data += struct.pack("<d", data)
+        self.bytes.append(struct.pack("<d", data))
 
     # Position
     # Parameters is list(x,y,z)
@@ -358,49 +346,33 @@ class TibiaPacket:
         
     def string(self, string):
         self.uint16(len(string))
-        self.pos += len(string)
-        self.data += struct.pack("%ds" % len(string), str(string))
+        self.bytes.append(struct.pack("%ds" % len(string), str(string)))
 
     def put(self, string):
-        self.pos += len(string)
-        self.data += struct.pack("%ds" % len(string), str(string))
+        self.bytes.append(struct.pack("%ds" % len(string), str(string)))
 
     @inThread
     def send(self, stream):
-        buffer = b""
-        ol = len(self.data)
-
-        data = struct.pack("<H", ol)+self.data
-        ol += 2
+        self.bytes = (''.join(self.bytes),)
 
         if stream.xtea:
-            data = otcrypto.encryptXTEA(data, stream.xtea)
-
-        adler = adler32(data) & 0xffffffff
-        # Fix a bug in Python2?
-        #if adler < 0:
-        #     adler = adler
-        buffer = struct.pack("<HI", len(data)+4, adler)
-        buffer += data
-        
-        
-        reactor.callFromThread(stream.transport.write, buffer)
+            data = otcrypto.encryptXTEA(struct.pack("<H", len(self.bytes[0]))+self.bytes[0], stream.xtea)
+        else:
+            data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
+        reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
     
     @inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
-            
-        data = struct.pack("<H", len(self.data))+self.data
+        
+        self.bytes = (''.join(self.bytes),)
+        dataL = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         lenCache = 0
         for client in list:
-             data = otcrypto.encryptXTEA(data, client.xtea)
-             adler = adler32(data) & 0xffffffff
-             #if adler < 0:
-             #    adler = adler
-             
+             data = otcrypto.encryptXTEA(dataL, client.xtea)
              if not lenCache:
                  lenCache = len(data)+4
              
              
-             reactor.callFromThread(client.transport.write, bytes(struct.pack("<HI", lenCache, adler))+data)
+             reactor.callFromThread(client.transport.write, bytes(struct.pack("<HI", lenCache, adler32(data) & 0xffffffff))+data)
