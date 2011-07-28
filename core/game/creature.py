@@ -153,10 +153,10 @@ class Creature:
                 streamX = copy.copy(stream)
                 
                 if oldPosition[2] > self.position[2]:
-                    streamX.moveUpCreature(self, oldPosition, self.position)
+                    streamX.moveUpPlayer(self, oldPosition)
                     
                 elif oldPosition[2] < self.position[2]:
-                    streamX.moveDownCreature(self, oldPosition, self.position)
+                    streamX.moveDownPlayer(self, oldPosition)
                     
                 if direction < 4:
                     self.updateMap(direction, streamX)
@@ -200,9 +200,8 @@ class Creature:
                 self.scripts["onNextStep"].remove(script)
         
         for item in newTile.topItems(): # Scripts
-            print item.itemId
             game.scriptsystem.get('walkOn').run(item.itemId, self, None, item, position)
-        print "Move ok"
+
         return True # Required for auto walkings
 
     def teleport(self, position):
@@ -221,7 +220,7 @@ class Creature:
             stream.uint8(1)
             stream.uint8(0x64)
             stream.position(position)
-            stream.map_description((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
+            stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
             stream.magicEffect(position, 0x02)
             stream.send(self.client)
             

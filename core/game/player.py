@@ -41,7 +41,7 @@ class TibiaPlayer(Creature):
 
         stream.uint8(0x64) # Map description
         stream.position(self.position)
-        stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14, self)
+        stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14, self)
 
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
@@ -171,13 +171,13 @@ class TibiaPlayer(Creature):
             stream = TibiaPacket()
         stream.uint8(0x65 + direction)
         if direction is 0:
-            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 18, 1, self)
+            stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 18, 1, self)
         elif direction is 1:
-            stream.map_description((self.position[0] + 9, self.position[1] - 6, self.position[2]+level), 1, 14, self)
+            stream.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]+level), 1, 14, self)
         elif direction is 2:
-            stream.map_description((self.position[0] - 8, self.position[1] + 7, self.position[2]+level), 18, 1, self)
+            stream.mapDescription((self.position[0] - 8, self.position[1] + 7, self.position[2]+level), 18, 1, self)
         elif direction is 3:
-            stream.map_description((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 1, 14, self)
+            stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]+level), 1, 14, self)
 
         if not streamX:
             stream.send(self.client)

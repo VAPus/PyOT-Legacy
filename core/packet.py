@@ -171,7 +171,7 @@ class TibiaPacket:
 
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
-    def map_description(self, position, width, height, player=None):
+    def mapDescription(self, position, width, height, player=None):
         skip = -1
         start = 7
         end = 0
@@ -321,29 +321,29 @@ class TibiaPacket:
  
         self.creature(creature, known)
 
-    def moveUpCreature(self, player, oldPos, newPos):
+    def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
-        if newPos[2] == 6:
+        if oldPos[2] == 8:
             # TODO
             pass
 
         self.uint8(0x68) # West
-        self.map_description((oldPos[0] - 8, oldPos[1] + 1 - 6, newPos[2]), 1, 14, player)
+        self.mapDescription((oldPos[0] - 8, oldPos[1] + 1 - 6, oldPos[2]-1), 1, 14, player)
         
         self.uint8(0x65) # North
-        self.map_description((oldPos[0] - 8, oldPos[1] - 6, newPos[2]), 18, 1, player)
+        self.mapDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]-1), 18, 1, player)
         
         
-    def moveDownCreature(self, player, oldPos, newPos):
+    def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
-        if newPos[2] == 8:
+        if oldPos[2] == 7:
             # TODO
             pass
 
         self.uint8(0x66) # East
-        self.map_description((oldPos[0] + 9, oldPos[1] - 1 - 6, newPos[2]), 1, 14, player)
+        self.mapDescription((oldPos[0] + 9, oldPos[1] - 1 - 6, oldPos[2]+1), 1, 14, player)
         self.uint8(0x67) # South
-        self.map_description((oldPos[0] - 8, oldPos[1] + 7, newPos[2]), 18, 1, player)
+        self.mapDescription((oldPos[0] - 8, oldPos[1] + 7, oldPos[2]+1), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
