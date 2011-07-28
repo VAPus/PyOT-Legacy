@@ -56,7 +56,7 @@ class Item:
             self.container = Container(self.containerSize)
             
     def __getattr__(self, name):
-        if name and name in items[self.itemId]:
+        if name in items[self.itemId]:
             return items[self.itemId][name]
         elif not "__" in name:
             return None
