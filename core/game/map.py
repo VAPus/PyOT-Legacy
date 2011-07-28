@@ -1,7 +1,8 @@
-from game.item import BaseThing
 import game.item
 from twisted.internet import reactor
 from twisted.python import log
+import time
+import platform
 
 def getTile(pos):
     try:
@@ -24,19 +25,17 @@ def removeCreature(creature, pos):
     except:
         return False  
 
-class Tile(BaseThing):
-    def __init__(self, items, unsafeOrder=True):
-        if unsafeOrder:
-            self.things = []
-            self.topItemCount = 0
-            for item in items[:]:
-                if item.ontop or item.type == 1:
-                    self.things.append(item)
-                    self.topItemCount += 1
-                    items.remove(item)
-            
-            for item in items[:]:
+class Tile:
+    def __init__(self, items):
+        self.things = []
+        self.topItemCount = 0
+        for item in items[:]:
+            if item.ontop or item.type == 1:
                 self.things.append(item)
+                self.topItemCount += 1
+                items.remove(item)
+            
+        self.things.extend(items)
 
         self.creatureCount = 0
 
@@ -173,32 +172,46 @@ def load(sectorX, sectorY):
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
             
     def I(itemId, **kwargs):
-        global dummyItems
-        if not itemId in dummyItems:
+        try:
+            return dummyItems[itemId]
+        except:
             dummyItems[itemId] = game.item.Item(itemId, **kwargs)
-        return dummyItems[itemId]
+            return dummyItems[itemId]
 
     def T(*args, **kwargs): 
         return Tile(list(args), **kwargs)
+    
+    if platform.system() == "Windows":
+        begin = time.clock()
+        timer = time.clock
+    else:
+        timer = time.time
+        begin = time.time()
         
     dd = {}
-    O = None # Shortform
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
+    
+    currX = None
     for z in dd["m"]:
         xPos = (sectorX*32)
         yPos = (sectorY*32)  
+        
         for x in dd["m"][z]:
-            if not xPos in knownMap:
+            try:
+                currX = knownMap[xPos]
+            except:
                 knownMap[xPos] = {}
+                currX = knownMap[xPos]
             for tile in x:
-                if not yPos in knownMap[xPos]:
-                    knownMap[xPos][yPos] = {}
-
-                knownMap[xPos][yPos][z] = tile.topCopy()
+                try:
+                    currX[yPos][z] = tile.topCopy()
+                except:    
+                    currX[yPos] = {z: tile.topCopy()}
                 yPos += 1    
             yPos = sectorY*32
             xPos += 1
-        
+    
+    print "Loading %d.%d took %f" % (sectorX, sectorY, timer() - begin)
     if "l" in dd:    
         reactor.callInThread(dd["l"])
         

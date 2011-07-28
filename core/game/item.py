@@ -7,10 +7,6 @@ import game.enum
 items = {}
 reverseItems = {}
 
-class BaseThing:
-     def cid(self):
-         return items[self.itemId]['cid']
-
 ### Container class ###
 class Container:
     def __init__(self, size):
@@ -181,7 +177,7 @@ def loadItems():
         else:
             val = game.engine.autoCastValue(data["value"])
         if val:
-            loadItems[int(data["sid"])][data["key"]] = val
+            loadItems[data["sid"]][data["key"]] = val
             
  
     # Replace the existing items
