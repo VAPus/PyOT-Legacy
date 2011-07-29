@@ -32,15 +32,20 @@ class Tile(object):
         self.topItemCount = 1
         self.creatureCount = 0
         
+        
         if workItems:
+            bottomItems = []
             for item in workItems:
                 if item.ontop:
                     self.things.append(item)
                     self.topItemCount += 1
-                    workItems.remove(item)
-        
-        if workItems:
-            self.things.extend(workItems)
+                else:
+                    bottomItems.append(item)
+                    
+            if bottomItems:
+                self.things.extend(bottomItems)
+                
+            
 
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount, creature)
@@ -121,8 +126,8 @@ class Tile(object):
         
         # This might bug, disable GM walks (in current code)
         # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
-        if self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
-            return self # Reference, or own kind of auto tile stack, very very unsafe
+        #if self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
+        #    return self # Reference, or own kind of auto tile stack, very very unsafe
         return Tile(self.things[:])
         
 knownMap = {}
@@ -182,13 +187,14 @@ def load(sectorX, sectorY):
             return dummyItems[itemId]
 
     def T(*args, **kwargs):
-        try:
+        """try:
             if args[0].solid:
                 return dummyTiles[args[0].itemId]
             return Tile(list(args), **kwargs)
         except:
             dummyTiles[args[0].itemId] = Tile(list(args), **kwargs)
-        return dummyTiles[args[0].itemId]
+        return dummyTiles[args[0].itemId]"""
+        return Tile(list(args), **kwargs)
     
     if platform.system() == "Windows":
         begin = time.clock()

@@ -644,7 +644,6 @@ class TibiaPlayer(Creature):
                 stream.addTileItem(toPosition, toStackPos, newItem )
                 
                 if not renew and newItem.containerSize and newItem.opened:
-                    print newItem.opened
                     self.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
 
@@ -702,9 +701,16 @@ class TibiaPlayer(Creature):
         if not itemId:
             return self.notPossible()
           
-
-        for item in game.map.getTile(position).things:
+        print "Top items:"
+        for item in game.map.getTile(position).topItems():
+            
             print item.itemId
+            
+        print "Bottom items:"
+        for item in game.map.getTile(position).bottomItems():
+            
+            print item.itemId
+            
         item = self.findItem(position, stackpos)     
         if item:
             extra = ""

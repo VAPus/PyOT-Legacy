@@ -164,6 +164,7 @@ def loadItems():
                 newItem = copy.copy(item)
                 newItem["cid"] = item["cid"]+x
                 reverseLoadItems[newItem["cid"]] = item["sid"]+x
+
                 del newItem["sid"]
                 loadItems[reverseLoadItems[newItem["cid"]]] = newItem
             
