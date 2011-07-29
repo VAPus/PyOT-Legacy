@@ -643,7 +643,8 @@ class TibiaPlayer(Creature):
                 toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                 stream.addTileItem(toPosition, toStackPos, newItem )
                 
-                if not renew and newItem.containerSize and newItem.opened is not None:
+                if not renew and newItem.containerSize and newItem.opened:
+                    print newItem.opened
                     self.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
 
