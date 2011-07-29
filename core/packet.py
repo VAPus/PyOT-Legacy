@@ -148,6 +148,8 @@ class TibiaPacket(object):
             if item.stackable:
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
+                if item.type == 11:
+                    print "Notice on %d" % item.itemId
                 self.uint8(item.fluidSource or 0)
             if item.animation:
                 self.uint8(0xFE)
@@ -164,13 +166,13 @@ class TibiaPacket(object):
         start = 7
         end = 0
         step = -1
-        beginRelative = 7
+
         # Lower then ground level
         if position[2] > 7:
             start = position[2] - 2
-            end = min(15, position[2] + 2) # Choose the smallest of 15 (MAX - 1) and z + 2
+            end = min(15, position[2] + 2) # Choose the smallest of 15 and z + 2
             step = 1
-            beginRelative = position[2]
+
         # Run the steps by appending the floor
         for z in xrange(start, (end+step), step):
             skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip, player)
@@ -311,10 +313,27 @@ class TibiaPacket(object):
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
-        if oldPos[2] == 8:
-            # TODO
-            pass
+        
+        # Underground to surface
+        if oldPos[2]-1 == 7:
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 5), 18, 14, pos[2]+5, -1, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 4), 18, 14, pos[2]+4, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 3), 18, 14, pos[2]+3, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 2), 18, 14, pos[2]+2, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 1), 18, 14, pos[2]+1, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 0), 18, 14, pos[2], skip, player)
 
+            if skip >= 0:
+                self.uint8(skip)
+                self.uint8(0xFF)
+                
+        elif oldPos[2]-1 > 7: # Still underground
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]-3), 18, 14, oldPos[2]+3, -1, player)
+            
+            if skip >= 0:
+                self.uint8(skip)
+                self.uint8(0xFF)
+                
         self.uint8(0x68) # West
         self.mapDescription((oldPos[0] - 8, oldPos[1] + 1 - 6, oldPos[2]-1), 1, 14, player)
         
@@ -324,12 +343,24 @@ class TibiaPacket(object):
         
     def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
-        if oldPos[2] == 7:
-            # TODO
-            pass
+        if oldPos[2] == 8:
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+1), 18, 14, -1, -1, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+2), 18, 14, -2, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+3), 18, 14, -3, skip, player)
 
+            if skip >= 0:
+                self.uint8(skip)
+                self.uint8(0xFF)
+                
+        elif oldPos[2]+1 > 8:
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+3), 18, 14, oldPos[2]-3, -1, player)
+            
+            if skip >= 0:
+                self.uint8(skip)
+                self.uint8(0xFF)            
+        
         self.uint8(0x66) # East
-        self.mapDescription((oldPos[0] + 9, oldPos[1] - 1 - 6, oldPos[2]+1), 1, 14, player)
+        self.mapDescription((oldPos[0] + 9, oldPos[1] - 6, oldPos[2]+1), 1, 14, player)
         self.uint8(0x67) # South
         self.mapDescription((oldPos[0] - 8, oldPos[1] + 7, oldPos[2]+1), 18, 1, player)
         

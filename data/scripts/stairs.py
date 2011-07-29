@@ -25,6 +25,10 @@ def floordown(creature, item, position):
 scriptsystem.get("walkOn").reg(1385, floorchange)
 scriptsystem.get("walkOn").reg(429, floorchange)
 scriptsystem.get("walkOn").reg(427, floorchange)
+scriptsystem.get("walkOn").reg(4834, floorchange)
+scriptsystem.get("walkOn").reg(4837, floorchange)
+scriptsystem.get("walkOn").reg(8282, floorchange)
+scriptsystem.get("walkOn").reg(411, floordown)
 
 # Ladders
 scriptsystem.get("walkOn").reg(1386, floorup)

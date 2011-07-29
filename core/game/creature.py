@@ -142,15 +142,18 @@ class Creature(object):
             self.notPossible()
             return False
 
-
-        # Make packet
-        stream = TibiaPacket(0x6D)
-        stream.position(self.position)
-        
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
-        stream.uint8(oldStackpos)
-        stream.position(position)   
-        
+ 
+        # Make packet
+        if position[2] < 8:
+            stream = TibiaPacket(0x6D)
+            stream.position(self.position)
+            stream.uint8(oldStackpos)
+            stream.position(position)   
+        else:
+            stream = TibiaPacket()
+            stream.removeTileItem(self.position, oldStackpos)
+            
         removeCreature(self, self.position)
         placeCreature(self, position)
         
@@ -177,19 +180,21 @@ class Creature(object):
                 else:
                     if direction & 2 == 2:
                         # North
-                        self.updateMap(0, streamX, level=level)
+                        self.updateMap(0, streamX)
                     else:
                         # South
-                        self.updateMap(2, streamX, level=level)
+                        self.updateMap(2, streamX)
                     if direction & 1 == 1:
                         # East
-                        self.updateMap(1, streamX, level=level)
+                        self.updateMap(1, streamX)
                     else:
                         # West
-                        self.updateMap(3, streamX, level=level)
+                        self.updateMap(3, streamX)
             
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
+            print canSeeNew
+            print canSeeOld
             if not canSeeOld and canSeeNew:
                 stream2 = TibiaPacket()
                 stream2.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
@@ -206,6 +211,10 @@ class Creature(object):
             elif not canSeeOld and not canSeeNew: # Happend on the last 4 squares in the +1 rim, cause a debug with etc rx=-1 (also a ry, but tibia fail to meansion it)
                 pass
             else:
+                if position[2] > 7:
+                    streamX.position(oldPosition)
+                    streamX.uint8(oldStackpos)
+                    streamX.position(position)  
                 streamX.send(spectator) 
 
         if len(self.scripts["onNextStep"]):
@@ -222,16 +231,17 @@ class Creature(object):
         # 4 steps, remove item (creature), send new map and cords, and effects 
         
         stream = TibiaPacket()
-        stream.removeTileItem(self.position, getTile(self.position).findCreatureStackpos(self))
+        oldStackpos = getTile(self.position).findCreatureStackpos(self)
+        stream.removeTileItem(self.position, oldStackpos)
         stream.magicEffect(self.position, 0x02)
         stream.sendto(getSpectators(self.position, ignore=[self]))
         
         removeCreature(self, self.position)
-        placeCreature(self, position)
+        stackpos = placeCreature(self, position)
         if self.creatureType == 0:
             stream = TibiaPacket(0x6C)
             stream.position(self.position)
-            stream.uint8(1)
+            stream.uint8(oldStackpos)
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
@@ -242,7 +252,7 @@ class Creature(object):
         
         for spectator in getSpectators(position, ignore=[self]):
             stream = TibiaPacket()
-            stream.addTileCreature(position, 1, self, spectator.player)
+            stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
                 
