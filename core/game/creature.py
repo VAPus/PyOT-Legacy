@@ -85,16 +85,16 @@ class Creature(object):
             return (ground.speed / self.speed) # TODO
         return 1.5
 
+    def notPossible(self):
+        # Needs to be overrided in player
+        # Here we can inform a script if a illigal event
+        # Right now, don't care
+        return
+        
     def move(self, direction, spectators=None, level=0):
         import data.map.info
         self.direction = direction
         
-        # Make packet
-        stream = TibiaPacket(0x6D)
-        stream.position(self.position)
-        
-        oldStackpos = getTile(self.position).findCreatureStackpos(self)
-        stream.uint8(oldStackpos)
         
         
         # Recalculate position
@@ -126,17 +126,31 @@ class Creature(object):
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
            return False
                     
-        stream.position(position)
+        # New Tile
         newTile = getTile(position)
         
+        if newTile.getThing(0).solid:
+            self.notPossible()
+            return False # Prevent walking on solid tiles
+            
         if self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
             return False
             
         else:
             self.lastStep = time.time()
-        if newTile.creatures(): # Dont walk to creatures
+        if newTile.creatures(): # Dont walk to creatures, too be supported
+            self.notPossible()
             return False
-            
+
+
+        # Make packet
+        stream = TibiaPacket(0x6D)
+        stream.position(self.position)
+        
+        oldStackpos = getTile(self.position).findCreatureStackpos(self)
+        stream.uint8(oldStackpos)
+        stream.position(position)   
+        
         removeCreature(self, self.position)
         placeCreature(self, position)
         

@@ -114,67 +114,93 @@ class MonsterBase(CreatureBase):
 class MonsterBrain(object):
     def beginThink(self, monster):
         monster.actionThink = LoopingCall(self.handleThink, monster)
-        monster.actionThink.start(2, False)
+        monster.actionThink.start(2, False) # Run handleThink every 2second
         if monster.base.voiceslist:
             monster.actionTalk = LoopingCall(self.handleTalk, monster)
-            monster.actionTalk.start(2, False)
+            monster.actionTalk.start(2, False) # Run handleTalk every 2second
 
     
     def handleThink(self, monster):
         # Walking
-        if monster.target:
+        if monster.target: # We need a target for this code check to run
+        
+            # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canSee(monster.target.position):
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
                 
-            return
-        elif not monster.target:
-            spectators = game.engine.getSpectatorList(monster.position)
-            if spectators:
+                game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
+            
+            return # If we do have a target, we stop here
+            
+        # Only run this check if there is no target, we are hostile and targetChance checksout
+        elif not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100):
+            spectators = game.engine.getSpectatorList(monster.position) # Get all creaturse in range
+            if spectators: # If we find any
                 target = None
-                if len(spectators) > 1:
+                
+                # Only run this code if there is more then one in range
+                if len(spectators) > 1: 
                     bestDist = 0
                     for x in spectators:
-                        dist = monster.distanceStepsTo(x.position)
+                        # Calc x+y distance, diagonal is honored too.
+                        dist = monster.distanceStepsTo(x.position) 
                         if dist < bestDist:
+                            # If it's smaller then the previous value
                             bestDist = dist
                             target = x.player
                 else:
+                    # Target the singel spectator
                     target = spectators[0].player
                 monster.target = target
+                
+                # Call the scripts
                 monster.base.onFollow(monster.target)
-                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1, False)
+                
+                # Begin autowalking
+                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, False)
+                
+                # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         monster.stopAction()
-                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1, False)
+                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, False)
                         monster.target.scripts["onNextStep"].append(__followCallback)
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)
-                return
-        if time.time() - monster.lastStep > 3:
-            self.walkRandomStep(monster)
+                return # Prevent random walking
+                
+        if not monster.action and time.time() - monster.lastStep > 3: # If no other action is available
+            self.walkRandomStep(monster) # Walk a random step
             
     def handleTalk(self, monster):
-        if 10 > random.randint(0, 100): # 10%. TODO: Support config
+        if 10 > random.randint(0, 100): # 10%
+            # Find a random text
             text = random.choice(monster.base.voiceslist)
+            
+            # If text is uppercase, then yell it.
             if text.isupper():
                 monster.yell(text)
             else:
                 monster.say(text)
                 
     def walkRandomStep(self, monster):
+        # Ignore autowalking when there is noone in range
         spectators = game.engine.getSpectatorList(monster.position)
         if not spectators:
             return False
         
-        steps = []
+        # How far are we (x,y) from our spawn point?
         xFrom = monster.position[0]-monster.spawnPosition[0]
         yFrom = monster.position[1]-monster.spawnPosition[1]
         
         steps = [0,1,2,3]
+        
+        # Reorder the steps randomly
         random.shuffle(steps)
+        
         for step in steps:
+            # Prevent us from autowalking futher then 5 steps
             if step is 0:
                 if monster.spawnPosition[1]-(monster.position[1]-1) > 5:
                     print "Stop by north"
