@@ -145,7 +145,7 @@ class Creature(object):
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
  
         # Make packet
-        if position[2] < 8:
+        if self.position[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
             stream.position(self.position)
             stream.uint8(oldStackpos)
@@ -166,6 +166,8 @@ class Creature(object):
         
         for spectator in spectators:
             streamX = stream
+            canSeeNew = spectator.player.canSee(position)
+            canSeeOld = spectator.player.canSee(oldPosition)
             if spectator.player == self:
                 streamX = copy.copy(stream)
                 
@@ -190,32 +192,16 @@ class Creature(object):
                     else:
                         # West
                         self.updateMap(3, streamX)
-            
-            canSeeNew = spectator.player.canSee(position)
-            canSeeOld = spectator.player.canSee(oldPosition)
-            print canSeeNew
-            print canSeeOld
-            if not canSeeOld and canSeeNew:
-                stream2 = TibiaPacket()
-                stream2.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
-                stream2.send(spectator)
+                
+                canSeeOld = True
+                
+            elif not canSeeOld and canSeeNew:
+                streamX.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
                 
             elif canSeeOld and not canSeeNew:
-                stream2 = TibiaPacket()
-                #if self.cid in spectator.player.knownCreatures:
-                #    spectator.player.knownCreatures.remove(self.cid) # Remove him from the known list
-                    
-                stream2.removeTileItem(oldPosition, oldStackpos)
-                stream2.send(spectator)
-                
-            elif not canSeeOld and not canSeeNew: # Happend on the last 4 squares in the +1 rim, cause a debug with etc rx=-1 (also a ry, but tibia fail to meansion it)
-                pass
-            else:
-                if position[2] > 7:
-                    streamX.position(oldPosition)
-                    streamX.uint8(oldStackpos)
-                    streamX.position(position)  
-                streamX.send(spectator) 
+                streamX.removeTileItem(oldPosition, oldStackpos)
+
+            streamX.send(spectator) 
 
         if len(self.scripts["onNextStep"]):
             for script in self.scripts["onNextStep"]:

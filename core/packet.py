@@ -316,12 +316,12 @@ class TibiaPacket(object):
         
         # Underground to surface
         if oldPos[2]-1 == 7:
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 5), 18, 14, pos[2]+5, -1, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 4), 18, 14, pos[2]+4, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 3), 18, 14, pos[2]+3, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 2), 18, 14, pos[2]+2, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 1), 18, 14, pos[2]+1, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 0), 18, 14, pos[2], skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 5), 18, 14, 3, -1, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 4), 18, 14, 4, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 3), 18, 14, 5, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 2), 18, 14, 6, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 1), 18, 14, 7, skip, player)
+            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 0), 18, 14, 8, skip, player)
 
             if skip >= 0:
                 self.uint8(skip)
@@ -343,7 +343,7 @@ class TibiaPacket(object):
         
     def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
-        if oldPos[2] == 8:
+        if oldPos[2]+1 == 8:
             skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+1), 18, 14, -1, -1, player)
             skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+2), 18, 14, -2, skip, player)
             skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+3), 18, 14, -3, skip, player)
