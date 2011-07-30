@@ -136,7 +136,7 @@ class Creature(object):
             self.notPossible()
             return False # Prevent walking on solid tiles
             
-        if self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
             return False
             
         else:

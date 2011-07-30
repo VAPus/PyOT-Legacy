@@ -2,8 +2,6 @@ import game.scriptsystem as scriptsystem
 import game.map
 
 def floorchange(creature, item, position):
-    print position
-    
     # Note this is the correct direction
     if item.floorchange == "north":
         creature.move(0, level=-1)

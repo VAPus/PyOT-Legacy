@@ -26,25 +26,30 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(object):
-    def __init__(self, items):
-        workItems = items[:]
-        self.things = [workItems.pop(0)]
-        self.topItemCount = 1
+    def __init__(self, items, topItemCount=0):
         self.creatureCount = 0
         
-        
-        if workItems:
-            bottomItems = []
-            for item in workItems:
-                if item.ontop:
-                    self.things.append(item)
-                    self.topItemCount += 1
-                else:
-                    bottomItems.append(item)
-                    
-            if bottomItems:
-                self.things.extend(bottomItems)
-                
+        if not topItemCount:
+            workItems = items[:]
+            self.things = [workItems.pop(0)]
+            self.topItemCount = 1
+            
+            
+            
+            if workItems:
+                bottomItems = []
+                for item in workItems:
+                    if item.ontop:
+                        self.things.append(item)
+                        self.topItemCount += 1
+                    else:
+                        bottomItems.append(item)
+                        
+                if bottomItems:
+                    self.things.extend(bottomItems)
+        else:
+             self.things = items
+             self.topItemCount= topItemCount
             
 
     def placeCreature(self, creature):
@@ -126,17 +131,28 @@ class Tile(object):
         
         # This might bug, disable GM walks (in current code)
         # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
-        #if self.things[0].solid: # Only check lowest ground, we need to do a loop on this one!
-        #    return self # Reference, or own kind of auto tile stack, very very unsafe
-        return Tile(self.things[:])
+        for item in self.things:
+            if not item.solid:
+                return Tile(self.things[:], self.topItemCount)
+        
+        return self # Reference, or own kind of auto tile stack, very very unsafe
+
+    def toSafe(self, position):
+        for item in self.things:
+            if not item.solid:
+                return self # I am already safe
+                
+        tile = getTile(position)
+        tile = Tile(self.things[:], self.topItemCount)
+        return tile
         
 knownMap = {}
 sectors = {}
 callbacks = {}
 
 import data.map.info
-dummyTiles = {} # solid items like mountains will stay here
 dummyItems = {} # Ground items etc
+dummyTile = None
 
 def loadTiles(x,y, walk=True):
     if x > data.map.info.height or y > data.map.info.width:
@@ -171,30 +187,24 @@ def load(sectorX, sectorY):
     def MM(name, *argc):
         try:
             z = 7
-            if len(argc) % 2:
+            length = len(argc)
+            if length % 2:
                 z = argc[-1]
                 
-            for count in xrange(0,len(argc), 2):
+            for count in xrange(0,length, 2):
                 game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
             
-    def I(itemId, **kwargs):
+    def I(itemId):
         try:
             return dummyItems[itemId]
         except:
-            dummyItems[itemId] = game.item.Item(itemId, **kwargs)
+            dummyItems[itemId] = game.item.Item(itemId)
             return dummyItems[itemId]
 
-    def T(*args, **kwargs):
-        """try:
-            if args[0].solid:
-                return dummyTiles[args[0].itemId]
-            return Tile(list(args), **kwargs)
-        except:
-            dummyTiles[args[0].itemId] = Tile(list(args), **kwargs)
-        return dummyTiles[args[0].itemId]"""
-        return Tile(list(args), **kwargs)
+    def T(*args):
+        return Tile(list(args))
     
     if platform.system() == "Windows":
         begin = time.clock()
@@ -204,11 +214,10 @@ def load(sectorX, sectorY):
         begin = time.time()
     
     try:
-        V = dummyTiles[100] 
+        V = dummyTile
     except:
-        dummyTiles[100] = T(I(100))
-        dummyTiles[100].static = True
-        V = dummyTiles[100] 
+        dummyTile = T(I(100))
+        V = dummyTile
         
     dd = {}
     execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
