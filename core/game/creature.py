@@ -85,7 +85,7 @@ class Creature(object):
         
     def stepDuration(self, ground):
         if time.time() - self.lastStep < 1.5:
-            return (ground.speed / self.speed)
+            return (ground.speed / self.speed) * 1.1
         return 1.5
 
     def notPossible(self):
@@ -95,6 +95,7 @@ class Creature(object):
         return
         
     def move(self, direction, spectators=None, level=0):
+        self.actionLock.acquire()
         import data.map.info
         self.direction = direction
         
@@ -134,15 +135,18 @@ class Creature(object):
         
         if newTile.getThing(0).solid:
             self.notPossible()
+            self.actionLock.release()
             return False # Prevent walking on solid tiles
             
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+            self.actionLock.release()
             return False
             
         else:
             self.lastStep = time.time()
         if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
+            self.actionLock.release()
             return False
 
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
@@ -214,6 +218,7 @@ class Creature(object):
         for item in newTile.topItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
 
+        self.actionLock.release()
         return True # Required for auto walkings
 
     def teleport(self, position):

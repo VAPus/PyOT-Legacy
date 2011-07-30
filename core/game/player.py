@@ -191,8 +191,8 @@ class TibiaPlayer(Creature):
     def setSpeed(self, speed):
         if speed != self.speed:
             if speed > 1500:
-                speed = 1500
-            self.speed = speed
+                speed = 1500.0
+            self.speed = float(speed)
             stream = TibiaPacket(0x8F)
             stream.uint32(self.clientId())
             stream.uint16(speed)
@@ -491,11 +491,10 @@ class TibiaPlayer(Creature):
             self.target = None
         self.stopAction()    
         steps = packet.uint8()
-        log.msg("Steps: %d" % steps)
+
         walkPattern = deque()
         for x in xrange(0, steps):
             direction = packet.uint8()
-            log.msg("direction %d" % direction)
             if direction == 1:
                 walkPattern.append(1) # East
             elif direction == 2:
