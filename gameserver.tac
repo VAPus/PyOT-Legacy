@@ -57,3 +57,26 @@ topService.setServiceParent(application)
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
 import game.engine
 reactor.callLater(0, game.engine.loader, startTime)
+
+if config.loadEntierMap:
+    def loader():
+        import game.map
+        begin = time.time()
+        x = 0
+        y = 0
+        retOld = False
+        while True:
+            try:
+                ret = game.map.load(x,y)
+                y += 1
+            except:
+                x += 1
+                y = 0
+            if not ret and not retOld:
+                break
+            retOld = ret    
+        print "Loaded entier map in %f" % (time.time() - begin)
+    reactor.callLater(2.5, loader)
+
+    
+            

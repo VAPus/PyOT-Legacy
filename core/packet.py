@@ -203,23 +203,27 @@ class TibiaPacket(object):
 
     def tileDescription(self, tile, player=None):
         self.uint16(0x00)
-        
+        isSolid = False
         for item in tile.topItems():
-            self.item(item)
-
-        for creature in tile.creatures():
-            known = False
-            if player and creature is not player:
-                known = creature.cid in player.knownCreatures
+            if item.solid:
+                isSolid = True
                 
-                if not known:
-                    player.knownCreatures.append(creature.cid)
-  
-            self.creature(creature, known)
-            
-
-        for item in tile.bottomItems():
             self.item(item)
+        
+        if not isSolid:
+            for creature in tile.creatures():
+                known = False
+                if player and creature is not player:
+                    known = creature.cid in player.knownCreatures
+                    
+                    if not known:
+                        player.knownCreatures.append(creature.cid)
+    
+                self.creature(creature, known)
+                
+
+            for item in tile.bottomItems():
+                self.item(item)
 
     def outfit(self, look, addon=0, mount=0x00):
         

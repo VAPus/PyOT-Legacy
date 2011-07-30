@@ -1,8 +1,8 @@
 import game.item
-from twisted.internet import reactor
+from twisted.internet import threads
 from twisted.python import log
 import time
-import platform
+import struct
 
 def getTile(pos):
     try:
@@ -27,14 +27,10 @@ def removeCreature(creature, pos):
 
 class Tile(object):
     def __init__(self, items, topItemCount=0):
-        self.creatureCount = 0
-        
         if not topItemCount:
             workItems = items[:]
             self.things = [workItems.pop(0)]
             self.topItemCount = 1
-            
-            
             
             if workItems:
                 bottomItems = []
@@ -47,11 +43,16 @@ class Tile(object):
                         
                 if bottomItems:
                     self.things.extend(bottomItems)
+             
+            if "solid" in game.item.items[self.things[0].itemId]:
+                self.things = tuple(self.things)
+            else:
+                self.creatureCount = 0
         else:
              self.things = items
              self.topItemCount= topItemCount
-            
-
+             self.creatureCount = 0
+             
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount, creature)
         self.creatureCount += 1
@@ -131,26 +132,39 @@ class Tile(object):
         
         # This might bug, disable GM walks (in current code)
         # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
-        for item in self.things:
+        """for item in self.things:
             if not item.solid:
-                return Tile(self.things[:], self.topItemCount)
+                return Tile(self.things, self.topItemCount)
         
-        return self # Reference, or own kind of auto tile stack, very very unsafe
-
+        try:
+            return dummyTiles[self.it]
+            return self # Reference, or own kind of auto tile stack, very very unsafe"""
+        if "solid" in game.item.items[self.things[0].itemId]:
+            return self
+        return Tile(self.things[:], self.topItemCount)
+        
     def toSafe(self, position):
         for item in self.things:
             if not item.solid:
                 return self # I am already safe
                 
         tile = getTile(position)
-        tile = Tile(self.things[:], self.topItemCount)
+        tile = Tile(self.things, self.topItemCount)
         return tile
+
+class STile(Tile):
+    def __init__(self, things):
+        self.things = things
         
+    def topCopy(self): return self
+    def topItems(self): return self.things
+    
 knownMap = {}
 sectors = {}
 callbacks = {}
 
 import data.map.info
+dummyTiles = []
 dummyItems = {} # Ground items etc
 dummyTile = None
 
@@ -165,11 +179,8 @@ def loadTiles(x,y, walk=True):
     
 def load(sectorX, sectorY):
 
-    if sectorX < 0 or sectorY < 0 or (sectorX in sectors and sectorY in sectors[sectorX]):
-        return None
-
-    if sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1:
-        return None
+    if sectorX in sectors and sectorY in sectors[sectorX] or (sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1):
+        return False
         
     if not sectorX in sectors:
         sectors[sectorX] = {}
@@ -204,19 +215,28 @@ def load(sectorX, sectorY):
             return dummyItems[itemId]
 
     def T(*args):
-        return Tile(list(args))
+        ids = []
+        for item in args:
+            if not "solid" in game.item.items[item.itemId]:
+                return Tile(list(args))
+            else:
+                ids.append(struct.pack("<H", item.itemId))
+        
+        ids = ''.join(ids)
+
+        for tem in dummyTiles:
+            if tem[0] == ids:
+                return tem[1]
+
+        tile = Tile(list(args))
+        dummyTiles.append((ids, tile))
+        return tile
     
-    if platform.system() == "Windows":
-        begin = time.clock()
-        timer = time.clock
-    else:
-        timer = time.time
-        begin = time.time()
     
     try:
         V = dummyTile
     except:
-        dummyTile = T(I(100))
+        dummyTile = STile((I(100),))
         V = dummyTile
         
     dd = {}
@@ -250,16 +270,16 @@ def load(sectorX, sectorY):
             yPos = sectorY*32
             xPos += 1
     
-    print "Loading %d.%d took %f" % (sectorX, sectorY, timer() - begin)
     if "l" in dd:    
-        reactor.callInThread(dd["l"])
+        threads.deferToThread(dd["l"])
         
     # Do callbacks
-    m = str(sectorX).zfill(3)+str(sectorY).zfill(3)
+    m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))
     if m in callbacks:
         for func in callbacks[m]:
             func()
 
+    return True
 def unload(sectorX, sectorY):
     for x in xrange(sectorX * 64, (sectorX * 64) + 64):
         for x in xrange(sectorY * 64, (sectorY * 64) + 64):

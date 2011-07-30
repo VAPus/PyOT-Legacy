@@ -130,10 +130,9 @@ def loadItems():
     d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,animation FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
-    yield d2
 
     result = d.getResult()
-    result2 = d2.getResult()
+    
     
     # Make two new values while we are loading
     loadItems = {}
@@ -176,6 +175,9 @@ def loadItems():
             
         del item["sid"] # Unneeded
 
+    yield d2
+    result2 = d2.getResult()
+    
     for data in result2:
         if data["key"] == "fluidSource":
             val = getattr(game.enum, 'FLUID_'+data["value"].upper())
