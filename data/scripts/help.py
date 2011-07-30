@@ -16,7 +16,6 @@ def teleporter(player, text):
     player.teleport(pos)
     player.message("Welcome to %s" % text)
     
-last = 0
 def tiler(player, text):
     #try:
         global last

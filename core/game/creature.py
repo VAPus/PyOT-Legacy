@@ -56,7 +56,7 @@ class Creature(object):
         self.creatureType = 0
         self.direction = 0
         self.position = position
-        self.speed = 100
+        self.speed = 100.0
         self.scripts = { "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
@@ -84,7 +84,7 @@ class Creature(object):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground):
-        if time.time() - self.lastStep < 1.5: 
+        if time.time() - self.lastStep < 1.5:
             return (ground.speed / self.speed)
         return 1.5
 
@@ -102,24 +102,24 @@ class Creature(object):
         
         # Recalculate position
         position = self.position[:] # Important not to remove the : here, we don't want a reference!
-        if direction is 0:
+        if direction == 0:
             position[1] = self.position[1] - 1
-        elif direction is 1:
+        elif direction == 1:
             position[0] = self.position[0] + 1
-        elif direction is 2:
+        elif direction == 2:
             position[1] = self.position[1] + 1
-        elif direction is 3:
+        elif direction == 3:
             position[0] = self.position[0] - 1
-        elif direction is 4:
+        elif direction == 4:
             position[1] = self.position[1] + 1
             position[0] = self.position[0] - 1
-        elif direction is 5:
+        elif direction == 5:
             position[1] = self.position[1] + 1
             position[0] = self.position[0] + 1
-        elif direction is 6:
+        elif direction == 6:
             position[1] = self.position[1] - 1
             position[0] = self.position[0] - 1
-        elif direction is 7:
+        elif direction == 7:
             position[1] = self.position[1] - 1
             position[0] = self.position[0] + 1
 
@@ -248,7 +248,7 @@ class Creature(object):
         
 
     def turn(self, direction):
-        if self.direction is direction:
+        if self.direction == direction:
             return
             
         self.direction = direction

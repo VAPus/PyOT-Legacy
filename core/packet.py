@@ -303,7 +303,7 @@ class TibiaPacket(object):
         self.position(pos)
         self.uint8(stackpos)
         known = False
-        if player and creature is not player:
+        if player and creature != player:
             known = creature.cid in player.knownCreatures
                 
             if not known:

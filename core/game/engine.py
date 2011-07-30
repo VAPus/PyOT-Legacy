@@ -52,6 +52,9 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
         autoWalkCreature(creature, deque(pattern), callback)
         
 def handleAutoWalking(creature, walkPatterns, callback=None):
+    if not walkPatterns:
+        return
+        
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
     if ret and len(walkPatterns):
@@ -62,7 +65,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         creature.action = None
         
     if callback and ret and not len(walkPatterns):    
-        reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), callback)
+        reactor.callLater(0, callback)
 
 # Calculate walk patterns
 def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):

@@ -21,7 +21,7 @@ class TibiaPlayer(Creature):
         Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
-        self.speed = min(220 + (2 * int(data["level"])-1), 1500)
+        self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
         self.modes = [0,0,0]
         self.gender = 0
         self.base = anyPlayer
@@ -119,7 +119,7 @@ class TibiaPlayer(Creature):
             bags = []
             itemFound = None
             for item in self.inventory:
-                if item.itemId is sid:
+                if item.itemId == sid:
                     itemFound = item
                     break
                 elif item.containerSize:
@@ -128,7 +128,7 @@ class TibiaPlayer(Creature):
             # Bags
             for bag in bags.pop(0):
                 for item in bag.items:
-                    if item.itemId is sid:
+                    if item.itemId == sid:
                         itemFound = item
                         break
                     elif item.containerSize:
@@ -170,13 +170,13 @@ class TibiaPlayer(Creature):
         if not streamX:
             stream = TibiaPacket()
         stream.uint8(0x65 + direction)
-        if direction is 0:
+        if direction == 0:
             stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
-        elif direction is 1:
+        elif direction == 1:
             stream.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
-        elif direction is 2:
+        elif direction == 2:
             stream.mapDescription((self.position[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
-        elif direction is 3:
+        elif direction == 3:
             stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
 
         if not streamX:
@@ -189,7 +189,7 @@ class TibiaPlayer(Creature):
         self.modes[2] = secure
         
     def setSpeed(self, speed):
-        if speed is not self.speed:
+        if speed != self.speed:
             if speed > 1500:
                 speed = 1500
             self.speed = speed
@@ -496,21 +496,21 @@ class TibiaPlayer(Creature):
         for x in xrange(0, steps):
             direction = packet.uint8()
             log.msg("direction %d" % direction)
-            if direction is 1:
+            if direction == 1:
                 walkPattern.append(1) # East
-            elif direction is 2:
+            elif direction == 2:
                 walkPattern.append(7) # Northeast
-            elif direction is 3:
+            elif direction == 3:
                 walkPattern.append(0) # North
-            elif direction is 4:
+            elif direction == 4:
                 walkPattern.append(6) # Northwest          
-            elif direction is 5:
+            elif direction == 5:
                 walkPattern.append(3) # West
-            elif direction is 6:
+            elif direction == 6:
                 walkPattern.append(4) # Southwest
-            elif direction is 7:
+            elif direction == 7:
                 walkPattern.append(2) # South
-            elif direction is 8:
+            elif direction == 8:
                 walkPattern.append(5) # Southeast           
             else:
                 continue # We don't support them

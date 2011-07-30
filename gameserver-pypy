@@ -1,2 +1,2 @@
 #!/bin/sh
-pypy /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid -r epoll
+pypy -OO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid

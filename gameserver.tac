@@ -4,23 +4,23 @@ import sys
 sys.path.insert(1, 'core')
 
 #### Setup Reactor ####
-if config.reactorStyle is "poll":
+if config.reactorStyle == "poll":
     from twisted.internet import pollreactor
     pollreactor.install()
 
-elif config.reactorStyle is "epoll" or (sys.platform == "linux2" and config.reactorStyle is "default"):
+elif config.reactorStyle == "epoll" or (sys.platform == "linux2" and config.reactorStyle == "default"):
     from twisted.internet import epollreactor
     epollreactor.install()
 
-elif config.reactorStyle is "kqueue" or ('freebsd' in sys.platform and config.reactorStyle is "default"):
+elif config.reactorStyle == "kqueue" or ('freebsd' in sys.platform and config.reactorStyle == "default"):
     from twisted.internet import kqreactor
     kqreactor.install()
 
-elif config.reactorStyle is "iocp" or (sys.platform == "win32" and config.reactorStyle is "default"):
+elif config.reactorStyle == "iocp" or (sys.platform == "win32" and config.reactorStyle == "default"):
     from twisted.internet import iocpreactor
     iocpreactor.install()
 
-elif not hasattr(sys, 'pypy_translation_info'): # This is the default reactor, "select"
+else: # This is the default reactor, "select"
     from twisted.internet import selectreactor
     selectreactor.install()
 

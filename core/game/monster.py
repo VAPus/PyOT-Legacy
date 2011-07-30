@@ -19,7 +19,7 @@ class Monster(Creature):
         self.creatureType = 1
         self.spawnPosition = position[:]
         self.lastStep = 0
-        self.speed = self.base.data["speed"]
+        self.speed = float(self.base.data["speed"])
     
 
 
