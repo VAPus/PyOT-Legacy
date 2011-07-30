@@ -689,35 +689,21 @@ class TibiaPlayer(Creature):
         from game.item import sid, cid, items
         position = packet.position()
         print position
-        map = False
-        if position[0] != 0xFFFF:
-            map = True 
             
         clientId = packet.uint16()
         stackpos = packet.uint8()
-        print stackpos
-        itemId = sid(clientId)
+            
+        thing = self.findItem(position, stackpos)     
         
-        if not itemId:
-            return self.notPossible()
-          
-        print "Top items:"
-        for item in game.map.getTile(position).topItems():
-            
-            print item.itemId
-            
-        print "Bottom items:"
-        for item in game.map.getTile(position).bottomItems():
-            
-            print item.itemId
-            
-        item = self.findItem(position, stackpos)     
-        if item:
-            extra = ""
-            # TODO propper description handling
-            if config.debugItems:
-                extra = "(ItemId: %d, Cid: %d)" % (item.itemId, clientId)
-            self.message("You see %s%s. %s%s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else "", extra))
+        if thing:
+            def afterScript():
+                extra = ""
+                # TODO propper description handling
+                if config.debugItems:
+                    extra = "(ItemId: %d, Cid: %d)" % (item.itemId, clientId)
+                self.message("You see %s%s. %s%s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else "", extra))
+
+            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing, position, index)
         else:
             self.notPossible()
             
@@ -743,17 +729,17 @@ class TibiaPlayer(Creature):
         else:
             self.outfitWindow()
             
-    def handleUseItem(self, packet):
+    def handleUse(self, packet):
         game.engine.explainPacket(packet)
         position = packet.position()
 
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         index = packet.uint8()
-        item = self.findItem(position, stackpos)
+        thing = self.findItem(position, stackpos)
 
-        if item:
-            game.scriptsystem.get('useItem').run(item.itemId, self, None, item, position, index)
+        if thing:
+            game.scriptsystem.get('use').run(thing, self, None, thing, position, index)
             
     def handleAttack(self, packet):
         cid = packet.uint32()

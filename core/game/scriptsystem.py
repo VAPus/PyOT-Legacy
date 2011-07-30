@@ -2,6 +2,8 @@
 from twisted.internet import reactor
 from twisted.python.threadpool import ThreadPool
 import config
+import weakref
+
 class Scripts(object):
     def __init__(self):
         self.scripts = []
@@ -59,37 +61,49 @@ class ThingScripts(object):
         self.scripts = {}
         
     def reg(self, id, callback, toid=None):
-        if not toid:
-            if not id in self.scripts:
-                self.scripts[id] = []
-            self.scripts[id].append(callback)
-        else:
-            for x in xrange(id, toid):
-                if not id in self.scripts:
-                    self.scripts[id] = []
-                self.scripts[id].append(callback)
-                
-    def unreg(self, thingId, callback):
-        self.scripts[thingId].remove(callback)
-        if not len(self.scripts[thingId]):
-            del self.scripts[thingId]
+        if type(id) != int:
+            # This ensures we remove the script object if the object disappear
+            id = weakref.ref(id, self.unregAll) 
             
-    def run(self, thingId, creature, end=None, *args, **kwargs):
-        scriptPool.callInThread(self._run, thingId, creature, end, *args, **kwargs)
+        if not id in self.scripts:
+            self.scripts[id] = []
+        self.scripts[id].append(callback)
+
+    def unreg(self, id, callback):
+        try:
+            self.scripts[id].remove(callback)
+            if not self.scripts[id]:
+                del self.scripts[id]
+                
+        except:
+            pass # Nothing
+
+    def unregAll(self, id):
+        try:
+            del self.scripts[id]
+        except:
+            pass
+    def run(self, thing, creature, end=None, *args, **kwargs):
+        scriptPool.callInThread(self._run, thing, creature, end, *args, **kwargs)
         
-    def _run(self, thingId, creature, end, *args, **kwargs):
+    def _run(self, thing, creature, end, *args, **kwargs):
         ok = True
-        if not thingId in self.scripts:
-            try:
-                return end()
-            except:
-                return
-        for script in self.scripts[thingId]:
-            ok = script(creature, *args, **kwargs)
-            if not (ok if ok is not None else True):
-               break
-        if end and (ok if ok is not None else True):
-            end()
+        
+        if thing in self.scripts:
+            for script in self.scripts[thing]:
+                ok = script(creature, *args, **kwargs)
+                if not ok is not False:
+                    break
+                    
+        if ok and thing.thingId() in self.scripts:
+            for script in self.scripts[thing.thingId()]:
+                ok = script(creature, *args, **kwargs)
+                if not ok is not False:
+                    break
+                    
+        if end and ok is not False:
+            return end()
+            
 # All global events can be initialized here
 globalScripts = {}
 globalScripts["talkaction"] = TriggerScripts()

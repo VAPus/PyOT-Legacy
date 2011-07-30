@@ -26,7 +26,7 @@ class Monster(Creature):
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
         self.data = data
-        self.monsterData = monsterData
+        self.creatureData = monsterData
         self.voiceslist = []
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}

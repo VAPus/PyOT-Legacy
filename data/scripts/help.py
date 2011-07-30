@@ -108,7 +108,7 @@ def testContainer(player, item, position, index):
     else:
         player.closeContainer(item)
         
-scriptsystem.get("useItem").reg(1987, testContainer)
+scriptsystem.get("use").reg(1987, testContainer)
 
 
 def makeitem(player, text):

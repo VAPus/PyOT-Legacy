@@ -55,6 +55,9 @@ class Item(object):
         if "containerSize" in self.attributes():
             self.container = Container(self.containerSize)
             
+    def thingId(self):
+        return self.itemId # Used for scripts
+        
     def __getattr__(self, name):
         if name in items[self.itemId]:
             return items[self.itemId][name]
@@ -124,7 +127,7 @@ def loadItems():
     global reverseItems
 
     # Async SQL (it's funny isn't it?)
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,animation,charges FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,animation FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
     yield d2
@@ -135,6 +138,9 @@ def loadItems():
     # Make two new values while we are loading
     loadItems = {}
     reverseLoadItems = {}
+    
+    # Precache this list:
+    boolKeys = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
 
 
     for item in result:
@@ -150,7 +156,7 @@ def loadItems():
         if not item["subs"]:
             del item["subs"]            
         for key in copy.copy(item):
-            if key in ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation','charges'):
+            if key in boolKeys:
                 if bool(item[key]):
                     item[key] = True
                 else:
@@ -173,8 +179,6 @@ def loadItems():
     for data in result2:
         if data["key"] == "fluidSource":
             val = getattr(game.enum, 'FLUID_'+data["value"].upper())
-        elif data["key"] == "floorChange":
-            val = game.enum.FLOORCHANGE_DOWN if data["value"]=="down" else game.enum.FLOORCHANGE_UP
         else:
             val = game.engine.autoCastValue(data["value"])
         if val:

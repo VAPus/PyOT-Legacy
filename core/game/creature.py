@@ -77,12 +77,15 @@ class Creature(object):
     def clientId(self):
         return self.cid
 
+    def thingId(self):
+        return self.creatureType # Used to indentify my "thing"
+        
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground):
         if time.time() - self.lastStep < 1.5: 
-            return (ground.speed / self.speed) # TODO
+            return (ground.speed / self.speed)
         return 1.5
 
     def notPossible(self):
@@ -209,7 +212,7 @@ class Creature(object):
                 self.scripts["onNextStep"].remove(script)
         
         for item in newTile.topItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item.itemId, self, None, item, position)
+            game.scriptsystem.get('walkOn').run(item, self, None, item, position)
 
         return True # Required for auto walkings
 

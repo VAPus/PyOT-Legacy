@@ -51,10 +51,10 @@ scriptsystem.get("walkOn").reg(8282, floorchange)
 scriptsystem.get("walkOn").reg(411, floorchange)
 
 # Ladders
-scriptsystem.get("useItem").reg(1386, floorup)
-scriptsystem.get("useItem").reg(3678, floorup)
-scriptsystem.get("useItem").reg(8599, floorup)
-scriptsystem.get("useItem").reg(10035, floorup)
+scriptsystem.get("use").reg(1386, floorup)
+scriptsystem.get("use").reg(3678, floorup)
+scriptsystem.get("use").reg(8599, floorup)
+scriptsystem.get("use").reg(10035, floorup)
 
 
 # Trapdoors etc
