@@ -48,11 +48,12 @@ class Container(object):
 class Item(object):
     def __init__(self, itemid, count=None):
         self.itemId = itemid
-        self.count = count if self.stackable else None
+        if "stackable" in items[self.itemId]:
+            self.count = count
         
         
         # Extend items such as containers, beds and doors
-        if "containerSize" in self.attributes():
+        elif "containerSize" in items[self.itemId]:
             self.container = Container(self.containerSize)
             
     def thingId(self):
@@ -71,8 +72,6 @@ class Item(object):
         else:
             return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["name"]
             
-    def attributes(self):
-        return items[self.itemId]
         
     def reduceCount(self, count):
         self.count -= count
