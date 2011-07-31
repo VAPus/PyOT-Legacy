@@ -85,7 +85,7 @@ class Creature(object):
         
     def stepDuration(self, ground):
         if time.time() - self.lastStep < 1.5:
-            return (ground.speed / self.speed) * 1.1
+            return (ground.speed / self.speed)
         return 1.5
 
     def notPossible(self):

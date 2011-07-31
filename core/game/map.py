@@ -125,24 +125,6 @@ class Tile(object):
     def findCreatureStackpos(self, creature):
         return self.things.index(creature)
                 
-    def topCopy(self):
-        # Could only be called under load or on pure static ground items, this WILL bug all kinds of tiles with creatures and bottomitems
-        # This approch is twice as fast as copy.copy is, might use more memory tho since it won't guaranty that self.*Count is a reference on creation
-        # TODO, deal with stacking on entierly solid objects, multilayer
-        
-        # This might bug, disable GM walks (in current code)
-        # Notice: If a GM deside to walk on solids, then recreate the entier Tile, take the normal way, teleport, or suffer insane memory usage!
-        """for item in self.things:
-            if not item.solid:
-                return Tile(self.things, self.topItemCount)
-        
-        try:
-            return dummyTiles[self.it]
-            return self # Reference, or own kind of auto tile stack, very very unsafe"""
-        if "solid" in game.item.items[self.things[0].itemId]:
-            return self
-        return Tile(self.things[:], self.topItemCount)
-        
     def toSafe(self, position):
         for item in self.things:
             if not item.solid:
@@ -156,7 +138,6 @@ class STile(Tile):
     def __init__(self, things):
         self.things = things
         
-    def topCopy(self): return self
     def topItems(self): return self.things
     
 knownMap = {}
@@ -262,7 +243,10 @@ def load(sectorX, sectorY):
                 
             for tile in x:
                 if tile:
-                    currX[yPos] = tile.topCopy()
+                    if "solid" in game.item.items[tile.things[0].itemId]:
+                        currX[yPos] = tile
+                    else:
+                        currX[yPos] = Tile(tile.things[:], tile.topItemCount)
                 else:
                     currX[yPos] = None
                     

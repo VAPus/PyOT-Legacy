@@ -7,8 +7,6 @@ from twisted.internet.task import LoopingCall
 import game.enum
 
 monsters = {}
-
-monsters["default"] = 
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
@@ -64,6 +62,12 @@ class MonsterBase(CreatureBase):
 
     def bloodType(self, color="blood"):
         self.blood = getattr(game.enum, 'FLUID_'+color.upper())
+
+    def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
+        self.data["lookhead"] = lookhead
+        self.data["lookbody"] = lookbody
+        self.data["looklegs"] = looklegs
+        self.data["lookfeet"] = lookfeet
         
     def setDefence(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
         self.armor = armor
