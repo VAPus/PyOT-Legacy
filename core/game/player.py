@@ -702,7 +702,7 @@ class TibiaPlayer(Creature):
                     extra = "(ItemId: %d, Cid: %d)" % (item.itemId, clientId)
                 self.message("You see %s%s. %s%s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else "", extra))
 
-            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing, position, index)
+            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing, position, stackpos)
         else:
             self.notPossible()
             
