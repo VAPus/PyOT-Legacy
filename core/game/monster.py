@@ -8,7 +8,7 @@ import game.enum
 
 monsters = {}
 
-monsters["default"] = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "experience":0,"speed":100}
+monsters["default"] = 
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
@@ -19,18 +19,20 @@ class Monster(Creature):
         self.creatureType = 1
         self.spawnPosition = position[:]
         self.lastStep = 0
-        self.speed = float(self.base.data["speed"])
+        self.speed = float(self.base.speed)
     
 
 
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
         self.data = data
-        self.creatureData = monsterData
         self.voiceslist = []
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         self.summons = []
+        
+        self.speed = 100
+        self.experience = 0
         
         self.setBehavior()
         self.setImmunity()
@@ -229,10 +231,9 @@ class MonsterBrain(object):
         
 brains = {}
 brains["default"] = MonsterBrain()
-def genMonster(name, look, description="", brain="default", template="default"):
+def genMonster(name, look, description="", brain="default"):
     # First build the common creature data
-    if template in monsters:
-        data = copy.copy(monsters[template])
+    data = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
 
     data["looktype"] = look[0]
     data["name"] = name
