@@ -1,8 +1,7 @@
+from game.item import Item
 import game.item
 from twisted.internet import threads
 from twisted.python import log
-import time
-import struct
 import bindconstant
 import marshal
 
@@ -173,7 +172,7 @@ def I(itemId):
     try:
         return dummyItems[itemId]
     except:
-        dummyItems[itemId] = game.item.Item(itemId)
+        dummyItems[itemId] = Item(itemId)
         return dummyItems[itemId]
 
 def T(*args):
@@ -206,35 +205,33 @@ def load(sectorX, sectorY):
 
     if not V:
         V = Tile((I(100),), 1)
-        
-    dd = {}    
+          
     
     # Attempt to load a cached file
-    #try:
-    if True:
-        exec(marshal.load(open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb")), globals(), dd)
+    l = None
+    try:
+        exec(marshal.loads(open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb").read()))
     except:
         # Build cache data
         # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
-        compiled = compile(open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb').read(), "Map%d.%d" % (sectorX, sectorY), 'exec')
-
+        compiled = compile(open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb').read(), "%d.%d" % (sectorX, sectorY), 'exec')
         # Write it
-        open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb').write(marshal.dumps(compiled, marshal.version))
-        exec(compiled, globals(), dd)
+        marshal.dump(compiled, open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb'), 2)
+        exec(compiled)
     
     currZ = None
     currX = None
     localItems = game.item.items # Prevent a bit of a lookup
-    for z in dd["m"]:
+    for z in m:
         xPos = (sectorX*32)
-        yPos = (sectorY*32)  
         try:
             currZ = knownMap[z]
         except:
             knownMap[z] = {}
             currZ = knownMap[z]
             
-        for x in dd["m"][z]:
+        for x in m[z]:
+            yPos = sectorY*32
             try:
                 currX = currZ[xPos]
             except:
@@ -247,15 +244,13 @@ def load(sectorX, sectorY):
                         currX[yPos] = tile
                     else:
                         currX[yPos] = Tile(tile.things[:], tile.topItemCount)
-                else:
-                    currX[yPos] = None
                     
                 yPos += 1    
-            yPos = sectorY*32
+            
             xPos += 1
     
-    if "l" in dd:    
-        threads.deferToThread(dd["l"])
+    if l:    
+        threads.deferToThread(l)
         
     # Do callbacks
     m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))
