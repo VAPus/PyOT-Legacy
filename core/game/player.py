@@ -699,8 +699,8 @@ class TibiaPlayer(Creature):
                 extra = ""
                 # TODO propper description handling
                 if config.debugItems:
-                    extra = "(ItemId: %d, Cid: %d)" % (item.itemId, clientId)
-                self.message("You see %s%s. %s%s" % (items[itemId]["article"]+" " if items[itemId]["article"] else "", items[itemId]["name"], items[itemId]["description"] if "description" in items[itemId] else "", extra))
+                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+                self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
 
             game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing, position, stackpos)
         else:
