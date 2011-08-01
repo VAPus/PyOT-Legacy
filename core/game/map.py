@@ -76,7 +76,11 @@ class Tile(object):
         
     def topItems(self):
         return self.things[:self.topItemCount]
-        
+
+    def getItems(self):
+        items = self.topItems()[:]
+        items.extend(self.bottomItems())
+        return items
     def creatures(self):
         return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
         

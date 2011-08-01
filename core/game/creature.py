@@ -7,6 +7,7 @@ import config
 import time
 import copy
 import game.scriptsystem
+import inspect
 
 # Unique ids, thread safe too
 def __uid():
@@ -67,6 +68,7 @@ class Creature(object):
         self.actionLock = thread.allocate_lock()
         self.lastStep = 0
         self.target = None # target for follow/attacks based on modes
+        self.vars = {}
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -132,7 +134,9 @@ class Creature(object):
                     
         # New Tile
         newTile = getTile(position)
+        oldTile = getTile(self.position)
         
+            
         if newTile.getThing(0).solid:
             self.notPossible()
             self.actionLock.release()
@@ -144,13 +148,14 @@ class Creature(object):
             
         else:
             self.lastStep = time.time()
+            
         if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
             self.actionLock.release()
             return False
 
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
- 
+
         # Make packet
         if self.position[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
@@ -160,30 +165,40 @@ class Creature(object):
         else:
             stream = TibiaPacket()
             stream.removeTileItem(self.position, oldStackpos)
+                
+
             
+        # Deal with walkOff
+        for item in oldTile.getItems():
+            game.scriptsystem.get('walkOff').runSync(item, self, None, item, self.position)
+
+        # Deal with preWalkOn
+        for item in newTile.getItems():
+            game.scriptsystem.get('preWalkOn').runSync(item, self, None, item, oldTile, newTile, position)
+
         removeCreature(self, self.position)
         placeCreature(self, position)
-        
+            
         oldPosition = self.position[:]
         self.position = position
-              
+                
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
-        
+            
         for spectator in spectators:
             streamX = stream
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
             if spectator.player == self:
                 streamX = copy.copy(stream)
-                
+                    
                 if oldPosition[2] > self.position[2]:
                     streamX.moveUpPlayer(self, oldPosition)
-                    
+                        
                 elif oldPosition[2] < self.position[2]:
                     streamX.moveDownPlayer(self, oldPosition)
-                    
+                        
                 if direction < 4:
                     self.updateMap(direction, streamX)
                 else:
@@ -199,12 +214,12 @@ class Creature(object):
                     else:
                         # West
                         self.updateMap(3, streamX)
-                
+                    
                 canSeeOld = True
-                
+                    
             elif not canSeeOld and canSeeNew:
                 streamX.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
-                
+                    
             elif canSeeOld and not canSeeNew:
                 streamX.removeTileItem(oldPosition, oldStackpos)
 
@@ -214,13 +229,45 @@ class Creature(object):
             for script in self.scripts["onNextStep"]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
-        
-        for item in newTile.topItems(): # Scripts
+                
+        self.actionLock.release()        
+        # Deal with walkOn
+        for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
 
-        self.actionLock.release()
+        
         return True # Required for auto walkings
 
+    def magicEffect(self, pos, type):
+        stream = TibiaPacket()
+        stream.magicEffect(pos, type)
+        stream.sendto(getSpectators(pos))
+        
+    def shoot(self, fromPos, toPos, type):
+        stream = TibiaPacket()
+        stream.shoot(fromPos, toPos, type)
+        stream.sendto(getSpectators(pos))
+
+    def refreshOutfit(self):
+        stream = TibiaPacket(0x8E)
+        stream.uint32(self.clientId())
+        stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
+        stream.sendto(game.engine.getSpectators(self.position))
+
+    def changeMountStatus(self, mounted):
+        mount = game.resource.getMount(self.mount)
+        if mount:
+            self.mounted = mounted
+        
+            if mount.speed:
+                self.setSpeed((self.speed + mount.speed) if mounted else (self.speed - mount.speed))
+            self.refreshOutfit()
+    
+    def setOutfit(self, looktype, lookhead=0, lookbody=0, looklegs=0, lookfeet=0, addon=0):
+        self.outfit = [looktype, lookhead, lookbody, looklegs, lookfeet]
+        self.addon = addon
+        self.refreshOutfit()
+        
     def teleport(self, position):
         # 4 steps, remove item (creature), send new map and cords, and effects 
         
@@ -312,3 +359,18 @@ class Creature(object):
     
     def distanceStepsTo(self, position):
         return abs(self.position[0]-position[0])+abs(self.position[1]-position[1])
+        
+    def setVar(self, name, value=None):
+        try:
+            if value == None:
+                del self.vars[inspect.stack()[0] + name]
+            else:
+                self.vars[inspect.stack()[0] + name] = value
+        except:
+            return None
+            
+    def getVar(self, name):
+        try:
+            return self.vars[inspect.stack()[0] + name]
+        except:
+            return None

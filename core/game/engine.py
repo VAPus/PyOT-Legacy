@@ -17,6 +17,8 @@ def loader(timer):
     def printer(d, timer):
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
+    from game.scriptsystem import importer
+    importer()
     d.addCallback(printer, timer)
 
 # The action decorator :)
@@ -201,11 +203,3 @@ def autoCastValue(data): # We get a string, then find the simplest possible valu
     except:
         return data
         
-# Last order of buisness, the script system
-# TODO: Design it using dynamic imports
-
-import game.scriptsystem
-from data.spells import *
-from data.monsters import *
-from data.npcs import *
-from data.scripts import *

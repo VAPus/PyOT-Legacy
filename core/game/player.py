@@ -226,15 +226,6 @@ class TibiaPlayer(Creature):
         stream.string(message)
         stream.send(self.client)
         
-    def magicEffect(self, pos, type):
-        stream = TibiaPacket()
-        stream.magicEffect(pos, type)
-        stream.send(self.client)
-        
-    def shoot(self, fromPos, toPos, type):
-        stream = TibiaPacket()
-        stream.shoot(fromPos, toPos, type)
-        stream.send(self.client)
         
 
     def outfitWindow(self):
@@ -304,20 +295,6 @@ class TibiaPlayer(Creature):
     def notEnoughRoom(self):
         self.message("There is not enough room.", enum.MSG_STATUS_SMALL)
         
-    def refreshOutfit(self):
-        stream = TibiaPacket(0x8E)
-        stream.uint32(self.clientId())
-        stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
-        stream.sendto(game.engine.getSpectators(self.position))
-
-    def changeMountStatus(self, mounted):
-        mount = game.resource.getMount(self.mount)
-        if mount:
-            self.mounted = mounted
-        
-            if mount.speed:
-                self.setSpeed((self.speed + mount.speed) if mounted else (self.speed - mount.speed))
-            self.refreshOutfit()
     
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
@@ -687,6 +664,7 @@ class TibiaPlayer(Creature):
     def handleLookAt(self, packet):
         from game.item import sid, cid, items
         position = packet.position()
+        print "Look at"
         print position
             
         clientId = packet.uint16()

@@ -85,6 +85,9 @@ class ThingScripts(object):
             pass
     def run(self, thing, creature, end=None, *args, **kwargs):
         scriptPool.callInThread(self._run, thing, creature, end, *args, **kwargs)
+    
+    def runSync(self, thing, creature, end=None, *args, **kwargs):
+        self._run(thing, creature, end, *args, **kwargs)
         
     def _run(self, thing, creature, end, *args, **kwargs):
         ok = True
@@ -112,6 +115,8 @@ globalScripts["login"] = Scripts()
 globalScripts["logout"] = Scripts()
 globalScripts["use"] = ThingScripts()
 globalScripts["walkOn"] = ThingScripts()
+globalScripts["walkOff"] = ThingScripts()
+globalScripts["preWalkOn"] = ThingScripts()
 globalScripts["lookAt"] = ThingScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
@@ -119,6 +124,35 @@ scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
+modPool = []
+def importer():
+    spells = __import__('data.spells', globals(), locals(), ["*"], -1)
+    for spell in spells.__all__:
+        try:
+            sys.modules["data.spells.%s" % spell].init()
+        except NameError:
+            pass
+    monsters = __import__('data.monsters', globals(), locals(), ["*"], -1)
+    for monster in monsters.__all__:
+        try:
+            sys.modules["data.monsters.%s" % monster].init()
+        except NameError:
+            pass
+    npcs = __import__('data.npcs', globals(), locals(), ["*"], -1)
+    for npc in npcs.__all__:
+        try:
+            sys.modules["data.npc.%s" % npc].init()
+        except NameError:
+            pass
+    scripts = __import__('data.scripts', globals(), locals(), ["*"], -1)
+    for script in scripts.__all__:
+        try:
+            sys.modules["data.scripts.%s" % spell].init()
+        except NameError:
+            pass
+        
+    modPool = [spells, monsters, npcs, scripts]
+    
 # This is the function to get events, it should also be a getAll, and get(..., creature)
 def get(type, thing=None):
     if not thing:

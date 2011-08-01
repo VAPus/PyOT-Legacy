@@ -152,7 +152,13 @@ def loadItems():
         item["speed"] = int(item["speed"]) # No long
         item["type"] = int(item["type"]) # No long
         item["subs"] = int(item["subs"]) # No long
-  
+        """if not item["speed"]:
+            del item["speed"]
+        if not item["type"]:
+            del item["type"]
+        if not item["subs"]:
+            del item["subs"] """
+
         for key in item.copy():
             if key in boolKeys:
                 if item[key]:
@@ -162,10 +168,10 @@ def loadItems():
                     
         reverseLoadItems[item["cid"]] = item["sid"]
         
-        loadItems[reverseLoadItems[item["cid"]]] = item
+        loadItems[item["sid"]] = item
         if "subs" in item:
             for x in xrange(1, item["subs"]+1):
-                reverseLoadItems[item["sid"]+x] = item["cid"]+x
+                reverseLoadItems[item["cid"]+x] = item["sid"]+x
                 loadItems[item["sid"]+x] = item
             
 

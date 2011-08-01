@@ -3,6 +3,8 @@ import game.map
 
 def floorchange(creature, item, position):
     # Note this is the correct direction
+    print "Floor change"
+    print item.floorchange
     if item.floorchange == "north":
         creature.move(0, level=-1)
         

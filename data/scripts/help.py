@@ -32,10 +32,10 @@ def tiler(player, text):
             return False
         item = game.item.Item( id )
         last = id
-        getTile(pos).setThing(0, item)
+        getTile([pos[0], pos[1]-1, pos[2]]).setThing(0, item)
 
-        game.engine.updateTile(pos, getTile(pos))
-        player.magicEffect(pos, 0x03)
+        game.engine.updateTile([pos[0], pos[1]-1, pos[2]], getTile([pos[0], pos[1]-1, pos[2]]))
+        player.magicEffect([pos[0], pos[1]-1, pos[2]], 0x03)
     #except:
     #    player.message("Not possible!")
         return False
@@ -93,8 +93,6 @@ def testContainer(player, item, position, index):
         if open:
             # Open a new one
             parent = 0
-            print position
-            print player.openContainers
 
             if position[0] == 0xFFFF and position[1] >= 64:
                 parent = 1
