@@ -4,6 +4,7 @@ from twisted.python import log
 import time
 import struct
 import bindconstant
+import marshal
 
 def getTile(pos):
     try:
@@ -205,8 +206,21 @@ def load(sectorX, sectorY):
 
     if not V:
         V = Tile((I(100),), 1)
-    dd = {}
-    execfile("data/map/%d.%d.sec" % (sectorX, sectorY), globals(), dd)
+        
+    dd = {}    
+    
+    # Attempt to load a cached file
+    #try:
+    if True:
+        exec(marshal.load(open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb")), globals(), dd)
+    except:
+        # Build cache data
+        # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
+        compiled = compile(open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb').read(), "Map%d.%d" % (sectorX, sectorY), 'exec')
+
+        # Write it
+        open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb').write(marshal.dumps(compiled, marshal.version))
+        exec(compiled, globals(), dd)
     
     currZ = None
     currX = None
