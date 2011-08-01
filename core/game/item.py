@@ -152,15 +152,10 @@ def loadItems():
         item["speed"] = int(item["speed"]) # No long
         item["type"] = int(item["type"]) # No long
         item["subs"] = int(item["subs"]) # No long
-        if not item["speed"]:
-            del item["speed"]
-        if not item["type"]:
-            del item["type"]
-        if not item["subs"]:
-            del item["subs"]            
+  
         for key in item.copy():
             if key in boolKeys:
-                if bool(item[key]):
+                if item[key]:
                     item[key] = True
                 else:
                     del item[key]
@@ -170,14 +165,9 @@ def loadItems():
         loadItems[reverseLoadItems[item["cid"]]] = item
         if "subs" in item:
             for x in xrange(1, item["subs"]+1):
-                newItem = item.copy()
-                newItem["cid"] = item["cid"]+x
-                reverseLoadItems[newItem["cid"]] = item["sid"]+x
-
-                del newItem["sid"]
-                loadItems[reverseLoadItems[newItem["cid"]]] = newItem
+                reverseLoadItems[item["sid"]+x] = item["cid"]+x
+                loadItems[item["sid"]+x] = item
             
-        del item["sid"] # Unneeded
 
     yield d2
     result2 = d2.getResult()
