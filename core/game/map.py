@@ -3,6 +3,7 @@ from twisted.internet import threads
 from twisted.python import log
 import time
 import struct
+import bindconstant
 
 def getTile(pos):
     try:
@@ -134,21 +135,54 @@ class Tile(object):
         tile = Tile(self.things, self.topItemCount)
         return tile
 
-class STile(Tile):
-    def __init__(self, things):
-        self.things = things
-        
-    def topItems(self): return self.things
+bindconstant.bind_all(Tile) # Apply constanting to Tile
+
     
 knownMap = {}
 sectors = {}
 callbacks = {}
 
 import data.map.info
-dummyTiles = []
 dummyItems = {} # Ground items etc
-dummyTile = None
 
+# Ops codes
+def M(name,x,y,z=7):
+    try:
+        game.monster.getMonster(name).spawn([x,y,z])
+    except:
+        log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+    
+M = bindconstant._make_constants(M)
+
+def MM(name, *argc):
+    try:
+        z = 7
+        length = len(argc)
+        if length % 2:
+            z = argc[-1]
+                
+        for count in xrange(0,length, 2):
+            game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
+    except:
+        log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+
+MM = bindconstant._make_constants(MM)
+
+def I(itemId):
+    try:
+        return dummyItems[itemId]
+    except:
+        dummyItems[itemId] = game.item.Item(itemId)
+        return dummyItems[itemId]
+
+def T(*args):
+    return Tile(list(args))
+
+T = bindconstant._make_constants(T)
+
+global V
+V = None
+        
 def loadTiles(x,y, walk=True):
     if x > data.map.info.height or y > data.map.info.width:
         return None
@@ -159,7 +193,8 @@ def loadTiles(x,y, walk=True):
     load(sectorX, sectorY)
     
 def load(sectorX, sectorY):
-
+    global V # Should really be avioided
+    
     if sectorX in sectors and sectorY in sectors[sectorX] or (sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1):
         return False
         
@@ -167,64 +202,15 @@ def load(sectorX, sectorY):
         sectors[sectorX] = {}
         
     sectors[sectorX][sectorY] = True
-    
 
-    # Ops codes
-    def M(name,x,y,z=7):
-        try:
-            game.monster.getMonster(name).spawn([x,y,z])
-        except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-    
-    def MM(name, *argc):
-        try:
-            z = 7
-            length = len(argc)
-            if length % 2:
-                z = argc[-1]
-                
-            for count in xrange(0,length, 2):
-                game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
-        except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-            
-    def I(itemId):
-        try:
-            return dummyItems[itemId]
-        except:
-            dummyItems[itemId] = game.item.Item(itemId)
-            return dummyItems[itemId]
-
-    def T(*args):
-        ids = []
-        for item in args:
-            if not "solid" in game.item.items[item.itemId]:
-                return Tile(list(args))
-            else:
-                ids.append(struct.pack("<H", item.itemId))
-        
-        ids = ''.join(ids)
-
-        for tem in dummyTiles:
-            if tem[0] == ids:
-                return tem[1]
-
-        tile = Tile(list(args))
-        dummyTiles.append((ids, tile))
-        return tile
-    
-    
-    try:
-        V = dummyTile
-    except:
-        dummyTile = STile((I(100),))
-        V = dummyTile
-        
+    if not V:
+        V = Tile((I(100),), 1)
     dd = {}
-    execfile("data/map/%d.%d.sec" % (sectorX, sectorY), locals(), dd)
+    execfile("data/map/%d.%d.sec" % (sectorX, sectorY), globals(), dd)
     
     currZ = None
     currX = None
+    localItems = game.item.items # Prevent a bit of a lookup
     for z in dd["m"]:
         xPos = (sectorX*32)
         yPos = (sectorY*32)  
@@ -243,7 +229,7 @@ def load(sectorX, sectorY):
                 
             for tile in x:
                 if tile:
-                    if "solid" in game.item.items[tile.things[0].itemId]:
+                    if "solid" in localItems[tile.things[0].itemId]:
                         currX[yPos] = tile
                     else:
                         currX[yPos] = Tile(tile.things[:], tile.topItemCount)

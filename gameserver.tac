@@ -60,21 +60,24 @@ reactor.callLater(0, game.engine.loader, startTime)
 
 if config.loadEntierMap:
     def loader():
-        import game.map
+        from game.map import load
         begin = time.time()
         x = 0
         y = 0
         retOld = False
+        ret = False
         while True:
             try:
-                ret = game.map.load(x,y)
+                ret = load(x,y)
                 y += 1
-            except:
+            except IOError:
                 x += 1
-                y = 0
+                y = 0                
+
             if not ret and not retOld:
                 break
-            retOld = ret    
+            retOld = ret  
+            
         print "Loaded entier map in %f" % (time.time() - begin)
     reactor.callLater(2.5, loader)
 

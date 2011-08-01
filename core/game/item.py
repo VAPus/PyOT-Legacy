@@ -1,8 +1,9 @@
 from twisted.internet.defer import waitForDeferred, deferredGenerator
-import sql, copy
+import sql
 from twisted.python import log
 from collections import deque
 import game.enum
+import bindconstant
 
 items = {}
 reverseItems = {}
@@ -43,7 +44,9 @@ class Container(object):
             
     def findSlot(self, item):
         return self.items.index(item)
-        
+
+bindconstant.bind_all(Container)
+
 ### Item ###
 class Item(object):
     def __init__(self, itemid, count=None):
@@ -105,6 +108,8 @@ class Item(object):
                     return game.enum.SLOT_LEFT if self.weaponType in ('sword', 'rod', 'ward') else game.enum.SLOT_RIGHT
                 else:
                     return None
+
+
 def cid(itemid):
     try:
         return items[itemid]["cid"]
@@ -153,19 +158,19 @@ def loadItems():
             del item["type"]
         if not item["subs"]:
             del item["subs"]            
-        for key in copy.copy(item):
+        for key in item.copy():
             if key in boolKeys:
                 if bool(item[key]):
                     item[key] = True
                 else:
                     del item[key]
                     
-        reverseLoadItems[item["cid"]] = copy.copy(item["sid"])
+        reverseLoadItems[item["cid"]] = item["sid"]
         
         loadItems[reverseLoadItems[item["cid"]]] = item
         if "subs" in item:
             for x in xrange(1, item["subs"]+1):
-                newItem = copy.copy(item)
+                newItem = item.copy()
                 newItem["cid"] = item["cid"]+x
                 reverseLoadItems[newItem["cid"]] = item["sid"]+x
 
@@ -176,12 +181,12 @@ def loadItems():
 
     yield d2
     result2 = d2.getResult()
-    
+    autoCastValue = game.engine.autoCastValue
     for data in result2:
         if data["key"] == "fluidSource":
             val = getattr(game.enum, 'FLUID_'+data["value"].upper())
         else:
-            val = game.engine.autoCastValue(data["value"])
+            val = autoCastValue(data["value"])
         if val:
             loadItems[data["sid"]][data["key"]] = val
             
