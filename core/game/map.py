@@ -3,6 +3,7 @@ from twisted.internet import threads
 from twisted.python import log
 import time
 import struct
+import bindconstant
 
 def getTile(pos):
     try:
@@ -134,6 +135,7 @@ class Tile(object):
         tile = Tile(self.things, self.topItemCount)
         return tile
 
+bindconstant.bind_all(Tile) # Apply constanting to Tile
 
     
 knownMap = {}
@@ -150,6 +152,7 @@ def M(name,x,y,z=7):
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     
+M = bindconstant._make_constants(M)
 
 def MM(name, *argc):
     try:
@@ -163,6 +166,7 @@ def MM(name, *argc):
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
 
+MM = bindconstant._make_constants(MM)
 
 def I(itemId):
     try:
@@ -173,6 +177,8 @@ def I(itemId):
 
 def T(*args):
     return Tile(list(args))
+
+T = bindconstant._make_constants(T)
 
 global V
 V = None

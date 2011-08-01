@@ -3,6 +3,7 @@ import sql
 from twisted.python import log
 from collections import deque
 import game.enum
+import bindconstant
 
 items = {}
 reverseItems = {}
@@ -43,6 +44,8 @@ class Container(object):
             
     def findSlot(self, item):
         return self.items.index(item)
+
+bindconstant.bind_all(Container)
 
 ### Item ###
 class Item(object):
