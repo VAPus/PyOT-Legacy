@@ -69,7 +69,7 @@ class MonsterBase(CreatureBase):
         self.data["looklegs"] = looklegs
         self.data["lookfeet"] = lookfeet
         
-    def setDefence(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
+    def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
         self.armor = armor
         self.fire = fire
         self.earth = earth
@@ -109,10 +109,11 @@ class MonsterBase(CreatureBase):
         self.ignoreFire = fire
         self.ignorePoison = poison
         
-    def setImmunity(self, paralyze=1, invisible=1, lifedrain=1):
+    def setImmunity(self, paralyze=1, invisible=1, lifedrain=1, drunk=1):
         self.paralyze = paralyze
         self.invisible = invisible
         self.lifedrain = lifedrain
+        self.drunk = drunk
         
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
