@@ -81,6 +81,9 @@ class Creature(object):
 
     def thingId(self):
         return self.creatureType # Used to indentify my "thing"
+    
+    def actionIds(self):
+        return ("_99",) # Static actionID
         
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
@@ -234,7 +237,8 @@ class Creature(object):
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
-
+            if item.teledest:
+                self.teleport(item.teledest)
         
         return True # Required for auto walkings
 
@@ -270,7 +274,7 @@ class Creature(object):
         
     def teleport(self, position):
         # 4 steps, remove item (creature), send new map and cords, and effects 
-        
+        print position
         stream = TibiaPacket()
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
         stream.removeTileItem(self.position, oldStackpos)

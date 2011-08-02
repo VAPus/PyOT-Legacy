@@ -172,11 +172,11 @@ def MM(name, *argc):
 
 MM = bindconstant._make_constants(MM)
 
-def I(itemId):
+def I(itemId, **kwargs):
     try:
         return dummyItems[itemId]
     except:
-        dummyItems[itemId] = Item(itemId)
+        dummyItems[itemId] = Item(itemId, **kwargs)
         return dummyItems[itemId]
 
 def T(*args):

@@ -46,7 +46,7 @@ debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
 
-loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
+loadEntierMap = True # Load all the sectors, useful for debug and benchmarking
 sayRange = (10,8)
 yellRange = (18, 14)
 

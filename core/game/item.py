@@ -49,8 +49,9 @@ bindconstant.bind_all(Container)
 
 ### Item ###
 class Item(object):
-    def __init__(self, itemid, count=None):
+    def __init__(self, itemid, count=None, **kwargs):
         self.itemId = itemid
+        self.actions = []
         if "stackable" in items[self.itemId]:
             self.count = count
         
@@ -59,9 +60,16 @@ class Item(object):
         elif "containerSize" in items[self.itemId]:
             self.container = Container(self.containerSize)
             
+        if kwargs:
+            for key in kwargs:
+                setattr(self, key, kwargs[key])
+                
     def thingId(self):
         return self.itemId # Used for scripts
-        
+
+    def actionIds(self):
+        return map(lambda x: "_"+x, self.actions)
+            
     def __getattr__(self, name):
         if name in items[self.itemId]:
             return items[self.itemId][name]

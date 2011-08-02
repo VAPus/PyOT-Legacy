@@ -128,10 +128,11 @@ scriptsystem.get("talkactionFirstWord").reg('i', makeitem)
 # Reimport tester
 def reimporter(player, text):
     scriptsystem.reimporter()
-    player.say("Worked!")
+    return False
 
 def saySomething(player, text):
-    player.say("Test 2")
+    player.say("Test 1")
+    return False
     
 scriptsystem.get("talkaction").reg('reload', reimporter)
 scriptsystem.get("talkaction").reg('reloadtest', saySomething)

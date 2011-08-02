@@ -128,7 +128,7 @@ class ThingScripts(object):
     def _run(self, thing, creature, end, *args, **kwargs):
         ok = True
         
-        if thing in self.scripts[:]:
+        if thing in self.scripts:
             for script in self.scripts[thing][:]:
                 func = script()
                 if func:
@@ -140,7 +140,7 @@ class ThingScripts(object):
                         self.scripts[thing].remove(script) 
                     except:
                         pass
-        if ok and thing.thingId() in self.scripts[:]:
+        if ok and thing.thingId() in self.scripts:
             for script in self.scripts[thing.thingId()][:]:
                 func = script()
                 if func:
@@ -151,7 +151,21 @@ class ThingScripts(object):
                     try:
                         self.scripts[thing.thingId()].remove(script) 
                     except:
-                        pass                    
+                        pass   
+
+        if ok:
+            for aid in thing.actionIds():
+                for script in self.scripts[aid][:]:
+                    func = script()
+                    if func:
+                        ok = func(creature, *args, **kwargs)
+                        if not ok is not False:
+                            break
+                    else:
+                        try:
+                            self.scripts[aid].remove(script) 
+                        except:
+                            pass   
         if end and ok is not False:
             return end()
             

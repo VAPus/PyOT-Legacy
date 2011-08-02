@@ -352,8 +352,26 @@ class Tile:
 class Item:
     def __init__(self, id):
         self.id = id
+        self.attributes = {}
+        self.actions = []
+        
+    def attribute(self, key, value):
+        self.attributes[key] = value
+    
+    def action(self, id):
+        self.actions.append(id)
     def gen(self, x,y,z,rx,ry,extras):
-        return ('I(%d)' % self.id, extras)
+        extra = ""
+        if self.actions:
+            self.attributes["actions"] = self.actions
+            
+        if self.attributes:
+            eta = []
+            for key in self.attributes:
+                eta.append("%s=%s" % (key, str(self.attributes[key]) if type(self.attributes[key]) != str else '"""%s"""' % self.attributes[key]))
+                
+            extra = ',%s' % ','.join(eta)
+        return ('I(%d%s)' % (self.id, extra), extras)
 
 class RSItem:
     def __init__(self, *argc):

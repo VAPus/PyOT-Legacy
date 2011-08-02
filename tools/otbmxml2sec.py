@@ -164,12 +164,13 @@ class Node:
             del self # It's rather safe to assume we don't be around anymore
             return None
 
+
 dummyItems = {}
 def genItem(itemid, *argc, **kwargs):
     if not itemid in dummyItems:
         dummyItems[itemid] = generator.Item(itemid, *argc, **kwargs)
     return dummyItems[itemid]
-    
+
 otbmFile = open("map.otbm")
 otbm = Reader(otbmFile.read())
 
@@ -249,7 +250,7 @@ while node:
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        
+                        _item_ = generator.Item(itemId)
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
@@ -262,25 +263,25 @@ while node:
                             elif attr == 21: # sleepstart
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
-                                teleDest = [item.data.uint16(),item.data.uint16(),item.data.uint8()]
+                                _item_.attribute("teledest", [item.data.uint16(),item.data.uint16(),item.data.uint8()])
                             elif attr == 15: # Item count
-                                count = item.data.uint8()
+                                _item_.attribute("count", item.data.uint8())
                             elif attr == 4: # action id
-                                actionId = item.data.uint16()
+                                _item_.action(item.data.uint16())
                             elif attr == 5:
-                                uniqueId = item.data.uint16() # We don't support this
+                                _item_.action(item.data.uint16() + 0xFFFF)
                             elif attr == 6:
-                                text = item.data.string()
+                                _item_.attribute("text", item.data.string())
                             elif attr == 18:
-                                writtenDate = item.data.uint32()
+                                _item_.attribute("written", item.data.uint32())
                             elif attr == 19:
-                                writenBy = item.data.string()
+                                _item_.attribute("writtenBy", item.data.string())
                             elif attr == 7:
-                                specialDescription = item.data.string() # It will probably work diffrently
+                                _item_.attribute("description", item.data.string()) # It will probably work diffrently
                             elif attr == 12:
                                 runeCharges = item.data.uint8()
                             elif attr == 22:
-                                charges = item.data.uint8()
+                                _item_.attribute("count", item.data.uint8())
                             elif attr == 16:
                                 duration = item.data.uint32()
                             elif attr == 17:
@@ -291,7 +292,7 @@ while node:
                             else:
                                 print "Unknown item attribute %d" % attr
                         
-                        mapTile.add(genItem(itemId))
+                        mapTile.add(_item_)
                     else:
                         print "Unknown item header"
                     item = tile.next()
