@@ -81,18 +81,25 @@ class ThingScripts(object):
         self.scripts = {}
         
     def reg(self, id, callback, toid=None):
-        if type(id) != int:
-            # This ensures we remove the script object if the object disappear
-            id = weakref.ref(id, self.unregAll) 
-            
-            if not id in self.scripts:
-                self.scripts[id] = []
-            self.scripts[id].append(weakref.ref(callback, self.unregCallback ))
+        if not toid:
+            if type(id) != int:
+                # This ensures we remove the script object if the object disappear
+                id = weakref.ref(id, self.unregAll) 
+                
+                if not id in self.scripts:
+                    self.scripts[id] = []
+                self.scripts[id].append(weakref.ref(callback, self.unregCallback ))
+            else:
+                if not id in self.scripts:
+                    self.scripts[id] = []
+                self.scripts[id].append(weakref.ref(callback, self.unregCallback))
         else:
-            if not id in self.scripts:
-                self.scripts[id] = []
-            self.scripts[id].append(weakref.ref(callback, self.unregCallback))
-
+            func = weakref.ref(callback, self.unregCallback)
+            for xid in xrange(id, toid+1):
+                if not xid in self.scripts:
+                    self.scripts[xid] = [func]
+                else:
+                    self.scripts[xid].append(func)
     def unreg(self, id, callback):
         try:
             for ref in self.scripts[id]:
@@ -120,12 +127,12 @@ class ThingScripts(object):
                 del self.scripts[s]
                 
     def run(self, thing, creature, end=None, *args, **kwargs):
-        scriptPool.callInThread(self._run, thing, creature, end, *args, **kwargs)
+        scriptPool.callInThread(self._run, thing, creature, end, False, *args, **kwargs)
     
     def runSync(self, thing, creature, end=None, *args, **kwargs):
-        self._run(thing, creature, end, *args, **kwargs)
+        return self._run(thing, creature, end, True, *args, **kwargs)
         
-    def _run(self, thing, creature, end, *args, **kwargs):
+    def _run(self, thing, creature, end, returnVal, *args, **kwargs):
         ok = True
         
         if thing in self.scripts:
@@ -155,19 +162,22 @@ class ThingScripts(object):
 
         if ok:
             for aid in thing.actionIds():
-                for script in self.scripts[aid][:]:
-                    func = script()
-                    if func:
-                        ok = func(creature, *args, **kwargs)
-                        if not ok is not False:
-                            break
-                    else:
-                        try:
-                            self.scripts[aid].remove(script) 
-                        except:
-                            pass   
-        if end and ok is not False:
+                if aid in self.scripts:
+                    for script in self.scripts[aid][:]:
+                        func = script()
+                        if func:
+                            ok = func(creature, *args, **kwargs)
+                            if not ok is not False:
+                                break
+                        else:
+                            try:
+                                self.scripts[aid].remove(script) 
+                            except:
+                                pass   
+        if not returnVal and end and ok is not False:
             return end()
+        elif returnVal:
+            return ok if type(ok) != bool else None
             
 # All global events can be initialized here
 globalScripts = {}
@@ -179,6 +189,7 @@ globalScripts["use"] = ThingScripts()
 globalScripts["walkOn"] = ThingScripts()
 globalScripts["walkOff"] = ThingScripts()
 globalScripts["preWalkOn"] = ThingScripts()
+globalScripts["addMapItem"] = ThingScripts()
 globalScripts["lookAt"] = ThingScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!

@@ -63,7 +63,7 @@ class Item(object):
         if kwargs:
             for key in kwargs:
                 setattr(self, key, kwargs[key])
-                
+
     def thingId(self):
         return self.itemId # Used for scripts
 

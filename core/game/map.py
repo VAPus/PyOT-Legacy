@@ -4,6 +4,7 @@ from twisted.internet import threads
 from twisted.python import log
 import bindconstant
 import marshal
+import scriptsystem
 
 def getTile(pos):
     try:
@@ -173,12 +174,27 @@ def MM(name, *argc):
 MM = bindconstant._make_constants(MM)
 
 def I(itemId, **kwargs):
-    try:
-        return dummyItems[itemId]
-    except:
-        dummyItems[itemId] = Item(itemId, **kwargs)
-        return dummyItems[itemId]
+    # Do not stack
+    if not kwargs:
+        try:
+            return dummyItems[itemId]
+        except:
+            item = Item(itemId, **kwargs)
+            
+            itemX = game.scriptsystem.get('addMapItem').runSync(item, None, None, item, options={})
 
+            if not itemX:
+                dummyItems[item.itemId] = item
+            else:
+                return itemX
+            return item
+    else:
+        item = Item(itemId, **kwargs)
+        itemX = game.scriptsystem.get('addMapItem').runSync(item, None, None, item, options=kwargs)
+        if itemX:
+            return itemX
+        return item
+    
 def T(*args):
     return Tile(list(args))
 
