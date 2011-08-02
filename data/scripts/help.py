@@ -123,3 +123,15 @@ def makeitem(player, text):
      return False
 
 scriptsystem.get("talkactionFirstWord").reg('i', makeitem)
+
+
+# Reimport tester
+def reimporter(player, text):
+    scriptsystem.reimporter()
+    player.say("Worked!")
+
+def saySomething(player, text):
+    player.say("Test 2")
+    
+scriptsystem.get("talkaction").reg('reload', reimporter)
+scriptsystem.get("talkaction").reg('reloadtest', saySomething)
