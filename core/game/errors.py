@@ -9,4 +9,5 @@ class BaseError(Exception):
             return repr(self.value)
 
 class ImpossibleMove(BaseError): pass
+class Cheat(BaseError): pass
 class SolidTile(BaseError): pass

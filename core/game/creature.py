@@ -9,6 +9,8 @@ import copy
 import game.scriptsystem
 import inspect
 import game.errors
+import math
+
 
 # Unique ids, thread safe too
 def __uid():
@@ -144,19 +146,21 @@ class Creature(object):
         if newTile.getThing(0).solid:
             self.notPossible()
             self.actionLock.release()
-            return False # Prevent walking on solid tiles
-            
-        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
-            self.actionLock.release()
-            return False
-            
-        else:
-            self.lastStep = time.time()
+            raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
             
         if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
             self.actionLock.release()
-            return False
+            raise game.errors.ImpossibleMove  
+        
+        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+            self.actionLock.release()
+            raise game.errors.Cheat("Stepping too fast!")
+            
+        else:
+            self.lastStep = time.time()
+            
+
 
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
 
