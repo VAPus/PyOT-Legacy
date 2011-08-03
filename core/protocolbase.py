@@ -4,14 +4,20 @@ from twisted.python import log
 from twisted.application.service import Service
 from packet import TibiaPacketReader, TibiaPacket
 import config
-
+import struct
+if config.checkAdler32:
+    from zlib import adler32
+    
 class TibiaProtocol(Protocol):
 
     def __init__(self):
         self.gotFirst = False
         self.xtea = ()
         self.onInit()
-
+        self.buffer = ""
+        self.nextPacketLength = 0
+        self.bufferLength = 0
+        
     def connectionMade(self):
         peer = self.transport.getPeer()
         log.msg("Connection made from {0}:{1}".format(peer.host, peer.port))
@@ -34,18 +40,54 @@ class TibiaProtocol(Protocol):
         self.onConnectionLost()
 
     def dataReceived(self, data):
-        packet = TibiaPacketReader(data)
-
-        # Length
-        gotLength = packet.uint16()
-        if len(data)-2 != gotLength:
-            log.msg("Packet length is invalid (exptected %d, got %d)" % (gotLength, len(data)-2))
-            self.transport.loseConnection()
-            return
-
+        if self.nextPacketLength:
+            rest = self.nextPacketLength - self.bufferLength
+            gotLength = len(data)
+            if gotLength == rest:
+                self.nextPacketLength = 0
+                self.bufferLength = 0
+                self.handlePacketFrame(self.buffer + data)
+                
+            elif gotLength > rest:
+                nextPacketLength = struct.unpack("<H", data[:2])[0]
+                if nextPacketLength > 20000:
+                    log.msg("Packet length is bigger then 20k, dropping")
+                    self.transport.loseConnection()
+                    return
+                bufferLength = len(data)-2
+                self.handlePacketFrame(self.buffer + data[:rest])
+                
+                if nextPacketLength == bufferLength:
+                    self.handlePacketFrame(self.buffer + data[rest:])
+                else:
+                    self.bufferLength = bufferLength
+                    self.nextPacketLength = nextPacketLength
+            elif gotLength < rest:
+                self.buffer += data
+                self.bufferLength += len(data)
+        else:
+                
+            gotLength = struct.unpack("<H", data[:2])[0]
+            if gotLength > 20000:
+                log.msg("Packet length is bigger then 20k, dropping")
+                self.transport.loseConnection()
+                return
+            
+            # Length
+            elif len(data)-2 != gotLength:
+                self.nextPacketLength = gotLength
+                self.bufferLength = len(data)-2
+                self.buffer = data[2:]
+                return
+                
+            else:
+                self.handlePacketFrame(data[2:])
+            
+        
+    def handlePacketFrame(self, packetData):
+        packet = TibiaPacketReader(packetData)
         # Adler32:
         if config.checkAdler32:
-            from zlib import adler32
             adler = packet.uint32()
             calcAdler = adler32(packet.getData()) & 0xffffffff
             if adler != calcAdler:
