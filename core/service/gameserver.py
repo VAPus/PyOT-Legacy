@@ -166,6 +166,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType == 0x88: # Arrow up container
             self.player.arrowUpContainer(packet.uint8())
             
+        elif packetType == 0x97: # Request channels
+            self.player.openChannels()
+
+        elif packetType == 0x98: # Open channel
+            self.player.openChannel(packet.uint16())
+            
+        elif packetType == 0x99: # Close channel
+            self.player.closeChannel(packet.uint16())
+            
         elif packetType == 0x8C: # Look at
             self.player.handleLookAt(packet)
         

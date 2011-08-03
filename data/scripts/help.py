@@ -53,7 +53,7 @@ def tilerE(player, text):
     return tiler(player, str(last))
     
 def mypos(player, text):
-    player.say("My position is: "+str(player.position))
+    player.message("Your position is: "+str(player.position))
     print str(player.position) # Print to console to be sure
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)

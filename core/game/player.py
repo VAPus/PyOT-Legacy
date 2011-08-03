@@ -429,7 +429,34 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
         
         return True
-              
+
+    # Channel system
+    def openChannels(self):
+        stream = TibiaPacket(0xAB)
+        channels = game.chat.getChannels(self)
+        stream.uint8(len(channels))
+        for channel in channels:
+            stream.uint16(channel.id)
+            stream.string(channel.name)
+            
+        stream.send(self.client)
+    
+    def openChannel(self, id):
+        stream = TibiaPacket(0xAC)
+        channel = game.chat.getChannel(id)
+        stream.uint16(id)
+        stream.string(channel.name)
+        
+        # TODO: Send members for certain channels
+        stream.uint32(0)
+        
+        stream.send(self.client)
+        channel.addMember(self)
+    
+    def closeChannel(self, id):
+        channel = game.chat.getChannel(id)
+        channel.removeMember(self)
+        
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
