@@ -9,7 +9,6 @@ import copy
 import game.scriptsystem
 import inspect
 import game.errors
-import math
 
 
 # Unique ids, thread safe too

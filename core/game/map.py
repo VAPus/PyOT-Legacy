@@ -5,6 +5,7 @@ from twisted.python import log
 import bindconstant
 import marshal
 import scriptsystem
+from collections import deque
 
 def getTile(pos):
     try:
@@ -28,10 +29,11 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(object):
+    __slots__ = ('things', 'topItemCount', 'creatureCount')
     def __init__(self, items, topItemCount=0):
         if not topItemCount:
-            workItems = items[:]
-            self.things = [workItems.pop(0)]
+            workItems = deque(items)
+            self.things = [workItems.popleft()]
             self.topItemCount = 1
             
             if workItems:
@@ -45,15 +47,13 @@ class Tile(object):
                         
                 if bottomItems:
                     self.things.extend(bottomItems)
-             
-            if "solid" in game.item.items[self.things[0].itemId]:
-                self.things = tuple(self.things)
-            else:
+   
+            if not "solid" in game.item.items[self.things[0].itemId]:
                 self.creatureCount = 0
         else:
-             self.things = items
-             self.topItemCount= topItemCount
-             self.creatureCount = 0
+            self.things = items
+            self.topItemCount= topItemCount
+            self.creatureCount = 0
              
     def placeCreature(self, creature):
         self.things.insert(self.topItemCount, creature)
@@ -181,7 +181,7 @@ def I(itemId, **kwargs):
         except:
             item = Item(itemId, **kwargs)
             
-            itemX = game.scriptsystem.get('addMapItem').runSync(item, None, None, item, options={})
+            itemX = scriptsystem.get('addMapItem').runSync(item, None, None, item, options={})
 
             if not itemX:
                 dummyItems[item.itemId] = item
@@ -190,13 +190,13 @@ def I(itemId, **kwargs):
             return item
     else:
         item = Item(itemId, **kwargs)
-        itemX = game.scriptsystem.get('addMapItem').runSync(item, None, None, item, options=kwargs)
+        itemX = scriptsystem.get('addMapItem').runSync(item, None, None, item, options=kwargs)
         if itemX:
             return itemX
         return item
     
 def T(*args):
-    return Tile(list(args))
+    return Tile(args)
 
 T = bindconstant._make_constants(T)
 

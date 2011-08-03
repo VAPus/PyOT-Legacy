@@ -10,6 +10,7 @@ reverseItems = {}
 
 ### Container class ###
 class Container(object):
+    __slots__ = ('items', 'maxSize')
     def __init__(self, size):
         self.items = deque()
         self.maxSize = size

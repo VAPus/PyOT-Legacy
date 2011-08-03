@@ -6,6 +6,7 @@ import time
 from packet import TibiaPacket
 import game.map
 import config
+import math
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -89,7 +90,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
     ret = creature.move(direction)
     if ret and len(walkPatterns):
         creature.actionLock.acquire()
-        creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(creature.position).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+        creature.action = reactor.callLater(math.ceil(creature.stepDuration(game.map.getTile(creature.position).getThing(0)) * 100) / 100, handleAutoWalking, creature, walkPatterns, callback)
         creature.actionLock.release()
     else:
         creature.action = None
