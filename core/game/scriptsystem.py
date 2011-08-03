@@ -199,38 +199,31 @@ reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
 global modPool
 modPool = []
-def importer():
+
+def handleModule(name):
     global modPool
-    spells = __import__('data.spells', globals(), locals(), ["*"], -1)
-    for spell in spells.__all__:
+    modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+    
+    for module in modules.__all__:
         try:
-            if not spell == "__init__":
-                sys.modules["data.spells.%s" % spell].init()
+            if not module == "__init__":
+                sys.modules["data.%s.%s" % (name, module)].init()
         except AttributeError:
             pass
-    monsters = __import__('data.monsters', globals(), locals(), ["*"], -1)
-    for monster in monsters.__all__:
-        try:
-            if not monster == "__init__":
-                sys.modules["data.monsters.%s" % monster].init()
-        except AttributeError:
-            pass
-    npcs = __import__('data.npcs', globals(), locals(), ["*"], -1)
-    for npc in npcs.__all__:
-        try:
-            if not npc == "__init__":
-                sys.modules["data.npcs.%s" % npc].init()
-        except AttributeError:
-            pass
-    scripts = __import__('data.scripts', globals(), locals(), ["*"], -1)
-    for script in scripts.__all__:
-        try:
-            if not script == "__init__":
-                sys.modules["data.scripts.%s" % script].init()
-        except AttributeError:
-            pass
+    
+    try:
+        for subModule in modules.__paths__:
+            handleModule("%s.%s" % (name, subModule))
+    except:
+        pass
+    
+    modPool.append((name, modules))
         
-    modPool = [["spells", spells], ["monsters", monsters], ["npcs", npcs], ["scripts", scripts]]
+def importer():
+    handleModule("spells")
+    handleModule("monsters")
+    handleModule("npcs")
+    handleModule("scripts")
 
 def reimporter():
     global modPool
