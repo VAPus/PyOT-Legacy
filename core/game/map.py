@@ -204,7 +204,9 @@ global V
 V = None
         
 def loadTiles(x,y, walk=True):
-    if x > data.map.info.height or y > data.map.info.width:
+    if x < 0 or y < 0:
+        return None
+    elif x > data.map.info.height or y > data.map.info.width:
         return None
         
     sectorX = int(x / data.map.info.sectorSize[0])

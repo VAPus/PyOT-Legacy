@@ -3,6 +3,7 @@ from packet import TibiaPacket
 from game.map import placeCreature, getTile
 import game.engine, game.item
 from game.creature import Creature
+import game.errors
 
 def callback(player, text):
     player.message("No you!!")
@@ -13,8 +14,12 @@ def repeater(player, text):
 def teleporter(player, text):
     x,y,z = text.split(',')
     pos = [int(x),int(y),int(z)]
-    player.teleport(pos)
-    player.message("Welcome to %s" % text)
+    try:
+        player.teleport(pos)
+    except game.errors.SolidTile:
+        player.message("Can't teleport to solid tiles!")
+    else:
+        player.message("Welcome to %s" % text)
     
 def tiler(player, text):
     #try:

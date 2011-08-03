@@ -8,6 +8,7 @@ import time
 import copy
 import game.scriptsystem
 import inspect
+import game.errors
 
 # Unique ids, thread safe too
 def __uid():
@@ -238,7 +239,11 @@ class Creature(object):
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
             if item.teledest:
-                self.teleport(item.teledest)
+                try:
+                    self.teleport(item.teledest)
+                except:
+                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
+                    del item.teledest
         
         return True # Required for auto walkings
 
@@ -274,7 +279,12 @@ class Creature(object):
         
     def teleport(self, position):
         # 4 steps, remove item (creature), send new map and cords, and effects 
-        print position
+        newTile = getTile(position)
+        
+        if newTile.things[0].solid:
+            raise game.errors.SolidTile()
+        
+        
         stream = TibiaPacket()
         oldStackpos = getTile(self.position).findCreatureStackpos(self)
         stream.removeTileItem(self.position, oldStackpos)
