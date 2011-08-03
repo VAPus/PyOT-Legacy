@@ -1,10 +1,11 @@
 # This act as the core event system
-from twisted.internet import reactor
+from twisted.internet import reactor, threads
 from collections import deque
 from twisted.python import log
 import time
 from packet import TibiaPacket
 import game.map
+import config
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -13,12 +14,39 @@ def loader(timer):
     # Begin loading items in the background
     d = loadItems()
     
+    
+    def mapLoader(d, timer):
+        if config.loadEntierMap:
+                from game.map import load
+                begin = time.time()
+                x = 0
+                y = 0
+                retOld = False
+                ret = False
+                while True:
+                    try:
+                        ret = load(x,y)
+                        y += 1
+                    except IOError:
+                        x += 1
+                        y = 0                
+
+                    if not ret and not retOld:
+                        break
+                    retOld = ret  
+                    
+                log.msg("Loaded entier map in %f" % (time.time() - begin))
     # This is called once we are done with all loading, we got to use deferred on all future rutines too
     def printer(d, timer):
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
-    from game.scriptsystem import importer
-    importer()
+    def loadScripts():
+        from game.scriptsystem import importer
+        importer()
+        
+    threads.deferToThread(loadScripts)
+    
+    d.addCallback(mapLoader, timer)
     d.addCallback(printer, timer)
 
 # The action decorator :)

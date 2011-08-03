@@ -1,2 +1,2 @@
 #!/bin/sh
-pypy -OO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+pypy --jit inlining=1 /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
