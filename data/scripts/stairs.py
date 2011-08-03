@@ -36,10 +36,12 @@ def floorchange(creature, item, position):
             creature.move(3, level=1)
             
 def floorup(creature, item, position, index=None): # By using index=None, this function will work on both walkOn and useItem
-    creature.teleport([position[0],position[1],position[2]-1])
+    if creature.inRange(position, 1, 1, 0):
+        creature.teleport([position[0],position[1],position[2]-1])
     
 def floordown(creature, item, position, index=None):
-    creature.teleport([position[0],position[1],position[2]+1])
+    if creature.inRange(position, 1, 1, 0):
+        creature.teleport([position[0],position[1],position[2]+1])
 
 # Stairs
 scriptsystem.get("walkOn").reg(1385, floorchange)

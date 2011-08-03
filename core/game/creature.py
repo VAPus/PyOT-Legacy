@@ -374,6 +374,9 @@ class Creature(object):
     def distanceStepsTo(self, position):
         return abs(self.position[0]-position[0])+abs(self.position[1]-position[1])
         
+    def inRange(self, position, x, y, z=0):
+        return ( abs(self.position[0]-position[0]) <= x and abs(self.position[1]-position[1]) <= y and abs(self.position[2]-position[2]) <= y )   
+        
     def setVar(self, name, value=None):
         try:
             if value == None:
