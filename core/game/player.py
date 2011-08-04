@@ -257,36 +257,36 @@ class TibiaPlayer(Creature):
         
     # Spells
     def cooldownSpell(self, icon, group, cooldown):
+        stream = TibiaPacket(0xA4)
+        stream.uint8(icon)
+        stream.uint32(cooldown * 1000)
+        stream.uint8(0xA5)
+        stream.uint8(group)
+        stream.uint32(cooldown * 1000)
+        
+        stream.send(self.client)        
         t = time.time()  + cooldown
         self.cooldowns[icon] = t
         self.cooldowns[group << 8] = t
-        stream = TibiaPacket(0xA4)
-        stream.uint8(icon)
-        stream.uint32(cooldown)
-        stream.uint8(0xA5)
-        stream.uint8(group)
-        stream.uint32(cooldown)
-        
-        stream.send(self.client)        
     def cooldownIcon(self, icon, cooldown):
         self.cooldowns[icon] = time.time() + cooldown
         stream = TibiaPacket(0xA4)
         stream.uint8(icon)
-        stream.uint32(cooldown)
+        stream.uint32(cooldown * 1000)
         stream.send(self.client)
         
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
         stream = TibiaPacket(0xA5)
         stream.uint8(group)
-        stream.uint32(cooldown)
+        stream.uint32(cooldown * 1000)
         stream.send(self.client)
 
     def canDoSpell(self, icon, group):
         t = time.time()
         group = group << 8
-        if not group in self.cooldowns or self.cooldowns[group] <= t:
-            if not icon in self.cooldowns or self.cooldowns[icon] <= t:
+        if not group in self.cooldowns or self.cooldowns[group] < t:
+            if not icon in self.cooldowns or self.cooldowns[icon] < t:
                 return True
         return False
     def setModes(self, attack, chase, secure):

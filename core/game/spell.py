@@ -7,6 +7,7 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
     def conjure(creature, words):
         if not creature.canDoSpell(icon, group):
             creature.message("Sorry, cooling down")
+            return
             
         # Checks
         if creature.data["level"] < level:
