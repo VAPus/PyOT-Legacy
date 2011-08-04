@@ -174,11 +174,9 @@ def loadItems():
     autoCastValue = game.engine.autoCastValue
     for data in d2.getResult():
         if data["key"] == "fluidSource":
-            val = getattr(game.enum, 'FLUID_'+data["value"].upper())
-        else:
-            val = autoCastValue(data["value"])
-        if val:
-            loadItems[data["sid"]][data["key"]] = val
+            data["value"] = getattr(game.enum, 'FLUID_'+data["value"].upper())
+        if data["value"]:
+            loadItems[data["sid"]][data["key"]] = data["value"]
     del d2
     log.msg("%d Items loaded" % len(loadItems))
     
