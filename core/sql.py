@@ -4,7 +4,10 @@ import config
 def connect():
     if config.sqlModule == "MySQLdb":
         from MySQLdb.cursors import DictCursor
-        return adbapi.ConnectionPool(config.sqlModule, host="localhost",db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor)
+        from MySQLdb.constants import FIELD_TYPE
+        import MySQLdb.converters
+        MySQLdb.converters.conversions[FIELD_TYPE.LONG] = int
+        return adbapi.ConnectionPool(config.sqlModule, host="localhost",db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
 
     elif config.sqlModule == "sqlite3":
         import sqlite3

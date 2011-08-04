@@ -155,10 +155,6 @@ def loadItems():
 
 
     for item in d.getResult():
-        item["cid"] = int(item["cid"]) # no long
-        item["sid"] = int(item["sid"]) # no long
-        item["speed"] = int(item["speed"]) # No long
-        item["type"] = int(item["type"]) # No long
         subs = item["subs"]
         del item["subs"]
         if item["plural"] == item["name"] or not item["plural"]:

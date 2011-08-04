@@ -155,7 +155,6 @@ if config.preAllocateMap or config.loadEntierMap:
 else:
     knownMap = {}
 sectors = []
-callbacks = {}
 
 
 
