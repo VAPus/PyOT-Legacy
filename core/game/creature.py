@@ -295,6 +295,7 @@ class Creature(object):
         self.refreshOutfit()
         
     def teleport(self, position):
+        self.actionLock.acquire()
         # 4 steps, remove item (creature), send new map and cords, and effects 
         newTile = getTile(position)
         
@@ -328,12 +329,12 @@ class Creature(object):
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
                 
-        
+        self.actionLock.release()
 
     def turn(self, direction):
         if self.direction == direction:
             return
-            
+        self.actionLock.acquire()    
         self.direction = direction
         
         # Make package
@@ -346,7 +347,7 @@ class Creature(object):
                 
         # Send to everyone
         stream.sendto(getSpectators(self.position))
-        
+        self.actionLock.release()
     def say(self, message):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)

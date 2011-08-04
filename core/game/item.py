@@ -4,9 +4,10 @@ from twisted.python import log
 from collections import deque
 import game.enum
 import bindconstant
+import config
 
-items = {}
-reverseItems = {}
+items = None
+reverseItems = None
 
 ### Container class ###
 class Container(object):
@@ -51,6 +52,7 @@ bindconstant.bind_all(Container)
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
+    __slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
@@ -140,39 +142,28 @@ def sid(itemid):
 @deferredGenerator
 def loadItems():
     log.msg("Loading items...")
-    
-    global items
-    global reverseItems
 
     # Async SQL (it's funny isn't it?)
     d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
-
-    result = d.getResult()
     
     
     # Make two new values while we are loading
-    loadItems = {}
-    reverseLoadItems = {}
+    loadItems = [None] * (config.itemMaxServerId + 1)
+    reverseLoadItems = [None] * (config.itemMaxClientId + 1)
 
 
-    for item in result:
+    for item in d.getResult():
         item["cid"] = int(item["cid"]) # no long
         item["sid"] = int(item["sid"]) # no long
         item["speed"] = int(item["speed"]) # No long
         item["type"] = int(item["type"]) # No long
-        subs = int(item["subs"]) # No long
+        subs = item["subs"]
         del item["subs"]
         if item["plural"] == item["name"] or not item["plural"]:
             del item["plural"]
             
-        """if not item["speed"]:
-            del item["speed"]
-        if not item["type"]:
-            del item["type"]
-        if not item["subs"]:
-            del item["subs"] """
                     
         reverseLoadItems[item["cid"]] = item["sid"]
         
@@ -180,25 +171,26 @@ def loadItems():
         if subs:
             for x in xrange(1, subs+1):
                 reverseLoadItems[item["cid"]+x] = item["sid"]+x
-                loadItems[item["sid"]+x] = item
+                loadItems[item["sid"]+x] = loadItems[item["sid"]]
             
-
+    del d
     yield d2
-    result2 = d2.getResult()
     autoCastValue = game.engine.autoCastValue
-    for data in result2:
+    for data in d2.getResult():
         if data["key"] == "fluidSource":
             val = getattr(game.enum, 'FLUID_'+data["value"].upper())
         else:
             val = autoCastValue(data["value"])
         if val:
             loadItems[data["sid"]][data["key"]] = val
-            
+    del d2
     log.msg("%d Items loaded" % len(loadItems))
     
     # Replace the existing items
-    items = loadItems
-    reverseItems = reverseLoadItems
+    global items
+    global reverseItems
+    items = tuple(loadItems)
+    reverseItems = tuple(reverseLoadItems)
     
     
     

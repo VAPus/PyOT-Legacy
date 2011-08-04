@@ -6,6 +6,7 @@ import bindconstant
 import marshal
 import scriptsystem
 from collections import deque
+import config
 
 def getTile(pos):
     try:
@@ -52,7 +53,7 @@ class Tile(object):
                             
                     if bottomItems:
                         self.things.extend(bottomItems)
-                    
+  
         else:
             self.things = items
             self.itemCount = topItemCount
@@ -146,18 +147,23 @@ class Tile(object):
 
 bindconstant.bind_all(Tile) # Apply constanting to Tile
 
-    
-knownMap = {}
-sectors = {}
+import data.map.info
+dummyItems = {}
+
+if config.preAllocateMap or config.loadEntierMap:    
+    knownMap = (([None]*data.map.info.height,)*data.map.info.width,)*15
+else:
+    knownMap = {}
+sectors = []
 callbacks = {}
 
-import data.map.info
-dummyItems = {} # Ground items etc
+
 
 # Ops codes
 def M(name,x,y,z=7):
     try:
         game.monster.getMonster(name).spawn([x,y,z])
+        pass
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     
@@ -172,6 +178,7 @@ def MM(name, *argc):
                 
         for count in xrange(0,length, 2):
             game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
+            pass
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
 
@@ -188,7 +195,7 @@ def I(itemId, **kwargs):
             itemX = scriptsystem.get('addMapItem').runSync(item, None, None, item, options={})
 
             if not itemX:
-                dummyItems[item.itemId] = item
+                dummyItems[itemId] = item
             else:
                 return itemX
             return item
@@ -220,14 +227,12 @@ def loadTiles(x,y, walk=True):
     
 def load(sectorX, sectorY):
     global V # Should really be avioided
-    
-    if sectorX in sectors and sectorY in sectors[sectorX] or (sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1):
+    sectorSum = (sectorX << 15) + sectorY
+    if sectorSum in sectors or (sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1):
         return False
         
-    if not sectorX in sectors:
-        sectors[sectorX] = {}
         
-    sectors[sectorX][sectorY] = True
+    sectors.append(sectorSum)
 
     if not V:
         V = Tile((I(100),), 1)
