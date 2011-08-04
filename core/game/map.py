@@ -253,14 +253,14 @@ def load(sectorX, sectorY):
     
     localItems = game.item.items # Prevent a bit of a lookup
     
-    for z,mz in m.iteritems():
+    for mz in m:
         try:
-            currZ = knownMap[z]
+            currZ = knownMap[mz[0]]
         except:
-            knownMap[z] = {}
-            currZ = knownMap[z]
+            knownMap[mz[0]] = {}
+            currZ = knownMap[mz[0]]
             
-        for i,x in enumerate(mz):
+        for i,x in enumerate(mz[1]):
             try:
                 currX = currZ[xbase+i]
             except:

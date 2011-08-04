@@ -211,11 +211,11 @@ class Map:
 		    else:
 			if zPos in nothingness:
 				nothingness.remove(zPos)
-                    output += str(zPos)+":"+data+","
+                    output += "(%d,%s)," % (zPos, data)
                 if output:
-                    output = "m={"+output[:-1]+"}"
+                    output = "m=(%s)" % output
                 else: # A very big load of nothing
-                    output = "m={}"
+                    output = "m=(,)"
                 
                 if extras:
                     # Monster ops
