@@ -401,7 +401,15 @@ class TibiaPlayer(Creature):
     def notEnoughRoom(self):
         self.message("There is not enough room.", enum.MSG_STATUS_SMALL)
         
+    def exhausted(self):
+        self.message("You are exhausted.", enum.MSG_STATUS_SMALL)
+
+    def needMagicItem(self):
+        self.message("You need a magic item to cast this spell.", enum.MSG_STATUS_SMALL)
     
+    def notEnough(self, word):
+        self.message("You do not have enough %s." % word, enum.MSG_STATUS_SMALL)
+        
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
             self.openContainers[self.openContainers.index(container.parent)] = container # Replace it in structure
@@ -481,8 +489,8 @@ class TibiaPlayer(Creature):
                         count = total - itemX.count
                         
                         # Is it a open container, if so, send item update
-                        if itemX in self.openContainers:
-                            stream.updateContainerItem(self.openContainers.index(itemX), slot, itemX)
+                        if bag in self.openContainers:
+                            stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
                             
                         if not count:
                             break
