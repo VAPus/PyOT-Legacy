@@ -155,13 +155,13 @@ class Creature(object):
             raise game.errors.ImpossibleMove
             return False
         
-        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+        """if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
             self.actionLock.release()
             raise game.errors.Cheat("Stepping too fast!")
             return False
             
         else:
-            self.lastStep = time.time()
+            self.lastStep = time.time()"""
         
         self.lastStep = time.time()
 
