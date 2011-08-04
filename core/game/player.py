@@ -174,12 +174,10 @@ class TibiaPlayer(Creature):
                 else:
                     break
         
-        if len(items) and not count:
-            return items
-             
-        elif (not len(items) or foundCount < count) and self.inventory[3]:
-            bags = [self.inventory[3]]
-            for bag in bags.pop(0):
+
+        if (not len(items) or foundCount < count) and self.inventory[3]:
+            bags = [self.inventory[2]]
+            for bag in bags:
                 for item in bag.container.items:
                     if item.itemId == itemId:
                         items.append((2, item, bag, bag.container.items.index(item)))
@@ -191,6 +189,8 @@ class TibiaPlayer(Creature):
                             break
                     elif item.containerSize:
                         bags.append(item)
+        
+
         if count and foundCount < count:
             return None
         elif not items:
@@ -213,7 +213,7 @@ class TibiaPlayer(Creature):
                     break
                 precount = item[1].count
                 item[1].reduceCount(min(item[1].count, count))
-                count -= precount - item[1].count
+                count = precount - item[1].count
                 if item[1].count:
                     if item[0] == 1:
                         stream.addInventoryItem(item[3]+1, item[1])

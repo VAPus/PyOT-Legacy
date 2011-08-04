@@ -13,13 +13,13 @@ reverseItems = None
 class Container(object):
     __slots__ = ('items', 'maxSize')
     def __init__(self, size):
-        self.items = deque()
+        self.items = []
         self.maxSize = size
         
     def placeItem(self, item):
         length = len(self.items)
         if length < self.maxSize:
-            self.items.appendleft(item)
+            self.items.insert(0, item)
             return 0
         else:
             return None
@@ -27,7 +27,7 @@ class Container(object):
     def placeItemRecursive(self, item):
         length = len(self.items)
         if length < self.maxSize:
-            self.items.appendleft(item)
+            self.items.insert(0, item)
             return 0
         else:
             for itemX in self.items:

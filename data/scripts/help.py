@@ -115,18 +115,21 @@ scriptsystem.get("use").reg(1987, testContainer)
 
 
 def makeitem(player, text):
-     try:
-        text = int(text)
+    try:
+        count = 1
+        if ' ' in text:
+            count = int(text.split(" ")[1])
+        text = int(text.split(" ")[0])
         if text >= 1000:
-            newitem = game.item.Item(text, 1)
+            newitem = game.item.Item(text, count)
             bag = player.inventory[2]
             player.itemToContainer(bag, newitem)
         else:
-            raise NameError()
-     except:
-         player.message("Invalid Item!")
+            raise
+    except:
+        player.message("Invalid Item!")
          
-     return False
+    return False
 
 scriptsystem.get("talkactionFirstWord").reg('i', makeitem)
 
@@ -149,4 +152,4 @@ def popItems(player, text):
     item = player.findItemById(i,c)
     return False
     
-scriptsystem.get("talkactionFirstWord").reg('pop', makeitem)
+scriptsystem.get("talkactionFirstWord").reg('pop', popItems)
