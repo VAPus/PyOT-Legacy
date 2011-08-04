@@ -151,7 +151,7 @@ import data.map.info
 dummyItems = {}
 
 if config.preAllocateMap or config.loadEntierMap:    
-    knownMap = (([None]*data.map.info.height,)*data.map.info.width,)*15
+    knownMap = (([None]*data.map.info.height,)*data.map.info.width,)*data.map.info.levels[0]
 else:
     knownMap = {}
 sectors = []

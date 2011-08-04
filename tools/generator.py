@@ -119,7 +119,7 @@ class Map:
         areaY = 0
         toX = self.size[0] / areas[0]
         toY = self.size[1] / areas[1]
-
+	nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
                 
@@ -208,6 +208,9 @@ class Map:
                     if data == "((None,)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
                         print "--Note: %d is a level of nothingness, ignore it" % zPos
                         continue
+		    else:
+			if zPos in nothingness:
+				nothingness.remove(zPos)
                     output += str(zPos)+":"+data+","
                 if output:
                     output = "m={"+output[:-1]+"}"
@@ -269,7 +272,16 @@ class Map:
         output += "sectorSize = (%d, %d)\n" % (areas[0], areas[1])
         output += "towns = %s\n" % str(self.towns)
         output += "waypoints = %s\n" % str(self.waypoints)
-        
+	low = 15
+	num = 0
+	for level in self.area:
+		if level in nothingness:
+			continue
+		if level < low:
+			low = level
+		num += 1
+	print "Northingness on: %s" % (nothingness)
+	output += "levels = (%d, %d)" % (num, low)        
         open('info.py', "w").write(output)
         print "---Wrote info.py"
 
