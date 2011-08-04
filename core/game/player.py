@@ -158,7 +158,80 @@ class TibiaPlayer(Creature):
         # Option 4, find any item the player might posess
         if sid:
             return None # TODO
-            
+
+    def findItemById(self, itemId, count=0):
+        items = []
+        foundCount = 0
+        stream = TibiaPacket()
+        # From inventory?
+        for item in self.inventory:
+            if item and item.itemId == itemId:
+                items.append((1, item, self.inventory.index(item)))
+                if count:
+                    foundCount += item.count
+                    
+                    if foundCount >= count: break
+                else:
+                    break
+        
+        if len(items) and not count:
+            return items
+             
+        elif (not len(items) or foundCount < count) and self.inventory[3]:
+            bags = [self.inventory[3]]
+            for bag in bags.pop(0):
+                for item in bag.container.items:
+                    if item.itemId == itemId:
+                        items.append((2, item, bag, bag.container.items.index(item)))
+                        if count:
+                            foundCount += item.count
+                            
+                            if foundCount >= count: break
+                        else:
+                            break
+                    elif item.containerSize:
+                        bags.append(item)
+        if count and foundCount < count:
+            return None
+        elif not items:
+            return None
+        elif items and not count:
+            if items[0][0] == 1:
+                self.inventory[items[0][3]] = None
+                stream.removeInventoryItem(items[0][3]+1)
+            elif items[0][0] == 2:
+                items[0][2].container.removeItem(items[0][1])
+                try:
+                    stream.removeContainerItem(self.openContainers.index(item[2]), item[3]+1)
+                except:
+                    pass
+            return items[0][1]
+        else:
+            newItem = game.item.Item(itemId, count)
+            for item in items:
+                if not count:
+                    break
+                precount = item[1].count
+                item[1].reduceCount(min(item[1].count, count))
+                count -= precount - item[1].count
+                if item[1].count:
+                    if item[0] == 1:
+                        stream.addInventoryItem(item[3]+1, item[1])
+                    elif item[0] == 2:
+                        try:
+                            stream.updateContainerItem(self.openContainers.index(item[2]), item[3]+1, item[1])
+                        except:
+                            pass
+                else:
+                    if item[0] == 1:
+                        self.inventory[item[3]+1-1] = None
+                        stream.removeInventoryItem(item[3]+1)
+                    elif item[0] == 2:
+                        item[2].container.removeItem(item[1])
+                        stream.removeContainerItem(self.openContainers.index(item[2]), item[3]+1)
+
+            return newItem
+              
     def getContainer(self, openId):
         try:
             return self.openContainers[openId]

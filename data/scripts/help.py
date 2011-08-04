@@ -142,3 +142,11 @@ def saySomething(player, text):
     
 scriptsystem.get("talkaction").reg('reload', reimporter)
 scriptsystem.get("talkaction").reg('reloadtest', saySomething)
+
+# Tester of container functions
+def popItems(player, text):
+    i,c = map(int, text.split(" "))
+    item = player.findItemById(i,c)
+    return False
+    
+scriptsystem.get("talkactionFirstWord").reg('pop', makeitem)

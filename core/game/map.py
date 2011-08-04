@@ -264,7 +264,7 @@ def load(sectorX, sectorY):
             try:
                 currX = currZ[xbase+i]
             except:
-                currZ[xPos] = {}
+                currZ[xbase+i] = {}
                 currX = currZ[xbase+i]
                 
             for y,tile in enumerate(x):

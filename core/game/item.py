@@ -52,7 +52,7 @@ bindconstant.bind_all(Container)
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
-    __slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
+    #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
@@ -176,15 +176,18 @@ def loadItems():
         if data["key"] == "fluidSource":
             data["value"] = getattr(game.enum, 'FLUID_'+data["value"].upper())
         if data["value"]:
-            loadItems[data["sid"]][data["key"]] = data["value"]
+            try:
+                loadItems[int(data["sid"])][data["key"]] = int(data["value"])
+            except:
+                loadItems[int(data["sid"])][data["key"]] = data["value"]
     del d2
     log.msg("%d Items loaded" % len(loadItems))
     
     # Replace the existing items
     global items
     global reverseItems
-    items = tuple(loadItems)
-    reverseItems = tuple(reverseLoadItems)
+    items = loadItems
+    reverseItems = reverseLoadItems
     
     
     
