@@ -6,7 +6,7 @@ from zlib import adler32
 
 def inThread(f):
     def func(*argc, **argw):
-        reactor.callFromThread(f, *argc, **argw)
+        reactor.callInThread(f, *argc, **argw)
     return func
 class TibiaPacketReader(object):
     __slots__ = ('length', 'pos', 'data')
@@ -388,7 +388,7 @@ class TibiaPacket(object):
     def put(self, string):
         self.bytes.append(struct.pack("%ds" % len(string), str(string)))
 
-    #@inThread
+    @inThread
     def send(self, stream, lock=None):
         self.bytes = (''.join(self.bytes),)
 
@@ -400,7 +400,7 @@ class TibiaPacket(object):
         stream.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
         if lock:
             lock.release()
-    #@inThread
+    @inThread
     def sendto(self, list, lock=None):
         if not list:
             return # Noone to send to

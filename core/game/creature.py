@@ -71,6 +71,7 @@ class Creature(object):
         self.lastStep = 0
         self.target = None # target for follow/attacks based on modes
         self.vars = {}
+        self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         
         # We are trackable
         allCreatures[self.cid] = self

@@ -255,7 +255,40 @@ class TibiaPlayer(Creature):
         if not streamX:
             stream.send(self.client)
         
+    # Spells
+    def cooldownSpell(self, icon, group, cooldown):
+        t = time.time()  + cooldown
+        self.cooldowns[icon] = t
+        self.cooldowns[group << 8] = t
+        stream = TibiaPacket(0xA4)
+        stream.uint8(icon)
+        stream.uint32(cooldown)
+        stream.uint8(0xA5)
+        stream.uint8(group)
+        stream.uint32(cooldown)
         
+        stream.send(self.client)        
+    def cooldownIcon(self, icon, cooldown):
+        self.cooldowns[icon] = time.time() + cooldown
+        stream = TibiaPacket(0xA4)
+        stream.uint8(icon)
+        stream.uint32(cooldown)
+        stream.send(self.client)
+        
+    def cooldownGroup(self, group, cooldown):
+        self.cooldowns[group << 8] = time.time() + cooldown
+        stream = TibiaPacket(0xA5)
+        stream.uint8(group)
+        stream.uint32(cooldown)
+        stream.send(self.client)
+
+    def canDoSpell(self, icon, group):
+        t = time.time()
+        group = group << 8
+        if not group in self.cooldowns or self.cooldowns[group] <= t:
+            if not icon in self.cooldowns or self.cooldowns[icon] <= t:
+                return True
+        return False
     def setModes(self, attack, chase, secure):
         self.modes[0] = attack
         self.modes[1] = chase
@@ -448,8 +481,8 @@ class TibiaPlayer(Creature):
                         count = total - itemX.count
                         
                         # Is it a open container, if so, send item update
-                        if container in self.openContainers:
-                            stream.updateContainerItem(self.openContainers.index(container), slot, itemX)
+                        if itemX in self.openContainers:
+                            stream.updateContainerItem(self.openContainers.index(itemX), slot, itemX)
                             
                         if not count:
                             break
