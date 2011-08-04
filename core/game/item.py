@@ -50,10 +50,11 @@ bindconstant.bind_all(Container)
 
 ### Item ###
 class Item(object):
+    attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
-        if "stackable" in items[self.itemId]:
+        if self.stackable:
             self.count = count
         
         
@@ -72,10 +73,14 @@ class Item(object):
         return self.actions
             
     def __getattr__(self, name):
-        if name in items[self.itemId]:
-            return items[self.itemId][name]
-        elif not "__" in name:
-            return None
+        try:
+            attrVal = 1 << self.attributes.index(name)
+            return items[self.itemId]["a"] & attrVal == attrVal
+        except:
+            if name in items[self.itemId]:
+                return items[self.itemId][name]
+            elif not "__" in name:
+                return None
         raise AttributeError, name
         
     def name(self):
@@ -140,7 +145,7 @@ def loadItems():
     global reverseItems
 
     # Async SQL (it's funny isn't it?)
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,solid,blockprojectile,blockpath,usable,pickable,movable,stackable,ontop,hangable,rotatable,animation FROM items"))
+    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items"))
     d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
     yield d
 
@@ -150,9 +155,6 @@ def loadItems():
     # Make two new values while we are loading
     loadItems = {}
     reverseLoadItems = {}
-    
-    # Precache this list:
-    boolKeys = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
 
 
     for item in result:
@@ -160,26 +162,23 @@ def loadItems():
         item["sid"] = int(item["sid"]) # no long
         item["speed"] = int(item["speed"]) # No long
         item["type"] = int(item["type"]) # No long
-        item["subs"] = int(item["subs"]) # No long
+        subs = int(item["subs"]) # No long
+        del item["subs"]
+        if item["plural"] == item["name"] or not item["plural"]:
+            del item["plural"]
+            
         """if not item["speed"]:
             del item["speed"]
         if not item["type"]:
             del item["type"]
         if not item["subs"]:
             del item["subs"] """
-
-        for key in item.copy():
-            if key in boolKeys:
-                if item[key]:
-                    item[key] = True
-                else:
-                    del item[key]
                     
         reverseLoadItems[item["cid"]] = item["sid"]
         
         loadItems[item["sid"]] = item
-        if "subs" in item:
-            for x in xrange(1, item["subs"]+1):
+        if subs:
+            for x in xrange(1, subs+1):
                 reverseLoadItems[item["cid"]+x] = item["sid"]+x
                 loadItems[item["sid"]+x] = item
             

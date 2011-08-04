@@ -26,7 +26,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         from packet import TibiaPacket
         from game.player import TibiaPlayer
-        from game.map import placeCreature
+        from game.map import getTile
         import game.scriptsystem
         
         packet.pos += 1 # Packet Type, we don't really care about it in the first packet
@@ -98,7 +98,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             return
         
         self.player = TibiaPlayer(self, character[0])
-        placeCreature(self.player, self.player.position)
+        getTile(self.player.position).placeCreature(self.player)
         
         self.player.sendFirstPacket()
         

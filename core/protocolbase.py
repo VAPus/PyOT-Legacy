@@ -5,6 +5,7 @@ from twisted.application.service import Service
 from packet import TibiaPacketReader, TibiaPacket
 import config
 import struct
+
 if config.checkAdler32:
     from zlib import adler32
     

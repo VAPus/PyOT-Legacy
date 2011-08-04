@@ -6,9 +6,10 @@ from zlib import adler32
 
 def inThread(f):
     def func(*argc, **argw):
-        reactor.callInThread(f, *argc, **argw)
+        reactor.callFromThread(f, *argc, **argw)
     return func
 class TibiaPacketReader(object):
+    __slots__ = ('length', 'pos', 'data')
     def __init__(self, data):
         self.length = len(data)
         self.pos = 0
@@ -78,6 +79,7 @@ class TibiaPacketReader(object):
         return [self.uint16(), self.uint16(), self.uint8()]
         
 class TibiaPacket(object):
+    __slots__ = ('bytes')
     def __init__(self, header=None):
         self.bytes = []
         if header:
@@ -386,28 +388,32 @@ class TibiaPacket(object):
     def put(self, string):
         self.bytes.append(struct.pack("%ds" % len(string), str(string)))
 
-    @inThread
-    def send(self, stream):
+    #@inThread
+    def send(self, stream, lock=None):
         self.bytes = (''.join(self.bytes),)
 
         if stream.xtea:
             data = otcrypto.encryptXTEA(struct.pack("<H", len(self.bytes[0]))+self.bytes[0], stream.xtea)
         else:
             data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
-        reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
-    
-    @inThread
-    def sendto(self, list):
+        
+        stream.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+        if lock:
+            lock.release()
+    #@inThread
+    def sendto(self, list, lock=None):
         if not list:
             return # Noone to send to
         
         self.bytes = (''.join(self.bytes),)
         dataL = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         lenCache = 0
+        
         for client in list:
-             data = otcrypto.encryptXTEA(dataL, client.xtea)
-             if not lenCache:
-                 lenCache = len(data)+4
+            data = otcrypto.encryptXTEA(dataL, client.xtea)
+            if not lenCache:
+                lenCache = len(data)+4
              
-             
-             reactor.callFromThread(client.transport.write, bytes(struct.pack("<HI", lenCache, adler32(data) & 0xffffffff))+data)
+            client.transport.write(struct.pack("<HI", lenCache, adler32(data) & 0xffffffff)+data)
+        if lock:
+            lock.release()

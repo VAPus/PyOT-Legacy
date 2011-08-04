@@ -29,61 +29,65 @@ def removeCreature(creature, pos):
         return False  
 
 class Tile(object):
-    __slots__ = ('things', 'topItemCount', 'creatureCount')
-    def __init__(self, items, topItemCount=0):
+    __slots__ = ('things', 'itemCount')
+    def __init__(self, items, topItemCount=0, itemLen=1):
         if not topItemCount:
-            workItems = deque(items)
-            self.things = [workItems.popleft()]
-            self.topItemCount = 1
+            self.itemCount = 1
             
-            if workItems:
-                bottomItems = []
-                for item in workItems:
-                    if item.ontop:
-                        self.things.append(item)
-                        self.topItemCount += 1
-                    else:
-                        bottomItems.append(item)
-                        
-                if bottomItems:
-                    self.things.extend(bottomItems)
-   
-            if not "solid" in game.item.items[self.things[0].itemId]:
-                self.creatureCount = 0
+            if itemLen == 1:
+                self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
+            else:
+                workItems = deque(items)
+                self.things = [workItems.popleft()]
+                
+                
+                if workItems:
+                    bottomItems = []
+                    for item in workItems:
+                        if item.ontop:
+                            self.things.append(item)
+                            self.itemCount += 1
+                        else:
+                            bottomItems.append(item)
+                            
+                    if bottomItems:
+                        self.things.extend(bottomItems)
+                    
         else:
             self.things = items
-            self.topItemCount= topItemCount
-            self.creatureCount = 0
+            self.itemCount = topItemCount
              
     def placeCreature(self, creature):
-        self.things.insert(self.topItemCount, creature)
-        self.creatureCount += 1
-        return self.topItemCount
+        pos = self.itemCount & 0x0F
+        self.things.insert(pos, creature)
+        self.itemCount += 1 << 4
+        return pos
         
     def removeCreature(self,creature):
-        self.creatureCount -= 1
+        self.itemCount -= 1 << 4
         return self.things.remove(creature)
         
     def placeItem(self, item):
-        self.things.insert(self.topItemCount+self.creatureCount, item)
-        return self.topItemCount+self.creatureCount
+        pos = (self.itemCount >> 4) + self.itemCount & 0x0F
+        self.things.insert(pos, item)
+        return pos
     
     def placeItemEnd(self, item):
         self.things.append(item)
         return len(self.things)-1
         
     def bottomItems(self):
-        return self.things[self.topItemCount+self.creatureCount:]
+        return self.things[(self.itemCount >> 4) + self.itemCount & 0x0F:]
         
     def topItems(self):
-        return self.things[:self.topItemCount]
+        return self.things[:self.itemCount & 0x0F]
 
     def getItems(self):
         items = self.topItems()[:]
         items.extend(self.bottomItems())
         return items
     def creatures(self):
-        return self.things[self.topItemCount:self.topItemCount+self.creatureCount]
+        return self.things[self.itemCount & 0x0F:(self.itemCount >> 4) + self.itemCount & 0x0F]
         
     def removeItem(self, item):
         return self.things.remove(item)
@@ -99,7 +103,7 @@ class Tile(object):
     
     def removeClientCreature(self, stackpos=None):
         if stackpos and self.things[stackpos]:
-            self.creatureCount -= 1
+            self.creatureCount -= 1 << 4
             return self.things.pop(stackpos)  
             
     def placeClientItem(self, cid):
@@ -196,7 +200,7 @@ def I(itemId, **kwargs):
         return item
     
 def T(*args):
-    return Tile(args)
+    return Tile(args, itemLen=len(args))
 
 T = bindconstant._make_constants(T)
 
@@ -262,15 +266,15 @@ def load(sectorX, sectorY):
                 
             for tile in x:
                 if tile:
-                    if "solid" in localItems[tile.things[0].itemId]:
+                    if localItems[tile.things[0].itemId]["a"] & 1:
                         currX[yPos] = tile
                     else:
-                        currX[yPos] = Tile(tile.things[:], tile.topItemCount)
+                        currX[yPos] = Tile(tile.things[:], tile.itemCount)
                     
                 yPos += 1    
             
             xPos += 1
-    
+
     if l:    
         threads.deferToThread(l)
         

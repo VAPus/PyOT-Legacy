@@ -50,30 +50,30 @@ def loader(timer):
     d.addCallback(mapLoader, timer)
     d.addCallback(printer, timer)
 
+# Useful for windows
+def safeCallLater(sec, *args):
+    reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
+    
 # The action decorator :)
 def action(forced=False, delay=0):
     def decor(f):
         def new_f(creature, *args, **argw):
-            creature.actionLock.acquire()
-            if creature.action and forced: # + forced
+            if creature.action and forced:
                 creature.action.cancel()
-            elif creature.action and creature.action.active():
-                # This will bug
-                #creature.action.addCallback(f, creature, *args, **argw)
-                creature.action.cancel()
-            #else:
-            f(creature, *args, **argw)
-                
-            # (forced actions are released first when their done
-            if not forced:
-                creature.actionLock.release()
+            elif not forced and creature.action and creature.action.active():
+                safecallLater(0, new_f, *args, **argw)
+            elif delay:
+                safeCallLater(delay, f, *args, **argw)
+            else:
+                f(creature, *args, **argw)
+
         return new_f
     return decor
     
 # First order of buisness, the autoWalker
 @action()
 def autoWalkCreature(creature, walkPatterns, callback=None): 
-    creature.action = reactor.callLater(0, handleAutoWalking, creature, walkPatterns, callback)
+    creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
@@ -81,7 +81,8 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
-        
+
+@action()
 def handleAutoWalking(creature, walkPatterns, callback=None):
     if not walkPatterns:
         return
@@ -89,14 +90,12 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
     direction = walkPatterns.popleft()
     ret = creature.move(direction)
     if ret and len(walkPatterns):
-        creature.actionLock.acquire()
-        creature.action = reactor.callLater(math.ceil(creature.stepDuration(game.map.getTile(creature.position).getThing(0)) * 100) / 100, handleAutoWalking, creature, walkPatterns, callback)
-        creature.actionLock.release()
+        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
     else:
         creature.action = None
         
     if callback and ret and not len(walkPatterns):    
-        reactor.callLater(0, callback)
+        safeCallback(0, callback)
 
 # Calculate walk patterns
 def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):

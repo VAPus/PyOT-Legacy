@@ -581,7 +581,7 @@ class TibiaPlayer(Creature):
                     self.notPossible()
                     return
                     
-                if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                if oldItem[1].stackable and count < 100:
                     renew = True
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
@@ -604,7 +604,7 @@ class TibiaPlayer(Creature):
                     self.notPossible()
                     return
                     
-                if "stackable" in game.item.items[sid(clientId)] and count < 100:
+                if oldItem[1].stackable and count < 100:
                     renew = True
                     oldItem[1].reduceCount(count)
                     if oldItem[1].count:
@@ -638,7 +638,7 @@ class TibiaPlayer(Creature):
                 else:
                     newItem = oldItem[1]
                 findItem = game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
-                if findItem and "stackable" in game.item.items[sid(clientId)] and count < 100 and findItem[1].count + count <= 100:
+                if findItem and newItem.stackable and count < 100 and findItem[1].count + count <= 100:
                     newItem.count += findItem[1].count
                     stream.removeTileItem(toPosition, findItem[0])
                     game.map.getTile(toPosition).removeItem(findItem[1])
@@ -660,7 +660,7 @@ class TibiaPlayer(Creature):
                 else:
                     stream = TibiaPacket()
                     if toPosition[1] < 64:
-                        if "stackable" in game.item.items[sid(clientId)] and self.inventory[toPosition[1]-1] and self.inventory[toPosition[1]-1].itemId == sid(clientId) and (self.inventory[toPosition[1]-1].count + count <= 100):
+                        if oldItem[1].stackable and self.inventory[toPosition[1]-1] and self.inventory[toPosition[1]-1].itemId == sid(clientId) and (self.inventory[toPosition[1]-1].count + count <= 100):
                             self.inventory[toPosition[1]-1].count += count
                         else:       
                             self.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]

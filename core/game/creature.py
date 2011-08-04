@@ -1,7 +1,7 @@
 from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
-import thread
+import threading
 import game.enum as enum
 import config
 import time
@@ -19,7 +19,7 @@ def __uid():
         yield idsTaken
         
 __uniqueId = __uid().next
-__uniqueLock = thread.allocate_lock()
+__uniqueLock = threading.Lock()
 def uniqueId():
     __uniqueLock.acquire()
     id = __uniqueId()
@@ -67,7 +67,7 @@ class Creature(object):
         self.mounted = 0
         self.addon = 0
         self.action = None
-        self.actionLock = thread.allocate_lock()
+        self.actionLock = threading.Lock()
         self.lastStep = 0
         self.target = None # target for follow/attacks based on modes
         self.vars = {}
@@ -90,10 +90,10 @@ class Creature(object):
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
-    def stepDuration(self, ground):
-        if time.time() - self.lastStep < 1.5:
-            return (ground.speed / self.speed)
-        return 1.5
+    def stepDuration(self, ground, delay=1.5):
+        if time.time() - self.lastStep < delay:
+            return ground.speed / self.speed
+        return delay
 
     def notPossible(self):
         # Needs to be overrided in player
@@ -107,103 +107,117 @@ class Creature(object):
         self.direction = direction
         
         
+        oldPosition = self.position[:]
         
         # Recalculate position
-        position = self.position[:] # Important not to remove the : here, we don't want a reference!
+        position = oldPosition[:] # Important not to remove the : here, we don't want a reference!
         if direction == 0:
-            position[1] = self.position[1] - 1
+            position[1] = oldPosition[1] - 1
         elif direction == 1:
-            position[0] = self.position[0] + 1
+            position[0] = oldPosition[0] + 1
         elif direction == 2:
-            position[1] = self.position[1] + 1
+            position[1] = oldPosition[1] + 1
         elif direction == 3:
-            position[0] = self.position[0] - 1
+            position[0] = oldPosition[0] - 1
         elif direction == 4:
-            position[1] = self.position[1] + 1
-            position[0] = self.position[0] - 1
+            position[1] = oldPosition[1] + 1
+            position[0] = oldPosition[0] - 1
         elif direction == 5:
-            position[1] = self.position[1] + 1
-            position[0] = self.position[0] + 1
+            position[1] = oldPosition[1] + 1
+            position[0] = oldPosition[0] + 1
         elif direction == 6:
-            position[1] = self.position[1] - 1
-            position[0] = self.position[0] - 1
+            position[1] = oldPosition[1] - 1
+            position[0] = oldPosition[0] - 1
         elif direction == 7:
-            position[1] = self.position[1] - 1
-            position[0] = self.position[0] + 1
+            position[1] = oldPosition[1] - 1
+            position[0] = oldPosition[0] + 1
 
-        position[2] = self.position[2] + level
-            
+        position[2] = oldPosition[2] + level
+
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
            return False
                     
         # New Tile
         newTile = getTile(position)
-        oldTile = getTile(self.position)
-        
+        oldTile = getTile(oldPosition)
+
+        oldStackpos = oldTile.findCreatureStackpos(self)
+
             
         if newTile.getThing(0).solid:
             self.notPossible()
-            self.actionLock.release()
             raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
+            return False
             
         if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
-            self.actionLock.release()
-            raise game.errors.ImpossibleMove  
+            raise game.errors.ImpossibleMove
+            return False
         
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
             self.actionLock.release()
             raise game.errors.Cheat("Stepping too fast!")
+            return False
             
         else:
             self.lastStep = time.time()
-            
+        
+        self.lastStep = time.time()
 
 
-        oldStackpos = getTile(self.position).findCreatureStackpos(self)
+        
 
+        
         # Make packet
-        if self.position[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
+        if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
-            stream.position(self.position)
+            stream.position(oldPosition)
             stream.uint8(oldStackpos)
             stream.position(position)   
         else:
             stream = TibiaPacket()
-            stream.removeTileItem(self.position, oldStackpos)
+            stream.removeTileItem(oldPosition, oldStackpos)
                 
 
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, item, self.position)
+            game.scriptsystem.get('walkOff').runSync(item, self, None, item, oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
             game.scriptsystem.get('preWalkOn').runSync(item, self, None, item, oldTile, newTile, position)
-
-        removeCreature(self, self.position)
-        placeCreature(self, position)
             
-        oldPosition = self.position[:]
+            
+        newStackPos = newTile.placeCreature(self)
+
+        if not newStackPos:
+            raise game.errors.ImpossibleMove
+            return False
+            
+        oldTile.removeCreature(self)
+        
+            
+        
         self.position = position
                 
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
-            
+
         for spectator in spectators:
             streamX = stream
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
+
             if spectator.player == self:
                 streamX = copy.copy(stream)
-                    
-                if oldPosition[2] > self.position[2]:
+                
+                if oldPosition[2] > oldPosition[2]:
                     streamX.moveUpPlayer(self, oldPosition)
                         
-                elif oldPosition[2] < self.position[2]:
+                elif oldPosition[2] < oldPosition[2]:
                     streamX.moveDownPlayer(self, oldPosition)
                         
                 if direction < 4:
@@ -237,7 +251,7 @@ class Creature(object):
                 script(self)
                 self.scripts["onNextStep"].remove(script)
                 
-        self.actionLock.release()        
+               
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
@@ -247,7 +261,7 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
-        
+        self.actionLock.release()
         return True # Required for auto walkings
 
     def magicEffect(self, pos, type):
@@ -379,6 +393,30 @@ class Creature(object):
         
     def inRange(self, position, x, y, z=0):
         return ( abs(self.position[0]-position[0]) <= x and abs(self.position[1]-position[1]) <= y and abs(self.position[2]-position[2]) <= y )   
+    
+    def positionInDirection(self, direction):
+        position = self.position[:] # Important not to remove the : here, we don't want a reference!
+        if direction == 0:
+            position[1] = self.position[1] - 1
+        elif direction == 1:
+            position[0] = self.position[0] + 1
+        elif direction == 2:
+            position[1] = self.position[1] + 1
+        elif direction == 3:
+            position[0] = self.position[0] - 1
+        elif direction == 4:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] - 1
+        elif direction == 5:
+            position[1] = self.position[1] + 1
+            position[0] = self.position[0] + 1
+        elif direction == 6:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] - 1
+        elif direction == 7:
+            position[1] = self.position[1] - 1
+            position[0] = self.position[0] + 1
+        return position
         
     def setVar(self, name, value=None):
         try:
