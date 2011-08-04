@@ -226,14 +226,16 @@ def loadTiles(x,y, walk=True):
     load(sectorX, sectorY)
     
 def load(sectorX, sectorY):
-    global V # Should really be avioided
+    
     sectorSum = (sectorX << 15) + sectorY
-    if sectorSum in sectors or (sectorX*data.map.info.sectorSize[0] > data.map.info.height-1 or sectorY*data.map.info.sectorSize[1] > data.map.info.width-1):
+    ybase = sectorY*data.map.info.sectorSize[1]
+    xbase = sectorX*data.map.info.sectorSize[0]
+    if sectorSum in sectors or (ybase > data.map.info.height-1 or xbase > data.map.info.width-1):
         return False
         
-        
+       
     sectors.append(sectorSum)
-
+    global V # Should really be avioided 
     if not V:
         V = Tile((I(100),), 1)
           
@@ -250,44 +252,39 @@ def load(sectorX, sectorY):
         marshal.dump(compiled, open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb'), 2)
         exec(compiled)
     
-    currZ = None
-    currX = None
     localItems = game.item.items # Prevent a bit of a lookup
-    for z in m:
-        xPos = (sectorX*32)
+    
+    for z,mz in m.iteritems():
         try:
             currZ = knownMap[z]
         except:
             knownMap[z] = {}
             currZ = knownMap[z]
             
-        for x in m[z]:
-            yPos = sectorY*32
+        for i,x in enumerate(mz):
             try:
-                currX = currZ[xPos]
+                currX = currZ[xbase+i]
             except:
                 currZ[xPos] = {}
-                currX = currZ[xPos]
+                currX = currZ[xbase+i]
                 
-            for tile in x:
+            for y,tile in enumerate(x):
                 if tile:
                     if localItems[tile.things[0].itemId]["a"] & 1:
-                        currX[yPos] = tile
+                        currX[ybase+y] = tile
                     else:
-                        currX[yPos] = Tile(tile.things[:], tile.itemCount)
-                    
-                yPos += 1    
+                        currX[ybase+y] = Tile(tile.things[:], tile.itemCount)
+                       
             
-            xPos += 1
 
     if l:    
         threads.deferToThread(l)
         
     # Do callbacks
-    m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))
+    """m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))
     if m in callbacks:
         for func in callbacks[m]:
-            func()
+            func()"""
 
     return True
 def unload(sectorX, sectorY):
