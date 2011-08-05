@@ -3,7 +3,7 @@ import game.monster
 ghoulish_hyaena = game.monster.genMonster("Ghoulish Hyaena", (94, 6026), "a ghoulish hyaena")
 ghoulish_hyaena.setHealth(400)
 ghoulish_hyaena.bloodType(color="blood")
-ghoulish_hyaena.setDefense(10, armor=10, fire=1, earth=0.3, energy=1, ice=1, holy=1, death=0, physical=1, drown=1)
+ghoulish_hyaena.setDefense(armor=10, fire=1, earth=0.3, energy=1, ice=1, holy=1, death=0, physical=1, drown=1)
 ghoulish_hyaena.setExperience(195)
 ghoulish_hyaena.setSpeed(240)#unknown speed
 ghoulish_hyaena.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=30)

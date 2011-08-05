@@ -3,7 +3,7 @@ import game.monster
 mummy = game.monster.genMonster("Mummy", (65, 6004), "a mummy")
 mummy.setHealth(240)
 mummy.bloodType(color="undead")
-mummy.setDefense(20, armor=14, fire=1, earth=1, energy=1, ice=0.8, holy=1.25, death=1, physical=1, drown=1)
+mummy.setDefense(armor=20, fire=1, earth=1, energy=1, ice=0.8, holy=1.25, death=1, physical=1, drown=1)
 mummy.setExperience(150)
 mummy.setSpeed(220)
 mummy.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)
