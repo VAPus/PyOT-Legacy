@@ -1,6 +1,6 @@
 import game.monster
 
-Pig = game.monster.genMonster("Pig", (60, 6000), "a Pig")
+Pig = game.monster.genMonster("Pig", (60, 6000), "a pig")
 Pig.setTargetChance(0)
 Pig.bloodType("blood")
 Pig.setHealth(25)

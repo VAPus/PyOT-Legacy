@@ -1,7 +1,7 @@
 import game.monster
 
 bug = game.monster.genMonster("Bug", (45, 5990), "a bug")
-bug.bloodType("venom")
+bug.bloodType("slime")
 bug.setHealth(29)
 bug.setExperience(18)
 bug.setTargetChance(10)

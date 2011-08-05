@@ -1,9 +1,9 @@
 import game.monster
 
-Green_Frog = game.monster.genMonster("Green Frog", (224, 6079), "a Green Frog")
+Green_Frog = game.monster.genMonster("Green Frog", (224, 6079), "a green frog")
 Green_Frog.setOutfit(69, 66, 69, 66)
 Green_Frog.setTargetChance(10)
-Green_Frog.bloodType("venom")
+Green_Frog.bloodType("slime")
 Green_Frog.setHealth(25)
 Green_Frog.setExperience(0)
 Green_Frog.setSpeed(200) #incorrect

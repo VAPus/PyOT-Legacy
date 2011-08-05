@@ -1,6 +1,6 @@
 import game.monster
 
-Tiger = game.monster.genMonster("Tiger", (125, 051), "a Tiger")
+Tiger = game.monster.genMonster("Tiger", (125, 051), "a tiger")
 Tiger.setTargetChance(10)
 Tiger.bloodType("blood")
 Tiger.setHealth(75)

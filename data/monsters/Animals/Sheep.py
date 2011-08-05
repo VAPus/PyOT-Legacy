@@ -1,6 +1,6 @@
 import game.monster
 
-Sheep = game.monster.genMonster("Sheep", (14, 5991), "a Sheep")
+Sheep = game.monster.genMonster("Sheep", (14, 5991), "a sheep")
 Sheep.setTargetChance(0)
 Sheep.bloodType("blood")
 Sheep.setHealth(20)

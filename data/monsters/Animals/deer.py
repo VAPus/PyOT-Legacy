@@ -1,6 +1,6 @@
 import game.monster
 
-Deer = game.monster.genMonster("Deer", (31, 5970), "a Deer")
+Deer = game.monster.genMonster("Deer", (31, 5970), "a deer")
 Deer.setTargetChance(10)
 Deer.bloodType("blood")
 Deer.setHealth(25)

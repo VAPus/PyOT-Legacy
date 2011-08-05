@@ -1,7 +1,7 @@
 import game.monster
 
 brimstone_bug = game.monster.genMonster("brimstone bug", (352, 12527), "a brimstone bug")
-brimstone_bug.bloodType("venom")
+brimstone_bug.bloodType("slime")
 brimstone_bug.setHealth(1300)
 brimstone_bug.setExperience(900)
 brimstone_bug.setTargetChance(10)

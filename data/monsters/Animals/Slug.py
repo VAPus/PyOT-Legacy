@@ -1,6 +1,6 @@
 import game.monster
  # bad
-Slug = game.monster.genMonster("Slug", (407, 6079), "a Slug") # not right yet
+Slug = game.monster.genMonster("Slug", (407, 6079), "a slug") # not right yet
 Slug.setTargetChance(10)
 Slug.bloodType("blood")
 Slug.setHealth(255)

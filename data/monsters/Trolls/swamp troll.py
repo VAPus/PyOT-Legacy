@@ -2,7 +2,7 @@ import game.monster
 
 swamp_troll = game.monster.genMonster("Swamp Troll", (76, 6018), "a swamp troll")
 swamp_troll.setHealth(55)
-swamp_troll.bloodType(color="venom")
+swamp_troll.bloodType(color="slime")
 swamp_troll.setDefense(armor=6, fire=1.05, earth=0.85, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 swamp_troll.setExperience(65)
 swamp_troll.setSpeed(128)

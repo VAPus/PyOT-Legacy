@@ -2,7 +2,7 @@ import game.monster
 
 cockroach = game.monster.genMonster("cockroach", (284, 8593), "a cockroach")
 cockroach.setTargetChance(0)
-cockroach.bloodType("venom")
+cockroach.bloodType("slime")
 cockroach.setHealth(1)
 cockroach.setExperience(0)
 cockroach.setSpeed(200) #incorrect

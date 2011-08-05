@@ -1,6 +1,6 @@
 import game.monster
 
-Tortoise = game.monster.genMonster("Tortoise", (197, 6072), "a Tortoise")
+Tortoise = game.monster.genMonster("Tortoise", (197, 6072), "a tortoise")
 Tortoise.setTargetChance(0)
 Tortoise.bloodType("blood")
 Tortoise.setHealth(185)
