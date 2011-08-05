@@ -1,5 +1,5 @@
 import game.monster
-<-- Werewolf -->
+
 Werewolf = game.monster.genMonster("Werewolf", (308, 6080), "a Werewolf")
 Werewolf.setTargetChance(10)
 Werewolf.bloodType("blood")

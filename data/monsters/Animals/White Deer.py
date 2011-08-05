@@ -1,5 +1,5 @@
 import game.monster
-<-- White_Deer -->
+
 White_Deer = game.monster.genMonster("White Deer", (400, 6079), "a White Deer") # uknown yet
 White_Deer.setTargetChance(10)
 White_Deer.bloodType("blood")

@@ -1,5 +1,5 @@
 import game.monster
-<-- Flamingo -->
+
 Flamingo = game.monster.genMonster("Flamingo", (212, 6054), "a Flamingo")
 Flamingo.setTargetChance(10)
 Flamingo.bloodType("blood")

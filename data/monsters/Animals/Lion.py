@@ -1,5 +1,5 @@
 import game.monster
-<-- Lion -->
+
 Lion = game.monster.genMonster("Lion", (41, 5986), "a Lion")
 Lion.setTargetChance(10)
 Lion.bloodType("blood")

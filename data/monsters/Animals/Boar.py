@@ -1,5 +1,5 @@
 import game.monster
-<-- boar -->
+
 boar = game.monster.genMonster("boar", (380, 13239), "a boar")
 boar.bloodType("blood")
 boar.setHealth(198)

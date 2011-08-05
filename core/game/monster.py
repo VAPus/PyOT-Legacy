@@ -120,13 +120,11 @@ class MonsterBase(CreatureBase):
 
 class MonsterBrain(object):
     def beginThink(self, monster):
-        monster.actionThink = LoopingCall(self.handleThink, monster)
-        monster.actionThink.start(2, False) # Run handleThink every 2second
+        self.handleThink(monster)
         if monster.base.voiceslist:
-            monster.actionTalk = LoopingCall(self.handleTalk, monster)
-            monster.actionTalk.start(2, False) # Run handleTalk every 2second
+            self.handleTalk(monster)
 
-    
+    @game.engine.loopInThread(2)
     def handleThink(self, monster):
         # Walking
         if monster.target: # We need a target for this code check to run
@@ -180,6 +178,7 @@ class MonsterBrain(object):
         if not monster.action and time.time() - monster.lastStep > 3: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
+    @game.engine.loopInThread(2)        
     def handleTalk(self, monster):
         if 10 > random.randint(0, 100): # 10%
             # Find a random text

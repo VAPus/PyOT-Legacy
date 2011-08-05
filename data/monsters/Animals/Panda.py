@@ -1,5 +1,5 @@
 import game.monster
-<-- Panda -->
+
 Panda = game.monster.genMonster("Panda", (123, 6049), "a Panda")
 Panda.setTargetChance(10)
 Panda.bloodType("blood")

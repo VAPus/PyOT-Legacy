@@ -1,5 +1,5 @@
 import game.monster
-<-- Terror_Bird -->
+
 Terror_Bird = game.monster.genMonster("Terror Bird", (218, 6057), "a Terror Bird")
 Terror_Bird.setTargetChance(10)
 Terror_Bird.bloodType("blood")

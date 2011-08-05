@@ -1,5 +1,5 @@
 import game.monster
-<-- bat -->
+
 bat = game.monster.genMonster("bat", (122, 6053), "a bat")
 bat.bloodType("blood")
 bat.setHealth(30)

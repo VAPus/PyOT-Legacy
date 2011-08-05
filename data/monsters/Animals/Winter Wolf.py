@@ -1,5 +1,5 @@
 import game.monster
-<-- Winter_Wolf -->
+
 Winter_Wolf = game.monster.genMonster("Winter Wolf", (52, 5997), "a Winter Wolf")
 Winter_Wolf.setTargetChance(0)
 Winter_Wolf.bloodType("blood")

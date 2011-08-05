@@ -1,5 +1,5 @@
 import game.monster
-<-- Badger -->
+
 Badger = game.monster.genMonster("Badger", (105, 6034), "a Badger")
 Badger.bloodType("blood")
 Badger.setHealth(23)

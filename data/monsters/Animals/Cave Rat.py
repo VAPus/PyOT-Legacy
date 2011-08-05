@@ -1,5 +1,5 @@
 import game.monster
-<-- cave rat -->
+
 cave_rat = game.monster.genMonster("cave rat", (56, 5964), "a cave rat")
 cave_rat.bloodType("blood")
 cave_rat.setHealth(30)

@@ -1,5 +1,5 @@
 import game.monster
-<-- crab -->
+
 crab = game.monster.genMonster("crab", (112, 6039), "a crab")
 crab.setTargetChance(10)
 crab.bloodType("blood")

@@ -208,8 +208,14 @@ modPool = []
 
 def handleModule(name):
     global modPool
-    modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
-    
+    try:
+        modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+    except:
+        import traceback
+        t = traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+        if t:
+            print t
+        return
     for module in modules.__all__:
         try:
             if not module == "__init__":
@@ -218,10 +224,12 @@ def handleModule(name):
             pass
     
     try:
-        for subModule in modules.__paths__:
-            handleModule("%s.%s" % (name, subModule))
+        modules.paths
     except:
         pass
+    else:
+        for subModule in modules.paths:
+            handleModule("%s.%s" % (name, subModule))
     
     modPool.append((name, modules))
         

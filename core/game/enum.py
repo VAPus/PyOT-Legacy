@@ -85,6 +85,7 @@ FLUID_WHITE                     = 0x06
 FLUID_PURPLE                    = 0x07
 
 FLUID_NONE                      = FLUID_EMPTY
+FLUID_UNDEAD                      = FLUID_EMPTY
 FLUID_WATER                     = FLUID_BLUE
 FLUID_BLOOD                     = FLUID_RED
 FLUID_BEER                      = FLUID_BROWN

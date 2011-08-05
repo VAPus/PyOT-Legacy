@@ -1,5 +1,5 @@
 import game.monster
-<-- Stampor -->
+
 Stampor = game.monster.genMonster("Stampor", (381, 13246), "a Stampor")
 Stampor.setTargetChance(10)
 Stampor.bloodType("blood")

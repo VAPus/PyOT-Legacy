@@ -1,5 +1,5 @@
 import game.monster
-<-- Toad -->
+
 Toad = game.monster.genMonster("Toad", (222, 6077), "a Toad")
 Toad.setTargetChance(10)
 Toad.bloodType("blood")

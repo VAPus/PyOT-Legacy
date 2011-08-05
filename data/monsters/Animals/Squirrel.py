@@ -1,5 +1,5 @@
 import game.monster
-<-- Squirrel -->
+
 Squirrel = game.monster.genMonster("Squirrel", (274, 7628), "a Squirrel")
 Squirrel.setTargetChance(0)
 Squirrel.bloodType("blood")

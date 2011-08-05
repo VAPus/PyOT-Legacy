@@ -11,10 +11,10 @@ for mod in glob.glob("data/monsters/*.py"):
     __all__.append(modm)
     
 #Our own kind of scriptsystem use this
-__paths__ = []
+paths = []
 for mod in glob.glob("data/monsters/*/__init__.py"):
     modm = mod.split(os.sep)[-2]
     if modm == "." or modm == "..":
         continue
 
-    __paths__.append(modm)
+    paths.append(modm)

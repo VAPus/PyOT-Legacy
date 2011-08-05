@@ -1,5 +1,5 @@
 import game.monster
-<-- Silver_Rabbit -->
+
 Silver_Rabbit = game.monster.genMonster("Silver Rabbit", (252, 7338), "a Silver Rabbit")
 Silver_Rabbit.setTargetChance(10)
 Silver_Rabbit.bloodType("blood")

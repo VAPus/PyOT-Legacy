@@ -1,5 +1,5 @@
 import game.monster
-<-- Rat -->
+
 Rat = game.monster.genMonster("Rat", (21, 5964), "a Rat")
 Rat.setTargetChance(10)
 Rat.bloodType("blood")

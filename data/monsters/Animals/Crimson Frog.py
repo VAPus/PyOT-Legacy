@@ -1,5 +1,5 @@
 import game.monster
-<-- crimson_frog -->
+
 crimson_frog = game.monster.genMonster("crimson frog", (226, 6079), "a crimson frog")
 crimson_frog.setOutfit(94, 78, 94, 78)
 crimson_frog.setTargetChance(10)

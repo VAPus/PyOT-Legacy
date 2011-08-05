@@ -1,5 +1,5 @@
 import game.monster
-<-- Pig -->
+
 Pig = game.monster.genMonster("Pig", (60, 6000), "a Pig")
 Pig.setTargetChance(0)
 Pig.bloodType("blood")

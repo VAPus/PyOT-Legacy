@@ -1,5 +1,5 @@
 import game.monster
-<-- Penguin -->
+
 Penguin = game.monster.genMonster("Penguin", (250, 7334), "a Penguin")
 Penguin.setTargetChance(0)
 Penguin.bloodType("blood")

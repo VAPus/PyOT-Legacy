@@ -1,5 +1,5 @@
 import game.monster
-<-- coral frog -->
+
 coral frog = game.monster.genMonster("coral frog", (226, 6079), "a coral frog")
 coral_Frog.setOutfit(69, 66, 69, 66)
 coral frog.setTargetChance(10)

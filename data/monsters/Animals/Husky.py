@@ -1,5 +1,5 @@
 import game.monster
-<-- Husky -->
+
 Husky = game.monster.genMonster("Husky", (258, 7316), "a Husky")
 Husky.setTargetChance(10)
 Husky.bloodType("blood")

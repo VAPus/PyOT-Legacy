@@ -1,5 +1,5 @@
 import game.monster
-<-- Orchid_Frog -->
+
 Orchid_Frog = game.monster.genMonster("Orchid Frog", (226, 6079), "a Orchid Frog")
 Orchid_Frog.setOutfit(109, 14, 109, 114)
 Orchid_Frog.setTargetChance(10)

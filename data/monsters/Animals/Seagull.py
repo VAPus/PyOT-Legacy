@@ -1,5 +1,5 @@
 import game.monster
-<-- Seagull -->
+
 Seagull = game.monster.genMonster("Seagull", (223, 6076), "a Seagull")
 Seagull.setTargetChance(0)
 Seagull.bloodType("blood")

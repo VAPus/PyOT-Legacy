@@ -1,5 +1,5 @@
 import game.monster
-<-- Hyaena -->
+
 Hyaena = game.monster.genMonster("Hyaena", (94, 6026), "a Hyaena")
 Hyaena.setTargetChance(10)
 Hyaena.bloodType("blood")

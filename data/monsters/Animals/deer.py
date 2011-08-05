@@ -1,5 +1,6 @@
 import game.monster
-<-- Deer -->
+
+print "Hello world"
 Deer = game.monster.genMonster("Deer", (31, 5970), "a Deer")
 Deer.setTargetChance(10)
 Deer.bloodType("blood")

@@ -1,5 +1,5 @@
 import game.monster
-<-- Gnarlhound -->
+
 Gnarlhound = game.monster.genMonster("Gnarlhound", (341, 11250), "a Gnarlhound")
 Gnarlhound.setTargetChance(10)
 Gnarlhound.bloodType("blood")

@@ -1,5 +1,5 @@
 import game.monster
-<-- blood crab -->
+
 blood_crab = game.monster.genMonster("blood crab", (200, 6075), "a blood crab")
 blood_crab.bloodType("blood")
 blood_crab.setHealth(290)

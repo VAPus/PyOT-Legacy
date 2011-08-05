@@ -37,15 +37,13 @@ def loader(timer):
                     retOld = ret  
                     
                 log.msg("Loaded entier map in %f" % (time.time() - begin))
-    # This is called once we are done with all loading, we got to use deferred on all future rutines too
+    # This is called once we are done with all deferred loading
     def printer(d, timer):
-        log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
-        
-    def loadScripts():
         from game.scriptsystem import importer
         importer()
+        log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
-    threads.deferToThread(loadScripts)
+        
     
     d.addCallback(mapLoader, timer)
     d.addCallback(printer, timer)
@@ -69,7 +67,15 @@ def action(forced=False, delay=0):
 
         return new_f
     return decor
-    
+
+def loopInThread(time):
+    def decor(f):
+        def new_f(*args, **kwargs):
+            f(*args, **kwargs)
+            safeCallLater(time, reactor.callInThread, f, *args, **kwargs)
+            
+        return new_f
+    return decor
 # First order of buisness, the autoWalker
 @action()
 def autoWalkCreature(creature, walkPatterns, callback=None): 

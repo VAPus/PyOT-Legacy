@@ -1,5 +1,5 @@
 import game.monster
-<-- Elephant -->
+
 Elephant = game.monster.genMonster("Elephant", (211, 6052), "a Elephant")
 Elephant.setTargetChance(10)
 Elephant.bloodType("blood")
