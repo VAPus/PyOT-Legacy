@@ -390,7 +390,7 @@ class TibiaPacket(object):
 
     @inThread
     def send(self, stream, lock=None):
-        self.bytes = (''.join(self.bytes),)
+        self.bytes = [''.join(self.bytes)]
 
         if stream.xtea:
             data = otcrypto.encryptXTEA(struct.pack("<H", len(self.bytes[0]))+self.bytes[0], stream.xtea)
@@ -405,7 +405,7 @@ class TibiaPacket(object):
         if not list:
             return # Noone to send to
         
-        self.bytes = (''.join(self.bytes),)
+        self.bytes = [''.join(self.bytes)]
         dataL = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         lenCache = 0
         
