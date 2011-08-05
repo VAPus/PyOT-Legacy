@@ -106,7 +106,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
             import data.map.info
             import game.map
             self.player.position = data.map.info.towns[1][1]
-            print game.map.knownMap[self.player.position[2]][self.player.position[0]][self.player.position[1]].things[0].itemId
             getTile(self.player.position).placeCreature(self.player)
             
         self.player.sendFirstPacket()

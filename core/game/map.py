@@ -150,7 +150,12 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 import data.map.info
 dummyItems = {} 
 
-knownMap = tuple([{} for _ in xrange(0, data.map.info.levels[0])])
+if config.useNumpy:
+    from numpy import empty
+    knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
+    
+else:
+    knownMap = tuple([{} for _ in xrange(0, data.map.info.levels[0])])
 sectors = []
 
 
@@ -209,7 +214,9 @@ T = bindconstant._make_constants(T)
 
 global V
 V = None
-        
+
+if config.stackTiles:
+    dummyTiles = {}
 def loadTiles(x,y, walk=True):
     if x < 0 or y < 0:
         return None
@@ -263,10 +270,19 @@ def load(sectorX, sectorY):
             for y,tile in enumerate(x):
                 if tile:
                     if localItems[tile.things[0].itemId]["a"] & 1:
-                        currX[ybase+y] = tile
+                        if config.stackTiles:
+                            code = 0
+                            por = 0
+                            for item in tile.things:
+                                code += item.itemId << por
+                                por += 14
+                            if not code in dummyTiles:
+                                dummyTiles[code] = tile
+                            currX[ybase+y] = dummyTiles[code]
+                        else:
+                            currX[ybase+y] = tile
                     else:
-                        currX[ybase+y] = Tile(tile.things[:], tile.itemCount)
-                       
+                        currX[ybase+y] = Tile(tile.things[:], tile.itemCount)                  
             
 
     if l:    
