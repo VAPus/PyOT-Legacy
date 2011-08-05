@@ -10,7 +10,11 @@ import config
 
 def getTile(pos):
     try:
-        return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
+        t = knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
+        if t:
+            return t
+        else:
+            raise
     except:
         loadTiles(pos[0] - (7-pos[2]), pos[1])
         try:
@@ -150,10 +154,7 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 import data.map.info
 dummyItems = {}
 
-if config.preAllocateMap or config.loadEntierMap:    
-    knownMap = (([None]*data.map.info.height,)*data.map.info.width,)*data.map.info.levels[0]
-else:
-    knownMap = {}
+knownMap = {}
 sectors = []
 
 

@@ -61,7 +61,7 @@ class MonsterBase(CreatureBase):
         return self
 
     def bloodType(self, color="blood"):
-        self.blood = getattr(game.enum, 'FLUID_'+color.upper())
+        self.blood = color #getattr(game.enum, 'FLUID_'+color.upper())
 
     def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
         self.data["lookhead"] = lookhead

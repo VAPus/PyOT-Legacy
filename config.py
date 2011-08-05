@@ -45,8 +45,7 @@ maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
-preAllocateMap = False # If you intend to have a big piece of the map (let say 25%) loaded, then this is something you want to enable. Autoenabled when using loadEntierMap
-loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
+loadEntierMap = True # Load all the sectors, useful for debug and benchmarking
 
 sayRange = (10,8)
 yellRange = (18, 14)

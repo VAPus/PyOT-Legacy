@@ -4,6 +4,7 @@ from twisted.internet.defer import deferredGenerator, waitForDeferred
 from twisted.python import log
 import config
 import hashlib
+import otcrypto
 
 class GameProtocol(protocolbase.TibiaProtocol):
 
@@ -98,8 +99,16 @@ class GameProtocol(protocolbase.TibiaProtocol):
             return
         
         self.player = TibiaPlayer(self, character[0])
-        getTile(self.player.position).placeCreature(self.player)
-        
+        try:
+            getTile(self.player.position).placeCreature(self.player)
+        except:
+            print "%s is unspawnable, choosing a city" % str(self.player.position)
+            import data.map.info
+            import game.map
+            self.player.position = data.map.info.towns[1][1]
+            print game.map.knownMap[self.player.position[2]][self.player.position[0]][self.player.position[1]].things[0].itemId
+            getTile(self.player.position).placeCreature(self.player)
+            
         self.player.sendFirstPacket()
         
         # Call the login script
@@ -107,7 +116,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         
     def onPacket(self, packet):
-        import otcrypto
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 0
         packet.data = packet.data[2:2+packet.uint16()]
