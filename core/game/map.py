@@ -10,11 +10,7 @@ import config
 
 def getTile(pos):
     try:
-        t = knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
-        if t:
-            return t
-        else:
-            raise
+        return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
     except:
         loadTiles(pos[0] - (7-pos[2]), pos[1])
         try:
@@ -152,9 +148,9 @@ class Tile(object):
 bindconstant.bind_all(Tile) # Apply constanting to Tile
 
 import data.map.info
-dummyItems = {}
+dummyItems = {} 
 
-knownMap = {}
+knownMap = tuple([{} for _ in xrange(0, data.map.info.levels[0])])
 sectors = []
 
 
@@ -255,11 +251,7 @@ def load(sectorX, sectorY):
     localItems = game.item.items # Prevent a bit of a lookup
     
     for mz in m:
-        try:
-            currZ = knownMap[mz[0]]
-        except:
-            knownMap[mz[0]] = {}
-            currZ = knownMap[mz[0]]
+        currZ = knownMap[mz[0]]
             
         for i,x in enumerate(mz[1]):
             try:
