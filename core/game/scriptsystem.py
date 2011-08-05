@@ -36,7 +36,13 @@ class TriggerScripts(object):
         if not trigger in self.scripts:
             self.scripts[trigger] = []
         self.scripts[trigger].append(weakref.ref(callback, self.unregCallback))
-        
+
+    def regFirst(self, trigger, callback):
+        if not trigger in self.scripts:
+            self.reg(trigger, callback)
+        else:
+            self.scripts[trigger].insert(0, weakref.ref(callback, self.unregCallback))
+            
     def unreg(self, trigger, callback):
         for ref in self.scripts[trigger]:
             if ref() == callback:

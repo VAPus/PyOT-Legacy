@@ -2,7 +2,7 @@ import game.scriptsystem # We use the talkactions from here
 import game.item
 import game.enum
 
-spells = []
+spells = {}
 
 
 def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
@@ -34,5 +34,13 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
                 creature.message("Made %dx%s" % (makeCount, name))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
 
-    spells.append((name, conjure))
-    return (words, conjure)
+    return (name, words, conjure)
+    
+    
+def reg(name, words, function):
+    # I'm special
+    if name in spells:
+        print "Warning: Duplicate spell with name %s" % name
+        
+    spells[name] = (words, function)
+    game.scriptsystem.get("talkaction").reg(words, function)
