@@ -5,7 +5,8 @@ import struct, sys, copy
 import generator
 
 # The reader class:
-class Reader:
+class Reader(object):
+    __slots__ = ('pos', 'data')
     def __init__(self, data):
         self.pos = 0
         self.data = data
@@ -77,11 +78,13 @@ class Reader:
         return self.data[self.pos:]
     
 
-class L:
+class L(object):
+    __slots__ = ('value')
     def __init__(self, val):
         self.value = val
         
-class Node:
+class Node(object):
+    __slots_ = ('data', 'nodes', 'begin', 'size')
     def __init__(self, begin, size=None):
         self.data = b""
         self.nodes = []
@@ -185,12 +188,15 @@ height = root.data.uint16()
 majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
+# Tiles
+tiles = width * height * 15
+
 print "OTBM v%d, %dx%d" % (version, width, height) 
 
 # Prepopulate map with a ground level of voids
-
-_map = generator.Map(width,height)
-
+print "--Generating the map layout with no filling (gad this takes alot of memory)"
+_map = generator.Map(width,height, ground=None)
+print "--Done generating the map layout"
 nodes = root.next()
 nodes.data.pos += 1
 description = ""
@@ -198,7 +204,7 @@ spawns = ""
 house = ""
 
 _map.author("OTBMXML2sec generator")
-
+print "--Beging parsing description, spawns, and houses"
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
@@ -213,6 +219,8 @@ while nodes.data.peekUint8():
         print "Unknown nodes data"
 
 node = nodes.next()
+onTile = 0
+lastPrint = 0
 print "--Begin OTBM nodes"
 while node:
     type = node.data.uint8()
@@ -300,7 +308,10 @@ while node:
                 print "Unknown tile node"
             if mapTile.get():
                 _map.add(mapTile)
-            
+            onTile += 1
+            if onTile - lastPrint == 2000:
+                lastPrint += 2000
+                print "---%d/~%d done" % (lastPrint, tiles)
             tile = node.next()
             
     elif type == 12: # Towns

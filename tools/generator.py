@@ -33,7 +33,7 @@ def iReplacer(old, new):
     return old
 
 ### Mainmap
-class Map:
+class Map(object):
     def __init__(self, xA, yA, ground=100):
         self.area = {7:[]}
         self.size = (xA, yA)
@@ -41,7 +41,6 @@ class Map:
         self._description = ""
         self.towns = {}
         self.waypoints = {}
-        
         for x in xrange(0, xA+1):
             self.area[7].append([])
             for y in xrange(0, yA+1):
@@ -52,6 +51,7 @@ class Map:
                     self.area[7][x][y] = [Item(ground)]
                 else:
                     self.area[7][x][y] = [ground]
+
 
     def author(self, name):
         self._author = name
@@ -286,7 +286,8 @@ class Map:
         print "---Wrote info.py"
 
 ### Areas
-class Area:
+class Area(object):
+    __slots__ = ('level', 'area')
     def __init__(self, xA, yA, ground=100, level=7):
         self.level = level
         self.area = []
@@ -297,6 +298,7 @@ class Area:
                     self.area[x].append({level: [Item(ground)]})
                 else:
                     self.area[x].append({level: [ground]})
+
     def add(self, x,y,thing):
         self.area[x][y][self.level].append(thing)
         
@@ -343,7 +345,8 @@ class Area:
         if southwest:
             self.area[offset][(offset*-1)-1][self.level] = behavior(self.area[offset][(offset*-1)-1][self.level], southewst if isinstance(southwest, tuple) else [southwest])     
 
-class Tile:
+class Tile(object):
+    __slots__ = ('x', 'y', 'level', 'area')
     def __init__(self, x,y, ground=100, level=7):
         self.x = x
         self.y = y
@@ -361,7 +364,8 @@ class Tile:
         return self.area[self.x][self.y][self.level]
         
 ### Things
-class Item:
+class Item(object):
+    __slots__ = ('id', 'attributes', 'actions')
     def __init__(self, id):
         self.id = id
         self.attributes = {}
@@ -372,6 +376,7 @@ class Item:
     
     def action(self, id):
         self.actions.append(id)
+        
     def gen(self, x,y,z,rx,ry,extras):
         extra = ""
         if self.actions:
@@ -385,17 +390,18 @@ class Item:
             extra = ',%s' % ','.join(eta)
         return ('I(%d%s)' % (self.id, extra), extras)
 
-class RSItem:
+class RSItem(object):
+    __slots__ = ('ids')
     def __init__(self, *argc):
         self.ids = argc
     def gen(self, x,y,z,rx,ry,extras):
         import random
         return ('I(%d)' % random.choice(self.ids), extras)    
-class Monster:
+class Monster(object):
+    __slots__ = ('name')
     def __init__(self, name):
         self.name = name
-
-            
+  
     def gen(self, x,y,z,rx,ry, extras):
         extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
         return (None, extras)
