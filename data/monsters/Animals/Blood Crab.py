@@ -1,6 +1,6 @@
 import game.monster
 
-blood_crab = game.monster.genMonster("blood crab", (200, 6075), "a blood crab")
+blood_crab = game.monster.genMonster("Blood Crab", (200, 6075), "a blood crab")
 blood_crab.bloodType("blood")
 blood_crab.setHealth(290)
 blood_crab.setExperience(160)

@@ -1,6 +1,6 @@
 import game.monster
 
-bat = game.monster.genMonster("bat", (122, 6053), "a bat")
+bat = game.monster.genMonster("Bat", (122, 6053), "a bat")
 bat.bloodType("blood")
 bat.setHealth(30)
 bat.setExperience(10)

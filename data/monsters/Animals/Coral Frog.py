@@ -1,6 +1,6 @@
 import game.monster
 
-corall_frog = game.monster.genMonster("corall_frog", (226, 6079), "a corall_frog")
+corall_frog = game.monster.genMonster("Corall Frog", (226, 6079), "a corall_frog")
 corall_frog.setOutfit(69, 66, 69, 66)
 corall_frog.setTargetChance(10)
 corall_frog.bloodType("blood")

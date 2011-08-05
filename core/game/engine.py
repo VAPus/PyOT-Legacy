@@ -16,37 +16,35 @@ def loader(timer):
     d = loadItems()
     
     
-    def mapLoader(d, timer):
-        if config.loadEntierMap:
-                from game.map import load
-                begin = time.time()
-                x = 0
-                y = 0
-                retOld = False
-                ret = False
-                while True:
-                    try:
-                        ret = load(x,y)
-                        y += 1
-                    except IOError:
-                        x += 1
-                        y = 0                
-
-                    if not ret and not retOld:
-                        break
-                    retOld = ret  
-                    
-                log.msg("Loaded entier map in %f" % (time.time() - begin))
-    # This is called once we are done with all deferred loading
-    def printer(d, timer):
+    def sync(d, timer):
         from game.scriptsystem import importer
         importer()
+        if config.loadEntierMap:
+            from game.map import load
+            begin = time.time()
+            x = 0
+            y = 0
+            retOld = False
+            ret = False
+            while True:
+                try:
+                    ret = load(x,y)
+                    y += 1
+                except IOError:
+                    x += 1
+                    y = 0                
+
+                if not ret and not retOld:
+                    break
+                retOld = ret  
+                    
+            log.msg("Loaded entier map in %f" % (time.time() - begin))
+
+
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         
-    
-    d.addCallback(mapLoader, timer)
-    d.addCallback(printer, timer)
+    d.addCallback(sync, timer)
 
 # Useful for windows
 def safeCallLater(sec, *args):

@@ -1,6 +1,6 @@
 import game.monster
 
-bug = game.monster.genMonster("bug", (45, 5990), "a bug")
+bug = game.monster.genMonster("Bug", (45, 5990), "a bug")
 bug.bloodType("venom")
 bug.setHealth(29)
 bug.setExperience(18)
