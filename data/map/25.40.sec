@@ -1,0 +1,2 @@
+m=(,)
+def l():MM('Pirate Marauder',814,1291,815,1288,821,1284,821,1297,822,1299,826,1287,827,1285);MM('Pirate Skeleton',823,1310,827,1308);MM('Pirate Buccaneer',824,1288,825,1282,826,1290,828,1286,829,1290,830,1281,6);MM('Pirate Corsair',825,1287,828,1290,6);MM('Pirate Corsair',825,1288,828,1287,829,1290,5);MM('Pirate Cutthroat',825,1290,830,1288,5);M('Pirate Cutthroat',827,1285,6);M('Pirate Marauder',827,1290,5);M('Pirate Buccaneer',829,1286,5);M('Pirate Marauder',830,1287,6)

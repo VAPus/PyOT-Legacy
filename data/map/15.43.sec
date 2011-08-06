@@ -1,0 +1,2 @@
+m=(,)
+def l():M('Hellfire Fighter',483,1396,11);MM('Lost Soul',486,1380,487,1381,488,1378,13);MM('Destroyer',486,1396,487,1394,490,1393,12);MM('Spectre',490,1392,492,1390,12);MM('Lost Soul',491,1392,492,1390,14);MM('Destroyer',492,1388,496,1388,497,1385,13);MM('Diabolic Imp',492,1388,497,1397,14);M('Plaguesmith',492,1400,13);MM('Destroyer',494,1386,496,1383,497,1387,498,1384,11);MM('Hellfire Fighter',494,1387,494,1394,14);MM('Plaguesmith',496,1401,499,1398,11);MM('Demon Skeleton',497,1397,498,1400,500,1396,12);M('Destroyer',497,1400,14);M('Hellfire Fighter',498,1394,13)

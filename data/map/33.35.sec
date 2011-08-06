@@ -1,0 +1,2 @@
+m=(,)
+def l():MM('Draken Abomination',1057,1128,1066,1121,1066,1148,1082,1145,13);MM('Draken Elite',1057,1131,1061,1123,13);MM('Worker Golem',1063,1144,1064,1147,1065,1137);M('War Golem',1064,1150,8);M('Mercury Blob',1066,1137);M('Diabolic Imp',1069,1139,10);M('Hand of Cursed Fate',1070,1137,10);MM('Snake',1072,1122,1073,1123);M('Demon',1073,1142,10);MM('Wasp',1075,1121,1077,1151,1079,1151);M('Elf Arcanist',1078,1132,6);M('Elf',1078,1136);M('Elf Scout',1086,1129,6);M('Juggernaut',1087,1143,10)

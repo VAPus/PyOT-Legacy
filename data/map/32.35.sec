@@ -1,0 +1,2 @@
+m=(,)
+def l():M('War Golem',1024,1150,10);M('Acid Blob',1028,1122,6);MM('Worker Golem',1028,1148,1040,1150,1042,1148,1052,1143);M('Worker Golem',1034,1149,8);MM('dark apprentice',1034,1151,1036,1147,8);M('Draken Elite',1049,1143,13);M('Draken Abomination',1051,1143,13)

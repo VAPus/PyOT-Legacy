@@ -226,6 +226,8 @@ class Map(object):
                     for x in extras:
                         if x[0] == "M":
                             args = list(x.split('(')[1].split(')')[0].split(','))
+                            if len(args) < 2:
+                                continue
                             if len(args) == 3:
                                 args.append('7')
                             
@@ -233,6 +235,7 @@ class Map(object):
                             if not subs[1] in monsters:
                                 monsters[subs[1]] = {}
                                 monsterPos[subs[1]] = {}
+
                             if not args[3] in monsterPos[subs[1]]:
                                 monsters[subs[1]][args[3]] = 1
                                 monsterPos[subs[1]][args[3]] = [args[1], args[2]]
@@ -243,22 +246,24 @@ class Map(object):
                                 
                     # Run two, with new count 
                     for x in copy.copy(extras):
-                        if x[0] == "M":
-                            args = list(x.split('(')[1].split(')')[0].split(','))
-                            if len(args) == 3:
-                                args.append('7')
-                            subs = args[0].split("'")
-                            if monsters[subs[1]][args[3]] > 1:
-                                if not args[3] in handled:
-                                    handled[args[3]] = []
-                                    
-                                if not subs[1] in handled[args[3]]:
-                                    extras[extras.index(x)] = "MM('%s',%s%s)" % ( subs[1], ','.join(monsterPos[subs[1]][args[3]]), ','+args[3] if int(args[3]) != 7 else '' )
-                                    handled[args[3]].append(subs[1])
-                                    curr = subs[1]
-                                else:
-                                    del extras[extras.index(x)]
-                                    
+                        try:
+                            if x[0] == "M":
+                                args = list(x.split('(')[1].split(')')[0].split(','))
+                                if len(args) == 3:
+                                    args.append('7')
+                                subs = args[0].split("'")
+                                if monsters[subs[1]][args[3]] > 1:
+                                   if not args[3] in handled:
+                                       handled[args[3]] = []
+                                   
+                                   if not subs[1] in handled[args[3]]:
+                                       extras[extras.index(x)] = "MM('%s',%s%s)" % ( subs[1], ','.join(monsterPos[subs[1]][args[3]]), ','+args[3] if int(args[3]) != 7 else '' )
+                                       handled[args[3]].append(subs[1])
+                                       curr = subs[1]
+                                   else:
+                                       del extras[extras.index(x)]
+                        except:
+                            print "Bug"            
                     output += "\ndef l():"+';'.join(extras)
 
                 open('%d.%d.sec' % (xA, yA), 'w').write(output)

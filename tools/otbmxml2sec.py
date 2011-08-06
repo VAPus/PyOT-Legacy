@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys, copy
+import struct, sys
 import generator
 
 # The reader class:
@@ -99,7 +99,7 @@ class Node(object):
         while otbm.pos < (self.begin + self.size):
             if byte == 0xFE and not nextIsEscaped:
                 blockSize = self.sizer()
-                node = self.handleBlock(copy.copy(otbm.pos), blockSize)
+                node = self.handleBlock(otbm.pos, blockSize)
                 otbm.pos += blockSize
             elif byte == 0xFF and not nextIsEscaped:
                 level.value -= 1
@@ -118,7 +118,7 @@ class Node(object):
         self.data = Reader(self.data)
 
     def sizer(self):
-        oldPos = copy.copy(otbm.pos)
+        oldPos = otbm.pos
         global subLevels
         subLevels = 0
         
@@ -189,7 +189,7 @@ majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
 # Tiles
-tiles = width * height * 15
+tiles = width * height # This also count null tiles which we doesn't pass, bad
 
 print "OTBM v%d, %dx%d" % (version, width, height) 
 
