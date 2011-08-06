@@ -195,10 +195,11 @@ class Map(object):
                         output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
                     elif yCount:
                         output += "(T("+(','.join(yCom))+"),)+"
-                        
-                    return "("+output[:-1].replace("T()", "None").replace("T(I(100))", 'V')+",)" # None is waay faster then T(), T(I(100)) is also known as V
-                
-                # Level 2, X compare
+                    if output:    
+                        return "("+output[:-1].replace("T()", "None").replace("T(I(100))", 'V')+",)" # None is waay faster then T(), T(I(100)) is also known as V
+                    return ''
+                    
+            # Level 2, X compare
                 def xComp(zCom):
                     xCom = []
                     xCount = 0
@@ -210,14 +211,18 @@ class Map(object):
                         else:
                             if xCount > 1:
                                 # Begin building
-                                output += yComp(xCom)+"*%d+" % xCount
+                                t = yComp(xCom)
+                                if t:
+                                    output += t+"*%d+" % xCount
                             elif xCount:
                                 output += yComp(xCom)+"+"
                             xCom = x
                             xCount = 1
 
                     if xCount > 1:
-                        output += yComp(xCom)+"*%d+" % xCount
+                        t = yComp(xCom)
+                        if t:
+                            output += t+"*%d+" % xCount
                     elif xCount:
                         output += yComp(xCom)+"+"
                     

@@ -242,9 +242,8 @@ while node:
                 if tileType == 14:
                     # TODO
                     tile.data.uint32()
-                
-                _output_.append("mapTile = generator.Tile(%d, %d, ground=None, level=%d)" % (tileX, tileY, baseZ))
-                
+                _render_ = False
+                _itemG_ = 'None'
                 # Attributes
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
@@ -252,17 +251,18 @@ while node:
                         tile.data.uint32() # TODO, parse those
                         
                     elif attr == 9: # ITEM, ground item
-                        _output_.append("mapTile.add(generator.Item(%d))" % (tile.data.uint16()))
+                        _itemG_ = "generator.Item(%d)" % (tile.data.uint16())
+                        _render_ = True
                         
                     else:
                         print "Unknown tile attrubute"
                         
-                
+                _tile_ = ["mapTile = generator.Tile(%d, %d, ground=%s, level=%d)" % (tileX, tileY, _itemG_, baseZ)]
                 item = tile.next()
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _output_.append("_item_ = generator.Item(%d)" % (itemId))
+                        _tile_.append("_item_ = generator.Item(%d)" % (itemId))
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
@@ -275,25 +275,25 @@ while node:
                             elif attr == 21: # sleepstart
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
-                                _output_.append("_item_.attribute(\"teledest\", [%d,%d,%d])" % (item.data.uint16(),item.data.uint16(),item.data.uint8()))
+                                _tile_.append("_item_.attribute(\"teledest\", [%d,%d,%d])" % (item.data.uint16(),item.data.uint16(),item.data.uint8()))
                             elif attr == 15: # Item count
-                                _output_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
+                                _tile_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
                             elif attr == 4: # action id
-                                _output_.append("_item_.action(%d)" % item.data.uint16())
+                                _tile_.append("_item_.action(%d)" % item.data.uint16())
                             elif attr == 5:
-                                _output_.append("_item_.action(%d)" % (item.data.uint16() + 0xFFFF))
+                                _tile_.append("_item_.action(%d)" % (item.data.uint16() + 0xFFFF))
                             elif attr == 6:
-                                _output_.append('_item_.attribute("text", """%s""")' % (item.data.string()))
+                                _tile_.append('_item_.attribute("text", """%s""")' % (item.data.string()))
                             elif attr == 18:
-                                _output_.append("_item_.attribute(\"written\", %d)" % (item.data.uint32()))
+                                _tile_.append("_item_.attribute(\"written\", %d)" % (item.data.uint32()))
                             elif attr == 19:
-                                _output_.append("_item_.attribute(\"writtenBy\", \"%s\")" % (item.data.string()))
+                                _tile_.append("_item_.attribute(\"writtenBy\", \"%s\")" % (item.data.string()))
                             elif attr == 7:
-                                _output_.append(" _item_.attribute(\"description\", \"%s\")" % (item.data.string()))
+                                _tile_.append(" _item_.attribute(\"description\", \"%s\")" % (item.data.string()))
                             elif attr == 12:
                                 runeCharges = item.data.uint8()
                             elif attr == 22:
-                                _output_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
+                                _tile_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
                             elif attr == 16:
                                 duration = item.data.uint32()
                             elif attr == 17:
@@ -303,15 +303,16 @@ while node:
                                 break # All after this is container items
                             else:
                                 print "Unknown item attribute %d" % attr
-                        
-                        _output_.append("mapTile.add(_item_)")
+                        _render_ = True
+                        _tile_.append("mapTile.add(_item_)")
                     else:
                         print "Unknown item header"
                     item = tile.next()
             else:
                 print "Unknown tile node"
-            
-            _output_.append("_map.add(mapTile)")
+            if _render_:
+                _tile_.append("_map.add(mapTile)")
+                _output_.append("\n".join(_tile_))
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000

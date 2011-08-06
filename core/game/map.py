@@ -266,8 +266,6 @@ def load(sectorX, sectorY):
         currZ = knownMap[mz[0]]
             
         for i,x in enumerate(mz[1]):
-            if not x:
-                continue
             try:
                 currX = currZ[xbase+i]
             except:

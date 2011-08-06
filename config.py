@@ -45,9 +45,9 @@ maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
-loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
+loadEntierMap = True # Load all the sectors, useful for debug and benchmarking
 useNumpy = True # Use numpy to deal with map array, preallocating itself. This is most memory effective without causing problems, but numpy itself is HUGE. It use like 20MB of memory. The entier map (on my system) takes only 11MB in this mode.
-stackTiles = False # Sacrefice loading time for the sake of memory usage
+stackTiles = True # Sacrefice loading time for the sake of memory usage
 
 sayRange = (10,8)
 yellRange = (18, 14)
