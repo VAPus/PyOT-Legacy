@@ -798,7 +798,7 @@ class TibiaPlayer(Creature):
                 if len(walkPattern) > 1:
                     self.outOfRange()
                 else:
-                    game.engine.autoWalkCreatureTo(self, creature.position, -1, lambda: game.engine.autoWalkCreature(creature, walkPattern))
+                    game.engine.autoWalkCreatureTo(self, creature.position, -1, True, lambda: game.engine.autoWalkCreature(creature, deque(walkPattern)))
             else:
                 game.engine.autoWalkCreatureTo(creature, toPosition)
             

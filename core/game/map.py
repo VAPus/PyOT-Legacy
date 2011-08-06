@@ -80,6 +80,9 @@ class Tile(object):
     def placeItemEnd(self, item):
         self.things.append(item)
         return len(self.things)-1
+
+    def ground(self):
+        return self.things[0]
         
     def bottomItems(self):
         return self.things[(self.itemCount >> 4) + self.itemCount & 0x0F:]

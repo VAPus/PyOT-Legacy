@@ -102,9 +102,9 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         safeCallLater(0, callback)
 
 # Calculate walk patterns
-def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
+def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True, walkSolid=False):
     pattern = []
-    
+    currPos = fromPos
     # First diagonal if possible
     if abs(fromPos[0] - to[0]) == 1 and abs(fromPos[1] - to[1]) == 1:
         if fromPos[1] > to[1]:
@@ -114,25 +114,52 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             
         if fromPos[0] < to[0]:
             base += 1
-            
-        pattern.append(base)
+        newPos = positionInDirection(currPos, base)
+        if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+            currPos = newPos
+            pattern.append(base)
         
-    else:
-        # First x walk
-        if fromPos[0] > to[0]:
-            for x in xrange(0, fromPos[0]-to[0]):
-                pattern.append(3)
-        elif fromPos[0] < to[0]:
-            for x in xrange(0, to[0]-fromPos[0]):
-                pattern.append(1)
-        
-        # Then y walking
-        if fromPos[1] > to[1]:
-            for x in xrange(0, fromPos[1]-to[1]):
-                pattern.append(0)
-        elif fromPos[1] < to[1]:
-            for x in xrange(0, to[1]-fromPos[1]):
-                pattern.append(2)
+    if not pattern:
+        while currPos != to:
+            # First x walk
+            if fromPos[0] > to[0]:
+                for x in xrange(0, fromPos[0]-to[0]):
+                    newPos = positionInDirection(currPos, 3)
+                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+                        pattern.append(3)
+                        currPos = newPos
+                    else:
+                        break
+            elif fromPos[0] < to[0]:
+                for x in xrange(0, to[0]-fromPos[0]):
+                    newPos = positionInDirection(currPos, 1)
+                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+                        pattern.append(1)
+                        currPos = newPos
+                    else:
+                        break
+                        
+            # Then y walking
+            if fromPos[1] > to[1]:
+                for x in xrange(0, fromPos[1]-to[1]):
+                    newPos = positionInDirection(currPos, 0)
+                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+                        pattern.append(0)
+                        currPos = newPos
+                    else:
+                        break
+                        
+            elif fromPos[1] < to[1]:
+                for x in xrange(0, to[1]-fromPos[1]):
+                    newPos = positionInDirection(currPos, 2)
+                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+                        pattern.append(2)
+                        currPos = newPos
+                    else:
+                        break
+            if not currPos == to:
+                print "Walk/calculate path around blocked stuff is not supported! Help us fix it!\n Regards: line 161 core/game/engine.py"
+                break
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:
@@ -195,7 +222,30 @@ def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
                 
     raise StopIteration
 
-    
+# Calculate new position by direction
+def positionInDirection(nposition, direction):
+    position = nposition[:] # Important not to remove the : here, we don't want a reference!
+    if direction == 0:
+        position[1] = nposition[1] - 1
+    elif direction == 1:
+        position[0] = nposition[0] + 1
+    elif direction == 2:
+        position[1] = nposition[1] + 1
+    elif direction == 3:
+        position[0] = nposition[0] - 1
+    elif direction == 4:
+        position[1] = nposition[1] + 1
+        position[0] = nposition[0] - 1
+    elif direction == 5:
+        position[1] = nposition[1] + 1
+        position[0] = nposition[0] + 1
+    elif direction == 6:
+        position[1] = nposition[1] - 1
+        position[0] = nposition[0] - 1
+    elif direction == 7:
+        position[1] = nposition[1] - 1
+        position[0] = nposition[0] + 1
+    return position
 def updateTile(pos, tile):
     stream = TibiaPacket(0x69)
     stream.position(pos)

@@ -151,10 +151,10 @@ class Creature(object):
             raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
             return False
             
-        if newTile.creatures(): # Dont walk to creatures, too be supported
+        """if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
             raise game.errors.ImpossibleMove
-            return False
+            return False"""
         
         """if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
             self.actionLock.release()
