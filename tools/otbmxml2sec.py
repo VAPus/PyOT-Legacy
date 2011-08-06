@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys
+import struct, sys, copy
 import generator
 
 # The reader class:
@@ -99,7 +99,7 @@ class Node(object):
         while otbm.pos < (self.begin + self.size):
             if byte == 0xFE and not nextIsEscaped:
                 blockSize = self.sizer()
-                node = self.handleBlock(otbm.pos, blockSize)
+                node = self.handleBlock(copy.copy(otbm.pos), blockSize)
                 otbm.pos += blockSize
             elif byte == 0xFF and not nextIsEscaped:
                 level.value -= 1
@@ -118,7 +118,7 @@ class Node(object):
         self.data = Reader(self.data)
 
     def sizer(self):
-        oldPos = otbm.pos
+        oldPos = copy.copy(otbm.pos)
         global subLevels
         subLevels = 0
         
