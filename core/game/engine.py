@@ -57,7 +57,7 @@ def action(forced=False, delay=0):
             if creature.action and forced:
                 creature.action.cancel()
             elif not forced and creature.action and creature.action.active():
-                safecallLater(0, new_f, *args, **argw)
+                safeCallLater(0, new_f, *args, **argw)
             elif delay:
                 safeCallLater(delay, f, *args, **argw)
             else:
@@ -99,7 +99,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         creature.action = None
         
     if callback and ret and not len(walkPatterns):    
-        safeCallback(0, callback)
+        safeCallLater(0, callback)
 
 # Calculate walk patterns
 def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
