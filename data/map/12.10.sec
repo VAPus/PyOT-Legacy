@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Destroyer',392,345,392,351,402,342,13);MM('Fury',396,341,402,351,13);M('Hellfire Fighter',402,349,13);M('Dark Torturer',414,344,13)

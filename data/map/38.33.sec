@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Wild Warrior',1216,1074);M('Centipede',1217,1075);M('Slime',1222,1079);M('Demon',1225,1069,11);MM('Tarantula',1226,1077,1226,1079);MM('Smuggler',1226,1085,1227,1071,1228,1072,8);M('Centipede',1229,1075,8);M('Poacher',1232,1077)

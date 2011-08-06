@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Necromancer',961,995,10);MM('Ghoul',961,1023,967,995,8);M('Stalker',968,994,8);MM('Dragon Hatchling',968,1007,971,1011,5);M('Dragon Hatchling',970,1021,6);M('Demon Skeleton',971,996,9);MM('Bug',976,997,978,999)

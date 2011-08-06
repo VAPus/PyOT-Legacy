@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Blightwalker',430,1291,431,1305,432,1289,11);MM('Plaguesmith',430,1296,432,1307,11);M('Hand of Cursed Fate',432,1284,11);MM('Betrayed Wraith',432,1291,432,1310,435,1291,11);MM('Phantasm',432,1296,432,1303,435,1293,11)

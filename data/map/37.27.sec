@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Quara Hydromancer',1192,879,8);M('Quara Pincher',1194,894,9);M('Quara Pincher',1195,882,8);MM('Sea Serpent',1203,894,1209,891,10);M('Quara Mantassin',1213,874,8);M('Quara Predator',1215,873,8)

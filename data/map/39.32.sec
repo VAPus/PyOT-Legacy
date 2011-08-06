@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Blood Crab',1254,1024,1255,1029);MM('Tarantula',1256,1026,1259,1028);M('Dark Torturer',1257,1029,15);MM('Plaguesmith',1257,1031,1259,1027,15);M('Centipede',1258,1024);MM('Tortoise',1271,1031,1273,1024);M('Crab',1276,1024)

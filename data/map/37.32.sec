@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Dragon',1187,1025);MM('Demon',1190,1040,1197,1044,11);M('Hellhound',1198,1045,11);M('Nightmare',1200,1043,13);M('Hand of Cursed Fate',1202,1044,13)

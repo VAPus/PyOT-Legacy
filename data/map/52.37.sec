@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Lizard Sentinel',1664,1188,8);MM('Lizard Sentinel',1664,1189,1664,1199,1674,1212,1678,1197,9);MM('Lizard Templar',1664,1191,1666,1196,1671,1211,9);MM('Elephant',1675,1195,1676,1212);M('Terror Bird',1677,1191);M('Lizard Snakecharmer',1678,1198,9);M('Lizard Templar',1678,1211,10);MM('Lizard Sentinel',1678,1214,1682,1210,10);MM('Spit Nettle',1681,1195,1682,1195)

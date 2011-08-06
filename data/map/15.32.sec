@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Bonelord',494,1037,499,1046,12);MM('Zombie',494,1048,498,1051,12);M('Ghastly Dragon',495,1042,12);MM('Necromancer',496,1048,500,1049,503,1055,507,1045,509,1041,8);M('Elder Bonelord',497,1029,10);M('Undead Dragon',497,1036,12);M('Braindeath',498,1041,12);M('Vampire',499,1027,10);MM('Banshee',500,1037,502,1036,9);MM('Demon Skeleton',502,1047,511,1051,8);MM('Priestess',502,1051,508,1047,8)

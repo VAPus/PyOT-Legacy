@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Barbarian Skullhunter',1248,756);MM('Barbarian Brutetamer',1249,762,1252,744,1252,748,1257,755,1259,761,1263,742,1263,744,5);MM('Barbarian Headsplitter',1252,761,1257,747,1258,756,1258,762,1263,742,1263,745,6);MM('Barbarian Bloodwalker',1258,761,1263,742,1263,744,4);MM('Barbarian Bloodwalker',1259,761,1259,762,1264,742,1264,743,1264,744,3);M('Dragon Lord Hatchling',1279,745,8)

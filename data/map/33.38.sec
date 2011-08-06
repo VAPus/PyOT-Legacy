@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Stone Golem',1060,1216,1074,1217,1080,1218,1080,1219,1085,1222,6);MM('Skeleton',1060,1241,1060,1242,8);M('Nightmare Scion',1065,1230,9);MM('Nightmare',1066,1226,1070,1229,9);M('brimstone bug',1072,1234,13);M('Draken Abomination',1075,1219,13);M('brimstone bug',1081,1235,12);M('Grorlam',1083,1220,6);M('brimstone bug',1084,1234,11);M('brimstone bug',1087,1234,10)

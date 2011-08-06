@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Undead Dragon',288,642,299,651,12);MM('Hellhound',289,662,289,668,297,662,13);MM('Nightmare',290,641,297,642,12);MM('Hellhound',290,651,300,641,12);MM('Nightmare',291,662,292,662,13);M('Undead Dragon',300,661,13)

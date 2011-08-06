@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Cyclops Smith',1088,994,1095,1003,9);MM('Cyclops',1088,995,1089,994);MM('Cyclops',1088,997,1090,999,8);M('Fire Elemental',1088,1019,10);M('Cyclops',1090,998,10);M('Cyclops Drone',1092,1001,10);M('Cyclops Drone',1092,1021,11);MM('Behemoth',1093,1001,1098,996,11);MM('Cyclops',1093,1002,1094,1005,9);MM('Cyclops',1094,995,1096,1004,11);M('Cyclops Smith',1099,994,11);MM('Cyclops Drone',1104,994,1112,997,8);MM('Wolf',1107,1011,1109,1011,1109,1012);M('Dragon',1119,1007,6)

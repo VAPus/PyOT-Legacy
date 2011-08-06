@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Minotaur',1455,1507,1456,1513,1460,1511,1461,1505,1463,1511,1465,1504);MM('Minotaur mage',1466,1511,1468,1512,9);MM('Minotaur guard',1466,1512,1467,1517,1469,1511,9);MM('Minotaur',1466,1513,1467,1511,1469,1513,1470,1512,8);M('Minotaur archer',1468,1520,9);M('Minotaur mage',1469,1535,11);M('Minotaur guard',1470,1516,12);MM('Minotaur archer',1470,1526,1471,1515,12);M('Minotaur mage',1471,1525,12);M('Minotaur archer',1471,1527,8)

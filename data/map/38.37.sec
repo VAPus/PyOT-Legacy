@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Ghastly Dragon',1216,1202,1218,1198,9);MM('Draken Warmaster',1229,1185,1229,1203,1238,1196,1245,1194,1245,1197,10);MM('Lizard Chosen',1230,1188,1230,1202,10);M('Draken Spellweaver',1235,1192,10)

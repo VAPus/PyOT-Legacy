@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Behemoth',1130,831,1132,830);M('Lich',1133,831);M('Behemoth',1135,830,6);M('Warlock',1138,829);M('Dragon Lord',1140,830)

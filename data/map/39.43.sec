@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Hyaena',1263,1382,1265,1384,6);MM('Crypt shambler',1264,1400,1269,1397,1279,1396,11);MM('Demon Skeleton',1264,1402,1265,1403,10);M('Ghost',1265,1401,9);M('Vampire',1265,1402,9);MM('Demon Skeleton',1265,1403,1266,1402,11);MM('Lion',1269,1388,1273,1391,1276,1404);MM('Vampire',1271,1403,1274,1389,1275,1402,11);MM('Scorpion',1272,1378,1274,1377,4);M('Demon Skeleton',1273,1404,9);M('Grim Reaper',1274,1393,11);M('Sandcrawler',1274,1406);M('Banshee',1274,1407,9);M('Stone Golem',1275,1379,4);M('Crypt shambler',1275,1404,9);M('Hyaena',1279,1401)

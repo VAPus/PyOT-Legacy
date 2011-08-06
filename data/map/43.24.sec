@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Dwarf',1376,797,1381,797,1384,791);MM('Banshee',1377,775,1393,796,1397,777,8);MM('Ghoul',1379,782,1390,799,8);MM('Dwarf Soldier',1379,798,1387,796);MM('Ice Golem',1381,789,1389,769,1406,781,8);M('Dwarf Geomancer',1381,794,6);M('Dwarf Guard',1381,798,6);M('Dwarf Soldier',1382,796,6);M('Dwarf Soldier',1383,770,8);M('Polar Bear',1386,778);MM('Ice Witch',1391,785,1401,769,1404,793,8);MM('Penguin',1392,790,1407,775);M('Mammoth',1396,776);M('Winter Wolf',1402,785)

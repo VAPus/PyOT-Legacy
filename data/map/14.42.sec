@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Destroyer',448,1368,12);MM('Spectre',450,1374,452,1372,11);M('Plaguesmith',451,1371,12);M('Defiler',452,1360,9);MM('Spectre',454,1375,456,1372,12);M('Betrayed Wraith',457,1363,9);M('Spectre',457,1374,13);M('Hellfire Fighter',463,1372,9);M('Diabolic Imp',466,1345,11);M('Nightmare',467,1348,11);MM('Plaguesmith',467,1351,475,1345,11);MM('Hellfire Fighter',467,1368,470,1371,13);M('Hellfire Fighter',468,1349,11);M('Dark Torturer',468,1350,11);M('Defiler',472,1369,13)

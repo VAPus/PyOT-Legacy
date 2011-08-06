@@ -56,6 +56,7 @@ class Item(object):
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
+        print self.itemId
         if self.stackable:
             self.count = count
         
@@ -79,9 +80,12 @@ class Item(object):
             attrVal = 1 << self.attributes.index(name)
             return items[self.itemId]["a"] & attrVal == attrVal
         except:
-            if name in items[self.itemId]:
-                return items[self.itemId][name]
-            elif not "__" in name:
+            try:
+                if name in items[self.itemId]:
+                    return items[self.itemId][name]
+                elif not "__" in name:
+                    return None
+            except:
                 return None
         raise AttributeError, name
         

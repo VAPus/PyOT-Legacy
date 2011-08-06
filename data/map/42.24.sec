@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Crystal Spider',1345,786,1357,794,1368,799,4);M('Penguin',1346,769,6);M('Dragon',1347,793,9);M('Yeti',1349,771,12);M('Crystal Spider',1353,774,5);M('Ice Golem',1353,783,4);M('Polar Bear',1369,776);M('Ice Golem',1369,776,8);M('Mammoth',1372,791);M('Dwarf Soldier',1375,778,8)

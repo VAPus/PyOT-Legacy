@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Pirate Corsair',928,1188,931,1185,8);M('Pirate Corsair',940,1188,6);M('Pirate Buccaneer',940,1189,6);M('Dark Torturer',949,1184,9);M('Nightmare',956,1204,9);M('Wisp',957,1207,9)

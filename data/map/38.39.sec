@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Lizard High Guard',1220,1260,1243,1276,8);MM('Lizard Dragon Priest',1221,1263,1243,1268,8);MM('Lizard Zaogun',1230,1272,1233,1261,1241,1267,8)

@@ -245,7 +245,7 @@ while node:
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
                     if attr == 3: # OTBM_ATTR_TILE_FLAGS
-                        flags = tile.data.uint32() # TODO, parse those
+                        tile.data.uint32() # TODO, parse those
                         
                     elif attr == 9: # ITEM, ground item
                         mapTile.add(genItem(tile.data.uint16())) # TODO, parse item
@@ -258,7 +258,7 @@ while node:
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _item_ = generator.Item(itemId)
+                        _item_ = genItem(itemId)
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()

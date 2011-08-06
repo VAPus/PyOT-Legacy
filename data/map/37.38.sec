@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Lizard Legionnaire',1184,1237,1204,1237,1204,1244,6);M('Lizard Templar',1185,1236);MM('Lizard High Guard',1185,1239,1205,1243,5);MM('Warlock',1187,1246,1189,1232,1190,1244,1196,1240,1204,1225,1204,1239,1204,1241,1215,1234,13);M('Lizard Sentinel',1189,1218);MM('Draken Warmaster',1191,1237,1192,1244,1213,1244,10);MM('Lizard Chosen',1192,1236,1211,1243,10);M('Warlock',1196,1219,12);MM('Lizard Legionnaire',1202,1240,1205,1244,1206,1244);M('Lizard Dragon Priest',1204,1238,5);M('Ghastly Dragon',1208,1222,9);M('Draken Spellweaver',1209,1236,10)

@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():M('Ice Golem',1410,707);M('Polar Bear',1412,717);M('Mammoth',1413,730,6);M('Young Sea Serpent',1417,706,10);M('Sea Serpent',1419,724,10);M('Frost Troll',1421,720,6);MM('Blood Crab',1422,712,1434,714,1435,705,1438,726,9);M('Frost Dragon',1424,709,8);M('Frost Dragon',1424,729,5);MM('Sea Serpent',1427,722,1429,731,1438,720,11);MM('Penguin',1435,728,1436,720)

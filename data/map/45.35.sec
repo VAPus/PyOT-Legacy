@@ -1,2 +1,2 @@
-m=(,)
+m=()
 def l():MM('Lizard Sentinel',1441,1145,1452,1150,1454,1148,6);MM('Kongra',1443,1144,1455,1147,9);MM('Sibang',1445,1144,1451,1147,1471,1130,9);MM('Lizard Templar',1447,1144,1452,1144,5);MM('Lizard Templar',1450,1139,1454,1140,4);MM('Lizard Sentinel',1452,1137,1456,1136,4);M('Kongra',1456,1142,8);M('Lizard Snakecharmer',1458,1134,4);MM('Sibang',1462,1142,1465,1145,8);M('Elephant',1463,1121);M('Tiger',1466,1122);M('Merlkin',1471,1128,9)
