@@ -1,8 +1,8 @@
-width = 2048
-height = 2048
+width = 572
+height = 500
 author = 'OTBMXML2sec generator'
 description = 'SimOne MapEditor 0.5.0'
 sectorSize = (32, 32)
-towns = {1: ('Enigma City', [1000, 1000, 7])}
+towns = {1: ('Tharkas', [100, 100, 7]), 2: ('Khal-Tar', [335, 382, 7])}
 waypoints = {}
-levels = (13, 0)
+levels = (10, 0)

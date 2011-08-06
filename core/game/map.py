@@ -10,11 +10,15 @@ import config
 
 def getTile(pos):
     try:
-        return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
+        t = knownMap[ pos[2] ][ pos[0] ][ pos[1] ]
+        if t:
+            return t
+        else:
+            raise
     except:
-        loadTiles(pos[0] - (7-pos[2]), pos[1])
+        loadTiles(pos[0], pos[1])
         try:
-            return knownMap[ pos[2] ][ pos[0] - (7-pos[2]) ][ pos[1] ]
+            return knownMap[ pos[2] ][ pos[0] ][ pos[1] ]
         except:
             return None
 def placeCreature(creature, pos):
@@ -219,8 +223,10 @@ if config.stackTiles:
     dummyTiles = {}
 def loadTiles(x,y, walk=True):
     if x < 0 or y < 0:
+        print "Hmm"
         return None
     elif x > data.map.info.height or y > data.map.info.width:
+        print "Hmm2"
         return None
         
     sectorX = int(x / data.map.info.sectorSize[0])
@@ -256,7 +262,6 @@ def load(sectorX, sectorY):
         exec(compiled)
     
     localItems = game.item.items # Prevent a bit of a lookup
-
     for mz in m:
         currZ = knownMap[mz[0]]
             

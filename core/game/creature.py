@@ -215,10 +215,10 @@ class Creature(object):
             if spectator.player == self:
                 streamX = copy.copy(stream)
                 
-                if oldPosition[2] > oldPosition[2]:
+                if oldPosition[2] > position[2]:
                     streamX.moveUpPlayer(self, oldPosition)
                         
-                elif oldPosition[2] < oldPosition[2]:
+                elif oldPosition[2] < position[2]:
                     streamX.moveDownPlayer(self, oldPosition)
                         
                 if direction < 4:
@@ -252,7 +252,7 @@ class Creature(object):
                 script(self)
                 self.scripts["onNextStep"].remove(script)
                 
-               
+        self.actionLock.release()       
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
@@ -262,7 +262,7 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
-        self.actionLock.release()
+        
         return True # Required for auto walkings
 
     def magicEffect(self, pos, type):

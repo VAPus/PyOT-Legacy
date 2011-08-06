@@ -100,8 +100,23 @@ class Map(object):
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
         self._level(thing.level)
-        self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
-
+        try:
+            self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
+        except:
+            self.size = (thing.x if thing.x > self.size[0] else self.size[0], thing.y if thing.y > self.size[1] else self.size[1])
+            while True:
+                try:
+                    self.area[thing.level][thing.x]
+                    break
+                except:
+                    self.area[thing.level].append([])
+            while True:
+                try:
+                    self.area[thing.level][thing.x][thing.y]
+                    break
+                except:
+                    self.area[thing.level][thing.x].append([])                
+            self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
     def _levelsTo(self, x, y): # Rather heavy!
         levels = []
 
@@ -132,12 +147,18 @@ class Map(object):
                             if not level in sector:
                                 sector[level] = []
 
-                            if len(sector[level]) <= xS:
-                                sector[level].append([])
+                            while True:
+                                if len(sector[level]) <= xS:
+                                    sector[level].append([])
+                                else:
+                                    break
                             
-                            if len(sector[level][xS]) <= yS:
-                                sector[level][xS].append([])
-
+                            while True:
+                                if len(sector[level][xS]) <= yS:
+                                    sector[level][xS].append([])
+                                else:
+                                    break
+                                    
                             for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
                                 e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
                                 if e:
@@ -215,7 +236,7 @@ class Map(object):
                 if output:
                     output = "m=(%s)" % output
                 else: # A very big load of nothing
-                    output = "m=(,)"
+                    output = "m=()"
                 
                 if extras:
                     # Monster ops

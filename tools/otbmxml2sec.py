@@ -237,7 +237,7 @@ while node:
         while tile:
             tileType = tile.data.uint8()
             if tileType == 5 or tileType == 14: # Tile
-                tileX = tile.data.uint8() + baseZ
+                tileX = tile.data.uint8() + baseX
                 tileY = tile.data.uint8() + baseY
                 if tileType == 14:
                     # TODO
