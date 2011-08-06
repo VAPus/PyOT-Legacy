@@ -1,2 +1,2 @@
 m=()
-def l():MM('Wasp',1092,1096,1096,1088);MM('Snake',1094,1099,1095,1099);MM('Demon Skeleton',1104,1116,1107,1115,9);M('Ghost',1104,1117,9);M('Demon Skeleton',1105,1117,8);M('Ghost',1107,1116,8);MM('Bonebeast',1110,1107,1113,1104,10);M('Demon Skeleton',1114,1106,10);M('Scorpion',1115,1112);MM('Wolf',1116,1101,1117,1099);M('Sandcrawler',1119,1112)
+def l():MM('Giant Spider',1095,1099,1102,1090,1110,1098,8)

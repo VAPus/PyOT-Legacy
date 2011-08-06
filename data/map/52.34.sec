@@ -1,2 +1,1 @@
 m=()
-def l():MM('Serpent Spawn',1672,1089,1680,1095,1688,1088,6);MM('Serpent Spawn',1674,1089,1683,1091);MM('Lizard Sentinel',1676,1114,1677,1096,1677,1097,1680,1113,8);MM('Lizard Snakecharmer',1677,1112,1681,1096,8);MM('Lizard Templar',1678,1116,1679,1099,1679,1111,8)

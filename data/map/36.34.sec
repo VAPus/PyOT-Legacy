@@ -1,2 +1,2 @@
 m=()
-def l():M('Poacher',1168,1099);MM('Mummy',1168,1107,1176,1102,9);MM('Poison spider',1169,1097,1170,1100);M('Ghoul',1169,1106,9);M('Centipede',1176,1097,8);MM('Stalker',1176,1106,1177,1119,9)
+def l():M('Giant Spider',1156,1093,8);MM('Giant Spider',1157,1091,1162,1098,9)

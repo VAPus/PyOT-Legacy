@@ -1,2 +1,2 @@
 m=()
-def l():MM('Pirate Corsair',934,1165,936,1169,6);MM('Pirate Corsair',934,1174,938,1177,943,1160,947,1165,8);MM('Nightmare',934,1182,942,1169,8);MM('Pirate Marauder',936,1163,939,1175);MM('Pirate Cutthroat',938,1161,938,1177,939,1164);MM('Dark Torturer',939,1170,950,1161,8);MM('Pirate Corsair',945,1170,955,1175,9);M('Wisp',948,1161,8);M('Undead Dragon',948,1179,9);M('Dark Torturer',950,1165,9);M('Wisp',950,1170,9);MM('Nightmare',953,1167,953,1178,9);MM('Wolf',958,1175,959,1172)
+def l():MM('Necromancer',938,1155,941,1161,946,1155,949,1159,10);MM('Priestess',941,1152,943,1157,946,1160,10)

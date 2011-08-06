@@ -1,2 +1,1 @@
 m=()
-def l():MM('Demon Skeleton',1152,1159,1152,1173,10);M('Bonebeast',1152,1164,10);M('Crypt shambler',1152,1168,10);M('Orc Rider',1166,1156);M('Lizard Snakecharmer',1166,1180,6);MM('Orc Spearman',1167,1152,1170,1155);M('Orc',1167,1155);MM('Lizard Sentinel',1172,1180,1172,1183);M('Lizard Legionnaire',1173,1162,6);M('Lizard Snakecharmer',1176,1180);M('Lizard Zaogun',1178,1165,6);MM('Lizard Sentinel',1182,1180,1183,1181,6)

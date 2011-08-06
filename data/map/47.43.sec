@@ -1,2 +1,1 @@
 m=()
-def l():M('Demon Skeleton',1505,1389,10);M('Vampire',1507,1389,10);MM('Bonebeast',1509,1389,1510,1400,13);MM('Banshee',1510,1397,1515,1380,13);M('Lich',1511,1390,13);MM('Banshee',1515,1383,1518,1397,12);M('Grim Reaper',1516,1381,12);MM('Demon Skeleton',1516,1382,1518,1393,13);M('Ancient Scarab',1517,1393,12);MM('Giant Spider',1520,1393,1520,1397,13);M('Nightmare',1520,1394,12);MM('Bug',1522,1377,1527,1407,1528,1381);M('Lost Soul',1523,1386,13);MM('Grim Reaper',1532,1381,1532,1398,13);M('Blightwalker',1534,1390,13)

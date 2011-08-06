@@ -1,2 +1,1 @@
 m=()
-def l():MM('Minotaur mage',1451,1425,1453,1423,4);MM('Minotaur archer',1452,1423,1453,1425,4);M('Minotaur mage',1452,1436,5);MM('Minotaur guard',1453,1430,1461,1432,1464,1437,5);M('Minotaur archer',1457,1433,5);M('Minotaur',1457,1436,5);MM('Wyrm',1467,1438,1470,1429,9)
