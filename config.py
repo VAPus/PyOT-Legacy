@@ -51,5 +51,5 @@ stackTiles = True # Sacrefice loading time for the sake of memory usage
 
 sayRange = (10,8)
 yellRange = (18, 14)
-itemMaxClientId = 12844
-itemMaxServerId = 13979
+itemMaxClientId = 12816
+itemMaxServerId = 12844
