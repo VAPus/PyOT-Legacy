@@ -266,7 +266,8 @@ class Map(object):
                             print "Bug"            
                     output += "\ndef l():"+';'.join(extras)
 
-                open('%d.%d.sec' % (xA, yA), 'w').write(output)
+                with open('%d.%d.sec' % (xA, yA), 'w') as f:
+                    f.write(output)
                 
                 print "--Wrote %d.%d.sec\n" % (xA, yA)
         output = ""
@@ -286,8 +287,9 @@ class Map(object):
 			low = level
 		num += 1
 	print "Northingness on: %s" % (nothingness)
-	output += "levels = (%d, %d)" % (num, low)        
-        open('info.py', "w").write(output)
+	output += "levels = (%d, %d)" % (num, low)
+	with open('info.py', "w") as f:
+            f.write(output)
         print "---Wrote info.py"
 
 ### Areas

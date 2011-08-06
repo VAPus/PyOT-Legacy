@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys, copy
-import generator
+import struct, sys
 
 # The reader class:
 class Reader(object):
@@ -99,7 +98,7 @@ class Node(object):
         while otbm.pos < (self.begin + self.size):
             if byte == 0xFE and not nextIsEscaped:
                 blockSize = self.sizer()
-                node = self.handleBlock(copy.copy(otbm.pos), blockSize)
+                node = self.handleBlock(otbm.pos, blockSize)
                 otbm.pos += blockSize
             elif byte == 0xFF and not nextIsEscaped:
                 level.value -= 1
@@ -118,7 +117,7 @@ class Node(object):
         self.data = Reader(self.data)
 
     def sizer(self):
-        oldPos = copy.copy(otbm.pos)
+        oldPos = otbm.pos
         global subLevels
         subLevels = 0
         
@@ -192,25 +191,30 @@ minorVersionItems = root.data.uint32()
 tiles = width * height # This also count null tiles which we doesn't pass, bad
 
 print "OTBM v%d, %dx%d" % (version, width, height) 
-
-# Prepopulate map with a ground level of voids
+_output_ = []
+_output_.append("""
+import generator
 print "--Generating the map layout with no filling (gad this takes alot of memory)"
-_map = generator.Map(width,height, ground=None)
+_map = generator.Map(%d,%d, ground=None)
 print "--Done generating the map layout"
+""" % (width, height))
+# Prepopulate map with a ground level of voids
+
 nodes = root.next()
 nodes.data.pos += 1
 description = ""
 spawns = ""
 house = ""
 
-_map.author("OTBMXML2sec generator")
+_output_.append("""_map.author("OTBMXML2sec generator")
 print "--Beging parsing description, spawns, and houses"
+""")
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
         description = nodes.data.string()
         print description+"\n"
-        _map.description(description)
+        _output_.append('_map.description("""%s""")' % (description))
     elif attr == 11:
         spawns = nodes.data.string()
     elif attr == 13:
@@ -239,7 +243,7 @@ while node:
                     # TODO
                     tile.data.uint32()
                 
-                mapTile = generator.Tile(tileX, tileY, ground=None, level=baseZ)
+                _output_.append("mapTile = generator.Tile(%d, %d, ground=None, level=%d)" % (tileX, tileY, baseZ))
                 
                 # Attributes
                 while tile.data.peekUint8():
@@ -248,7 +252,7 @@ while node:
                         tile.data.uint32() # TODO, parse those
                         
                     elif attr == 9: # ITEM, ground item
-                        mapTile.add(genItem(tile.data.uint16())) # TODO, parse item
+                        _output_.append("mapTile.add(generator.Item(%d))" % (tile.data.uint16()))
                         
                     else:
                         print "Unknown tile attrubute"
@@ -258,7 +262,7 @@ while node:
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _item_ = genItem(itemId)
+                        _output_.append("_item_ = generator.Item(%d)" % (itemId))
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
@@ -271,25 +275,25 @@ while node:
                             elif attr == 21: # sleepstart
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
-                                _item_.attribute("teledest", [item.data.uint16(),item.data.uint16(),item.data.uint8()])
+                                _output_.append("_item_.attribute(\"teledest\", [%d,%d,%d])" % (item.data.uint16(),item.data.uint16(),item.data.uint8()))
                             elif attr == 15: # Item count
-                                _item_.attribute("count", item.data.uint8())
+                                _output_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
                             elif attr == 4: # action id
-                                _item_.action(item.data.uint16())
+                                _output_.append("_item_.action(%d)" % item.data.uint16())
                             elif attr == 5:
-                                _item_.action(item.data.uint16() + 0xFFFF)
+                                _output_.append("_item_.action(%d)" % (item.data.uint16() + 0xFFFF))
                             elif attr == 6:
-                                _item_.attribute("text", item.data.string())
+                                _output_.append('_item_.attribute("text", """%s""")' % (item.data.string()))
                             elif attr == 18:
-                                _item_.attribute("written", item.data.uint32())
+                                _output_.append("_item_.attribute(\"written\", %d)" % (item.data.uint32()))
                             elif attr == 19:
-                                _item_.attribute("writtenBy", item.data.string())
+                                _output_.append("_item_.attribute(\"writtenBy\", \"%s\")" % (item.data.string()))
                             elif attr == 7:
-                                _item_.attribute("description", item.data.string()) # It will probably work diffrently
+                                _output_.append(" _item_.attribute(\"description\", \"%s\")" % (item.data.string()))
                             elif attr == 12:
                                 runeCharges = item.data.uint8()
                             elif attr == 22:
-                                _item_.attribute("count", item.data.uint8())
+                                _output_.append("_item_.attribute(\"count\", %d)" % (item.data.uint8()))
                             elif attr == 16:
                                 duration = item.data.uint32()
                             elif attr == 17:
@@ -300,14 +304,14 @@ while node:
                             else:
                                 print "Unknown item attribute %d" % attr
                         
-                        mapTile.add(_item_)
+                        _output_.append("mapTile.add(_item_)")
                     else:
                         print "Unknown item header"
                     item = tile.next()
             else:
                 print "Unknown tile node"
-            if mapTile.get():
-                _map.add(mapTile)
+            
+            _output_.append("_map.add(mapTile)")
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000
@@ -323,7 +327,7 @@ while node:
                 townId = town.data.uint32()
                 townName = town.data.string()
                 temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
-                _map.town(townId, townName, temple)
+                _output_.append("_map.town(%d, \"%s\", %s)" % (townId, townName, temple))
             else:
                 print "Unknown town node"
                 
@@ -338,7 +342,7 @@ while node:
             if waypointType == 16:
                 name = waypoint.data.string()
                 cords = [waypoint.data.uint16(),waypoint.data.uint16(),waypoint.data.uint8()]
-                _map.waypoint(name, cords)
+                _output.append("_map.waypoint(\"%d\", %s)" % (name, cords))
             else:
                 print "Unknown waypoint type"
             waypoint = node.next()
@@ -354,7 +358,6 @@ del otbm
 ### Begin XML reading
 import xml.dom.minidom as dom
 dom = dom.parse(spawns)
-monsters = {}
 
 print "---Begin spawns"
 for xSpawn in dom.getElementsByTagName("spawn"):
@@ -369,12 +372,15 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if monsterZ != baseZ:
             print "UNSUPPORTED spawns!"
         
-        monsterName = xMonster.getAttribute("name")
-        if not monsterName in monsters:
-            monsters[monsterName] = generator.Monster(monsterName)
+        monsterName = xMonster.getAttribute("name") 
             
-        _map.addTo(monsterX, monsterY, monsters[monsterName], monsterZ)
+        _output_.append("_map.addTo(%d, %d, generator.Monster(\"%s\"), %d)" % (monsterX, monsterY, monsterName, monsterZ))
 
 print "---Done with spawns"
 
-_map.compile()
+_output_.append("_map.compile()")
+
+print "-- Writing genmap.py"
+with open("genmap.py", "wb") as f:
+    f.write("\n".join(_output_))
+print "Done!"
