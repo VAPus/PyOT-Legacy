@@ -256,7 +256,7 @@ def load(sectorX, sectorY):
         exec(compiled)
     
     localItems = game.item.items # Prevent a bit of a lookup
-    
+
     for mz in m:
         currZ = knownMap[mz[0]]
             

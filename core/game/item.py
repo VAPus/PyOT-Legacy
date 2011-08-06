@@ -56,15 +56,20 @@ class Item(object):
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
-        print self.itemId
+
         if self.stackable:
             self.count = count
         
-        
-        # Extend items such as containers, beds and doors
-        elif "containerSize" in items[self.itemId]:
-            self.container = Container(self.containerSize)
-            
+        else:
+            try:        
+                # Extend items such as containers, beds and doors
+                if "containerSize" in items[self.itemId]:
+                    self.container = Container(self.containerSize)
+            except:
+                print "Buggy itemId %d" % self.itemId
+                self.itemId = 100   
+                
+
         if kwargs:
             for key in kwargs:
                 setattr(self, key, kwargs[key])
