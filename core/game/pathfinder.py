@@ -34,16 +34,22 @@ class node(object):
 
 # A-star algorithm.
 # The path returned will be a string of digits of directions.
-def pathFind(the_map, xA, yA, xB, yB):
-    dx = [1, 1, 0, -1, -1, -1, 0, 1]
-    dy = [0, 1, 1, 1, 0, -1, -1, -1]
+def pathFind(the_map, relX, relY, xB, yB):
+    """dx = [1, 1, 0, -1, -1, -1, 0, 1]
+    dy = [0, 1, 1, 1, 0, -1, -1, -1]"""
+    dx = [0, 1, 0, -1]
+    dy = [-1, 0, 1, 0]
+    xA = 15
+    yA = 15
+    xB = xB - relX + 15
+    yB = yB - relY + 15
     """dy = [0, 1, 0, -1, -1, 1, -1, 1]
     dx = [1, 0, -1, 0, 1, 1, -1, -1]"""
     closed_nodes_map = [] # map of closed (tried-out) nodes
     open_nodes_map = [] # map of open (not-yet-tried) nodes
     dir_map = [] # map of dirs
-    row = [0] * n
-    for i in xrange(m): # create 2d arrays
+    row = [0] * 30
+    for i in xrange(30): # create 2d arrays
         closed_nodes_map.append(row[:])
         open_nodes_map.append(row[:])
         dir_map.append(row[:])
@@ -57,7 +63,7 @@ def pathFind(the_map, xA, yA, xB, yB):
     open_nodes_map[yA][xA] = n0.priority # mark it on the open nodes map
 
     # A* search
-    while len(pq[pqi]):
+    while pq[pqi]:
         # get the current node w/ the highest priority
         # from the list of open nodes
         n1 = pq[pqi][0] # top node
@@ -66,7 +72,7 @@ def pathFind(the_map, xA, yA, xB, yB):
         y = n0.yPos
         heappop(pq[pqi]) # remove the node from the open list
         open_nodes_map[y][x] = 0
-        closed_nodes_map[y][x] = 1 # mark it on the closed nodes map
+        closed_nodes_map[y][x] = True # mark it on the closed nodes map
 
         # quit searching when the goal is reached
         # if n0.estimate(xB, yB) == 0:
@@ -75,19 +81,30 @@ def pathFind(the_map, xA, yA, xB, yB):
             # by following the dirs
             path = []
             while not (x == xA and y == yA):
-                print "%d %d" % (y,x)
                 j = dir_map[y][x]
-                c = (j + 8 / 2) % 8
+                c = (j + 4 / 2) % 4
                 path.append(c)
                 x += dx[j]
                 y += dy[j]
+            path.reverse()
             return path
 
         # generate moves (child nodes) in all possible dirs
-        for i in xrange(8):
+        for i in xrange(4):
             xdx = x + dx[i]
             ydy = y + dy[i]
-            if not (xdx < 0 or xdx > n-1 or ydy < 0 or ydy > m - 1 or not the_map[x][y] or the_map[x][y].ground().solid or closed_nodes_map[ydy][xdx] == 1):
+            mx = x+relX-15
+            my = y+relY-15
+            isSolid = False
+            if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not the_map[mx][my] or closed_nodes_map[ydy][xdx]):
+               
+                for t in the_map[mx][my].getItems():
+                    if t.solid:
+                        isSolid = True
+                        break
+                if isSolid:
+                    continue
+                #print "%d %d" % (mx, my)
                 # generate a child node
                 m0 = node(xdx, ydy, n0.distance, n0.priority)
                 m0.nextMove(i)
@@ -97,12 +114,12 @@ def pathFind(the_map, xA, yA, xB, yB):
                     open_nodes_map[ydy][xdx] = m0.priority
                     heappush(pq[pqi], m0)
                     # mark its parent node direction
-                    dir_map[ydy][xdx] = (i + 8 / 2) % 8
+                    dir_map[ydy][xdx] = (i + 4 / 2) % 4
                 elif open_nodes_map[ydy][xdx] > m0.priority:
                     # update the priority
                     open_nodes_map[ydy][xdx] = m0.priority
                     # update the parent direction
-                    dir_map[ydy][xdx] = (i + 8 / 2) % 8
+                    dir_map[ydy][xdx] = (i + 4 / 2) % 4
                     # replace the node
                     # by emptying one pq to the other one
                     # except the node to be replaced will be ignored
@@ -114,7 +131,7 @@ def pathFind(the_map, xA, yA, xB, yB):
                     # empty the larger size priority queue to the smaller one
                     if len(pq[pqi]) > len(pq[1 - pqi]):
                         pqi = 1 - pqi
-                    while len(pq[pqi]):
+                    while pq[pqi]:
                         heappush(pq[1-pqi], pq[pqi][0])
                         heappop(pq[pqi])       
                     pqi = 1 - pqi

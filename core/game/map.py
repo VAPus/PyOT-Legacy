@@ -92,7 +92,10 @@ class Tile(object):
 
     def getItems(self):
         items = self.topItems()[:]
-        items.extend(self.bottomItems())
+        try:
+            items.extend(self.bottomItems())
+        except:
+            pass
         return items
     def creatures(self):
         return self.things[self.itemCount & 0x0F:(self.itemCount >> 4) + self.itemCount & 0x0F]
