@@ -38,7 +38,7 @@ class TibiaPlayer(Creature):
         stream = TibiaPacket(0x0A)
 
         stream.uint32(self.clientId()) # Cid
-        stream.uint16(0x0032) # Speed
+        stream.uint16(self.speed) # Speed
         stream.uint8(1) # Rule violations?
 
         stream.uint8(0x64) # Map description
