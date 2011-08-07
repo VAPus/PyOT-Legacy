@@ -269,3 +269,5 @@ def get(type, thing=None):
     if not thing:
         return globalScripts[type]
     
+def reg(type, *argc, **kwargs):
+    globalScripts[type].reg(*argc, **kwargs)
