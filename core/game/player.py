@@ -925,6 +925,21 @@ class TibiaPlayer(Creature):
 
         if thing:
             game.scriptsystem.get('use').run(thing, self, None, thing, position, index)
+
+    def handleUseWith(self, packet):
+        game.engine.explainPacket(packet)
+        position = packet.position()
+        clientId = packet.uint16() # Junk I tell you :p
+        stackpos = packet.uint8()
+        
+        onPosition = packet.position()
+        onId = packet.uint16()
+        onStack = packet.uint8()
+        
+        thing = self.findItem(position, stackpos)
+
+        if thing:
+            game.scriptsystem.get('useWith').run(thing, self, None, thing, position, onPosition, onId, onStack)
             
     def handleAttack(self, packet):
         cid = packet.uint32()
