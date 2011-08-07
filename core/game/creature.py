@@ -164,9 +164,9 @@ class Creature(object):
             self.notPossible()
             raise game.errors.ImpossibleMove
             return False"""
-        
-        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
-            game.engine.safeCallLater(0, self.move, direction)
+        t = time.time()
+        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
+            game.engine.safeCallLater(t-self.lastStep+self.stepDuration(newTile.getThing(0)), self.move, direction)
             return False
             
         else:
