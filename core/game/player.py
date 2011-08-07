@@ -798,7 +798,12 @@ class TibiaPlayer(Creature):
                 self.notEnoughRoom()
                 return
                 
-            creature = game.map.getTile(fromPosition).getThing(fromStackPos)    
+            creature = game.map.getTile(fromPosition).getThing(fromStackPos) 
+            toTile = game.map.getTile(toPosition)
+            for i in toTile.getItems():
+                if i.solid:
+                    self.notPossible()
+                    return
             if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
                 walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
                 if len(walkPattern) > 1:
