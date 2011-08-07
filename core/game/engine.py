@@ -7,6 +7,7 @@ from packet import TibiaPacket
 import game.map
 import config
 import math
+import game.pathfinder
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -106,7 +107,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         safeCallLater(0, callback)
 
 # Calculate walk patterns
-def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True, walkSolid=False):
+def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     pattern = []
     currPos = fromPos
     # First diagonal if possible
@@ -124,46 +125,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True, walkSolid=
             pattern.append(base)
         
     if not pattern:
-        while currPos != to:
-            # First x walk
-            if fromPos[0] > to[0]:
-                for x in xrange(0, fromPos[0]-to[0]):
-                    newPos = positionInDirection(currPos, 3)
-                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
-                        pattern.append(3)
-                        currPos = newPos
-                    else:
-                        break
-            elif fromPos[0] < to[0]:
-                for x in xrange(0, to[0]-fromPos[0]):
-                    newPos = positionInDirection(currPos, 1)
-                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
-                        pattern.append(1)
-                        currPos = newPos
-                    else:
-                        break
-                        
-            # Then y walking
-            if fromPos[1] > to[1]:
-                for x in xrange(0, fromPos[1]-to[1]):
-                    newPos = positionInDirection(currPos, 0)
-                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
-                        pattern.append(0)
-                        currPos = newPos
-                    else:
-                        break
-                        
-            elif fromPos[1] < to[1]:
-                for x in xrange(0, to[1]-fromPos[1]):
-                    newPos = positionInDirection(currPos, 2)
-                    if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
-                        pattern.append(2)
-                        currPos = newPos
-                    else:
-                        break
-            if not currPos == to:
-                print "Walk/calculate path around blocked stuff is not supported! Help us fix it!\n Regards: line 161 core/game/engine.py"
-                break
+        pattern = game.pathfinder.findPath(game.map.knownMap[fromPos[2]], fromPos[0], fromPos[1], to[0], to[1])
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:

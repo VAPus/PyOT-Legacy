@@ -819,15 +819,6 @@ class TibiaPlayer(Creature):
             
         thing = self.findItem(position, stackpos)     
         
-        # DEBUG
-        if position[2] == self.position[2]:
-            import game.map
-            t = time.time()
-            p = game.pathfinder.pathFind(game.map.knownMap[position[2]], self.position[0], self.position[1], position[0], position[1])
-            print p
-            print "Finding took took: %f" % (time.time() - t)
-            if p:
-                game.engine.autoWalkCreature(self, deque(p))
         if thing:
             def afterScript():
                 extra = ""

@@ -1,9 +1,8 @@
 ## {{{ http://code.activestate.com/recipes/577519/ (r3)
 # A* Shortest Path Algorithm
-# http://en.wikipedia.org/wiki/A*
 # FB - 201012256
 
-# Heavily modified by Stian Andreassen :)
+# Heavily modified by Stian Andreassen to gain speed and functionality (original script was totally broken for our usage and used 5 times longer to calculate) :)
 from heapq import heappush, heappop # for priority queue
 
 class node(object):
@@ -34,7 +33,7 @@ class node(object):
 
 # A-star algorithm.
 # The path returned will be a string of digits of directions.
-def pathFind(the_map, relX, relY, xB, yB):
+def findPath(the_map, relX, relY, xB, yB):
     """dx = [1, 1, 0, -1, -1, -1, 0, 1]
     dy = [0, 1, 1, 1, 0, -1, -1, -1]"""
     dx = [0, 1, 0, -1]
@@ -96,44 +95,46 @@ def pathFind(the_map, relX, relY, xB, yB):
             mx = x+relX-15
             my = y+relY-15
             isSolid = False
-            if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not the_map[mx][my] or closed_nodes_map[ydy][xdx]):
-               
-                for t in the_map[mx][my].getItems():
-                    if t.solid:
-                        isSolid = True
-                        break
-                if isSolid:
-                    continue
-                #print "%d %d" % (mx, my)
-                # generate a child node
-                m0 = node(xdx, ydy, n0.distance, n0.priority)
-                m0.nextMove(i)
-                m0.updatePriority(xB, yB)
-                # if it is not in the open list then add into that
-                if open_nodes_map[ydy][xdx] == 0:
-                    open_nodes_map[ydy][xdx] = m0.priority
-                    heappush(pq[pqi], m0)
-                    # mark its parent node direction
-                    dir_map[ydy][xdx] = (i + 4 / 2) % 4
-                elif open_nodes_map[ydy][xdx] > m0.priority:
-                    # update the priority
-                    open_nodes_map[ydy][xdx] = m0.priority
-                    # update the parent direction
-                    dir_map[ydy][xdx] = (i + 4 / 2) % 4
-                    # replace the node
-                    # by emptying one pq to the other one
-                    # except the node to be replaced will be ignored
-                    # and the new node will be pushed in instead
-                    while not (pq[pqi][0].xPos == xdx and pq[pqi][0].yPos == ydy):
-                        heappush(pq[1 - pqi], pq[pqi][0])
-                        heappop(pq[pqi])
-                    heappop(pq[pqi]) # remove the target node
-                    # empty the larger size priority queue to the smaller one
-                    if len(pq[pqi]) > len(pq[1 - pqi]):
+            try:
+                if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not the_map[mx][my] or closed_nodes_map[ydy][xdx]):
+                    for t in the_map[mx][my].getItems():
+                        if t.solid:
+                            isSolid = True
+                            break
+                    if isSolid:
+                        continue
+                    #print "%d %d" % (mx, my)
+                    # generate a child node
+                    m0 = node(xdx, ydy, n0.distance, n0.priority)
+                    m0.nextMove(i)
+                    m0.updatePriority(xB, yB)
+                    # if it is not in the open list then add into that
+                    if open_nodes_map[ydy][xdx] == 0:
+                        open_nodes_map[ydy][xdx] = m0.priority
+                        heappush(pq[pqi], m0)
+                        # mark its parent node direction
+                        dir_map[ydy][xdx] = (i + 4 / 2) % 4
+                    elif open_nodes_map[ydy][xdx] > m0.priority:
+                        # update the priority
+                        open_nodes_map[ydy][xdx] = m0.priority
+                        # update the parent direction
+                        dir_map[ydy][xdx] = (i + 4 / 2) % 4
+                        # replace the node
+                        # by emptying one pq to the other one
+                        # except the node to be replaced will be ignored
+                        # and the new node will be pushed in instead
+                        while not (pq[pqi][0].xPos == xdx and pq[pqi][0].yPos == ydy):
+                            heappush(pq[1 - pqi], pq[pqi][0])
+                            heappop(pq[pqi])
+                        heappop(pq[pqi]) # remove the target node
+                        # empty the larger size priority queue to the smaller one
+                        if len(pq[pqi]) > len(pq[1 - pqi]):
+                            pqi = 1 - pqi
+                        while pq[pqi]:
+                            heappush(pq[1-pqi], pq[pqi][0])
+                            heappop(pq[pqi])       
                         pqi = 1 - pqi
-                    while pq[pqi]:
-                        heappush(pq[1-pqi], pq[pqi][0])
-                        heappop(pq[pqi])       
-                    pqi = 1 - pqi
-                    heappush(pq[pqi], m0) # add the better node instead
+                        heappush(pq[pqi], m0) # add the better node instead
+            except:
+                pass # Out of map position
     return [] # if no route found
