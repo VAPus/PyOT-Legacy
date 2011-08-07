@@ -21,15 +21,32 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
         elif creature.data["maglevel"] < mlevel:
             creature.notEnough("magic level")
         else:
-            useItem = creature.findItemById(use, useCount)
+            #useItem = creature.findItemById(use, useCount)
+            useItem = None
+            slot = 0
+            if creature.inventory[4] and creature.inventory[4].itemId == use and creature.inventory[4].count >= useCount:
+                useItem = creature.inventory[4]
+                slot = 5
+            elif creature.inventory[5] and creature.inventory[5].itemId == use and creature.inventory[5].count >= useCount:
+                useItem = creature.inventory[5]
+                slot = 6
+            elif creature.inventory[9] and creature.inventory[9].itemId == use and creature.inventory[9].count >= useCount:
+                useItem = creature.inventory[9]
+                slot = 10
+                
             if not useItem:
                 creature.needMagicItem()
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
+                useItem.count -= useCount
+                creature.updateInventory(slot) # Send refresh to client
                 item = game.item.Item(make,makeCount)
 
-                creature.itemToContainer(creature.inventory[2], item)
+                ret = creature.itemToUse(item)
+                if not ret:
+                    creature.notEnoughRoom()
+                    
                 creature.cooldownSpell(icon, group, cooldown)
                 creature.message("Made %dx%s" % (makeCount, name))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)

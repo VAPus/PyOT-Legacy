@@ -79,7 +79,7 @@ class TibiaPlayer(Creature):
         stream.uint8(0) # % to next level, TODO
         stream.uint8(self.data["soul"]) # TODO: Virtual cap? Soul
         stream.uint16(self.data["stamina"] / (1000 * 60)) # Stamina minutes
-        stream.uint16(0x0032) # Speed
+        stream.uint16(self.speed) # Speed
         
         stream.uint16(0x00) # Condition
 
@@ -528,6 +528,56 @@ class TibiaPlayer(Creature):
             
         return True
 
+    def itemToUse(self, item):
+        # Means, right hand, left hand, ammo or bag. Stackable only
+        if not self.inventory[4]:
+            self.inventory[4] = item
+            stream = TibiaPacket()
+            stream.addInventoryItem(5, self.inventory[4])
+            stream.send(self.client)
+            return True
+        elif self.inventory[4].itemId == item.itemId and self.inventory[4].count < 100:
+            prevCount = self.inventory[4].count
+            self.inventory[4].count = min(100, prevCount + item.count)
+            item.count = (prevCount + item.count) - self.inventory[4].count
+            stream = TibiaPacket()
+            stream.addInventoryItem(5, self.inventory[4])
+            stream.send(self.client)            
+        if item.count:
+            if not self.inventory[5]:
+                self.inventory[5] = item
+                stream = TibiaPacket()
+                stream.addInventoryItem(6, self.inventory[5])
+                stream.send(self.client)
+                return True
+            elif self.inventory[5].itemId == item.itemId and self.inventory[5].count < 100:
+                prevCount = self.inventory[5].count
+                self.inventory[5].count = min(100, prevCount + item.count)
+                item.count = (prevCount + item.count) - self.inventory[5].count  
+                stream = TibiaPacket()
+                stream.addInventoryItem(6, self.inventory[5])
+                stream.send(self.client)
+                
+        if item.count:
+            if not self.inventory[9]:
+                self.inventory[9] = item
+                stream = TibiaPacket()
+                stream.addInventoryItem(10, self.inventory[0])
+                stream.send(self.client)
+                return True
+            elif self.inventory[9].itemId == item.itemId and self.inventory[9].count < 100:
+                prevCount = self.inventory[5].count
+                self.inventory[9].count = min(100, prevCount + item.count)
+                item.count = (prevCount + item.count) - self.inventory[9].count  
+                stream = TibiaPacket()
+                stream.addInventoryItem(10, self.inventory[9])
+                stream.send(self.client) 
+                
+        if item.count and self.inventory[2]:
+            return self.itemToContainer(self.inventory[2], item)
+        elif item.count:
+            return False
+        return True
     # Item To inventory slot
     def itemToInventory(self, item, slot=None, stack=True):
         if slot == None:
@@ -546,6 +596,13 @@ class TibiaPlayer(Creature):
         
         return True
 
+    def updateInventory(self, slot):
+        stream = TibiaPacket()
+        if self.inventory[slot-1].stackable and not self.inventory[slot-1].count:
+            stream.removeInventoryItem(slot)
+        else:
+            stream.addInventoryItem(slot, self.inventory[slot-1])
+        stream.send(self.client)        
     # Channel system
     def openChannels(self):
         stream = TibiaPacket(0xAB)
@@ -663,7 +720,6 @@ class TibiaPlayer(Creature):
             toMap = True
            
         count = packet.uint8()
-        restoreItem = None
         oldItem = None
         renew = False
         stack = True
@@ -697,7 +753,7 @@ class TibiaPlayer(Creature):
                 oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)
 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     self.notPossible()
                     return
                     
@@ -720,7 +776,7 @@ class TibiaPlayer(Creature):
                 oldItem = self.findItemWithPlacement(fromPosition)
                 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_DEPOT and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     self.notPossible()
                     return
                     
@@ -789,9 +845,9 @@ class TibiaPlayer(Creature):
                         container = self.getContainer(toPosition[1]-64)
 
                         self.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
-                    if not fromMap and restoreItem:
-                        stream.addInventoryItem(fromPosition[1], restoreItem[1])
-                        self.inventory[fromPosition[1]-1] = restoreItem[1]
+                    if renew and currItem:
+                        self.itemToContainer(self.inventory[2], currItem[1])
+
                     stream.send(self.client)
         else:
             if game.map.getTile(toPosition).creatures():
