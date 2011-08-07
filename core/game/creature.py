@@ -67,7 +67,7 @@ class Creature(object):
         self.mounted = 0
         self.addon = 0
         self.action = None
-        self.actionLock = threading.Lock()
+        self.lastAction = 0
         self.lastStep = 0
         self.target = None # target for follow/attacks based on modes
         self.vars = {}
@@ -75,7 +75,15 @@ class Creature(object):
         
         # We are trackable
         allCreatures[self.cid] = self
-        
+
+    def actionLock(self, *args):
+        if self.lastAction >= time.time():
+            game.engine.safeCallLater(0.1, *args)
+            return False
+        else:
+            self.lastAction = game.engine.safeTime()
+            return True
+            
     def name(self):
         return self.data["name"]
 
@@ -103,7 +111,8 @@ class Creature(object):
         return
         
     def move(self, direction, spectators=None, level=0):
-        self.actionLock.acquire()
+        if not self.actionLock(self.move, direction, spectators, level):
+            return False
         import data.map.info
         self.direction = direction
         
@@ -156,18 +165,12 @@ class Creature(object):
             raise game.errors.ImpossibleMove
             return False"""
         
-        """if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
-            self.actionLock.release()
-            raise game.errors.Cheat("Stepping too fast!")
+        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > time.time():
+            game.engine.safeCallLater(0, self.move, direction)
             return False
             
         else:
-            self.lastStep = time.time()"""
-        
-        self.lastStep = time.time()
-
-
-        
+            self.lastStep = time.time()
 
         
         # Make packet
@@ -214,7 +217,7 @@ class Creature(object):
 
             if spectator.player == self:
                 streamX = copy.copy(stream)
-                
+
                 if oldPosition[2] > position[2]:
                     streamX.moveUpPlayer(self, oldPosition)
                         
@@ -251,8 +254,7 @@ class Creature(object):
             for script in self.scripts["onNextStep"]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
-                
-        self.actionLock.release()       
+                     
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, item, position)
@@ -296,7 +298,9 @@ class Creature(object):
         self.refreshOutfit()
         
     def teleport(self, position):
-        self.actionLock.acquire()
+        if not self.actionLock(self.teleport, position):
+            return False
+            
         # 4 steps, remove item (creature), send new map and cords, and effects 
         newTile = getTile(position)
         
@@ -330,12 +334,13 @@ class Creature(object):
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
                 
-        self.actionLock.release()
 
     def turn(self, direction):
         if self.direction == direction:
             return
-        self.actionLock.acquire()    
+        if not self.actionLock(self.turn, direction):
+            return False
+            
         self.direction = direction
         
         # Make package
@@ -348,7 +353,6 @@ class Creature(object):
                 
         # Send to everyone
         stream.sendto(getSpectators(self.position))
-        self.actionLock.release()
     def say(self, message):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)

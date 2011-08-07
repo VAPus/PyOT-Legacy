@@ -99,14 +99,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
             return
         
         self.player = TibiaPlayer(self, character[0])
-        #try:
-        getTile(self.player.position).placeCreature(self.player)
-        """except:
+        try:
+            getTile(self.player.position).placeCreature(self.player)
+        except:
             print "%s is unspawnable, choosing a city" % str(self.player.position)
             import data.map.info
             import game.map
             self.player.position = data.map.info.towns[1][1]
-            getTile(self.player.position).placeCreature(self.player)"""
+            getTile(self.player.position).placeCreature(self.player)
                 
         self.player.sendFirstPacket()
         

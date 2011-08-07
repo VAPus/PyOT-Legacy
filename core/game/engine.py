@@ -46,7 +46,11 @@ def loader(timer):
         
     d.addCallback(sync, timer)
 
+
 # Useful for windows
+def safeTime():
+    return math.ceil(time.time() * 60) / 60
+    
 def safeCallLater(sec, *args):
     reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
     

@@ -388,7 +388,7 @@ class TibiaPacket(object):
     def put(self, string):
         self.bytes.append(struct.pack("%ds" % len(string), str(string)))
 
-    @inThread
+    #@inThread
     def send(self, stream):
         self.bytes = [''.join(self.bytes)]
 
@@ -397,8 +397,8 @@ class TibiaPacket(object):
         else:
             data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         
-        stream.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
-    @inThread
+        reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+    #@inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
@@ -412,4 +412,4 @@ class TibiaPacket(object):
             if not lenCache:
                 lenCache = len(data)+4
              
-            client.transport.write(struct.pack("<HI", lenCache, adler32(data) & 0xffffffff)+data)
+            reactor.callFromThread(client.transport.write, struct.pack("<HI", lenCache, adler32(data) & 0xffffffff)+data)

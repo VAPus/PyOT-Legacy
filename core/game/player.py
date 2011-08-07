@@ -638,8 +638,12 @@ class TibiaPlayer(Creature):
         if self.target:
             self.target = None
 
-        game.engine.autoWalkCreature(self, deque([direction]))
-        
+        try:
+            game.engine.autoWalkCreature(self, deque([direction]))
+        except game.errors.ImpossibleMove:
+            print "Player got a impossible move, ignoring"
+            # This is a impossible move
+            
     @deferredGenerator
     def handleMoveItem(self, packet):
         from game.item import Item, sid, items
