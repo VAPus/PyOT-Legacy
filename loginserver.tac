@@ -1,5 +1,8 @@
-import config, sys
+import sys
+sys.path.insert(0, '.')
 sys.path.insert(1, 'core')
+
+import config
 
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
