@@ -77,7 +77,7 @@ class Creature(object):
         allCreatures[self.cid] = self
 
     def actionLock(self, *args):
-        if self.lastAction >= time.time():
+        if self.lastAction > time.time():
             game.engine.safeCallLater(0.1, *args)
             return False
         else:
@@ -110,8 +110,8 @@ class Creature(object):
         # Right now, don't care
         return
         
-    def move(self, direction, spectators=None, level=0):
-        if not self.actionLock(self.move, direction, spectators, level):
+    def move(self, direction, spectators=None, level=0, callback=None):
+        if not self.actionLock(self.move, direction, spectators, level, callback):
             return False
         import data.map.info
         self.direction = direction
@@ -164,15 +164,15 @@ class Creature(object):
             self.notPossible()
             raise game.errors.ImpossibleMove
             return False"""
-        t = time.time()
+        """t = time.time()
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
             game.engine.safeCallLater(t-self.lastStep+self.stepDuration(newTile.getThing(0)), self.move, direction)
             return False
             
         else:
-            self.lastStep = time.time()
-
-        
+            self.lastStep = time.time()"""
+        self.lastStep = game.engine.safeTime()
+        self.lastAction += self.stepDuration(newTile.getThing(0))
         # Make packet
         if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
@@ -264,7 +264,8 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
-        
+        if callback:
+            callback(oldPosition, position)
         return True # Required for auto walkings
 
     def magicEffect(self, pos, type):

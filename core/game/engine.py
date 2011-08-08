@@ -61,6 +61,7 @@ def action(forced=False, delay=0):
         def new_f(creature, *args, **argw):
             if creature.action and forced:
                 creature.action.cancel()
+                f(creature, *args, **argw)
             elif not forced and creature.action and creature.action.active():
                 safeCallLater(0, new_f, *args, **argw)
             elif delay:
@@ -80,7 +81,7 @@ def loopInThread(time):
         return new_f
     return decor
 # First order of buisness, the autoWalker
-@action()
+@action(True)
 def autoWalkCreature(creature, walkPatterns, callback=None): 
     creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
     
@@ -97,14 +98,14 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         return
         
     direction = walkPatterns.popleft()
-    ret = creature.move(direction)
-    if ret and len(walkPatterns):
-        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
-    else:
-        creature.action = None
-        
-    if callback and ret and not len(walkPatterns):    
-        safeCallLater(0, callback)
+    currPos = creature.position
+    mcallback=callback
+    if walkPatterns:
+        def mcallback(oldPos, newPos):
+            if oldPos == currPos:
+                creature.action = safeCallLater(creature.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+    ret = creature.move(direction, callback=mcallback)
+    
 
 # Calculate walk patterns
 def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
