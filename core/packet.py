@@ -1,6 +1,5 @@
 import struct
 import otcrypto
-from twisted.python import log
 from twisted.internet import reactor
 from zlib import adler32
 

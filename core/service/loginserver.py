@@ -66,7 +66,6 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         yield d # Tell the core to come back to use once the query above is finished
 
         characters = d.getResult()
-        print (str(characters))
 
         # Send motd
         pkg.uint8(0x14)
