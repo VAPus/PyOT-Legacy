@@ -152,8 +152,15 @@ class Creature(object):
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
-        oldStackpos = oldTile.findCreatureStackpos(self)
-
+        try:
+            oldStackpos = oldTile.findCreatureStackpos(self)
+        except:
+            self.teleport(position)
+            if callback:
+                callback(oldPosition, position)
+            self.lastStep = game.engine.safeTime()
+            self.lastAction += self.stepDuration(newTile.getThing(0))
+            return True
             
         if newTile.getThing(0).solid:
             self.notPossible()
@@ -299,8 +306,8 @@ class Creature(object):
         self.refreshOutfit()
         
     def teleport(self, position):
-        if not self.actionLock(self.teleport, position):
-            return False
+        """if not self.actionLock(self.teleport, position):
+            return False"""
             
         # 4 steps, remove item (creature), send new map and cords, and effects 
         newTile = getTile(position)
@@ -310,17 +317,23 @@ class Creature(object):
         
         
         stream = TibiaPacket()
-        oldStackpos = getTile(self.position).findCreatureStackpos(self)
-        stream.removeTileItem(self.position, oldStackpos)
-        stream.magicEffect(self.position, 0x02)
-        stream.sendto(getSpectators(self.position, ignore=[self]))
+        try:
+            oldStackpos = getTile(self.position).findCreatureStackpos(self)
+            stream.removeTileItem(self.position, oldStackpos)
+            stream.magicEffect(self.position, 0x02)
+            stream.sendto(getSpectators(self.position, ignore=[self]))
+            
+            removeCreature(self, self.position)
+        except:
+            pass
         
-        removeCreature(self, self.position)
         stackpos = placeCreature(self, position)
         if self.creatureType == 0:
-            stream = TibiaPacket(0x6C)
-            stream.position(self.position)
-            stream.uint8(oldStackpos)
+            stream = TibiaPacket()
+            try:
+                stream.removeTileItem(self.position, oldStackpos)
+            except:
+                pass
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
