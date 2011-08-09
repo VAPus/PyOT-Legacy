@@ -158,12 +158,13 @@ class Creature(object):
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            self.teleport(position)
+            """self.teleport(position)
             self.lastStep = time.time()
             if callback:
                 callback(self, oldPosition, position)
             
-            self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)
+            self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)"""
+            self.cancelWalk()
             return True
             
         if newTile.getThing(0).solid:
