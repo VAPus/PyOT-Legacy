@@ -103,7 +103,7 @@ class Creature(object):
         if time.time() - self.lastStep < delay:
             if not ground.speed:
                 ground.speed = 100
-            return round(ground.speed / self.speed, 1) + 0.15
+            return round(ground.speed / self.speed, 1) + (0.15 if config.autowalkInSameSpeed else 0.0)
         return delay
 
     def notPossible(self):
@@ -185,7 +185,7 @@ class Creature(object):
         else:
             self.lastStep = time.time()"""
         self.lastStep = time.time()
-        self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)
+        self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > config.diagonalWalkCost else 1)
         # Make packet
         if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)

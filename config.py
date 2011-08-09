@@ -26,6 +26,10 @@ motd = "PyOT, it's alive!"
 # name
 name = "PyOT dev server"
 
+# Walking
+diagonalWalkCost = 3
+autowalkInSameSpeed = True # Disable to get OT alike fast autowalking, keep enabled to get Tibia alike autowalking
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
