@@ -101,7 +101,7 @@ class Creature(object):
         
     def stepDuration(self, ground, delay=1.5):
         if time.time() - self.lastStep < delay:
-            if ground.speed < 1:
+            if not ground.speed:
                 ground.speed = 100
             return round(ground.speed / self.speed, 1) + 0.15
         return delay
