@@ -77,11 +77,11 @@ class Creature(object):
         allCreatures[self.cid] = self
 
     def actionLock(self, *args):
-        if self.lastAction > time.time():
+        if self.lastAction >= time.time():
             game.engine.safeCallLater(0.1, *args)
             return False
         else:
-            self.lastAction = game.engine.safeTime()
+            self.lastAction = time.time()
             return True
             
     def name(self):
@@ -101,7 +101,9 @@ class Creature(object):
         
     def stepDuration(self, ground, delay=1.5):
         if time.time() - self.lastStep < delay:
-            return ground.speed / self.speed
+            if ground.speed < 1:
+                ground.speed = 100
+            return round(ground.speed / self.speed, 1) + 0.15
         return delay
 
     def notPossible(self):
@@ -115,7 +117,7 @@ class Creature(object):
             return False
         import data.map.info
         self.direction = direction
-        
+        print "Handled at:", time.time()
         
         oldPosition = self.position[:]
         
@@ -156,10 +158,11 @@ class Creature(object):
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
             self.teleport(position)
+            self.lastStep = time.time()
             if callback:
-                callback(oldPosition, position)
-            self.lastStep = game.engine.safeTime()
-            self.lastAction += self.stepDuration(newTile.getThing(0))
+                callback(self, oldPosition, position)
+            
+            self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)
             return True
             
         if newTile.getThing(0).solid:
@@ -178,8 +181,8 @@ class Creature(object):
             
         else:
             self.lastStep = time.time()"""
-        self.lastStep = game.engine.safeTime()
-        self.lastAction += self.stepDuration(newTile.getThing(0))
+        self.lastStep = time.time()
+        self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)
         # Make packet
         if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
@@ -257,7 +260,7 @@ class Creature(object):
 
             streamX.send(spectator) 
 
-        if len(self.scripts["onNextStep"]):
+        if self.scripts["onNextStep"]:
             for script in self.scripts["onNextStep"]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
@@ -272,7 +275,7 @@ class Creature(object):
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
         if callback:
-            callback(oldPosition, position)
+            callback(self, oldPosition, position)
         return True # Required for auto walkings
 
     def magicEffect(self, pos, type):

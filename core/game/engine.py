@@ -51,10 +51,11 @@ def loader(timer):
 # Useful for windows
 def safeTime():
     return math.ceil(time.time() * 60) / 60
-    
+
 def safeCallLater(sec, *args):
     reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
-    
+
+
 # The action decorator :)
 def action(forced=False, delay=0):
     def decor(f):
@@ -63,9 +64,9 @@ def action(forced=False, delay=0):
                 creature.action.cancel()
                 f(creature, *args, **argw)
             elif not forced and creature.action and creature.action.active():
-                safeCallLater(0, new_f, *args, **argw)
-            elif delay:
-                safeCallLater(delay, f, *args, **argw)
+                safeCallLater(0.05, new_f, creature, *args, **argw)
+            elif delay and creature.action:
+                safeCallLater(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
 
@@ -83,6 +84,7 @@ def loopInThread(time):
 # First order of buisness, the autoWalker
 @action(True)
 def autoWalkCreature(creature, walkPatterns, callback=None): 
+    print "autowalk"
     creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
@@ -98,12 +100,14 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
         return
         
     direction = walkPatterns.popleft()
-    currPos = creature.position
+    currPos = creature.position[:]
     mcallback=callback
     if walkPatterns:
-        def mcallback(oldPos, newPos):
-            if oldPos == currPos:
-                creature.action = safeCallLater(creature.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+        def mcallback(creature2, oldPos, newPos):
+            if oldPos == currPos and (not creature2.action or not creature2.action.active()):
+                print creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0))
+                print "At:", time.time()
+                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
     ret = creature.move(direction, callback=mcallback)
     
 
