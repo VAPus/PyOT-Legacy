@@ -196,7 +196,7 @@ class Creature(object):
             stream = TibiaPacket()
             stream.removeTileItem(oldPosition, oldStackpos)
                 
-
+        
             
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -208,7 +208,8 @@ class Creature(object):
             
             
         newStackPos = newTile.placeCreature(self)
-
+        print position
+        print newTile.things
         if not newStackPos:
             self.cancelWalk()
             raise game.errors.ImpossibleMove
@@ -232,27 +233,29 @@ class Creature(object):
             if spectator.player == self:
                 streamX = copy.copy(stream)
 
+                # Levels
                 if oldPosition[2] > position[2]:
                     streamX.moveUpPlayer(self, oldPosition)
                         
                 elif oldPosition[2] < position[2]:
                     streamX.moveDownPlayer(self, oldPosition)
-                        
-                if direction < 4:
-                    self.updateMap(direction, streamX)
-                else:
-                    if direction & 2 == 2:
-                        # North
-                        self.updateMap(0, streamX)
-                    else:
-                        # South
-                        self.updateMap(2, streamX)
-                    if direction & 1 == 1:
-                        # East
-                        self.updateMap(1, streamX)
-                    else:
-                        # West
-                        self.updateMap(3, streamX)
+                
+                # Y movements
+                if oldPosition[1] > position[1]:
+                    streamX.uint8(0x65)
+                    streamX.mapDescription((oldPosition[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
+                elif oldPosition[1] < position[1]:
+                    streamX.uint8(0x67)
+                    streamX.mapDescription((oldPosition[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
+                
+                # X movements
+                if oldPosition[0] < position[0]:
+                    streamX.uint8(0x66)
+                    streamX.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
+                elif oldPosition[0] > position[0]:
+                    streamX.uint8(0x68)
+                    streamX.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
+
                     
                 canSeeOld = True
                     

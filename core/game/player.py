@@ -239,23 +239,6 @@ class TibiaPlayer(Creature):
             return self.openContainers[openId]
         except:
             return
-                 
-    def updateMap(self, direction, streamX=None):
-        stream = streamX
-        if not streamX:
-            stream = TibiaPacket()
-        stream.uint8(0x65 + direction)
-        if direction == 0:
-            stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
-        elif direction == 1:
-            stream.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
-        elif direction == 2:
-            stream.mapDescription((self.position[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
-        elif direction == 3:
-            stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
-
-        if not streamX:
-            stream.send(self.client)
         
     # Spells
     def cooldownSpell(self, icon, group, cooldown):

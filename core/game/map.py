@@ -35,7 +35,7 @@ def removeCreature(creature, pos):
 
 class Tile(object):
     __slots__ = ('things', 'itemCount')
-    def __init__(self, items, topItemCount=0, itemLen=1):
+    def __init__(self, items, topItemCount=0, itemLen=0):
         if not topItemCount:
             self.itemCount = 1
             
@@ -64,6 +64,7 @@ class Tile(object):
              
     def placeCreature(self, creature):
         pos = self.itemCount & 0x0F
+        print "Place at: ", pos
         self.things.insert(pos, creature)
         self.itemCount += 1 << 4
         return pos
