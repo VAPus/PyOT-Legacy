@@ -108,6 +108,9 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
                 print creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0))
                 print "At:", time.time()
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
+            else:
+                creature2.cancelWalk(walkPatterns[0])
+                
     ret = creature.move(direction, callback=mcallback)
     
 

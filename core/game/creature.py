@@ -148,7 +148,8 @@ class Creature(object):
 
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
-           return False
+            self.cancelWalk()
+            return False
                     
         # New Tile
         newTile = getTile(position)
@@ -166,6 +167,7 @@ class Creature(object):
             return True
             
         if newTile.getThing(0).solid:
+            self.cancelWalk()
             self.notPossible()
             raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
             return False
@@ -207,6 +209,7 @@ class Creature(object):
         newStackPos = newTile.placeCreature(self)
 
         if not newStackPos:
+            self.cancelWalk()
             raise game.errors.ImpossibleMove
             return False
             
@@ -396,6 +399,9 @@ class Creature(object):
         except:
             pass
         self.action = None
+    
+    def cancelWalk(self):
+        return # Is only executed on players
         
     def canSee(self, position):
         if self.position[2] <= 7: # We are on ground level
