@@ -234,7 +234,13 @@ def transformItem(item, transformTo, pos, stack):
     stream.updateTileItem(pos, stack, cid(transformTo))
     item.itemId = transformTo
     stream.sendto(getSpectators(pos))
-                
+
+def placeItem(item, position):
+    stackpos = game.map.getTile(position).placeItem(item)
+    stream = TibiaPacket()
+    stream.addTileItem(position, stackpos, item)
+    stream.sendto(getSpectators(position))
+    
 # The development debug system
 def explainPacket(packet):
     currPos = packet.pos

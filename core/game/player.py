@@ -920,8 +920,9 @@ class TibiaPlayer(Creature):
         onStack = packet.uint8()
         
         thing = self.findItem(position, stackpos)
-
+        
         if thing:
+            print thing.itemId
             game.scriptsystem.get('useWith').run(thing, self, None, thing, position, onPosition, onId, onStack)
             
     def handleAttack(self, packet):

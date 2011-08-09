@@ -154,8 +154,10 @@ class ThingScripts(object):
                     except:
                         pass
         if ok and thing.thingId() in self.scripts:
+            print "_run thingId"
             for script in self.scripts[thing.thingId()][:]:
                 func = script()
+                print "func: ", func
                 if func:
                     ok = func(creature, *args, **kwargs)
                     if not ok is not False:
