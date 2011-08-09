@@ -52,8 +52,8 @@ class TibiaPlayer(Creature):
             
                 stream.item(self.inventory[slot-1])
                 
-        self.stream_status(stream)
-        self.stream_skills(stream)
+        self.refreshStatus(stream)
+        self.refreshSkills(stream)
         
         stream.worldlight(enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
         stream.creaturelight(self.cid, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
@@ -63,7 +63,11 @@ class TibiaPlayer(Creature):
         stream.magicEffect(self.position, 0x03)
         stream.send(self.client)
         
-    def stream_status(self, stream):
+    def refreshStatus(self, streamX=None):
+        if not streamX:
+            stream = TibiaPacket()
+        else:
+            stream = streamX
         stream.uint8(0xA0)
         stream.uint16(self.data["health"])
         stream.uint16(self.data["healthmax"])
@@ -83,13 +87,21 @@ class TibiaPlayer(Creature):
         
         stream.uint16(0x00) # Condition
 
-    def stream_skills(self, stream):
+        if not streamX:
+            stream.send(self.client)
+            
+    def refreshSkills(self, streamX=None):
+        if not streamX:
+            stream = TibiaPacket()
+        else:
+            stream = streamX        
         stream.uint8(0xA1) # Skill type
         for x in xrange(0,7): # 7 skill types
             stream.uint8(1) # Value / Level
             stream.uint8(1) # Base
             stream.uint8(0) # %
-            
+        if not streamX:
+            stream.send(self.client)            
             
 
     def pong(self):
@@ -279,15 +291,6 @@ class TibiaPlayer(Creature):
         self.modes[1] = chase
         self.modes[2] = secure
         
-    def setSpeed(self, speed):
-        if speed != self.speed:
-            if speed > 1500:
-                speed = 1500.0
-            self.speed = float(speed)
-            stream = TibiaPacket(0x8F)
-            stream.uint32(self.clientId())
-            stream.uint16(speed)
-            stream.send(self.client)
             
     def setTarget(self, targetId=0):
         stream = TibiaPacket(0xA3)

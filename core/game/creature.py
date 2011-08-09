@@ -111,7 +111,10 @@ class Creature(object):
         # Here we can inform a script if a illigal event
         # Right now, don't care
         return
-        
+
+    def refreshStatus(self, streamX=None): pass
+    def refreshSkills(self, streamX=None): pass
+    
     def move(self, direction, spectators=None, level=0, callback=None):
         if not self.actionLock(self.move, direction, spectators, level, callback):
             return False
@@ -314,6 +317,42 @@ class Creature(object):
         self.outfit = [looktype, lookhead, lookbody, looklegs, lookfeet]
         self.addon = addon
         self.refreshOutfit()
+
+    def setSpeed(self, speed):
+        if speed != self.speed:
+            if speed > 1500:
+                speed = 1500.0
+            self.speed = float(speed)
+            stream = TibiaPacket(0x8F)
+            stream.uint32(self.clientId())
+            stream.uint16(speed)
+            stream.sendto(getSpectators(self.position))
+    
+    def setHealth(self, health):
+        self.data["health"] = health
+        stream = TibiaPacket(0x8C)
+        stream.uint32(self.clientId())
+        stream.uint8(self.data["health"] * 100 / self.data["maxhealth"])
+        stream.sendto(getSpectators(self.position))
+        
+        self.refreshStatus()
+
+    def modifyHealth(self, health):
+        self.sethealth(self.data["health"] + health)
+    
+    def setMana(self, mana):
+        self.data["mana"] = mana
+        self.refreshStatus()
+
+    def modifyMana(self, mana):
+        self.setMana(self.data["mana"] + mana)
+        
+    def setSoul(self, soul):
+        self.data["soul"] = soul
+        self.refreshStatus()
+    
+    def modifySoul(self, soul):
+        self.setSoul(self.data["soul"] + soul)
         
     def teleport(self, position):
         """if not self.actionLock(self.teleport, position):

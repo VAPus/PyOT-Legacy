@@ -59,7 +59,11 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
                 ret = creature.itemToUse(item)
                 if not ret:
                     creature.notEnoughRoom()
-                    
+                
+                if mana:
+                    creature.modifyMana(-1 * mana)
+                if soul:
+                    creature.modifySoul(-1 * soul)
                 creature.cooldownSpell(icon, group, cooldown)
                 creature.message("Made %dx%s" % (makeCount, name))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
