@@ -88,7 +88,14 @@ class ThingScripts(object):
         
     def reg(self, id, callback, toid=None):
         if not toid:
-            if type(id) != int:
+            if type(id) == tuple:
+                func = weakref.ref(callback, self.unregCallback)
+                for xid in id:
+                    if not xid in self.scripts:
+                        self.scripts[xid] = [func]
+                    else:
+                        self.scripts[xid].append(func)                
+            elif type(id) != int:
                 # This ensures we remove the script object if the object disappear
                 id = weakref.ref(id, self.unregAll) 
                 
@@ -234,7 +241,7 @@ def handleModule(name):
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))
     
-    modPool.append((name, modules))
+    modPool.append([name, modules])
         
 def importer():
     handleModule("spells")
@@ -244,6 +251,9 @@ def importer():
 
 def reimporter():
     global modPool
+    import game.spell
+    game.spell.clear()
+    
     for mod in modPool:
         # Step 1 reload self
         del mod[1]

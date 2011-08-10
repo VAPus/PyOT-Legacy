@@ -114,3 +114,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2):
     print "fieldRune was called, rune = ", rune
     fieldRunes[rune] = fieldrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
+    
+def clear():
+    fieldRunes.clear()
+    spells.clear()

@@ -116,7 +116,7 @@ class Creature(object):
     def refreshSkills(self, streamX=None): pass
     
     def move(self, direction, spectators=None, level=0, callback=None):
-        if not self.actionLock(self.move, direction, spectators, level, callback):
+        if not level and not self.actionLock(self.move, direction, spectators, level, callback):
             return False
         import data.map.info
         self.direction = direction

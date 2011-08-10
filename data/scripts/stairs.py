@@ -44,23 +44,17 @@ def floordown(creature, item, position, index=None):
         creature.teleport([position[0],position[1],position[2]+1])
 
 # Stairs
-scriptsystem.get("walkOn").reg(1385, floorchange)
-scriptsystem.get("walkOn").reg(429, floorchange)
-scriptsystem.get("walkOn").reg(427, floorchange)
-scriptsystem.get("walkOn").reg(4834, floorchange)
-scriptsystem.get("walkOn").reg(4837, floorchange)
-scriptsystem.get("walkOn").reg(8282, floorchange)
-scriptsystem.get("walkOn").reg(411, floorchange)
+stairs = 1385, 429, 411, 4834, 1396
+scriptsystem.get("walkOn").reg(stairs, floorchange)
 
-# Ladders
-scriptsystem.get("use").reg(1386, floorup)
-scriptsystem.get("use").reg(3678, floorup)
-scriptsystem.get("use").reg(8599, floorup)
-scriptsystem.get("use").reg(10035, floorup)
+# Ladders up
+laddersUp = 1386, 3678, 5543, 8599
+scriptsystem.get("use").reg(laddersUp, floorup)
 
+# Ladders down
+laddersDown = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
+scriptsystem.get("use").reg(laddersDown, floordown)
 
-# Trapdoors etc
-scriptsystem.get("walkOn").reg(408, floordown)
-scriptsystem.get("walkOn").reg(427, floordown)
-scriptsystem.get("walkOn").reg(8284, floordown)
-scriptsystem.get("walkOn").reg(8279, floordown)
+# Trapdoors, holes etc
+trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
+scriptsystem.get("walkOn").reg(trapsAndHoles, floordown)
