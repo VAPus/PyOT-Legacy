@@ -642,10 +642,10 @@ class TibiaPlayer(Creature):
 	  stream.send(self.client)
 
         def part1():
-            game.scriptsystem.get("talkaction").run(text, self, endCallback, text)
+            game.scriptsystem.get("talkaction").run(text, self, endCallback, text=text)
             
         if len(text.split(" ")) > 1:
-            game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text.split(" ", 1)[1])
+            game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text=text.split(" ", 1)[1])
         else:
             part1()
 
@@ -874,7 +874,7 @@ class TibiaPlayer(Creature):
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
                 self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
 
-            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing, position, stackpos)
+            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing=thing, position=position, stackpos=stackpos)
         else:
             self.notPossible()
             
@@ -910,7 +910,7 @@ class TibiaPlayer(Creature):
         thing = self.findItem(position, stackpos)
 
         if thing:
-            game.scriptsystem.get('use').run(thing, self, None, thing, position, index)
+            game.scriptsystem.get('use').run(thing, self, None, thing=thing, position=position, stackpos=stackpos, index=index)
 
     def handleUseWith(self, packet):
         game.engine.explainPacket(packet)
@@ -926,7 +926,7 @@ class TibiaPlayer(Creature):
         
         if thing:
             print thing.itemId
-            game.scriptsystem.get('useWith').run(thing, self, None, thing, position, onPosition, onId, onStack)
+            game.scriptsystem.get('useWith').run(thing, self, None, thing=thing, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
             
     def handleAttack(self, packet):
         cid = packet.uint32()

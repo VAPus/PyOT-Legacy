@@ -15,13 +15,13 @@ class Scripts(object):
     def unreg(self, callback):
         self.scripts.remove(callback)
 
-    def run(self, creature, end=None, *args, **kwargs):
-        scriptPool.callInThread(self._run, creature, end, *args, **kwargs)
+    def run(self, creature, end=None, **kwargs):
+        scriptPool.callInThread(self._run, creature, end, **kwargs)
         
-    def _run(self, creature, end=None, *args, **kwargs):
+    def _run(self, creature, end=None, **kwargs):
         ok = True
         for script in self.scripts:
-            ok = script(creature, *args, **kwargs)
+            ok = script(creature=creature, **kwargs)
             if not (ok if ok is not None else True):
                break
         if end and (ok if ok is not None else True):
@@ -52,8 +52,8 @@ class TriggerScripts(object):
         if not len(self.scripts[trigger]):
             del self.scripts[trigger]
         
-    def run(self, trigger, creature, end=None, *args, **kwargs):
-        scriptPool.callInThread(self._run, trigger, creature, end, *args, **kwargs)
+    def run(self, trigger, creature, end=None, **kwargs):
+        scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
 
     def unregCallback(self, callback):
         for s in self.scripts:
@@ -63,14 +63,14 @@ class TriggerScripts(object):
             if not len(self.scripts[s]):
                 del self.scripts[s]
                 
-    def _run(self, trigger, creature, end, *args, **kwargs):
+    def _run(self, trigger, creature, end, **kwargs):
         ok = True
         if not trigger in self.scripts:
             return end()
         for script in self.scripts[trigger][:]:
             func = script()
             if func:
-                ok = func(creature, *args, **kwargs)
+                ok = func(creature=creature, **kwargs)
                 if not (ok if ok is not None else True):
                     break
             else:
@@ -139,20 +139,20 @@ class ThingScripts(object):
             if not len(self.scripts[s]):
                 del self.scripts[s]
                 
-    def run(self, thing, creature, end=None, *args, **kwargs):
-        scriptPool.callInThread(self._run, thing, creature, end, False, *args, **kwargs)
+    def run(self, thing, creature, end=None, **kwargs):
+        scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
     
-    def runSync(self, thing, creature, end=None, *args, **kwargs):
-        return self._run(thing, creature, end, True, *args, **kwargs)
+    def runSync(self, thing, creature, end=None, **kwargs):
+        return self._run(thing, creature, end, True, **kwargs)
         
-    def _run(self, thing, creature, end, returnVal, *args, **kwargs):
+    def _run(self, thing, creature, end, returnVal, **kwargs):
         ok = True
         
         if thing in self.scripts:
             for script in self.scripts[thing][:]:
                 func = script()
                 if func:
-                    ok = func(creature, *args, **kwargs)
+                    ok = func(creature=creature, **kwargs)
                     if not ok is not False:
                         break
                 else:
@@ -166,7 +166,7 @@ class ThingScripts(object):
                 func = script()
                 print "func: ", func
                 if func:
-                    ok = func(creature, *args, **kwargs)
+                    ok = func(creature=creature, **kwargs)
                     if not ok is not False:
                         break
                 else:
@@ -181,7 +181,7 @@ class ThingScripts(object):
                     for script in self.scripts[aid][:]:
                         func = script()
                         if func:
-                            ok = func(creature, *args, **kwargs)
+                            ok = func(creature=creature, **kwargs)
                             if not ok is not False:
                                 break
                         else:

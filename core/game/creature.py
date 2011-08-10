@@ -203,11 +203,11 @@ class Creature(object):
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, item, oldPosition)
+            game.scriptsystem.get('walkOff').runSync(item, self, None, item=item, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            game.scriptsystem.get('preWalkOn').runSync(item, self, None, item, oldTile, newTile, position)
+            game.scriptsystem.get('preWalkOn').runSync(item, self, None, item=item, oldTile=oldTile, newTile=newTile, position=position)
             
             
         newStackPos = newTile.placeCreature(self)
@@ -277,7 +277,7 @@ class Creature(object):
                      
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item, self, None, item, position)
+            game.scriptsystem.get('walkOn').run(item, self, None, item=item, position=position)
             if item.teledest:
                 try:
                     self.teleport(item.teledest)
