@@ -73,7 +73,6 @@ scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 # First use of actions :p
 def testContainer(creature, thing, position, stackpos, index):
     # Each time you open it, add a bag. I use this code to test max capasity stuff
-    print "LLLLLLLLLLLLLLLLLLLLl"
     if position[1] == 3:
         bag1 = game.item.Item(1987)
         thing.container.placeItem(bag1)
@@ -82,18 +81,18 @@ def testContainer(creature, thing, position, stackpos, index):
     if not thing.opened:
         # Open a bag inside a bag?
         open = True
-        bagFound = player.getContainer(index)    
+        bagFound = creature.getContainer(index)    
             
         if bagFound:
             # Virtual close
-            player.openContainers[index].opened = False
+            creature.openContainers[index].opened = False
                 
             # Virtual switch
             thing.opened = True
-            thing.parent = player.openContainers[index]
+            thing.parent = creature.openContainers[index]
                 
             # Update the container
-            player.updateContainer(thing, parent=1)
+            creature.updateContainer(thing, parent=1)
             open = False
         
         if open:
@@ -102,19 +101,19 @@ def testContainer(creature, thing, position, stackpos, index):
 
             if position[0] == 0xFFFF and position[1] >= 64:
                 parent = 1
-                item.parent = player.openContainers[position[2]-64]
-            player.openContainer(thing, parent=parent)
+                item.parent = creature.openContainers[position[2]-64]
+            creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
         if position[0] != 0xFFFF:
-            player.scripts["onNextStep"].append(lambda who: player.closeContainer(thing))
+            creature.scripts["onNextStep"].append(lambda who: creature.closeContainer(thing))
     else:
-        player.closeContainer(thing)
+        creature.closeContainer(thing)
         
 scriptsystem.get("use").reg(1987, testContainer)
 
 
-def makeitem(player, text):
+def makeitem(creature, text):
     try:
         count = 1
         if ' ' in text:
@@ -122,12 +121,12 @@ def makeitem(player, text):
         text = int(text.split(" ")[0])
         if text >= 1000:
             newitem = game.item.Item(text, count)
-            bag = player.inventory[2]
-            player.itemToContainer(bag, newitem)
+            bag = creature.inventory[2]
+            creature.itemToContainer(bag, newitem)
         else:
             raise
     except:
-        player.message("Invalid Item!")
+        creature.message("Invalid Item!")
          
     return False
 

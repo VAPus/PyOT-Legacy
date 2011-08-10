@@ -204,7 +204,7 @@ def I(itemId, **kwargs):
         except:
             item = Item(itemId, **kwargs)
             
-            itemX = scriptsystem.get('addMapItem').runSync(item, None, None, item=item, options={})
+            itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options={})
 
             if not itemX:
                 dummyItems[itemId] = item
@@ -213,7 +213,7 @@ def I(itemId, **kwargs):
             return item
     else:
         item = Item(itemId, **kwargs)
-        itemX = scriptsystem.get('addMapItem').runSync(item, None, None, item=item, options=kwargs)
+        itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options=kwargs)
         if itemX:
             return itemX
         return item

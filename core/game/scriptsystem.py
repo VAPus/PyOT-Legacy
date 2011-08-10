@@ -88,7 +88,7 @@ class ThingScripts(object):
         
     def reg(self, id, callback, toid=None):
         if not toid:
-            if type(id) == tuple:
+            if type(id) in (tuple, list):
                 func = weakref.ref(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:

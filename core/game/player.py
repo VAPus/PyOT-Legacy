@@ -245,7 +245,57 @@ class TibiaPlayer(Creature):
                         stream.removeContainerItem(self.openContainers.index(item[2]), item[3]+1)
 
             return newItem
-              
+
+    def replaceItem(self, position, stackpos, item):
+        # Option 1, from the map:
+        if position:
+            if position[0] != 0xFFFF:
+                tile = game.map.getTile(position)
+                tile.things[stackpos] = item
+                game.engine.updateTile(position, tile)
+                
+            # Option 2, the inventory
+            elif position[1] < 64:
+                self.inventory[position[1]-1] = item
+                self.updateInventory(position[1]-1)
+            
+            # Option 3, the bags, if there is one ofcource
+            elif self.inventory[2]:
+                try:
+                    bag = self.openContainers[position[1] - 64]
+                except:
+                    return
+                    
+                bag.container.items[position[2]] = item
+                stream = TibiaPacket()
+                stream.updateContainerItem(position[1] - 64, position[2], item)
+                stream.send(self.client)
+            
+    def removeItem(self, position, stackpos):
+        # Option 1, from the map:
+        if position:
+            if position[0] != 0xFFFF:
+                tile = game.map.getTile(position)
+                del tile.things[position[2]]
+                game.engine.updateTile(position, tile)
+                
+            # Option 2, the inventory
+            elif position[1] < 64:
+                self.inventory[position[1]-1] = None
+                self.updateInventory(position[1]-1)
+            
+            # Option 3, the bags, if there is one ofcource
+            elif self.inventory[2]:
+                try:
+                    bag = self.openContainers[position[1] - 64]
+                except:
+                    return
+                    
+                del bag.container.items[position[2]]
+                stream = TibiaPacket()
+                stream.removeContainerItem(position[1] - 64, position[2])
+                stream.send(self.client)
+                
     def getContainer(self, openId):
         try:
             return self.openContainers[openId]
