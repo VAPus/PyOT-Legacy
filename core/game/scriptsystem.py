@@ -169,7 +169,7 @@ class ThingScripts(object):
                 func = script()
                 print "func: ", func
                 if func:
-                    ok = func(creature=creature, **kwargs)
+                    ok = func(creature=creature, thing=thing, **kwargs)
                     if not ok is not False:
                         break
                 else:
@@ -184,7 +184,7 @@ class ThingScripts(object):
                     for script in self.scripts[aid][:]:
                         func = script()
                         if func:
-                            ok = func(creature=creature, **kwargs)
+                            ok = func(creature=creature, thing=thing, **kwargs)
                             if not ok is not False:
                                 break
                         else:

@@ -71,15 +71,15 @@ scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 
 
 # First use of actions :p
-def testContainer(player, item, position, index):
+def testContainer(creature, thing, position, stackpos, index):
     # Each time you open it, add a bag. I use this code to test max capasity stuff
-
+    print "LLLLLLLLLLLLLLLLLLLLl"
     if position[1] == 3:
         bag1 = game.item.Item(1987)
-        item.container.placeItem(bag1)
+        thing.container.placeItem(bag1)
     
     
-    if not item.opened:
+    if not thing.opened:
         # Open a bag inside a bag?
         open = True
         bagFound = player.getContainer(index)    
@@ -89,11 +89,11 @@ def testContainer(player, item, position, index):
             player.openContainers[index].opened = False
                 
             # Virtual switch
-            item.opened = True
-            item.parent = player.openContainers[index]
+            thing.opened = True
+            thing.parent = player.openContainers[index]
                 
             # Update the container
-            player.updateContainer(item, parent=1)
+            player.updateContainer(thing, parent=1)
             open = False
         
         if open:
@@ -103,13 +103,13 @@ def testContainer(player, item, position, index):
             if position[0] == 0xFFFF and position[1] >= 64:
                 parent = 1
                 item.parent = player.openContainers[position[2]-64]
-            player.openContainer(item, parent=parent)
+            player.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
         if position[0] != 0xFFFF:
-            player.scripts["onNextStep"].append(lambda who: player.closeContainer(item))
+            player.scripts["onNextStep"].append(lambda who: player.closeContainer(thing))
     else:
-        player.closeContainer(item)
+        player.closeContainer(thing)
         
 scriptsystem.get("use").reg(1987, testContainer)
 

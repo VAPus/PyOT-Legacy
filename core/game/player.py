@@ -874,7 +874,7 @@ class TibiaPlayer(Creature):
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
                 self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
 
-            game.scriptsystem.get('lookAt').run(thing, self, afterScript, thing=thing, position=position, stackpos=stackpos)
+            game.scriptsystem.get('lookAt').run(thing, self, afterScript, position=position, stackpos=stackpos)
         else:
             self.notPossible()
             
@@ -901,7 +901,6 @@ class TibiaPlayer(Creature):
             self.outfitWindow()
             
     def handleUse(self, packet):
-        game.engine.explainPacket(packet)
         position = packet.position()
 
         clientId = packet.uint16() # Junk I tell you :p
@@ -910,7 +909,7 @@ class TibiaPlayer(Creature):
         thing = self.findItem(position, stackpos)
 
         if thing:
-            game.scriptsystem.get('use').run(thing, self, None, thing=thing, position=position, stackpos=stackpos, index=index)
+            game.scriptsystem.get('use').run(thing, self, None, position=position, stackpos=stackpos, index=index)
 
     def handleUseWith(self, packet):
         game.engine.explainPacket(packet)
@@ -925,8 +924,7 @@ class TibiaPlayer(Creature):
         thing = self.findItem(position, stackpos)
         
         if thing:
-            print thing.itemId
-            game.scriptsystem.get('useWith').run(thing, self, None, thing=thing, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
+            game.scriptsystem.get('useWith').run(thing, self, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
             
     def handleAttack(self, packet):
         cid = packet.uint32()
