@@ -1,5 +1,5 @@
 # The script system
-from twisted.internet import reactor
+from twisted.internet import reactor, threads
 from twisted.python.threadpool import ThreadPool
 import config
 import weakref
@@ -142,6 +142,9 @@ class ThingScripts(object):
     def run(self, thing, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
     
+    def runDefer(self, thing, creature, end=None, **kwargs):
+        return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, True, **kwargs)
+
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)
         

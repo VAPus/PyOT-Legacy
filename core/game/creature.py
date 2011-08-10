@@ -1,3 +1,4 @@
+from twisted.internet import defer
 from game.engine import getSpectators
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
@@ -115,9 +116,10 @@ class Creature(object):
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
     
+    @defer.deferredGenerator
     def move(self, direction, spectators=None, level=0, callback=None):
         if not level and not self.actionLock(self.move, direction, spectators, level, callback):
-            return False
+            return
         import data.map.info
         self.direction = direction
         print "Handled at:", time.time()
@@ -152,7 +154,7 @@ class Creature(object):
         # We don't walk out of the map!
         if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
             self.cancelWalk()
-            return False
+            return
                     
         # New Tile
         newTile = getTile(position)
@@ -168,13 +170,13 @@ class Creature(object):
             
             self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)"""
             self.cancelWalk()
-            return True
+            return
             
         if newTile.getThing(0).solid:
             self.cancelWalk()
             self.notPossible()
             raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
-            return False
+            return
             
         """if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
@@ -203,11 +205,11 @@ class Creature(object):
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, item=item, position=oldPosition)
+            yield defer.waitForDeferred(game.scriptsystem.get('walkOff').runDefer(item, self, None, item=item, position=oldPosition))
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            game.scriptsystem.get('preWalkOn').runSync(item, self, None, item=item, oldTile=oldTile, newTile=newTile, position=position)
+            yield defer.waitForDeferred(game.scriptsystem.get('preWalkOn').runDefer(item, self, None, item=item, oldTile=oldTile, newTile=newTile, position=position))
             
             
         newStackPos = newTile.placeCreature(self)
@@ -216,7 +218,7 @@ class Creature(object):
         if not newStackPos:
             self.cancelWalk()
             raise game.errors.ImpossibleMove
-            return False
+            return
             
         oldTile.removeCreature(self)
         
@@ -286,7 +288,7 @@ class Creature(object):
                     del item.teledest
         if callback:
             callback(self, oldPosition, position)
-        return True # Required for auto walkings
+        return
 
     def magicEffect(self, pos, type):
         stream = TibiaPacket()
