@@ -15,6 +15,7 @@ import game.resource
 
 import game.pathfinder
 
+import game.vocation
 global anyPlayer
 anyPlayer = CreatureBase()
 
@@ -106,7 +107,9 @@ class TibiaPlayer(Creature):
 
     def pong(self):
         TibiaPacket(0x1E).send(self.client)
-    
+
+    def getVocation(self):
+        return game.vocation.getVocationById(self.data["vocation"])
     def findItem(self, position, stackpos=1, sid=None):
         # Option 1, from the map:
         if position:

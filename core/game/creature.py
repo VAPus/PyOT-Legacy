@@ -341,14 +341,14 @@ class Creature(object):
         self.refreshStatus()
 
     def modifyHealth(self, health):
-        self.sethealth(self.data["health"] + health)
+        self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))
     
     def setMana(self, mana):
         self.data["mana"] = mana
         self.refreshStatus()
 
     def modifyMana(self, mana):
-        self.setMana(self.data["mana"] + mana)
+        self.setMana(min(self.data["mana"] + mana, self.data["manamax"]))
         
     def setSoul(self, soul):
         self.data["soul"] = soul

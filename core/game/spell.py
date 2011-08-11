@@ -19,7 +19,7 @@ def makeField(fieldId):
     
     
 def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
-    def conjure(creature, words):
+    def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
             return False
