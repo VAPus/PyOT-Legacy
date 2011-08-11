@@ -37,7 +37,7 @@ def makeField(fieldId):
                 creature.modifyHealth(-1 * thing.damage)
                 
             if thing.turns:
-                game.engine.safeCallLater(thing.ticks / 1000, effectOverTime, creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
+                effectOverTime(creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
         
         stackpos = game.engine.placeItem(item, position)
         if item.damage:
