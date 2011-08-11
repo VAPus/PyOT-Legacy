@@ -5,27 +5,26 @@ import game.engine, game.item
 from game.creature import Creature
 import game.errors
 
-def callback(player, text):
-    player.message("No you!!")
+def callback(creature, text):
+    creature.message("No you!!")
     
-def repeater(player, text):
-    player.message(text)
+def repeater(creature, text):
+    creature.message(text)
     
-def teleporter(player, text):
+def teleporter(creature, text):
     x,y,z = text.split(',')
     pos = [int(x),int(y),int(z)]
     try:
-        player.teleport(pos)
+        creature.teleport(pos)
     except game.errors.SolidTile:
-        player.message("Can't teleport to solid tiles!")
+        creature.message("Can't teleport to solid tiles!")
     else:
-        player.message("Welcome to %s" % text)
+        creature.message("Welcome to %s" % text)
     
-def tiler(player, text):
-    #try:
+def tiler(creature, text):
         global last
         if len(text.split(" ")) < 2:
-            pos = player.position
+            pos = creature.position
             id = int(text.split(" ")[0])
         else:
             x,y,z = text.split(" ")[0].split(',')
@@ -33,39 +32,38 @@ def tiler(player, text):
             id = int(text.split(" ")[1])
             
         if not id in game.item.items:
-            player.message("Item not found!")
+            creature.message("Item not found!")
             return False
         item = game.item.Item( id )
         last = id
         getTile([pos[0], pos[1]-1, pos[2]]).setThing(0, item)
 
         game.engine.updateTile([pos[0], pos[1]-1, pos[2]], getTile([pos[0], pos[1]-1, pos[2]]))
-        player.magicEffect([pos[0], pos[1]-1, pos[2]], 0x03)
-    #except:
-    #    player.message("Not possible!")
+        creature.magicEffect([pos[0], pos[1]-1, pos[2]], 0x03)
+
         return False
         
 global last
 last = 0
-def tilerE(player, text):
+def tilerE(creature, text):
     global last
     last += 1
-    return tiler(player, str(last))
+    return tiler(creature, str(last))
     
-def mypos(player, text):
-    player.message("Your position is: "+str(player.position))
-    print str(player.position) # Print to console to be sure
+def mypos(creature, text):
+    creature.message("Your position is: "+str(creature.position))
+    print str(creature.position) # Print to console to be sure
 scriptsystem.get("talkaction").reg("help", callback)
 scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
 scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
 scriptsystem.get("talkactionFirstWord").reg('set', tiler)
 scriptsystem.get("talkaction").reg('t', tilerE)
 scriptsystem.get("talkaction").reg('mypos', mypos)
-def speedsetter(player, text):
+def speedsetter(creature, text):
     try:
-        player.setSpeed(int(text))
+        creature.setSpeed(int(text))
     except:
-        player.message("Invalid speed!")
+        creature.message("Invalid speed!")
 scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 
 
@@ -134,21 +132,21 @@ scriptsystem.get("talkactionFirstWord").reg('i', makeitem)
 
 
 # Reimport tester
-def reimporter(player, text):
+def reimporter(creature, text):
     scriptsystem.reimporter()
     return False
 
-def saySomething(player, text):
-    player.say("Test 1")
+def saySomething(creature, text):
+    creature.say("Test 1")
     return False
     
 scriptsystem.get("talkaction").reg('reload', reimporter)
 scriptsystem.get("talkaction").reg('reloadtest', saySomething)
 
 # Tester of container functions
-def popItems(player, text):
+def popItems(creature, text):
     i,c = map(int, text.split(" "))
-    item = player.findItemById(i,c)
+    item = creature.findItemById(i,c)
     return False
     
 scriptsystem.get("talkactionFirstWord").reg('pop', popItems)

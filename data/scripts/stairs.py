@@ -1,23 +1,23 @@
 import game.scriptsystem as scriptsystem
 import game.map
 
-def floorchange(creature, item, position):
+def floorchange(creature, thing, position, **k):
     # Note this is the correct direction
     print "Floor change"
-    print item.floorchange
-    if item.floorchange == "north":
+    print thing.floorchange
+    if thing.floorchange == "north":
         creature.move(0, level=-1)
         
-    elif item.floorchange == "south":
+    elif thing.floorchange == "south":
         creature.move(2, level=-1)
         
-    elif item.floorchange == "east":
+    elif thing.floorchange == "east":
         creature.move(1, level=-1)
         
-    elif item.floorchange == "west":
+    elif thing.floorchange == "west":
         creature.move(3, level=-1)
         
-    elif item.floorchange == "down":  
+    elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
         destTile = game.map.getTile([position[0], position[1], position[2]+1])
         destThing = destTile.getThing(1)
@@ -35,11 +35,11 @@ def floorchange(creature, item, position):
         elif destThing.floorchange == "east":
             creature.move(3, level=1)
             
-def floorup(creature, item, position, index=None): # By using index=None, this function will work on both walkOn and useItem
+def floorup(creature, thing, position, **k): # By using index=None, this function will work on both walkOn and useItem
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]-1])
     
-def floordown(creature, item, position, index=None):
+def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]+1])
 
