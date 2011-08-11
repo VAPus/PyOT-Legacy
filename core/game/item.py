@@ -5,6 +5,7 @@ from collections import deque
 import game.enum
 import bindconstant
 import config
+import game.engine
 
 items = None
 reverseItems = None
@@ -134,7 +135,25 @@ class Item(object):
                 else:
                     return None
 
-
+    def decay(self, position, stackpos, to=None, duration=None, callback=None):
+        if to == None:
+            to = self.decayTo
+            
+        if duration == None:
+            duration = self.duration
+            
+        def executeDecay():
+            game.engine.transformItem(self, self.decayTo, position, stackpos)
+            
+            # Hack for chained decay
+            if self.decayTo:
+                self.decay(position, stackpos, callback=callback)
+                
+            if callback:
+                callback(self)
+                
+        game.engine.safeCallLater(duration, executeDecay)
+        
 def cid(itemid):
     try:
         return items[itemid]["cid"]

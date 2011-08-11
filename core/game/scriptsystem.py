@@ -85,6 +85,7 @@ class TriggerScripts(object):
 class ThingScripts(object):
     def __init__(self):
         self.scripts = {}
+        self.thingScripts = {}
         
     def reg(self, id, callback, toid=None):
         if not toid:
@@ -99,9 +100,9 @@ class ThingScripts(object):
                 # This ensures we remove the script object if the object disappear
                 id = weakref.ref(id, self.unregAll) 
                 
-                if not id in self.scripts:
-                    self.scripts[id] = []
-                self.scripts[id].append(weakref.ref(callback, self.unregCallback ))
+                if not id in self.thingScripts:
+                    self.thingScripts[id] = []
+                self.thingScripts[id].append(weakref.ref(callback, self.unregCallback ))
             else:
                 if not id in self.scripts:
                     self.scripts[id] = []
@@ -151,18 +152,22 @@ class ThingScripts(object):
     def _run(self, thing, creature, end, returnVal, **kwargs):
         ok = True
         
-        if thing in self.scripts:
-            for script in self.scripts[thing][:]:
-                func = script()
-                if func:
-                    ok = func(creature=creature, **kwargs)
-                    if not ok is not False:
-                        break
-                else:
-                    try:
-                        self.scripts[thing].remove(script) 
-                    except:
-                        pass
+        
+        for weakthing in self.thingScripts:
+            if weakthing() == thing:
+                for script in self.thingScripts[weakthing][:]:
+                    func = script()
+                    if func:
+                        ok = func(creature=creature, thing=thing, **kwargs)
+                        if not ok is not False:
+                            break
+                    else:
+                        try:
+                            self.thingScripts[weakthing].remove(script) 
+                        except:
+                            pass
+            elif weakthing() == None:
+                del self.thingScripts[weakthing]
         if ok and thing.thingId() in self.scripts:
             print "_run thingId"
             for script in self.scripts[thing.thingId()][:]:

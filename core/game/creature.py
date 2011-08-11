@@ -206,11 +206,11 @@ class Creature(object):
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            yield defer.waitForDeferred(game.scriptsystem.get('walkOff').runDefer(item, self, None, item=item, position=oldPosition))
+            yield defer.waitForDeferred(game.scriptsystem.get('walkOff').runDefer(item, self, None, position=oldPosition))
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            yield defer.waitForDeferred(game.scriptsystem.get('preWalkOn').runDefer(item, self, None, item=item, oldTile=oldTile, newTile=newTile, position=position))
+            yield defer.waitForDeferred(game.scriptsystem.get('preWalkOn').runDefer(item, self, None, oldTile=oldTile, newTile=newTile, position=position))
             
             
         newStackPos = newTile.placeCreature(self)
@@ -280,7 +280,7 @@ class Creature(object):
                      
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item, self, None, item=item, position=position)
+            game.scriptsystem.get('walkOn').run(item, self, None, position=position)
             if item.teledest:
                 try:
                     self.teleport(item.teledest)
@@ -335,7 +335,7 @@ class Creature(object):
         self.data["health"] = health
         stream = TibiaPacket(0x8C)
         stream.uint32(self.clientId())
-        stream.uint8(self.data["health"] * 100 / self.data["maxhealth"])
+        stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
         stream.sendto(getSpectators(self.position))
         
         self.refreshStatus()
@@ -496,14 +496,14 @@ class Creature(object):
     def setVar(self, name, value=None):
         try:
             if value == None:
-                del self.vars[inspect.stack()[0] + name]
+                del self.vars[inspect.stack()[0][1] + name]
             else:
-                self.vars[inspect.stack()[0] + name] = value
+                self.vars[inspect.stack()[0][1] + name] = value
         except:
             return None
             
     def getVar(self, name):
         try:
-            return self.vars[inspect.stack()[0] + name]
+            return self.vars[inspect.stack()[0][1] + name]
         except:
             return None

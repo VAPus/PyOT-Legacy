@@ -12,9 +12,39 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = ((0,0),)
 
+def typeToEffect(type):
+    if type == "fire":
+        return (game.enum.EFFECT_HITBYFIRE, game.enum.ANIMATION_FIRE)
+    elif type == "poison":
+        return (game.enum.EFFECT_HITBYPOISON, game.enum.ANIMATION_POISON)
+        
 def makeField(fieldId):
-    def make(position):
-        game.engine.placeItem(game.item.Item(fieldId), position)
+    def make(position, **k):
+        item = game.item.Item(fieldId)
+        
+        def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
+            ticks += 1
+            creature.modifyHealth(-1 * damage)
+            creature.magicEffect(creature.position, effect)
+            
+            
+            if ticks < forTicks:
+                game.engine.safeCallLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
+                
+        def callback(creature, thing, **k):
+            if thing.damage:
+                creature.magicEffect(creature.position, typeToEffect(thing.field)[0])
+                creature.modifyHealth(-1 * thing.damage)
+                
+            if thing.turns:
+                game.engine.safeCallLater(thing.ticks / 1000, effectOverTime, creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
+        
+        stackpos = game.engine.placeItem(item, position)
+        if item.damage:
+            game.scriptsystem.reg('walkOn', item, callback)
+            if item.duration:
+                item.decay(position, stackpos, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
+                
     return make
     
     
@@ -33,6 +63,8 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
             creature.notEnough("soul")
         elif creature.data["maglevel"] < mlevel:
             creature.notEnough("magic level")
+        elif vocation and not creature.data["vocation"] in vocation:
+            creature.notPossible()
         else:
             #useItem = creature.findItemById(use, useCount)
             useItem = None
@@ -73,7 +105,7 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2):
-    def fieldrune(creature, thing, position, onPosition, onId, onStack):
+    def fieldrune(creature, thing, onPosition, **k):
         print "I was called!!!"
         if not creature.canDoSpell(icon, group):
             creature.exhausted()

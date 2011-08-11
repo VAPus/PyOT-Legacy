@@ -229,10 +229,9 @@ def updateTile(pos, tile):
     stream.sendto(getSpectators(pos))
 
 def transformItem(item, transformTo, pos, stack):
-    from game.item import cid
     stream = TibiaPacket()
-    stream.updateTileItem(pos, stack, cid(transformTo))
     item.itemId = transformTo
+    stream.updateTileItem(pos, stack, item)
     stream.sendto(getSpectators(pos))
 
 def placeItem(item, position):
@@ -240,6 +239,7 @@ def placeItem(item, position):
     stream = TibiaPacket()
     stream.addTileItem(position, stackpos, item)
     stream.sendto(getSpectators(position))
+    return stackpos
     
 # The development debug system
 def explainPacket(packet):

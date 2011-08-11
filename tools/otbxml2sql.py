@@ -235,10 +235,14 @@ for xItem in dom.getElementsByTagName("item"):
 
      prep = {"name":xName, "plural":xPlural, "article":xArticle}
      for attr in xAttributes:
+         key = attr.getAttribute("key")
+         if key == 'count':
+             key = 'turns'
+
          try:
-            prep[attr.getAttribute("key")] = int(attr.getAttribute("value"))
+            prep[key] = int(attr.getAttribute("value"))
          except:
-            prep[attr.getAttribute("key")] = attr.getAttribute("value").replace("'", "\\'")
+            prep[key] = attr.getAttribute("value").replace("'", "\\'")
      if xId:
          data[int(xId)] = prep
 
@@ -246,10 +250,14 @@ for xItem in dom.getElementsByTagName("item"):
          for x in range(int(xFromId), int(xToId)+1):
              data[int(x)] = {"name":xName, "plural":xPlural, "article":xArticle}
              for attr in xAttributes:
+                 key = attr.getAttribute("key")
+                 if key == 'count':
+                     key = 'turns'
+
                  try:
-                    data[int(x)][attr.getAttribute("key")] = int(attr.getAttribute("value"))
+                    data[int(x)][key] = int(attr.getAttribute("value"))
                  except:
-                    data[int(x)][attr.getAttribute("key")] = attr.getAttribute("value").replace("'", "\\'")
+                    data[int(x)][key] = attr.getAttribute("value").replace("'", "\\'")
              
              
 #print data
