@@ -62,6 +62,7 @@ itemMaxServerId = 12844
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50*(x**3)-150*(x**2) + 400*x)/3
 magicLevelFormula = lambda a,b: 1600*(b**a)
+totalMagicLevelFormula = lambda a,b:(1600*(b**a-1))/b-1
 skillFormula = lambda a,b: 50*(b**(a-10))
 magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
 fishingFormula = lambda x: 20*(1.1)**(x-10)

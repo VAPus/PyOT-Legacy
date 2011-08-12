@@ -24,7 +24,7 @@ class TibiaPlayer(Creature):
         Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
-        self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
+        
         self.modes = [0,0,0]
         self.gender = 0
         self.base = anyPlayer
@@ -32,6 +32,20 @@ class TibiaPlayer(Creature):
         self.openContainers = []
 
         vocation = self.getVocation()
+        level = 1
+        while True:
+            level += 1
+            if config.totalExpFormula(level) > self.data["experience"]:
+                break
+        
+        maglevel = 1
+        while True:
+            maglevel += 1
+            if config.totalMagicLevelFormula(maglevel, vocation.mlevel) > self.data["manaspent"]:
+                break
+                
+        self.data["level"] = level
+        self.data["maglevel"] = maglevel
         self.data["healthmax"] = vocation.maxHP(self.data["level"])
         self.data["manamax"] = vocation.maxMana(self.data["level"])
         self.data["capasity"] = vocation.maxCapasity(self.data["level"])
@@ -41,6 +55,8 @@ class TibiaPlayer(Creature):
             
         if self.data["mana"] > self.data["manamax"]:
             self.data["mana"] = self.data["manamax"]
+            
+        self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
 
     def generateClientID(self):
         return 0x10000000 + uniqueId()
