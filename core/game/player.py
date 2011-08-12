@@ -803,9 +803,9 @@ class TibiaPlayer(Creature):
             # Remove item:
             currItem = self.findItemWithPlacement(toPosition)
 
-            if currItem and currItem[1] and not (currItem[1].stackable or currItem[1].containerSize):
+            """if currItem and currItem[1] and not ((currItem[1].stackable and currItem[1].itemId == sid(clientId)) or currItem[1].containerSize):
                 currItem[1] = None
-                
+            """
             if fromMap:
                 
                 walkPattern = game.engine.calculateWalkPattern(self.position, fromPosition, -1)
@@ -903,7 +903,7 @@ class TibiaPlayer(Creature):
                 if currItem and currItem[1] and currItem[1].containerSize:
                     ret = self.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
-                elif (currItem == 2) and not currItem[1] and currItem[2]:
+                elif (currItem[0] == 2) and not currItem[1] and currItem[2]:
                     ret = self.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                 else:
                     stream = TibiaPacket()
@@ -915,10 +915,17 @@ class TibiaPlayer(Creature):
                         stream.addInventoryItem(toPosition[1], self.inventory[toPosition[1]-1])
                     else:
                         container = self.getContainer(toPosition[1]-64)
-
-                        self.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
+                        try:
+                            container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
+                            stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
+                        except:
+                            self.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
                     if renew and currItem and currItem[1]:
-                        self.itemToContainer(self.inventory[2], currItem[1])
+                        if fromPosition[1] < 64:
+                            self.inventory[fromPosition[1]-1] = currItem[1]
+                            stream.addInventoryItem(fromPosition[1], self.inventory[fromPosition[1]-1])
+                        else:
+                            self.itemToContainer(self.inventory[2], currItem[1])
 
                     stream.send(self.client)
         else:
