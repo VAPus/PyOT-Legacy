@@ -2,6 +2,7 @@ import game.scriptsystem # We use the talkactions from here
 import game.item
 import game.enum
 import game.engine
+import game.map
 
 spells = {}
 fieldRunes = {}
@@ -46,9 +47,8 @@ def makeField(fieldId):
                 item.decay(position, stackpos, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
                 
     return make
-    
-    
-def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
+     
+def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
@@ -97,16 +97,16 @@ def conjureRune(name, words, make, icon, mana=0, level=0, mlevel=0, soul=1, voca
                 if soul:
                     creature.modifySoul(-1 * soul)
                 creature.cooldownSpell(icon, group, cooldown)
-                creature.message("Made %dx%s" % (makeCount, name))
+                creature.message("Made %dx%s" % (makeCount, item.rawName()))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
-    if name in spells:
+    if game.item.items[make]["name"].title() in spells:
         print "Warning: Duplicate spell with name %s" % name
-    spells[name] = (words, conjure)
+    spells[game.item.items[make]["name"].title()] = (words, conjure)
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
-def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2):
+def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):
     def fieldrune(creature, thing, onPosition, **k):
-        print "I was called!!!"
+
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
             return False
@@ -134,7 +134,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2):
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                useItem.count -= 1
+                useItem.count -= useCount
                 creature.updateInventory(slot) # Send refresh to client
                 
                 creature.cooldownSpell(icon, group, cooldown)
@@ -143,10 +143,49 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2):
                     pos[0] += a[0]
                     pos[1] += a[1]
                     callback(pos)
-    print "fieldRune was called, rune = ", rune
+
     fieldRunes[rune] = fieldrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
-    
+
+def targetRune(rune, level, mlevel, icon, group, callback, cooldown=2, useCount=1):
+    def targetrune(creature, thing, onPosition, stackpos, onStackpos **k):
+
+        if not creature.canDoSpell(icon, group):
+            creature.exhausted()
+            return False
+            
+        if creature.data["level"] < level:
+            creature.notEnough("level")
+        elif creature.data["maglevel"] < mlevel:
+            creature.notEnough("magic level")
+            
+        else:
+            useItem = None
+            slot = 0
+            if creature.inventory[4] and creature.inventory[4] == thing:
+                useItem = creature.inventory[4]
+                slot = 5
+            elif creature.inventory[5] and creature.inventory[5] == thing:
+                useItem = creature.inventory[5]
+                slot = 6
+            elif creature.inventory[9] and creature.inventory[9] == thing:
+                useItem = creature.inventory[9]
+                slot = 10
+                
+            if not useItem:
+                creature.needMagicItem()
+                creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+                
+            else:
+                useItem.count -= useCount
+                creature.updateInventory(slot) # Send refresh to client
+                
+                creature.cooldownSpell(icon, group, cooldown)
+                onCreature = game.map.getTile(onPosition).getThing(onStackpos)
+                
+                callback(creature, position, onCreature, onPosition)
+                
+
 def clear():
     fieldRunes.clear()
     spells.clear()

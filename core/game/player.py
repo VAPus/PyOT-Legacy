@@ -31,6 +31,17 @@ class TibiaPlayer(Creature):
         self.knownCreatures = []
         self.openContainers = []
 
+        vocation = self.getVocation()
+        self.data["healthmax"] = vocation.maxHP(self.data["level"])
+        self.data["manamax"] = vocation.maxMana(self.data["level"])
+        self.data["capasity"] = vocation.maxCapasity(self.data["level"])
+        
+        if self.data["health"] > self.data["healthmax"]:
+            self.data["health"] = self.data["healthmax"]
+            
+        if self.data["mana"] > self.data["manamax"]:
+            self.data["mana"] = self.data["manamax"]
+
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -72,11 +83,11 @@ class TibiaPlayer(Creature):
         stream.uint8(0xA0)
         stream.uint16(self.data["health"])
         stream.uint16(self.data["healthmax"])
-        stream.uint32(10000) # TODO: Free Capasity
-        stream.uint32(self.data["cap"]) # TODO: Cap
+        stream.uint32(self.data["capasity"]) # TODO: Free Capasity
+        stream.uint32(self.data["capasity"]) # TODO: Cap
         stream.uint64(self.data["experience"]) # TODO: Virtual cap? Experience
         stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
-        stream.uint8(0) # % to next level, TODO
+        stream.uint8(config.levelFormula(self.data["level"]+1) / self.data["experience"]) # % to next level, TODO
         stream.uint16(self.data["mana"]) # mana
         stream.uint16(self.data["manamax"]) # mana max
         stream.uint8(self.data["maglevel"]) # TODO: Virtual cap? Manalevel

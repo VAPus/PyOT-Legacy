@@ -9,7 +9,39 @@ class Vocation(object):
         self.health = health
         self.mana = mana
         self.soulticks = soulticks
+        self.calcMaxHP = lambda x: x*5 + 145
+        self.calcMaxMana = lambda x: x*5 - 5
+        self.calcMaxCapasity = lambda x: x*10 + 390
+        self.soul = 100
+        self.mlevel = 3
+        self.meleeSkill = 2
+        
+    def maxHP(self, x):
+        return self.calcMaxHP(x)
+        
+    def hpFormula(self, formula):
+        self.calcMaxHP = formula
+        
+    def maxMana(self, x):
+        return self.calcMaxMana(x)
+        
+    def manaFormula(self, formula):
+        self.calcMaxMana = formula   
+        
+    def maxCapasity(self, x):
+        return self.calcMaxCapasity(x)
+        
+    def capasityFormula(self, formula):
+        self.calcMaxCapasity = formula   
 
+    def maxSoul(self, soul):
+        self.soul = soul
+        
+    def meleeSkillConstant(self, constant):
+        self.meleeSkill = constant
+        
+    def mlevelConstant(self, constant):
+        self.mlevel = constant
 def regVocation(id, name, description, health, mana, soulticks):
     vocation = Vocation(id, name, description, health, mana, soulticks)
     vocations[name] = vocation

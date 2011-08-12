@@ -101,7 +101,10 @@ class Item(object):
         else:
             return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["name"]
             
-        
+    def rawName(self):
+        if self.count > 1 and "plural" in items[self.itemId]:
+            return items[self.itemId]["plural"].title()
+        return items[self.itemId]["name"].title()
     def reduceCount(self, count):
         self.count -= count
         if self.count <= 0:
@@ -146,10 +149,10 @@ class Item(object):
             game.engine.transformItem(self, self.decayTo, position, stackpos)
             
             # Hack for chained decay
-            if self.decayTo:
+            if self.itemId and self.decayTo != None:
                 self.decay(position, stackpos, callback=callback)
                 
-            if callback:
+            if self.itemId and callback:
                 callback(self)
                 
         game.engine.safeCallLater(duration, executeDecay)

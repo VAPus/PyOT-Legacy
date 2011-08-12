@@ -231,7 +231,11 @@ def updateTile(pos, tile):
 def transformItem(item, transformTo, pos, stack):
     stream = TibiaPacket()
     item.itemId = transformTo
-    stream.updateTileItem(pos, stack, item)
+    if transformTo:
+        stream.updateTileItem(pos, stack, item)
+    else:
+        stream.removeTileItem(pos, stack)
+        game.map.getTile(pos).removeItem(item)
     stream.sendto(getSpectators(pos))
 
 def placeItem(item, position):
