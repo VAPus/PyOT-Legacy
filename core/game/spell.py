@@ -7,6 +7,7 @@ import random
 
 spells = {}
 fieldRunes = {}
+targetRunes = {}
 ATTACK_GROUP = 1
 HEALING_GROUP = 2
 SUPPORT_GROUP=3
@@ -49,22 +50,25 @@ def makeField(fieldId):
                 
     return make
 
-def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=0.2, lvlMax=0.2):
+def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
     def callback(creature, position, onCreature, onPosition, effect):
-        creature.shoot(position, onPosition)
-        maxDmg = -1 * (creature.data["level"]*lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-        minDmg = -1 * (creature.data["level"]*lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        creature.shoot(position, onPosition, effect)
+        maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+        minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
         
-        onCreature.modifyHealth(random.randint(minDmg, maxDmg))
-        
-def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=0.2, lvlMax=0.2):
+        onCreature.modifyHealth(random.randint(round(minDmg), round(maxDmg)))
+    return callback
+    
+def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
     def callback(creature, position, onCreature, onPosition, effect):
-        creature.shoot(position, onPosition)
-        maxHP = (creature.data["level"]*lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-        minHP = (creature.data["level"]*lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        
-        onCreature.modifyHealth(random.randint(minHP, maxHP))
-        
+        creature.shoot(position, onPosition, effect)
+        maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+        minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        print minHP
+        print maxHP
+        onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
+    return callback
+    
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
@@ -204,9 +208,12 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
                 except:
                     creature.onlyOnCreatures()
                 else:
-                    callback(creature, position, onCreature, onPosition, effect)
+                    callback(creature, creature.position, onCreature, onPosition, effect)
                 
-
+    targetRunes[rune] = targetrune # Just to prevent reset
+    game.scriptsystem.get("useWith").reg(rune, targetrune)
+    
 def clear():
     fieldRunes.clear()
+    targetRunes.clear()
     spells.clear()

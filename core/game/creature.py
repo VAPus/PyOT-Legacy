@@ -85,7 +85,10 @@ class Creature(object):
         else:
             self.lastAction = time.time()
             return True
-            
+
+    def isPlayer(self):
+        return False
+        
     def name(self):
         return self.data["name"]
 
@@ -299,7 +302,7 @@ class Creature(object):
     def shoot(self, fromPos, toPos, type):
         stream = TibiaPacket()
         stream.shoot(fromPos, toPos, type)
-        stream.sendto(getSpectators(pos))
+        stream.sendto(getSpectators(fromPos))
 
     def refreshOutfit(self):
         stream = TibiaPacket(0x8E)
