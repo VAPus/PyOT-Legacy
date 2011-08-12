@@ -68,7 +68,7 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         print maxHP
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
-    
+
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
@@ -212,6 +212,26 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
                 
     targetRunes[rune] = targetrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, targetrune)
+
+def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=1):
+    def selftargetspell(creature, **k):
+        if not creature.canDoSpell(icon, group):
+            creature.exhausted()
+            return False
+                
+        if creature.data["level"] < level:
+            creature.notEnough("level")
+        elif creature.data["mana"] < mana:
+            creature.notEnough("mana")   
+            
+        else:
+            creature.modifyMana(-1 * mana)
+            creature.cooldownSpell(icon, group, cooldown)
+            callback(creature, creature.position, creature, creature.position, effect)
+            
+    spells[words] = selftargetspell
+    game.scriptsystem.reg("talkaction", words, selftargetspell)
+        
     
 def clear():
     fieldRunes.clear()
