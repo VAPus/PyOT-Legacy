@@ -477,6 +477,9 @@ class TibiaPlayer(Creature):
     
     def notEnough(self, word):
         self.message("You do not have enough %s." % word, enum.MSG_STATUS_SMALL)
+
+    def onlyOnCreature(self):
+        self.message("You can only use it on creatures." enum.MSG_STATUS_SMALL)
         
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:

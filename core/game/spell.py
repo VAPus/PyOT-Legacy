@@ -3,6 +3,7 @@ import game.item
 import game.enum
 import game.engine
 import game.map
+import random
 
 spells = {}
 fieldRunes = {}
@@ -47,7 +48,23 @@ def makeField(fieldId):
                 item.decay(position, stackpos, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
                 
     return make
-     
+
+def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=0.2, lvlMax=0.2):
+    def callback(creature, position, onCreature, onPosition, effect):
+        creature.shoot(position, onPosition)
+        maxDmg = -1 * (creature.data["level"]*lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+        minDmg = -1 * (creature.data["level"]*lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        
+        onCreature.modifyHealth(random.randint(minDmg, maxDmg))
+        
+def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=0.2, lvlMax=0.2):
+    def callback(creature, position, onCreature, onPosition, effect):
+        creature.shoot(position, onPosition)
+        maxHP = (creature.data["level"]*lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+        minHP = (creature.data["level"]*lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        
+        onCreature.modifyHealth(random.randint(minHP, maxHP))
+        
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
@@ -147,7 +164,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
     fieldRunes[rune] = fieldrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
 
-def targetRune(rune, level, mlevel, icon, group, callback, cooldown=2, useCount=1):
+def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, useCount=1):
     def targetrune(creature, thing, onPosition, stackpos, onStackpos, **k):
 
         if not creature.canDoSpell(icon, group):
@@ -181,9 +198,13 @@ def targetRune(rune, level, mlevel, icon, group, callback, cooldown=2, useCount=
                 creature.updateInventory(slot) # Send refresh to client
                 
                 creature.cooldownSpell(icon, group, cooldown)
-                onCreature = game.map.getTile(onPosition).getThing(onStackpos)
-                
-                callback(creature, position, onCreature, onPosition)
+                try:
+                    onCreature = game.map.getTile(onPosition).getThing(onStackpos)
+                    onCreature.isPlayer()
+                except:
+                    creature.onlyOnCreatures()
+                else:
+                    callback(creature, position, onCreature, onPosition, effect)
                 
 
 def clear():
