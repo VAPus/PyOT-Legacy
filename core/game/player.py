@@ -208,6 +208,7 @@ class TibiaPlayer(Creature):
             return None # TODO
 
     def findItemById(self, itemId, count=0):
+        print "Find"
         items = []
         foundCount = 0
         stream = TibiaPacket()
@@ -246,13 +247,14 @@ class TibiaPlayer(Creature):
         elif items and not count:
             if items[0][0] == 1:
                 self.inventory[items[0][3]] = None
-                stream.removeInventoryItem(items[0][3]+1)
+                stream.removeInventoryItem(items[0][2]+1)
             elif items[0][0] == 2:
                 items[0][2].container.removeItem(items[0][1])
                 try:
-                    stream.removeContainerItem(self.openContainers.index(item[2]), item[3]+1)
+                    stream.removeContainerItem(self.openContainers.index(items[0][2]), items[0][3])
                 except:
                     pass
+            stream.send(self.client)
             return items[0][1]
         else:
             newItem = game.item.Item(itemId, count)
@@ -264,23 +266,24 @@ class TibiaPlayer(Creature):
                 count = precount - item[1].count
                 if item[1].count:
                     if item[0] == 1:
-                        stream.addInventoryItem(item[3]+1, item[1])
+                        stream.addInventoryItem(item[2]+1, item[1])
                     elif item[0] == 2:
                         try:
-                            stream.updateContainerItem(self.openContainers.index(item[2]), item[3]+1, item[1])
+                            stream.updateContainerItem(self.openContainers.index(item[2]), item[3], item[1])
                         except:
                             pass
                 else:
                     if item[0] == 1:
-                        self.inventory[item[3]+1-1] = None
-                        stream.removeInventoryItem(item[3]+1)
+                        self.inventory[item[2]+1-1] = None
+                        stream.removeInventoryItem(item[2]+1)
                     elif item[0] == 2:
                         item[2].container.removeItem(item[1])
-                        stream.removeContainerItem(self.openContainers.index(item[2]), item[3]+1)
-
+                        stream.removeContainerItem(self.openContainers.index(item[2]), item[3])
+            stream.send(self.client)
             return newItem
 
     def replaceItem(self, position, stackpos, item):
+        print "Replace"
         # Option 1, from the map:
         if position:
             if position[0] != 0xFFFF:
@@ -373,9 +376,15 @@ class TibiaPlayer(Creature):
         
     def setModes(self, attack, chase, secure):
         self.modes[0] = attack
+        
+        if self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
+            self.target.scripts["onNextStep"].append(self.__followCallback)
+            
         self.modes[1] = chase
         self.modes[2] = secure
         print self.modes
+        
         
             
     def setTarget(self, targetId=0):
@@ -857,8 +866,8 @@ class TibiaPlayer(Creature):
                     
                 if oldItem[1].stackable and count < 100:
                     renew = True
-                    oldItem[1].reduceCount(count)
-                    if oldItem[1].count:
+                    oldItem[1].count -= count
+                    if oldItem[1].count > 0:
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
                         elif oldItem[0] == 2:
@@ -906,7 +915,7 @@ class TibiaPlayer(Creature):
                 if currItem and currItem[1] and currItem[1].containerSize:
                     ret = self.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
-                elif (currItem[0] == 2) and not currItem[1] and currItem[2]:
+                elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
                     ret = self.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                 else:
                     stream = TibiaPacket()

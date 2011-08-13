@@ -128,7 +128,14 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
         if fromPos[0] < to[0]:
             base += 1
         newPos = positionInDirection(currPos, base)
-        if not game.map.getTile(newPos).getThing(1) or not game.map.getTile(newPos).getThing(1).solid:
+        
+        isOk = True
+        for item in game.map.getTile(newPos).getItems():
+            if item.solid:
+                isOk = False
+                break
+                
+        if isOk:
             currPos = newPos
             pattern.append(base)
         

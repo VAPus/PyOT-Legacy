@@ -87,26 +87,13 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
         elif vocation and not creature.data["vocation"] in vocation:
             creature.notPossible()
         else:
-            #useItem = creature.findItemById(use, useCount)
-            useItem = None
-            slot = 0
-            if creature.inventory[4] and creature.inventory[4].itemId == use and creature.inventory[4].count >= useCount:
-                useItem = creature.inventory[4]
-                slot = 5
-            elif creature.inventory[5] and creature.inventory[5].itemId == use and creature.inventory[5].count >= useCount:
-                useItem = creature.inventory[5]
-                slot = 6
-            elif creature.inventory[9] and creature.inventory[9].itemId == use and creature.inventory[9].count >= useCount:
-                useItem = creature.inventory[9]
-                slot = 10
+            useItem = creature.findItemById(use, useCount)
                 
             if not useItem:
                 creature.needMagicItem()
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                useItem.count -= useCount
-                creature.updateInventory(slot) # Send refresh to client
                 item = game.item.Item(make,makeCount)
 
                 ret = creature.itemToUse(item)
@@ -126,7 +113,7 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):
-    def fieldrune(creature, thing, onPosition, **k):
+    def fieldrune(creature, position, thing, stackpos, onPosition, **k):
 
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
@@ -138,25 +125,16 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
             creature.notEnough("magic level")
             
         else:
-            useItem = None
-            slot = 0
-            if creature.inventory[4] and creature.inventory[4] == thing:
-                useItem = creature.inventory[4]
-                slot = 5
-            elif creature.inventory[5] and creature.inventory[5] == thing:
-                useItem = creature.inventory[5]
-                slot = 6
-            elif creature.inventory[9] and creature.inventory[9] == thing:
-                useItem = creature.inventory[9]
-                slot = 10
-                
-            if not useItem:
+            if not thing.count:
                 creature.needMagicItem()
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                useItem.count -= useCount
-                creature.updateInventory(slot) # Send refresh to client
+                thing.count -= useCount
+                if thing.count:
+                    creature.replaceItem(position, stackpos, thing)
+                else:
+                    creature.removeItem(position, stackpos)
                 
                 creature.cooldownSpell(icon, group, cooldown)
                 for a in area:
@@ -181,26 +159,17 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
             creature.notEnough("magic level")
             
         else:
-            useItem = None
-            slot = 0
-            if creature.inventory[4] and creature.inventory[4] == thing:
-                useItem = creature.inventory[4]
-                slot = 5
-            elif creature.inventory[5] and creature.inventory[5] == thing:
-                useItem = creature.inventory[5]
-                slot = 6
-            elif creature.inventory[9] and creature.inventory[9] == thing:
-                useItem = creature.inventory[9]
-                slot = 10
-                
-            if not useItem:
+            if not thing.count:
                 creature.needMagicItem()
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                useItem.count -= useCount
-                creature.updateInventory(slot) # Send refresh to client
-                
+                thing.count -= useCount
+                if thing.count:
+                    creature.replaceItem(position, stackpos, thing)
+                else:
+                    creature.removeItem(position, stackpos)
+                    
                 creature.cooldownSpell(icon, group, cooldown)
                 try:
                     onCreature = game.map.getTile(onPosition).getThing(onStackpos)

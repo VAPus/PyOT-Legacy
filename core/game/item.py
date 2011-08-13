@@ -107,8 +107,6 @@ class Item(object):
         return items[self.itemId]["name"].title()
     def reduceCount(self, count):
         self.count -= count
-        if self.count <= 0:
-            pass # TODO: remove
             
     def slotId(self):
         if not self.slotType:
