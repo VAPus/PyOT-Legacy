@@ -77,7 +77,7 @@ def loopInThread(time):
     def decor(f):
         def new_f(*args, **kwargs):
             f(*args, **kwargs)
-            safeCallLater(time, reactor.callInThread, f, *args, **kwargs)
+            safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
             
         return new_f
     return decor

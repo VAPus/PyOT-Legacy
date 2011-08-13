@@ -70,7 +70,8 @@ class Creature(object):
         self.action = None
         self.lastAction = 0
         self.lastStep = 0
-        self.target = None # target for follow/attacks based on modes
+        self.target = None # target for follow/attacks
+        self.targetMode = 0 # 0 = no particular reason, 1 = attack, 2 = follow
         self.vars = {}
         self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         self.regenerate = None
@@ -175,17 +176,19 @@ class Creature(object):
             self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)"""
             self.cancelWalk()
             return
+        
+        for thing in newTile.getItems():
+            if thing.solid:
+                self.cancelWalk()
+                self.notPossible()
+                raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
+                return
             
-        if newTile.getThing(0).solid:
-            self.cancelWalk()
-            self.notPossible()
-            raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
-            return
-            
-        """if newTile.creatures(): # Dont walk to creatures, too be supported
+        if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
             raise game.errors.ImpossibleMove
-            return False"""
+            return
+            
         """t = time.time()
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
             game.engine.safeCallLater(t-self.lastStep+self.stepDuration(newTile.getThing(0)), self.move, direction)
@@ -266,14 +269,17 @@ class Creature(object):
                     streamX.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
 
                     
-                canSeeOld = True
                     
             elif not canSeeOld and canSeeNew:
-                streamX.addTileCreature(position, 1, self, spectator.player) # This automaticly deals with known list so
+                streamX = TibiaPacket()
+                streamX.addTileCreature(position, newStackPos, self, spectator.player) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
+                streamX = TibiaPacket()
                 streamX.removeTileItem(oldPosition, oldStackpos)
-
+                
+            elif not canSeeOld and not canSeeNew:
+                continue
             streamX.send(spectator) 
 
         if self.scripts["onNextStep"]:

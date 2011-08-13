@@ -140,6 +140,7 @@ class TibiaPlayer(Creature):
 
     def getVocation(self):
         return game.vocation.getVocationById(self.data["vocation"])
+        
     def findItem(self, position, stackpos=1, sid=None):
         # Option 1, from the map:
         if position:
@@ -369,10 +370,12 @@ class TibiaPlayer(Creature):
             if not icon in self.cooldowns or self.cooldowns[icon] < t:
                 return True
         return False
+        
     def setModes(self, attack, chase, secure):
         self.modes[0] = attack
         self.modes[1] = chase
         self.modes[2] = secure
+        print self.modes
         
             
     def setTarget(self, targetId=0):
@@ -1022,10 +1025,21 @@ class TibiaPlayer(Creature):
     def handleAttack(self, packet):
         cid = packet.uint32()
         print "CreatureID %d" %  cid
+        if self.targetMode == 1:
+            self.targetMode = 0
+            self.target = None
+            return
+            
         if cid in allCreatures:
             print allCreatures[cid].position
+            self.target = allCreatures[cid]
+            self.targetMode = 1
         else:
             self.notPossible()
+            
+        if self.modes[1] == game.enum.CHASE:
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
+            self.target.scripts["onNextStep"].append(self.__followCallback)
 
     def __followCallback(self, who):
         if self.target == who:
@@ -1034,9 +1048,15 @@ class TibiaPlayer(Creature):
             
     def handleFollow(self, packet):
         cid = packet.uint32()
+        
+        if self.targetMode == 2:
+            self.targetMode = 0
+            self.target = None
+            return
+            
         if cid in allCreatures:
             self.target = allCreatures[cid]
-            
+            self.targetMode = 2
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
             self.target.scripts["onNextStep"].append(self.__followCallback)
         else:
