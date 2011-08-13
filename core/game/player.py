@@ -31,7 +31,7 @@ class TibiaPlayer(Creature):
         self.knownCreatures = []
         self.openContainers = []
         self.doingSoulGain = False
-        
+        self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
         vocation = self.getVocation()
         level = 1
         while True:
@@ -49,7 +49,18 @@ class TibiaPlayer(Creature):
         self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
     
 
-            
+        if self.data["stamina"]:
+            def loseStamina():
+                self.data["stamina"] -= 60
+                if self.data["stamina"] < 0:
+                    self.data["stamina"] = 0
+                else:
+                    game.engine.safeCallLater(60, loseStamina)
+                
+                if self.data["stamina"] < (42*3600):
+                    self.refreshStatus()
+                    
+            game.engine.safeCallLater(60, loseStamina)
         
 
     def generateClientID(self):
@@ -96,8 +107,8 @@ class TibiaPlayer(Creature):
         stream.uint8(0xA0)
         stream.uint16(self.data["health"])
         stream.uint16(self.data["healthmax"])
-        stream.uint32(self.data["capasity"]) # TODO: Free Capasity
-        stream.uint32(self.data["capasity"]) # TODO: Cap
+        stream.uint32(self.data["capasity"] * 100) # TODO: Free Capasity
+        stream.uint32(self.data["capasity"] * 100) # TODO: Cap
         stream.uint64(self.data["experience"]) # TODO: Virtual cap? Experience
         stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
         stream.uint8(config.levelFormula(self.data["level"]+1) / self.data["experience"]) # % to next level, TODO
@@ -107,7 +118,7 @@ class TibiaPlayer(Creature):
         stream.uint8(1) # TODO: Virtual cap? ManaBase
         stream.uint8(0) # % to next level, TODO
         stream.uint8(self.data["soul"]) # TODO: Virtual cap? Soul
-        stream.uint16(self.data["stamina"] / (1000 * 60)) # Stamina minutes
+        stream.uint16(min(42 * 60, self.data["stamina"] / 60)) # Stamina minutes
         stream.uint16(self.speed) # Speed
         
         stream.uint16(0x00) # Condition
