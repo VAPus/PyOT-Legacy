@@ -31,7 +31,9 @@ class Monster(Creature):
         game.engine.updateTile(self.position, tile)
 
         if self.lastDamager and self.lastDamager.isPlayer():
-            self.lastDamager.modifyExperience(self.base.experience)
+            if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
+                self.lastDamager.modifyExperience(self.base.experience)
+                
             if self.base.experience >= self.lastDamager.data["level"]:
                 self.lastDamager.soulGain()
 

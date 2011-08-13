@@ -63,6 +63,7 @@ soulGain = 240 # 4 minutes
 
 # Stamina
 maxStamina = 42 * 60 # 42 hours, higher won't be displayed in client do to debug, but it will exist virtually
+noStaminaNoExp = True
 
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
