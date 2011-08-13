@@ -6,6 +6,7 @@ from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 import game.enum
 import game.errors
+import game.item
 
 monsters = {}
 class Monster(Creature):
@@ -24,7 +25,9 @@ class Monster(Creature):
         # Transform
         tile = game.map.getTile(self.position)
         tile.removeCreature(self)
-        tile.placeItem(self.base.data["corpse"])
+        corpse = game.item.Item(self.base.data["corpse"])
+        corpse.decay(self.position)
+        tile.placeItem(corpse)
         game.engine.updateTile(self.position, tile)
 
 class MonsterBase(CreatureBase):
