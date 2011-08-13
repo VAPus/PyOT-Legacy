@@ -58,6 +58,9 @@ yellRange = (18, 14)
 itemMaxClientId = 12816
 itemMaxServerId = 12844
 
+# Soulgain timer
+soulGain = 240 # 4 minutes
+
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50*(x**3)-150*(x**2) + 400*x)/3

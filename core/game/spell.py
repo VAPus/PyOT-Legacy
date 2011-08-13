@@ -60,6 +60,8 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5)
         minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
         
         onCreature.modifyHealth(random.randint(round(minDmg), round(maxDmg)))
+        onCreature.lastDamager = creature
+        
     return callback
     
 def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
@@ -67,8 +69,7 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         creature.shoot(position, onPosition, effect)
         maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
         minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        print minHP
-        print maxHP
+
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 

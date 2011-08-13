@@ -30,6 +30,11 @@ class Monster(Creature):
         tile.placeItem(corpse)
         game.engine.updateTile(self.position, tile)
 
+        if self.lastDamager and self.lastDamager.isPlayer():
+            self.lastDamager.modifyExperience(self.base.experience)
+            if self.base.experience >= self.lastDamager.data["level"]:
+                self.lastDamager.soulGain()
+
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
         self.data = data

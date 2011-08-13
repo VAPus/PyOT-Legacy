@@ -24,39 +24,33 @@ class TibiaPlayer(Creature):
         Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
         self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
-        
+        self.speed = 220
         self.modes = [0,0,0]
         self.gender = 0
         self.base = anyPlayer
         self.knownCreatures = []
         self.openContainers = []
-
+        self.doingSoulGain = False
+        
         vocation = self.getVocation()
         level = 1
         while True:
-            level += 1
             if config.totalExpFormula(level) > self.data["experience"]:
                 break
+            level += 1
         
         maglevel = 1
         while True:
-            maglevel += 1
             if config.totalMagicLevelFormula(maglevel, vocation.mlevel) > self.data["manaspent"]:
                 break
-                
-        self.data["level"] = level
+            maglevel += 1
         self.data["maglevel"] = maglevel
-        self.data["healthmax"] = vocation.maxHP(self.data["level"])
-        self.data["manamax"] = vocation.maxMana(self.data["level"])
-        self.data["capasity"] = vocation.maxCapasity(self.data["level"])
-        
-        if self.data["health"] > self.data["healthmax"]:
-            self.data["health"] = self.data["healthmax"]
-            
-        if self.data["mana"] > self.data["manamax"]:
-            self.data["mana"] = self.data["manamax"]
-            
+        self.setLevel(level, False)
         self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
+    
+
+            
+        
 
     def generateClientID(self):
         return 0x10000000 + uniqueId()
@@ -338,7 +332,63 @@ class TibiaPlayer(Creature):
             return self.openContainers[openId]
         except:
             return
+
+    # Experience & level
+    def setLevel(self, level, send=True):
+        vocation = self.getVocation()
+        self.data["level"] = level
         
+        self.data["healthmax"] = vocation.maxHP(self.data["level"])
+        self.data["manamax"] = vocation.maxMana(self.data["level"])
+        self.data["capasity"] = vocation.maxCapasity(self.data["level"])
+        
+        if self.data["health"] > self.data["healthmax"]:
+            self.data["health"] = self.data["healthmax"]
+            
+        if self.data["mana"] > self.data["manamax"]:
+            self.data["mana"] = self.data["manamax"]
+        
+        if send: self.refreshStatus()
+        
+    def modifyExperience(self, exp):
+        up = True
+        if exp < 0:
+            up = False
+            
+        self.data["experience"] += exp
+        
+        if up:
+            level = 0
+            while True:
+                if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
+                    break
+                level += 1
+            if level:
+                self.setLevel(self.data["level"]+level)
+        else:
+            level = 0
+            while True:
+                if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
+                    break
+                level += 1
+            if level:
+                self.setLevel(self.data["level"]-level)            
+
+    # Soul
+    def soulGain(self):
+        def doSoulGain(self, gainOverX):
+            self.modifySoul(1)
+            if self.doingSoulGain - gainOverX >= time.time():
+                game.engine.safeCallLater(gainOverX, doSoulGain, gainOverX)
+            else:
+                self.doingSoulGain = False
+                
+        if self.doingSoulGain:
+            self.doingSoulGain = time.time() + config.soulGain
+        else:
+            self.doingSoulGain = time.time() + config.soulGain
+            gainTime = self.getVocation().soulticker
+            game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown):
         stream = TibiaPacket(0xA4)

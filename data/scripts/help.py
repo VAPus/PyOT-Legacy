@@ -150,3 +150,11 @@ def popItems(creature, text):
     return False
     
 scriptsystem.get("talkactionFirstWord").reg('pop', popItems)
+
+# Experience tester
+def modexp(creature, text):
+    exp = int(text)
+    creature.modifyExperience(exp)
+    return False
+    
+scriptsystem.get("talkactionFirstWord").reg('exp', modexp)

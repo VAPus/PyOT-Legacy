@@ -16,6 +16,7 @@ class Vocation(object):
         self.mlevel = 3
         self.meleeSkill = 2
         
+        
     def maxHP(self, x):
         return self.calcMaxHP(x)
         

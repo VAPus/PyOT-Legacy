@@ -76,6 +76,7 @@ class Creature(object):
         self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         self.regenerate = None
         self.alive = True
+        self.lastDamager = None
         
         # We are trackable
         allCreatures[self.cid] = self
