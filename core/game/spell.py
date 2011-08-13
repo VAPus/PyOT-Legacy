@@ -147,7 +147,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
 
 def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, useCount=1):
-    def targetrune(creature, thing, onPosition, stackpos, onStackpos, **k):
+    def targetrune(creature, thing, position, onPosition, stackpos, onStackpos, **k):
 
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
