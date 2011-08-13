@@ -5,6 +5,7 @@ import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 import game.enum
+import game.errors
 
 monsters = {}
 class Monster(Creature):
@@ -18,8 +19,13 @@ class Monster(Creature):
         self.spawnPosition = position[:]
         self.lastStep = 0
         self.speed = float(self.base.speed)
-    
-
+        
+    def onDeath(self):
+        # Transform
+        tile = game.map.getTile(self.position)
+        tile.removeCreature(self)
+        tile.placeItem(self.base.data["corpse"])
+        game.engine.updateTile(self.position, tile)
 
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
@@ -126,6 +132,10 @@ class MonsterBrain(object):
 
     @game.engine.loopInThread(2)
     def handleThink(self, monster):
+        # Are we alive?
+        if not monster.alive:
+            return False # Stop looper
+            
         # Walking
         if monster.target: # We need a target for this code check to run
         
@@ -180,6 +190,10 @@ class MonsterBrain(object):
             
     @game.engine.loopInThread(2)        
     def handleTalk(self, monster):
+        # Are we alive?
+        if not monster.alive:
+            return False # Stop looper
+            
         if 10 > random.randint(0, 100): # 10%
             # Find a random text
             text = random.choice(monster.base.voiceslist)
@@ -227,10 +241,13 @@ class MonsterBrain(object):
                     print monster.position, " vs ", monster.spawnPosition
                     print "Stop by west"
                     continue
-                
-            if monster.move(step, spectators):
+            
+            try:
+                monster.move(step, spectators)
                 monster.lastStep = time.time()
                 return True
+            except game.errors.ImpossibleMove:
+                pass
         return False
         
 brains = {}
@@ -240,6 +257,7 @@ def genMonster(name, look, description="", brain="default"):
     data = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
 
     data["looktype"] = look[0]
+    data["corpse"] = look[1]
     data["name"] = name
     # Then monster only data
     monsters[name] = MonsterBase(data, brains[brain], None)

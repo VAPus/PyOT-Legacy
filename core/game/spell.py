@@ -26,6 +26,9 @@ def makeField(fieldId):
         item = game.item.Item(fieldId)
         
         def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
+            if not creature.alive:
+                return
+                
             ticks += 1
             creature.modifyHealth(-1 * damage)
             creature.magicEffect(creature.position, effect)
@@ -46,7 +49,7 @@ def makeField(fieldId):
         if item.damage:
             game.scriptsystem.reg('walkOn', item, callback)
             if item.duration:
-                item.decay(position, stackpos, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
+                item.decay(position, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
                 
     return make
 

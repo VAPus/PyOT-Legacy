@@ -76,8 +76,9 @@ def action(forced=False, delay=0):
 def loopInThread(time):
     def decor(f):
         def new_f(*args, **kwargs):
-            f(*args, **kwargs)
-            safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
+            ret = f(*args, **kwargs)
+            if ret != False:
+                safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
             
         return new_f
     return decor
@@ -235,9 +236,12 @@ def updateTile(pos, tile):
     stream.uint8(0xFF)
     stream.sendto(getSpectators(pos))
 
-def transformItem(item, transformTo, pos, stack):
+def transformItem(item, transformTo, pos, stack=None):
     stream = TibiaPacket()
     item.itemId = transformTo
+    if not stack:
+        stack = game.map.getTile(pos).findStackpos(item)
+        
     if transformTo:
         stream.updateTileItem(pos, stack, item)
     else:

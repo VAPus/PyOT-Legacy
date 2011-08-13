@@ -75,6 +75,7 @@ class Creature(object):
         self.vars = {}
         self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         self.regenerate = None
+        self.alive = True
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -339,15 +340,29 @@ class Creature(object):
             stream.uint32(self.clientId())
             stream.uint16(speed)
             stream.sendto(getSpectators(self.position))
+
+    def onDeath(self):
+        pass # To be overrided in monster and player
     
-    def setHealth(self, health):
-        self.data["health"] = health
-        stream = TibiaPacket(0x8C)
-        stream.uint32(self.clientId())
-        stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
-        stream.sendto(getSpectators(self.position))
+    def onSpawn(self):
+        pass # To be overrided
         
-        self.refreshStatus()
+    def setHealth(self, health):
+        if self.data["health"] == 0 and health:
+            self.alive = True
+            self.onSpawn()
+            
+        self.data["health"] = max(0, health)
+        if self.data["health"] == 0:
+            self.alive = False
+            self.onDeath()
+        else:
+            stream = TibiaPacket(0x8C)
+            stream.uint32(self.clientId())
+            stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
+            stream.sendto(getSpectators(self.position))
+            
+            self.refreshStatus()
 
     def modifyHealth(self, health):
         self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))

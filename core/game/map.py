@@ -137,6 +137,9 @@ class Tile(object):
             if x.itemId == sid:
                 return x
 
+    def findStackpos(self, thing):
+        return self.things.index(thing)
+        
     def findClientItem(self, cid, stackpos=None):
         for x in self.bottomItems():
             if x.cid == cid:

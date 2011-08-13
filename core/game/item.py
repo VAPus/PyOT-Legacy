@@ -136,7 +136,9 @@ class Item(object):
                 else:
                     return None
 
-    def decay(self, position, stackpos, to=None, duration=None, callback=None):
+    def decay(self, position, to=None, duration=None, callback=None):
+        import game.map
+        
         if to == None:
             to = self.decayTo
             
@@ -144,11 +146,11 @@ class Item(object):
             duration = self.duration
             
         def executeDecay():
-            game.engine.transformItem(self, self.decayTo, position, stackpos)
+            game.engine.transformItem(self, self.decayTo, position)
             
             # Hack for chained decay
             if self.itemId and self.decayTo != None:
-                self.decay(position, stackpos, callback=callback)
+                self.decay(position, callback=callback)
                 
             if self.itemId and callback:
                 callback(self)

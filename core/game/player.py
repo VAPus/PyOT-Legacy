@@ -294,7 +294,7 @@ class TibiaPlayer(Creature):
             # Option 2, the inventory
             elif position[1] < 64:
                 self.inventory[position[1]-1] = item
-                self.updateInventory(position[1]-1)
+                self.updateInventory(position[1])
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
@@ -319,7 +319,7 @@ class TibiaPlayer(Creature):
             # Option 2, the inventory
             elif position[1] < 64:
                 self.inventory[position[1]-1] = None
-                self.updateInventory(position[1]-1)
+                self.updateInventory(position[1])
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
