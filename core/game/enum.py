@@ -77,12 +77,12 @@ MSG_STATUS_CONSOLE_BLUE		= 0xFF
 # Fluids
 FLUID_EMPTY                     = 0x00
 FLUID_BLUE                      = 0x01
-FLUID_RED                       = 0x02
+FLUID_PURPLE                    = 0x02
 FLUID_BROWN                     = 0x03
-FLUID_GREEN                     = 0x04
-FLUID_YELLOW                    = 0x05
-FLUID_WHITE                     = 0x06
-FLUID_PURPLE                    = 0x07
+FLUID_RED                       = 0x05
+FLUID_GREEN                     = 0x06
+FLUID_YELLOW                    = 0x08
+FLUID_WHITE                     = 0x09
 
 FLUID_NONE                      = FLUID_EMPTY
 FLUID_WATER                     = FLUID_BLUE
@@ -108,8 +108,6 @@ FLUID_SWAMP                     = FLUID_GREEN + 24
 
 FLUID_TEA                       = FLUID_BROWN + 32
 FLUID_MEAD                      = FLUID_BROWN + 40
-
-reversFluids = [FLUID_EMPTY, FLUID_WATER, FLUID_MANA, FLUID_BEER, FLUID_EMPTY, FLUID_BLOOD, FLUID_SLIME, FLUID_EMPTY, FLUID_LEMONADE, FLUID_MILK]
 
 # Floorchange
 FLOORCHANGE_DOWN                = 0x00

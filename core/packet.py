@@ -149,8 +149,6 @@ class TibiaPacket(object):
             if item.stackable:
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
-                if item.type == 11:
-                    print "Notice on %d" % item.itemId
                 self.uint8(item.fluidSource or 0)
             if item.animation:
                 self.uint8(0xFE)
