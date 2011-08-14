@@ -351,29 +351,40 @@ class TibiaPlayer(Creature):
     # Experience & level
     def setLevel(self, level, send=True):
         vocation = self.getVocation()
-        self.data["level"] = level
-        
-        self.data["healthmax"] = vocation.maxHP(self.data["level"])
-        self.data["manamax"] = vocation.maxMana(self.data["level"])
-        self.data["capasity"] = vocation.maxCapasity(self.data["level"])
-        
-        if self.data["health"] > self.data["healthmax"]:
-            self.data["health"] = self.data["healthmax"]
+        try:
+            oldLevel = self.data["level"]
+        except:
+            oldLevel = 0
+        if oldLevel != level:
+            self.data["level"] = level
             
-        if self.data["mana"] > self.data["manamax"]:
-            self.data["mana"] = self.data["manamax"]
-        
-        if send: self.refreshStatus()
+            self.data["healthmax"] = vocation.maxHP(self.data["level"])
+            self.data["manamax"] = vocation.maxMana(self.data["level"])
+            self.data["capasity"] = vocation.maxCapasity(self.data["level"])
+            
+            if self.data["health"] > self.data["healthmax"]:
+                self.data["health"] = self.data["healthmax"]
+                
+            if self.data["mana"] > self.data["manamax"]:
+                self.data["mana"] = self.data["manamax"]
+            
+            if send:
+                if level > oldLevel:
+                    self.message("You advanced from level %d to Level %d." % (oldLevel, level), game.enum.MSG_EVENT_ADVANCE)
+                elif level < oldLevel:
+                    self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), game.enum.MSG_EVENT_ADVANCE)
+                self.refreshStatus()
         
     def modifyExperience(self, exp):
         up = True
         if exp < 0:
             up = False
-            
+        
         self.data["experience"] += exp
         
         if up:
             level = 0
+            self.message("You gained %d experience points." % exp, game.enum.MSG_EXPERIENCE)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break
@@ -382,6 +393,7 @@ class TibiaPlayer(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
+            self.message("You lost %d experience points." % exp, game.enum.MSG_EXPERIENCE)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -474,9 +486,26 @@ class TibiaPlayer(Creature):
         stream.string(desc)
         stream.send(self.client)
         
-    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT):
+    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT, color=0, cid=0, pos=None):
         stream = TibiaPacket(0xB4)
         stream.uint8(msgType)
+        if msgType in (enum.MSG_DAMAGE_DEALT, enum.MSG_DAMAGE_RECEIVED, enum.MSG_DAMAGE_OTHERS):
+            if pos:
+                stream.position(pos)
+            else:
+                stream.position(self.position)
+            stream.uint32(cid)
+            stream.uint8(color)
+            stream.uint32(0)
+            stream.uint8(0)
+        elif msgType in (enum.MSG_EXPERIENCE, enum.MSG_EXPERIENCE_OTHERS, enum.MSG_HEALED, enum.MSG_HEALED_OTHERS):
+            if pos:
+                stream.position(pos)
+            else:
+                stream.position(self.position)
+            stream.uint32(cid)
+            stream.uint8(color)
+            
         stream.string(message)
         stream.send(self.client)
         

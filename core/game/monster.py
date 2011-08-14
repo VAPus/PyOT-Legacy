@@ -38,7 +38,7 @@ class Monster(Creature):
         if self.lastDamager and self.lastDamager.isPlayer():
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience)
-                
+
             if self.base.experience >= self.lastDamager.data["level"]:
                 self.lastDamager.soulGain()
                 

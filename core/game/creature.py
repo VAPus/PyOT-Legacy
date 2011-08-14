@@ -123,9 +123,14 @@ class Creature(object):
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
     
+    def move(self, *argc, **kwargs):
+        d = defer.Deferred()
+        game.engine.safeCallLater(0, self.__move, d, *argc, **kwargs)
+        return d
+        
     @defer.deferredGenerator
-    def move(self, direction, spectators=None, level=0, callback=None):
-        if not level and not self.actionLock(self.move, direction, spectators, level, callback):
+    def __move(self, d, direction, spectators=None, level=0):
+        if not level and not self.actionLock(self.move, d, direction, spectators, level):
             return
         import data.map.info
         self.direction = direction
@@ -182,12 +187,12 @@ class Creature(object):
             if thing.solid:
                 self.cancelWalk()
                 self.notPossible()
-                raise game.errors.ImpossibleMove  # Prevent walking on solid tiles
+                d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
                 return
             
         if newTile.creatures(): # Dont walk to creatures, too be supported
             self.notPossible()
-            raise game.errors.ImpossibleMove
+            d.errback(game.errors.ImpossibleMove)
             return
             
         """t = time.time()
@@ -224,7 +229,7 @@ class Creature(object):
 
         if not newStackPos:
             self.cancelWalk()
-            raise game.errors.ImpossibleMove
+            d.errback(game.errors.ImpossibleMove)
             return
             
         oldTile.removeCreature(self)
@@ -296,9 +301,9 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
-        if callback:
-            callback(self, oldPosition, position)
-        return
+
+        if d.callback:
+            d.callback((self, oldPosition, position))
 
     def magicEffect(self, pos, type):
         stream = TibiaPacket()
@@ -359,6 +364,16 @@ class Creature(object):
             splash.fluidSource = game.enum.FLUID_BLOOD
             game.engine.placeItem(splash, self.position)
             
+            
+        if by and by.isPlayer():
+            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT)
+
+        if self.isPlayer():
+            if by:
+                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), game.enum.MSG_DAMAGE_RECEIVED)
+            else:
+                self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_RECEIVED)
+                
     def onSpawn(self):
         pass # To be overrided
         
