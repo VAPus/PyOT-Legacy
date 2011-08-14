@@ -1101,21 +1101,11 @@ class TibiaPlayer(Creature):
             if not self.inventory[5]:
                 self.message("Fist is not supported, targetcheck failed!")
             else:
-                dmg = random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
-                self.target.modifyHealth(-1 * dmg)
-                self.magicEffect(self.target.position, game.enum.EFFECT_DRAWBLOOD)
-                tile = game.map.getTile(self.target.position)
-                addSplash = True
-                for item in tile.getItems():
-                    if item.itemId == game.enum.SMALLSPLASH:
-                        item.decay(self.position) # Reset decay
-                        addSplash = False
-                        
-                if addSplash:
-                    splash = game.item.Item(game.enum.SMALLSPLASH)
-                    splash.fluidSource = game.enum.FLUID_BLOOD
-                    game.engine.placeItem(splash, self.target.position)
-                    
+                dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
+                
+                self.target.onHit(self, dmg, game.enum.PHYSICAL)
+                
+                
         if self.target:        
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
                 

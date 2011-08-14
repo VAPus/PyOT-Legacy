@@ -28,6 +28,7 @@ class Monster(Creature):
         corpse = game.item.Item(self.base.data["corpse"])
         corpse.decay(self.position)
         splash = game.item.Item(game.enum.FULLSPLASH)
+        splash.fluidSource = game.enum.FLUID_BLOOD
         splash.decay(self.position)
         
         tile.placeItem(corpse)

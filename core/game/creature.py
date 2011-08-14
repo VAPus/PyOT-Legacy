@@ -342,7 +342,23 @@ class Creature(object):
 
     def onDeath(self):
         pass # To be overrided in monster and player
-    
+
+    def onHit(self, by, dmg, type):
+        print dmg
+        self.modifyHealth(dmg)
+        self.magicEffect(self.position, game.enum.EFFECT_DRAWBLOOD)
+        tile = game.map.getTile(self.position)
+        addSplash = True
+        for item in tile.getItems():
+            if item.itemId == game.enum.SMALLSPLASH:
+                item.decay(self.position) # Reset decay
+                addSplash = False
+                        
+        if addSplash:
+            splash = game.item.Item(game.enum.SMALLSPLASH)
+            splash.fluidSource = game.enum.FLUID_BLOOD
+            game.engine.placeItem(splash, self.position)
+            
     def onSpawn(self):
         pass # To be overrided
         

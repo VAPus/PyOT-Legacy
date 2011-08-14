@@ -15,6 +15,39 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = ((0,0),)
 
+AREA_WAVE = (-1, 1), (0, 1), (1, 1), \
+            (-1, 2), (0, 2), (1, 2), \
+            (-2, 3), (-1, 3), (0, 3), (1, 3), (2, 3)
+
+def calculateAreaDirection(position, direction, area):
+    positions = []
+    if direction == 0: # North:
+        for a in area:
+            x = position[0] - a[0]
+            y = position[1] - a[1]
+            
+            positions.append([x,y, position[2]])
+            
+    elif direction == 1: # east
+        for a in area:
+            x = position[0] + a[1]
+            y = position[1] + a[0]
+            
+            positions.append([x,y, position[2]])            
+    elif direction == 2: # South
+        for a in area:
+            x = position[0] + a[0]
+            y = position[1] + a[1]
+            
+            positions.append([x,y,position[2]])
+    elif direction == 3: # west
+        for a in area:
+            x = position[0] - a[1]
+            y = position[1] - a[0]
+            
+            positions.append([x,y, position[2]])              
+    return positions
+    
 def typeToEffect(type):
     if type == "fire":
         return (game.enum.EFFECT_HITBYFIRE, game.enum.ANIMATION_FIRE)
@@ -53,13 +86,14 @@ def makeField(fieldId):
                 
     return make
 
-def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
+def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
     def callback(creature, position, onCreature, onPosition, effect):
         creature.shoot(position, onPosition, effect)
         maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
         minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        
-        onCreature.modifyHealth(random.randint(round(minDmg), round(maxDmg)))
+        dmg = random.randint(round(minDmg), round(maxDmg))
+        onCreature.modifyHealth(dmg)
+        onCreature.onHit(creature, dmg, type)
         onCreature.lastDamager = creature
         
     return callback
@@ -73,6 +107,20 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 
+def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
+    def callback(creature, position, effect):
+        creature.magicEffect(position, effect)
+        maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+        minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        creatures = game.map.getTile(position).creatures()
+        if creatures:
+            for onCreature in creatures:
+                dmg = random.randint(round(minDmg), round(maxDmg))
+                onCreature.onHit(creature, -1 * dmg, type)
+                onCreature.lastDamager = creature
+        
+    return callback
+    
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
@@ -205,6 +253,26 @@ def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=
     spells[words] = selftargetspell
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
+def targetSpell(words, icon, level, mana, group, effect, area, targetType, callback, cooldown=2):
+    def targetspell(creature, **k):
+        if not creature.canDoSpell(icon, group):
+            creature.exhausted()
+            return False
+                
+        if creature.data["level"] < level:
+            creature.notEnough("level")
+        elif creature.data["mana"] < mana:
+            creature.notEnough("mana")   
+            
+        else:
+            creature.modifyMana(-1 * mana)
+            creature.cooldownSpell(icon, group, cooldown)
+            positions = calculateAreaDirection(creature.position, creature.direction, area)
+            for pos in positions:
+                callback(creature, pos, effect)
+            
+    spells[words] = targetspell
+    game.scriptsystem.reg("talkaction", words, targetspell)
     
 def clear():
     fieldRunes.clear()
