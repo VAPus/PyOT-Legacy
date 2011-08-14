@@ -85,7 +85,6 @@ def loopInThread(time):
 # First order of buisness, the autoWalker
 @action(True)
 def autoWalkCreature(creature, walkPatterns, callback=None): 
-    print "autowalk"
     creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
     
 # This one calculate the tiles on the way
@@ -106,8 +105,6 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
     if walkPatterns:
         def mcallback(creature2, oldPos, newPos):
             if oldPos == currPos and (not creature2.action or not creature2.action.active()):
-                print creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0))
-                print "At:", time.time()
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
             else:
                 creature2.cancelWalk(walkPatterns[0])

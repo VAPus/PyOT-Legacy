@@ -129,7 +129,6 @@ class Creature(object):
             return
         import data.map.info
         self.direction = direction
-        print "Handled at:", time.time()
         
         oldPosition = self.position[:]
         
@@ -222,8 +221,7 @@ class Creature(object):
             
             
         newStackPos = newTile.placeCreature(self)
-        print position
-        print newTile.things
+
         if not newStackPos:
             self.cancelWalk()
             raise game.errors.ImpossibleMove
