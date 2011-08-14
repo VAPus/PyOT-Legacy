@@ -442,7 +442,7 @@ class TibiaPlayer(Creature):
     def setModes(self, attack, chase, secure):
         self.modes[0] = attack
         
-        if self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
+        if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
             self.target.scripts["onNextStep"].append(self.__followCallback)
             
