@@ -444,22 +444,22 @@ class Creature(object):
                 
         # Send to everyone
         stream.sendto(getSpectators(self.position))
-    def say(self, message):
+    def say(self, message, messageType=enum.MSG_SPEAK_SAY):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(enum.MSG_SPEAK_SAY)
+        stream.uint8(messageType)
         stream.position(self.position)
         stream.string(message)
         stream.sendto(getSpectators(self.position, config.sayRange))
 
-    def yell(self, message):
+    def yell(self, message, messageType=enum.MSG_SPEAK_YELL):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(enum.MSG_SPEAK_YELL)
+        stream.uint8(messageType)
         stream.position(self.position)
         stream.string(message)
         stream.sendto(getSpectators(self.position, config.yellRange))
@@ -471,7 +471,7 @@ class Creature(object):
             pass
         self.action = None
     
-    def cancelWalk(self):
+    def cancelWalk(self, d=None):
         return # Is only executed on players
         
     def canSee(self, position):

@@ -40,7 +40,13 @@ class Monster(Creature):
                 
             if self.base.experience >= self.lastDamager.data["level"]:
                 self.lastDamager.soulGain()
-
+                
+    def say(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_SAY):
+        return Creature.say(self, message, messageType)
+        
+    def yell(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_YELL):
+        return Creature.yell(self, message, messageType)
+        
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain, monsterData):
         self.data = data
