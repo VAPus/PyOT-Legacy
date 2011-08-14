@@ -139,6 +139,11 @@ class Item(object):
     def decay(self, position, to=None, duration=None, callback=None):
         import game.map
         
+        try:
+            self.executeDecay.cancel()
+        except:
+            pass
+        
         if to == None:
             to = self.decayTo
             
@@ -155,7 +160,7 @@ class Item(object):
             if self.itemId and callback:
                 callback(self)
                 
-        game.engine.safeCallLater(duration, executeDecay)
+        self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
         
 def cid(itemid):
     try:

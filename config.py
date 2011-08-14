@@ -65,6 +65,9 @@ soulGain = 240 # 4 minutes
 maxStamina = 42 * 60 # 42 hours, higher won't be displayed in client do to debug, but it will exist virtually
 noStaminaNoExp = True
 
+# Melee
+meleeAttackSpeed = 2
+
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50*(x**3)-150*(x**2) + 400*x)/3

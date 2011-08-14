@@ -35,7 +35,7 @@ def floorchange(creature, thing, position, **k):
         elif destThing.floorchange == "east":
             creature.move(3, level=1)
             
-def floorup(creature, thing, position, **k): # By using index=None, this function will work on both walkOn and useItem
+def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]-1])
     

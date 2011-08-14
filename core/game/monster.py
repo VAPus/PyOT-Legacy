@@ -27,7 +27,11 @@ class Monster(Creature):
         tile.removeCreature(self)
         corpse = game.item.Item(self.base.data["corpse"])
         corpse.decay(self.position)
+        splash = game.item.Item(game.enum.FULLSPLASH)
+        splash.decay(self.position)
+        
         tile.placeItem(corpse)
+        tile.placeItem(splash)
         game.engine.updateTile(self.position, tile)
 
         if self.lastDamager and self.lastDamager.isPlayer():

@@ -16,6 +16,8 @@ import game.resource
 import game.pathfinder
 
 import game.vocation
+import random
+
 global anyPlayer
 anyPlayer = CreatureBase()
 
@@ -32,6 +34,8 @@ class TibiaPlayer(Creature):
         self.openContainers = []
         self.doingSoulGain = False
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
+        self.targetChecker = None
+        
         vocation = self.getVocation()
         level = 1
         while True:
@@ -1091,13 +1095,40 @@ class TibiaPlayer(Creature):
         
         if thing:
             game.scriptsystem.get('useWith').run(thing, self, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
-            
+
+    def attackTarget(self):
+        if self.target and self.inRange(self.target.position, 1, 1):
+            if not self.inventory[5]:
+                self.message("Fist is not supported, targetcheck failed!")
+            else:
+                dmg = random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
+                self.target.modifyHealth(-1 * dmg)
+                self.magicEffect(self.target.position, game.enum.EFFECT_DRAWBLOOD)
+                tile = game.map.getTile(self.target.position)
+                addSplash = True
+                for item in tile.getItems():
+                    if item.itemId == game.enum.SMALLSPLASH:
+                        item.decay(self.position) # Reset decay
+                        addSplash = False
+                        
+                if addSplash:
+                    splash = game.item.Item(game.enum.SMALLSPLASH)
+                    splash.fluidSource = game.enum.FLUID_BLOOD
+                    game.engine.placeItem(splash, self.target.position)
+                    
+        if self.target:        
+            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+                
     def handleAttack(self, packet):
         cid = packet.uint32()
         print "CreatureID %d" %  cid
         if self.targetMode == 1:
             self.targetMode = 0
             self.target = None
+            try:
+                self.targetChecker.cancel()
+            except:
+                pass
             return
             
         if cid in allCreatures:
@@ -1111,6 +1142,12 @@ class TibiaPlayer(Creature):
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
             self.target.scripts["onNextStep"].append(self.__followCallback)
 
+        try:
+            self.targetChecker.cancel()
+        except:
+            pass        
+        self.attackTarget()
+        
     def __followCallback(self, who):
         if self.target == who:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, False)
