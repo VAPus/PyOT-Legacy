@@ -130,7 +130,7 @@ class Creature(object):
         
     @defer.deferredGenerator
     def __move(self, d, direction, spectators=None, level=0):
-        if not level and not self.actionLock(self.move, d, direction, spectators, level):
+        if not level and not self.actionLock(self.__move, d, direction, spectators, level):
             return
         import data.map.info
         self.direction = direction
