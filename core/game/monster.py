@@ -145,6 +145,18 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
+    def regMelee(self, skill, attack, factor=1, level= 0, interval=config.meleeAttackSpeed, formula=config.meleeDamage):
+        self.attacks.append((game.enum.MELEE, interval, formula, attack, skill, level, factor))
+        
+    def regTargetSpell(self, spellName, interval=1, chance=10, range=1, strength=1):
+        self.attacks.append((game.enum.TARGET_SPELL, interval, spellName, chance, range, strength))
+        
+    def regSelfSpell(self, spellName, interval=1, chance=10, strength=1):
+        self.attacks.append((game.enum.SELF_SPELL, interval, spellName, chance, strength))
+        
+    def regBoost(self, ability, chance, change, duration):
+        pass # TODO
+        
 class MonsterBrain(object):
     def beginThink(self, monster):
         self.handleThink(monster)

@@ -69,7 +69,7 @@ maxStamina = 42 * 60 # 42 hours, higher won't be displayed in client do to debug
 noStaminaNoExp = True
 
 # Melee
-meleeAttackSpeed = 2
+meleeAttackSpeed = 2 # 2 seconds, this affect both monsters and players. TODO: Configurable per vocation and per monster.
 
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200

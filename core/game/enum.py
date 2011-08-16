@@ -138,6 +138,11 @@ HOLY = 5
 DEATH = 6
 DROWN = 7
 
+# Monster attack types
+MELEE = 0
+TARGET_SPELL = 1
+SELF_SÅELL = 2
+
 # TargetTypes
 TARGET_DIRECTION = 0
 TARGET_CASTER_AREA = 1
