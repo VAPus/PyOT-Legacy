@@ -64,7 +64,6 @@ class Tile(object):
              
     def placeCreature(self, creature):
         pos = self.itemCount & 0x0F
-        print "Place at: ", pos
         self.things.insert(pos, creature)
         self.itemCount += 1 << 4
         return pos
@@ -178,7 +177,7 @@ sectors = []
 def M(name,x,y,z=7):
     try:
         game.monster.getMonster(name).spawn([x,y,z])
-        pass
+
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     
@@ -193,7 +192,7 @@ def MM(name, *argc):
                 
         for count in xrange(0,length, 2):
             game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
-            pass
+
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
 

@@ -280,3 +280,6 @@ def autoCastValue(data): # We get a string, then find the simplest possible valu
     except:
         return data
         
+# Call that ignores failours
+def ignore(result):
+    pass

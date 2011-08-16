@@ -4,6 +4,7 @@ from game.map import placeCreature, getTile
 import game.engine, game.item
 from game.creature import Creature
 import game.errors
+import game.item
 
 def callback(creature, text):
     creature.message("No you!!")
@@ -107,8 +108,10 @@ def testContainer(creature, thing, position, stackpos, index):
             creature.scripts["onNextStep"].append(lambda who: creature.closeContainer(thing))
     else:
         creature.closeContainer(thing)
-        
-scriptsystem.get("use").reg(1987, testContainer)
+
+for item in game.item.items:
+    if item and "containerSize" in item:
+        scriptsystem.get("use").reg(item["sid"], testContainer)
 
 
 def makeitem(creature, text):

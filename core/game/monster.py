@@ -22,11 +22,13 @@ class Monster(Creature):
         self.spawnPosition = position[:]
         self.lastStep = 0
         self.speed = float(self.base.speed)
+        self.lastMelee = 0
+        self.walkPer = 3
         
     def onDeath(self):
         # Transform
         tile = game.map.getTile(self.position)
-        tile.removeCreature(self)
+
         corpse = game.item.Item(self.base.data["corpse"])
         corpse.decay(self.position)
         splash = game.item.Item(game.enum.FULLSPLASH)
@@ -35,15 +37,20 @@ class Monster(Creature):
         
         tile.placeItem(corpse)
         tile.placeItem(splash)
+        try:
+            tile.removeCreature(self)
+        except:
+            pass
         game.engine.updateTile(self.position, tile)
-
+        
         if self.lastDamager and self.lastDamager.isPlayer():
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience)
 
             if self.base.experience >= self.lastDamager.data["level"]:
                 self.lastDamager.soulGain()
-                
+        Creature.onDeath(self)
+        
     def say(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_SAY):
         return Creature.say(self, message, messageType)
         
@@ -61,6 +68,7 @@ class MonsterBase(CreatureBase):
         self.speed = 100
         self.experience = 0
         
+        
         self.setBehavior()
         self.setImmunity()
         self.walkAround()
@@ -70,13 +78,12 @@ class MonsterBase(CreatureBase):
         self.meleeAttacks = []
         self.spellAttacks = []
         self.defenceSpells = []
-        self.lastMelee = 0
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
         self.brain.beginThink(monster) # begin the heavy thought process!
 
-        if self.targetChance and not self.attacks:
+        if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
             log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
             
         if place:
@@ -124,7 +131,7 @@ class MonsterBase(CreatureBase):
         self.summons.append([monster, chance, max]) 
         
     def setExperience(self, experience):
-        self.data["experience"] = experience
+        self.experience = experience
         
     def setSpeed(self, speed):
         self.speed = speed
@@ -159,10 +166,10 @@ class MonsterBase(CreatureBase):
         self.meleeAttacks.append([interval, formula, attack, skill, level, factor])
         
     def regTargetSpell(self, spellName, interval=1, chance=10, range=1, strength=1):
-        self.spellAttacks.append([0, interval, spellName, chance, range, strength])
+        self.spellAttacks.append([interval, spellName, chance, range, strength])
         
     def regSelfSpell(self, spellName, interval=1, chance=10, strength=1):
-        self.defenceSpells.append([0, interval, spellName, chance, strength])
+        self.defenceSpells.append([interval, spellName, chance, strength])
         
     def regBoost(self, ability, chance, change, duration):
         pass # TODO
@@ -186,21 +193,29 @@ class MonsterBrain(object):
             if not monster.canSee(monster.target.position):
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
-                
+                if monster.walkPer == 0.1:
+                    monster.walkPer = 3
+                    monster.setSpeed(monster.speed / 2)
+                    
                 game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
-
-        elif monster.target and monster.inRange(monster.target.position, 1, 1):
-            attack = random.choice(monster.meleeAttacks)
-            if monster.lastAttack + attack[0] <= time.time():
-                dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
+                return
                 
-                monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
-                monster.lastAttack = time.time()
+            elif monster.data["health"] <= monster.base.runOnHealth:
+                monster.walkPer = 0.5
+                monster.setSpeed(monster.speed * 2)
                 
-        return # If we do have a target, we stop here
+            elif monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
+                attack = random.choice(monster.base.meleeAttacks)
+                if monster.lastAttack + attack[0] <= time.time():
+                    dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
+                
+                    monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
+                    monster.lastAttack = time.time()
+                
+                return # If we do have a target, we stop here
             
         # Only run this check if there is no target, we are hostile and targetChance checksout
-        elif not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100):
+        elif not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
             spectators = game.engine.getSpectatorList(monster.position) # Get all creaturse in range
             if spectators: # If we find any
                 target = None
@@ -236,7 +251,7 @@ class MonsterBrain(object):
                 monster.target.scripts["onNextStep"].append(__followCallback)
                 return # Prevent random walking
                 
-        if not monster.action and time.time() - monster.lastStep > 3: # If no other action is available
+        if not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
     @game.engine.loopInThread(2)        
@@ -293,12 +308,12 @@ class MonsterBrain(object):
                     print "Stop by west"
                     continue
             
-            try:
-                monster.move(step, spectators)
+            def success(result):
                 monster.lastStep = time.time()
-                return True
-            except game.errors.ImpossibleMove:
-                pass
+            d = monster.move(step, spectators)
+            d.addCallback(success)
+            d.addErrback(game.engine.ignore)
+            return True
         return False
         
 brains = {}

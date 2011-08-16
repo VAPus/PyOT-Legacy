@@ -342,10 +342,11 @@ class Creature(object):
             self.speed = float(speed)
             stream = TibiaPacket(0x8F)
             stream.uint32(self.clientId())
-            stream.uint16(speed)
+            stream.uint16(self.speed)
             stream.sendto(getSpectators(self.position))
-
+            
     def onDeath(self):
+        del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
     def onHit(self, by, dmg, type):
@@ -373,7 +374,7 @@ class Creature(object):
             else:
                 self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_RECEIVED)
 
-        elif not self.target:
+        elif not self.target and self.data["health"] < 1:
             self.target = by # If I'm a creature, set my target
             
     def onSpawn(self):
