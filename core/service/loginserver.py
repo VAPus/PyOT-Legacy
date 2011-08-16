@@ -61,7 +61,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             self.exitWithError("Invalid username or password")
             return
 
-        d = waitForDeferred(sql.conn.runQuery("SELECT `name` FROM `players` WHERE account_id = %s", (account[0]['id'])))
+        d = waitForDeferred(sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id'])))
 
         yield d # Tell the core to come back to use once the query above is finished
 
@@ -77,8 +77,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         for character in characters:
             pkg.string(character['name'])
             pkg.string(config.name)
-            #pkg.uint32(socket.inet_aton(config.host))
-            pkg.uint32(0x100007f)
+            pkg.uint32(socket.inet_aton(config.servers[character['world_id']]))
             pkg.uint16(config.gamePort)
 
         # Add premium days

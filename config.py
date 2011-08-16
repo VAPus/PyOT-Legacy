@@ -6,6 +6,9 @@ loginPort = 7171
 gameInterface = 'localhost'
 gamePort = 7172
 
+# Server ips, for the loginserver
+servers = {0 : '127.0.0.1'}
+
 loginMaxConnections = 20
 gameMaxConnections = 100
 
