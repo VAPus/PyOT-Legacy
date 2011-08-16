@@ -67,7 +67,10 @@ class MonsterBase(CreatureBase):
         self.bloodType()
         self.setTargetChance()
         
-        self.attacks = []
+        self.meleeAttacks = []
+        self.spellAttacks = []
+        self.defenceSpells = []
+        self.lastMelee = 0
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -153,13 +156,13 @@ class MonsterBase(CreatureBase):
         self.voiceslist = tuple(argc)
 
     def regMelee(self, skill, attack, factor=1, level= 0, interval=config.meleeAttackSpeed, formula=config.meleeDamage):
-        self.attacks.append((game.enum.MELEE, interval, formula, attack, skill, level, factor))
+        self.meleeAttacks.append([interval, formula, attack, skill, level, factor])
         
     def regTargetSpell(self, spellName, interval=1, chance=10, range=1, strength=1):
-        self.attacks.append((game.enum.TARGET_SPELL, interval, spellName, chance, range, strength))
+        self.spellAttacks.append([0, interval, spellName, chance, range, strength])
         
     def regSelfSpell(self, spellName, interval=1, chance=10, strength=1):
-        self.attacks.append((game.enum.SELF_SPELL, interval, spellName, chance, strength))
+        self.defenceSpells.append([0, interval, spellName, chance, strength])
         
     def regBoost(self, ability, chance, change, duration):
         pass # TODO
@@ -185,8 +188,16 @@ class MonsterBrain(object):
                 monster.target = None
                 
                 game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
-            
-            return # If we do have a target, we stop here
+
+        elif monster.target and monster.inRange(monster.target.position, 1, 1):
+            attack = random.choice(monster.meleeAttacks)
+            if monster.lastAttack + attack[0] <= time.time():
+                dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
+                
+                monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
+                monster.lastAttack = time.time()
+                
+        return # If we do have a target, we stop here
             
         # Only run this check if there is no target, we are hostile and targetChance checksout
         elif not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100):

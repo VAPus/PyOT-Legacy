@@ -349,7 +349,6 @@ class Creature(object):
         pass # To be overrided in monster and player
 
     def onHit(self, by, dmg, type):
-        print dmg
         self.modifyHealth(dmg)
         self.magicEffect(self.position, game.enum.EFFECT_DRAWBLOOD)
         tile = game.map.getTile(self.position)
@@ -373,7 +372,10 @@ class Creature(object):
                 self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), game.enum.MSG_DAMAGE_RECEIVED)
             else:
                 self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_RECEIVED)
-                
+
+        elif not self.target:
+            self.target = by # If I'm a creature, set my target
+            
     def onSpawn(self):
         pass # To be overrided
         
