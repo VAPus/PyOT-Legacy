@@ -4,9 +4,11 @@ from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
+from twisted.python import log
 import game.enum
 import game.errors
 import game.item
+import config
 
 monsters = {}
 class Monster(Creature):
@@ -65,10 +67,15 @@ class MonsterBase(CreatureBase):
         self.bloodType()
         self.setTargetChance()
         
+        self.attacks = []
+        
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
         self.brain.beginThink(monster) # begin the heavy thought process!
 
+        if self.targetChance and not self.attacks:
+            log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
+            
         if place:
                 stackpos = game.map.getTile(position).placeCreature(monster)
                 list = game.engine.getSpectators(position)
@@ -117,7 +124,7 @@ class MonsterBase(CreatureBase):
         self.data["experience"] = experience
         
     def setSpeed(self, speed):
-        self.data["speed"] = 200
+        self.speed = speed
         
     def setBehavior(self, summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0):
         self.summonable = summonable
