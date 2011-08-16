@@ -7,6 +7,7 @@ import sql
 import otcrypto
 import config
 import hashlib
+import socket
 
 class LoginProtocol(protocolbase.TibiaProtocol):
     @deferredGenerator
@@ -77,13 +78,20 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         for character in characters:
             pkg.string(character['name'])
             pkg.string(config.name)
-            pkg.uint32(socket.inet_aton(config.servers[character['world_id']]))
+            pkg.raw(socket.inet_aton(config.servers[character['world_id']]))
             pkg.uint16(config.gamePort)
 
         # Add premium days
         pkg.uint16(account[0]['premdays'])
         pkg.send(self) # Send
-            
+
+    def exitWithError(self, message, error = 0x0A):
+        packet = TibiaPacket()
+        packet.uint8(error) # Error code
+        packet.string(message) # Error message
+        packet.send(self)
+        self.loseConnection()
+        
 class LoginFactory(protocolbase.TibiaFactory):
     protocol = LoginProtocol
 

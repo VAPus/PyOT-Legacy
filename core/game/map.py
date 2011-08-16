@@ -73,7 +73,11 @@ class Tile(object):
         return self.things.remove(creature)
         
     def placeItem(self, item):
-        pos = (self.itemCount >> 4) + self.itemCount & 0x0F
+        if item.ontop:
+            pos = self.itemCount & 0x4F
+            self.itemCount += 1
+        else:
+            pos = (self.itemCount >> 4) + self.itemCount & 0x0F
         self.things.insert(pos, item)
         return pos
     
@@ -101,6 +105,8 @@ class Tile(object):
         return self.things[self.itemCount & 0x0F:(self.itemCount >> 4) + self.itemCount & 0x0F]
         
     def removeItem(self, item):
+        if item.ontop:
+            self.itemCount -= 1
         return self.things.remove(item)
         
     def removeClientItem(self, cid, stackpos=None):

@@ -383,21 +383,22 @@ class Creature(object):
     def setHealth(self, health):
         if self.data["health"] == 0 and health:
             self.alive = True
-            self.onSpawn()
             
         self.data["health"] = max(0, health)
+        
+        stream = TibiaPacket(0x8C)
+        stream.uint32(self.clientId())
+        stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
+        stream.sendto(getSpectators(self.position))
+         
+        self.refreshStatus()
+        
         if self.data["health"] == 0:
             self.alive = False
             self.onDeath()
-        else:
-            stream = TibiaPacket(0x8C)
-            stream.uint32(self.clientId())
-            stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
-            stream.sendto(getSpectators(self.position))
-            
-            self.refreshStatus()
+           
 
-    def modifyHealth(self, health):
+    def modifyHealth(self, health, spawn=False):
         self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))
     
     def setMana(self, mana):

@@ -20,6 +20,7 @@ import random
 
 global anyPlayer
 anyPlayer = CreatureBase()
+allPlayers = {}
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
@@ -807,6 +808,38 @@ class TibiaPlayer(Creature):
     def closeChannel(self, id):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
+
+    # Death stuff
+    def sendReloginWindow(self, percent=0):
+        stream = TibiaPacket(0x28)
+        stream.uint8(percent)
+        stream.send(self.client)
+        
+    def onDeath(self):
+        tile = game.map.getTile(self.position)
+
+        corpse = game.item.Item(3058)
+        corpse.decay(self.position)
+        splash = game.item.Item(game.enum.FULLSPLASH)
+        splash.fluidSource = game.enum.FLUID_BLOOD
+        splash.decay(self.position)
+        
+        tile.placeItem(corpse)
+        tile.placeItem(splash)
+        
+        try:
+            tile.removeCreature(self)
+        except:
+            pass
+        game.engine.updateTile(self.position, tile)
+        self.sendReloginWindow()
+    def onSpawn(self):
+        if not self.data["health"]:
+            self.modifyHealth(self.data["healthmax"])
+            self.modifyMana(self.data["manamax"])
+            
+            import data.map.info
+            self.teleport(data.map.info.towns[self.data['town_id']][1])
         
     # Compelx packets
     def handleSay(self, packet):

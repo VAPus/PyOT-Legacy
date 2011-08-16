@@ -121,13 +121,6 @@ class TibiaProtocol(Protocol):
         pass
 
     #### Some simplefiers ####
-    def exitWithError(self, message, error = 0x0A):
-        packet = TibiaPacket()
-        packet.uint8(error) # Error code
-        packet.string(message) # Error message
-        packet.send(self)
-        self.loseConnection()
-
     def loseConnection(self):
         self.onConnectionLost()
         reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending

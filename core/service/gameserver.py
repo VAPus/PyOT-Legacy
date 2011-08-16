@@ -20,13 +20,20 @@ class GameProtocol(protocolbase.TibiaProtocol):
         pkg.uint8(0xFF)
         pkg.send(self)
 
+    def exitWithError(self, message, error = 0x14):
+        packet = TibiaPacket()
+        packet.uint8(error) # Error code
+        packet.string(message) # Error message
+        packet.send(self)
+        self.loseConnection()
+        
     @deferredGenerator
     def onFirstPacket(self, packet):
         import sql
         import otcrypto
         
         from packet import TibiaPacket
-        from game.player import TibiaPlayer
+        import game.player
         from game.map import getTile
         import game.scriptsystem
         
@@ -98,18 +105,27 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
             return
         
-        self.player = TibiaPlayer(self, character[0])
-        try:
-            getTile(self.player.position).placeCreature(self.player)
-        except:
-            print "%s is unspawnable, choosing a city" % str(self.player.position)
-            import data.map.info
-            import game.map
-            self.player.position = data.map.info.towns[1][1]
-            getTile(self.player.position).placeCreature(self.player)
+        if character[0]['name'] in game.player.allPlayers:
+            self.player = game.player.allPlayers[character[0]['name']]
+            self.player.client = self
+            
+        else:
+            game.player.allPlayers[character[0]['name']] = game.player.TibiaPlayer(self, character[0])
+            self.player = game.player.allPlayers[character[0]['name']]
+            if self.player.data["health"]:
+                try:
+                    getTile(self.player.position).placeCreature(self.player)
+                except:
+                    print "%s is unspawnable, choosing a city" % str(self.player.position)
+                    import data.map.info
+                    import game.map
+                    self.player.position = data.map.info.towns[1][1]
+                    getTile(self.player.position).placeCreature(self.player)
                 
         self.player.sendFirstPacket()
-        
+        if self.player.data["health"] < 1:
+            self.player.onSpawn()
+                
         # Call the login script
         game.scriptsystem.get("login").run(self.player)
         
@@ -122,7 +138,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         packetType = packet.uint8()
         
-        if packetType == 0x14: # Logout
+        if packetType == 0x14 or self.player.data["health"] < 1: # Logout
             self.transport.loseConnection()
             
         elif packetType == 0x1E: # Keep alive
@@ -214,6 +230,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if self.player:
             import game.scriptsystem
             from game.map import removeCreature
+            self.player.client = None
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
         

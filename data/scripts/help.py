@@ -161,3 +161,17 @@ def modexp(creature, text):
     return False
     
 scriptsystem.get("talkactionFirstWord").reg('exp', modexp)
+
+# Creature tester
+def creatureSpawn(creature, text):
+    pos = creature.position[:]
+    pos[1] += 2
+    
+    try:
+        game.monster.getMonster(text).spawn(pos)
+    except:
+        creature.message("Spawning failed!")
+        
+    return False
+    
+scriptsystem.get("talkactionFirstWord").reg('s', creatureSpawn)

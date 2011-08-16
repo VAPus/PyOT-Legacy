@@ -384,9 +384,15 @@ class TibiaPacket(object):
 
     def put(self, string):
         self.bytes.append(struct.pack("%ds" % len(string), str(string)))
+        
+    def raw(self, data):
+        self.bytes.append(data)
 
     #@inThread
     def send(self, stream):
+        if not stream:
+            return
+            
         self.bytes = [''.join(self.bytes)]
 
         if stream.xtea:
@@ -405,6 +411,9 @@ class TibiaPacket(object):
         lenCache = 0
         
         for client in list:
+            if not client:
+                continue
+            
             data = otcrypto.encryptXTEA(dataL, client.xtea)
             if not lenCache:
                 lenCache = len(data)+4

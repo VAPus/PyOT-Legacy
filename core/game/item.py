@@ -55,6 +55,8 @@ class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
     def __init__(self, itemid, count=None, actions=[], **kwargs):
+        if not itemid:
+            raise NameError("itemId can't be None/0")
         self.itemId = itemid
         self.actions = map(str, actions)
 
@@ -139,17 +141,19 @@ class Item(object):
     def decay(self, position, to=None, duration=None, callback=None):
         import game.map
         
-        try:
-            self.executeDecay.cancel()
-        except:
-            pass
-        
         if to == None:
             to = self.decayTo
             
         if duration == None:
             duration = self.duration
-            
+            if not duration:
+                return # We can't decay
+
+        try:
+            self.executeDecay.cancel()
+        except:
+            pass
+        
         def executeDecay():
             game.engine.transformItem(self, self.decayTo, position)
             

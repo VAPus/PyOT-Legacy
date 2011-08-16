@@ -180,7 +180,7 @@ class MonsterBrain(object):
         if monster.base.voiceslist:
             self.handleTalk(monster)
 
-    @game.engine.loopInThread(2)
+    @game.engine.loopInThread(0.5)
     def handleThink(self, monster):
         # Are we alive?
         if not monster.alive:
@@ -206,11 +206,11 @@ class MonsterBrain(object):
                 
             elif monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                 attack = random.choice(monster.base.meleeAttacks)
-                if monster.lastAttack + attack[0] <= time.time():
+                if monster.lastMelee + attack[0] <= time.time():
                     dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
                 
                     monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
-                    monster.lastAttack = time.time()
+                    monster.lastMelee = time.time()
                 
                 return # If we do have a target, we stop here
             
