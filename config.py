@@ -40,7 +40,7 @@ suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This 
 sqlMinConnections = 3
 sqlMaxConnections = 5
 
-reactorStyle = "default" # Can be "select" (Default, work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs). Pypy ignore this one!
+reactorStyle = "default" # Can be "select" (work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs). Leave it to "default" to allow twisted to choose
 
 RSAKeys = {"n":"109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413",
 "e":"65537",
@@ -53,7 +53,7 @@ debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
 loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
-useNumpy = False # Use numpy to deal with map array, preallocating itself. This is most memory effective without causing problems, but numpy itself is HUGE. It use like 20MB of memory. The entier map (on my system) takes only 11MB in this mode.
+useNumpy = False # Use numpy to deal with map array and item array, preallocating itself. This is most memory effective without causing problems, but numpy itself is HUGE. It use like 20MB of memory. The entier map (on my system) takes only 11MB in this mode. Also, it doesn't work with Pypy until pypy 1.6
 stackTiles = True # Sacrefice loading time for the sake of memory usage
 
 sayRange = (10,8)
