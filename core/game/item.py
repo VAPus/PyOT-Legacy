@@ -56,8 +56,6 @@ class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
     def __init__(self, itemid, count=None, actions=[], **kwargs):
-        if not itemid:
-            raise NameError("itemId can't be None/0")
         self.itemId = itemid
         self.actions = map(str, actions)
 
