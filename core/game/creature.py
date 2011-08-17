@@ -462,8 +462,6 @@ class Creature(object):
     def turn(self, direction):
         if self.direction == direction:
             return
-        if not self.actionLock(self.turn, direction):
-            return False
             
         self.direction = direction
         
@@ -477,6 +475,18 @@ class Creature(object):
                 
         # Send to everyone
         stream.sendto(getSpectators(self.position))
+        
+    def turnAgainst(self, position):
+        # First north/south
+        if position[1] > self.position[1]:
+            return self.turn(0)
+        elif position[1] < self.position[1]:
+            return self.turn(2)
+        elif position[0] > self.position[0]:
+            return self.turn(1)
+        elif position[0] < self.position[0]:
+            return self.turn(3)
+            
     def say(self, message, messageType=enum.MSG_SPEAK_SAY):
         stream = TibiaPacket(0xAA)
         stream.uint32(00)

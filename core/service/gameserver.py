@@ -107,6 +107,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         if character[0]['name'] in game.player.allPlayers:
             self.player = game.player.allPlayers[character[0]['name']]
+            if self.player.data["health"] < 1:
+                self.player.onSpawn()
             self.player.client = self
             
         else:
@@ -123,8 +125,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     getTile(self.player.position).placeCreature(self.player)
                 
         self.player.sendFirstPacket()
-        if self.player.data["health"] < 1:
-            self.player.onSpawn()
                 
         # Call the login script
         game.scriptsystem.get("login").run(self.player)

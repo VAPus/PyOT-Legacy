@@ -11,12 +11,21 @@ import game.item
 import config
 
 monsters = {}
+
+def chance(procent):
+    def gen(monster):
+        if 10 > random.randint(0, 100):
+            return True
+        else:
+            return False
+    return gen
+    
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
         
     def __init__(self, base, position, cid=None):
-        Creature.__init__(self, base.data, position, cid)
+        Creature.__init__(self, base.data.copy(), position, cid)
         self.base = base
         self.creatureType = 1
         self.spawnPosition = position[:]
@@ -78,6 +87,8 @@ class MonsterBase(CreatureBase):
         self.meleeAttacks = []
         self.spellAttacks = []
         self.defenceSpells = []
+        
+        self.intervals = {}
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -162,14 +173,14 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-    def regMelee(self, skill, attack, factor=1, level= 0, interval=config.meleeAttackSpeed, formula=config.meleeDamage):
+    def regMelee(self, skill, attack, factor=1, level= 0, check=lambda: True, interval=config.meleeAttackSpeed, formula=config.meleeDamage):
         self.meleeAttacks.append([interval, formula, attack, skill, level, factor])
         
-    def regTargetSpell(self, spellName, interval=1, chance=10, range=1, strength=1):
-        self.spellAttacks.append([interval, spellName, chance, range, strength])
+    def regTargetSpell(self, spellName, interval=1, check=chance(10), range=1, strength=1):
+        self.spellAttacks.append([interval, spellName, check, range, strength])
         
-    def regSelfSpell(self, spellName, interval=1, chance=10, strength=1):
-        self.defenceSpells.append([interval, spellName, chance, strength])
+    def regSelfSpell(self, spellName, interval=1, check=chance(10), strength=1):
+        self.defenceSpells.append([interval, spellName, check, strength])
         
     def regBoost(self, ability, chance, change, duration):
         pass # TODO
@@ -180,7 +191,7 @@ class MonsterBrain(object):
         if monster.base.voiceslist:
             self.handleTalk(monster)
 
-    @game.engine.loopInThread(0.5)
+    @game.engine.loopInThread(0.1)
     def handleThink(self, monster):
         # Are we alive?
         if not monster.alive:
@@ -188,11 +199,12 @@ class MonsterBrain(object):
             
         # Walking
         if monster.target: # We need a target for this code check to run
-        
+
             # If target is out of sight, stop following it and begin moving back to base position
-            if not monster.canSee(monster.target.position):
+            if not monster.canSee(monster.target.position) or monster.target.data["health"] < 1:
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
+                monster.intervals = {} # Zero them out
                 if monster.walkPer == 0.1:
                     monster.walkPer = 3
                     monster.setSpeed(monster.speed / 2)
@@ -203,17 +215,37 @@ class MonsterBrain(object):
             elif monster.data["health"] <= monster.base.runOnHealth:
                 monster.walkPer = 0.5
                 monster.setSpeed(monster.speed * 2)
-                
-            elif monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
-                attack = random.choice(monster.base.meleeAttacks)
-                if monster.lastMelee + attack[0] <= time.time():
-                    dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
-                
-                    monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
-                    monster.lastMelee = time.time()
-                
-                return # If we do have a target, we stop here
             
+            else:
+                # First stratigic manuver
+                for id, spell in enumerate(monster.base.defenceSpells):
+                    key = "s%d"%id
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
+                        if spell[2](monster):
+                            game.spell.spells[spell[1]](monster, spell[3])
+                            monster.intervals[key] = time.time()
+                            return # Until next brain tick
+                
+                # Melee attacks
+                if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
+                    attack = random.choice(monster.base.meleeAttacks)
+                    if monster.lastMelee + attack[0] <= time.time():
+                        dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
+                    
+                        monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
+                        monster.lastMelee = time.time()
+                    
+                    return # If we do have a target, we stop here
+                
+                # Attack attacks
+                for id, spell in enumerate(monster.base.defenceSpells):
+                    key = "a%d"%id
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
+                        if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
+                            game.spell.spells[spell[1]](monster, spell[4])
+                            monster.intervals[key] = time.time()
+                            return # Until next brain tick     
+                            
         # Only run this check if there is no target, we are hostile and targetChance checksout
         elif not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
             spectators = game.engine.getSpectatorList(monster.position) # Get all creaturse in range
@@ -239,13 +271,13 @@ class MonsterBrain(object):
                 monster.base.onFollow(monster.target)
                 
                 # Begin autowalking
-                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, False)
+                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                 
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         monster.stopAction()
-                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, False)
+                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         monster.target.scripts["onNextStep"].append(__followCallback)
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)

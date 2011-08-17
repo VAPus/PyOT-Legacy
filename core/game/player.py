@@ -415,7 +415,7 @@ class TibiaPlayer(Creature):
             self.doingSoulGain = time.time() + config.soulGain
         else:
             self.doingSoulGain = time.time() + config.soulGain
-            gainTime = self.getVocation().soulticker
+            gainTime = self.getVocation().soulticks
             game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown):
@@ -835,8 +835,8 @@ class TibiaPlayer(Creature):
         self.sendReloginWindow()
     def onSpawn(self):
         if not self.data["health"]:
-            self.modifyHealth(self.data["healthmax"])
-            self.modifyMana(self.data["manamax"])
+            self.data["health"] = self.data["healthmax"]
+            self.data["mana"] = self.data["manamax"]
             
             import data.map.info
             self.teleport(data.map.info.towns[self.data['town_id']][1])

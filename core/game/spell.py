@@ -110,11 +110,11 @@ def makeField(fieldId):
     return make
 
 def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
-    def callback(creature, position, onCreature, onPosition, effect):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
         minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        dmg = random.randint(round(minDmg), round(maxDmg))
+        dmg = round(random.randint(round(minDmg), round(maxDmg))) * strength
         onCreature.modifyHealth(dmg)
         onCreature.onHit(creature, dmg, type)
         onCreature.lastDamager = creature
@@ -122,23 +122,23 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvl
     return callback
     
 def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
-    def callback(creature, position, onCreature, onPosition, effect):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
         minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
 
-        onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
+        onCreature.modifyHealth(round(random.randint(round(minHP), round(maxHP)) * strength))
     return callback
 
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
-    def callback(creature, position, effect):
+    def callback(creature, position, effect, strength):
         creature.magicEffect(position, effect)
         maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
         minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
         creatures = game.map.getTile(position).creatures()
         if creatures:
             for onCreature in creatures:
-                dmg = random.randint(round(minDmg), round(maxDmg))
+                dmg = round(random.randint(round(minDmg), round(maxDmg)) * strength)
                 onCreature.onHit(creature, -1 * dmg, type)
                 onCreature.lastDamager = creature
         
@@ -258,41 +258,48 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
 def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=1):
-    def selftargetspell(creature, **k):
-        if not creature.canDoSpell(icon, group):
-            creature.exhausted()
-            return False
+    def selftargetspell(creature, strength=1, **k):
+        if creature.isPlayer():
+            if not creature.canDoSpell(icon, group):
+                creature.exhausted()
+                return False
+                    
+            if creature.data["level"] < level:
+                creature.notEnough("level")
+                return False
                 
-        if creature.data["level"] < level:
-            creature.notEnough("level")
-        elif creature.data["mana"] < mana:
-            creature.notEnough("mana")   
+            elif creature.data["mana"] < mana:
+                creature.notEnough("mana")
+                return False
             
-        else:
             creature.modifyMana(-1 * mana)
             creature.cooldownSpell(icon, group, cooldown)
-            callback(creature, creature.position, creature, creature.position, effect)
+        callback(creature, creature.position, creature, creature.position, effect, strength)
             
     spells[words] = selftargetspell
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
 def targetSpell(words, icon, level, mana, group, effect, area, targetType, callback, cooldown=2):
-    def targetspell(creature, **k):
-        if not creature.canDoSpell(icon, group):
-            creature.exhausted()
-            return False
+    def targetspell(creature, strength=1, **k):
+        if creature.isPlayer():
+            if not creature.canDoSpell(icon, group):
+                creature.exhausted()
+                return False
+                    
+            if creature.data["level"] < level:
+                creature.notEnough("level")
+                return False
                 
-        if creature.data["level"] < level:
-            creature.notEnough("level")
-        elif creature.data["mana"] < mana:
-            creature.notEnough("mana")   
+            elif creature.data["mana"] < mana:
+                creature.notEnough("mana")
+                return False
             
-        else:
             creature.modifyMana(-1 * mana)
             creature.cooldownSpell(icon, group, cooldown)
-            positions = calculateAreaDirection(creature.position, creature.direction, area)
-            for pos in positions:
-                callback(creature, pos, effect)
+            
+        positions = calculateAreaDirection(creature.position, creature.direction, area)
+        for pos in positions:
+            callback(creature, pos, effect, strength)
             
     spells[words] = targetspell
     game.scriptsystem.reg("talkaction", words, targetspell)

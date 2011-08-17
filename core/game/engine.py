@@ -93,7 +93,9 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
-
+    elif callback:
+        callback(None)
+        
 @action()
 def handleAutoWalking(creature, walkPatterns, callback=None):
     if not walkPatterns:
@@ -105,7 +107,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
     if walkPatterns:
         def mcallback(ret):
             creature2, oldPos, newPos = ret
-            if oldPos == currPos and (not creature2.action or not creature2.action.active()):
+            if oldPos == currPos and creature2.action and not creature2.action.active():
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
             else:
                 creature2.cancelWalk(walkPatterns[0])
