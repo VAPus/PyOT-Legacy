@@ -113,9 +113,12 @@ def makeField(fieldId):
 def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
-        maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-        minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        dmg = round(random.randint(round(minDmg), round(maxDmg))) * strength
+        if strength:
+            minDmg, maxDmg = strength
+        else:    
+            maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+            minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        dmg = random.randint(round(minDmg), round(maxDmg))
         onCreature.modifyHealth(dmg)
         onCreature.onHit(creature, dmg, type)
         onCreature.lastDamager = creature
@@ -125,10 +128,13 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvl
 def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
-        maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-        minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+        if strength:
+            minHP, maxHP = strength
+        else:
+            maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+            minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
 
-        onCreature.modifyHealth(round(random.randint(round(minHP), round(maxHP)) * strength))
+        onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
@@ -259,7 +265,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
 def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=1):
-    def selftargetspell(creature, strength=1, **k):
+    def selftargetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
                 creature.exhausted()
@@ -281,7 +287,7 @@ def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
 def targetSpell(words, icon, level, mana, group, effect, area, callback, cooldown=2):
-    def targetspell(creature, strength=1, **k):
+    def targetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
                 creature.exhausted()

@@ -176,11 +176,11 @@ class MonsterBase(CreatureBase):
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed):
         self.meleeAttacks.append([interval, check, maxDamage])
         
-    def regTargetSpell(self, spellName, interval=1, check=chance(10), range=1, strength=1):
-        self.spellAttacks.append([interval, spellName, check, range, strength])
+    def regTargetSpell(self, spellName, min, max, interval=1, check=chance(10), range=1):
+        self.spellAttacks.append([interval, spellName, check, range, (min, max)])
         
-    def regSelfSpell(self, spellName, interval=1, check=chance(10), strength=1):
-        self.defenceSpells.append([interval, spellName, check, strength])
+    def regSelfSpell(self, spellName, min, max, interval=1, check=chance(10)):
+        self.defenceSpells.append([interval, spellName, check, (min, max)])
         
     def regBoost(self, ability, chance, change, duration):
         pass # TODO
