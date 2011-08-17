@@ -46,9 +46,24 @@ class Monster(Creature):
                 if lenLoot == 2:
                     corpse.container.placeItem(game.item.Item(loot[0], 1))
                 elif lenLoot == 3:
-                    corpse.container.placeItem(game.item.Item(loot[0], random.randint(1, loot[2])))
+                    count = random.randint(1, loot[2])
+                    if count > 100:
+                        while count:
+                            depCount = min(count, 100)
+                            corpse.container.placeItem(game.item.Item(loot[0], depCount))
+                            count -= depCount
+                    else:        
+                        corpse.container.placeItem(game.item.Item(loot[0], count))
                 elif lenLoot == 4:
-                    corpse.container.placeItem(game.item.Item(loot[0], random.randint(loot[4], loot[2])))
+                    count = random.randint(loot[4], loot[2])
+                    if count > 100:
+                        while count:
+                            depCount = min(count, 100)
+                            corpse.container.placeItem(game.item.Item(loot[0], depCount))
+                            count -= depCount
+                            
+                    else:
+                        corpse.container.placeItem(game.item.Item(loot[0], count))
             elif lenLoot == 4:
                 corpse.container.placeItem(game.item.Item(loot[0], loot[4]))
                 

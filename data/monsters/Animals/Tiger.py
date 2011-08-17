@@ -13,4 +13,8 @@ Tiger.setDefense(5, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.
 Tiger.regMelee(50)
 
 # Notice on loot, there is 3 formats (name/id, chance) chance equals the chance to get 1, (name/id, chance, maxCount) if chance checksout random one between 1 to maxCount, (name/id, chance, maxCount, minCount), same as previous, but always yields minCount
+# Chance can be a float number with max two desimals (more will just be rounded upwards)
+# Etc 100 or 12.5 or 55.52
+# maxCount can be more then 100 (it splits internally), but minCount is max 100
+
 Tiger.loot( ('meat', 100, 3), ('striped fur', 11) )
