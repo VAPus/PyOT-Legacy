@@ -15,56 +15,57 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = (0,0),
 
-AREA_WAVE3 = (-1, 1), (0, 1), (1, 1), \
+AREA_WAVE3 = game.enum.TARGET_DIRECTION, (-1, 1), (0, 1), (1, 1), \
             (-1, 2), (0, 2), (1, 2), \
             (-2, 3), (-1, 3), (0, 3), (1, 3), (2, 3)
             
-AREA_WAVE4 = (0, 1), \
+AREA_WAVE4 = game.enum.TARGET_DIRECTION,(0, 1), \
              (-1, 2), (0, 2), (1, 2), \
              (-1, 3), (0, 3), (1, 3), \
              (-1, 4), (0, 4), (1, 4)
              
-AREA_BEAM4 = (0, 1), (0, 2), (0, 3), (0, 4)
+AREA_BEAM4 = game.enum.TARGET_DIRECTION,(0, 1), (0, 2), (0, 3), (0, 4)
 
-AREA_BEAM7 = (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)
+AREA_BEAM7 = game.enum.TARGET_DIRECTION,(0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)
 
-AREA_CIRCLE = (-1, 0), (1, 0), (0, -1), (0, 1)
+AREA_CIRCLE = game.enum.TARGET_CASTER_AREA, (-1, 0), (1, 0), (0, -1), (0, 1)
 
-AREA_CIRCLE2 = (-1, -2), (0, -2), (1, -2), \
+AREA_CIRCLE2 = game.enum.TARGET_CASTER_AREA, (-1, -2), (0, -2), (1, -2), \
                (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
                (-2, 0), (-1, 0), (1, 0), (2, 0), \
                (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), \
                (-1, 2), (0, 2), (1, 2)
 
-AREA_SQUARE = (-1, -1), (0, -1), (1, -1), \
+AREA_SQUARE = game.enum.TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
               (-1, 0), (1, 0), \
               (-1, 1), (0, 1), (1, 1)
 
-AREA_WALL = (-2, 0), (-1, 0), (1, 0), (2, 0)
+AREA_WALL = game.enum.TARGET_DIRECTION, (-2, 0), (-1, 0), (1, 0), (2, 0)
 
 def calculateAreaDirection(position, direction, area):
     positions = []
-    if direction == 0: # North:
-        for a in area:
+
+    if direction == 0 or area[0] == game.enum.TARGET_CASTER_AREA: # North:
+        for a in area[1:]:
             x = position[0] - a[0]
             y = position[1] - a[1]
             
             positions.append([x,y, position[2]])
             
     elif direction == 1: # east
-        for a in area:
+        for a in area[1:]:
             x = position[0] + a[1]
             y = position[1] + a[0]
             
             positions.append([x,y, position[2]])            
     elif direction == 2: # South
-        for a in area:
+        for a in area[1:]:
             x = position[0] + a[0]
             y = position[1] + a[1]
             
             positions.append([x,y,position[2]])
     elif direction == 3: # west
-        for a in area:
+        for a in area[1:]:
             x = position[0] - a[1]
             y = position[1] - a[0]
             
@@ -279,7 +280,7 @@ def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=
     spells[words] = selftargetspell
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
-def targetSpell(words, icon, level, mana, group, effect, area, targetType, callback, cooldown=2):
+def targetSpell(words, icon, level, mana, group, effect, area, callback, cooldown=2):
     def targetspell(creature, strength=1, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):

@@ -173,8 +173,8 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-    def regMelee(self, skill, attack, factor=1, level= 0, check=lambda: True, interval=config.meleeAttackSpeed, formula=config.meleeDamage):
-        self.meleeAttacks.append([interval, formula, attack, skill, level, factor])
+    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed):
+        self.meleeAttacks.append([interval, check, maxDamage])
         
     def regTargetSpell(self, spellName, interval=1, check=chance(10), range=1, strength=1):
         self.spellAttacks.append([interval, spellName, check, range, strength])
@@ -229,10 +229,8 @@ class MonsterBrain(object):
                 # Melee attacks
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                     attack = random.choice(monster.base.meleeAttacks)
-                    if monster.lastMelee + attack[0] <= time.time():
-                        dmg = -1 * random.randint(0, round(attack[1](attack[2], attack[3], attack[4], attack[5])))
-                    
-                        monster.target.onHit(monster, dmg, game.enum.PHYSICAL)
+                    if monster.lastMelee + attack[0] <= time.time() and attack[1](monster):
+                        monster.target.onHit(monster, -1 * random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
                         monster.lastMelee = time.time()
                     
                     return # If we do have a target, we stop here
