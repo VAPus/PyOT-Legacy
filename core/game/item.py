@@ -9,6 +9,7 @@ import game.engine
 
 items = None
 reverseItems = None
+itemNames = {}
 
 ### Container class ###
 class Container(object):
@@ -190,6 +191,7 @@ def loadItems():
     
     
     # Make two new values while we are loading
+    loadItemNames = {}
     if config.useNumpy:
         from numpy import empty
         loadItems = empty((config.itemMaxServerId + 1), dict)
@@ -208,6 +210,9 @@ def loadItems():
                     
         reverseLoadItems[item["cid"]] = item["sid"]
         
+        if item['type'] != 1:
+            loadItemNames[item['name']] = item['sid']
+            
         loadItems[item["sid"]] = item
         if subs:
             for x in xrange(1, subs+1):
@@ -231,8 +236,10 @@ def loadItems():
     # Replace the existing items
     global items
     global reverseItems
+    global itemNames
     items = loadItems
     reverseItems = reverseLoadItems
+    itemNames = loadItemNames
     
     
     

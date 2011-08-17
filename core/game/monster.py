@@ -39,6 +39,19 @@ class Monster(Creature):
         tile = game.map.getTile(self.position)
 
         corpse = game.item.Item(self.base.data["corpse"])
+        for loot in self.base.lootTable:
+            lenLoot = len(loot)
+            if loot[1]*100 > random.randint(0, 10000):
+                lenLoot = len(loot)
+                if lenLoot == 2:
+                    corpse.container.placeItem(game.item.Item(loot[0], 1))
+                elif lenLoot == 3:
+                    corpse.container.placeItem(game.item.Item(loot[0], random.randint(1, loot[2])))
+                elif lenLoot == 4:
+                    corpse.container.placeItem(game.item.Item(loot[0], random.randint(loot[4], loot[2])))
+            elif lenLoot == 4:
+                corpse.container.placeItem(game.item.Item(loot[0], loot[4]))
+                
         corpse.decay(self.position)
         splash = game.item.Item(game.enum.FULLSPLASH)
         splash.fluidSource = game.enum.FLUID_BLOOD
@@ -89,6 +102,7 @@ class MonsterBase(CreatureBase):
         self.defenceSpells = []
         
         self.intervals = {}
+        self.lootTable = []
         
     def spawn(self, position, place=True):
         monster = Monster(self, position, None)
@@ -184,6 +198,15 @@ class MonsterBase(CreatureBase):
         
     def regBoost(self, ability, chance, change, duration):
         pass # TODO
+        
+    def loot(self, *argc):
+        # Convert name to Id here
+        for loot in argc:
+            if type(loot[0]) != int:
+                loot = list(loot)
+                loot[0] = game.item.itemNames[loot[0]]
+    
+            self.lootTable.append(loot)
         
 class MonsterBrain(object):
     def beginThink(self, monster):
