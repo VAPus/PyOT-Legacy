@@ -5,7 +5,11 @@ import config
 import weakref
 import sys
 
+modPool = []
+globalScripts = {}
+
 class Scripts(object):
+    __slots__ = ('scripts')
     def __init__(self):
         self.scripts = []
         
@@ -28,6 +32,7 @@ class Scripts(object):
             end()
             
 class TriggerScripts(object):
+    __slots__ = ('scripts')
     def __init__(self):
         self.scripts = {}
         
@@ -83,6 +88,7 @@ class TriggerScripts(object):
 
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
+    __slots__ = ('scripts', 'thingScripts')
     def __init__(self):
         self.scripts = {}
         self.thingScripts = {}
@@ -203,7 +209,6 @@ class ThingScripts(object):
             return ok if type(ok) != bool else None
             
 # All global events can be initialized here
-globalScripts = {}
 globalScripts["talkaction"] = TriggerScripts()
 globalScripts["talkactionFirstWord"] = TriggerScripts()
 globalScripts["login"] = Scripts()
@@ -221,11 +226,7 @@ scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
-global modPool
-modPool = []
-
 def handleModule(name):
-    global modPool
     try:
         modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
     except:
@@ -258,7 +259,6 @@ def importer():
     handleModule("scripts")
 
 def reimporter():
-    global modPool
     import game.spell
     game.spell.clear()
     
@@ -285,9 +285,8 @@ def reimporter():
                 pass
                 
 # This is the function to get events, it should also be a getAll, and get(..., creature)
-def get(type, thing=None):
-    if not thing:
-        return globalScripts[type]
+def get(type):
+    return globalScripts[type]
     
 def reg(type, *argc, **kwargs):
     globalScripts[type].reg(*argc, **kwargs)

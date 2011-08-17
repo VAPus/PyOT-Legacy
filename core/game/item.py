@@ -191,9 +191,9 @@ def loadItems():
     # Make two new values while we are loading
     loadItemNames = {}
     if config.useNumpy:
-        from numpy import empty
+        from numpy import empty, uint16
         loadItems = empty((config.itemMaxServerId + 1), dict)
-        reverseLoadItems = empty((config.itemMaxClientId + 1), int)
+        reverseLoadItems = empty((config.itemMaxClientId + 1), uint16)
     else:
         loadItems = [None] * (config.itemMaxServerId + 1)
         reverseLoadItems = [None] * (config.itemMaxClientId + 1)
