@@ -63,7 +63,10 @@ class Tile(object):
             self.itemCount = topItemCount
              
     def placeCreature(self, creature):
-        pos = self.itemCount & 0x0F
+        pos = (self.itemCount >> 4) + self.itemCount & 0x0F
+        if pos > 9:
+            return
+            
         self.things.insert(pos, creature)
         self.itemCount += 1 << 4
         return pos

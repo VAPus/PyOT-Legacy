@@ -77,6 +77,7 @@ class Creature(object):
         self.regenerate = None
         self.alive = True
         self.lastDamager = None
+        self.solid = False
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -190,10 +191,13 @@ class Creature(object):
                 d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
                 return
             
-        if newTile.creatures(): # Dont walk to creatures, too be supported
-            self.notPossible()
-            d.errback(game.errors.ImpossibleMove)
-            return
+        tileCreatures = newTile.creatures()  
+            
+        for tileCreature in tileCreatures:
+            if tileCreature.solid: # Dont walk to creatures that is solid
+                self.notPossible()
+                d.errback(game.errors.ImpossibleMove)
+                return
             
         """t = time.time()
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
@@ -202,8 +206,10 @@ class Creature(object):
             
         else:
             self.lastStep = time.time()"""
+
         self.lastStep = time.time()
         self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > config.diagonalWalkCost else 1)
+
         # Make packet
         if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
             stream = TibiaPacket(0x6D)
@@ -227,7 +233,7 @@ class Creature(object):
             
         newStackPos = newTile.placeCreature(self)
 
-        if not newStackPos:
+        if not newStackPos or newStackPos > 9:
             self.cancelWalk()
             d.errback(game.errors.ImpossibleMove)
             return
@@ -346,12 +352,21 @@ class Creature(object):
             stream.sendto(getSpectators(self.position))
             
     def onDeath(self):
-        del allCreatures[self.clientId()]
+        #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
+    def hitEffect(self):
+        if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
+            return game.enum.EFFECT_DRAWBLOOD
+        elif self.base.blood == game.enum.FLUID_SLIME:
+            return game.enum.EFFECT_POISON
+        elif self.base.blood == game.enum.FLUID_ENERGY:
+            return game.enum.EFFECT_PURPLEENERGY
+        return game.enum.EFFECT_DRAWBLOOD
+        
     def onHit(self, by, dmg, type):
         self.modifyHealth(dmg)
-        self.magicEffect(self.position, game.enum.EFFECT_DRAWBLOOD)
+        self.magicEffect(self.position, self.hitEffect())
         tile = game.map.getTile(self.position)
         addSplash = True
         for item in tile.getItems():
@@ -361,7 +376,12 @@ class Creature(object):
                         
         if addSplash:
             splash = game.item.Item(game.enum.SMALLSPLASH)
-            splash.fluidSource = game.enum.FLUID_BLOOD
+            
+            if self.isPlayer():
+                splash.fluidSource = game.enum.FLUID_BLOOD
+            else:
+                splash.fluidSource = self.base.blood
+                
             game.engine.placeItem(splash, self.position)
             
             

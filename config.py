@@ -33,6 +33,22 @@ name = "PyOT dev server"
 diagonalWalkCost = 3
 autowalkInSameSpeed = True # Disable to get OT alike fast autowalking, keep enabled to get Tibia alike autowalking
 
+# Soulgain timer
+soulGain = 240 # 4 minutes
+
+# Stamina
+maxStamina = 42 * 60 # 42 hours, higher won't be displayed in client do to debug, but it will exist virtually
+noStaminaNoExp = True
+
+# Melee
+meleeAttackSpeed = 2 # 2 seconds, this affect both monsters and players. TODO: Configurable per vocation and per monster.
+monsterMeleeFactor = 1 # 1x damage
+
+# Monster behavior
+monsterWalkBack = False # Walk or Teleport back to spawn point
+monsterWalkPer = 3 # Amount of seconds between walks without target
+monsterNeverSkipWalks = True # This makes monsters always calculate a new rute if it runs into solid tiles etc. Walking will be smooth
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
@@ -60,17 +76,6 @@ sayRange = (10,8)
 yellRange = (18, 14)
 itemMaxClientId = 12816
 itemMaxServerId = 12844
-
-# Soulgain timer
-soulGain = 240 # 4 minutes
-
-# Stamina
-maxStamina = 42 * 60 # 42 hours, higher won't be displayed in client do to debug, but it will exist virtually
-noStaminaNoExp = True
-
-# Melee
-meleeAttackSpeed = 2 # 2 seconds, this affect both monsters and players. TODO: Configurable per vocation and per monster.
-monsterMeleeFactor = 1 # 1x damage
 
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200

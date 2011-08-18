@@ -258,7 +258,8 @@ class TibiaPacket(object):
         self.uint8(0) # Party/Shield
         if not known:
             self.uint8(0) # Emblem
-        self.uint8(1) # Can't walkthrough
+        self.uint8(creature.solid) # Can't walkthrough
+        
     def worldlight(self, level, color):
         self.uint8(0x82)
         self.uint8(level)

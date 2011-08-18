@@ -32,7 +32,7 @@ class Monster(Creature):
         self.lastStep = 0
         self.speed = float(self.base.speed)
         self.lastMelee = 0
-        self.walkPer = 3
+        self.walkPer = config.monsterWalkPer
         
     def onDeath(self):
         # Transform
@@ -76,7 +76,7 @@ class Monster(Creature):
                 
         corpse.decay(self.position)
         splash = game.item.Item(game.enum.FULLSPLASH)
-        splash.fluidSource = game.enum.FLUID_BLOOD
+        splash.fluidSource = self.base.blood
         splash.decay(self.position)
         
         tile.placeItem(corpse)
@@ -135,6 +135,10 @@ class MonsterBase(CreatureBase):
             
         if place:
                 stackpos = game.map.getTile(position).placeCreature(monster)
+                if stackpos > 9:
+                    log.msg("Can't place creatures on a stackpos > 9")
+                    return
+                    
                 list = game.engine.getSpectators(position)
                 for client in list:
                     stream = TibiaPacket()
@@ -143,6 +147,7 @@ class MonsterBase(CreatureBase):
             
                     stream.send(client)
         return monster
+        
     def setHealth(self, health, healthmax=None):
         if not healthmax:
             healthmax = health
@@ -152,7 +157,7 @@ class MonsterBase(CreatureBase):
         return self
 
     def bloodType(self, color="blood"):
-        self.blood = color #getattr(game.enum, 'FLUID_'+color.upper())
+        self.blood = getattr(game.enum, 'FLUID_'+color.upper())
 
     def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
         self.data["lookhead"] = lookhead
@@ -251,13 +256,17 @@ class MonsterBrain(object):
                 monster.target = None
                 monster.intervals = {} # Zero them out
                 if monster.walkPer == 0.1:
-                    monster.walkPer = 3
+                    monster.walkPer = config.monsterWalkPer
                     monster.setSpeed(monster.speed / 2)
+                
+                if config.monsterWalkBack:
+                    game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
+                else:
+                    game.engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
                     
-                game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
                 return
                 
-            elif monster.data["health"] <= monster.base.runOnHealth:
+            elif monster.data["health"] <= monster.base.runOnHealth and monster.walkPer == config.monsterWalkPer:
                 monster.walkPer = 0.5
                 monster.setSpeed(monster.speed * 2)
             
@@ -314,13 +323,13 @@ class MonsterBrain(object):
                 monster.base.onFollow(monster.target)
                 
                 # Begin autowalking
-                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance - 1, lambda x: monster.turnAgainst(monster.target.position))
                 
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         monster.stopAction()
-                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance - 1, lambda x: monster.turnAgainst(monster.target.position))
                         monster.target.scripts["onNextStep"].append(__followCallback)
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)
@@ -345,7 +354,7 @@ class MonsterBrain(object):
             else:
                 monster.say(text)
                 
-    def walkRandomStep(self, monster):
+    def walkRandomStep(self, monster, badDir=None):
         # Ignore autowalking when there is noone in range
         spectators = game.engine.getSpectatorList(monster.position)
         if not spectators:
@@ -356,38 +365,41 @@ class MonsterBrain(object):
         yFrom = monster.position[1]-monster.spawnPosition[1]
         
         steps = [0,1,2,3]
+        if badDir == None:
+            badDir = []
         
-        # Reorder the steps randomly
         random.shuffle(steps)
         
         for step in steps:
-            # Prevent us from autowalking futher then 5 steps
-            if step is 0:
-                if monster.spawnPosition[1]-(monster.position[1]-1) > 5:
-                    print "Stop by north"
-                    print monster.position, " vs ", monster.spawnPosition
-                    continue
-            elif step is 1:
-                if (monster.position[0]+1)-monster.spawnPosition[0] > 5:
-                    print "Stop by east"
-                    print monster.position, " vs ", monster.spawnPosition
-                    continue
-            elif step is 2:
-                if (monster.position[1]+1)-monster.spawnPosition[1] > 5:
-                    print "Stop by south"
-                    print monster.position, " vs ", monster.spawnPosition
-                    continue
-            elif step is 3:
-                if monster.spawnPosition[0]-(monster.position[0]-1) > 5:
-                    print monster.position, " vs ", monster.spawnPosition
-                    print "Stop by west"
-                    continue
+            # Prevent checks in "bad" directions
+            if step in badDir:
+                continue
             
+            # Prevent us from autowalking futher then 5 steps
+            if step == 0 and monster.spawnPosition[1]-(monster.position[1]-1) > 5:
+                continue
+                
+            elif step == 1 and (monster.position[0]+1)-monster.spawnPosition[0] > 5:
+                continue
+                
+            elif step == 2 and (monster.position[1]+1)-monster.spawnPosition[1] > 5:
+                continue
+                
+            elif step == 3 and monster.spawnPosition[0]-(monster.position[0]-1) > 5:
+                continue
+                
+            badDir.append(step)
             def success(result):
                 monster.lastStep = time.time()
+            
+            def errback(result):
+                if config.monsterNeverSkipWalks:
+                    self.walkRandomStep(monster, badDir)
+            
             d = monster.move(step, spectators)
             d.addCallback(success)
-            d.addErrback(game.engine.ignore)
+            
+            d.addErrback(errback)
             return True
         return False
         
