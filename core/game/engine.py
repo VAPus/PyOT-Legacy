@@ -192,7 +192,7 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
                                 del spectatorList[zp]
                                 for nx in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
                                     for ny in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                                        for creature in game.map.knownMap[zp].creatures():
+                                        for creature in game.map.knownMap[game.map.ZPack(pos[2], nx, ny)].creatures():
                                             if creature.creatureType == 1 and creature.noBrain:
                                                 creature.base.brain.beginThink(creature)
                                 zpn = True

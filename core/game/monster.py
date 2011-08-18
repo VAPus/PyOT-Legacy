@@ -238,9 +238,10 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster):
-        monster.noBrain = False
+        
         # Wrapper
         def __beginThink():
+            monster.noBrain = False
             self.handleThink(monster)
             if monster.base.voiceslist:
                 self.handleTalk(monster)
