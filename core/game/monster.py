@@ -237,19 +237,22 @@ class MonsterBase(CreatureBase):
             self.lootTable.append(loot)
         
 class MonsterBrain(object):
-    def beginThink(self, monster):
+    def beginThink(self, monster, isOk=False):
         
         # Wrapper
         def __beginThink():
-            monster.noBrain = False
-            self.handleThink(monster)
-            if monster.base.voiceslist:
-                self.handleTalk(monster)
+            if isOk or game.engine.getSpectators(monster.position, cache=False):
+                print "Starting brain 2"
+                monster.noBrain = False
+                self.handleThink(monster)
+                if monster.base.voiceslist:
+                    self.handleTalk(monster)
                 
         game.engine.safeCallLater(0.5, __beginThink) # Begin though process 0.5s later, this prevents monsters from thinking while the map is rendering.
 
-    @game.engine.loopInThread(0.1)
-    def handleThink(self, monster):
+    @game.engine.loopInThread(0.5)
+    def handleThink(self, monster, check=True):
+        monster.noBrain = False
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
@@ -344,8 +347,9 @@ class MonsterBrain(object):
                 return # Prevent random walking
 
         # Are anyone watching?
-        if not game.engine.getSpectators(monster.position):
+        if check and not game.engine.getSpectators(monster.position, (11, 9), cache=False):
             monster.noBrain = True
+            print "Stopping brain"
             return False
             
         if not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available

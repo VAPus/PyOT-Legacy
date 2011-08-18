@@ -220,7 +220,9 @@ class TibiaPacket(object):
                         player.knownCreatures.append(creature.cid)
     
                 self.creature(creature, known)
-                
+                if creature.creatureType == 1 and creature.noBrain:
+                    print "Begin think 1"
+                    creature.base.brain.handleThink(creature, False)
 
             for item in tile.bottomItems():
                 self.item(item)

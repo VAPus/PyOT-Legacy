@@ -167,11 +167,14 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     
 # Spectator list
 spectatorList = {}
-def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
+def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[], cache=True):
     # At the moment, we only do one floor
     zpc = game.map.ZPack(pos[2], pos[0], pos[1])
     if zpc in spectatorList:
-        return spectatorList[zpc]
+        if cache:
+            return spectatorList[zpc]
+        else:
+            del spectatorList[zpc]
     players = []
 
     if extra:
@@ -183,21 +186,13 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
                 zp = game.map.ZPack(pos[2], x, y)
-                zpn = False
                 for creature in game.map.knownMap[zp].creatures():
                     if creature.creatureType == 0 and not creature in ignore:
                         players.append(creature.client)
-                        if not zpn:
-                            try:
-                                del spectatorList[zp]
-                                for nx in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
-                                    for ny in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                                        for creature in game.map.knownMap[game.map.ZPack(pos[2], nx, ny)].creatures():
-                                            if creature.creatureType == 1 and creature.noBrain:
-                                                creature.base.brain.beginThink(creature)
-                                zpn = True
-                            except:
-                                pass
+                        try:
+                            del spectatorList[zp]
+                        except:
+                            pass
             except:
                 pass # Tile isn't loaded
     spectatorList[zpc] = players
