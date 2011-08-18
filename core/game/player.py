@@ -219,7 +219,6 @@ class TibiaPlayer(Creature):
             return None # TODO
 
     def findItemById(self, itemId, count=0):
-        print "Find"
         items = []
         foundCount = 0
         stream = TibiaPacket()
@@ -294,7 +293,6 @@ class TibiaPlayer(Creature):
             return newItem
 
     def replaceItem(self, position, stackpos, item):
-        print "Replace"
         # Option 1, from the map:
         if position:
             if position[0] != 0xFFFF:
@@ -462,7 +460,6 @@ class TibiaPlayer(Creature):
             
         self.modes[1] = chase
         self.modes[2] = secure
-        print self.modes
         
         
             
@@ -559,11 +556,8 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
         
     def stopAutoWalk(self):
-        try:
-            engine.walkerEvents[self.clientId()].cancel()
-            del engine.walkerEvents[self.clientId()]
-        except:
-            pass
+        ret = self.stopAction()
+
         self.cancelWalk(self.direction)
     
     def windowMessage(self, text):
@@ -876,6 +870,7 @@ class TibiaPlayer(Creature):
             part1()
 
     def handleAutoWalk(self, packet):
+        game.engine.explainPacket(packet)
         if self.target:
             self.target = None
         self.stopAction()    

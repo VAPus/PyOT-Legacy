@@ -154,6 +154,7 @@ class TibiaPacket(object):
                 self.uint8(0xFE)
             
         else:
+            print item
             self.uint16(item)
             if count:
                 self.uint8(count)

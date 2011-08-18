@@ -237,9 +237,13 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster):
-        self.handleThink(monster)
-        if monster.base.voiceslist:
-            self.handleTalk(monster)
+        # Wrapper
+        def __beginThink():
+            self.handleThink(monster)
+            if monster.base.voiceslist:
+                self.handleTalk(monster)
+                
+        game.engine.safeCallLater(0.5, __beginThink) # Begin though process 0.5s later, this prevents monsters from thinking while the map is rendering.
 
     @game.engine.loopInThread(0.1)
     def handleThink(self, monster):

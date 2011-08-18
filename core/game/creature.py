@@ -131,10 +131,12 @@ class Creature(object):
         
     @defer.deferredGenerator
     def __move(self, d, direction, spectators=None, level=0):
+        self.direction = direction # Direction might change regardless
+        
         if not level and not self.actionLock(self.__move, d, direction, spectators, level):
             return
         import data.map.info
-        self.direction = direction
+        
         
         oldPosition = self.position[:]
         
@@ -250,6 +252,8 @@ class Creature(object):
 
         for spectator in spectators:
             streamX = stream
+            if not spectator:
+                spectator = self.client
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
 
@@ -440,37 +444,33 @@ class Creature(object):
             return False"""
             
         # 4 steps, remove item (creature), send new map and cords, and effects 
+        oldPosition = self.position[:]
+        self.position = position 
         newTile = getTile(position)
         
         if newTile.things[0].solid:
             raise game.errors.SolidTile()
         
+        oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
         
         stream = TibiaPacket()
-        try:
-            oldStackpos = getTile(self.position).findCreatureStackpos(self)
-            stream.removeTileItem(self.position, oldStackpos)
-            stream.magicEffect(self.position, 0x02)
-            stream.sendto(getSpectators(self.position, ignore=[self]))
-            
-            removeCreature(self, self.position)
-        except:
-            pass
+        stream.removeTileItem(oldPosition, oldStackpos)
+        stream.magicEffect(oldPosition, 0x02)
+        stream.sendto(getSpectators(oldPosition, ignore=[self]))
+        
         
         stackpos = placeCreature(self, position)
+        removeCreature(self, oldPosition)
         if self.creatureType == 0:
             stream = TibiaPacket()
-            try:
-                stream.removeTileItem(self.position, oldStackpos)
-            except:
-                pass
+            stream.removeTileItem(oldPosition, oldStackpos)
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
-            stream.magicEffect(position, 0x02)
+            #stream.magicEffect(position, 0x02)
             stream.send(self.client)
             
-        self.position = position  
+         
         
         for spectator in getSpectators(position, ignore=[self]):
             stream = TibiaPacket()
@@ -528,12 +528,15 @@ class Creature(object):
         stream.sendto(getSpectators(self.position, config.yellRange))
         
     def stopAction(self):
+        ret = False
         try:
             self.action.cancel()
+            ret = True
         except:
             pass
         self.action = None
-    
+        return ret
+        
     def cancelWalk(self, d=None):
         return # Is only executed on players
         

@@ -107,13 +107,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
         if character[0]['name'] in game.player.allPlayers:
             self.player = game.player.allPlayers[character[0]['name']]
+            self.player.client = self
             if self.player.data["health"] < 1:
                 self.player.onSpawn()
-            self.player.client = self
+            
             
         else:
             game.player.allPlayers[character[0]['name']] = game.player.TibiaPlayer(self, character[0])
             self.player = game.player.allPlayers[character[0]['name']]
+            self.player.client = self
             if self.player.data["health"]:
                 try:
                     getTile(self.player.position).placeCreature(self.player)
@@ -137,7 +139,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.pos = 0
         
         packetType = packet.uint8()
-        
+        print hex(packetType)
         if packetType == 0x14 or self.player.data["health"] < 1: # Logout
             self.transport.loseConnection()
             
@@ -228,6 +230,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onConnectionLost(self):
         if self.player:
+            log.msg("Lost connection to player")
             import game.scriptsystem
             from game.map import removeCreature
             self.player.client = None

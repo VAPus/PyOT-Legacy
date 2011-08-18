@@ -66,9 +66,10 @@ class Tile(object):
         pos = (self.itemCount >> 4) + self.itemCount & 0x0F
         if pos > 9:
             return
-            
+  
         self.things.insert(pos, creature)
         self.itemCount += 1 << 4
+
         return pos
         
     def removeCreature(self,creature):
