@@ -112,7 +112,7 @@ class Creature(object):
         if time.time() - self.lastStep < delay:
             if not ground.speed:
                 ground.speed = 100
-            return round(ground.speed / self.speed, 1) + (0.15 if config.autowalkInSameSpeed else 0.0)
+            return round(ground.speed / self.speed, 3) #+ (0.15 if config.autowalkInSameSpeed else 0.0)
         return delay
 
     def notPossible(self):

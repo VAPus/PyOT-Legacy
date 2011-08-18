@@ -8,8 +8,10 @@ import scriptsystem
 from collections import deque
 import config
 
+PACKSIZE = 0
+
 def ZPack(level, x, y):
-    return level + (x << 4) + (y << 16)
+    return level + (x << 4) + (y << PACKSIZE)
     
 def getTile(pos):
     try:
@@ -176,6 +178,13 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 import data.map.info
 dummyItems = {} 
 
+while True:
+    if data.map.info.height > 2**PACKSIZE:
+        PACKSIZE += 1
+        
+    else:
+        break
+PACKSIZE += 4        
 if config.useNumpy:
     from numpy import empty
     knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
@@ -257,7 +266,6 @@ def loadTiles(x,y, walk=True):
     load(sectorX, sectorY)
     
 def load(sectorX, sectorY):
-    
     sectorSum = (sectorX << 15) + sectorY
     ybase = sectorY*data.map.info.sectorSize[1]
     xbase = sectorX*data.map.info.sectorSize[0]
@@ -291,7 +299,7 @@ def load(sectorX, sectorY):
             var = currZ + ((i+xbase) << 4)
             for y,tile in enumerate(x):
                 if tile:
-                    zpacked = var + ((y+ybase) << 16)
+                    zpacked = var + ((y+ybase) << PACKSIZE)
                         
                     if localItems[tile.things[0].itemId]["a"] & 1:
                         if config.stackTiles:
