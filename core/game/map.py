@@ -9,7 +9,7 @@ from collections import deque
 import config
 
 def ZPack(level, x, y):
-    return level + (x << 4) + (y << 20)
+    return level + (x << 4) + (y << 16)
     
 def getTile(pos):
     try:
@@ -291,7 +291,7 @@ def load(sectorX, sectorY):
             var = currZ + ((i+xbase) << 4)
             for y,tile in enumerate(x):
                 if tile:
-                    zpacked = var + ((y+ybase) << 20)
+                    zpacked = var + ((y+ybase) << 16)
                         
                     if localItems[tile.things[0].itemId]["a"] & 1:
                         if config.stackTiles:

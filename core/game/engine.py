@@ -38,7 +38,7 @@ def loader(timer):
                 if not ret and not retOld:
                     break
                 retOld = ret  
-                    
+                
             log.msg("Loaded entier map in %f" % (time.time() - begin))
 
 
