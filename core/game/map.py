@@ -8,9 +8,12 @@ import scriptsystem
 from collections import deque
 import config
 
+def ZPack(level, x, y):
+    return level + (x << 4) + (y << 20)
+    
 def getTile(pos):
     try:
-        t = knownMap[ pos[2] ][ pos[0] ][ pos[1] ]
+        t = knownMap[ ZPack(pos[2], pos[0], pos[1]) ]
         if t:
             return t
         else:
@@ -18,7 +21,7 @@ def getTile(pos):
     except:
         loadTiles(pos[0], pos[1])
         try:
-            return knownMap[ pos[2] ][ pos[0] ][ pos[1] ]
+            return knownMap[ ZPack(pos[2], pos[0], pos[1]) ]
         except:
             return None
 def placeCreature(creature, pos):
@@ -178,7 +181,7 @@ if config.useNumpy:
     knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
     
 else:
-    knownMap = tuple([{} for _ in xrange(0, data.map.info.levels[0])])
+    knownMap = {}
 sectors = []
 
 
@@ -282,17 +285,14 @@ def load(sectorX, sectorY):
     
     localItems = game.item.items # Prevent a bit of a lookup
     for mz in m:
-        currZ = knownMap[mz[0]]
-            
+        currZ = mz[0]
+
         for i,x in enumerate(mz[1]):
-            try:
-                currX = currZ[xbase+i]
-            except:
-                currZ[xbase+i] = {}
-                currX = currZ[xbase+i]
-                
+            var = currZ + ((i+xbase) << 4)
             for y,tile in enumerate(x):
                 if tile:
+                    zpacked = var + ((y+ybase) << 20)
+                        
                     if localItems[tile.things[0].itemId]["a"] & 1:
                         if config.stackTiles:
                             code = 0
@@ -302,11 +302,11 @@ def load(sectorX, sectorY):
                                 por += 14
                             if not code in dummyTiles:
                                 dummyTiles[code] = tile
-                            currX[ybase+y] = dummyTiles[code]
+                            knownMap[zpacked] = dummyTiles[code]
                         else:
-                            currX[ybase+y] = tile
+                            knownMap[zpacked] = tile
                     else:
-                        currX[ybase+y] = Tile(tile.things[:], tile.itemCount)                  
+                        knownMap[zpacked] = Tile(tile.things[:], tile.itemCount)                  
             
 
     if l:    
