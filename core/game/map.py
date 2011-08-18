@@ -164,14 +164,6 @@ class Tile(object):
     def findCreatureStackpos(self, creature):
         return self.things.index(creature)
                 
-    def toSafe(self, position):
-        for item in self.things:
-            if not item.solid:
-                return self # I am already safe
-                
-        tile = getTile(position)
-        tile = Tile(self.things, self.topItemCount)
-        return tile
 
 bindconstant.bind_all(Tile) # Apply constanting to Tile
 

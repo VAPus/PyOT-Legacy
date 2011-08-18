@@ -33,6 +33,7 @@ class Monster(Creature):
         self.speed = float(self.base.speed)
         self.lastMelee = 0
         self.walkPer = config.monsterWalkPer
+        self.noBrain = True
         
     def onDeath(self):
         # Transform
@@ -237,6 +238,7 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster):
+        monster.noBrain = False
         # Wrapper
         def __beginThink():
             self.handleThink(monster)
@@ -245,10 +247,11 @@ class MonsterBrain(object):
                 
         game.engine.safeCallLater(0.5, __beginThink) # Begin though process 0.5s later, this prevents monsters from thinking while the map is rendering.
 
-    @game.engine.loopInThread(1)
+    @game.engine.loopInThread(0.1)
     def handleThink(self, monster):
         # Are we alive?
         if not monster.alive:
+            monster.noBrain = True
             return False # Stop looper
             
         # Walking
@@ -338,7 +341,12 @@ class MonsterBrain(object):
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)
                 return # Prevent random walking
-                
+
+        # Are anyone watching?
+        if not game.engine.getSpectators(monster.position):
+            monster.noBrain = True
+            return False
+            
         if not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             

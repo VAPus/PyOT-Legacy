@@ -166,8 +166,12 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
     
 # Spectator list
+spectatorList = {}
 def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
     # At the moment, we only do one floor
+    zpc = game.map.ZPack(pos[2], pos[0], pos[1])
+    if zpc in spectatorList:
+        return spectatorList[zpc]
     players = []
 
     if extra:
@@ -178,16 +182,29 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[]):
     for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
-                for creature in game.map.knownMap[game.map.ZPack(pos[2], x, y)].creatures():
+                zp = game.map.ZPack(pos[2], x, y)
+                zpn = False
+                for creature in game.map.knownMap[zp].creatures():
                     if creature.creatureType == 0 and not creature in ignore:
                         players.append(creature.client)
+                        if not zpn:
+                            try:
+                                del spectatorList[zp]
+                                for nx in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+                                    for ny in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
+                                        for creature in game.map.knownMap[zp].creatures():
+                                            if creature.creatureType == 1 and creature.noBrain:
+                                                creature.base.brain.beginThink(creature)
+                                zpn = True
+                            except:
+                                pass
             except:
                 pass # Tile isn't loaded
-
+    spectatorList[zpc] = players
     return players
 
 # Spectator list using yield
-def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
+"""def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
     # At the moment, we only do one floor
     
     if extra:
@@ -204,7 +221,8 @@ def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
             except:
                 pass # Tile isn't loaded
                 
-    raise StopIteration
+    raise StopIteration"""
+getSpectators = getSpectatorList
 
 # Calculate new position by direction
 def positionInDirection(nposition, direction):
