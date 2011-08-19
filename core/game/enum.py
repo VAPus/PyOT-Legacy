@@ -139,6 +139,7 @@ ICE = 4
 HOLY = 5
 DEATH = 6
 DROWN = 7
+MELEE = 8
 
 # Monster attack types
 MELEE = 0

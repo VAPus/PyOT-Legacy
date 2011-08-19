@@ -35,6 +35,29 @@ class Monster(Creature):
         self.walkPer = config.monsterWalkPer
         self.noBrain = True
         self.spawnTime = None
+
+    def damageToBlock(self, dmg, type):
+        if type == game.enum.MELEE:
+            return dmg - self.base.armor
+        elif type == game.enum.PHYSICAL:
+            return dmg * self.base.physical
+        elif type == game.enum.FIRE:
+            return dmg * self.base.fire
+        elif type == game.enum.EARTH:
+            return dmg * self.base.earth
+        elif type == game.enum.ENERGY:
+            return dmg * self.base.energy
+        elif type == game.enum.ICE:
+            return dmg * self.base.ice
+        elif type == game.enum.HOLY:
+            return dmg * self.base.holy
+        elif type == game.enum.DEATH:
+            return dmg * self.base.death
+        elif type == game.enum.DROWN:
+            return dmg * self.base.drown
+        
+        # What, no match?
+        return dmg
         
     def onDeath(self):
         # Transform

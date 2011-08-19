@@ -368,7 +368,12 @@ class Creature(object):
             return game.enum.EFFECT_PURPLEENERGY
         return game.enum.EFFECT_DRAWBLOOD
         
+    def damageToBlock(self, dmg, type):
+        return dmg
+        
     def onHit(self, by, dmg, type):
+        dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
+
         self.modifyHealth(dmg)
         self.magicEffect(self.position, self.hitEffect())
         tile = game.map.getTile(self.position)
