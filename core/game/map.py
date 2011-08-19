@@ -188,9 +188,9 @@ sectors = []
 
 
 # Ops codes
-def M(name,x,y,z=7):
+def M(name,x,y,z=7, spawnTime=None):
     try:
-        game.monster.getMonster(name).spawn([x,y,z])
+        game.monster.getMonster(name).spawn([x,y,z], spawnTime=spawnTime)
 
     except:
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
@@ -211,6 +211,15 @@ def MM(name, *argc):
         log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
 
 MM = bindconstant._make_constants(MM)
+
+def N(name,x,y,z=7, spawnTime=None):
+    try:
+        game.npc.getNPC(name).spawn([x,y,z], spawnTime=spawnTime)
+
+    except:
+        log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+    
+M = bindconstant._make_constants(M)
 
 def I(itemId, **kwargs):
     # Do not stack

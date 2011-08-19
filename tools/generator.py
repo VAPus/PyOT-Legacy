@@ -429,7 +429,8 @@ class RSItem(object):
         self.ids = argc
     def gen(self, x,y,z,rx,ry,extras):
         import random
-        return ('I(%d)' % random.choice(self.ids), extras)    
+        return ('I(%d)' % random.choice(self.ids), extras) 
+        
 class Monster(object):
     __slots__ = ('name')
     def __init__(self, name):
@@ -437,5 +438,14 @@ class Monster(object):
   
     def gen(self, x,y,z,rx,ry, extras):
         extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
+        return (None, extras)
+       
+class NPC(object):
+    __slots__ = ('name')
+    def __init__(self, name):
+        self.name = name
+  
+    def gen(self, x,y,z,rx,ry, extras):
+        extras.append("N('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
         return (None, extras)
        

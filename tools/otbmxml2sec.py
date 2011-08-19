@@ -377,6 +377,17 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             
         _output_.append("_map.addTo(%d, %d, generator.Monster(\"%s\"), %d)" % (monsterX, monsterY, monsterName, monsterZ))
 
+    for xMonster in xSpawn.getElementsByTagName("npc"):
+        npcX = int(xMonster.getAttribute("x")) + baseX
+        npcY = int(xMonster.getAttribute("y")) + baseY
+        npcZ  = int(xMonster.getAttribute("z"))
+        if npcZ != baseZ:
+            print "UNSUPPORTED spawns!"
+        
+        npcName = xMonster.getAttribute("name") 
+            
+        _output_.append("_map.addTo(%d, %d, generator.NPC(\"%s\"), %d)" % (npcX, npcY, npcName, npcZ))
+        
 print "---Done with spawns"
 
 _output_.append("_map.compile()")
