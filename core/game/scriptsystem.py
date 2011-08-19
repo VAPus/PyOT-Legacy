@@ -52,8 +52,8 @@ class TriggerScripts(object):
         for ref in self.scripts[trigger]:
             if ref() == callback:
                 self.scripts[trigger].remove(ref)
-                print "Found"
-            print "Lop"
+
+
         if not len(self.scripts[trigger]):
             del self.scripts[trigger]
         
@@ -175,10 +175,9 @@ class ThingScripts(object):
             elif weakthing() == None:
                 del self.thingScripts[weakthing]
         if ok and thing.thingId() in self.scripts:
-            print "_run thingId"
             for script in self.scripts[thing.thingId()][:]:
                 func = script()
-                print "func: ", func
+
                 if func:
                     ok = func(creature=creature, thing=thing, **kwargs)
                     if not ok is not False:

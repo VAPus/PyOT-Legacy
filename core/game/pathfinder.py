@@ -79,7 +79,7 @@ def findPath(mapZ, relX, relY, xB, yB):
         if x == xB and y == yB:
             # generate the path from finish to start
             # by following the dirs
-            print dir_map
+
             path = []
             while not (x == xA and y == yA):
                 j = dir_map[y][x]
@@ -98,7 +98,7 @@ def findPath(mapZ, relX, relY, xB, yB):
             my = y+relY-15
             isSolid = False
             tile = game.map.getTile((mx, my, mapZ))
-            print (x, y)
+
             try:
                 if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not tile or closed_nodes_map[ydy][xdx]):
                     for t in tile.getItems():

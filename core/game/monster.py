@@ -34,6 +34,7 @@ class Monster(Creature):
         self.lastMelee = 0
         self.walkPer = config.monsterWalkPer
         self.noBrain = True
+        self.spawnTime = None
         
     def onDeath(self):
         # Transform
@@ -96,6 +97,13 @@ class Monster(Creature):
                 self.lastDamager.soulGain()
         Creature.onDeath(self)
         
+        # Begin respawn
+        # TODO just respawn <this> class, can't possibly bind so many kb :p
+        if self.spawnTime:
+            game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+        else:
+            game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+            
     def say(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_SAY):
         return Creature.say(self, message, messageType)
         
@@ -109,6 +117,8 @@ class MonsterBase(CreatureBase):
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         self.summons = []
+        
+        self.spawnTime = 60
         
         self.speed = 100
         self.experience = 0
@@ -127,27 +137,32 @@ class MonsterBase(CreatureBase):
         self.intervals = {}
         self.lootTable = []
         
-    def spawn(self, position, place=True):
-        monster = Monster(self, position, None)
-        self.brain.beginThink(monster) # begin the heavy thought process!
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0):
+        if spawnDelay:
+            return game.engine.safeCallLater(self.spawn, spawnDelay, position, place, spawnTime)
+        else:
+            monster = Monster(self, position, None)
+            if spawnTime:
+                monster.spawnTime = spawnTime
+            self.brain.beginThink(monster) # begin the heavy thought process!
 
-        if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
-            log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
-            
-        if place:
-                stackpos = game.map.getTile(position).placeCreature(monster)
-                if stackpos > 9:
-                    log.msg("Can't place creatures on a stackpos > 9")
-                    return
-                    
-                list = game.engine.getSpectators(position)
-                for client in list:
-                    stream = TibiaPacket()
-                    stream.magicEffect(position, 0x03)
-                    stream.addTileCreature(position, stackpos, monster, client.player)
-            
-                    stream.send(client)
-        return monster
+            if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
+                log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
+                
+            if place:
+                    stackpos = game.map.getTile(position).placeCreature(monster)
+                    if stackpos > 9:
+                        log.msg("Can't place creatures on a stackpos > 9")
+                        return
+                        
+                    list = game.engine.getSpectators(position)
+                    for client in list:
+                        stream = TibiaPacket()
+                        stream.magicEffect(position, 0x03)
+                        stream.addTileCreature(position, stackpos, monster, client.player)
+                
+                        stream.send(client)
+            return monster
         
     def setHealth(self, health, healthmax=None):
         if not healthmax:
@@ -157,6 +172,9 @@ class MonsterBase(CreatureBase):
         
         return self
 
+    def defaultSpawnTime(self, spawnTime):
+        self.spawnTime = spawnTime
+        
     def bloodType(self, color="blood"):
         self.blood = getattr(game.enum, 'FLUID_'+color.upper())
 
