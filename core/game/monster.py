@@ -256,6 +256,7 @@ class MonsterBrain(object):
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
+            print "Dead"
             return False # Stop looper
             
         # Walking
@@ -373,7 +374,7 @@ class MonsterBrain(object):
                 
     def walkRandomStep(self, monster, badDir=None):
         # Ignore autowalking when there is noone in range
-        spectators = game.engine.getSpectatorList(monster.position)
+        spectators = game.engine.getSpectatorList(monster.position, cache=False)
         if not spectators:
             return False
         
