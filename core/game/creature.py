@@ -298,7 +298,7 @@ class Creature(object):
             streamX.send(spectator) 
 
         if self.scripts["onNextStep"]:
-            for script in self.scripts["onNextStep"]:
+            for script in self.scripts["onNextStep"][:]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
                      
@@ -399,7 +399,7 @@ class Creature(object):
                 self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_RECEIVED)
 
         elif not self.target and self.data["health"] < 1:
-            self.target = by # If I'm a creature, set my target
+            self.follow(by) # If I'm a creature, set my target
             
     def onSpawn(self):
         pass # To be overrided
@@ -598,3 +598,19 @@ class Creature(object):
             return self.vars[inspect.stack()[0][1] + name]
         except:
             return None
+
+    def __followCallback(self, who):
+        if self.target == who:
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.target.scripts["onNextStep"].append(self.__followCallback)
+            
+    def follow(self, target):
+        """if self.targetMode == 2 and self.target == target:
+            self.targetMode = 0
+            self.target = None
+            return"""
+
+        self.target = target
+        self.targetMode = 2
+        game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+        self.target.scripts["onNextStep"].append(self.__followCallback)

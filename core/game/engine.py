@@ -91,6 +91,7 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
 
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
+    print pattern
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
     elif callback:
@@ -143,7 +144,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             pattern.append(base)
         
     if not pattern:
-        pattern = game.pathfinder.findPath(game.map.knownMap[fromPos[2]], fromPos[0], fromPos[1], to[0], to[1])
+        pattern = game.pathfinder.findPath(fromPos[2], fromPos[0], fromPos[1], to[0], to[1])
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:

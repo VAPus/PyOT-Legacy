@@ -4,6 +4,7 @@
 
 # Heavily modified by Stian Andreassen to gain speed and functionality (original script was totally broken for our usage and used 5 times longer to calculate) :)
 from heapq import heappush, heappop # for priority queue
+import game.map
 
 class node(object):
     __slots__ = ('xPos', 'yPos', 'distance', 'priority')
@@ -33,7 +34,7 @@ class node(object):
 
 # A-star algorithm.
 # The path returned will be a string of digits of directions.
-def findPath(the_map, relX, relY, xB, yB):
+def findPath(mapZ, relX, relY, xB, yB):
     """dx = [1, 1, 0, -1, -1, -1, 0, 1]
     dy = [0, 1, 1, 1, 0, -1, -1, -1]"""
     dx = [0, 1, 0, -1]
@@ -78,6 +79,7 @@ def findPath(the_map, relX, relY, xB, yB):
         if x == xB and y == yB:
             # generate the path from finish to start
             # by following the dirs
+            print dir_map
             path = []
             while not (x == xA and y == yA):
                 j = dir_map[y][x]
@@ -95,9 +97,11 @@ def findPath(the_map, relX, relY, xB, yB):
             mx = x+relX-15
             my = y+relY-15
             isSolid = False
+            tile = game.map.getTile((mx, my, mapZ))
+            print (x, y)
             try:
-                if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not the_map[mx][my] or closed_nodes_map[ydy][xdx]):
-                    for t in the_map[mx][my].getItems():
+                if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not tile or closed_nodes_map[ydy][xdx]):
+                    for t in tile.getItems():
                         if t.solid:
                             isSolid = True
                             break

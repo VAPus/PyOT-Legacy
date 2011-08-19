@@ -261,9 +261,10 @@ class MonsterBrain(object):
             
         # Walking
         if monster.target: # We need a target for this code check to run
-
+            print "Have target"
             # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canSee(monster.target.position) or monster.target.data["health"] < 1:
+                print "On lost"
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
                 monster.intervals = {} # Zero them out
@@ -277,6 +278,7 @@ class MonsterBrain(object):
                     game.engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
                     
                 return
+            
                 
             elif monster.data["health"] <= monster.base.runOnHealth and monster.walkPer == config.monsterWalkPer:
                 monster.walkPer = 0.5
@@ -335,13 +337,13 @@ class MonsterBrain(object):
                 monster.base.onFollow(monster.target)
                 
                 # Begin autowalking
-                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance - 1, lambda x: monster.turnAgainst(monster.target.position))
+                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                 
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         monster.stopAction()
-                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance - 1, lambda x: monster.turnAgainst(monster.target.position))
+                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         monster.target.scripts["onNextStep"].append(__followCallback)
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)
@@ -353,7 +355,7 @@ class MonsterBrain(object):
             print "Stopping brain"
             return False
             
-        if not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+        if not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
     @game.engine.loopInThread(2)        
