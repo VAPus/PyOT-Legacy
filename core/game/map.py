@@ -219,7 +219,7 @@ def N(name,x,y,z=7, spawnTime=None):
     except:
         log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
     
-M = bindconstant._make_constants(M)
+N = bindconstant._make_constants(N)
 
 def I(itemId, **kwargs):
     # Do not stack
