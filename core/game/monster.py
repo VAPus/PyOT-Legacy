@@ -160,9 +160,9 @@ class MonsterBase(CreatureBase):
         self.intervals = {}
         self.lootTable = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=1):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.5):
         if spawnDelay:
-            return game.engine.safeCallLater(self.spawn, spawnDelay, position, place, spawnTime)
+            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0)
         else:
             monster = Monster(self, position, None)
             if spawnTime:
@@ -173,6 +173,7 @@ class MonsterBase(CreatureBase):
                 log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
                 
             if place:
+                try:
                     stackpos = game.map.getTile(position).placeCreature(monster)
                     if stackpos > 9:
                         log.msg("Can't place creatures on a stackpos > 9")
@@ -185,6 +186,8 @@ class MonsterBase(CreatureBase):
                         stream.addTileCreature(position, stackpos, monster, client.player)
                 
                         stream.send(client)
+                except:
+                    log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
             return monster
         
     def setHealth(self, health, healthmax=None):

@@ -165,13 +165,11 @@ scriptsystem.get("talkactionFirstWord").reg('exp', modexp)
 
 # Creature tester
 def creatureSpawn(creature, text):
+    print "Spawner called"
     pos = creature.position[:]
     pos[1] += 2
     
-    try:
-        game.monster.getMonster(text).spawn(pos)
-    except:
-        creature.message("Spawning failed!")
+    game.monster.getMonster(text).spawn(pos)
         
     return False
     

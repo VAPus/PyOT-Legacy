@@ -213,7 +213,7 @@ class TibiaPacket(object):
         if not isSolid:
             for creature in tile.creatures():
                 known = False
-                if player and creature is not player:
+                if player and creature.isPlayer():
                     known = creature.cid in player.knownCreatures
                     
                     if not known:

@@ -203,6 +203,7 @@ def MM(name, *argc):
         length = len(argc)
         if length % 2:
             z = argc[-1]
+            length -= 1
                 
         for count in xrange(0,length, 2):
             game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
