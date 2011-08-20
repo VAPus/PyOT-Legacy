@@ -1,8 +1,8 @@
-width = 2048
-height = 2048
+width = 2000
+height = 2000
 author = 'OTBMXML2sec generator'
-description = 'SimOne MapEditor 0.5.5'
+description = 'SimOne MapEditor 0.4.49'
 sectorSize = (32, 32)
-towns = {1: ('Tattiland', [550, 504, 6])}
+towns = {}
 waypoints = {}
-levels = (14, 0)
+levels = (8, 1)
