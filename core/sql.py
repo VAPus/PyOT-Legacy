@@ -6,7 +6,14 @@ def connect():
         from MySQLdb.cursors import DictCursor
         from MySQLdb.constants import FIELD_TYPE
         import MySQLdb.converters
+        
+        def autoFloat(s):
+            return float(s) if '.' in s else int(s)
+
         MySQLdb.converters.conversions[FIELD_TYPE.LONG] = int
+        MySQLdb.converters.conversions[FIELD_TYPE.DECIMAL] = autoFloat
+        MySQLdb.converters.conversions[FIELD_TYPE.NEWDECIMAL] = autoFloat
+        
         return adbapi.ConnectionPool(config.sqlModule, host="localhost",db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
 
     elif config.sqlModule == "sqlite3":
