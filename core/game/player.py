@@ -39,20 +39,40 @@ class TibiaPlayer(Creature):
         self.targetChecker = None
         
         vocation = self.getVocation()
-        level = 1
-        while True:
-            if config.totalExpFormula(level) > self.data["experience"]:
-                break
-            level += 1
+        level = 0
+        bit = 32
+        cache = 2**bit
+        print self.data["experience"]
+        while bit:
+            if config.totalExpFormula(level + cache) > self.data["experience"]:
+                bit -= 1
+                if bit == 0:
+                    if config.totalExpFormula(level + 1) > self.data["experience"]:
+                        level += 1
+                    break
+                else:
+                    cache = 2 ** bit
+            else:
+                level += cache
         
-        maglevel = 1
-        while True:
-            if config.totalMagicLevelFormula(maglevel, vocation.mlevel) > self.data["manaspent"]:
-                break
-            maglevel += 1
+        maglevel = 0
+        bit = 12
+        cache = 2 ** bit
+        while bit:
+            if config.totalMagicLevelFormula(maglevel + cache, vocation.mlevel) > self.data["manaspent"]:
+                bit -= 1
+                if bit == 0:
+                    if config.totalMagicLevelFormula(maglevel + 1, vocation.mlevel) > self.data["manaspent"]:
+                        maglevel += 1
+                    break
+                else:
+                    cache = 2 ** bit
+            else:
+                maglevel += cache
+
         self.data["maglevel"] = maglevel
         self.setLevel(level, False)
-        self.speed = min(220.0 + (2 * int(data["level"])-1), 1500.0)
+        self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
     
 
         if self.data["stamina"]:
