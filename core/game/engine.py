@@ -173,7 +173,11 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[], cache=True):
     zpc = game.map.ZPack(pos[2], pos[0], pos[1])
     if zpc in spectatorList:
         if cache:
-            return spectatorList[zpc]
+            work = spectatorList[zpc][:]
+            for creature in work:
+                if creature in ignore:
+                    work.remove(creature)
+            return work
         else:
             del spectatorList[zpc]
     players = []
@@ -196,7 +200,8 @@ def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[], cache=True):
                             pass
             except:
                 pass # Tile isn't loaded
-    spectatorList[zpc] = players
+    if not ignore:
+        spectatorList[zpc] = players
     return players
 
 # Spectator list using yield

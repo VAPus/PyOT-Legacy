@@ -448,24 +448,30 @@ class Creature(object):
         """if not self.actionLock(self.teleport, position):
             return False"""
             
-        # 4 steps, remove item (creature), send new map and cords, and effects 
+        # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position[:]
-        self.position = position 
+        
         newTile = getTile(position)
         
         if newTile.things[0].solid:
             raise game.errors.SolidTile()
         
         oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
-        
-        stream = TibiaPacket()
-        stream.removeTileItem(oldPosition, oldStackpos)
-        stream.magicEffect(oldPosition, 0x02)
-        stream.sendto(getSpectators(oldPosition, ignore=[self]))
+        for spectator in getSpectators(oldPosition):
+            if spectator.player == self:
+                continue
+            stream = TibiaPacket()
+            stream.removeTileItem(oldPosition, oldStackpos)
+            stream.magicEffect(oldPosition, 0x02)
+            stream.send(spectator)
         
         
         stackpos = placeCreature(self, position)
+        if not stackpos:
+            raise game.errors.ImpossibleMove()
+        
         removeCreature(self, oldPosition)
+        self.position = position 
         if self.creatureType == 0:
             stream = TibiaPacket()
             stream.removeTileItem(oldPosition, oldStackpos)
@@ -477,7 +483,10 @@ class Creature(object):
             
          
         
-        for spectator in getSpectators(position, ignore=[self]):
+        for spectator in getSpectators(position):
+            if spectator.player == self:
+                continue
+
             stream = TibiaPacket()
             stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)

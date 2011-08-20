@@ -160,7 +160,7 @@ class MonsterBase(CreatureBase):
         self.intervals = {}
         self.lootTable = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=1):
         if spawnDelay:
             return game.engine.safeCallLater(self.spawn, spawnDelay, position, place, spawnTime)
         else:
@@ -279,18 +279,12 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
-        
-        # Wrapper
-        def __beginThink():
-            if isOk or game.engine.getSpectators(monster.position, cache=False):
-                print "Starting brain 2"
-                monster.noBrain = False
-                self.handleThink(monster)
-                if monster.base.voiceslist:
-                    self.handleTalk(monster)
+        print "Starting brain 2"
+        monster.noBrain = False
+        self.handleThink(monster)
+        if monster.base.voiceslist:
+            self.handleTalk(monster)
                 
-        game.engine.safeCallLater(0.5, __beginThink) # Begin though process 0.5s later, this prevents monsters from thinking while the map is rendering.
-
     @game.engine.loopInThread(0.5)
     def handleThink(self, monster, check=True):
         monster.noBrain = False

@@ -1,6 +1,20 @@
 import game.scriptsystem as scriptsystem
 import game.map
 
+# Stairfronts
+"""stairnorth = None,
+stairsouth = None
+stairwest = 1390,
+staireast = 1389,
+
+def walker(direction):
+    def callback(creature, **k):
+        creature.move(direction)
+    return callback
+    
+scriptsystem.get("walkOn").reg(stairwest, walker(3))
+scriptsystem.get("walkOn").reg(staireast, walker(1))"""
+
 def floorchange(creature, thing, position, **k):
     # Note this is the correct direction
     print "Floor change"
@@ -44,7 +58,7 @@ def floordown(creature, thing, position, **k):
         creature.teleport([position[0],position[1],position[2]+1])
 
 # Stairs
-stairs = 1385, 429, 411, 4834, 1396, 4837
+stairs = 1385, 410, 429, 411, 4834, 1396, 4837, 1388, 1393, 1391
 scriptsystem.get("walkOn").reg(stairs, floorchange)
 
 # Ladders up
