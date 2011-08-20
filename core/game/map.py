@@ -177,12 +177,12 @@ while True:
     else:
         break
 PACKSIZE += 4        
-if config.useNumpy:
+"""if config.useNumpy:
     from numpy import empty
     knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
     
-else:
-    knownMap = {}
+else:"""
+knownMap = {}
 sectors = []
 
 

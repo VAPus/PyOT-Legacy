@@ -10,7 +10,7 @@ import game.errors
 import game.item
 import config
 
-monsters = {}
+npcs = {}
 
 def chance(procent):
     def gen(monster):
@@ -21,7 +21,7 @@ def chance(procent):
     return gen
 
 brains = {}
-brains["default"] = MonsterBrain()
+brains["default"] = None #MonsterBrain()
 def genNPC(name, look, description="", brain="default"):
     # First build the common creature data
     data = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}

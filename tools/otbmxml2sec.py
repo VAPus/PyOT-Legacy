@@ -217,6 +217,7 @@ while nodes.data.peekUint8():
         _output_.append('_map.description("""%s""")' % (description))
     elif attr == 11:
         spawns = nodes.data.string()
+        print "--Using spawns: %s" % spawns
     elif attr == 13:
         house = nodes.data.string()
     else:
@@ -395,4 +396,4 @@ _output_.append("_map.compile()")
 print "-- Writing genmap.py"
 with open("genmap.py", "wb") as f:
     f.write("\n".join(_output_))
-print "Done!"
+print "-- Done!"
