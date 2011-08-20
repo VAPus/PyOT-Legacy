@@ -85,8 +85,14 @@ def loopInThread(time):
 # First order of buisness, the autoWalker
 @action(True)
 def autoWalkCreature(creature, walkPatterns, callback=None): 
-    creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
-    
+    try:
+        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
+    except:
+        # Just have to assume he goes down?
+        # First a hack
+        creature.NO_STAIRHOP = True
+        handleAutoWalking(creature, walkPatterns, callback, 1)
+        
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
 
@@ -98,7 +104,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
         callback(None)
         
 @action()
-def handleAutoWalking(creature, walkPatterns, callback=None):
+def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
     if not walkPatterns:
         return
         
@@ -113,7 +119,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None):
             else:
                 pass #creature2.cancelWalk(walkPatterns[0])
                 
-    ret = creature.move(direction)
+    ret = creature.move(direction, level=level)
     if mcallback:
         ret.addCallback(mcallback)
     
