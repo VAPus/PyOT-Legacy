@@ -44,7 +44,7 @@ def floordown(creature, thing, position, **k):
         creature.teleport([position[0],position[1],position[2]+1])
 
 # Stairs
-stairs = 1385, 429, 411, 4834, 1396
+stairs = 1385, 429, 411, 4834, 1396, 4837
 scriptsystem.get("walkOn").reg(stairs, floorchange)
 
 # Ladders up

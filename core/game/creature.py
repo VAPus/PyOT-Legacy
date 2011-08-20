@@ -124,9 +124,9 @@ class Creature(object):
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
     
-    def move(self, *argc, **kwargs):
+    def move(self, direction, spectators=None, level=0):
         d = defer.Deferred()
-        game.engine.safeCallLater(0, self.__move, d, *argc, **kwargs)
+        game.engine.safeCallLater(0, self.__move, d, direction, spectators, level)
         return d
         
     @defer.deferredGenerator
