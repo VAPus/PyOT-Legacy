@@ -1091,8 +1091,7 @@ class TibiaPlayer(Creature):
             
         clientId = packet.uint16()
         stackpos = packet.uint8()
-        import game.pathfinder
-        print game.pathfinder.findPath(7, self.position[0], self.position[1], position[0], position[1])
+
         thing = self.findItem(position, stackpos)     
         
         if thing:
