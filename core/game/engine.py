@@ -86,7 +86,7 @@ def loopInThread(time):
 @action(True)
 def autoWalkCreature(creature, walkPatterns, callback=None): 
     try:
-        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0), 0.5), handleAutoWalking, creature, walkPatterns, callback)
+        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
     except:
         # Just have to assume he goes down?
         # First a hack
@@ -114,7 +114,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
     if walkPatterns:
         def mcallback(ret):
             creature2, oldPos, newPos = ret
-            if oldPos == currPos and creature2.action and not creature2.action.active():
+            if oldPos == currPos:
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
             else:
                 pass #creature2.cancelWalk(walkPatterns[0])

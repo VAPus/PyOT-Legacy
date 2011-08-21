@@ -10,7 +10,7 @@ import copy
 import game.scriptsystem
 import inspect
 import game.errors
-
+import math
 
 # Unique ids, thread safe too
 def __uid():
@@ -109,11 +109,12 @@ class Creature(object):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground, delay=1.5):
-        if time.time() - self.lastStep < delay:
+        #if time.time() - self.lastStep < delay:
+        if True: # Ignore delay system
             if not ground.speed:
                 ground.speed = 100
-            return round(ground.speed / self.speed, 3)
-        return delay
+            return (ground.speed / self.speed)
+        #return delay
 
     def notPossible(self):
         # Needs to be overrided in player
