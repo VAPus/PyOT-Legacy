@@ -117,11 +117,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
             if self.player.data["health"]:
                 try:
                     getTile(self.player.position).placeCreature(self.player)
-                except:
-                    print "%s is unspawnable, choosing a city" % str(self.player.position)
+                except AttributeError:
                     import data.map.info
                     import game.map
                     self.player.position = data.map.info.towns[1][1]
+                    print game.map.knownMap
                     getTile(self.player.position).placeCreature(self.player)
                 
         self.player.sendFirstPacket()

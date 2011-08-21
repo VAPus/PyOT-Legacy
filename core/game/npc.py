@@ -12,25 +12,80 @@ import config
 
 npcs = {}
 
+class NPC(Creature):
+    def generateClientID(self):
+        return 0x80000000 + uniqueId()
+        
+    def __init__(self, base, position, cid=None):
+        Creature.__init__(self, base.data.copy(), position, cid)
+        self.base = base
+        self.creatureType = 2
+        self.spawnPosition = position[:]
+        
+class NPCBase(CreatureBase):
+    def __init__(self, data):
+        self.data = data
+        self.voiceslist = []
+        self.scripts = {"onFollow":[], "onTargetLost":[]}
+        
+        self.speed = 100
+        self.experience = 0
+        self.intervals = {}
+        
+    def spawn(self, position, place=True, spawnDelay=0.5):
+        if spawnDelay:
+            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0)
+        else:
+            npc = NPC(self, position, None)
+
+            if place:
+                try:
+                    stackpos = game.map.getTile(position).placeCreature(npc)
+                    if stackpos > 9:
+                        log.msg("Can't place creatures on a stackpos > 9")
+                        return
+                        
+                    list = game.engine.getSpectators(position)
+                    for client in list:
+                        stream = TibiaPacket()
+                        stream.magicEffect(position, 0x03)
+                        stream.addTileCreature(position, stackpos, npc, client.player)
+                
+                        stream.send(client)
+                except:
+                    log.msg("Spawning of npc('%s') on %s failed" % (self.data["name"], str(position)))
+            return npc    
+
+    def setHealth(self, health, healthmax=None):
+        if not healthmax:
+            healthmax = health
+        self.data["health"] = health
+        self.data["healthmax"] = healthmax
+
 def chance(procent):
-    def gen(monster):
+    def gen(npc):
         if 10 > random.randint(0, 100):
             return True
         else:
             return False
     return gen
 
-brains = {}
-brains["default"] = None #MonsterBrain()
-def genNPC(name, look, description="", brain="default"):
-    # First build the common creature data
-    data = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0}
 
+def genNPC(name, look, description=""):
+    # First build the common creature data
+    data = {}
     data["looktype"] = look[0]
-    data["corpse"] = look[1]
+    data["lookhead"] = look[1]
+    data["lookbody"] = look[2]
+    data["looklegs"] = look[3]
+    data["corpse"] = look[4]
+    data["health"] = 150
+    data["healthmax"] = 150
     data["name"] = name
+    
+    
     # Then npc only data
-    npcs[name] = NPCBase(data, brains[brain], None)
+    npcs[name] = NPCBase(data)
 
     return npcs[name]
 

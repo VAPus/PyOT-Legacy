@@ -35,6 +35,7 @@ class Monster(Creature):
         self.walkPer = config.monsterWalkPer
         self.noBrain = True
         self.spawnTime = None
+        self.radius = 5
 
     def damageToBlock(self, dmg, type):
         if type == game.enum.MELEE:
@@ -134,7 +135,7 @@ class Monster(Creature):
         return Creature.yell(self, message, messageType)
         
 class MonsterBase(CreatureBase):
-    def __init__(self, data, brain, monsterData):
+    def __init__(self, data, brain):
         self.data = data
         self.voiceslist = []
         self.brain = brain
@@ -160,13 +161,19 @@ class MonsterBase(CreatureBase):
         self.intervals = {}
         self.lootTable = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.5):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.5, radius=5, radiusTo=None):
         if spawnDelay:
             return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0)
         else:
             monster = Monster(self, position, None)
             if spawnTime:
                 monster.spawnTime = spawnTime
+            monster.radius = radius
+            if radiusTo:
+                monster.radiusTo = radiusTo
+            else:
+                monster.radiusTo = (position[0], position[1])
+                
             self.brain.beginThink(monster) # begin the heavy thought process!
 
             if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
@@ -282,7 +289,6 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
-        print "Starting brain 2"
         monster.noBrain = False
         self.handleThink(monster)
         if monster.base.voiceslist:
@@ -294,15 +300,12 @@ class MonsterBrain(object):
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
-            print "Dead"
             return False # Stop looper
             
         # Walking
         if monster.target: # We need a target for this code check to run
-            print "Have target"
             # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canSee(monster.target.position) or monster.target.data["health"] < 1:
-                print "On lost"
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
                 monster.intervals = {} # Zero them out
@@ -390,7 +393,6 @@ class MonsterBrain(object):
         # Are anyone watching?
         if check and not game.engine.getSpectators(monster.position, (11, 9), cache=False):
             monster.noBrain = True
-            print "Stopping brain"
             return False
             
         if not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
@@ -434,16 +436,16 @@ class MonsterBrain(object):
                 continue
             
             # Prevent us from autowalking futher then 5 steps
-            if step == 0 and monster.spawnPosition[1]-(monster.position[1]-1) > 5:
+            if step == 0 and monster.spawnPosition[1]-(monster.position[1]-1) > monster.radius:
                 continue
                 
-            elif step == 1 and (monster.position[0]+1)-monster.spawnPosition[0] > 5:
+            elif step == 1 and (monster.position[0]+1)-monster.spawnPosition[0] > monster.radius:
                 continue
                 
-            elif step == 2 and (monster.position[1]+1)-monster.spawnPosition[1] > 5:
+            elif step == 2 and (monster.position[1]+1)-monster.spawnPosition[1] > monster.radius:
                 continue
                 
-            elif step == 3 and monster.spawnPosition[0]-(monster.position[0]-1) > 5:
+            elif step == 3 and monster.spawnPosition[0]-(monster.position[0]-1) > monster.radius:
                 continue
                 
             badDir.append(step)
@@ -471,7 +473,7 @@ def genMonster(name, look, description="", brain="default"):
     data["corpse"] = look[1]
     data["name"] = name
     # Then monster only data
-    monsters[name] = MonsterBase(data, brains[brain], None)
+    monsters[name] = MonsterBase(data, brains[brain])
 
     return monsters[name]
 

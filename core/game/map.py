@@ -188,39 +188,38 @@ sectors = []
 
 
 # Ops codes
-def M(name,x,y,z=7, spawnTime=None):
-    try:
-        game.monster.getMonster(name).spawn([x,y,z], spawnTime=spawnTime)
+class S(object):
+    __slots__ = ('base', 'radius')
+    def __init__(self, x,y,z=None,radius=5): # z isn't used.
+        self.base = (x,y) # Constant
+        self.radius = radius
+        
+    def M(self, name,x,y,z=7, spawnTime=None):
+        try:
+            game.monster.getMonster(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
-    except:
-        log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-    
-M = bindconstant._make_constants(M)
+        except:
+            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        return self
+        
+    """def MM(self, name, *argc):
+        try:
+            for count in xrange(0, len(argc), 2):
+                game.monster.getMonster(name).spawn(self, [argc[count],argc[count+1],self.base[2]])
 
-def MM(name, *argc):
-    try:
-        z = 7
-        length = len(argc)
-        if length % 2:
-            z = argc[-1]
-            length -= 1
-                
-        for count in xrange(0,length, 2):
-            game.monster.getMonster(name).spawn([argc[count],argc[count+1],z])
+        except:
+            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        return self"""
+        
+    def N(self, name,x,y,z=7, spawnTime=None):
+        #try:
+        game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
-    except:
-        log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-
-MM = bindconstant._make_constants(MM)
-
-def N(name,x,y,z=7, spawnTime=None):
-    try:
-        game.npc.getNPC(name).spawn([x,y,z], spawnTime=spawnTime)
-
-    except:
-        log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-    
-N = bindconstant._make_constants(N)
+        #except:
+        #    log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        return self
+        
+bindconstant.bind_all(S)
 
 def I(itemId, **kwargs):
     # Do not stack
@@ -295,8 +294,9 @@ def load(sectorX, sectorY):
     
     localItems = game.item.items # Prevent a bit of a lookup
     for mz in m:
+        if len(mz) != 2: continue
         currZ = mz[0]
-
+        
         for i,x in enumerate(mz[1]):
             var = currZ + ((i+xbase) << 4)
             for y,tile in enumerate(x):

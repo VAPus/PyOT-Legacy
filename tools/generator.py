@@ -33,24 +33,35 @@ def iReplacer(old, new):
     return old
 
 ### Mainmap
+USE_NUMPY = True
+try:
+    import numpy as N
+except:
+    USE_NUMPY = False
 class Map(object):
-    def __init__(self, xA, yA, ground=100):
-        self.area = {7:[]}
+    def __init__(self, xA, yA, ground=100, zs=16):
+        
         self.size = (xA, yA)
         self._author = ""
         self._description = ""
         self.towns = {}
         self.waypoints = {}
-        for x in xrange(0, xA+1):
-            self.area[7].append([])
-            for y in xrange(0, yA+1):
-                self.area[7][x].append([])
-                if ground == None:
-                    self.area[7][x][y] = []
-                elif isinstance(ground, int):
-                    self.area[7][x][y] = [Item(ground)]
-                else:
-                    self.area[7][x][y] = [ground]
+        
+        if USE_NUMPY:
+            self.area = N.empty((zs, xA, yA), dtype=list)
+            
+        else:    
+            self.area = {7:[]}
+            for x in xrange(0, xA+1):
+                self.area[7].append([])
+                for y in xrange(0, yA+1):
+                    self.area[7][x].append([])
+                    if ground == None:
+                        self.area[7][x][y] = None
+                    elif isinstance(ground, int):
+                        self.area[7][x][y] = [Item(ground)]
+                    else:
+                        self.area[7][x][y] = [ground]
 
 
     def author(self, name):
@@ -80,14 +91,16 @@ class Map(object):
             xO += 1
 
     def _level(self, level, ground=None):
-        if not level in self.area:
+        try:
+            self.area[level]
+        except:
             self.area[level] = []
             for x in xrange(0, self.size[0]+1):
                 self.area[level].append([])
                 for y in xrange(0, self.size[1]+1):
                     self.area[level][x].append([])
                     if ground == None:
-                        self.area[level][x][y] = []
+                        self.area[level][x][y] = None
                     elif isinstance(ground, int):
                         self.area[level][x][y] = [Item(ground)]
                     else:
@@ -95,8 +108,10 @@ class Map(object):
                         
     def addTo(self,x,y,thing,level=7):
         self._level(level)
-        self.area[level][x][y].append(thing)
-        
+        try:
+            self.area[level][x][y].append(thing)
+        except:
+            self.area[level][x][y] = [thing]
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
         self._level(thing.level)
@@ -119,14 +134,21 @@ class Map(object):
             self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
     def _levelsTo(self, x, y): # Rather heavy!
         levels = []
-
-        for level in self.area.keys():
-            try:
-                len(self.area[level][x][y]) # Raise a error, then it's skipped
-                levels.append(level)
-            except:
-                pass
-            
+        if not USE_NUMPY:
+            for level in self.area.keys():
+                try:
+                    if self.area[level][x][y]: # Raise a error, then it's skipped
+                        levels.append(level)
+                except:
+                    pass
+        else:
+            """for level in xrange(16):
+                try:
+                    if self.area[level][x][y]: # Raise a error, then it's skipped
+                        levels.append(level)
+                except:
+                    pass  """
+            return range(16)
         return levels
     def compile(self, areas=(32,32)):
         print "--Begin compilation"
@@ -144,6 +166,9 @@ class Map(object):
                 for xS in xrange(0, areas[0]):
                     for yS in xrange(0, areas[1]):
                         for level in self._levelsTo((xA*areas[0])+xS, (yA*areas[1])+yS):
+                            if self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS] == None:
+                                continue
+                            
                             if not level in sector:
                                 sector[level] = []
 
@@ -158,21 +183,13 @@ class Map(object):
                                     sector[level][xS].append([])
                                 else:
                                     break
-                                    
+      
                             for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
                                 e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
                                 if e:
                                     sector[level][xS][yS].append(e)
-                
+                                
                 # Begin by rebuilding ranges of tiles in x,y,z
-                global opR
-                opR = "m="
-                def opM():
-                    global opR
-                    if opR == "m=":
-                        opR = "+"
-                        return "m="
-                    return opR
                        
                 # Level 3, y compare:
                 def yComp(xCom):
@@ -180,31 +197,31 @@ class Map(object):
                     yCount = 0
                     output = ""
 
-                    for y in copy.copy(xCom):
+                    for y in xCom[:]:
                         if yCom == y:
                             yCount += 1
                             xCom.remove(y)
                         else:
                             if yCount > 1:
-                                output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
+                                output += "(T(%s),)*%d+" % (','.join(yCom), yCount)
                             elif yCount:
-                                output += "(T("+(','.join(yCom))+"),)+"
+                                output += "(T(%s),)+" % (','.join(yCom))
                             yCom = y
                             yCount = 1
                     if yCount > 1:
-                        output += "(T("+(','.join(yCom))+"),)*%d+" % yCount
+                        output += "(T(%s),)*%d+" % (','.join(yCom), yCount)
                     elif yCount:
-                        output += "(T("+(','.join(yCom))+"),)+"
+                        output += "(T(%s),)+" % (','.join(yCom))
                     if output:    
-                        return "("+output[:-1].replace("T()", "None").replace("T(I(100))", 'V')+",)" # None is waay faster then T(), T(I(100)) is also known as V
+                        return "(%s,)" % (output[:-1].replace("T()", "None").replace("T(I(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
                     return ''
                     
-            # Level 2, X compare
+                # Level 2, X compare
                 def xComp(zCom):
                     xCom = []
                     xCount = 0
                     output = ""
-                    for x in copy.copy(zCom):
+                    for x in zCom[:]:
                         if xCom == x:
                             xCount += 1
                             zCom.remove(x)
@@ -213,18 +230,22 @@ class Map(object):
                                 # Begin building
                                 t = yComp(xCom)
                                 if t:
-                                    output += t+"*%d+" % xCount
+                                    output += "%s*%d+" % (t, xCount)
                             elif xCount:
-                                output += yComp(xCom)+"+"
+                                t = yComp(xCom)
+                                if t:
+                                    output += "%s+" % t
                             xCom = x
                             xCount = 1
 
                     if xCount > 1:
                         t = yComp(xCom)
                         if t:
-                            output += t+"*%d+" % xCount
+                            output += "%s*%d+" % (t, xCount)
                     elif xCount:
-                        output += yComp(xCom)+"+"
+                        t = yComp(xCom)
+                        if t:
+                            output += "%s+" % t
                     
                     return output[:-1]
                 
@@ -243,7 +264,7 @@ class Map(object):
                 else: # A very big load of nothing
                     output = "m=()"
                 
-                if extras:
+                """if extras:
                     # Monster ops
                     # TODO: Reorder monsters first!
                     monsters = {}
@@ -289,13 +310,16 @@ class Map(object):
                                    else:
                                        del extras[extras.index(x)]
                         except:
-                            print "Bug"            
+                            print "Bug"            """
+                if extras:
                     output += "\ndef l():"+';'.join(extras)
-
-                with open('%d.%d.sec' % (xA, yA), 'w') as f:
-                    f.write(output)
+                if output != "m=()":
+                    with open('%d.%d.sec' % (xA, yA), 'w') as f:
+                        f.write(output)
                 
-                print "--Wrote %d.%d.sec\n" % (xA, yA)
+                    print "--Wrote %d.%d.sec\n" % (xA, yA)
+                else:
+                    print "--Skipped %d.%d.sec\n" % (xA, yA)
         output = ""
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]
@@ -306,12 +330,20 @@ class Map(object):
         output += "waypoints = %s\n" % str(self.waypoints)
 	low = 15
 	num = 0
-	for level in self.area:
-		if level in nothingness:
-			continue
-		if level < low:
-			low = level
-		num += 1
+	if USE_NUMPY:
+            for level,__junk in enumerate(self.area):
+                    if level in nothingness:
+                            continue
+                    if level < low:
+                            low = level
+                    num += 1
+        else:
+            for level in self.area:
+                    if level in nothingness:
+                            continue
+                    if level < low:
+                            low = level
+                    num += 1
 	print "Northingness on: %s" % (nothingness)
 	output += "levels = (%d, %d)" % (num, low)
 	with open('info.py', "w") as f:
@@ -430,22 +462,21 @@ class RSItem(object):
     def gen(self, x,y,z,rx,ry,extras):
         import random
         return ('I(%d)' % random.choice(self.ids), extras) 
+
+class Spawn(object):
+    __slots__ = ('radius', 'cret')
+    def __init__(self, radius):
+        self.radius = radius
+        self.cret = []
+    def monster(self, name,x,y,z):
+        self.cret.append("M('%s',%d,%d%s)" % (name, x, y, ',%d'%z if z != 7 else ''))
         
-class Monster(object):
-    __slots__ = ('name')
-    def __init__(self, name):
-        self.name = name
-  
+    def npc(self, name,x,y,z):
+        self.cret.append("N('%s',%d,%d%s)" % (name, x, y, ',%d'%z if z != 7 else ''))
+        
     def gen(self, x,y,z,rx,ry, extras):
-        extras.append("M('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
+        if self.cret:
+            extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (x, y, ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
         return (None, extras)
-       
-class NPC(object):
-    __slots__ = ('name')
-    def __init__(self, name):
-        self.name = name
-  
-    def gen(self, x,y,z,rx,ry, extras):
-        extras.append("N('%s',%d,%d%s)" % (self.name, x, y, ',%d'%z if z != 7 else ''))
-        return (None, extras)
+        
        
