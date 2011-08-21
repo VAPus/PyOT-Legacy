@@ -38,6 +38,13 @@ try:
     import numpy as N
 except:
     USE_NUMPY = False
+    
+# Python 3
+try:
+    xrange()
+except:
+    xrange = range
+    
 class Map(object):
     def __init__(self, xA, yA, ground=100, zs=16):
         
@@ -94,6 +101,9 @@ class Map(object):
         try:
             self.area[level]
         except:
+            if USE_NUMPY:
+                raise Exception("Out of map!")
+            
             self.area[level] = []
             for x in xrange(0, self.size[0]+1):
                 self.area[level].append([])
@@ -118,6 +128,9 @@ class Map(object):
         try:
             self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
         except:
+            if USE_NUMPY:
+                raise Exception("Out of map!")
+            
             self.size = (thing.x if thing.x > self.size[0] else self.size[0], thing.y if thing.y > self.size[1] else self.size[1])
             while True:
                 try:
@@ -135,7 +148,7 @@ class Map(object):
     def _levelsTo(self, x, y): # Rather heavy!
         levels = []
         if not USE_NUMPY:
-            for level in self.area.keys():
+            for level in list(self.area.keys()):
                 try:
                     if self.area[level][x][y]: # Raise a error, then it's skipped
                         levels.append(level)
@@ -151,12 +164,12 @@ class Map(object):
             return range(16)
         return levels
     def compile(self, areas=(32,32)):
-        print "--Begin compilation"
+        print("--Begin compilation")
         areaX = 0
         areaY = 0
-        toX = self.size[0] / areas[0]
-        toY = self.size[1] / areas[1]
-	nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        toX = round(self.size[0] / areas[0])
+        toY = round(self.size[1] / areas[1])
+        nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
                 
@@ -195,7 +208,7 @@ class Map(object):
                 def yComp(xCom):
                     yCom = []
                     yCount = 0
-                    output = ""
+                    output = []
 
                     for y in xCom[:]:
                         if yCom == y:
@@ -203,24 +216,26 @@ class Map(object):
                             xCom.remove(y)
                         else:
                             if yCount > 1:
-                                output += "(T(%s),)*%d+" % (','.join(yCom), yCount)
+                                output.append("(T(%s),)*%d" % (','.join(yCom), yCount))
                             elif yCount:
-                                output += "(T(%s),)+" % (','.join(yCom))
+                                output.append("(T(%s),)" % (','.join(yCom)))
                             yCom = y
                             yCount = 1
                     if yCount > 1:
-                        output += "(T(%s),)*%d+" % (','.join(yCom), yCount)
+                        output.append("(T(%s),)*%d" % (','.join(yCom), yCount))
                     elif yCount:
-                        output += "(T(%s),)+" % (','.join(yCom))
+                        output.append("(T(%s),)" % (','.join(yCom)))
                     if output:    
-                        return "(%s,)" % (output[:-1].replace("T()", "None").replace("T(I(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
-                    return ''
+
+                        return "(%s,)" % ('+'.join(output).replace("T()", "None").replace("T(I(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
+
+                    return '((None,)*%d,)' % areas[1]
                     
                 # Level 2, X compare
                 def xComp(zCom):
                     xCom = []
                     xCount = 0
-                    output = ""
+                    output = []
                     for x in zCom[:]:
                         if xCom == x:
                             xCount += 1
@@ -230,37 +245,41 @@ class Map(object):
                                 # Begin building
                                 t = yComp(xCom)
                                 if t:
-                                    output += "%s*%d+" % (t, xCount)
+                                    output.append("%s*%d" % (t, xCount))
                             elif xCount:
                                 t = yComp(xCom)
                                 if t:
-                                    output += "%s+" % t
+                                    output.append(t)
                             xCom = x
                             xCount = 1
 
                     if xCount > 1:
                         t = yComp(xCom)
                         if t:
-                            output += "%s*%d+" % (t, xCount)
+                            output.append("%s*%d" % (t, xCount))
                     elif xCount:
                         t = yComp(xCom)
                         if t:
-                            output += "%s+" % t
+                            output.append(t)
                     
-                    return output[:-1]
+                    return '+'.join(output)
                 
-                output = ""
+                output = []
                 for zPos in sector:
                     data = xComp(sector[zPos])
-                    if data == "((None,)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
-                        print "--Note: %d is a level of nothingness, ignore it" % zPos
+                    """if data == "((None,)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
+                        print("--Note: %d is a level of nothingness, ignore it" % zPos)
                         continue
-		    else:
-			if zPos in nothingness:
-				nothingness.remove(zPos)
-                    output += "(%d,%s)," % (zPos, data)
+                    elif data:
+                        if zPos in nothingness:
+                            nothingness.remove(zPos)
+                        output.append("(%d,%s)," % (zPos, data))"""
+                    if data:
+                        if zPos in nothingness:
+                            nothingness.remove(zPos)
+                        output.append("(%d,%s)," % (zPos, data))
                 if output:
-                    output = "m=(%s)" % output
+                    output = "m=%s" % ''.join(output)
                 else: # A very big load of nothing
                     output = "m=()"
                 
@@ -317,9 +336,9 @@ class Map(object):
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:
                         f.write(output)
                 
-                    print "--Wrote %d.%d.sec\n" % (xA, yA)
+                    print("--Wrote %d.%d.sec\n" % (xA, yA))
                 else:
-                    print "--Skipped %d.%d.sec\n" % (xA, yA)
+                    print("--Skipped %d.%d.sec\n" % (xA, yA))
         output = ""
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]
@@ -328,9 +347,9 @@ class Map(object):
         output += "sectorSize = (%d, %d)\n" % (areas[0], areas[1])
         output += "towns = %s\n" % str(self.towns)
         output += "waypoints = %s\n" % str(self.waypoints)
-	low = 15
-	num = 0
-	if USE_NUMPY:
+        low = 15
+        num = 0
+        if USE_NUMPY:
             for level,__junk in enumerate(self.area):
                     if level in nothingness:
                             continue
@@ -344,11 +363,11 @@ class Map(object):
                     if level < low:
                             low = level
                     num += 1
-	print "Northingness on: %s" % (nothingness)
-	output += "levels = (%d, %d)" % (num, low)
-	with open('info.py', "w") as f:
+        print("Northingness on: %s" % (nothingness))
+        output += "levels = (%d, %d)" % (num, low)
+        with open('info.py', "w") as f:
             f.write(output)
-        print "---Wrote info.py"
+        print("---Wrote info.py")
 
 ### Areas
 class Area(object):

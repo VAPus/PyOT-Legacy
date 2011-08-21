@@ -212,11 +212,11 @@ class S(object):
         return self"""
         
     def N(self, name,x,y,z=7, spawnTime=None):
-        #try:
-        game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+        try:
+            game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
-        #except:
-        #    log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        except:
+            log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
         return self
         
 bindconstant.bind_all(S)
@@ -294,7 +294,6 @@ def load(sectorX, sectorY):
     
     localItems = game.item.items # Prevent a bit of a lookup
     for mz in m:
-        if len(mz) != 2: continue
         currZ = mz[0]
         
         for i,x in enumerate(mz[1]):
