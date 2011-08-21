@@ -436,16 +436,16 @@ class MonsterBrain(object):
                 continue
             
             # Prevent us from autowalking futher then 5 steps
-            if step == 0 and monster.spawnPosition[1]-(monster.position[1]-1) > monster.radius:
+            if step == 0 and monster.radiusTo[1]-(monster.position[1]-1) > monster.radius:
                 continue
                 
-            elif step == 1 and (monster.position[0]+1)-monster.spawnPosition[0] > monster.radius:
+            elif step == 1 and (monster.position[0]+1)-monster.radiusTo[0] > monster.radius:
                 continue
                 
-            elif step == 2 and (monster.position[1]+1)-monster.spawnPosition[1] > monster.radius:
+            elif step == 2 and (monster.position[1]+1)-monster.radiusTo[1] > monster.radius:
                 continue
                 
-            elif step == 3 and monster.spawnPosition[0]-(monster.position[0]-1) > monster.radius:
+            elif step == 3 and monster.radiusTo[0]-(monster.position[0]-1) > monster.radius:
                 continue
                 
             badDir.append(step)
