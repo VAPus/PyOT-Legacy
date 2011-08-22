@@ -13,10 +13,12 @@ loginMaxConnections = 20
 gameMaxConnections = 100
 
 # SQL:
-sqlModule = "MySQLdb" # Can be "MySQLdb" or "sqlite3"
+sqlModule = "MySQLdb" #"MySQLdb" # Can be "MySQLdb" (Mysql), "pymysql" (Mysql using ctypes, slower on CPython) or "sqlite3"
 sqlUsername = "root"
 sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
+sqlHost = "localhost"
+sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # Versions:
 versionMin = 900

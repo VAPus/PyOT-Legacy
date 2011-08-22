@@ -14,7 +14,21 @@ def connect():
         MySQLdb.converters.conversions[FIELD_TYPE.DECIMAL] = autoFloat
         MySQLdb.converters.conversions[FIELD_TYPE.NEWDECIMAL] = autoFloat
         
-        return adbapi.ConnectionPool(config.sqlModule, host="localhost",db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
+        return adbapi.ConnectionPool(config.sqlModule, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
+
+    elif config.sqlModule == "pymysql": # This module is indentical, but uses a diffrent name
+        from pymysql.cursors import DictCursor
+        from pymysql.constants import FIELD_TYPE
+        import pymysql.converters
+        
+        def autoFloat(s):
+            return float(s) if '.' in s else int(s)
+
+        pymysql.converters.conversions[FIELD_TYPE.LONG] = int
+        pymysql.converters.conversions[FIELD_TYPE.DECIMAL] = autoFloat
+        pymysql.converters.conversions[FIELD_TYPE.NEWDECIMAL] = autoFloat
+        
+        return adbapi.ConnectionPool(config.sqlModule, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=pymysql.converters.conversions)
 
     elif config.sqlModule == "sqlite3":
         import sqlite3
