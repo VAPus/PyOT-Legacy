@@ -42,7 +42,6 @@ class TibiaPlayer(Creature):
         level = 0
         bit = 32
         cache = 2**bit
-        print self.data["experience"]
         while bit:
             if config.totalExpFormula(level + cache) > self.data["experience"]:
                 bit -= 1
@@ -435,7 +434,7 @@ class TibiaPlayer(Creature):
                 level += 1
             if level:
                 self.setLevel(self.data["level"]-level)            
-
+        self.refreshStatus()
     # Soul
     def soulGain(self):
         def doSoulGain(self, gainOverX):

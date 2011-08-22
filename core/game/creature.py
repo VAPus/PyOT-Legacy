@@ -378,10 +378,12 @@ class Creature(object):
         return dmg
         
     def onHit(self, by, dmg, type):
+        self.lastDamager = by
+
         if by.isPlayer():
             if by.modes[1] == game.enum.BALANCED:
                 dmg = dmg / 0.75
-            elif by.modes[1] == game.enum.DEFENCIVE:
+            elif by.modes[1] == game.enum.DEFENSIVE:
                 dmg = dmg / 0.5
                 
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
@@ -417,7 +419,9 @@ class Creature(object):
 
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
-            
+        
+        
+        
     def onSpawn(self):
         pass # To be overrided
         
