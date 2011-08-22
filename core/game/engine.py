@@ -89,9 +89,9 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
         creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
     except:
         # Just have to assume he goes down?
-        # First a hack
-        creature.NO_STAIRHOP = True
-        handleAutoWalking(creature, walkPatterns, callback, 1)
+        pos = positionInDirection(creature.position, walkPatterns[0], 2)
+        pos[2] += 1
+        creature.teleport(pos)
         
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
@@ -253,28 +253,28 @@ def getCreatureList(pos, radius=(8,6), extra=[], ignore=[]):
 getSpectators = getSpectatorList
 
 # Calculate new position by direction
-def positionInDirection(nposition, direction):
+def positionInDirection(nposition, direction, amount=1):
     position = nposition[:] # Important not to remove the : here, we don't want a reference!
     if direction == 0:
-        position[1] = nposition[1] - 1
+        position[1] = nposition[1] - amount
     elif direction == 1:
-        position[0] = nposition[0] + 1
+        position[0] = nposition[0] + amount
     elif direction == 2:
-        position[1] = nposition[1] + 1
+        position[1] = nposition[1] + amount
     elif direction == 3:
-        position[0] = nposition[0] - 1
+        position[0] = nposition[0] - amount
     elif direction == 4:
-        position[1] = nposition[1] + 1
-        position[0] = nposition[0] - 1
+        position[1] = nposition[1] + amount
+        position[0] = nposition[0] - amount
     elif direction == 5:
-        position[1] = nposition[1] + 1
-        position[0] = nposition[0] + 1
+        position[1] = nposition[1] + amount
+        position[0] = nposition[0] + amount
     elif direction == 6:
-        position[1] = nposition[1] - 1
-        position[0] = nposition[0] - 1
+        position[1] = nposition[1] - amount
+        position[0] = nposition[0] - amount
     elif direction == 7:
-        position[1] = nposition[1] - 1
-        position[0] = nposition[0] + 1
+        position[1] = nposition[1] - amount
+        position[0] = nposition[0] + amount
     return position
 def updateTile(pos, tile):
     stream = TibiaPacket(0x69)

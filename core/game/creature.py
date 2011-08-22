@@ -177,7 +177,6 @@ class Creature(object):
             return
                     
         # New Tile
-        print position
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
