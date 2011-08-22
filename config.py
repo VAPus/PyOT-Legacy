@@ -16,7 +16,7 @@ gameMaxConnections = 100
 sqlModule = "MySQLdb" #"MySQLdb" # Can be "MySQLdb" (Mysql), "pymysql" (Mysql using ctypes, slower on CPython) or "sqlite3"
 sqlUsername = "root"
 sqlPassword = ""
-sqlDatabase = "vapusaac" # Either a DB name, or file for sqlite3
+sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 sqlSocket = "/var/run/mysqld/mysqld.sock"
 
