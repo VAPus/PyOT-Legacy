@@ -66,7 +66,7 @@ class Creature(object):
         self.outfit = [self.data["looktype"], self.data["lookhead"], self.data["lookbody"], self.data["looklegs"], self.data["lookfeet"]]
         self.mount = 0
         self.mounted = 0
-        self.addon = 0
+        self.addon = self.data["lookaddons"]
         self.action = None
         self.lastAction = 0
         self.lastStep = 0
@@ -177,6 +177,7 @@ class Creature(object):
             return
                     
         # New Tile
+        print position
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
@@ -255,7 +256,7 @@ class Creature(object):
         # Send to everyone   
         if not spectators:
             spectators = getSpectators(position)
-
+            
         for spectator in spectators:
             streamX = stream
             if not spectator:
@@ -378,6 +379,12 @@ class Creature(object):
         return dmg
         
     def onHit(self, by, dmg, type):
+        if by.isPlayer():
+            if by.modes[1] == game.enum.BALANCED:
+                dmg = dmg / 0.75
+            elif by.modes[1] == game.enum.DEFENCIVE:
+                dmg = dmg / 0.5
+                
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
         self.modifyHealth(dmg)
@@ -634,3 +641,6 @@ class Creature(object):
         self.targetMode = 2
         game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
         self.target.scripts["onNextStep"].append(self.__followCallback)
+
+    def playerSay(self, player, say, channel):
+        pass # Override me

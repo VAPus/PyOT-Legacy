@@ -238,7 +238,11 @@ for xItem in dom.getElementsByTagName("item"):
          key = attr.getAttribute("key")
          if key == 'count':
              key = 'turns'
-
+         elif key == "extradef":
+             key = "defence"
+         elif key == "defense":
+             key = "defence"
+             
          try:
             prep[key] = int(attr.getAttribute("value"))
          except:
@@ -253,7 +257,10 @@ for xItem in dom.getElementsByTagName("item"):
                  key = attr.getAttribute("key")
                  if key == 'count':
                      key = 'turns'
-
+                 elif key == "extradef":
+                     key = "defence"
+                 elif key == "defense":
+                     key = "defence"
                  try:
                     data[int(x)][key] = int(attr.getAttribute("value"))
                  except:

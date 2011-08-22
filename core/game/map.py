@@ -8,14 +8,15 @@ import scriptsystem
 from collections import deque
 import config
 
-PACKSIZE = 0
+PACKSIZE = 4
 
 def ZPack(level, x, y):
     return level + (x << 4) + (y << PACKSIZE)
     
 def getTile(pos):
+    zp = ZPack(pos[2], pos[0], pos[1]) 
     try:
-        t = knownMap[ ZPack(pos[2], pos[0], pos[1]) ]
+        t = knownMap[zp ]
         if t:
             return t
         else:
@@ -23,7 +24,7 @@ def getTile(pos):
     except:
         loadTiles(pos[0], pos[1])
         try:
-            return knownMap[ ZPack(pos[2], pos[0], pos[1]) ]
+            return knownMap[ zp ]
         except:
             return None
 def placeCreature(creature, pos):
@@ -176,7 +177,7 @@ while True:
         
     else:
         break
-PACKSIZE += 4        
+#PACKSIZE += 4        
 """if config.useNumpy:
     from numpy import empty
     knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
@@ -190,10 +191,10 @@ sectors = []
 # Ops codes
 class S(object):
     __slots__ = ('base', 'radius', 'errors')
+    errors = []
     def __init__(self, x,y,z=None,radius=5): # z isn't used.
         self.base = (x,y) # Constant
         self.radius = radius
-        self.errors = []
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
@@ -205,14 +206,6 @@ class S(object):
                 self.errors.append(name)
         return self
         
-    """def MM(self, name, *argc):
-        try:
-            for count in xrange(0, len(argc), 2):
-                game.monster.getMonster(name).spawn(self, [argc[count],argc[count+1],self.base[2]])
-
-        except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-        return self"""
         
     def N(self, name,x,y,z=7, spawnTime=None):
         #try:
@@ -268,7 +261,9 @@ def loadTiles(x,y, walk=True):
     sectorY = int(y / data.map.info.sectorSize[1])
     
     load(sectorX, sectorY)
-    
+
+def __loadOp(code): exec(code)
+
 def load(sectorX, sectorY):
     sectorSum = (sectorX << 15) + sectorY
     ybase = sectorY*data.map.info.sectorSize[1]
@@ -285,6 +280,7 @@ def load(sectorX, sectorY):
     
     # Attempt to load a cached file
     l = None
+    m = None
     try:
         exec(marshal.loads(open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb").read()))
     except:
@@ -295,34 +291,35 @@ def load(sectorX, sectorY):
         marshal.dump(compiled, open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb'), 2)
         exec(compiled)
     
-    localItems = game.item.items # Prevent a bit of a lookup
-    for mz in m:
-        currZ = mz[0]
-        
-        for i,x in enumerate(mz[1]):
-            var = currZ + ((i+xbase) << 4)
-            for y,tile in enumerate(x):
-                if tile:
-                    zpacked = var + ((y+ybase) << PACKSIZE)
-                        
-                    if localItems[tile.things[0].itemId]["a"] & 1:
-                        if config.stackTiles:
-                            code = 0
-                            por = 0
-                            for item in tile.things:
-                                code += item.itemId << por
-                                por += 14
-                            if not code in dummyTiles:
-                                dummyTiles[code] = tile
-                            knownMap[zpacked] = dummyTiles[code]
+    if m:
+        localItems = game.item.items # Prevent a bit of a lookup
+        for mz in m:
+            currZ = mz[0]
+            
+            for i,x in enumerate(mz[1]):
+                var = currZ + ((i+xbase) << 4)
+                for y,tile in enumerate(x):
+                    if tile:
+                        zpacked = var + ((y+ybase) << PACKSIZE)
+                            
+                        if localItems[tile.things[0].itemId]["a"] & 1:
+                            if config.stackTiles:
+                                code = 0
+                                por = 0
+                                for item in tile.things:
+                                    code += item.itemId << por
+                                    por += 14
+                                if not code in dummyTiles:
+                                    dummyTiles[code] = tile
+                                knownMap[zpacked] = dummyTiles[code]
+                            else:
+                                knownMap[zpacked] = tile
                         else:
-                            knownMap[zpacked] = tile
-                    else:
-                        knownMap[zpacked] = Tile(tile.things[:], tile.itemCount)                  
+                            knownMap[zpacked] = Tile(tile.things[:], tile.itemCount)                  
             
 
     if l:    
-        threads.deferToThread(l)
+        threads.deferToThread(__loadOp, l)
         
     # Do callbacks
     """m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))

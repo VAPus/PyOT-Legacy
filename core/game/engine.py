@@ -193,10 +193,12 @@ def getSpectatorList(pos, radius=(8,6), extra=[], ignore=[], cache=True):
             if creature.creatureType == 0:
                 players.append(creature.client)
 
+    PACKSIZE = game.map.PACKSIZE 
     for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+        zpc = pos[2] + (x << 4)
         for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
             try:
-                zp = game.map.ZPack(pos[2], x, y)
+                zp = zpc + (y << PACKSIZE)
                 for creature in game.map.knownMap[zp].creatures():
                     if creature.creatureType == 0 and not creature in ignore:
                         players.append(creature.client)
@@ -209,6 +211,25 @@ def getSpectatorList(pos, radius=(8,6), extra=[], ignore=[], cache=True):
     if not ignore:
         spectatorList[zpc] = players
     return players
+    
+def getCreatureList(pos, radius=(8,6), extra=[], ignore=[]):
+    creatures = []
+
+    if extra:
+        for creature in extra:
+            creatures.append(creature)
+    PACKSIZE = game.map.PACKSIZE 
+    for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+        zpc = pos[2] + (x << 4)
+        for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
+            try:
+                zp = zpc + (y << PACKSIZE)
+                for creature in game.map.knownMap[zp].creatures():
+                    if not creature in ignore:
+                        creatures.append(creature)
+            except:
+                pass # Tile isn't loaded
+    return creatures    
 
 # Spectator list using yield
 """def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):

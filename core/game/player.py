@@ -148,7 +148,10 @@ class TibiaPlayer(Creature):
         stream.uint32(self.data["capasity"] * 100) # TODO: Free Capasity
         stream.uint32(self.data["capasity"] * 100) # TODO: Cap
         stream.uint64(self.data["experience"]) # TODO: Virtual cap? Experience
-        stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
+        if self.data["level"] > 0xFFFF:
+            stream.uint16(0xFFFF)
+        else:
+            stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
         stream.uint8(math.ceil(float(config.levelFormula(self.data["level"]+1)) / self.data["experience"])) # % to next level, TODO
         stream.uint16(self.data["mana"]) # mana
         stream.uint16(self.data["manamax"]) # mana max
@@ -836,6 +839,11 @@ class TibiaPlayer(Creature):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
 
+    def openPrivateChannel(self, between):
+        stream = TibiaPacket(0xAD)
+        stream.string(between.name())
+        stream.send(self.client)
+        
     # Death stuff
     def sendReloginWindow(self, percent=0):
         stream = TibiaPacket(0x28)
@@ -860,6 +868,7 @@ class TibiaPlayer(Creature):
             pass
         game.engine.updateTile(self.position, tile)
         self.sendReloginWindow()
+        
     def onSpawn(self):
         if not self.data["health"]:
             self.data["health"] = self.data["healthmax"]
@@ -867,7 +876,32 @@ class TibiaPlayer(Creature):
             
             import data.map.info
             self.teleport(data.map.info.towns[self.data['town_id']][1])
-        
+
+    # Damage calculation:
+    def damageToBlock(self, dmg, type):
+        if type == game.enum.MELEE:
+            # Armor and defence
+            armor = 0
+            defence = 0
+            for item in self.inventory:
+                armor += item.armor
+                defence += item.defence
+            
+            # Reduce armor to fit action + set defence still
+            defRate = 10
+            if self.modes[1] == game.enum.OFFENSIVE:
+                armor = armor * 0.5
+                defRate = 5
+            elif self.modes[1] == game.enum.BALANCED:
+                armor = armor * 0.75
+                defRate = 7
+                
+            # Recalculate damage by defence rate
+            dmg = dmg - ((defence * defRate) / 100.0) - (dmg / 100) * armor
+                
+            return dmg - armor
+        return dmg
+            
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -877,21 +911,30 @@ class TibiaPlayer(Creature):
             
         text = packet.string()
         def endCallback():
-	  if len(text) > config.maxLengthOfSay:
-	      self.message("Message too long")
-	      return
-	  log.msg("chat  type %d" % channelType)
-	  stream = TibiaPacket(0xAA)
-	  stream.uint32(1)
-	  stream.string(self.data["name"])
-	  stream.uint16(self.data["level"])
-	  stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
-	  if channelId:
-	      stream.uint16(channelId)
-	  else:
-	      stream.position(self.position)
-	  stream.string(text)
-	  stream.send(self.client)
+            if len(text) > config.maxLengthOfSay:
+                self.message("Message too long")
+                return
+            log.msg("chat  type %d" % channelType)
+            stream = TibiaPacket(0xAA)
+            stream.uint32(1)
+            if self.data["level"] >= 0xFFFF:
+                stream.string("%s [%d]" % (self.data["name"], self.data["level"]))
+                stream.uint16(0)
+            else:
+                stream.string(self.data["name"])
+                stream.uint16(self.data["level"])
+                
+            stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
+            if channelId:
+                print channelId
+                stream.uint16(channelId)
+            else:
+                stream.position(self.position)
+            stream.string(text)
+            stream.send(self.client)
+            
+            for creature in game.engine.getCreatureList(self.position):
+                creature.playerSay(self, text, channelId)
 
         def part1():
             game.scriptsystem.get("talkaction").run(text, self, endCallback, text=text)

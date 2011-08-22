@@ -102,7 +102,7 @@ class ThingScripts(object):
                         self.scripts[xid] = [func]
                     else:
                         self.scripts[xid].append(func)                
-            elif type(id) != int:
+            elif type(id) not in (int, str):
                 # This ensures we remove the script object if the object disappear
                 id = weakref.ref(id, self.unregAll) 
                 
@@ -158,7 +158,6 @@ class ThingScripts(object):
     def _run(self, thing, creature, end, returnVal, **kwargs):
         ok = True
         
-        
         for weakthing in self.thingScripts:
             if weakthing() == thing:
                 for script in self.thingScripts[weakthing][:]:
@@ -206,6 +205,58 @@ class ThingScripts(object):
             return end()
         elif returnVal:
             return ok if type(ok) != bool else None
+
+class CreatureScripts(ThingScripts):
+    def _run(self, thing, creature, end, returnVal, **kwargs):
+        ok = True
+        
+        for weakthing in self.thingScripts:
+            if weakthing() == thing:
+                for script in self.thingScripts[weakthing][:]:
+                    func = script()
+                    if func:
+                        ok = func(creature=creature, creature2=thing, **kwargs)
+                        if not ok is not False:
+                            break
+                    else:
+                        try:
+                            self.thingScripts[weakthing].remove(script) 
+                        except:
+                            pass
+            elif weakthing() == None:
+                del self.thingScripts[weakthing]
+        if ok and thing.thingId() in self.scripts:
+            for script in self.scripts[thing.thingId()][:]:
+                func = script()
+
+                if func:
+                    ok = func(creature=creature, creature2=thing, **kwargs)
+                    if not ok is not False:
+                        break
+                else:
+                    try:
+                        self.scripts[thing.thingId()].remove(script) 
+                    except:
+                        pass   
+
+        if ok:
+            for aid in thing.actionIds():
+                if aid in self.scripts:
+                    for script in self.scripts[aid][:]:
+                        func = script()
+                        if func:
+                            ok = func(creature=creature, creature2=thing, **kwargs)
+                            if not ok is not False:
+                                break
+                        else:
+                            try:
+                                self.scripts[aid].remove(script) 
+                            except:
+                                pass   
+        if not returnVal and end and ok is not False:
+            return end()
+        elif returnVal:
+            return ok if type(ok) != bool else None
             
 # All global events can be initialized here
 globalScripts["talkaction"] = TriggerScripts()
@@ -219,6 +270,7 @@ globalScripts["walkOff"] = ThingScripts()
 globalScripts["preWalkOn"] = ThingScripts()
 globalScripts["addMapItem"] = ThingScripts()
 globalScripts["lookAt"] = ThingScripts()
+globalScripts["playerSayTo"] = CreatureScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)

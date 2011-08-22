@@ -124,9 +124,16 @@ class Map(object):
             self.area[level][x][y] = [thing]
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
-        self._level(thing.level)
         try:
-            self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
+            self._level(thing.level)
+        except:
+            pass
+        
+        try:
+            if isinstance(thing, Tile):
+                self.area[thing.pos[2]][thing.pos[0]][thing.pos[1]] = thing.area
+            else:
+                self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
         except:
             if USE_NUMPY:
                 raise Exception("Out of map!")
@@ -331,7 +338,7 @@ class Map(object):
                         except:
                             print "Bug"            """
                 if extras:
-                    output += "\ndef l():"+';'.join(extras)
+                    output += '\nl="%s"' % ';'.join(extras)
                 if output != "m=()":
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:
                         f.write(output)
@@ -430,22 +437,22 @@ class Area(object):
             self.area[offset][(offset*-1)-1][self.level] = behavior(self.area[offset][(offset*-1)-1][self.level], southewst if isinstance(southwest, tuple) else [southwest])     
 
 class Tile(object):
-    __slots__ = ('x', 'y', 'level', 'area')
+    __slots__ = ('area', 'pos')
     def __init__(self, x,y, ground=100, level=7):
-        self.x = x
-        self.y = y
-        self.level = level
+        self.pos = (x,y,level)
+        
         if isinstance(ground, int):
-            self.area = {x: {y: {level: [Item(ground)]}}}
+            self.area = [Item(ground)]
         elif ground:
-            self.area = {x: {y: {level: [ground]}}}
+            self.area = [ground]
         else:
-            self.area = {x: {y: {level: []}}}
+            self.area = []
+            
     def add(self, thing):
-        self.area[self.x][self.y][self.level].append(thing)
+        self.area.append(thing)
         
     def get(self): # Unique for tiles i presume
-        return self.area[self.x][self.y][self.level]
+        return self.area
         
 ### Things
 class Item(object):
@@ -489,10 +496,10 @@ class Spawn(object):
         self.cret = []
         self.center = centerPoint
     def monster(self, name,x,y,z):
-        self.cret.append("M('%s',%d,%d%s)" % (name, x, y, ',%d'%z if z != 7 else ''))
+        self.cret.append("M('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
         
     def npc(self, name,x,y,z):
-        self.cret.append("N('%s',%d,%d%s)" % (name, x, y, ',%d'%z if z != 7 else ''))
+        self.cret.append("N('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
         
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
