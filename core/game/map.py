@@ -189,17 +189,20 @@ sectors = []
 
 # Ops codes
 class S(object):
-    __slots__ = ('base', 'radius')
+    __slots__ = ('base', 'radius', 'errors')
     def __init__(self, x,y,z=None,radius=5): # z isn't used.
         self.base = (x,y) # Constant
         self.radius = radius
+        self.errors = []
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
             game.monster.getMonster(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+            if not name in self.errors:
+                log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+                self.errors.append(name)
         return self
         
     """def MM(self, name, *argc):
@@ -212,11 +215,11 @@ class S(object):
         return self"""
         
     def N(self, name,x,y,z=7, spawnTime=None):
-        try:
-            game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+        #try:
+        game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
-        except:
-            log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        # except:
+        #    log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
         return self
         
 bindconstant.bind_all(S)

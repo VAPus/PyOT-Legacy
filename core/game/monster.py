@@ -133,6 +133,9 @@ class Monster(Creature):
         
     def yell(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_YELL):
         return Creature.yell(self, message, messageType)
+
+    def description(self):
+        return "You see %s" % self.base.data["description"]
         
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain):
@@ -163,7 +166,7 @@ class MonsterBase(CreatureBase):
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.5, radius=5, radiusTo=None):
         if spawnDelay:
-            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0)
+            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
         else:
             monster = Monster(self, position, None)
             if spawnTime:
@@ -472,6 +475,7 @@ def genMonster(name, look, description="", brain="default"):
     data["looktype"] = look[0]
     data["corpse"] = look[1]
     data["name"] = name
+    data["description"] = description or "a %s." % name
     # Then monster only data
     monsters[name] = MonsterBase(data, brains[brain])
 

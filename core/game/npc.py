@@ -22,6 +22,9 @@ class NPC(Creature):
         self.creatureType = 2
         self.spawnPosition = position[:]
         
+    def description(self):
+        return "You see %s" % self.base.data["description"]
+        
 class NPCBase(CreatureBase):
     def __init__(self, data):
         self.data = data
@@ -32,12 +35,16 @@ class NPCBase(CreatureBase):
         self.experience = 0
         self.intervals = {}
         
-    def spawn(self, position, place=True, spawnDelay=0.5):
+    def spawn(self, position, place=True, spawnDelay=0.5, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
-            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0)
+            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:
             npc = NPC(self, position, None)
-
+            npc.radius = radius
+            if not radiusTo:
+                npc.radiusTo = (position[0], position[1])
+            else:
+                npc.radiusTo = radiusTo
             if place:
                 try:
                     stackpos = game.map.getTile(position).placeCreature(npc)
@@ -78,11 +85,12 @@ def genNPC(name, look, description=""):
     data["lookhead"] = look[1]
     data["lookbody"] = look[2]
     data["looklegs"] = look[3]
-    data["corpse"] = look[4]
+    data["lookfeet"] = look[4]
+    data["corpse"] = look[5]
     data["health"] = 150
     data["healthmax"] = 150
     data["name"] = name
-    
+    data["description"] = description or "%s." % name
     
     # Then npc only data
     npcs[name] = NPCBase(data)

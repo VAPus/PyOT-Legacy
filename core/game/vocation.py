@@ -43,6 +43,9 @@ class Vocation(object):
         
     def mlevelConstant(self, constant):
         self.mlevel = constant
+    
+    def description(self):
+        return "a %s" % self.name
         
 def regVocation(id, name, description, health, mana, soulticks):
     vocation = Vocation(id, name, description, health, mana, soulticks)

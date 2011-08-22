@@ -96,6 +96,9 @@ class Creature(object):
     def name(self):
         return self.data["name"]
 
+    def description(self):
+        return "You see a creature."
+        
     def clientId(self):
         return self.cid
 
@@ -113,7 +116,9 @@ class Creature(object):
         if True: # Ignore delay system
             if not ground.speed:
                 ground.speed = 100
-            return (ground.speed / self.speed)
+                
+            postValue = (config.drawingSpeed - 50) / 100
+            return (ground.speed / self.speed) + postValue
         #return delay
 
     def notPossible(self):

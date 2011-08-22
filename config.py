@@ -79,7 +79,6 @@ itemMaxServerId = 12844
 # Drawing speed
 # Drawing speed is the overall delay of all actions, minimum value PyOT is able to handle nicely (on Windows) is 15, while you can easily have it down to 1 on Linux,
 # keep in mind tho that having a value below 10 might cause client out-of-syncs. Default on cipsoft/otserv is 50. We use 25 because we're abit cooler!
-# Notice that we currently don't care to fix value >50
 drawingSpeed = 25
 
 # Formulas

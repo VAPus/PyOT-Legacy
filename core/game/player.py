@@ -94,7 +94,19 @@ class TibiaPlayer(Creature):
 
     def isPlayer(self):
         return True
-        
+
+    def sexPrefix():
+        if self.data["sex"] == 1:
+            return "He"
+        else:
+            return "She"
+            
+    def description(self, isSelf=False):
+        if isSelf:
+            output = "You see yourself. You are %s." % self.getVocation().description()
+        else:
+            output = "You see %s (Level %d). %s is %s." % (self.name, self.data["level"], self.sexPrefix(), self.getVocation().description())
+        return output
     def sendFirstPacket(self):
         
         stream = TibiaPacket(0x0A)
@@ -1115,13 +1127,19 @@ class TibiaPlayer(Creature):
         thing = self.findItem(position, stackpos)     
         
         if thing:
-            def afterScript():
-                extra = ""
-                # TODO propper description handling
-                if config.debugItems:
-                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
-
+            if isinstance(thing, game.item.Item):
+                def afterScript():
+                    extra = ""
+                    # TODO propper description handling
+                    if config.debugItems:
+                        extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+                    self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
+            elif isinstance(thing, Creature):
+                def afterScript():
+                    if self == thing:
+                        self.message(thing.description(True))
+                    else:
+                        self.message(thing.description())
             game.scriptsystem.get('lookAt').run(thing, self, afterScript, position=position, stackpos=stackpos)
         else:
             self.notPossible()

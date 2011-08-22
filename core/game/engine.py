@@ -174,7 +174,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     
 # Spectator list
 spectatorList = {}
-def getSpectatorList(pos, radius=(9,7), extra=[], ignore=[], cache=True):
+def getSpectatorList(pos, radius=(8,6), extra=[], ignore=[], cache=True):
     # At the moment, we only do one floor
     zpc = game.map.ZPack(pos[2], pos[0], pos[1])
     if zpc in spectatorList:
