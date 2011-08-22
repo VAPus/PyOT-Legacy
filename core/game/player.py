@@ -884,8 +884,9 @@ class TibiaPlayer(Creature):
             armor = 0
             defence = 0
             for item in self.inventory:
-                armor += item.armor
-                defence += item.defence
+                if item:
+                    armor += item.armor or 0
+                    defence += item.defence or 0
             
             # Reduce armor to fit action + set defence still
             defRate = 10

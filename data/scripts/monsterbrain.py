@@ -2,6 +2,8 @@ import game.monster
 import game.engine
 import random
 import game.enum
+import time
+import config
 
 def defaultBrainFeaturePriority(self, monster):
         # Walking
