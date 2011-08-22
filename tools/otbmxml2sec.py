@@ -394,9 +394,11 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     baseY = int(xSpawn.getAttribute("centery"))
     baseZ = int(xSpawn.getAttribute("centerz"))
     radius = int(xSpawn.getAttribute("radius"))
+    spawn = "s = Spawn(%d,(%d,%d))" % (radius, baseX, baseY)
+    spawnSectors = []
+    spawnData = {}
     
-    _output_.append("s = Spawn(%d)" % (radius))
-    deleteMe = True
+
     for xMonster in xSpawn.getElementsByTagName("monster"):
         monsterX = int(xMonster.getAttribute("x"))
         monsterY = int(xMonster.getAttribute("y"))
@@ -405,8 +407,13 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             print("UNSUPPORTED spawns!")
         
         monsterName = xMonster.getAttribute("name") 
-        deleteMe = False
-        _output_.append("s.monster(\"%s\",%d,%d,%d)" % (monsterName, monsterX, monsterY, monsterZ))    
+
+        sector = (int((baseX+monsterX)/32), int((baseY+monsterY)/32))
+        if not sector in spawnSectors:
+            spawnSectors.append(sector)
+            spawnData[sector] = []
+        
+        spawnData[sector].append("s.monster(\"%s\",%d,%d,%d)" % (monsterName, monsterX, monsterY, monsterZ))    
 
     for xMonster in xSpawn.getElementsByTagName("npc"):
         npcX = int(xMonster.getAttribute("x"))
@@ -416,13 +423,17 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             print("UNSUPPORTED spawns!")
         
         npcName = xMonster.getAttribute("name") 
-        deleteMe = False
-        _output_.append("s.npc(\"%s\",%d,%d,%d)" % (npcName, npcX, npcY, npcZ))  
+
+        sector = (int((baseX+npcX)/32), int((baseY+npcY)/32))
+        if not sector in spawnSectors:
+            spawnSectors.append(sector)
+            spawnData[sector] = []
+        spawnData[sector].append("s.npc(\"%s\",%d,%d,%d)" % (npcName, npcX, npcY, npcZ))  
         
-    if deleteMe:
-        del _output_[-1]
-    else:
-        _output_.append("m.addTo(%d, %d, s, %d)" % (baseX, baseY, baseZ))
+    for entry in spawnSectors:
+        _output_.append(spawn)
+        _output_.append('\n'.join(spawnData[entry]))
+        _output_.append("m.addTo(%d, %d, s, %d)" % ((entry[0]*32)+16, (entry[1]*32)+16, baseZ))
         
 print("---Done with spawns")
 

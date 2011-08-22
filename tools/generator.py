@@ -167,8 +167,8 @@ class Map(object):
         print("--Begin compilation")
         areaX = 0
         areaY = 0
-        toX = round(self.size[0] / areas[0])
-        toY = round(self.size[1] / areas[1])
+        toX = int(self.size[0] / areas[0])
+        toY = int(self.size[1] / areas[1])
         nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
@@ -483,10 +483,11 @@ class RSItem(object):
         return ('I(%d)' % random.choice(self.ids), extras) 
 
 class Spawn(object):
-    __slots__ = ('radius', 'cret')
-    def __init__(self, radius):
+    __slots__ = ('radius', 'cret', 'center')
+    def __init__(self, radius, centerPoint):
         self.radius = radius
         self.cret = []
+        self.center = centerPoint
     def monster(self, name,x,y,z):
         self.cret.append("M('%s',%d,%d%s)" % (name, x, y, ',%d'%z if z != 7 else ''))
         
@@ -495,7 +496,7 @@ class Spawn(object):
         
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
-            extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (x, y, ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
+            extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
         return (None, extras)
         
        
