@@ -11,3 +11,4 @@ Polar_Bear.setBehavior(summonable=315, attackable=1, hostile=1, illusionable=315
 Polar_Bear.voices("GROARRR!")
 Polar_Bear.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Polar_Bear.setDefense(10, fire=0.9, earth=1.0, energy=1.05, ice=0.8, holy=1.0, death=1.1, physical=1.0, drown=1.0)
+Polar_Bear.loot( ('bear paw', 1.75, 3), ('ham', 25.25, 2), ('meat', 15, 4), ('polar bear paw', 1) ) 

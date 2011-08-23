@@ -11,3 +11,4 @@ brimstone_bug.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0,
 brimstone_bug.voices("Chrrr!")
 brimstone_bug.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 brimstone_bug.setDefense(40, fire=1.1, earth=0, energy=1.1, ice=1.1, holy=1.1, death=0, physical=1.05, drown=1.0)
+brimstone_bug.loot( ('brimstone fang', 6.5), ('brimstone shell', 8.75), ('lump of earth', 18.25), ('poisonous slime', 45), ('sulphurous stone', 13), ('strong health potion', 8.75), ('strong mana potion', 8.5), ('gold coin', 35, 197), ('magic sulphur', 2), ('stealth ring', 1.5), ('small emerald', 1.3, 4), ('platinum amulet', 0.75)  )

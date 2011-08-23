@@ -11,3 +11,4 @@ War_Wolf.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=420, co
 War_Wolf.voices("Yoooohhuuuu!", "Grrrrrrrr")
 War_Wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 War_Wolf.setDefense(10, fire=1.0, earth=0.8, energy=1.0, ice=1.1, holy=0.9, death=1.08, physical=10, drown=1.0)
+War_Wolf.loot( ('wolf paw', 1.25, 3), ('ham', 14, 2), ('warwolf fur', 2.75), ('1884', 0.55) ) # 1884 is a wolf trophy 

@@ -11,4 +11,4 @@ Wolf.setBehavior(summonable=255, attackable=1, hostile=1, illusionable=255, conv
 Wolf.voices("Yooooohhuuuu!", "Grrrrrrrr")
 Wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Wolf.setDefense(3, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.05, physical=1.0, drown=1.0)
-
+Wolf.loot( ('wolf paw', 1.75, 3), ('meat', 30, 2) )

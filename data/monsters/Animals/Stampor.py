@@ -11,3 +11,4 @@ Stampor.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convi
 Stampor.voices("KRRRRRNG")
 Stampor.setImmunity(1,1,0) # paralyze, invisible, lifedrain
 Stampor.setDefense(3, fire=0.8, earth=1.0, energy=0.8, ice=0.9, holy=0.5, death=0.9, physical=1.0, drown=1.0) # not full correct
+Stampor.loot( ('gold coin', 26.25, 244), ('hollow stampor hoof', 3.5), ('stampor horn', 5.5), ('stampor talon', 11), ('strong health potion', 8), ('knight armor', 1.25), ('war hammer', 1.5), ('small topaz', 6.5, 2), ('strong mana potion', 4, 2), ('platinum coin', 7.75, 2), ('spiked squelcher', 0.525)

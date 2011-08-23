@@ -1,5 +1,5 @@
 import game.monster
-
+# bad
 Thornfire_Wolf = game.monster.genMonster("Thornfire Wolf", (414, 6079), "a thornfire wolf") # unkown yet
 Thornfire_Wolf.setTargetChance(10)
 Thornfire_Wolf.bloodType("blood")

@@ -11,3 +11,4 @@ boar.setBehavior(summonable=465, attackable=1, hostile=1, illusionable=465, conv
 boar.voices("Grunt Grunt, Grunt")
 boar.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 boar.setDefense(3, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
+boar.loot( ('haunch of boar', 15.25, 2 ), ('gold coin', 12.825, 20) )

@@ -11,3 +11,4 @@ bear.setBehavior(summonable=300, attackable=1, hostile=1, illusionable=300, conv
 bear.voices("Grrrr", "Groar")
 bear.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 bear.setDefense(10, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.5, physical=1.0, drown=1.0)
+bear..loot( ('bear paw', 3, 3 ), ('honeycomb', 1.25, 3), ('ham', 9.5, 3), ('meat', 13.25, 4) )

@@ -11,3 +11,4 @@ chicken.setBehavior(summonable=220, attackable=1, hostile=1, illusionable=220, c
 chicken.voices("Cluck Cluck", "Gokgoooook")
 chicken.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 chicken.setDefense(3, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
+chicken.loot( ('egg', 1.75), ('chicken feather', 20.5, 3), ('worm', 6, 3), ('meat', 2.75) )

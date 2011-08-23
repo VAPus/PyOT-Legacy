@@ -11,3 +11,4 @@ Rat.setBehavior(summonable=220, attackable=1, hostile=1, illusionable=220, convi
 Rat.voices("Meep!")
 Rat.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Rat.setDefense(3, fire=1.0, earth=0.75, energy=1.0, ice=1.1, holy=0.9, death=1.1, physical=1.0, drown=1.0)
+Rat.loot( ('cheese', 40), ('worm', 10.5, 3), ('gold coin', 43.75, 4) )
