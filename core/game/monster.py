@@ -266,7 +266,7 @@ class MonsterBase(CreatureBase):
         self.targetDistance = targetDistance
         self.runOnHealth = runOnHealth
         self.targetStrategy = targetStrategy
-        self.attackChange = attackChange
+        self.targetChange = targetChange
         
     def walkAround(self, energy=0, fire=0, poison=0):
         self.ignoreEnergy = energy
