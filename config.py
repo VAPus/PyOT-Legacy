@@ -53,7 +53,9 @@ monsterNeverSkipWalks = True # This makes monsters always calculate a new rute i
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1
-lootInAlphabeticalOrder = True
+lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real tibia
+stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
+stockLootBagId = 1987 # Id of the bags to append
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough

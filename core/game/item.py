@@ -33,9 +33,8 @@ class Container(object):
             return 0
         else:
             for itemX in self.items:
-                if itemX.containerSize:
-                    if itemX.container.placeItemRecursive(item) == 0:
-                        return itemX
+                if itemX.containerSize and itemX.container.placeItemRecursive(item) == 0:
+                    return itemX
 
     def removeItem(self, item):
         return self.items.remove(item)
