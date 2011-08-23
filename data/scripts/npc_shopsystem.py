@@ -4,14 +4,15 @@ greetings = ('hi ', 'hey ', 'hello ', 'hail ')
 farwells = ('bye', 'farewell', 'cya')
 
 def saidTo(creature, creature2, said, channelType, channelId):
-    if not channelId:
+    if channelType == 1:
         ok = False
         for greeting in greetings:
             if greeting+creature2.data["name"] == said:
                 ok = True
                 break
         if ok:
-            creature.openNPCChannel(creature2)
+            creature2.sayTo(creature, "Hello world!")
+            
     elif channelType == 5 and channelId == creature2.name():
         print "This npc heard: %s" % said
 scriptsystem.reg("playerSayTo", 'shop', saidTo)

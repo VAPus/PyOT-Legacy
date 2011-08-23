@@ -539,7 +539,7 @@ class Creature(object):
             
     def say(self, message, messageType=enum.MSG_SPEAK_SAY):
         stream = TibiaPacket(0xAA)
-        stream.uint32(00)
+        stream.uint32(0)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
         stream.uint8(messageType)
@@ -549,13 +549,23 @@ class Creature(object):
 
     def yell(self, message, messageType=enum.MSG_SPEAK_YELL):
         stream = TibiaPacket(0xAA)
-        stream.uint32(00)
+        stream.uint32(0)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
         stream.uint8(messageType)
         stream.position(self.position)
         stream.string(message)
         stream.sendto(getSpectators(self.position, config.yellRange))
+
+    def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
+        stream = TibiaPacket(0xAA)
+        stream.uint32(0)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"] if "level" in self.data else 0)
+        stream.uint8(messageType)
+        stream.position(self.position)
+        stream.string(message)
+        stream.sendto(getSpectators(self.position, config.whisperRange))
         
     def stopAction(self):
         ret = False

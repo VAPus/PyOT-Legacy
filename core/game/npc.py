@@ -40,6 +40,10 @@ class NPC(Creature):
         
     def playerSay(self, player, said, type, channel):
         game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
+
+    def sayTo(self, to, text):
+        id = to.openPrivateChannel(self)
+        to.sendChannelMessage(self, text, game.enum.MSG_NPC_FROM, id)
         
 class NPCBase(CreatureBase):
     def __init__(self, data):

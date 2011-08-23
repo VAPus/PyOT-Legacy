@@ -38,6 +38,7 @@ class TibiaPlayer(Creature):
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
         self.targetChecker = None
         self.openChannels = {}
+        self.idMap = []
         
         vocation = self.getVocation()
         level = 0
@@ -834,21 +835,47 @@ class TibiaPlayer(Creature):
         
         stream.send(self.client)
         channel.addMember(self)
-    
+
+    def openPrivateChannel(self, between):
+        id = 0xFFFF
+        self.openChannels[between.name()] = [id, between]
+        stream = TibiaPacket(0xAC)
+        stream.uint16(id)
+        stream.string(between.name())
+        
+        # Between two for now
+        stream.uint16(2)
+        stream.string(self.name())
+        stream.string(between.name())
+        
+        stream.uint16(0)
+        stream.send(self.client)
+        return id
     def closeChannel(self, id):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
 
-    def openNPCChannel(self, between):
-        if not between.name() in self.openChannels:
-            stream = TibiaPacket(0xAD)
-            stream.string(between.name())
-            stream.send(self.client)
-            self.openChannels[between.name()] = between
-
     def isChannelOpen(self, between):
-        return between in self.openChannels
-        
+        try:
+            return self.openChannels[between.name()]
+        except:
+            return False
+            
+    def sendChannelMessage(self, by, text, type=game.enum.MSG_SPEAK_SAY, channelId=0):
+        print channelId
+        stream = TibiaPacket(0xAA)
+        stream.uint32(1)
+        stream.string(by.data["name"])
+        if by.isPlayer():
+            stream.uint16(by.data["level"])
+        else:
+            stream.uint16(0)
+        stream.uint8(type)
+        #if type in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+        stream.uint16(channelId)
+            
+        stream.string(text)
+        stream.send(self.client)
     def getPrivate(self, name):
         try:
             return self.openChannels[name]
@@ -932,40 +959,36 @@ class TibiaPlayer(Creature):
         if len(text) > config.maxLengthOfSay:
             self.message("Message too long")
             return
+            
+        splits = text.split(" ")
+        if splits[0] == "#y":
+            mode = game.enum.MSG_SPEAK_YELL
+            del splits[0]
+        elif splits[0] == "#w":
+            mode = game.enum.MSG_SPEAK_WHISPER
+            del splits[0]
+        else:
+            mode = channelType
         def endCallback():
-            
-            stream = TibiaPacket(0xAA)
-            stream.uint32(1)
-            if self.data["level"] >= 0xFFFF:
-                stream.string("%s [%d]" % (self.data["name"], self.data["level"]))
-                stream.uint16(0)
-            else:
-                stream.string(self.data["name"])
-                stream.uint16(self.data["level"])
-            
-            if not channelId and not reciever:
-                stream.uint8(enum.MSG_SPEAK_SAY)
-            elif channelId:
-                stream.uint8(enum.MSG_CHANNEL)
-            """elif reciever:
-                stream.uint8(enum.MSG_PRIVATE_FROM)"""
-            if channelId:
-                stream.uint16(channelId)
-            
-            else:
-                stream.position(self.position)
-            stream.string(text)
-            if not reciever:
-                stream.send(self.client)
-            
+            print channelType
+            if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
+                if mode == game.enum.MSG_SPEAK_SAY:
+                    self.say(' '.join(splits[0:]))
+                    
+                elif mode == game.enum.MSG_SPEAK_YELL:
+                    self.yell(' '.join(splits[0:]))
+                
+                elif mode == game.enum.MSG_SPEAK_WHISPER:
+                    self.whisper(' '.join(splits[0:]))
+                    
             for creature in game.engine.getCreatureList(self.position):
                 creature.playerSay(self, text, channelType, channelId or reciever)
 
         def part1():
-            game.scriptsystem.get("talkaction").run(text, self, endCallback, text=text)
+            game.scriptsystem.get("talkaction").run(text, self, endCallback, text=' '.join(splits[0:]))
             
-        if len(text.split(" ")) > 1:
-            game.scriptsystem.get("talkactionFirstWord").run(text.split(" ", 1)[0], self, part1, text=text.split(" ", 1)[1])
+        if len(splits) > 1:
+            game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, part1, text=' '.join(splits[1:]))
         else:
             part1()
 
