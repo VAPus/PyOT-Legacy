@@ -439,7 +439,7 @@ class TibiaPlayer(Creature):
         self.refreshStatus()
     # Soul
     def soulGain(self):
-        def doSoulGain(self, gainOverX):
+        def doSoulGain(gainOverX):
             self.modifySoul(1)
             if self.doingSoulGain - gainOverX >= time.time():
                 game.engine.safeCallLater(gainOverX, doSoulGain, gainOverX)

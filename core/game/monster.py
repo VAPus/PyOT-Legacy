@@ -66,36 +66,38 @@ class Monster(Creature):
         tile = game.map.getTile(self.position)
 
         corpse = game.item.Item(self.base.data["corpse"])
+        print self.base.lootTable
         for loot in self.base.lootTable:
             lenLoot = len(loot)
             if loot[1]*100 > random.randint(0, 10000):
                 lenLoot = len(loot)
+                print loot[0]
                 if lenLoot == 2:
-                    ret = corpse.container.placeItemRecursive(game.item.Item(loot[0], 1))
+                    ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1))
                     
                 elif lenLoot == 3:
                     count = random.randint(1, loot[2])
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            corpse.container.placeItemRecursive(game.item.Item(loot[0], depCount))
+                            corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
                             count -= depCount
                     else:        
-                        ret = corpse.container.placeItemRecursive(game.item.Item(loot[0], count))
+                        ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count))
                         
                 elif lenLoot == 4:
                     count = random.randint(loot[4], loot[2])
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            ret = corpse.container.placeItemRecursive(game.item.Item(loot[0], depCount))
+                            ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
                             count -= depCount
                             
                     else:
-                        ret = corpse.container.placeItemRecursive(game.item.Item(loot[0], count))
+                        ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count))
                         
             elif lenLoot == 4:
-                ret = corpse.container.placeItemRecursive(game.item.Item(loot[0], loot[4]))
+                ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], loot[4]))
             
             if ret != 0:
                 log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
@@ -305,7 +307,14 @@ class MonsterBase(CreatureBase):
     def loot(self, *argc):
         # Convert name to Id here
         for loot in argc:
-            if type(loot[0]) != int:
+            if type(loot[0]) == tuple:
+                loot = list(loot)
+                loots = loot[0][:]
+                loot[0] = []
+                for item in loots:
+                    loot[0].append(game.item.itemNames[item])
+                    
+            elif type(loot[0]) == str:
                 loot = list(loot)
                 loot[0] = game.item.itemNames[loot[0]]
     
