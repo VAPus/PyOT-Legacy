@@ -1345,4 +1345,13 @@ class TibiaPlayer(Creature):
             self.target.scripts["onNextStep"].append(self.__followCallback)
         else:
             self.notPossible()
+
+    def handleUpdateContainer(self, packet):
+        openId = packet.uint8()
         
+        parent = False
+        try:
+            parent = bool(container.parent)
+        except:
+            pass
+        self.openContainer(self.openContainers[openId], parent=parent, update=True)

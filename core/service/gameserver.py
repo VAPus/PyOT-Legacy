@@ -210,6 +210,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType == 0xA2: # Attack
             self.player.handleFollow(packet)
             
+        elif packetType == 0xCA:
+            self.player.handleUpdateContainer(packet)
+            
         elif packetType == 0xD2: # Request outfit
             self.player.outfitWindow()
             
