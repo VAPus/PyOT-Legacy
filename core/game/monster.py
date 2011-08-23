@@ -69,24 +69,25 @@ class Monster(Creature):
         print self.base.lootTable
         for loot in self.base.lootTable:
             lenLoot = len(loot)
-            if loot[1]*100 > random.randint(0, 10000):
+            ret = 0
+            if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
                 lenLoot = len(loot)
-                print loot[0]
+
                 if lenLoot == 2:
                     ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1))
                     
                 elif lenLoot == 3:
-                    count = random.randint(1, loot[2])
+                    count = random.randint(1, loot[2]) * config.lootMaxRate
                     if count > 100:
                         while count:
-                            depCount = min(count, 100)
-                            corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
+                            depCount = min(count, 100) * config.lootMaxRate
+                            ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
                             count -= depCount
                     else:        
                         ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count))
                         
                 elif lenLoot == 4:
-                    count = random.randint(loot[4], loot[2])
+                    count = random.randint(loot[4], loot[2]) * config.lootMaxRate
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
@@ -306,19 +307,46 @@ class MonsterBase(CreatureBase):
         
     def loot(self, *argc):
         # Convert name to Id here
-        for loot in argc:
-            if type(loot[0]) == tuple:
-                loot = list(loot)
-                loots = loot[0][:]
-                loot[0] = []
-                for item in loots:
-                    loot[0].append(game.item.itemNames[item])
-                    
-            elif type(loot[0]) == str:
-                loot = list(loot)
-                loot[0] = game.item.itemNames[loot[0]]
-    
-            self.lootTable.append(loot)
+        if config.lootInAlphabeticalOrder:
+            cache = []
+            for loot in argc:
+                # Id to name
+                if type(loot[0]) == int:
+                    loot = list(loot)
+                    loot[0] = game.item.items[loot[0]]["name"]
+        
+                cache.append(loot)  
+                
+            cache.sort(reverse=True)    
+            
+            for loot in cache:
+                if type(loot[0]) == tuple:
+                    loot = list(loot)
+                    loots = loot[0][:]
+                    loot[0] = []
+                    for item in loots:
+                        loot[0].append(game.item.itemNames[item])
+                        
+                else:
+                    loot = list(loot)
+                    loot[0] = game.item.itemNames[loot[0]]
+        
+                self.lootTable.append(loot)  
+            
+        else:
+            for loot in argc:
+                if type(loot[0]) == tuple:
+                    loot = list(loot)
+                    loots = loot[0][:]
+                    loot[0] = []
+                    for item in loots:
+                        loot[0].append(game.item.itemNames[item])
+                        
+                elif type(loot[0]) == str:
+                    loot = list(loot)
+                    loot[0] = game.item.itemNames[loot[0]]
+        
+                self.lootTable.append(loot)
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):

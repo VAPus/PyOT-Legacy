@@ -50,6 +50,11 @@ monsterWalkBack = False # Walk or Teleport back to spawn point
 monsterWalkPer = 3 # Amount of seconds between walks without target
 monsterNeverSkipWalks = True # This makes monsters always calculate a new rute if it runs into solid tiles etc. Walking will be smooth
 
+# Loot / Drop
+lootDropRate = 1
+lootMaxRate = 1
+lootInAlphabeticalOrder = True
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
