@@ -254,7 +254,7 @@ class MonsterBase(CreatureBase):
     def setSpeed(self, speed):
         self.speed = speed
         
-    def setBehavior(self, summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0):
+    def setBehavior(self, summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetStrategy=0, targetChange=1):
         self.summonable = summonable
         self.attackable = attackable
         self.hostile = hostile
@@ -265,6 +265,8 @@ class MonsterBase(CreatureBase):
         self.pushCreaturse = pushCreatures
         self.targetDistance = targetDistance
         self.runOnHealth = runOnHealth
+        self.targetStrategy = targetStrategy
+        self.attackChange = attackChange
         
     def walkAround(self, energy=0, fire=0, poison=0):
         self.ignoreEnergy = energy
