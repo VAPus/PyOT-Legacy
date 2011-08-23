@@ -38,8 +38,8 @@ class NPC(Creature):
     def actionIds(self):
         return self.base.actions
         
-    def playerSay(self, player, said, channel):
-        game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channel=channel)
+    def playerSay(self, player, said, type, channel):
+        game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
         
 class NPCBase(CreatureBase):
     def __init__(self, data):

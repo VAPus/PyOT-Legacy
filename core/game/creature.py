@@ -645,5 +645,5 @@ class Creature(object):
         game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
         self.target.scripts["onNextStep"].append(self.__followCallback)
 
-    def playerSay(self, player, say, channel):
+    def playerSay(self, player, say, type, channel):
         pass # Override me

@@ -37,6 +37,7 @@ class TibiaPlayer(Creature):
         self.doingSoulGain = False
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
         self.targetChecker = None
+        self.openChannels = {}
         
         vocation = self.getVocation()
         level = 0
@@ -838,10 +839,24 @@ class TibiaPlayer(Creature):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
 
-    def openPrivateChannel(self, between):
-        stream = TibiaPacket(0xAD)
-        stream.string(between.name())
-        stream.send(self.client)
+    def openNPCChannel(self, between):
+        if not between.name() in self.openChannels:
+            stream = TibiaPacket(0xAD)
+            stream.string(between.name())
+            stream.send(self.client)
+            self.openChannels[between.name()] = between
+
+    def isChannelOpen(self, between):
+        return between in self.openChannels
+        
+    def getPrivate(self, name):
+        try:
+            return self.openChannels[name]
+        except:
+            pass
+
+    def notifyPrivateSay(self, sayer, text):
+        pass # Not supported yet
         
     # Death stuff
     def sendReloginWindow(self, percent=0):
@@ -906,15 +921,19 @@ class TibiaPlayer(Creature):
     def handleSay(self, packet):
         channelType = packet.uint8()
         channelId = 0
+        reciever = ""
         if channelType in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
             channelId = packet.uint16()
-            
+        elif channelType in (enum.MSG_PRIVATE_TO, enum.MSG_GAMEMASTER_PRIVATE_TO):
+            reciever = packet.string()
+
         text = packet.string()
+        
+        if len(text) > config.maxLengthOfSay:
+            self.message("Message too long")
+            return
         def endCallback():
-            if len(text) > config.maxLengthOfSay:
-                self.message("Message too long")
-                return
-            log.msg("chat  type %d" % channelType)
+            
             stream = TibiaPacket(0xAA)
             stream.uint32(1)
             if self.data["level"] >= 0xFFFF:
@@ -923,18 +942,24 @@ class TibiaPlayer(Creature):
             else:
                 stream.string(self.data["name"])
                 stream.uint16(self.data["level"])
-                
-            stream.uint8(enum.MSG_CHANNEL if channelId else enum.MSG_SPEAK_SAY)
+            
+            if not channelId and not reciever:
+                stream.uint8(enum.MSG_SPEAK_SAY)
+            elif channelId:
+                stream.uint8(enum.MSG_CHANNEL)
+            """elif reciever:
+                stream.uint8(enum.MSG_PRIVATE_FROM)"""
             if channelId:
-                print channelId
                 stream.uint16(channelId)
+            
             else:
                 stream.position(self.position)
             stream.string(text)
-            stream.send(self.client)
+            if not reciever:
+                stream.send(self.client)
             
             for creature in game.engine.getCreatureList(self.position):
-                creature.playerSay(self, text, channelId)
+                creature.playerSay(self, text, channelType, channelId or reciever)
 
         def part1():
             game.scriptsystem.get("talkaction").run(text, self, endCallback, text=text)
