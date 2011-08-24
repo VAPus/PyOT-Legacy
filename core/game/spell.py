@@ -141,16 +141,26 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
 
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
     def callback(creature, position, effect, strength):
+        tile = game.map.getTile(position)
+
+        if tile == None:
+            return # We don't do this on none 
+            
+        for item in tile.getItems():
+            if item.solid: # or solid tiles
+                return    
+                
         creature.magicEffect(position, effect)
         if strength:
             minDmg, maxDmg = strength
         else:
-            maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-            minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
-        creatures = game.map.getTile(position).creatures()
+            maxDmg = round(-1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round(-1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+            
+        creatures = tile.creatures()
         if creatures:
             for onCreature in creatures:
-                dmg = round(random.randint(round(minDmg), round(maxDmg)))
+                dmg = round(random.randint(minDmg, maxDmg))
                 onCreature.onHit(creature, -1 * dmg, type)
                 onCreature.lastDamager = creature
         
