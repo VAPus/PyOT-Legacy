@@ -388,7 +388,7 @@ class Creature(object):
                 
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
-        self.modifyHealth(dmg)
+        
 	if type == game.enum.MELEE:
         	self.magicEffect(self.position, self.hitEffect())
 
@@ -422,6 +422,8 @@ class Creature(object):
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
         
+        # Modify health
+        self.modifyHealth(dmg)
         
         
     def onSpawn(self):
