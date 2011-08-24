@@ -491,7 +491,7 @@ class TibiaPlayer(Creature):
         self.modes[0] = attack
         
         if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
-            game.engine.autoWalkCreatureTo(self, self.target.position, 0, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
             
         self.modes[1] = chase
@@ -1288,9 +1288,12 @@ class TibiaPlayer(Creature):
             if not self.inventory[5]:
                 self.message("Fist is not supported, targetcheck failed!")
             else:
-                dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
                 
-                self.target.onHit(self, dmg, game.enum.PHYSICAL)
+                if not self.target.data["health"]:
+                    self.target = None
+                else:
+                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
+                    self.target.onHit(self, dmg, game.enum.PHYSICAL)
                 
                 
         if self.target:        
@@ -1316,7 +1319,7 @@ class TibiaPlayer(Creature):
             self.notPossible()
             
         if self.modes[1] == game.enum.CHASE:
-            game.engine.autoWalkCreatureTo(self, self.target.position, 0, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
 
         try:
@@ -1327,7 +1330,7 @@ class TibiaPlayer(Creature):
         
     def __followCallback(self, who):
         if self.target == who:
-            game.engine.autoWalkCreatureTo(self, self.target.position, 0, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
             
     def handleFollow(self, packet):
@@ -1341,7 +1344,7 @@ class TibiaPlayer(Creature):
         if cid in allCreatures:
             self.target = allCreatures[cid]
             self.targetMode = 2
-            game.engine.autoWalkCreatureTo(self, self.target.position, 0, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
         else:
             self.notPossible()

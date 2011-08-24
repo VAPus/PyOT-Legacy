@@ -445,7 +445,10 @@ class MonsterBrain(object):
                 
             elif step == 3 and monster.radiusTo[0]-(monster.position[0]-1) > monster.radius:
                 continue
-                
+            
+            elif monster.target and game.enine.positionInDirection(monster.position, step) == monster.target.position:
+                continue
+            
             badDir.append(step)
             def success(result):
                 monster.lastStep = time.time()

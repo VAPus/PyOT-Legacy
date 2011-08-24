@@ -212,6 +212,10 @@ class TibiaPacket(object):
         
         if not isSolid:
             for creature in tile.creatures():
+                if creature == None:
+                    del creature
+                    continue
+                
                 known = False
                 if player:
                     known = creature.cid in player.knownCreatures

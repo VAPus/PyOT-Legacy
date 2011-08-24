@@ -105,7 +105,7 @@ def testContainer(creature, thing, position, stackpos, index):
 
         # Opened from ground, close it on next step :)
         if position[0] != 0xFFFF:
-            creature.scripts["onNextStep"].append(lambda who: creature.closeContainer(thing))
+            creature.scripts["onNextStep"].append(lambda who: thing.opened and creature.closeContainer(thing))
     else:
         creature.closeContainer(thing)
 
