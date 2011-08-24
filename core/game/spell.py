@@ -15,12 +15,12 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = (0,0),
 
-AREA_WAVE4 = game.enum.TARGET_DIRECTION, (0, 1), \
-            (-1, 2), (0, 2), (1, 2), \
-            (-1, 3), (0, 3), (1, 3), \
-            (-2, 4), (-1, 4), (0, 4), (1, 4), (2, 4)
+AREA_WAVE4 = game.enum.TARGET_DIRECTION, [0], \
+            [-1, 0, 1], \
+            [-1, 0, 1], \
+            [-2, -1, 0, 1, 2]
             
-AREA_WAVE5 = game.enum.TARGET_DIRECTION,(0, 1), \
+AREA_WAVE5 = game.enum.TARGET_DIRECTION, (0, 1), \
              (0, 2), \
              (-1, 3), (0, 3), (1, 3), \
              (-1, 4), (0, 4), (1, 4), \
@@ -48,30 +48,40 @@ def calculateAreaDirection(position, direction, area):
     positions = []
 
     if direction == 0 or area[0] == game.enum.TARGET_CASTER_AREA: # North:
-        for a in area[1:]:
-            x = position[0] - a[0]
-            y = position[1] - a[1]
-            
-            positions.append([x,y, position[2]])
+        yp = 1
+        for yo in area[1:]:
+            for xp in yo:
+                x = position[0] - xp
+                y = position[1] - yp
+                positions.append([x,y, position[2]])
+            yp += 1
+                
             
     elif direction == 1: # east
-        for a in area[1:]:
-            x = position[0] + a[1]
-            y = position[1] + a[0]
-            
-            positions.append([x,y, position[2]])            
+        xp = 1
+        for xo in area[1:]:
+            for yp in xo:
+                x = position[0] + xp
+                y = position[1] + yp
+                positions.append([x,y, position[2]])
+            xp += 1          
     elif direction == 2: # South
-        for a in area[1:]:
-            x = position[0] + a[0]
-            y = position[1] + a[1]
-            
-            positions.append([x,y,position[2]])
+        yp = 1
+        for yo in area[1:]:
+            for xp in yo:
+                x = position[0] + xp
+                y = position[1] + yp
+                positions.append([x,y, position[2]])
+            yp += 1
     elif direction == 3: # west
-        for a in area[1:]:
-            x = position[0] - a[1]
-            y = position[1] - a[0]
-            
-            positions.append([x,y, position[2]])              
+        xp = 1
+        for xo in area[1:]:
+            for yp in xo:
+                x = position[0] - xp
+                y = position[1] - yp
+                positions.append([x,y, position[2]])
+            xp += 1
+    print positions
     return positions
     
 def typeToEffect(type):
