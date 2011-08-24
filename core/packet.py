@@ -213,14 +213,14 @@ class TibiaPacket(object):
         if not isSolid:
             for creature in tile.creatures():
                 known = False
-                if player and creature.isPlayer():
+                if player:
                     known = creature.cid in player.knownCreatures
                     
                     if not known:
                         player.knownCreatures.append(creature.cid)
     
                 self.creature(creature, known)
-                if creature.creatureType == 1 and creature.noBrain:
+                if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
 
