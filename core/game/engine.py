@@ -196,7 +196,7 @@ def getSpectatorList(pos, radius=(8,6), extra=[], ignore=[], cache=True):
     PACKSIZE = game.map.PACKSIZE
     if pos[2] <= 7:
         for z in xrange(0, 8):
-            for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+            for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
                 zpc = z + (x << 4)
                 for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
                     try:
@@ -212,7 +212,7 @@ def getSpectatorList(pos, radius=(8,6), extra=[], ignore=[], cache=True):
                         pass # Tile isn't loaded
 
     else: 
-        for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+        for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
             zpc = pos[2] + (x << 4)
             for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
                 try:
@@ -240,7 +240,7 @@ def getCreatureList(pos, radius=(8,6), extra=[], ignore=[]):
 
     if pos[0] <= 7:
         for z in xrange(0, 8):
-            for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+            for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
                 zpc = z + (x << 4)
                 for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
                     try:
@@ -251,7 +251,7 @@ def getCreatureList(pos, radius=(8,6), extra=[], ignore=[]):
                     except:
                         pass # Tile isn't loaded
     else:
-        for x in xrange(pos[0]-radius[0], pos[0]+radius[1]+1):
+        for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
             zpc = pos[2] + (x << 4)
             for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
                 try:
