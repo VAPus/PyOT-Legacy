@@ -15,10 +15,10 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = (0,0),
 
-AREA_WAVE4 = game.enum.TARGET_DIRECTION, [0], \
-            [-1, 0, 1], \
-            [-1, 0, 1], \
-            [-2, -1, 0, 1, 2]
+AREA_WAVE4 = game.enum.TARGET_DIRECTION, (0,), \
+            (-1, 0, 1), \
+            (-1, 0, 1), \
+            (-2, -1, 0, 1, 2)
             
 AREA_WAVE5 = game.enum.TARGET_DIRECTION, (0, 1), \
              (0, 2), \
