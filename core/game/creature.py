@@ -389,7 +389,9 @@ class Creature(object):
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
         self.modifyHealth(dmg)
-        self.magicEffect(self.position, self.hitEffect())
+	if type == game.enum.MELEE:
+        	self.magicEffect(self.position, self.hitEffect())
+
         tile = game.map.getTile(self.position)
         addSplash = True
         for item in tile.getItems():
