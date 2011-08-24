@@ -20,17 +20,17 @@ AREA_WAVE4 = game.enum.TARGET_DIRECTION, (0,), \
             (-1, 0, 1), \
             (-2, -1, 0, 1, 2)
             
-AREA_WAVE5 = game.enum.TARGET_DIRECTION, (0, 1), \
-             (0, 2), \
-             (-1, 3), (0, 3), (1, 3), \
-             (-1, 4), (0, 4), (1, 4), \
-             (-1, 5), (0, 5), (1, 5)
+AREA_WAVE5 = game.enum.TARGET_DIRECTION, (0,), \
+            (-1, 0, 1), \
+            (-2, -1, 0, 1, 2), \
+            (-2, -1, 0, 1, 2), \
+            (-2, -1, 0, 1, 2), \
              
-AREA_BEAM4 = game.enum.TARGET_DIRECTION,(0, 1), (0, 2), (0, 3), (0, 4)
+AREA_BEAM4 = game.enum.TARGET_DIRECTION,(0,), (0,), (0,), (0,)
 
-AREA_BEAM7 = game.enum.TARGET_DIRECTION,(0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)
+AREA_BEAM7 = game.enum.TARGET_DIRECTION,(0,), (0,), (0,), (0,), (0,), (0,), (0,)
 
-AREA_CIRCLE = game.enum.TARGET_CASTER_AREA, (-1, 0), (1, 0), (0, -1), (0, 1)
+AREA_CIRCLE = game.enum.TARGET_CASTER_AREA, (-1, 1), (0, -1), (0, 1)
 
 AREA_CIRCLE2 = game.enum.TARGET_CASTER_AREA, (-1, -2), (0, -2), (1, -2), \
                (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
@@ -42,46 +42,53 @@ AREA_SQUARE = game.enum.TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
               (-1, 0), (1, 0), \
               (-1, 1), (0, 1), (1, 1)
 
-AREA_WALL = game.enum.TARGET_DIRECTION, (-2, 0), (-1, 0), (1, 0), (2, 0)
+AREA_WALL = game.enum.TARGET_DIRECTION, (-2, -1, 1, 2)
 
 def calculateAreaDirection(position, direction, area):
     positions = []
-
-    if direction == 0 or area[0] == game.enum.TARGET_CASTER_AREA: # North:
-        yp = 1
-        for yo in area[1:]:
-            for xp in yo:
-                x = position[0] - xp
-                y = position[1] - yp
-                positions.append([x,y, position[2]])
-            yp += 1
+    if area[0] == game.enum.TARGET_DIRECTION:
+        if direction == 0: # North:
+            yp = 1
+            for yo in area[1:]:
+                for xp in yo:
+                    x = position[0] - xp
+                    y = position[1] - yp
+                    positions.append([x,y, position[2]])
+                yp += 1
+                    
                 
-            
-    elif direction == 1: # east
-        xp = 1
-        for xo in area[1:]:
-            for yp in xo:
-                x = position[0] + xp
-                y = position[1] + yp
-                positions.append([x,y, position[2]])
-            xp += 1          
-    elif direction == 2: # South
-        yp = 1
-        for yo in area[1:]:
-            for xp in yo:
-                x = position[0] + xp
-                y = position[1] + yp
-                positions.append([x,y, position[2]])
-            yp += 1
-    elif direction == 3: # west
-        xp = 1
-        for xo in area[1:]:
-            for yp in xo:
-                x = position[0] - xp
-                y = position[1] - yp
-                positions.append([x,y, position[2]])
-            xp += 1
-    print positions
+        elif direction == 1: # east
+            xp = 1
+            for xo in area[1:]:
+                for yp in xo:
+                    x = position[0] + xp
+                    y = position[1] + yp
+                    positions.append([x,y, position[2]])
+                xp += 1          
+        elif direction == 2: # South
+            yp = 1
+            for yo in area[1:]:
+                for xp in yo:
+                    x = position[0] + xp
+                    y = position[1] + yp
+                    positions.append([x,y, position[2]])
+                yp += 1
+        elif direction == 3: # west
+            xp = 1
+            for xo in area[1:]:
+                for yp in xo:
+                    x = position[0] - xp
+                    y = position[1] - yp
+                    positions.append([x,y, position[2]])
+                xp += 1
+    elif area[0] == game.enum.TARGET_CASTER_AREA:
+        for a in area[1:]:
+            x = position[0] - a[0]
+            y = position[1] - a[1]
+           
+            positions.append([x,y, position[2]])
+                  
+
     return positions
     
 def typeToEffect(type):
