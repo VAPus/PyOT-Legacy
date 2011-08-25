@@ -77,7 +77,7 @@ class Creature(object):
         self.regenerate = None
         self.alive = True
         self.lastDamager = None
-        self.solid = False
+        self.solid = True
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -192,20 +192,13 @@ class Creature(object):
             self.cancelWalk()
             return
         
-        for thing in newTile.getItems():
+        for thing in newTile.things():
             if thing.solid:
-                self.cancelWalk()
+                #self.cancelWalk()
                 self.notPossible()
                 d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
                 return
             
-        tileCreatures = newTile.creatures()  
-            
-        for tileCreature in tileCreatures:
-            if tileCreature.solid: # Dont walk to creatures that is solid
-                self.notPossible()
-                d.errback(game.errors.ImpossibleMove)
-                return
             
         """t = time.time()
         if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
@@ -584,7 +577,7 @@ class Creature(object):
     def cancelWalk(self, d=None):
         return # Is only executed on players
         
-    def canSee(self, position):
+    def canSee(self, position, radius=(8,6)):
         if self.position[2] <= 7: # We are on ground level
             if position[2] > 7:
                 return False # We can't see underground
@@ -594,7 +587,7 @@ class Creature(object):
                 return False
         
         offsetz = self.position[2]-position[2]
-        if (position[0] >= self.position[0] - 8 + offsetz) and (position[0] <= self.position[0] + 9 + offsetz) and (position[1] >= self.position[1] - 6 + offsetz) and (position[1] <= self.position[1] + 7 + offsetz):
+        if (position[0] >= self.position[0] - radius[0] + offsetz) and (position[0] <= self.position[0] + radius[0]+1 + offsetz) and (position[1] >= self.position[1] - radius[1] + offsetz) and (position[1] <= self.position[1] + radius[1]+1 + offsetz):
             return True
         return False
     

@@ -57,6 +57,12 @@ lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real
 stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
 stockLootBagId = 1987 # Id of the bags to append
 
+# Spectator formula
+# This is more effective on small maps, and servers with few players (like <200). This is between 200 and 700 times faster than the other method, but in turn it looses 1x per player (altho, the other one also gets looses, it have a better ability to do cache). 
+# Data might be incorrect since it's faster then one singel linux clock sync, but can't be "that" much since it's happend it executes in two.
+checkFullList = True 
+
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

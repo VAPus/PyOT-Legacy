@@ -78,7 +78,7 @@ def defaultBrainFeature(self, monster):
                             target = x.player
                 else:
                     # Target the singel spectator
-                    target = spectators[0].player
+                    target = spectators.pop().player
                 monster.target = target
                 
                 # Call the scripts

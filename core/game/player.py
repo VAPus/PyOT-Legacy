@@ -39,6 +39,7 @@ class TibiaPlayer(Creature):
         self.targetChecker = None
         self.openChannels = {}
         self.idMap = []
+        #self.solid = False
         
         vocation = self.getVocation()
         level = 0
