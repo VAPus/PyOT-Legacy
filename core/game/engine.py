@@ -180,7 +180,7 @@ if config.checkFullList:
         else:
             players = set()
                 
-        for player in game.player.allPlayers.values():
+        for player in game.player.allPlayersObject:
             if player.canSee(pos, radius) and player not in ignore and player not in extra:
                 players.add(player.client)
         return players
