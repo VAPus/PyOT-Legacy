@@ -559,6 +559,18 @@ class Creature(object):
         stream.position(self.position)
         stream.string(message)
         stream.sendto(getSpectators(self.position, config.whisperRange))
+
+    def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
+        if not to.isPlayer(): return
+        
+        stream = TibiaPacket(0xAA)
+        stream.uint32(0)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"] if "level" in self.data else 0)
+        stream.uint8(messageType)
+        stream.position(self.position)
+        stream.string(message)
+        stream.send(to.client)    
         
     def stopAction(self):
         ret = False

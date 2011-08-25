@@ -841,18 +841,19 @@ class TibiaPlayer(Creature):
     def openPrivateChannel(self, between):
         id = 0xFFFF
         self.openChannels[between.name()] = [id, between]
-        stream = TibiaPacket(0xAC)
+        stream = TibiaPacket(0xB2)
         stream.uint16(id)
         stream.string(between.name())
-        
-        # Between two for now
-        stream.uint16(2)
-        stream.string(self.name())
-        stream.string(between.name())
-        
-        stream.uint16(0)
         stream.send(self.client)
         return id
+        
+    def closePrivateChannel(self, between):
+        if between.name() in self.openChannels:
+            betweenObj = self.openChannels[between.name()]
+            stream = TibiaPacket(0xB3)
+            stream.uint16(betweenObj[0])
+            stream.send(self.client)
+        
     def closeChannel(self, id):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
@@ -867,15 +868,17 @@ class TibiaPlayer(Creature):
         print channelId
         stream = TibiaPacket(0xAA)
         stream.uint32(1)
+        print by.data["name"]
         stream.string(by.data["name"])
         if by.isPlayer():
             stream.uint16(by.data["level"])
         else:
             stream.uint16(0)
         stream.uint8(type)
-        #if type in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
-        stream.uint16(channelId)
-            
+        if type in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+            stream.uint16(channelId)
+        
+        print text
         stream.string(text)
         stream.send(self.client)
     def getPrivate(self, name):
@@ -955,6 +958,7 @@ class TibiaPlayer(Creature):
             channelId = packet.uint16()
         elif channelType in (enum.MSG_PRIVATE_TO, enum.MSG_GAMEMASTER_PRIVATE_TO):
             reciever = packet.string()
+            print "..."+reciever+"..."
 
         text = packet.string()
         

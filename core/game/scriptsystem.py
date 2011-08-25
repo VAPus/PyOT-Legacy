@@ -304,10 +304,11 @@ def handleModule(name):
     modPool.append([name, modules])
         
 def importer():
+    handleModule("scripts")
     handleModule("spells")
     handleModule("monsters")
     handleModule("npcs")
-    handleModule("scripts")
+    
 
 def reimporter():
     import game.spell

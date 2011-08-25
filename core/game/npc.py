@@ -11,10 +11,21 @@ import game.errors
 import game.item
 import config
 import game.scriptsystem
+from packet import TibiaPacket
 
 npcs = {}
 brainFeatures = ({},{})
+classActions = {}
 
+class ClassAction(object):
+    def __init__(self, on):
+        self.on = on
+        on.classActions.append(self)
+        self.action()
+        
+    def action(self):
+        pass
+    
 class NPC(Creature):
     def generateClientID(self):
         return 0x80000000 + uniqueId()
@@ -42,11 +53,29 @@ class NPC(Creature):
         game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
 
     def sayTo(self, to, text):
-        id = to.openPrivateChannel(self)
-        to.sendChannelMessage(self, text, game.enum.MSG_NPC_FROM, id)
-        
+        self.sayPrivate(text, to, game.enum.MSG_NPC_FROM)
+
+    def sendClose(self, to):
+        stream = TibiaPacket(0x7C)
+        stream.send(to.client)
+    
+    def sendTradeOffers(self, to):
+        stream = TibiaPacket(0x7A)
+        stream.string(self.data["name"])
+        stream.uint8(min(len(self.base.offers), 255))
+        for item in self.base.offers:
+            stream.uint16(game.item.items[item[0]]["cid"])
+            if "stackable" in game.item.items[item[0]]:
+                stream.uint8(1)
+            else:
+                stream.uint8(0)
+            stream.string(game.item.items[item[0]]["name"])
+            stream.uint32(game.item.items[item[0]]["weight"] * 100)
+            stream.uint32(item[1])
+            stream.uint32(item[2])
+        stream.send(to.client)    
 class NPCBase(CreatureBase):
-    def __init__(self, data):
+    def __init__(self, brain, data):
         self.data = data
         self.voiceslist = []
         self.scripts = {"onFollow":[], "onTargetLost":[]}
@@ -59,7 +88,10 @@ class NPCBase(CreatureBase):
         self.walkPer = config.monsterWalkPer
         
         self.brainFeatures = ["default"]
-        self.actions = ('99',)
+        self.classActions = []
+        self.actions = ['99',]
+        
+        self.brain = brain
         
     def spawn(self, position, place=True, spawnDelay=0.15, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
@@ -130,7 +162,12 @@ class NPCBase(CreatureBase):
         self.data["lookaddons"] = addon
 
     def setActions(self, *argc):
-        self.actions = argc
+        self.actions = list(argc)
+        
+    def regAction(self, action):
+        self.actions.append(action)
+        return classActions[action](self)
+        
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):
@@ -170,6 +207,7 @@ class NPCBrain(MonsterBrain):
         if npc.base.walkable and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
 
+brain = NPCBrain()
 def genNPC(name, look, description=""):
     # First build the common creature data
     data = {}
@@ -186,7 +224,7 @@ def genNPC(name, look, description=""):
     data["description"] = description or "%s." % name
     
     # Then npc only data
-    npcs[name] = NPCBase(data)
+    npcs[name] = NPCBase(brain, data)
 
     return npcs[name]
 
@@ -201,3 +239,6 @@ def regBrainFeature(name, function, priority=1):
         brainFeatures[priority][name] = function
     else:
         print "Warning, brain feature %s exists!" % name
+        
+def regClassAction(name, myClass):
+    classActions[name] = myClass
