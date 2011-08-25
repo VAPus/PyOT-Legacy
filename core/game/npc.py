@@ -89,7 +89,7 @@ class NPCBase(CreatureBase):
         
         self.brainFeatures = ["default"]
         self.classActions = []
-        self.actions = ['99',]
+        self.actions = ['99']
         
         self.brain = brain
         
