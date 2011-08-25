@@ -389,7 +389,7 @@ class MonsterBrain(object):
                     return ret
                     
         # Are anyone watching?
-        if check and not game.engine.getSpectators(monster.position, (11, 9), cache=False):
+        if check and not game.engine.getSpectators(monster.position, (11, 9)):
             monster.noBrain = True
             return False
             
@@ -414,7 +414,7 @@ class MonsterBrain(object):
                 
     def walkRandomStep(self, monster, badDir=None):
         # Ignore autowalking when there is noone in range
-        spectators = game.engine.getSpectatorList(monster.position, cache=False)
+        spectators = game.engine.getPlayers(monster.position)
         if not spectators:
             return False
         

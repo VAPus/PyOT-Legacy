@@ -8,6 +8,7 @@ import game.map
 import config
 import math
 import game.pathfinder
+import bindconstant
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -173,135 +174,36 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
     
 # Spectator list
-if config.checkFullList:
-    def getSpectatorList(pos, radius=(8,6), extra=[], ignore=tuple(), cache=True):
-        if extra:
-            players = set(extra)
-        else:
-            players = set()
+def getSpectators(pos, radius=(8,6), ignore=tuple()):
+    players = set()
                 
-        for player in game.player.allPlayersObject:
-            if player.canSee(pos, radius) and player not in ignore and player not in extra:
-                players.add(player.client)
-        return players
+    for player in game.player.allPlayersObject:
+        if player.canSee(pos, radius) and player not in ignore:
+            players.add(player.client)
+    return players
         
-    import bindconstant
-    getSpectatorList = bindconstant._make_constants(getSpectatorList)
+getSpectators = bindconstant._make_constants(getSpectators)
 
-else:
-    spectatorList = {}
-    def getSpectatorList(pos, radius=(7,5), extra=[], ignore=[], cache=True):
-        t = time.time()
-        zpc = game.map.ZPack(pos[2], pos[0], pos[1])
-        if zpc in spectatorList:
-            if cache:
-                work = spectatorList[zpc][:]
-                for creature in work:
-                    if creature in ignore:
-                        work.remove(creature)
-                print time.time() - t
-                return work
-            else:
-                del spectatorList[zpc]
-        players = []
-
-        if extra:
-            for creature in extra:
-                if creature.creatureType == 0:
-                    players.append(creature.client)
-
-        PACKSIZE = game.map.PACKSIZE
-        if pos[2] <= 7:
-            for z in xrange(0, 8):
-                for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
-                    zpc = z + (x << 4)
-                    for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                        try:
-                            zp = zpc + (y << PACKSIZE)
-                            for creature in game.map.knownMap[zp].creatures():
-                                if creature.creatureType == 0 and not creature in ignore:
-                                    players.append(creature.client)
-                                    try:
-                                        del spectatorList[zp]
-                                    except:
-                                        pass
-                        except:
-                            pass # Tile isn't loaded
-
-        else: 
-            for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
-                zpc = pos[2] + (x << 4)
-                for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                    try:
-                        zp = zpc + (y << PACKSIZE)
-                        for creature in game.map.knownMap[zp].creatures():
-                            if creature.creatureType == 0 and not creature in ignore:
-                                players.append(creature.client)
-                                try:
-                                    del spectatorList[zp]
-                                except:
-                                    pass
-                    except:
-                        pass # Tile isn't loaded
-        if not ignore:
-            spectatorList[zpc] = players
-        print time.time() - t
-        return players
     
-def getCreatureList(pos, radius=(7,5), extra=[], ignore=[]):
-    creatures = []
-
-    if extra:
-        for creature in extra:
-            creatures.append(creature)
-    PACKSIZE = game.map.PACKSIZE 
-
-    if pos[0] <= 7:
-        for z in xrange(0, 8):
-            for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
-                zpc = z + (x << 4)
-                for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                    try:
-                        zp = zpc + (y << PACKSIZE)
-                        for creature in game.map.knownMap[zp].creatures():
-                            if not creature in ignore:
-                                creatures.append(creature)
-                    except:
-                        pass # Tile isn't loaded
-    else:
-        for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
-            zpc = pos[2] + (x << 4)
-            for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-                try:
-                    zp = zpc + (y << PACKSIZE)
-                    for creature in game.map.knownMap[zp].creatures():
-                        if not creature in ignore:
-                            creatures.append(creature)
-                except:
-                    pass # Tile isn't loaded
-
-    return creatures    
-
-# Spectator list using yield
-"""def getSpectators(pos, radius=(9,7), extra=[], ignore=[]):
-    # At the moment, we only do one floor
-    
-    if extra:
-        for creature in extra:
-            if creature.creatureType == 0:
-                yield creature.client
-            
-    for x in xrange(pos[0]-radius[0], pos[0]+radius[0]+1):
-        for y in xrange(pos[1]-radius[1], pos[1]+radius[1]+1):
-            try:
-                for creature in game.map.knownMap[game.map.ZPack(pos[2], x, y)].creatures():
-                    if creature.creatureType == 0 and not creature in ignore:
-                        yield creature.client
-            except:
-                pass # Tile isn't loaded
+def getCreatures(pos, radius=(8,6), ignore=tuple()):
+    creatures = set()
                 
-    raise StopIteration"""
-getSpectators = getSpectatorList
+    for creature in game.creature.allCreaturesObject:
+        if creature.canSee(pos, radius) and creature not in ignore:
+            creatures.add(creature)
+    return creatures
+        
+getCreatures = bindconstant._make_constants(getCreatures)
+
+def getPlayers(pos, radius=(8,6), ignore=tuple()):
+    players = set()
+                
+    for player in game.player.allPlayersObject:
+        if player.canSee(pos, radius) and player not in ignore:
+            players.add(player)
+    return players
+        
+getPlayers = bindconstant._make_constants(getPlayers)
 
 # Calculate new position by direction
 def positionInDirection(nposition, direction, amount=1):

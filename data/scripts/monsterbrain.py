@@ -62,7 +62,7 @@ def defaultBrainFeaturePriority(self, monster):
 def defaultBrainFeature(self, monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
-            spectators = game.engine.getSpectatorList(monster.position) # Get all creaturse in range
+            spectators = game.engine.getPlayers(monster.position) # Get all creaturse in range
             if spectators: # If we find any
                 target = None
                 
@@ -75,10 +75,10 @@ def defaultBrainFeature(self, monster):
                         if dist < bestDist:
                             # If it's smaller then the previous value
                             bestDist = dist
-                            target = x.player
+                            target = x
                 else:
                     # Target the singel spectator
-                    target = spectators.pop().player
+                    target = spectators.pop()
                 monster.target = target
                 
                 # Call the scripts

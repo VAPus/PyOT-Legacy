@@ -1,5 +1,5 @@
 from twisted.internet import defer
-from game.engine import getSpectators
+from game.engine import getSpectators, getPlayers
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
 import threading
@@ -28,6 +28,7 @@ def uniqueId():
     return id
 
 allCreatures = {}
+allCreaturesObject = allCreatures.viewvalues()
 
 class CreatureBase(object):
     def __init__(self):
@@ -192,7 +193,7 @@ class Creature(object):
             self.cancelWalk()
             return
         
-        for thing in newTile.things():
+        for thing in newTile.things:
             if thing.solid:
                 #self.cancelWalk()
                 self.notPossible()
@@ -247,16 +248,16 @@ class Creature(object):
                 
         # Send to everyone   
         if not spectators:
-            spectators = getSpectators(position)
+            spectators = getPlayers(position)
             
         for spectator in spectators:
             streamX = stream
             if not spectator and self.isPlayer():
-                spectator = self.client
-            canSeeNew = spectator.player.canSee(position)
-            canSeeOld = spectator.player.canSee(oldPosition)
+                spectator = self
+            canSeeNew = spectator.canSee(position)
+            canSeeOld = spectator.canSee(oldPosition)
 
-            if spectator.player == self:
+            if spectator == self:
                 streamX = copy.copy(stream)
 
                 # Levels
@@ -286,7 +287,7 @@ class Creature(object):
                     
             elif not canSeeOld and canSeeNew:
                 streamX = TibiaPacket()
-                streamX.addTileCreature(position, newStackPos, self, spectator.player) # This automaticly deals with known list so
+                streamX.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
                 streamX = TibiaPacket()
@@ -294,7 +295,7 @@ class Creature(object):
                 
             elif not canSeeOld and not canSeeNew:
                 continue
-            streamX.send(spectator) 
+            streamX.send(spectator.client) 
 
         if self.scripts["onNextStep"]:
             for script in self.scripts["onNextStep"][:]:
@@ -470,9 +471,7 @@ class Creature(object):
             raise game.errors.SolidTile()
 
         oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
-        for spectator in getSpectators(oldPosition):
-            if spectator.player == self:
-                continue
+        for spectator in getSpectators(oldPosition, ignore=(self,)):
             stream = TibiaPacket()
             stream.removeTileItem(oldPosition, oldStackpos)
             stream.magicEffect(oldPosition, 0x02)
@@ -496,10 +495,7 @@ class Creature(object):
             
          
         
-        for spectator in getSpectators(position):
-            if spectator.player == self:
-                continue
-
+        for spectator in getSpectators(position, ignore=(self,)):
             stream = TibiaPacket()
             stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)

@@ -983,7 +983,7 @@ class TibiaPlayer(Creature):
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
                     self.whisper(' '.join(splits[0:]))
                     
-            for creature in game.engine.getCreatureList(self.position):
+            for creature in game.engine.getCreatures(self.position):
                 creature.playerSay(self, text, channelType, channelId or reciever)
 
         def part1():
