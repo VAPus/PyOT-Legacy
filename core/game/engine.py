@@ -176,7 +176,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
 if config.checkFullList:
     def getSpectatorList(pos, radius=(8,6), extra=[], ignore=tuple(), cache=True):
         if extra:
-            players = extra[:]
+            players = set(extra)
         else:
             players = set()
                 
