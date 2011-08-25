@@ -174,16 +174,15 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     
 # Spectator list
 if config.checkFullList:
-    def getSpectatorList(pos, radius=(8,6), extra=[], ignore=(None,), cache=True):
+    def getSpectatorList(pos, radius=(8,6), extra=[], ignore=tuple(), cache=True):
         if extra:
             players = extra[:]
         else:
             players = set()
-            
+                
         for player in game.player.allPlayers.values():
             if player.canSee(pos, radius) and player not in ignore and player not in extra:
                 players.add(player.client)
-
         return players
         
     import bindconstant

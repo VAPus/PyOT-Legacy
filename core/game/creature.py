@@ -578,13 +578,11 @@ class Creature(object):
         return # Is only executed on players
         
     def canSee(self, position, radius=(8,6)):
-        if self.position[2] <= 7: # We are on ground level
-            if position[2] > 7:
-                return False # We can't see underground
+        if self.position[2] <= 7 and position[2] > 7: # We are on ground level and we can't see underground
+            return False
                 
-        elif self.position[2] >= 8: # We are undergorund
-            if abs(self.position[2]-position[2]) > 2: # We may only see 2 floors
-                return False
+        elif self.position[2] >= 8 and abs(self.position[2]-position[2]) > 2: # We are undergorund and we may only see 2 floors
+            return False
         
         offsetz = self.position[2]-position[2]
         if (position[0] >= self.position[0] - radius[0] + offsetz) and (position[0] <= self.position[0] + radius[0]+1 + offsetz) and (position[1] >= self.position[1] - radius[1] + offsetz) and (position[1] <= self.position[1] + radius[1]+1 + offsetz):

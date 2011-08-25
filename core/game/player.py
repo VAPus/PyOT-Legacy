@@ -22,6 +22,7 @@ import math
 global anyPlayer
 anyPlayer = CreatureBase()
 allPlayers = {}
+allPlayersObjewct = allPlayers.viewvalues() # Quick speedup
 
 class TibiaPlayer(Creature):
     def __init__(self, client, data):
