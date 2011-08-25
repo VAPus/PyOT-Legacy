@@ -97,7 +97,7 @@ class Item(object):
         
     def name(self):
         if self.count > 1 and "plural" in items[self.itemId]:
-            return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["plural"]
+            return str(self.count) + " " + items[self.itemId]["plural"]
         else:
             return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["name"]
             

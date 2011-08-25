@@ -83,32 +83,44 @@ class Monster(Creature):
             elif len(loot) == 4:
                 drops.append((loot[0], None, loot[4]))
                 
+        lootMsg = []
+        
         for loot in drops:
             lenLoot = len(loot)
             ret = 0
             if lenLoot == 2:
-                ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1))
+                item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
+                lootMsg.append(item.name())
+                ret = corpse.container.placeItemRecursive(item)
                     
             elif lenLoot == 3:
                 count = random.randint(1, loot[2]) * config.lootMaxRate
                 if count > 100:
                     while count:
                         depCount = min(count, 100) * config.lootMaxRate
-                        ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
+                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                        lootMsg.append(item.name())
+                        ret = corpse.container.placeItemRecursive(item)
                         count -= depCount
-                else:        
-                    ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count))
+                else:
+                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                    lootMsg.append(item.name())
+                    ret = corpse.container.placeItemRecursive(item)
                         
             elif lenLoot == 4:
                 count = random.randint(loot[4], loot[2]) * config.lootMaxRate
                 if count > 100:
                     while count:
                         depCount = min(count, 100)
-                        ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount))
+                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                        lootMsg.append(item.name())
+                        ret = corpse.container.placeItemRecursive(item)
                         count -= depCount
                             
                 else:
-                    ret = corpse.container.placeItemRecursive(game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count))
+                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                    lootMsg.append(item.name())
+                    ret = corpse.container.placeItemRecursive(item)
                         
 
             if ret == None:
@@ -129,6 +141,11 @@ class Monster(Creature):
         game.engine.updateTile(self.position, tile)
 
         if self.lastDamager and self.lastDamager.isPlayer():
+            if lootMsg:
+                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), game.enum.MSG_LOOT)
+            else:
+                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), game.enum.MSG_LOOT)
+                
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience)
 

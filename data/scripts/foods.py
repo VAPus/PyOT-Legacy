@@ -1,5 +1,6 @@
 import game.scriptsystem
 import game.engine
+import game.enum
 
 global foods
 foods = {}
@@ -85,7 +86,6 @@ foods[11246] = (180, "Yum.")
 foods[11370] = (36, "Urgh.")
 
 def playerEat(creature, ticker=0, lastHP=0, lastMana=0):
-    print "called! %d - %d" % (creature.regenerate, ticker)
     gainhp = creature.getVocation().health
     gainmana = creature.getVocation().mana
     
@@ -122,9 +122,9 @@ def onUse(creature, thing, position, stackpos, **a):
         creature.regenerate += duration
         if creature.regenerate > 1500:
             creature.regenerate = max(creature.regenerate, 1500)
-            creature.message("You are full")
+            creature.message("You are full.", game.enum.MSG_SPEAK_MONSTER_SAY)
         else:
-            creature.message(sound)
+            creature.message(sound, game.enum.MSG_SPEAK_MONSTER_SAY)
     else:
         creature.regenerate = duration
         playerEat(creature)
