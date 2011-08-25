@@ -57,9 +57,33 @@ def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]+1])
 
+def teleportDirection(creature, thing, position, **k):
+    # Grab the position of the player/creature
+    print thing.floorchange
+    pos = creature.position[:]
+    pos[2] -= 1
+    
+    # Change the position to match the floorchange.
+    if thing.floorchange == "north":
+        pos[1] -= 1
+    elif thing.floorchange == "south":
+        pos[1] += 1
+        
+    elif thing.floorchange == "east":
+        pos[0] += 1
+        
+    elif thing.floorchange == "west":
+        pos[0] -= 1
+        
+    creature.teleport(pos)
+    
 # Stairs
-stairs = 1385, 410, 429, 411, 4834, 1396, 4837, 1388, 1393, 3687, 3219, 1394, 1390
+stairs = 410, 429, 411, 4834, 1396, 4837, 3687, 3219 
 scriptsystem.get("walkOn").reg(stairs, floorchange)
+
+# Ramps
+ramps = 1390, 1388, 1394, 1392
+scriptsystem.get("walkOn").reg(ramps, teleportDirection)
 
 # Ladders up
 laddersUp = 1386, 3678, 5543, 8599

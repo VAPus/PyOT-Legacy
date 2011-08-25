@@ -61,7 +61,7 @@ class NPCBase(CreatureBase):
         self.brainFeatures = ["default"]
         self.actions = ('99',)
         
-    def spawn(self, position, place=True, spawnDelay=0.5, spawnTime=60, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnDelay=0.15, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
             return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:

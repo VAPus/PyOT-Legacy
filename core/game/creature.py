@@ -258,7 +258,7 @@ class Creature(object):
             
         for spectator in spectators:
             streamX = stream
-            if not spectator:
+            if not spectator and self.isPlayer():
                 spectator = self.client
             canSeeNew = spectator.player.canSee(position)
             canSeeOld = spectator.player.canSee(oldPosition)
@@ -473,9 +473,9 @@ class Creature(object):
         
         newTile = getTile(position)
         
-        if newTile.things[0].solid:
+        if not newTile or newTile.things[0].solid:
             raise game.errors.SolidTile()
-        
+
         oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
         for spectator in getSpectators(oldPosition):
             if spectator.player == self:
