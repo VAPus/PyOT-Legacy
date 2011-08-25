@@ -164,7 +164,7 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
             return # We don't do this on none 
             
         for item in tile.getItems():
-            if item.solid: # or solid tiles
+            if item.blockprojectile: # or blockprojectile tiles
                 return    
                 
         creature.magicEffect(position, effect)
