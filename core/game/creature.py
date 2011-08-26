@@ -359,13 +359,13 @@ class Creature(object):
         #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
-    def hitEffect(self):
+    def hitEffects(self):
         if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
-            return game.enum.EFFECT_DRAWBLOOD
+            return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD
         elif self.base.blood == game.enum.FLUID_SLIME:
-            return game.enum.EFFECT_POISON
+            return game.enum.COLOR_LIGHTGREEN, game.enum.EFFECT_POISON
         elif self.base.blood == game.enum.FLUID_ENERGY:
-            return game.enum.EFFECT_PURPLEENERGY
+            return game.enum.COLOR_PURPLE, game.enum.EFFECT_PURPLEENERGY
         return game.enum.EFFECT_DRAWBLOOD
         
     def damageToBlock(self, dmg, type):
@@ -383,9 +383,17 @@ class Creature(object):
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
         
-	if type == game.enum.MELEE:
-        	self.magicEffect(self.position, self.hitEffect())
+        if type == game.enum.MELEE:
+            textColor, magicEffect = self.hitEffects()
+            self.magicEffect(self.position, magicEffect)
 
+        elif type == game.enum.ICE:
+            textColor = game.enum.COLOR_TEAL
+            
+        elif type == game.enum.FIRE:
+            textColor = game.enum.COLOR_ORANGE
+            
+            
         tile = game.map.getTile(self.position)
         addSplash = True
         for item in tile.getItems():
@@ -405,7 +413,7 @@ class Creature(object):
             
             
         if by and by.isPlayer():
-            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT)
+            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor)
 
         if self.isPlayer():
             if by:

@@ -73,6 +73,28 @@ MSG_HOTKEY_USE			= 0x25
 MSG_TUTORIAL_HINT		= 0x26
 MSG_STATUS_CONSOLE_BLUE		= 0xFF
 
+# Colors
+COLOR_BLACK                     = 0
+COLOR_BLUE                      = 5
+COLOR_GREEN                     = 18
+COLOR_LIGHTGREEN                = 66
+COLOR_DARKBROWN                 = 78
+COLOR_LIGHTBLUE                 = 89
+COLOR_MAYABLUE                  = 95
+COLOR_DARKRED                   = 108
+COLOR_DARKPURPLE                = 112
+COLOR_BROWN                     = 120
+COLOR_GREY                      = 129
+COLOR_TEAL                      = 143
+COLOR_DARKPINK                  = 152
+COLOR_PURPLE                    = 154
+COLOR_DARKORANGE                = 156
+COLOR_RED                       = 180
+COLOR_PINK                      = 190
+COLOR_ORANGE                    = 192
+COLOR_DARKYELLOW                = 205
+COLOR_YELLOW                    = 210
+COLOR_WHITE                     = 215
 
 # Fluids
 FLUID_EMPTY                     = 0x00
