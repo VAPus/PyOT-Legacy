@@ -382,7 +382,7 @@ class Creature(object):
                 
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
-        
+        dmg = max(self.data["health"] * -1, dmg)
         if type == game.enum.MELEE:
             textColor, magicEffect = self.hitEffects()
             self.magicEffect(self.position, magicEffect)
@@ -413,7 +413,7 @@ class Creature(object):
             
             
         if by and by.isPlayer():
-            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor)
+            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
 
         if self.isPlayer():
             if by:

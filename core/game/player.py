@@ -38,7 +38,7 @@ class TibiaPlayer(Creature):
         self.doingSoulGain = False
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
         self.targetChecker = None
-        self.openChannels = {}
+        self._openChannels = {}
         self.idMap = []
         #self.solid = False
         
@@ -840,7 +840,7 @@ class TibiaPlayer(Creature):
 
     def openPrivateChannel(self, between):
         id = 0xFFFF
-        self.openChannels[between.name()] = [id, between]
+        self._openChannels[between.name()] = [id, between]
         stream = TibiaPacket(0xB2)
         stream.uint16(id)
         stream.string(between.name())
@@ -848,8 +848,8 @@ class TibiaPlayer(Creature):
         return id
         
     def closePrivateChannel(self, between):
-        if between.name() in self.openChannels:
-            betweenObj = self.openChannels[between.name()]
+        if between.name() in self._openChannels:
+            betweenObj = self._openChannels[between.name()]
             stream = TibiaPacket(0xB3)
             stream.uint16(betweenObj[0])
             stream.send(self.client)
@@ -860,7 +860,7 @@ class TibiaPlayer(Creature):
 
     def isChannelOpen(self, between):
         try:
-            return self.openChannels[between.name()]
+            return self._openChannels[between.name()]
         except:
             return False
             

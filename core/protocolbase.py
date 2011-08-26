@@ -131,7 +131,6 @@ class TibiaFactory(Factory):
         self.service = service
         self.clients = []
         self.clientCount = 0
-        self.idsTaken = 0
 
     def addClient(self, client):
         self.clients.append(client)
