@@ -8,10 +8,11 @@ offers = ('offer', 'trade')
 
 def saidTo(creature, creature2, said, channelType, channelId):
     print channelId
+    said = said.lower()
     if channelType == 1:
         ok = False
         for greeting in greetings:
-            if greeting+creature2.data["name"] == said:
+            if (greeting+creature2.data["name"]).lower() == said:
                 ok = True
                 break
         if ok:
