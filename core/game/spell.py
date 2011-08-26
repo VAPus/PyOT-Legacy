@@ -47,40 +47,73 @@ AREA_WALL = game.enum.TARGET_DIRECTION, (-2, -1, 1, 2)
 def calculateAreaDirection(position, direction, area):
     positions = []
     if area[0] == game.enum.TARGET_DIRECTION:
-        if direction == 0: # North:
-            yp = 1
-            for yo in area[1:]:
-                for xp in yo:
-                    x = position[0] - xp
-                    y = position[1] - yp
-                    positions.append([x,y, position[2]])
-                yp += 1
-                    
+        # We begin on row 1, right in front of us
+        yp = 1
+        blocking = [] # We keep the blocking tiles from this row because we are using them in the next
+        prevBlocking = []
+        count = 0 # Count of fields in previous row, so we can calculate fields required
+        minEntry = maxEntry = 0
+        prevMinEntry = prevMaxEntry = 0
+        for yo in area[1:]: # As you might know, area[0] is used to determin the type. yo == y list
                 
-        elif direction == 1: # east
-            xp = 1
-            for xo in area[1:]:
-                for yp in xo:
-                    x = position[0] + xp
-                    y = position[1] + yp
-                    positions.append([x,y, position[2]])
-                xp += 1          
-        elif direction == 2: # South
-            yp = 1
-            for yo in area[1:]:
-                for xp in yo:
-                    x = position[0] + xp
-                    y = position[1] + yp
-                    positions.append([x,y, position[2]])
-                yp += 1
-        elif direction == 3: # west
-            xp = 1
-            for xo in area[1:]:
-                for yp in xo:
-                    x = position[0] - xp
-                    y = position[1] - yp
-                    positions.append([x,y, position[2]])
-                xp += 1
+            for xp in yo: # xp == x position from y list
+                # First agenda is to determin whatever a previous field blocked us
+                if count and prevBlocking:
+                    if prevBlocking[0] == prevMinEntry and prevBlocking[0] >= xp: # Are we extending the so called minEntry border?
+                        blocking.append(prevBlocking[0])
+                        minEntry = prevMinEntry
+                        continue
+                    elif prevBlocking[-1] == prevMaxEntry and prevBlocking[-1] <= xp: # Are we extending the so called maxEntry border?
+                        blocking.append(prevBlocking[-1])
+                        maxEntry = prevMaxEntry
+                        continue
+                    elif xp in prevBlocking:
+                        continue
+
+                if direction == 0: # North:
+                    pos = [position[0] - xp, position[1] - yp, position[2]] # Our new position
+                    
+                elif direction == 1: # East
+                    pos = [position[0] + yp, position[1] + xp, position[2]] # Our new position
+                    
+                elif direction == 2: # South
+                    pos = [position[0] + xp, position[1] + yp, position[2]] # Our new position
+                    
+                elif direction == 3: # West
+                    pos = [position[0] - yp, position[1] - xp, position[2]] # Our new position
+                    
+                if xp > maxEntry: # Determin this as our new min/max
+                    maxEntry = xp
+                elif xp < minEntry:
+                    minEntry = xp
+                    
+                tile = game.map.getTile(pos)
+                if not tile:
+                    blocking.append(xp)
+                    continue
+                    
+                ret = 0
+                for item in tile.getItems():
+                    if item.blockprojectile:
+                        blocking.append(xp)
+                        ret = 1
+                        break
+                    
+                if not ret:
+                    positions.append(pos)
+
+
+            count = len(yo)
+            
+            if count and count == len(blocking): # 100% blocking, it basicly means we're done
+                return positions
+                
+            prevBlocking = blocking[:]
+            blocking = [] # New blocking, from this level
+            prevMaxEntry = maxEntry
+            prevMinEntry = minEntry
+            yp += 1
+                    
     elif area[0] == game.enum.TARGET_CASTER_AREA:
         for a in area[1:]:
             x = position[0] - a[0]
@@ -134,6 +167,7 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvl
         creature.shoot(position, onPosition, effect)
         if strength:
             minDmg, maxDmg = strength
+            
         else:    
             maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
             minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
@@ -149,6 +183,7 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         creature.shoot(position, onPosition, effect)
         if strength:
             minHP, maxHP = strength
+            
         else:
             maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
             minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
@@ -157,24 +192,17 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
     return callback
 
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
-    def callback(creature, position, effect, strength):
-        tile = game.map.getTile(position)
-
-        if tile == None:
-            return # We don't do this on none 
-            
-        for item in tile.getItems():
-            if item.blockprojectile: # or blockprojectile tiles
-                return    
-                
+    def callback(creature, position, effect, strength):       
         creature.magicEffect(position, effect)
+        
         if strength:
             minDmg, maxDmg = strength
+            
         else:
             maxDmg = round(-1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
             minDmg = round(-1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
             
-        creatures = tile.creatures()
+        creatures = game.map.getTile(position).creatures()
         if creatures:
             for onCreature in creatures:
                 dmg = round(random.randint(minDmg, maxDmg))
