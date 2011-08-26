@@ -57,6 +57,9 @@ lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real
 stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
 stockLootBagId = 1987 # Id of the bags to append
 
+# Experince
+experienceRate = 1
+experienceMessageColor = 215 # Between 1 or 255, else debug
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough

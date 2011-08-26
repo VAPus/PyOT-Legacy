@@ -147,7 +147,7 @@ class Monster(Creature):
                 self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), game.enum.MSG_LOOT)
                 
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
-                self.lastDamager.modifyExperience(self.base.experience)
+                self.lastDamager.modifyExperience(self.base.experience * config.experienceRate)
 
             if self.base.experience >= self.lastDamager.data["level"]:
                 self.lastDamager.soulGain()

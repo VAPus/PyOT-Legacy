@@ -422,7 +422,7 @@ class TibiaPlayer(Creature):
         
         if up:
             level = 0
-            self.message("You gained %d experience points." % exp, game.enum.MSG_EXPERIENCE)
+            self.message("You gained %d experience points." % exp, game.enum.MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break
@@ -431,7 +431,7 @@ class TibiaPlayer(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message("You lost %d experience points." % exp, game.enum.MSG_EXPERIENCE)
+            self.message("You lost %d experience points." % exp, game.enum.MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -523,7 +523,7 @@ class TibiaPlayer(Creature):
         stream.string(desc)
         stream.send(self.client)
         
-    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT, color=0, cid=0, pos=None):
+    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         stream = TibiaPacket(0xB4)
         stream.uint8(msgType)
         if msgType in (enum.MSG_DAMAGE_DEALT, enum.MSG_DAMAGE_RECEIVED, enum.MSG_DAMAGE_OTHERS):
@@ -531,7 +531,7 @@ class TibiaPlayer(Creature):
                 stream.position(pos)
             else:
                 stream.position(self.position)
-            stream.uint32(cid)
+            stream.uint32(value)
             stream.uint8(color)
             stream.uint32(0)
             stream.uint8(0)
@@ -540,7 +540,7 @@ class TibiaPlayer(Creature):
                 stream.position(pos)
             else:
                 stream.position(self.position)
-            stream.uint32(cid)
+            stream.uint32(value)
             stream.uint8(color)
             
         stream.string(message)
