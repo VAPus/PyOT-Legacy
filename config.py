@@ -61,6 +61,11 @@ stockLootBagId = 1987 # Id of the bags to append
 experienceRate = 1
 experienceMessageColor = 215 # Between 1 or 255, else debug
 
+# Map cleaning & unloading
+# Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc
+performSectorUnload = True
+performSectorUnloadEvery = 300 # 5 minutes is good
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

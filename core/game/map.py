@@ -1,6 +1,6 @@
 from game.item import Item
 import game.item
-from twisted.internet import threads
+from twisted.internet import threads, reactor
 from twisted.python import log
 import bindconstant
 import marshal
@@ -190,9 +190,9 @@ sectors = []
 
 # Ops codes
 class S(object):
-    __slots__ = ('base', 'radius', 'errors')
-    errors = []
-    def __init__(self, x,y,z=None,radius=5): # z isn't used.
+    __slots__ = ('base', 'radius')
+    
+    def __init__(self, x, y, z=None, radius=5): # z isn't used.
         self.base = (x,y) # Constant
         self.radius = radius
         
@@ -201,18 +201,18 @@ class S(object):
             game.monster.getMonster(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
-            if not name in self.errors:
-                log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-                self.errors.append(name)
+            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+                
         return self
         
         
     def N(self, name,x,y,z=7, spawnTime=None):
-        #try:
-        game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+        try:
+            game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
-        # except:
-        #    log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+        except:
+            log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
+            
         return self
         
 bindconstant.bind_all(S)
@@ -320,22 +320,52 @@ def load(sectorX, sectorY):
 
     if l:    
         threads.deferToThread(__loadOp, l)
-        
-    # Do callbacks
-    """m = "%s%s" % (str(sectorX).zfill(3),str(sectorY).zfill(3))
-    if m in callbacks:
-        for func in callbacks[m]:
-            func()"""
-
+    
+    if config.performSectorUnload:
+        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
     return True
+
+# Map cleaner
+def _unloadCheck(sectorX, sectorY):
+    # Calculate the x->x and y->y ranges
+    # We're using a little higher values here to avoid reloading again 
+    import data.map.info
+    import game.player
+    
+    xMin = (sectorX * data.map.info.sectorSize[0]) + 14
+    xMax = (xMin + data.map.info.sectorSize[0]) + 14
+    yMin = (sectorY * data.map.info.sectorSize[1]) + 11
+    yMax = (yMin + data.map.info.sectorSize[1]) + 11
+    
+    for player in game.player.allPlayersObject:
+        pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
+        
+        # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
+        if pos[0] < xMax and pos[0] > xMin and pos[1] < yMax and pos[1] > yMin:
+            return False # He can see us, cancel the unloading
+            
+    return True
+    
+def _unloadMap(sectorX, sectorY):
+    import time
+    print "Checking %d.%d.sec" % (sectorX, sectorY)
+    t = time.time()
+    if _unloadCheck(sectorX, sectorY):
+        print "Unloading...."
+        unload(sectorX, sectorY)
+        print "Unloading took: %f" % (time.time() - t)   
+        
 def unload(sectorX, sectorY):
-    for x in xrange(sectorX * 64, (sectorX * 64) + 64):
-        for x in xrange(sectorY * 64, (sectorY * 64) + 64):
-            del knownMap[x][y]
-    
-def regPostLoadSector(x,y,callback):
-    m = str(x).zfill(3)+str(y).zfill(3)
-    if not m in callbacks:
-        callbacks[m] = []
-    callbacks[m].append(callback)
-    
+    # TODO: Make me alot more effective!
+    count = 0
+    for z in xrange(0, 15):
+        for x in xrange(sectorX*data.map.info.sectorSize[0], (sectorX+1)*data.map.info.sectorSize[0]):
+            var = z + (x << 4)
+            for y in xrange(sectorY*data.map.info.sectorSize[1], (sectorY+1)*data.map.info.sectorSize[1]):
+                try:
+                    del knownMap[var + (y << PACKSIZE)]
+                    count += 1
+                except:
+                    pass
+                
+    print "Cleared %d tiles" % count
