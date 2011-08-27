@@ -144,8 +144,6 @@ class Creature(object):
         
     @defer.deferredGenerator
     def __move(self, d, direction, spectators=None, level=0):
-        self.direction = direction # Direction might change regardless
-        
         if not level and not self.actionLock(self.__move, d, direction, spectators, level):
             return
         import data.map.info
@@ -201,7 +199,7 @@ class Creature(object):
         
         for thing in newTile.things:
             if thing.solid:
-                #self.cancelWalk()
+                self.turn(direction) # Fix me?
                 self.notPossible()
                 d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
                 return
@@ -251,7 +249,8 @@ class Creature(object):
             
         
         self.position = position
-                
+        self.direction = direction
+        
         # Send to everyone   
         if not spectators:
             spectators = getPlayers(position)
@@ -545,6 +544,8 @@ class Creature(object):
                 
 
     def turn(self, direction):
+        print direction
+        print self.direction
         if self.direction == direction:
             return
             
