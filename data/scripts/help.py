@@ -174,3 +174,9 @@ def creatureSpawn(creature, text):
     return False
     
 scriptsystem.get("talkactionFirstWord").reg('s', creatureSpawn)
+
+def saveMe(creature, text):
+    creature.save()
+    return False
+    
+scriptsystem.get("talkaction").reg('saveme', saveMe)

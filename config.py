@@ -95,6 +95,9 @@ yellRange = (18, 14)
 itemMaxClientId = 12816
 itemMaxServerId = 12844
 
+# JSON Library
+jsonLibrary = "cjson" # cjson, ujson, json or simplejson
+
 # Drawing speed
 # Drawing speed is the overall delay of all actions, minimum value PyOT is able to handle nicely (on Windows) is 15, while you can easily have it down to 1 on Linux,
 # keep in mind tho that having a value below 10 might cause client out-of-syncs. Default on cipsoft/otserv is 50. We use 25 because we're abit cooler!

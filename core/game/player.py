@@ -14,10 +14,11 @@ import time
 import game.resource
 
 import game.pathfinder
-
+import sql
 import game.vocation
 import random
 import math
+import otjson
 
 global anyPlayer
 anyPlayer = CreatureBase()
@@ -40,8 +41,12 @@ class TibiaPlayer(Creature):
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
-        #self.solid = False
         
+        # Direction
+        self.direction = self.data["direction"]
+        del self.data["direction"]
+        
+        # Calculate level from experience
         vocation = self.getVocation()
         level = 0
         bit = 32
@@ -58,6 +63,7 @@ class TibiaPlayer(Creature):
             else:
                 level += cache
         
+        # Calculate magic level from manaspent
         maglevel = 0
         bit = 12
         cache = 2 ** bit
@@ -77,7 +83,7 @@ class TibiaPlayer(Creature):
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
     
-
+        # Stamina loose
         if self.data["stamina"]:
             def loseStamina():
                 self.data["stamina"] -= 60
@@ -92,6 +98,23 @@ class TibiaPlayer(Creature):
             game.engine.safeCallLater(60, loseStamina)
         
 
+        # Storage & skills
+        if self.data["skills"]:
+            self.skills = otjson.dumps(self.data["skills"])
+        else:
+            self.skills = []
+            for i in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+                self.skills.append(1)
+            
+        del self.data["skills"]
+        
+        if self.data["storage"]:
+            self.storage = otjson.dumps(self.data["storage"])
+        else:
+            self.storage = {}
+            
+        del self.data["storage"]
+        
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -176,8 +199,8 @@ class TibiaPlayer(Creature):
         else:
             stream = streamX        
         stream.uint8(0xA1) # Skill type
-        for x in xrange(0,7): # 7 skill types
-            stream.uint8(1) # Value / Level
+        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+            stream.uint8(self.skills[x]) # Value / Level
             stream.uint8(1) # Base
             stream.uint8(0) # %
         if not streamX:
@@ -948,7 +971,26 @@ class TibiaPlayer(Creature):
                 
             return dmg - armor
         return dmg
-            
+
+    # Saving
+    @deferredGenerator
+    def save(self):
+        r = waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])))
+        yield r
+        r = r.getResult()
+
+    @deferredGenerator
+    def saveSkills(self):
+        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"])))
+    
+    @deferredGenerator
+    def saveExperience(self):
+        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"])))
+    
+    @deferredGenerator
+    def saveStorage(self):
+        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"])))
+    
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
