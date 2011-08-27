@@ -368,5 +368,5 @@ def unload(sectorX, sectorY):
                     count += 1
                 except:
                     pass
-                
+    sectors.remove((sectorX << 15) + sectorY)            
     print "Cleared %d tiles" % count
