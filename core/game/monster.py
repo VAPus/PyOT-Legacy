@@ -67,68 +67,69 @@ class Monster(Creature):
     def onDeath(self):
         # Transform
         tile = game.map.getTile(self.position)
-
-        corpse = game.item.Item(self.base.data["corpse"])
-        maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
-        drops = []
-        for loot in self.base.lootTable:
-            if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
-                if len(drops)+1 == maxSize:
-                    if config.stockLootInBagsIfNeeded:
-                        drops.insert(0, (config.stockLootBagId, None))
-                        maxSize += game.item.items[config.stockLootBagId]["containerSize"]
-                    else:
-                        drops.append(loot)
-                        break
-                else:        
-                    drops.append(loot)
-                    
-            elif len(loot) == 4:
-                drops.append((loot[0], None, loot[4]))
-                
         lootMsg = []
-        
-        for loot in drops:
-            lenLoot = len(loot)
-            ret = 0
-            if lenLoot == 2:
-                item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
-                lootMsg.append(item.name())
-                ret = corpse.container.placeItemRecursive(item)
+        corpse = game.item.Item(self.base.data["corpse"])
+        if "containerSize" in game.item.items[self.base.data["corpse"]]:
+            maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+            drops = []
+            for loot in self.base.lootTable:
+                if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
+                    if len(drops)+1 == maxSize:
+                        if config.stockLootInBagsIfNeeded:
+                            drops.insert(0, (config.stockLootBagId, None))
+                            maxSize += game.item.items[config.stockLootBagId]["containerSize"]
+                        else:
+                            drops.append(loot)
+                            break
+                    else:        
+                        drops.append(loot)
+                        
+                elif len(loot) == 4:
+                    drops.append((loot[0], None, loot[4]))
                     
-            elif lenLoot == 3:
-                count = random.randint(1, loot[2]) * config.lootMaxRate
-                if count > 100:
-                    while count:
-                        depCount = min(count, 100) * config.lootMaxRate
-                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                        lootMsg.append(item.name())
-                        ret = corpse.container.placeItemRecursive(item)
-                        count -= depCount
-                else:
-                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+            
+            
+            for loot in drops:
+                lenLoot = len(loot)
+                ret = 0
+                if lenLoot == 2:
+                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
                     lootMsg.append(item.name())
                     ret = corpse.container.placeItemRecursive(item)
                         
-            elif lenLoot == 4:
-                count = random.randint(loot[4], loot[2]) * config.lootMaxRate
-                if count > 100:
-                    while count:
-                        depCount = min(count, 100)
-                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                elif lenLoot == 3:
+                    count = random.randint(1, loot[2]) * config.lootMaxRate
+                    if count > 100:
+                        while count:
+                            depCount = min(count, 100) * config.lootMaxRate
+                            item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            lootMsg.append(item.name())
+                            ret = corpse.container.placeItemRecursive(item)
+                            count -= depCount
+                    else:
+                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                         lootMsg.append(item.name())
                         ret = corpse.container.placeItemRecursive(item)
-                        count -= depCount
                             
-                else:
-                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                    lootMsg.append(item.name())
-                    ret = corpse.container.placeItemRecursive(item)
-                        
+                elif lenLoot == 4:
+                    count = random.randint(loot[4], loot[2]) * config.lootMaxRate
+                    if count > 100:
+                        while count:
+                            depCount = min(count, 100)
+                            item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            lootMsg.append(item.name())
+                            ret = corpse.container.placeItemRecursive(item)
+                            count -= depCount
+                                
+                    else:
+                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                        lootMsg.append(item.name())
+                        ret = corpse.container.placeItemRecursive(item)
+                            
 
-            if ret == None:
-                log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
-                break
+                if ret == None:
+                    log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
+                    break
                 
         corpse.decay(self.position)
         splash = game.item.Item(game.enum.FULLSPLASH)

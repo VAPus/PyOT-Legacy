@@ -100,7 +100,7 @@ class TibiaPlayer(Creature):
 
         # Storage & skills
         if self.data["skills"]:
-            self.skills = otjson.dumps(self.data["skills"])
+            self.skills = otjson.loads(self.data["skills"])
         else:
             self.skills = []
             for i in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
@@ -109,7 +109,7 @@ class TibiaPlayer(Creature):
         del self.data["skills"]
         
         if self.data["storage"]:
-            self.storage = otjson.dumps(self.data["storage"])
+            self.storage = otjson.loads(self.data["storage"])
         else:
             self.storage = {}
             
@@ -199,6 +199,7 @@ class TibiaPlayer(Creature):
         else:
             stream = streamX        
         stream.uint8(0xA1) # Skill type
+
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
             stream.uint8(self.skills[x]) # Value / Level
             stream.uint8(1) # Base
