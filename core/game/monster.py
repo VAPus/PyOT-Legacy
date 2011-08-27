@@ -24,6 +24,9 @@ def chance(procent):
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
+
+    def isMonster(self):
+        return True
         
     def __init__(self, base, position, cid=None):
         Creature.__init__(self, base.data.copy(), position, cid)

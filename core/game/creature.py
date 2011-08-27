@@ -93,6 +93,12 @@ class Creature(object):
 
     def isPlayer(self):
         return False
+
+    def isNPC(self):
+        return False
+        
+    def isMonster(self):
+        return False
         
     def name(self):
         return self.data["name"]

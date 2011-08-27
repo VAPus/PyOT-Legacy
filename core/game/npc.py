@@ -29,6 +29,9 @@ class ClassAction(object):
 class NPC(Creature):
     def generateClientID(self):
         return 0x80000000 + uniqueId()
+
+    def isNPC(self):
+        return True
         
     def __init__(self, base, position, cid=None):
         Creature.__init__(self, base.data.copy(), position, cid)
@@ -38,13 +41,14 @@ class NPC(Creature):
         self.noBrain = True
         self.walkPer = base.walkPer
         self.openChannels = []
+        self.focus = set()
         
     def description(self):
         return "You see %s" % self.base.data["description"]
 
-    def onHit(self, by, type):
+    def onHit(self, by, dmg, type):
         if self.base.attackable:
-            Monster.onHit(self, by, type)
+            Monster.onHit(self, by, dmg, type)
     
     def actionIds(self):
         return self.base.actions
@@ -52,8 +56,8 @@ class NPC(Creature):
     def playerSay(self, player, said, type, channel):
         game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
 
-    def sayTo(self, to, text):
-        self.sayPrivate(text, to, game.enum.MSG_NPC_FROM)
+    def sayTo(self, to, text, messageType=game.enum.MSG_NPC_FROM):
+        self.sayPrivate(text, to, messageType)
 
     def sendClose(self, to):
         stream = TibiaPacket(0x7C)
