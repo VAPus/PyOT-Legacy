@@ -372,7 +372,10 @@ class Creature(object):
             return game.enum.COLOR_LIGHTGREEN, game.enum.EFFECT_POISON
         elif self.base.blood == game.enum.FLUID_ENERGY:
             return game.enum.COLOR_PURPLE, game.enum.EFFECT_PURPLEENERGY
-        return game.enum.EFFECT_DRAWBLOOD
+        elif self.base.blood == game.enum.FLUID_UNDEAD:
+            return game.enum.COLOR_GREY, game.enum.EFFECT_HITAREA
+        elif self.base.blood == game.enum.FLUID_FIRE:
+            return game.enum.COLOR_ORANGE, game.enum.EFFECT_DRAWBLOOD
         
     def damageToBlock(self, dmg, type):
         return dmg
@@ -389,17 +392,42 @@ class Creature(object):
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
         dmg = max(self.data["health"] * -1, dmg)
+
+
+
         if type == game.enum.MELEE:
             textColor, magicEffect = self.hitEffects()
-            self.magicEffect(self.position, magicEffect)
-
+        
         elif type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
+            magicEffect = game.enum.EFFECT_ICEATTACK
             
         elif type == game.enum.FIRE:
             textColor = game.enum.COLOR_ORANGE
+            magicEffect = game.enum.EFFECT_HITBYFIRE
+
+        elif type == game.enum.EARTH:
+            textColor = game.enum.COLOR_LIGHTGREEN
+            magicEffect = game.enum.EFFECT_HITBYPOSION
+           
+        elif type == game.enum.ENERGY:
+            textColor = game.enum.COLOR_PURPLE
+            magicEffect = game.enum.EFFECT_ENERGY_DAMAGE
             
+        elif type == game.enum.HOLY:
+            textColor = game.enum.COLOR_YELLOW
+            magicEffect = game.enum.EFFECT_HOLYDAMAGE
             
+        elif type == game.enum.DEATH:
+            textColor = game.enum.COLOR_DARKRED
+            magicEffect = game.enum.EFFECT_SMALLCLOUDS
+            
+        elif type == game.enum.DROWN:
+            textColor = game.enum.COLOR_LIGHTBLUE
+            magicEffect = game.enum.EFFECT_ICEATTACK
+            
+        self.magicEffect(self.position, magicEffect) 
+        
         tile = game.map.getTile(self.position)
         addSplash = True
         for item in tile.getItems():
@@ -414,8 +442,8 @@ class Creature(object):
                 splash.fluidSource = game.enum.FLUID_BLOOD
             else:
                 splash.fluidSource = self.base.blood
-                
-            game.engine.placeItem(splash, self.position)
+            if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
+                game.engine.placeItem(splash, self.position)
             
             
         if by and by.isPlayer():

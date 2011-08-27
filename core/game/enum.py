@@ -125,8 +125,6 @@ FLUID_SLIME                     = FLUID_GREEN
 FLUID_LEMONADE                  = FLUID_YELLOW
 FLUID_MILK                      = FLUID_WHITE
 FLUID_MANA                      = FLUID_PURPLE
-FLUID_ENERGY                    = FLUID_PURPLE
-FLUID_UNDEAD                    = FLUID_NONE
 
 FLUID_LIFE                      = FLUID_RED + 8
 FLUID_OIL                       = FLUID_BROWN + 8
@@ -143,6 +141,11 @@ FLUID_SWAMP                     = FLUID_GREEN + 24
 
 FLUID_TEA                       = FLUID_BROWN + 32
 FLUID_MEAD                      = FLUID_BROWN + 40
+
+# Compatibility stuff
+FLUID_ENERGY                    = FLUID_PURPLE
+FLUID_UNDEAD                    = FLUID_NONE
+FLUID_FIRE                      = FLUID_BROWN
 
 # Floorchange
 FLOORCHANGE_DOWN                = 0x00
