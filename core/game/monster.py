@@ -101,7 +101,7 @@ class Monster(Creature):
                     count = random.randint(1, loot[2]) * config.lootMaxRate
                     if count > 100:
                         while count:
-                            depCount = min(count, 100) * config.lootMaxRate
+                            depCount = min(count, 100)
                             item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
                             lootMsg.append(item.name())
                             ret = corpse.container.placeItemRecursive(item)
