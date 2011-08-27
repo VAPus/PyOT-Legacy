@@ -9,14 +9,14 @@ from collections import deque
 import config
 
 PACKSIZE = 4
-
+PACKMULTIPLY = 16
 def ZPack(level, x, y):
-    return level + (x << 4) + (y << PACKSIZE)
+    return level + (x * 16) + (y * PACKMULTIPLY)
     
 def getTile(pos):
     zp = ZPack(pos[2], pos[0], pos[1]) 
     try:
-        t = knownMap[zp ]
+        t = knownMap[zp]
         if t:
             return t
         else:
@@ -24,7 +24,7 @@ def getTile(pos):
     except:
         loadTiles(pos[0], pos[1])
         try:
-            return knownMap[ zp ]
+            return knownMap[zp]
         except:
             return None
 def placeCreature(creature, pos):
@@ -177,6 +177,7 @@ while True:
         
     else:
         break
+PACKMULTIPLY = 1 << PACKSIZE
 #PACKSIZE += 4        
 """if config.useNumpy:
     from numpy import empty
@@ -297,10 +298,10 @@ def load(sectorX, sectorY):
             currZ = mz[0]
             
             for i,x in enumerate(mz[1]):
-                var = currZ + ((i+xbase) << 4)
+                var = currZ + ((i+xbase) * 16)
                 for y,tile in enumerate(x):
                     if tile:
-                        zpacked = var + ((y+ybase) << PACKSIZE)
+                        zpacked = var + ((y+ybase) * PACKMULTIPLY)
                             
                         if localItems[tile.things[0].itemId]["a"] & 1:
                             if config.stackTiles:
@@ -329,7 +330,6 @@ def load(sectorX, sectorY):
 def _unloadCheck(sectorX, sectorY):
     # Calculate the x->x and y->y ranges
     # We're using a little higher values here to avoid reloading again 
-    import data.map.info
     import game.player
     
     xMin = (sectorX * data.map.info.sectorSize[0]) + 14
@@ -358,12 +358,13 @@ def _unloadMap(sectorX, sectorY):
 def unload(sectorX, sectorY):
     # TODO: Make me alot more effective!
     count = 0
-    for z in xrange(0, 15):
-        for x in xrange(sectorX*data.map.info.sectorSize[0], (sectorX+1)*data.map.info.sectorSize[0]):
-            var = z + (x << 4)
-            for y in xrange(sectorY*data.map.info.sectorSize[1], (sectorY+1)*data.map.info.sectorSize[1]):
+    for x in xrange(sectorX*data.map.info.sectorSize[0], (sectorX+1)*data.map.info.sectorSize[0]):
+        var = x * 16
+        for y in xrange(sectorY*data.map.info.sectorSize[1], (sectorY+1)*data.map.info.sectorSize[1]):
+            var2 = var + (y * PACKMULTIPLY)
+            for z in xrange(data.map.info.levels[1], data.map.info.levels[0]):
                 try:
-                    del knownMap[var + (y << PACKSIZE)]
+                    del knownMap[var2 + z]
                     count += 1
                 except:
                     pass

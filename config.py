@@ -64,7 +64,7 @@ experienceMessageColor = 215 # Between 1 or 255, else debug
 # Map cleaning & unloading
 # Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc
 performSectorUnload = True
-performSectorUnloadEvery = 300 # 5 minutes is good
+performSectorUnloadEvery = 30 # 5 minutes is good
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
