@@ -7,26 +7,22 @@ import marshal
 import scriptsystem
 from collections import deque
 import config
-
-PACKSIZE = 4
-PACKMULTIPLY = 16
-def ZPack(level, x, y):
-    return level + (x * 16) + (y * PACKMULTIPLY)
     
 def getTile(pos):
-    zp = ZPack(pos[2], pos[0], pos[1]) 
+    iX = int(pos[0] / 32)
+    iY = int(pos[1] / 32)
+    pX = pos[0] -iX * 32
+    pY = pos[1] -iY * 32
+    sectorSum = (iX * 32768) + iY
     try:
-        t = knownMap[zp]
-        if t:
-            return t
-        else:
-            raise
+        return knownMap[sectorSum][pos[2]][pX][pY]
     except:
         loadTiles(pos[0], pos[1])
         try:
-            return knownMap[zp]
+            return knownMap[sectorSum][pos[2]][pX][pY]
         except:
             return None
+            
 def placeCreature(creature, pos):
     try:
         return getTile(pos).placeCreature(creature)
@@ -171,20 +167,9 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 import data.map.info
 dummyItems = {} 
 
-while True:
-    if data.map.info.height > 2**PACKSIZE:
-        PACKSIZE += 1
-        
-    else:
-        break
-PACKMULTIPLY = 1 << PACKSIZE
-#PACKSIZE += 4        
-"""if config.useNumpy:
-    from numpy import empty
-    knownMap = empty((data.map.info.levels[0],data.map.info.width,data.map.info.height), dtype=Tile)
-    
-else:"""
 knownMap = {}
+for i in xrange(data.map.info.levels[1], data.map.info.levels[0]):
+    knownMap[i] = {}
 sectors = []
 
 
@@ -239,12 +224,27 @@ def I(itemId, **kwargs):
         if itemX:
             return itemX
         return item
-    
+
+R = I # TODO
+
 def T(*args):
     return Tile(args, itemLen=len(args))
 
 T = bindconstant._make_constants(T)
 
+def C(*args):
+    if config.stackTiles:
+        code = 0
+        por = 0
+        for item in tile.things:
+            code += item.itemId << por
+            por += 14
+        if not code in dummyTiles:
+            dummyTiles[code] = T(*args)
+        return dummyTiles[code]
+    else:
+        T(*args)
+        
 global V
 V = None
 
@@ -266,7 +266,7 @@ def loadTiles(x,y, walk=True):
 def __loadOp(code): exec(code)
 
 def load(sectorX, sectorY):
-    sectorSum = (sectorX << 15) + sectorY
+    sectorSum = (sectorX * 32768) + sectorY
     ybase = sectorY*data.map.info.sectorSize[1]
     xbase = sectorX*data.map.info.sectorSize[0]
     if sectorSum in sectors or (ybase > data.map.info.height-1 or xbase > data.map.info.width-1):
@@ -293,30 +293,7 @@ def load(sectorX, sectorY):
         exec(compiled)
     
     if m:
-        localItems = game.item.items # Prevent a bit of a lookup
-        for mz in m:
-            currZ = mz[0]
-            
-            for i,x in enumerate(mz[1]):
-                var = currZ + ((i+xbase) * 16)
-                for y,tile in enumerate(x):
-                    if tile:
-                        zpacked = var + ((y+ybase) * PACKMULTIPLY)
-                            
-                        if localItems[tile.things[0].itemId]["a"] & 1:
-                            if config.stackTiles:
-                                code = 0
-                                por = 0
-                                for item in tile.things:
-                                    code += item.itemId << por
-                                    por += 14
-                                if not code in dummyTiles:
-                                    dummyTiles[code] = tile
-                                knownMap[zpacked] = dummyTiles[code]
-                            else:
-                                knownMap[zpacked] = tile
-                        else:
-                            knownMap[zpacked] = Tile(tile.things[:], tile.itemCount)                  
+        knownMap[sectorSum] = m          
             
 
     if l:    
@@ -356,17 +333,9 @@ def _unloadMap(sectorX, sectorY):
         print "Unloading took: %f" % (time.time() - t)   
         
 def unload(sectorX, sectorY):
-    # TODO: Make me alot more effective!
-    count = 0
-    for x in xrange(sectorX*data.map.info.sectorSize[0], (sectorX+1)*data.map.info.sectorSize[0]):
-        var = x * 16
-        for y in xrange(sectorY*data.map.info.sectorSize[1], (sectorY+1)*data.map.info.sectorSize[1]):
-            var2 = var + (y * PACKMULTIPLY)
-            for z in xrange(data.map.info.levels[1], data.map.info.levels[0]):
-                try:
-                    del knownMap[var2 + z]
-                    count += 1
-                except:
-                    pass
-    sectors.remove((sectorX << 15) + sectorY)            
-    print "Cleared %d tiles" % count
+    sectorSum = (sectorX * 32768) + sectorY
+    try:
+        del knownMap[sectorSum]
+    except:
+        pass
+    sectors.remove(sectorSum)

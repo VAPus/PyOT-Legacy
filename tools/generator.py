@@ -1,12 +1,30 @@
 import copy
+import sys
+sys.path.append('../')
+import config
+import MySQLdb
 
+
+### Load all solid tiles
+items = set()
+db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
+cursor = db.cursor()
+cursor.execute("SELECT sid FROM items WHERE solid = 1")
+for row in cursor.fetchall():
+    items.add(row[0])
+cursor.close()
+db.close()
+    
 # Ops:
 """
     I: Item
-    M: Monster
-    MM: Multimonster
+    C: Closed tile
+    R: "restricted"/solid Item
     T: Tile
     V: Alias for a precached (reference) version of T(I(100))
+    S: Spawn point
+        M: Monster
+        N: NPC 
 """
 
 ### Behavior
@@ -213,133 +231,51 @@ class Map(object):
                        
                 # Level 3, y compare:
                 def yComp(xCom):
-                    yCom = []
-                    yCount = 0
                     output = []
 
-                    for y in xCom[:]:
-                        if yCom == y:
-                            yCount += 1
-                            xCom.remove(y)
+                    for y in xCom:
+                        if "R(" in y:
+                            output.append("(C(%s),)" % (','.join(y)))
                         else:
-                            if yCount > 1:
-                                output.append("(T(%s),)*%d" % (','.join(yCom), yCount))
-                            elif yCount:
-                                output.append("(T(%s),)" % (','.join(yCom)))
-                            yCom = y
-                            yCount = 1
-                    if yCount > 1:
-                        output.append("(T(%s),)*%d" % (','.join(yCom), yCount))
-                    elif yCount:
-                        output.append("(T(%s),)" % (','.join(yCom)))
+                            output.append("(T(%s),)" % (','.join(y)))
+                            
                     if output:    
-
-                        return "(%s,)" % ('+'.join(output).replace("T()", "None").replace("T(I(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
+                        return "(%s,)" % ('+'.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
 
                     return '((None,)*%d,)' % areas[1]
                     
                 # Level 2, X compare
                 def xComp(zCom):
-                    xCom = []
-                    xCount = 0
                     output = []
-                    for x in zCom[:]:
-                        if xCom == x:
-                            xCount += 1
-                            zCom.remove(x)
-                        else:
-                            if xCount > 1:
-                                # Begin building
-                                t = yComp(xCom)
-                                if t:
-                                    output.append("%s*%d" % (t, xCount))
-                            elif xCount:
-                                t = yComp(xCom)
-                                if t:
-                                    output.append(t)
-                            xCom = x
-                            xCount = 1
-
-                    if xCount > 1:
-                        t = yComp(xCom)
-                        if t:
-                            output.append("%s*%d" % (t, xCount))
-                    elif xCount:
-                        t = yComp(xCom)
+                    noRows = 0
+                    no = ("((None,)*%d,)" % areas[1], "(None,)")
+                    for x in zCom:
+                        t = yComp(x)
                         if t:
                             output.append(t)
-                    
-                    return '+'.join(output)
+                        if t in no:
+                            noRows += 1
+                            
+                    if not noRows >= areas[0]:
+                        return '+'.join(output)
                 
                 output = []
                 for zPos in sector:
                     data = xComp(sector[zPos])
-                    """if data == "((None,)*%d,)*%d" % (areas[0], areas[1]): # Big load of nothing
-                        print("--Note: %d is a level of nothingness, ignore it" % zPos)
-                        continue
-                    elif data:
-                        if zPos in nothingness:
-                            nothingness.remove(zPos)
-                        output.append("(%d,%s)," % (zPos, data))"""
                     if data:
                         if zPos in nothingness:
                             nothingness.remove(zPos)
-                        output.append("(%d,%s)," % (zPos, data))
+                        output.append("%d:%s" % (zPos, data))
+                        
                 if output:
-                    output = "m=%s" % ''.join(output)
+                    output = "m={%s}" % ','.join(output)
                 else: # A very big load of nothing
-                    output = "m=()"
-                
-                """if extras:
-                    # Monster ops
-                    # TODO: Reorder monsters first!
-                    monsters = {}
-                    monsterPos = {}
-                    handled = {}
-                    for x in extras:
-                        if x[0] == "M":
-                            args = list(x.split('(')[1].split(')')[0].split(','))
-                            if len(args) < 2:
-                                continue
-                            if len(args) == 3:
-                                args.append('7')
-                            
-                            subs = args[0].split("'")
-                            if not subs[1] in monsters:
-                                monsters[subs[1]] = {}
-                                monsterPos[subs[1]] = {}
+                    output = "m=None"
 
-                            if not args[3] in monsterPos[subs[1]]:
-                                monsters[subs[1]][args[3]] = 1
-                                monsterPos[subs[1]][args[3]] = [args[1], args[2]]
-                            else:
-                                monsters[subs[1]][args[3]] += 1
-                                monsterPos[subs[1]][args[3]].append(args[1])
-                                monsterPos[subs[1]][args[3]].append(args[2])
-                                
-                    # Run two, with new count 
-                    for x in copy.copy(extras):
-                        try:
-                            if x[0] == "M":
-                                args = list(x.split('(')[1].split(')')[0].split(','))
-                                if len(args) == 3:
-                                    args.append('7')
-                                subs = args[0].split("'")
-                                if monsters[subs[1]][args[3]] > 1:
-                                   if not args[3] in handled:
-                                       handled[args[3]] = []
-                                   
-                                   if not subs[1] in handled[args[3]]:
-                                       extras[extras.index(x)] = "MM('%s',%s%s)" % ( subs[1], ','.join(monsterPos[subs[1]][args[3]]), ','+args[3] if int(args[3]) != 7 else '' )
-                                       handled[args[3]].append(subs[1])
-                                       curr = subs[1]
-                                   else:
-                                       del extras[extras.index(x)]
-                        except:
-                            print "Bug"            """
                 if extras:
                     output += '\nl="%s"' % ';'.join(extras)
-                if output != "m=()":
+                    
+                if output != "m=None":
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:
                         f.write(output)
                 
@@ -479,7 +415,10 @@ class Item(object):
                 eta.append("%s=%s" % (key, str(self.attributes[key]) if type(self.attributes[key]) != str else '"""%s"""' % self.attributes[key]))
                 
             extra = ',%s' % ','.join(eta)
-        return ('I(%d%s)' % (self.id, extra), extras)
+        if not self.id in items:
+            return ('I(%d%s)' % (self.id, extra), extras)
+        else:
+            return ('R(%d%s)' % (self.id, extra), extras) 
 
 class RSItem(object):
     __slots__ = ('ids')

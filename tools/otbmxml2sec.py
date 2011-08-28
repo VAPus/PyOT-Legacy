@@ -199,9 +199,13 @@ tiles = width * height # This also count null tiles which we doesn't pass, bad
 print("OTBM v%d, %dx%d" % (version, width, height)) 
 _output_ = []
 _output_.append("""
-from generator import *
+from generator import Map, Item, Tile, Spawn
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
 m = Map(%d,%d, ground=None)
+at = m.addTo
+a = m.add
+I = Item
+T = Tile
 print ("--Done generating the map layout")
 """ % (width, height))
 # Prepopulate map with a ground level of voids
@@ -258,18 +262,18 @@ while node:
                         tile.data.uint32() # TODO, parse those
                         
                     elif attr == 9: # ITEM, ground item
-                        _itemG_ = "Item(%d)" % (tile.data.uint16())
+                        _itemG_ = "I(%d)" % (tile.data.uint16())
                         _render_ = True
                         
                     else:
                         print("Unknown tile attrubute")
                         
-                _tile_ = ["t=Tile(%d,%d,%s,%d)" % (tileX, tileY, _itemG_, baseZ)]
+                _tile_ = ["t=T(%d,%d,%s,%d)" % (tileX, tileY, _itemG_, baseZ)]
                 item = tile.next()
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _tile_.append("i=Item(%d)" % (itemId))
+                        _tile_.append("i=I(%d)" % (itemId))
                         safe = True
                         
                         # Unserialie attributes
@@ -337,9 +341,9 @@ while node:
                 print("Unknown tile node")
             if _render_:
                 if len(_tile_) == 1:
-                    _output_.append("m.add(%s)" % _tile_[0].replace("t=", ''))
+                    _output_.append("a(%s)" % _tile_[0].replace("t=", ''))
                 else:
-                    _tile_.append("m.add(t)")
+                    _tile_.append("a(t)")
                     _output_.append("\n".join(_tile_))
             onTile += 1
             if onTile - lastPrint == 2000:
@@ -433,7 +437,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     for entry in spawnSectors:
         _output_.append(spawn)
         _output_.append('\n'.join(spawnData[entry]))
-        _output_.append("m.addTo(%d, %d, s, %d)" % ((entry[0]*32)+16, (entry[1]*32)+16, baseZ))
+        _output_.append("at(%d, %d, s, %d)" % ((entry[0]*32)+16, (entry[1]*32)+16, baseZ))
         
 print("---Done with spawns")
 
