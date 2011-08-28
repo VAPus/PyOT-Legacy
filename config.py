@@ -66,6 +66,10 @@ experienceMessageColor = 215 # Between 1 or 255, else debug
 performSectorUnload = True
 performSectorUnloadEvery = 900 # 15 minutes is good
 
+# Save system
+doSaveAll = True # Issue saves
+saveAllEvery = 300 # in seconds. Even down to a few seconds won't really make server lag since it's async, but you will definitly risk binding up sql connections if your below 1second, this in turn can cause lag
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

@@ -183,3 +183,9 @@ def saveMe(creature, text):
     return False
     
 scriptsystem.get("talkaction").reg('saveme', saveMe)
+
+def saveAll(creature, text):
+    game.engine.saveAll()
+    return False
+    
+scriptsystem.get("talkaction").reg('saveall', saveAll)

@@ -1,5 +1,5 @@
 # This act as the core event system
-from twisted.internet import reactor, threads
+from twisted.internet import reactor, threads, defer
 from collections import deque
 from twisted.python import log
 import time
@@ -9,6 +9,7 @@ import config
 import math
 import game.pathfinder
 import bindconstant
+import sql
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -35,7 +36,12 @@ def loader(timer):
                 ret = threads.deferToThread(__, fileSec)
             ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
             
-
+        def looper(f, t):
+            d = f()
+            f.addCallback(lambda x: reactor.callLater(t, looper, f, t))
+        
+        if config.doSaveAll:
+            reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
 
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
@@ -285,3 +291,11 @@ def autoCastValue(data): # We get a string, then find the simplest possible valu
 # Call that ignores failours
 def ignore(result):
     pass
+
+# Save system, async :)
+@defer.deferredGenerator
+def saveAll():
+    # Build query
+    for player in game.player.allPlayersObject:
+        d = defer.waitForDeferred(sql.conn.runOperation(*player._saveQuery()))
+        yield d
