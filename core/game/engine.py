@@ -28,8 +28,9 @@ def loader(timer):
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
                 fileSec = fileSec.split('/')[-1]
-                x, y,junk = fileSec.split('.')
-                ret = load(x,y)
+                x, y, junk = fileSec.split('.')
+                print "Loading %s.%s.sec..." % (x,y)
+                ret = load(int(x),int(y))
                 
             log.msg("Loaded entier map in %f" % (time.time() - begin))
 
@@ -167,10 +168,13 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=tuple()):
     players = set()
-                
-    for player in game.player.allPlayersObject:
-        if player.canSee(pos, radius) and player not in ignore:
-            players.add(player.client)
+    try:       
+        for player in game.player.allPlayersObject:
+            if player.canSee(pos, radius) and player not in ignore:
+                players.add(player.client)
+    except:
+        pass # No players
+        
     return players
         
 getSpectators = bindconstant._make_constants(getSpectators)
@@ -188,10 +192,14 @@ getCreatures = bindconstant._make_constants(getCreatures)
 
 def getPlayers(pos, radius=(8,6), ignore=tuple()):
     players = set()
-                
-    for player in game.player.allPlayersObject:
-        if player.canSee(pos, radius) and player not in ignore:
-            players.add(player)
+    
+    try:            
+        for player in game.player.allPlayersObject:
+            if player.canSee(pos, radius) and player not in ignore:
+                players.add(player)
+    except:
+        pass # No players
+    
     return players
         
 getPlayers = bindconstant._make_constants(getPlayers)
