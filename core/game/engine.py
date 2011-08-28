@@ -23,22 +23,13 @@ def loader(timer):
         importer()
         if config.loadEntierMap:
             from game.map import load
+            import glob
             begin = time.time()
-            x = 0
-            y = 0
-            retOld = False
-            ret = False
-            while True:
-                try:
-                    ret = load(x,y)
-                    y += 1
-                except IOError:
-                    x += 1
-                    y = 0                
-
-                if not ret and not retOld:
-                    break
-                retOld = ret  
+            files = glob.glob('data/map/*.sec')
+            for fileSec in files:
+                fileSec = fileSec.split('/')[-1]
+                x, y,junk = fileSec.split('.')
+                ret = load(x,y)
                 
             log.msg("Loaded entier map in %f" % (time.time() - begin))
 

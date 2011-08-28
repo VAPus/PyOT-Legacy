@@ -296,7 +296,7 @@ def load(sectorX, sectorY):
         knownMap[sectorSum] = m          
             
     if l:    
-        threads.deferToThread(__loadOp, l)
+        reactor.callInThread(__loadOp, l)
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
