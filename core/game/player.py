@@ -889,7 +889,6 @@ class TibiaPlayer(Creature):
             return False
             
     def sendChannelMessage(self, by, text, type=game.enum.MSG_SPEAK_SAY, channelId=0):
-        print channelId
         stream = TibiaPacket(0xAA)
         stream.uint32(1)
         print by.data["name"]

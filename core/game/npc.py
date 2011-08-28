@@ -64,19 +64,29 @@ class NPC(Creature):
         stream.send(to.client)
     
     def sendTradeOffers(self, to):
+
+     
         stream = TibiaPacket(0x7A)
         stream.string(self.data["name"])
         stream.uint8(min(len(self.base.offers), 255))
         for item in self.base.offers:
             stream.uint16(game.item.items[item[0]]["cid"])
-            if "stackable" in game.item.items[item[0]]:
-                stream.uint8(1)
-            else:
-                stream.uint8(0)
+            stream.uint8(item[3])
             stream.string(game.item.items[item[0]]["name"])
             stream.uint32(game.item.items[item[0]]["weight"] * 100)
             stream.uint32(item[1])
             stream.uint32(item[2])
+        stream.send(to.client)
+        
+        stream = TibiaPacket(0x7B)
+        stream.uint32(20000000)
+        stream.uint8(min(len(self.base.offers), 255))
+        for item in self.base.offers:
+            stream.uint16(game.item.items[item[0]]["cid"])
+            if "stackable" in game.item.items[item[0]]:
+                stream.uint8(item[3])
+            stream.uint8(255)
+            
         stream.send(to.client)    
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):

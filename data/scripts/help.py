@@ -122,9 +122,12 @@ def makeitem(creature, text):
             count = int(text.split(" ")[1])
         text = int(text.split(" ")[0])
         if text >= 1000:
-            newitem = game.item.Item(text, count)
-            bag = creature.inventory[2]
-            creature.itemToContainer(bag, newitem)
+            while count:
+                rcount = min(100, count)
+                newitem = game.item.Item(text, rcount)
+                bag = creature.inventory[2]
+                creature.itemToContainer(bag, newitem)
+                count -= rcount
         else:
             raise
     except:

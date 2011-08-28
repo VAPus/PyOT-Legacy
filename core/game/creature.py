@@ -544,8 +544,6 @@ class Creature(object):
                 
 
     def turn(self, direction):
-        print direction
-        print self.direction
         if self.direction == direction:
             return
             

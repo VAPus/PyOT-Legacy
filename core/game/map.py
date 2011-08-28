@@ -250,12 +250,11 @@ V = None
 
 if config.stackTiles:
     dummyTiles = {}
+    
 def loadTiles(x,y, walk=True):
     if x < 0 or y < 0:
-        print "Hmm"
         return None
     elif x > data.map.info.height or y > data.map.info.width:
-        print "Hmm2"
         return None
         
     sectorX = int(x / data.map.info.sectorSize[0])
@@ -296,7 +295,7 @@ def load(sectorX, sectorY):
         knownMap[sectorSum] = m          
             
     if l:    
-        reactor.callInThread(__loadOp, l)
+        threads.deferToThread(__loadOp, l)
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)

@@ -223,8 +223,8 @@ class MonsterBase(CreatureBase):
             self.brain.beginThink(monster) # begin the heavy thought process!
 
             if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
-                log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
-                
+                #log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
+                pass
             if place:
                 try:
                     stackpos = game.map.getTile(position).placeCreature(monster)
