@@ -27,12 +27,14 @@ def loader(timer):
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
-                fileSec = fileSec.split('/')[-1]
-                x, y, junk = fileSec.split('.')
-                print "Loading %s.%s.sec..." % (x,y)
-                ret = load(int(x),int(y))
+                def __(fileSec):
+                    fileSec = fileSec.split('/')[-1]
+                    x, y, junk = fileSec.split('.')
+                    load(int(x),int(y))
                 
-            log.msg("Loaded entier map in %f" % (time.time() - begin))
+                ret = threads.deferToThread(__, fileSec)
+            ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
+            
 
 
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
