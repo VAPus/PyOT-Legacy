@@ -60,11 +60,11 @@ class Shop(ClassAction):
         self.on.shopEmpty = "Sorry, I'm not offering anything."
         self.on.shopTrade = "Here's my offer, %(playerName)s. Don't you like it?"
         
-    def offer(self, name, sellPrice=0, buyPrice=0, count=1):
+    def offer(self, name, sellPrice=-1, buyPrice=-1, count=255):
         if type(name) == str:
             name = game.item.itemNames[name]
             
-        self.on.offers.append( (name, buyPrice, sellPrice, count) )
+        self.on.offers.append( (name, sellPrice, buyPrice, count) )
 
     def offerContainer(self, name, contains, count, buyPrice=0):
         pass # TODO
@@ -83,21 +83,21 @@ class RuneShop(Shop):
         Shop.action(self)
         # Include shop actions
         self.on.actions.append('shop')
-        self.offer('intense healing rune', 95, 0, 1)
-        self.offer('ultimate healing rune', 175, 0, 1)
-        self.offer('magic wall rune', 2293, 0, 3)
-        self.offer('destroy field rune', 45, 0, 3)
-        self.offer('light magic missile rune', 40, 0, 10)
-        self.offer('heavy magic missile rune', 120, 0, 10)
-        self.offer('great fireball rune', 180, 0, 4)
-        self.offer('explosion rune', 250, 0, 6)
-        self.offer('sudden death rune', 350, 0, 3)
-        #self.offer('death arrow rune', 300, 0, 3)
-        self.offer('paralyze rune', 700, 0, 1)
-        self.offer('animate dead rune', 375, 0, 1)
-        self.offer('convince creature rune', 80, 0, 1)
-        self.offer('chameleon rune', 210, 0, 1)
-        self.offer('desintegrate rune', 80, 0, 3)
+        self.offer('intense healing rune', 95, -1, 1)
+        self.offer('ultimate healing rune', 175, -1, 1)
+        self.offer('magic wall rune', 2293, -1, 3)
+        self.offer('destroy field rune', 45, -1, 3)
+        self.offer('light magic missile rune', 40, -1, 10)
+        self.offer('heavy magic missile rune', 120, -1, 10)
+        self.offer('great fireball rune', 180, -1, 4)
+        self.offer('explosion rune', 250, -1, 6)
+        self.offer('sudden death rune', 350, -1, 3)
+        #self.offer('death arrow rune', 300, -1, 3)
+        self.offer('paralyze rune', 700, -1, 1)
+        self.offer('animate dead rune', 375, -1, 1)
+        self.offer('convince creature rune', 80, -1, 1)
+        self.offer('chameleon rune', 210, -1, 1)
+        self.offer('desintegrate rune', 80, -1, 3)
 
         self.offer('wand of vortex', 500, 250)
         self.offer('wand of dragonbreath', 1000, 500)
@@ -120,16 +120,16 @@ class RuneShop(Shop):
         self.offer('spellbook', 150)
         self.offer('magic lightwand', 400)
 
-        self.offer('small health potion', 20, 0, 1)
-        self.offer('health potion', 45, 0, 1)
-        self.offer('mana potion', 50, 0, 1)
-        self.offer('strong health potion', 100, 0, 1)
-        self.offer('strong mana potion', 80, 0, 1)
-        self.offer('great health potion', 190, 0, 1)
-        self.offer('great mana potion', 120, 0, 1)
-        self.offer('great spirit potion', 190, 0, 1)
-        self.offer('ultimate health potion', 310, 0, 1)
-        self.offer('antidote potion', 50, 0, 1)
+        self.offer('small health potion', 20, -1, 1)
+        self.offer('health potion', 45, -1, 1)
+        self.offer('mana potion', 50, -1, 1)
+        self.offer('strong health potion', 100, -1, 1)
+        self.offer('strong mana potion', 80, -1, 1)
+        self.offer('great health potion', 190, -1, 1)
+        self.offer('great mana potion', 120, -1, 1)
+        self.offer('great spirit potion', 190, -1, 1)
+        self.offer('ultimate health potion', 310, -1, 1)
+        self.offer('antidote potion', 50, -1, 1)
         
 regClassAction('runeshop', RuneShop)
 

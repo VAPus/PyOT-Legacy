@@ -1060,9 +1060,7 @@ class TibiaPlayer(Creature):
             
             addBack = removedMoney - amount
             if addBack: # Add some money back
-                reverseMap = game.enum.MONEY_MAP[:]
-                reverseMap.reverse()
-                for x in reverseMap:
+                for x in game.enum.MONEY_MAP:
                     if addBack >= x[1]:
                         coins = int(addBack / x[1])
                         addBack = addBack % x[1]
@@ -1078,7 +1076,20 @@ class TibiaPlayer(Creature):
             
         else:
             return 0
-            
+
+    def addMoney(self, amount):
+        for x in game.enum.MONEY_MAP:
+            if amount >= x[1]:
+                coins = int(amount / x[1])
+                amount = amount % x[1]
+                while coins:
+                    count = min(100, coins)
+                    self.itemToContainer(self.inventory[2], game.item.Item(x[0], count))
+                    coins -= count
+                if not amount:
+                    break
+        return True
+        
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()

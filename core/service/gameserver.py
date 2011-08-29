@@ -137,7 +137,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.pos = 0
         
         packetType = packet.uint8()
-        
+        import game.engine
+        game.engine.explainPacket(packet)
         if packetType == 0x14 or self.player.data["health"] < 1: # Logout
             self.transport.loseConnection()
             

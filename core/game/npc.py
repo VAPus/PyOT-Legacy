@@ -70,8 +70,8 @@ class NPC(Creature):
             stream.uint8(item[3])
             stream.string(game.item.items[item[0]]["name"])
             stream.uint32(game.item.items[item[0]]["weight"] * 100)
-            stream.uint32(item[1])
-            stream.uint32(item[2])
+            stream.int32(item[1])
+            stream.int32(item[2])
             if item[2]:
                 forSale.add(item[0])
                 
@@ -84,22 +84,27 @@ class NPC(Creature):
         stream = TibiaPacket(0x7B)
         stream.uint32(to.getMoney())
         
-        items = set()
+        items = {}
         count = 0
         for item in to.inventory[2].container.getRecursive():
             if item.itemId in forSale:
-                items.add(item)
-                count += 1
+                if item.itemId in items and item.stackable:
+                    items[item.itemId] += item.count
+                elif item.stackable:
+                    items[item.itemId] = item.count
+                    count += 1
+                elif item.itemId in items:
+                    items[item.itemId] += 1
+                else:
+                    items[item.itemId] = 1
+                    count += 1
+                    
                 if count == 255:
                     break       
         stream.uint8(count)
-        for item in items:
-            stream.uint16(game.item.items[item.itemId]["cid"])
-            sub = item.getsub()
-            if sub != None:
-                stream.uint8(sub)
-            else:
-                stream.uint8(255)
+        for itemId in items:
+            stream.uint16(game.item.items[itemId]["cid"])
+            stream.uint8(0) #or items[itemId]
             
         stream.send(to.client) 
         
@@ -107,7 +112,7 @@ class NPC(Creature):
         for offer in self.base.offers:
             if offer[0] == itemId and offer[3] == count:
                 # Can we afford it?
-                if player.removeMoney(offer[2] * amount):
+                if player.removeMoney(offer[1] * amount):
                     count = count * amount
                     container = player.inventory[2]
                     if withBackpack:
@@ -123,7 +128,16 @@ class NPC(Creature):
                         self.sendGoods(player, self.forSale)
                         
     def sell(self, player, itemId, count, amount, ignoreEquipped=True):
-        pass
+        for offer in self.base.offers:
+            count = count * amount
+            if offer[0] == itemId and offer[3] == count:
+                # Do we really have this item?
+                item = player.findItemById(itemId, count)
+                if item.count == count:
+                    player.addMoney(offer[2] * amount)
+                    if self.forSale and player.openTrade == self: # Resend my items
+                        self.sendGoods(player, self.forSale)
+
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):
         self.data = data

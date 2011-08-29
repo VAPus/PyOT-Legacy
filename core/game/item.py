@@ -51,7 +51,7 @@ class Container(object):
             
         for item in items:
             yield item
-            if item.containerSize:
+            if item != self and item.containerSize:
                 for i in self.getRecursive(item.container.items):
                     yield i
 
