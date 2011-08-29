@@ -30,15 +30,16 @@ def saidTo(creature, creature2, said, channelType, channelId):
     elif channelType == 11:
         # Check for goodbyes
         if said in farwells:
-            creature2.sendClose(creature)
             creature2.sayTo(creature, creature2.base.shopFarewell % _sayParams)
             creature2.focus.remove(creature)
+            creature.closeTrade()
             
         elif said in offers:
             
             if creature2.base.offers:
                 creature2.sayTo(creature, creature2.base.shopTrade % _sayParams)
                 creature2.sendTradeOffers(creature)
+                creature.setTrade(creature2)
             else:
                 creature2.sayTo(creature, creature2.base.shopEmpty % _sayParams)
         else:

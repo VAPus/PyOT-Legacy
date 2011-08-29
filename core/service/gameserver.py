@@ -177,6 +177,18 @@ class GameProtocol(protocolbase.TibiaProtocol):
         elif packetType == 0x78: # Throw/move item
             self.player.handleMoveItem(packet)
         
+        elif packetType == 0x79: # Look at in trade window
+            self.player.handleLookAtTrade(packet)
+            
+        elif packetType == 0x7A: # Player brought from store
+            self.player.handlePlayerBuy(packet)
+            
+        elif packetType == 0x7B: # Player sold to store
+            self.player.handlePlayerSale(packet)
+        
+        elif packetType == 0x80: # Player close trade
+            self.player.closeTrade()
+            
         elif packetType == 0x82:
             self.player.handleUse(packet)
 

@@ -334,3 +334,7 @@ TARGETSTRATEGY_NONE = 0
 TARGETSTRATEGY_NORMAL = 1
 TARGETSTRATEGY_LOWEST = 2
 TARGETSTRATEGY_HIGHEST = 3
+
+# Money map, id => value. Have to be ordered from lowest to highest, otherwise it will be bugs
+# TODO Move to money loading
+MONEY_MAP = ((2148, 1), (2152, 100), (2160, 10000))

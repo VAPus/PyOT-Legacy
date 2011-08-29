@@ -41,6 +41,7 @@ class TibiaPlayer(Creature):
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
+        self.openTrade = None
         
         # Direction
         self.direction = self.data["direction"]
@@ -653,6 +654,15 @@ class TibiaPlayer(Creature):
             self.openContainers[self.openContainers.index(container.parent)] = container # Replace it in structure
         self.openContainer(container, parent, update)
 
+    def updateAllContainers(self):
+        for container in self.openContainers:
+            parent = False
+            try:
+                parent = bool(container.parent)
+            except:
+                pass
+            self.openContainer(container, parent=parent, update=True)
+            
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
             stream = TibiaPacket(0x6E)
@@ -993,7 +1003,82 @@ class TibiaPlayer(Creature):
     @deferredGenerator
     def saveStorage(self):
         yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"])))
+
+    # Shopping
+    def setTrade(self, npc):
+        if not self.openTrade:
+            self.openTrade = npc
+
+            
+    def closeTrade(self):
+        if self.openTrade:
+            stream = TibiaPacket(0x7C)
+            stream.send(self.client)
+            self.openTrade = None
+
+
+    def getMoney(self):
+        if not self.inventory[2]:
+            return 0
     
+        money = 0
+        for item in self.inventory[2].container.getRecursive():
+            currency = item.currency
+            if currency:
+                money += currency * item.count
+        
+        return money
+        
+    def removeMoney(self, amount):
+        moneyItems = []
+        money = 0
+        for item, bag, pos in self.inventory[2].container.getRecursiveWithBag():
+            currency = item.currency
+            if currency:
+                money += currency * item.count   
+                moneyItems.append((item, bag, pos))
+                if money >= amount:
+                    break
+                    
+        if money >= amount:
+            removedMoney = 0
+            for i in moneyItems[:-1]:
+                removedMoney += i[0].currency * i[0].count
+                i[1].removeItem(i[0])
+            
+            last = moneyItems[-1]
+            count = 0
+            currency = last[0].currency
+            for i in xrange(last[0].count):
+                removedMoney += currency
+                count += 1
+                if removedMoney >= amount:
+                    last[0].count -= count
+                    if last[0].count <= 0:
+                        last[1].removeItem(last[0])
+                    break
+            
+            addBack = removedMoney - amount
+            if addBack: # Add some money back
+                reverseMap = game.enum.MONEY_MAP[:]
+                reverseMap.reverse()
+                for x in reverseMap:
+                    if addBack >= x[1]:
+                        coins = int(addBack / x[1])
+                        addBack = addBack % x[1]
+                        while coins:
+                            count = min(100, coins)
+                            self.itemToContainer(self.inventory[2], game.item.Item(x[0], count))
+                            coins -= count
+                            
+                    if not addBack:
+                        break
+            self.updateAllContainers()
+            return amount
+            
+        else:
+            return 0
+            
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()
@@ -1275,17 +1360,26 @@ class TibiaPlayer(Creature):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    self.message("You see %s%s. %s%s" % (items[thing.itemId]["article"]+" " if items[thing.itemId]["article"] else "", items[thing.itemId]["name"], items[thing.itemId]["description"] if "description" in items[thing.itemId] else "", extra))
+                    self.message(thing.description() + extra, game.enum.MSG_INFO_DESCR)
             elif isinstance(thing, Creature):
                 def afterScript():
                     if self == thing:
-                        self.message(thing.description(True))
+                        self.message(thing.description(True), game.enum.MSG_INFO_DESCR)
                     else:
-                        self.message(thing.description())
+                        self.message(thing.description(), game.enum.MSG_INFO_DESCR)
             game.scriptsystem.get('lookAt').run(thing, self, afterScript, position=position, stackpos=stackpos)
         else:
             self.notPossible()
-            
+
+    def handleLookAtTrade(self, packet):
+        from game.item import sid
+        clientId = packet.uint16()
+        count = packet.uint8()
+        
+        item = game.item.Item(sid(clientId), count)
+        self.message(item.description(), game.enum.MSG_INFO_DESCR)
+        del item
+        
     def handleRotateItem(self, packet):
         position = packet.position() # Yes, we don't support backpack rotations
         clientId = packet.uint16()
@@ -1409,3 +1503,29 @@ class TibiaPlayer(Creature):
         except:
             pass
         self.openContainer(self.openContainers[openId], parent=parent, update=True)
+        
+    def handlePlayerBuy(self, packet):
+        from game.item import sid
+        if not self.openTrade:
+            return
+            
+        clientId = packet.uint16()
+        count = packet.uint8()
+        amount = packet.uint8()
+        ignoreCapasity = packet.uint8()
+        withBackpack = packet.uint8()
+        
+        self.openTrade.buy(self, sid(clientId), count, amount, ignoreCapasity, withBackpack)
+        
+    def handlePlayerSale(self, packet):
+        from game.item import sid
+        if not self.openTrade:
+            return
+            
+        clientId = packet.uint16()
+        count = packet.uint8()
+        amount = packet.uint8()
+        ignoreEquipped = packet.uint8() 
+        
+        self.openTrade.sell(self, sid(clientId), count, amount, ignoreEquipped)
+        

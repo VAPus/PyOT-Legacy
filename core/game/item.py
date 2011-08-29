@@ -44,7 +44,27 @@ class Container(object):
             return self.items[pos]
         except:
             return None
+    
+    def getRecursive(self, items = None):
+        if not items:
+            items = self.items
             
+        for item in items:
+            yield item
+            if item.containerSize:
+                for i in self.getRecursive(item.container.items):
+                    yield i
+
+    def getRecursiveWithBag(self, items = None):
+        if not items:
+            items = self.items
+            
+        for pos, item in enumerate(items):
+            yield (item, self, pos)
+            if item.containerSize:
+                for i in self.getRecursiveWithBag(item.container.items):
+                    yield i
+                    
     def findSlot(self, item):
         return self.items.index(item)
 
@@ -78,6 +98,15 @@ class Item(object):
     def thingId(self):
         return self.itemId # Used for scripts
 
+    def getsub(self):
+        try:
+            return self.count
+        except:
+            try:
+                return self.fluidSource
+            except:
+                return None
+                
     def actionIds(self):
         return self.actions
             
@@ -100,7 +129,10 @@ class Item(object):
             return str(self.count) + " " + items[self.itemId]["plural"]
         else:
             return (items[self.itemId]["article"]+" " if items[self.itemId]["article"]+" " else "") + items[self.itemId]["name"]
-            
+    
+    def description(self):
+        return "You see %s%s. %s" % (items[self.itemId]["article"]+" " if items[self.itemId]["article"] else "", items[self.itemId]["name"], items[self.itemId]["description"] if "description" in items[self.itemId] else "")
+
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
             return items[self.itemId]["plural"].title()

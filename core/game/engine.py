@@ -336,3 +336,4 @@ def checkLightLevel(lightValue=[None]):
             print c
             stream.send(c)
         lightValue[0] = l
+        

@@ -42,6 +42,7 @@ class NPC(Creature):
         self.walkPer = base.walkPer
         self.openChannels = []
         self.focus = set()
+        self.forSale = None
         
     def description(self):
         return "You see %s" % self.base.data["description"]
@@ -59,13 +60,8 @@ class NPC(Creature):
     def sayTo(self, to, text, messageType=game.enum.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)
 
-    def sendClose(self, to):
-        stream = TibiaPacket(0x7C)
-        stream.send(to.client)
-    
     def sendTradeOffers(self, to):
-
-     
+        forSale = set()
         stream = TibiaPacket(0x7A)
         stream.string(self.data["name"])
         stream.uint8(min(len(self.base.offers), 255))
@@ -76,18 +72,58 @@ class NPC(Creature):
             stream.uint32(game.item.items[item[0]]["weight"] * 100)
             stream.uint32(item[1])
             stream.uint32(item[2])
+            if item[2]:
+                forSale.add(item[0])
+                
         stream.send(to.client)
-        
+        self.sendGoods(to, forSale)
+        self.forSale = forSale
+    
+    def sendGoods(self, to, forSale=None):
+        # A bit heavy stuff:
         stream = TibiaPacket(0x7B)
-        stream.uint32(20000000)
-        stream.uint8(min(len(self.base.offers), 255))
-        for item in self.base.offers:
-            stream.uint16(game.item.items[item[0]]["cid"])
-            if "stackable" in game.item.items[item[0]]:
-                stream.uint8(item[3])
-            stream.uint8(255)
+        stream.uint32(to.getMoney())
+        
+        items = set()
+        count = 0
+        for item in to.inventory[2].container.getRecursive():
+            if item.itemId in forSale:
+                items.add(item)
+                count += 1
+                if count == 255:
+                    break       
+        stream.uint8(count)
+        for item in items:
+            stream.uint16(game.item.items[item.itemId]["cid"])
+            sub = item.getsub()
+            if sub != None:
+                stream.uint8(sub)
+            else:
+                stream.uint8(255)
             
-        stream.send(to.client)    
+        stream.send(to.client) 
+        
+    def buy(self, player, itemId, count, amount, ignoreCapasity=True, withBackpack=False):
+        for offer in self.base.offers:
+            if offer[0] == itemId and offer[3] == count:
+                # Can we afford it?
+                if player.removeMoney(offer[2] * amount):
+                    count = count * amount
+                    container = player.inventory[2]
+                    if withBackpack:
+                        container = game.item.Item(1987)
+                        player.itemToContainer(player.inventory[2], container)
+                        
+                    while count:
+                        rcount = min(100, count)
+                        player.itemToContainer(container, game.item.Item(itemId, count))
+                        count -= rcount
+                        
+                    if self.forSale and player.openTrade == self: # Resend my items
+                        self.sendGoods(player, self.forSale)
+                        
+    def sell(self, player, itemId, count, amount, ignoreEquipped=True):
+        pass
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):
         self.data = data
