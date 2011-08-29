@@ -258,8 +258,8 @@ class TibiaPacket(object):
         self.uint8(100) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
-        self.uint8(0xFF) # Light
-        self.uint8(215) # Light
+        self.uint8(0) # Light
+        self.uint8(0) # Light
         self.uint16(creature.speed) # Speed
         self.uint8(0) # Skull
         self.uint8(0) # Party/Shield

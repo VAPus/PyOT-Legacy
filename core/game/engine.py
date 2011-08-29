@@ -11,6 +11,8 @@ import game.pathfinder
 import bindconstant
 import sql
 
+serverStart = time.time()
+
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")
@@ -37,12 +39,13 @@ def loader(timer):
             ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
             
         def looper(f, t):
-            d = f()
-            f.addCallback(lambda x: reactor.callLater(t, looper, f, t))
+            f()
+            reactor.callLater(t, looper, f, t)
         
         if config.doSaveAll:
             reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         
@@ -299,3 +302,37 @@ def saveAll():
     for player in game.player.allPlayersObject:
         d = defer.waitForDeferred(sql.conn.runOperation(*player._saveQuery()))
         yield d
+        
+        
+# Time stuff
+def getTibiaTime():
+    seconds = (time.time() - serverStart) % config.tibiaDayLength
+    hours = int(float(seconds / config.tibiaDayLength) * 24)
+    seconds = seconds - (config.tibiaDayLength * (hours / 24))
+    minutes = int(seconds / 60)
+    seconds = seconds % 60
+    
+    return (hours, minutes, seconds)
+    
+def getLightLevel():
+    tibiaTime = getTibiaTime()
+    light = 0
+    if tibiaTime[0] >= config.tibiaDayFullLightStart and tibiaTime[0] < config.tibiaDayFullLightEnds:
+        return config.tibiaFullDayLight
+    else:
+        dayHours = 24 - (config.tibiaDayFullLightEnds - config.tibiaDayFullLightStart)
+        hoursleft = (abs(24 - tibiaTime[0]) + config.tibiaDayFullLightStart) % 24
+
+        lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft - dayHours)
+        print config.tibiaFullDayLight + lightChange
+        return config.tibiaFullDayLight + lightChange
+        
+def checkLightLevel(lightValue=[None]):
+    l = getLightLevel()
+    if lightValue[0] != l:
+        stream = TibiaPacket()
+        stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
+        for c in getSpectators((0x7FFF,0x7FFF,7), (100000, 100000)):
+            print c
+            stream.send(c)
+        lightValue[0] = l

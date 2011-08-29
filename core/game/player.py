@@ -155,8 +155,8 @@ class TibiaPlayer(Creature):
         self.refreshStatus(stream)
         self.refreshSkills(stream)
         
-        stream.worldlight(enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
-        stream.creaturelight(self.cid, enum.LIGHTLEVEL_WORLD, enum.LIGHTCOLOR_WHITE)
+        stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
+        stream.creaturelight(self.cid, 0,0)
         stream.uint8(0xA2) # Icons
         stream.uint16(0) # TODO: Icons
 
