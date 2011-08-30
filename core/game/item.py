@@ -251,7 +251,6 @@ class Item(object):
         return (self.itemId, self.actions, count, cont, self.params)
     
     def __setstate__(self, state):
-        print state
         self.itemId = state[0]
         self.actions = state[1]
         if state[2]:
