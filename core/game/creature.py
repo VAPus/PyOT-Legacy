@@ -2,6 +2,7 @@ from twisted.internet import defer
 from game.engine import getSpectators, getPlayers
 from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
+from twisted.python import log
 import threading
 import game.enum as enum
 import config

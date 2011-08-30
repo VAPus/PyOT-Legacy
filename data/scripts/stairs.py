@@ -78,11 +78,11 @@ def teleportDirection(creature, thing, position, **k):
     creature.teleport(pos)
     
 # Stairs
-stairs = 410, 429, 411, 4834, 1385, 1396, 4837, 3687, 3219 
+stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
 scriptsystem.get("walkOn").reg(stairs, floorchange)
 
 # Ramps
-ramps = 1390, 1388, 1394, 1392
+ramps = 1390, 1388, 1394, 1392, 1398, 459
 scriptsystem.get("walkOn").reg(ramps, teleportDirection)
 
 # Ladders up
