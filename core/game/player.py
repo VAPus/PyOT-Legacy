@@ -20,6 +20,10 @@ import random
 import math
 import otjson
 import datetime
+try:
+    import cPickle as pickle
+except:
+    import pickle
 
 global anyPlayer
 anyPlayer = CreatureBase()
@@ -30,7 +34,7 @@ class TibiaPlayer(Creature):
     def __init__(self, client, data):
         Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
-        self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+        
         self.speed = 220
         self.modes = [0,0,0]
         self.gender = 0
@@ -49,6 +53,13 @@ class TibiaPlayer(Creature):
         # Direction
         self.direction = self.data["direction"]
         del self.data["direction"]
+
+        # Inventory
+        if self.data['inventory']:
+            self.inventory = self.unpickleInventory(self.data['inventory'])
+        else:
+            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+        del self.data['inventory']
         
         # Calculate level from experience
         vocation = self.getVocation()
@@ -996,9 +1007,19 @@ class TibiaPlayer(Creature):
             return dmg - armor
         return dmg
 
+    # Loading:
+    def unpickleInventory(self, inventoryData):
+        return pickle.loads(inventoryData)
+        
     # Saving
+    def pickleInventory(self):
+        t = time.time()
+        d = pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
+        print "pickle inventory took %f. Length is %d" % (time.time() - t, len(d))
+        return d
+        
     def _saveQuery(self):
-        return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
+        return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.data["id"])
 
     @deferredGenerator
     def save(self):

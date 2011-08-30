@@ -17,6 +17,13 @@ class Container(object):
     def __init__(self, size):
         self.items = []
         self.maxSize = size
+    
+    def __getstate__(self): # For pickle functions such as jsonpickle
+        return (self.items, self.maxSize)
+    
+    def __setstate__(self, state):
+        self.items = state[0]
+        self.maxSize = state[1]
         
     def placeItem(self, item):
         length = len(self.items)
@@ -72,7 +79,6 @@ bindconstant.bind_all(Container)
 
 # Mailbox
 class Mailbox(object):
-        
     def send(self, item):
         if not item.itemId in (game.enum.ITEM_LETTER or game.enum.ITEM_PARCEL):
             return False
@@ -83,10 +89,18 @@ class Mailbox(object):
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
+    __slots__ = ('itemId', 'actions', 'count', 'cont', 'params')
+    __conts__ = ('container', 'mailbox') # Just alias for cont
+    
     def __init__(self, itemid, count=None, actions=[], **kwargs):
         self.itemId = itemid
         self.actions = map(str, actions)
-
+        
+        if kwargs:
+            self.params = kwargs
+        else:
+            self.params = None
+            
         if self.stackable:
             self.count = count
         
@@ -94,20 +108,18 @@ class Item(object):
             try:        
                 # Extend items such as containers, beds and doors
                 if "containerSize" in items[self.itemId]:
-                    self.container = Container(self.containerSize)
+                    self.cont = Container(self.containerSize)
                     
                 if self.type == "mailbox":
-                    self.mailbox = Mailbox()
+                    self.cont = Mailbox()
                     
             except:
                 print "Buggy itemId %d" % self.itemId
                 self.itemId = 100   
                 
 
-        if kwargs:
-            for key in kwargs:
-                setattr(self, key, kwargs[key])
 
+            
     def thingId(self):
         return self.itemId # Used for scripts
 
@@ -124,19 +136,34 @@ class Item(object):
         return self.actions
             
     def __getattr__(self, name):
+        if name == 'params': return None # bugfix
+        
+        if self.params and name in self.params:
+            return self.params[name]
+        
+        if name in self.__conts__:
+            return self.cont
+            
         try:
             attrVal = 1 << self.attributes.index(name)
             return items[self.itemId]["a"] & attrVal == attrVal
         except:
-            try:
-                if name in items[self.itemId]:
-                    return items[self.itemId][name]
-                elif not "__" in name:
-                    return None
-            except:
+            if name in items[self.itemId]:
+                return items[self.itemId][name]
+            elif not "__" in name:
                 return None
+                
         raise AttributeError, name
-        
+
+    def __setattr__(self, name, value):
+        if name in self.__slots__:
+            return object.__setattr__(self, name, value)
+            
+        if self.params:
+            self.params[name] = value
+        else:
+            self.params = {name: value}
+            
     def name(self):
         if self.count > 1 and "plural" in items[self.itemId]:
             return str(self.count) + " " + items[self.itemId]["plural"]
@@ -208,7 +235,37 @@ class Item(object):
                 callback(self)
                 
         self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
+
+    def __getstate__(self):
+        count = None
+        try:
+            count = self.count
+        except:
+            pass
         
+        try:
+            cont = self.cont
+        except:
+            cont = None
+   
+        return (self.itemId, self.actions, count, cont, self.params)
+    
+    def __setstate__(self, state):
+        print state
+        self.itemId = state[0]
+        self.actions = state[1]
+        if state[2]:
+            self.count = state[2]
+        if state[3]:
+            self.cont = state[3]
+                
+        self.params = state[4]
+        # Bugfix
+        try:
+            del self.params["opened"]
+        except:
+            pass
+            
 def cid(itemid):
     try:
         return items[itemid]["cid"]
