@@ -44,7 +44,7 @@ def loader(timer):
         
         if config.doSaveAll:
             reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight) * 7
         reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
@@ -181,7 +181,7 @@ def getSpectators(pos, radius=(8,6), ignore=tuple()):
     players = set()
     try:       
         for player in game.player.allPlayersObject:
-            if player.canSee(pos, radius) and player not in ignore:
+            if player.canSee(pos, radius) and player.client and player not in ignore:
                 players.add(player.client)
     except:
         pass # No players
@@ -324,7 +324,6 @@ def getLightLevel():
         hoursleft = (abs(24 - tibiaTime[0]) + config.tibiaDayFullLightStart) % 24
 
         lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft - dayHours)
-        print config.tibiaFullDayLight + lightChange
         return config.tibiaFullDayLight + lightChange
         
 def checkLightLevel(lightValue=[None]):
@@ -333,7 +332,6 @@ def checkLightLevel(lightValue=[None]):
         stream = TibiaPacket()
         stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
         for c in getSpectators((0x7FFF,0x7FFF,7), (100000, 100000)):
-            print c
             stream.send(c)
         lightValue[0] = l
         

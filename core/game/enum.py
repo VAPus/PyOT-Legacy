@@ -338,3 +338,10 @@ TARGETSTRATEGY_HIGHEST = 3
 # Money map, id => value. Have to be ordered from highest to lowest, otherwise it will be bugs
 # TODO Move to money loading
 MONEY_MAP = ((2160, 10000), (2152, 100), (2148, 1))
+
+# Mailstuff
+ITEM_PARCEL           = 2595
+ITEM_PARCEL_STAMPED   = 2596
+ITEM_LETTER           = 2597
+ITEM_LETTER_STAMPED   = 2598
+

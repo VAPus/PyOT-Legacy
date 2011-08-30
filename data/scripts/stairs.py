@@ -78,7 +78,7 @@ def teleportDirection(creature, thing, position, **k):
     creature.teleport(pos)
     
 # Stairs
-stairs = 410, 429, 411, 4834, 1396, 4837, 3687, 3219 
+stairs = 410, 429, 411, 4834, 1385, 1396, 4837, 3687, 3219 
 scriptsystem.get("walkOn").reg(stairs, floorchange)
 
 # Ramps
@@ -90,7 +90,7 @@ laddersUp = 1386, 3678, 5543, 8599
 scriptsystem.get("use").reg(laddersUp, floorup)
 
 # Ladders down
-laddersDown = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
+laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
 scriptsystem.get("use").reg(laddersDown, floordown)
 
 # Trapdoors, holes etc

@@ -110,7 +110,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
             if self.player.data["health"] < 1:
                 self.player.onSpawn()
             self.player.client = self
-            
+            print self.player
+            getTile(self.player.position).placeCreature(self.player)
         else:
             game.player.allPlayers[character[0]['name']] = game.player.TibiaPlayer(self, character[0])
             self.player = game.player.allPlayers[character[0]['name']]
@@ -247,6 +248,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             import game.scriptsystem
             from game.map import removeCreature
             self.player.client = None
+            self.player.knownCreatures.remove(self.player.cid)
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
         

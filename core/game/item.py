@@ -70,6 +70,17 @@ class Container(object):
 
 bindconstant.bind_all(Container)
 
+# Mailbox
+class Mailbox(object):
+    def __init__(self):
+        pass # Do we need this?
+        
+    def send(self, item):
+        if not item.itemId in (game.enum.ITEM_LETTER or game.enum.ITEM_PARCEL):
+            return False
+        else:
+            pass # TODO
+            
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
@@ -86,6 +97,11 @@ class Item(object):
                 # Extend items such as containers, beds and doors
                 if "containerSize" in items[self.itemId]:
                     self.container = Container(self.containerSize)
+                    
+                itemType = self.type
+                if itemType == "mailbox":
+                    self.mailbox = Mailbox()
+                    
             except:
                 print "Buggy itemId %d" % self.itemId
                 self.itemId = 100   
