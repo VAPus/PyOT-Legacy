@@ -72,8 +72,6 @@ bindconstant.bind_all(Container)
 
 # Mailbox
 class Mailbox(object):
-    def __init__(self):
-        pass # Do we need this?
         
     def send(self, item):
         if not item.itemId in (game.enum.ITEM_LETTER or game.enum.ITEM_PARCEL):
@@ -98,8 +96,7 @@ class Item(object):
                 if "containerSize" in items[self.itemId]:
                     self.container = Container(self.containerSize)
                     
-                itemType = self.type
-                if itemType == "mailbox":
+                if self.type == "mailbox":
                     self.mailbox = Mailbox()
                     
             except:

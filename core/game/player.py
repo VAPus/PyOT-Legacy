@@ -19,6 +19,7 @@ import game.vocation
 import random
 import math
 import otjson
+import datetime
 
 global anyPlayer
 anyPlayer = CreatureBase()
@@ -42,6 +43,8 @@ class TibiaPlayer(Creature):
         self._openChannels = {}
         self.idMap = []
         self.openTrade = None
+        self.windowTextId = 0
+        self.windowHandlers = {}
         
         # Direction
         self.direction = self.data["direction"]
@@ -602,21 +605,32 @@ class TibiaPlayer(Creature):
 
         stream.send(self.client)
     
-    def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", date=""):
+    def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", timestamp=0):
         stream = TibiaPacket(0x96)
-        stream.uint32(0x100)
-        stream.uint16(item.itemId)
+        
+        self.windowTextId += 1
+        item._windowTextId = self.windowTextId
+        
+        stream.uint32(self.windowTextId)
+        
+        stream.uint16(item.cid)
         if canWrite:
-            stream.uint16(len(text)+maxLen)
+            stream.uint16(maxLen)
             stream.string(text)
         else:
             stream.uint16(len(text))
             stream.string(text)
         
         stream.string(writtenBy)
-        stream.string(date)
+        if timestamp:
+            timestamp = datetime.datetime.fromtimestamp(timestamp)
+
+            stream.string("%d/%d/%d - %d:%d" % (timestamp.day, timestamp.month, timestamp.year, timestamp.hour, timestamp.minute))
+        else:
+            stream.string("")
         
         stream.send(self.client)
+        return self.windowTextId
         
     def stopAutoWalk(self):
         ret = self.stopAction()
@@ -1539,4 +1553,10 @@ class TibiaPlayer(Creature):
         ignoreEquipped = packet.uint8() 
         
         self.openTrade.sell(self, sid(clientId), count, amount, ignoreEquipped)
+
+    def handleWriteBack(self, packet):
+        windowId = packet.uint32()
+        text = packet.string()
         
+        if windowId in self.windowHandlers:
+            self.windowHandlers[windowId](text)

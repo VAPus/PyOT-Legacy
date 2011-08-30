@@ -138,8 +138,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.pos = 0
         
         packetType = packet.uint8()
-        import game.engine
-        game.engine.explainPacket(packet)
+
         if packetType == 0x14 or self.player.data["health"] < 1: # Logout
             self.transport.loseConnection()
             
@@ -205,6 +204,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             
         elif packetType == 0x88: # Arrow up container
             self.player.arrowUpContainer(packet.uint8())
+        
+        elif packetType == 0x89: # Text from textWindow
+            self.player.handleWriteBack(packet)
             
         elif packetType == 0x97: # Request channels
             self.player.openChannels()
