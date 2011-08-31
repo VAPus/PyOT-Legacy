@@ -10,8 +10,17 @@ import math
 import game.pathfinder
 import bindconstant
 import sql
+import otjson
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+    
 serverStart = time.time()
+globalStorage = {'storage':{}, 'objectStorage':{}}
+jsonFields = ['storage']
+pickleFields = ['objectStorage']
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -46,6 +55,19 @@ def loader(timer):
             reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight) * 7
         reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        
+        @defer.deferredGenerator
+        def _sql_():
+            d = defer.waitForDeferred(sql.conn.runQuery("SELECT `key`, `data` FROM `globals`"))
+            yield d
+            for x in d.getResult():
+                if x['type'] == 'json':
+                    globalStorage[x['key']] = otjson.loads(x['data'])
+                elif x['type'] == 'pickle':
+                    globalStorage[x['key']] = pickle.loads(x['data'])
+                else:
+                    globalStorage[x['key']] = x['data']
+            
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         
@@ -296,13 +318,31 @@ def ignore(result):
     pass
 
 # Save system, async :)
-@defer.deferredGenerator
 def saveAll():
     # Build query
-    for player in game.player.allPlayersObject:
-        d = defer.waitForDeferred(sql.conn.runOperation(*player._saveQuery()))
-        yield d
+    try:
+        def callback(result):
+            sql.conn.runOperation(*result)
+            
+        for player in game.player.allPlayersObject:
+            d = threads.deferToThread(player._saveQuery)
+            d.addCallback(callback)
+    except:
+        pass # No players
         
+    # Global storage
+    for field in globalStorage:
+        type = ""
+        if field in jsonFields:
+            data = otjson.dumps(globalStorage[field])
+            type = "json"
+        elif field in pickleFields:
+            data = pickle.dumps(globalStorage[field])
+            type = "pickle"
+        else:
+            data = globalStorage[field]
+            
+        sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
         
 # Time stuff
 def getTibiaTime():

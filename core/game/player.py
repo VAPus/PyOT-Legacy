@@ -1124,7 +1124,24 @@ class TibiaPlayer(Creature):
                 if not amount:
                     break
         return True
+
+    # Storage
+    def setStorage(self, field, value):
+        self.storage[field] = value
         
+    def getStorage(self, field, default=None):
+        try:
+            return self.storage[field]
+        except:
+            return default
+            
+    def removeStorage(self, field):
+        try:
+            del self.storage[field]
+        except:
+            pass
+            
+    
     # Compelx packets
     def handleSay(self, packet):
         channelType = packet.uint8()

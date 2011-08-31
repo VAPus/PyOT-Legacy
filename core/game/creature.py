@@ -668,7 +668,8 @@ class Creature(object):
             position[1] = self.position[1] - 1
             position[0] = self.position[0] + 1
         return position
-        
+
+    # Personal vars
     def setVar(self, name, value=None):
         try:
             if value == None:
@@ -684,6 +685,44 @@ class Creature(object):
         except:
             return None
 
+    # Global storage
+    def setGlobal(self, field, value):
+        try:
+            game.engine.globalStorage['storage'][field] = value
+        except:
+            return False
+    
+    def getGlobal(self, field, default=None):
+        try:
+            return game.engine.globalStorage['storage'][field]
+        except:
+            return default
+            
+    def removeGlobal(self, field):
+        try:
+            del game.engine.globalStorage['storage'][field]
+        except:
+            pass
+
+    # Global object storage
+    def setGlobalObject(self, field, value):
+        try:
+            game.engine.globalStorage['objectStorage'][field] = value
+        except:
+            return False
+    
+    def getGlobalObject(self, field, default=None):
+        try:
+            return game.engine.globalStorage['objectStorage'][field]
+        except:
+            return default
+            
+    def removeGlobalObject(self, field):
+        try:
+            del game.engine.globalStorage['objectStorage'][field]
+        except:
+            pass
+        
     def __followCallback(self, who):
         if self.target == who:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
