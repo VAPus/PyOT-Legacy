@@ -49,6 +49,8 @@ class TibiaPlayer(Creature):
         self.windowTextId = 0
         self.windowHandlers = {}
         
+	self.solid = not config.playerWalkthrough
+
         # Direction
         self.direction = self.data["direction"]
         del self.data["direction"]

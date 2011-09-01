@@ -82,6 +82,9 @@ tibiaNightLight = 40
 allowMounts = False # Disabled for 8.6 compatibility
 applyMountSpeedChange = True
 
+# Game modes
+playerWalkthrough = False # can also be modified in scripts
+creatureWalkthrough = False # can also be modified in scripts
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

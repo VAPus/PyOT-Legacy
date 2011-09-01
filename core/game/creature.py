@@ -78,7 +78,7 @@ class Creature(object):
         self.regenerate = None
         self.alive = True
         self.lastDamager = None
-        self.solid = True
+        self.solid = not config.creatureWalkthrough
         
         # We are trackable
         allCreatures[self.cid] = self
