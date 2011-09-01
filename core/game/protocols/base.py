@@ -309,7 +309,17 @@ class BasePacket(TibiaPacket):
             self.uint8(player.skills[x]) # Value / Level
             self.uint8(1) # Base
             self.uint8(0) # %
-            
+
+    def cooldownIcon(self, icon, cooldown):
+        self.uint(0xA4)
+        self.uint8(icon)
+        self.uint32(cooldown * 1000)
+        
+    def cooldownGroup(self, group, cooldown):
+        self.uint(0xA5)
+        self.uint8(group)
+        self.uint32(cooldown * 1000)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):

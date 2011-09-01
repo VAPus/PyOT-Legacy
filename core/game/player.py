@@ -169,6 +169,9 @@ class TibiaPlayer(Creature):
                 stream.uint8(slot)
             
                 stream.item(self.inventory[slot-1])
+            else:
+                stream.uint8(0x79)
+                stream.uint8(slot)
                 
         self.refreshStatus(stream)
         self.refreshSkills(stream)
@@ -476,29 +479,26 @@ class TibiaPlayer(Creature):
             game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown):
-        stream = self.packet(0xA4)
-        stream.uint8(icon)
-        stream.uint32(cooldown * 1000)
-        stream.uint8(0xA5)
-        stream.uint8(group)
-        stream.uint32(cooldown * 1000)
+        stream = self.packet()
+        stream.cooldownIcon(icon, cooldown)
+        
+        stream.cooldownGroup(group, cooldown)
         
         stream.send(self.client)        
         t = time.time()  + cooldown
         self.cooldowns[icon] = t
         self.cooldowns[group << 8] = t
+        
     def cooldownIcon(self, icon, cooldown):
         self.cooldowns[icon] = time.time() + cooldown
-        stream = self.packet(0xA4)
-        stream.uint8(icon)
-        stream.uint32(cooldown * 1000)
+        stream = self.packet()
+        stream.cooldownIcon(icon, cooldown)
         stream.send(self.client)
         
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
-        stream = self.packet(0xA5)
-        stream.uint8(group)
-        stream.uint32(cooldown * 1000)
+        stream = self.packet()
+        stream.cooldownGroup(group, cooldown)
         stream.send(self.client)
 
     def canDoSpell(self, icon, group):
@@ -1153,7 +1153,7 @@ class TibiaPlayer(Creature):
                     self.whisper(' '.join(splits[0:]))
                     
             for creature in game.engine.getCreatures(self.position):
-                creature.playerSay(player, text, channelType, channelId or reciever)
+                creature.playerSay(self, text, channelType, channelId or reciever)
 
         def part1():
             game.scriptsystem.get("talkaction").run(text, self, endCallback, text=' '.join(splits[0:]))

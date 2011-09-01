@@ -75,8 +75,8 @@ saveEvery = 300 # in seconds. Even down to a few seconds won't really make serve
 tibiaDayLength = 60 # One hour
 tibiaDayFullLightStart = 14
 tibiaDayFullLightEnds = 20
-tibiaFullDayLight = 255
-tibiaNightLight = 0
+tibiaFullDayLight = 215
+tibiaNightLight = 40
 
 # Mounts
 allowMounts = False # Disabled for 8.6 compatibility

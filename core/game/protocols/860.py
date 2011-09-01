@@ -15,7 +15,26 @@ def vertify():
     return True
     
 class Packet(base.BasePacket):
+    def item(self, item, count=None):
+        import game.item
+        if isinstance(item, game.item.Item):
+            self.uint16(item.cid)
+
+            if item.stackable:
+                self.uint8(item.count or 1)
+            elif item.type == 11 or item.type == 12:
+                self.uint8(item.fluidSource or 0)
+            """if item.animation:
+                self.uint8(0xFE)""" # No animations in 8.6
+            
+        else:
+            print item
+            self.uint16(item)
+            if count:
+                self.uint8(count)
+                
     def creature(self, creature, known):
+        print "860!"
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -27,7 +46,7 @@ class Packet(base.BasePacket):
             self.string(creature.name())
         self.uint8(100) # Health %
         self.uint8(creature.direction) # Direction
-        self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
+        self.outfit(creature.outfit, creature.addon)
         self.uint8(0) # Light
         self.uint8(0) # Light
         self.uint16(creature.speed) # Speed
@@ -38,6 +57,7 @@ class Packet(base.BasePacket):
         self.uint8(creature.solid) # Can't walkthrough
 
     def status(self, player):
+        print "860"
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
@@ -85,6 +105,12 @@ class Packet(base.BasePacket):
             self.uint16(look[1])
             
         #self.uint16(mount) # Mount
+
+    def cooldownIcon(self, icon, cooldown):
+        pass # Not sendt
+        
+    def cooldownGroup(self, group, cooldown):
+        pass # Not sendt
         
 class Protocol(base.BaseProtocol):
     Packet = Packet
