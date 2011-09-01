@@ -7,6 +7,7 @@ enum = game.enum
 import math
 import config
 import sys
+import game.scriptsystem
 from collections import deque
 
 class BasePacket(TibiaPacket):
@@ -664,7 +665,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True), game.enum.MSG_INFO_DESCR)
                     else:
                         player.message(thing.description(), game.enum.MSG_INFO_DESCR)
-            game.scriptsystem.get('lookAt').run(thing, self, afterScript, position=position, stackpos=stackpos)
+            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=position, stackpos=stackpos)
         else:
             player.notPossible()
 
@@ -709,7 +710,7 @@ class BaseProtocol(object):
         thing = player.findItem(position, stackpos)
 
         if thing:
-            game.scriptsystem.get('use').run(thing, self, None, position=position, stackpos=stackpos, index=index)
+            game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
 
     def handleUseWith(self, player, packet):
         game.engine.explainPacket(packet)
@@ -724,7 +725,7 @@ class BaseProtocol(object):
         thing = player.findItem(position, stackpos)
         
         if thing:
-            game.scriptsystem.get('useWith').run(thing, self, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
+            game.scriptsystem.get('useWith').run(thing, player, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
 
     def attackTarget(self):
         if player.target and player.inRange(player.target.position, 1, 1):

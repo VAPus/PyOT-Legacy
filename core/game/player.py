@@ -1128,7 +1128,7 @@ class TibiaPlayer(Creature):
     # Stuff from protocol:
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
-            player.message("Message too long")
+            self.message("Message too long")
             return
             
         splits = text.split(" ")
@@ -1152,7 +1152,7 @@ class TibiaPlayer(Creature):
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
                     self.whisper(' '.join(splits[0:]))
                     
-            for creature in game.engine.getCreatures(player.position):
+            for creature in game.engine.getCreatures(self.position):
                 creature.playerSay(player, text, channelType, channelId or reciever)
 
         def part1():
