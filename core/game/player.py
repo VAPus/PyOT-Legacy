@@ -1,4 +1,3 @@
-from packet import TibiaPacket
 from game import enum, engine
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
@@ -586,16 +585,19 @@ class TibiaPlayer(Creature):
             stream.string(outfit.name)
             stream.uint8(3) # TODO addons
         
-        mounts = []
-        for mount in game.resource.mounts:
-            # TODO, can use
-            mounts.append(mount)
+        if config.allowMounts:
+            mounts = []
+            for mount in game.resource.mounts:
+                # TODO, can use
+                mounts.append(mount)
+                
+            stream.uint8(len(mounts))
+            for mount in mounts:
+                stream.uint16(mount.cid)
+                stream.string(mount.name)
+        else:
+            stream.uint8(0)
             
-        stream.uint8(len(mounts))
-        for mount in mounts:
-            stream.uint16(mount.cid)
-            stream.string(mount.name)
-
         stream.send(self.client)
     
     def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", timestamp=0):
@@ -1142,13 +1144,13 @@ class TibiaPlayer(Creature):
             print channelType
             if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
                 if mode == game.enum.MSG_SPEAK_SAY:
-                    player.say(' '.join(splits[0:]))
+                    self.say(' '.join(splits[0:]))
                     
                 elif mode == game.enum.MSG_SPEAK_YELL:
-                    player.yell(' '.join(splits[0:]))
+                    self.yell(' '.join(splits[0:]))
                 
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
-                    player.whisper(' '.join(splits[0:]))
+                    self.whisper(' '.join(splits[0:]))
                     
             for creature in game.engine.getCreatures(player.position):
                 creature.playerSay(player, text, channelType, channelId or reciever)

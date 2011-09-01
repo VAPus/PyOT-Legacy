@@ -133,9 +133,11 @@ class BasePacket(TibiaPacket):
             self.uint8(addon)
         else:
             self.uint16(look[1])
+        if config.allowMounts:    
+            self.uint16(mount) # Mount
+        else:
+            self.uint16(0)
             
-        self.uint16(mount) # Mount
-        
     def creature(self, creature, known):
         if known:
             self.uint16(0x62)
@@ -408,7 +410,7 @@ class BaseProtocol(object):
         elif packetType == 0xD3: # Set outfit
             self.handleSetOutfit(player,packet)
         
-        elif packetType == 0xD4: # Set mount status
+        elif packetType == 0xD4 and config.config.allowMounts: # Set mount status
             self.handleSetMounted(player,packet)
             
         elif packetType == 0xBE: # Stop action
@@ -687,7 +689,8 @@ class BaseProtocol(object):
     def handleSetOutfit(self, player, packet):
         player.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
         player.addon = packet.uint8()
-        player.mount = packet.uint16() # Not really supported
+        if config.allowMounts:
+            player.mount = packet.uint16()
         player.refreshOutfit()
     
     def handleSetMounted(self, player, packet):

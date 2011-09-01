@@ -1,6 +1,5 @@
 from twisted.internet import defer
 from game.engine import getSpectators, getPlayers
-from packet import TibiaPacket
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import threading
@@ -341,10 +340,11 @@ class Creature(object):
             stream.send(spectator)
 
     def refreshOutfit(self):
-        stream = TibiaPacket(0x8E)
-        stream.uint32(self.clientId())
-        stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
-        stream.sendto(game.engine.getSpectators(self.position))
+        for spectator in game.engine.getSpectators(self.position):
+            stream = spectator.packet(0x8E)
+            stream.uint32(self.clientId())
+            stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
+            stream.send(spectator)
 
     def changeMountStatus(self, mounted):
         mount = game.resource.getMount(self.mount)
@@ -365,10 +365,11 @@ class Creature(object):
             if speed > 1500:
                 speed = 1500.0
             self.speed = float(speed)
-            stream = TibiaPacket(0x8F)
-            stream.uint32(self.clientId())
-            stream.uint16(self.speed)
-            stream.sendto(getSpectators(self.position))
+            for spectator in getSpectators(self.position):
+                stream = spectator.packet(0x8F)
+                stream.uint32(self.clientId())
+                stream.uint16(self.speed)
+                stream.send(spectator)
             
     def onDeath(self):
         #del allCreatures[self.clientId()]
@@ -480,10 +481,11 @@ class Creature(object):
             
         self.data["health"] = max(0, health)
         
-        stream = TibiaPacket(0x8C)
-        stream.uint32(self.clientId())
-        stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
-        stream.sendto(getSpectators(self.position))
+        for spectator in getSpectators(self.position):
+            stream = spectator.packet(0x8C)
+            stream.uint32(self.clientId())
+            stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
+            stream.send(spectator)
          
         self.refreshStatus()
         
@@ -523,7 +525,7 @@ class Creature(object):
 
         oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
         for spectator in getSpectators(oldPosition, ignore=(self,)):
-            stream = TibiaPacket()
+            stream = spectator.packet()
             stream.removeTileItem(oldPosition, oldStackpos)
             stream.magicEffect(oldPosition, 0x02)
             stream.send(spectator)
@@ -536,7 +538,7 @@ class Creature(object):
         removeCreature(self, oldPosition)
         self.position = position 
         if self.creatureType == 0:
-            stream = TibiaPacket()
+            stream = self.packet()
             stream.removeTileItem(oldPosition, oldStackpos)
             stream.uint8(0x64)
             stream.position(position)
@@ -547,7 +549,7 @@ class Creature(object):
          
         
         for spectator in getSpectators(position, ignore=(self,)):
-            stream = TibiaPacket()
+            stream = spectator.packet()
             stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
@@ -560,15 +562,14 @@ class Creature(object):
         self.direction = direction
         
         # Make package
-        stream = TibiaPacket(0x6B)
-        stream.position(self.position)
-        stream.uint8(getTile(self.position).findCreatureStackpos(self))
-        stream.uint16(0x63)
-        stream.uint32(self.clientId())
-        stream.uint8(direction)
-                
-        # Send to everyone
-        stream.sendto(getSpectators(self.position))
+        for spectator in getSpectators(self.position):
+            stream = spectator.packet(0x6B)
+            stream.position(self.position)
+            stream.uint8(getTile(self.position).findCreatureStackpos(self))
+            stream.uint16(0x63)
+            stream.uint32(self.clientId())
+            stream.uint8(direction)
+            stream.send(spectator)
         
     def turnAgainst(self, position):
         # First north/south
@@ -617,7 +618,7 @@ class Creature(object):
     def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
         if not to.isPlayer(): return
         
-        stream = TibiaPacket(0xAA)
+        stream = to.packet(0xAA)
         stream.uint32(0)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)

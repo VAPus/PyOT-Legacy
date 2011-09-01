@@ -3,7 +3,6 @@ from twisted.internet import reactor, threads, defer
 from collections import deque
 from twisted.python import log
 import time
-from packet import TibiaPacket
 import game.map
 import config
 import math
@@ -275,31 +274,34 @@ def positionInDirection(nposition, direction, amount=1):
         position[0] = nposition[0] + amount
     return position
 def updateTile(pos, tile):
-    stream = TibiaPacket(0x69)
-    stream.position(pos)
-    stream.tileDescription(tile)
-    stream.uint8(0x00)
-    stream.uint8(0xFF)
-    stream.sendto(getSpectators(pos))
+    for spectator in getSpectators(pos):
+        stream = spectator.packet(0x69)
+        stream.position(pos)
+        stream.tileDescription(tile)
+        stream.uint8(0x00)
+        stream.uint8(0xFF)
+        stream.send(spectator)
 
 def transformItem(item, transformTo, pos, stack=None):
-    stream = TibiaPacket()
-    item.itemId = transformTo
-    if not stack:
-        stack = game.map.getTile(pos).findStackpos(item)
-        
-    if transformTo:
-        stream.updateTileItem(pos, stack, item)
-    else:
-        stream.removeTileItem(pos, stack)
-        game.map.getTile(pos).removeItem(item)
-    stream.sendto(getSpectators(pos))
+    for spectator in getSpectators(pos):
+        stream = spectator.packet()
+        item.itemId = transformTo
+        if not stack:
+            stack = game.map.getTile(pos).findStackpos(item)
+            
+        if transformTo:
+            stream.updateTileItem(pos, stack, item)
+        else:
+            stream.removeTileItem(pos, stack)
+            game.map.getTile(pos).removeItem(item)
+        stream.send(spectator)
 
 def placeItem(item, position):
     stackpos = game.map.getTile(position).placeItem(item)
-    stream = TibiaPacket()
-    stream.addTileItem(position, stackpos, item)
-    stream.sendto(getSpectators(position))
+    for spectator in getSpectators(position):
+        stream = spectator.packet()
+        stream.addTileItem(position, stackpos, item)
+        stream.send(spectator)
     return stackpos
     
 # The development debug system
@@ -382,9 +384,9 @@ def getLightLevel():
 def checkLightLevel(lightValue=[None]):
     l = getLightLevel()
     if lightValue[0] != l:
-        stream = TibiaPacket()
-        stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
         for c in getSpectators((0x7FFF,0x7FFF,7), (100000, 100000)):
+            stream = c.packet()
+            stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
             stream.send(c)
         lightValue[0] = l
         
