@@ -21,9 +21,10 @@ sqlHost = "localhost"
 sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # Versions:
-versionMin = 900
+versionMin = 860
 versionMax = 910
-versionError = "You must use 9.x"
+versionError = "You must use 8.6-9.1"
+supportProtocols = (860, 910) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"
@@ -76,6 +77,10 @@ tibiaDayFullLightStart = 14
 tibiaDayFullLightEnds = 20
 tibiaFullDayLight = 255
 tibiaNightLight = 0
+
+# Mounts
+allowMounts = False # Disabled for 8.6 compatibility
+applyMountSpeedChange = True
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough

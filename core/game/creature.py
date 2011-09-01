@@ -216,16 +216,6 @@ class Creature(object):
 
         self.lastStep = time.time()
         self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > config.diagonalWalkCost else 1)
-
-        # Make packet
-        if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
-            stream = TibiaPacket(0x6D)
-            stream.position(oldPosition)
-            stream.uint8(oldStackpos)
-            stream.position(position)   
-        else:
-            stream = TibiaPacket()
-            stream.removeTileItem(oldPosition, oldStackpos)
                 
         
             
@@ -257,51 +247,68 @@ class Creature(object):
             spectators = getPlayers(position)
             
         for spectator in spectators:
-            streamX = stream
+            # Make packet
             if not spectator and self.isPlayer():
                 spectator = self
+
             canSeeNew = spectator.canSee(position)
             canSeeOld = spectator.canSee(oldPosition)
 
             if spectator == self:
-                streamX = copy.copy(stream)
-
+                if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
+                    stream = spectator.packet(0x6D)
+                    stream.position(oldPosition)
+                    stream.uint8(oldStackpos)
+                    stream.position(position)   
+                else:
+                    stream = spectator.packet()
+                    stream.removeTileItem(oldPosition, oldStackpos)
                 # Levels
                 if oldPosition[2] > position[2]:
-                    streamX.moveUpPlayer(self, oldPosition)
+                    stream.moveUpPlayer(self, oldPosition)
                         
                 elif oldPosition[2] < position[2]:
-                    streamX.moveDownPlayer(self, oldPosition)
+                    stream.moveDownPlayer(self, oldPosition)
                 
                 # Y movements
                 if oldPosition[1] > position[1]:
-                    streamX.uint8(0x65)
-                    streamX.mapDescription((oldPosition[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
+                    stream.uint8(0x65)
+                    stream.mapDescription((oldPosition[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
                 elif oldPosition[1] < position[1]:
-                    streamX.uint8(0x67)
-                    streamX.mapDescription((oldPosition[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
+                    stream.uint8(0x67)
+                    stream.mapDescription((oldPosition[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
                 
                 # X movements
                 if oldPosition[0] < position[0]:
-                    streamX.uint8(0x66)
-                    streamX.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
+                    stream.uint8(0x66)
+                    stream.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
                 elif oldPosition[0] > position[0]:
-                    streamX.uint8(0x68)
-                    streamX.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
+                    stream.uint8(0x68)
+                    stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
 
                     
                     
             elif not canSeeOld and canSeeNew:
-                streamX = TibiaPacket()
-                streamX.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
+                stream = spectator.packet()
+                stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
-                streamX = TibiaPacket()
-                streamX.removeTileItem(oldPosition, oldStackpos)
+                stream = spectator.packet()
+                stream.removeTileItem(oldPosition, oldStackpos)
                 
             elif not canSeeOld and not canSeeNew:
                 continue
-            streamX.send(spectator.client) 
+            else:
+                if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
+                    stream = spectator.packet(0x6D)
+                    stream.position(oldPosition)
+                    stream.uint8(oldStackpos)
+                    stream.position(position)   
+                else:
+                    stream = spectator.packet()
+                    stream.removeTileItem(oldPosition, oldStackpos)
+                    
+            stream.send(spectator.client) 
 
         if self.scripts["onNextStep"]:
             for script in self.scripts["onNextStep"][:]:
@@ -322,14 +329,16 @@ class Creature(object):
             d.callback((self, oldPosition, position))
 
     def magicEffect(self, pos, type):
-        stream = TibiaPacket()
-        stream.magicEffect(pos, type)
-        stream.sendto(getSpectators(pos))
+        for spectator in getSpectators(pos):
+            stream = spectator.packet()
+            stream.magicEffect(pos, type)
+            stream.send(spectator)
         
     def shoot(self, fromPos, toPos, type):
-        stream = TibiaPacket()
-        stream.shoot(fromPos, toPos, type)
-        stream.sendto(getSpectators(fromPos))
+        for spectator in getSpectators(pos):
+            stream = spectator.packet()
+            stream.shoot(fromPos, toPos, type)
+            stream.send(spectator)
 
     def refreshOutfit(self):
         stream = TibiaPacket(0x8E)
@@ -573,34 +582,37 @@ class Creature(object):
             return self.turn(3)
             
     def say(self, message, messageType=enum.MSG_SPEAK_SAY):
-        stream = TibiaPacket(0xAA)
-        stream.uint32(0)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(messageType)
-        stream.position(self.position)
-        stream.string(message)
-        stream.sendto(getSpectators(self.position, config.sayRange))
+        for spectator in getSpectators(self.position, config.sayRange):
+            stream = spectator.packet(0xAA)
+            stream.uint32(0)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"] if "level" in self.data else 0)
+            stream.uint8(messageType)
+            stream.position(self.position)
+            stream.string(message)
+            stream.send(spectator)
 
     def yell(self, message, messageType=enum.MSG_SPEAK_YELL):
-        stream = TibiaPacket(0xAA)
-        stream.uint32(0)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(messageType)
-        stream.position(self.position)
-        stream.string(message)
-        stream.sendto(getSpectators(self.position, config.yellRange))
+        for spectator in getSpectators(self.position, config.sayRange):
+            stream = spectator.packet(0xAA)
+            stream.uint32(0)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"] if "level" in self.data else 0)
+            stream.uint8(messageType)
+            stream.position(self.position)
+            stream.string(message)
+            stream.sendto(spectator)
 
     def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
-        stream = TibiaPacket(0xAA)
-        stream.uint32(0)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(messageType)
-        stream.position(self.position)
-        stream.string(message)
-        stream.sendto(getSpectators(self.position, config.whisperRange))
+        for spectator in getSpectators(self.position, config.sayRange):
+            stream = spectator.packet(0xAA)
+            stream.uint32(0)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"] if "level" in self.data else 0)
+            stream.uint8(messageType)
+            stream.position(self.position)
+            stream.string(message)
+            stream.sendto(spectator)
 
     def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
         if not to.isPlayer(): return

@@ -148,9 +148,13 @@ class TibiaPlayer(Creature):
         else:
             output = "You see %s (Level %d). %s is %s." % (self.name, self.data["level"], self.sexPrefix(), self.getVocation().description())
         return output
+        
+    def packet(self, *args):
+        return self.client.protocol.Packet(*args)
+        
     def sendFirstPacket(self):
         
-        stream = TibiaPacket(0x0A)
+        stream = self.packet(0x0A)
 
         stream.uint32(self.clientId()) # Cid
         stream.uint16(config.drawingSpeed) # Drawing speed
@@ -180,51 +184,29 @@ class TibiaPlayer(Creature):
         
     def refreshStatus(self, streamX=None):
         if not streamX:
-            stream = TibiaPacket()
+            stream = self.packet()
         else:
             stream = streamX
-        stream.uint8(0xA0)
-        stream.uint16(self.data["health"])
-        stream.uint16(self.data["healthmax"])
-        stream.uint32(self.data["capasity"] * 100) # TODO: Free Capasity
-        stream.uint32(self.data["capasity"] * 100) # TODO: Cap
-        stream.uint64(self.data["experience"]) # TODO: Virtual cap? Experience
-        if self.data["level"] > 0xFFFF:
-            stream.uint16(0xFFFF)
-        else:
-            stream.uint16(self.data["level"]) # TODO: Virtual cap? Level
-        stream.uint8(math.ceil(float(config.levelFormula(self.data["level"]+1)) / self.data["experience"])) # % to next level, TODO
-        stream.uint16(self.data["mana"]) # mana
-        stream.uint16(self.data["manamax"]) # mana max
-        stream.uint8(self.data["maglevel"]) # TODO: Virtual cap? Manalevel
-        stream.uint8(1) # TODO: Virtual cap? ManaBase
-        stream.uint8(0) # % to next level, TODO
-        stream.uint8(self.data["soul"]) # TODO: Virtual cap? Soul
-        stream.uint16(min(42 * 60, self.data["stamina"] / 60)) # Stamina minutes
-        stream.uint16(self.speed) # Speed
-        
-        stream.uint16(0x00) # Condition
+            
+        stream.status(self)
 
         if not streamX:
             stream.send(self.client)
             
     def refreshSkills(self, streamX=None):
         if not streamX:
-            stream = TibiaPacket()
+            stream = self.packet()
         else:
-            stream = streamX        
-        stream.uint8(0xA1) # Skill type
+            stream = streamX
+            
+        stream.skills(self)
 
-        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-            stream.uint8(self.skills[x]) # Value / Level
-            stream.uint8(1) # Base
-            stream.uint8(0) # %
         if not streamX:
             stream.send(self.client)            
             
 
     def pong(self):
-        TibiaPacket(0x1E).send(self.client)
+        self.packet(0x1E).send(self.client)
 
     def getVocation(self):
         return game.vocation.getVocationById(self.data["vocation"])
@@ -298,7 +280,7 @@ class TibiaPlayer(Creature):
     def findItemById(self, itemId, count=0):
         items = []
         foundCount = 0
-        stream = TibiaPacket()
+        stream = self.packet()
         # From inventory?
         for item in self.inventory:
             if item and item.itemId == itemId:
@@ -390,7 +372,7 @@ class TibiaPlayer(Creature):
                     return
                     
                 bag.container.items[position[2]] = item
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.updateContainerItem(position[1] - 64, position[2], item)
                 stream.send(self.client)
             
@@ -415,7 +397,7 @@ class TibiaPlayer(Creature):
                     return
                     
                 del bag.container.items[position[2]]
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.removeContainerItem(position[1] - 64, position[2])
                 stream.send(self.client)
                 
@@ -495,7 +477,7 @@ class TibiaPlayer(Creature):
             game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown):
-        stream = TibiaPacket(0xA4)
+        stream = self.packet(0xA4)
         stream.uint8(icon)
         stream.uint32(cooldown * 1000)
         stream.uint8(0xA5)
@@ -508,14 +490,14 @@ class TibiaPlayer(Creature):
         self.cooldowns[group << 8] = t
     def cooldownIcon(self, icon, cooldown):
         self.cooldowns[icon] = time.time() + cooldown
-        stream = TibiaPacket(0xA4)
+        stream = self.packet(0xA4)
         stream.uint8(icon)
         stream.uint32(cooldown * 1000)
         stream.send(self.client)
         
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
-        stream = TibiaPacket(0xA5)
+        stream = self.packet(0xA5)
         stream.uint8(group)
         stream.uint32(cooldown * 1000)
         stream.send(self.client)
@@ -541,29 +523,29 @@ class TibiaPlayer(Creature):
         
             
     def setTarget(self, targetId=0):
-        stream = TibiaPacket(0xA3)
+        stream = self.packet(0xA3)
         stream.uint32(targetId)
         stream.send(self.client)
         
     def cancelWalk(self, direction=None):
-        stream = TibiaPacket(0xB5)
+        stream = self.packet(0xB5)
         stream.uint8(direction if direction is not None else self.direction)
         stream.send(self.client)
         
     def tutorial(self, tutorialId):
-        stream = TibiaPacket(0xDC)
+        stream = self.packet(0xDC)
         stream.uint8(tutorialId)
         stream.send(self.client)
         
     def mapMarker(self, position, typeId, desc=""):
-        stream = TibiaPacket(0xDD)
+        stream = self.packet(0xDD)
         stream.position(position)
         stream.uint8(typeId)
         stream.string(desc)
         stream.send(self.client)
         
     def message(self, message, msgType=enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
-        stream = TibiaPacket(0xB4)
+        stream = self.packet(0xB4)
         stream.uint8(msgType)
         if msgType in (enum.MSG_DAMAGE_DEALT, enum.MSG_DAMAGE_RECEIVED, enum.MSG_DAMAGE_OTHERS):
             if pos:
@@ -588,7 +570,7 @@ class TibiaPlayer(Creature):
         
 
     def outfitWindow(self):
-        stream = TibiaPacket(0xC8)
+        stream = self.packet(0xC8)
         
         # First the current outfit
         stream.outfit(self.outfit, self.addon, self.mount)
@@ -617,7 +599,7 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
     
     def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", timestamp=0):
-        stream = TibiaPacket(0x96)
+        stream = self.packet(0x96)
         
         self.windowTextId += 1
         item._windowTextId = self.windowTextId
@@ -649,7 +631,7 @@ class TibiaPlayer(Creature):
         self.cancelWalk(self.direction)
     
     def windowMessage(self, text):
-        stream = TibiaPacket(0x15)
+        stream = self.packet(0x15)
         stream.string(text)
         stream.send(self.client)
     
@@ -690,7 +672,7 @@ class TibiaPlayer(Creature):
             
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
-            stream = TibiaPacket(0x6E)
+            stream = self.packet(0x6E)
             
             if not update:
                 container.opened = True
@@ -712,7 +694,7 @@ class TibiaPlayer(Creature):
             
     def closeContainer(self, container):
         index = self.openContainers.index(container)
-        stream = TibiaPacket(0x6F)
+        stream = self.packet(0x6F)
         stream.uint8(index)
         del self.openContainers[index]
         container.opened = False
@@ -722,7 +704,7 @@ class TibiaPlayer(Creature):
     def closeContainerId(self, openId):
         try:
             container = self.openContainers[openId]
-            stream = TibiaPacket(0x6F)
+            stream = self.packet(0x6F)
             stream.uint8(openId)
             del self.openContainers[openId]
             container.opened = False
@@ -745,7 +727,7 @@ class TibiaPlayer(Creature):
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
         stream = streamX
         if not streamX:
-            stream = TibiaPacket()
+            stream = self.packet()
         
         if not count:
             count = 1 if item.count == None else item.count
@@ -803,7 +785,7 @@ class TibiaPlayer(Creature):
         # Means, right hand, left hand, ammo or bag. Stackable only
         if not self.inventory[4]:
             self.inventory[4] = item
-            stream = TibiaPacket()
+            stream = self.packet()
             stream.addInventoryItem(5, self.inventory[4])
             stream.send(self.client)
             return True
@@ -811,13 +793,13 @@ class TibiaPlayer(Creature):
             prevCount = self.inventory[4].count
             self.inventory[4].count = min(100, prevCount + item.count)
             item.count = (prevCount + item.count) - self.inventory[4].count
-            stream = TibiaPacket()
+            stream = self.packet()
             stream.addInventoryItem(5, self.inventory[4])
             stream.send(self.client)            
         if item.count:
             if not self.inventory[5]:
                 self.inventory[5] = item
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.addInventoryItem(6, self.inventory[5])
                 stream.send(self.client)
                 return True
@@ -825,14 +807,14 @@ class TibiaPlayer(Creature):
                 prevCount = self.inventory[5].count
                 self.inventory[5].count = min(100, prevCount + item.count)
                 item.count = (prevCount + item.count) - self.inventory[5].count  
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.addInventoryItem(6, self.inventory[5])
                 stream.send(self.client)
                 
         if item.count:
             if not self.inventory[9]:
                 self.inventory[9] = item
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[0])
                 stream.send(self.client)
                 return True
@@ -840,7 +822,7 @@ class TibiaPlayer(Creature):
                 prevCount = self.inventory[5].count
                 self.inventory[9].count = min(100, prevCount + item.count)
                 item.count = (prevCount + item.count) - self.inventory[9].count  
-                stream = TibiaPacket()
+                stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[9])
                 stream.send(self.client) 
                 
@@ -861,14 +843,14 @@ class TibiaPlayer(Creature):
         else:
             self.inventory[slot-1] = item
             
-        stream = TibiaPacket()
+        stream = self.packet()
         stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
         
         return True
 
     def updateInventory(self, slot):
-        stream = TibiaPacket()
+        stream = self.packet()
         if self.inventory[slot-1].stackable and not self.inventory[slot-1].count:
             stream.removeInventoryItem(slot)
         else:
@@ -876,7 +858,7 @@ class TibiaPlayer(Creature):
         stream.send(self.client)        
     # Channel system
     def openChannels(self):
-        stream = TibiaPacket(0xAB)
+        stream = self.packet(0xAB)
         channels = game.chat.getChannels(self)
         stream.uint8(len(channels))
         for channel in channels:
@@ -886,7 +868,7 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
     
     def openChannel(self, id):
-        stream = TibiaPacket(0xAC)
+        stream = self.packet(0xAC)
         channel = game.chat.getChannel(id)
         stream.uint16(id)
         stream.string(channel.name)
@@ -900,7 +882,7 @@ class TibiaPlayer(Creature):
     def openPrivateChannel(self, between):
         id = 0xFFFF
         self._openChannels[between.name()] = [id, between]
-        stream = TibiaPacket(0xB2)
+        stream = self.packet(0xB2)
         stream.uint16(id)
         stream.string(between.name())
         stream.send(self.client)
@@ -909,7 +891,7 @@ class TibiaPlayer(Creature):
     def closePrivateChannel(self, between):
         if between.name() in self._openChannels:
             betweenObj = self._openChannels[between.name()]
-            stream = TibiaPacket(0xB3)
+            stream = self.packet(0xB3)
             stream.uint16(betweenObj[0])
             stream.send(self.client)
         
@@ -924,7 +906,7 @@ class TibiaPlayer(Creature):
             return False
             
     def sendChannelMessage(self, by, text, type=game.enum.MSG_SPEAK_SAY, channelId=0):
-        stream = TibiaPacket(0xAA)
+        stream = self.packet(0xAA)
         stream.uint32(1)
         print by.data["name"]
         stream.string(by.data["name"])
@@ -950,7 +932,7 @@ class TibiaPlayer(Creature):
         
     # Death stuff
     def sendReloginWindow(self, percent=0):
-        stream = TibiaPacket(0x28)
+        stream = self.packet(0x28)
         stream.uint8(percent)
         stream.send(self.client)
         
@@ -1047,7 +1029,7 @@ class TibiaPlayer(Creature):
             
     def closeTrade(self):
         if self.openTrade:
-            stream = TibiaPacket(0x7C)
+            stream = self.packet(0x7C)
             stream.send(self.client)
             self.openTrade = None
 
@@ -1141,22 +1123,10 @@ class TibiaPlayer(Creature):
         except:
             pass
             
-    
-    # Compelx packets
-    def handleSay(self, packet):
-        channelType = packet.uint8()
-        channelId = 0
-        reciever = ""
-        if channelType in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
-            channelId = packet.uint16()
-        elif channelType in (enum.MSG_PRIVATE_TO, enum.MSG_GAMEMASTER_PRIVATE_TO):
-            reciever = packet.string()
-            print "..."+reciever+"..."
-
-        text = packet.string()
-        
+    # Stuff from protocol:
+    def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
-            self.message("Message too long")
+            player.message("Message too long")
             return
             
         splits = text.split(" ")
@@ -1172,16 +1142,16 @@ class TibiaPlayer(Creature):
             print channelType
             if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
                 if mode == game.enum.MSG_SPEAK_SAY:
-                    self.say(' '.join(splits[0:]))
+                    player.say(' '.join(splits[0:]))
                     
                 elif mode == game.enum.MSG_SPEAK_YELL:
-                    self.yell(' '.join(splits[0:]))
+                    player.yell(' '.join(splits[0:]))
                 
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
-                    self.whisper(' '.join(splits[0:]))
+                    player.whisper(' '.join(splits[0:]))
                     
-            for creature in game.engine.getCreatures(self.position):
-                creature.playerSay(self, text, channelType, channelId or reciever)
+            for creature in game.engine.getCreatures(player.position):
+                creature.playerSay(player, text, channelType, channelId or reciever)
 
         def part1():
             game.scriptsystem.get("talkaction").run(text, self, endCallback, text=' '.join(splits[0:]))
@@ -1190,411 +1160,3 @@ class TibiaPlayer(Creature):
             game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, part1, text=' '.join(splits[1:]))
         else:
             part1()
-
-    def handleAutoWalk(self, packet):
-        game.engine.explainPacket(packet)
-        if self.target:
-            self.target = None
-        self.stopAction()    
-        steps = packet.uint8()
-
-        walkPattern = deque()
-        for x in xrange(0, steps):
-            direction = packet.uint8()
-            if direction == 1:
-                walkPattern.append(1) # East
-            elif direction == 2:
-                walkPattern.append(7) # Northeast
-            elif direction == 3:
-                walkPattern.append(0) # North
-            elif direction == 4:
-                walkPattern.append(6) # Northwest          
-            elif direction == 5:
-                walkPattern.append(3) # West
-            elif direction == 6:
-                walkPattern.append(4) # Southwest
-            elif direction == 7:
-                walkPattern.append(2) # South
-            elif direction == 8:
-                walkPattern.append(5) # Southeast           
-            else:
-                continue # We don't support them
-                
-        game.engine.autoWalkCreature(self, walkPattern)
-
-    def handleWalk(self, direction):
-        if self.target:
-            self.target = None
-
-        try:
-            game.engine.autoWalkCreature(self, deque([direction]))
-        except game.errors.ImpossibleMove:
-            print "Player got a impossible move, ignoring"
-            # This is a impossible move
-            
-    @deferredGenerator
-    def handleMoveItem(self, packet):
-        from game.item import Item, sid, items
-        fromPosition = packet.position()
-        fromMap = False
-        toMap = False
-        if fromPosition[0] != 0xFFFF:
-            # From map
-            fromMap = True
-        
-        clientId = packet.uint16()
-        fromStackPos = packet.uint8()
-        toPosition = packet.position()
-        if toPosition[0] != 0xFFFF:
-            toMap = True
-           
-        count = packet.uint8()
-        oldItem = None
-        renew = False
-        stack = True
-        
-        isCreature = False
-        if clientId < 100:
-            isCreature = True
-        if not isCreature:
-            # Remove item:
-            currItem = self.findItemWithPlacement(toPosition)
-
-            """if currItem and currItem[1] and not ((currItem[1].stackable and currItem[1].itemId == sid(clientId)) or currItem[1].containerSize):
-                currItem[1] = None
-            """
-            if fromMap:
-                
-                walkPattern = game.engine.calculateWalkPattern(self.position, fromPosition, -1)
-                if len(walkPattern):
-                    def sleep(seconds):
-                        d = Deferred()
-                        reactor.callLater(seconds, d.callback, seconds)
-                        return d
-                    
-                    walking = [True]
-                    game.engine.autoWalkCreature(self, deque(walkPattern), lambda: walking.pop())
-                    while walking:
-                        yield waitForDeferred(sleep(0.05))
-                            
-                    
-                stream = TibiaPacket()
-                oldItem = self.findItemWithPlacement(fromPosition, fromStackPos)
-
-                # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
-                    self.notPossible()
-                    return
-                    
-                if oldItem[1].stackable and count < 100:
-                    renew = True
-                    oldItem[1].reduceCount(count)
-                    if oldItem[1].count:
-                        stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
-                    else:
-                        stream.removeTileItem(fromPosition, fromStackPos)
-                        game.map.getTile(fromPosition).removeItem(oldItem[1])
-                else:
-                    stream.removeTileItem(fromPosition, fromStackPos)
-                    game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
-                stream.sendto(game.engine.getSpectators(fromPosition))
-                
-            else:
-                stream = TibiaPacket()
-                        
-                oldItem = self.findItemWithPlacement(fromPosition)
-                
-                # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
-                    self.notPossible()
-                    return
-                    
-                if oldItem[1].stackable and count < 100:
-                    renew = True
-                    oldItem[1].count -= count
-                    if oldItem[1].count > 0:
-                        if oldItem[0] == 1:
-                            stream.addInventoryItem(fromPosition[1], oldItem[1])
-                        elif oldItem[0] == 2:
-                            stream.updateContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2], oldItem[1])
-                    else:
-                        if oldItem[0] == 1:
-                            self.inventory[fromPosition[1]-1] = None
-                            stream.removeInventoryItem(fromPosition[1])
-                        elif oldItem[0] == 2:
-                            oldItem[2].container.removeItem(oldItem[1])
-                            stream.removeContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2])
-                else:
-                    if oldItem[0] == 1:
-                        self.inventory[fromPosition[1]-1] = None
-                        stream.removeInventoryItem(fromPosition[1])
-                    elif oldItem[0] == 2:
-                        oldItem[2].container.removeItem(oldItem[1])
-                        stream.removeContainerItem(self.openContainers.index(oldItem[2]), fromPosition[2])
-                
-                if toPosition[1] == fromPosition[1]:
-                    stack = False
-                    
-                stream.send(self.client)
-            if toMap:
-                stream = TibiaPacket()
-                if renew:
-                    newItem = Item(sid(clientId), count)
-                else:
-                    newItem = oldItem[1]
-                findItem = game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
-                if findItem and newItem.stackable and count < 100 and findItem[1].count + count <= 100:
-                    newItem.count += findItem[1].count
-                    stream.removeTileItem(toPosition, findItem[0])
-                    game.map.getTile(toPosition).removeItem(findItem[1])
-                    
-                toStackPos = game.map.getTile(toPosition).placeItem(newItem)
-                stream.addTileItem(toPosition, toStackPos, newItem )
-                
-                if not renew and newItem.containerSize and newItem.opened:
-                    self.closeContainer(newItem)
-                stream.sendto(game.engine.getSpectators(toPosition))
-
-            else:
-                
-                if currItem and currItem[1] and currItem[1].containerSize:
-                    ret = self.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
-
-                elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
-                    ret = self.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
-                else:
-                    stream = TibiaPacket()
-                    if toPosition[1] < 64:
-                        if oldItem[1].stackable and self.inventory[toPosition[1]-1] and self.inventory[toPosition[1]-1].itemId == sid(clientId) and (self.inventory[toPosition[1]-1].count + count <= 100):
-                            self.inventory[toPosition[1]-1].count += count
-                        else:       
-                            self.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                        stream.addInventoryItem(toPosition[1], self.inventory[toPosition[1]-1])
-                    else:
-                        container = self.getContainer(toPosition[1]-64)
-                        try:
-                            container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
-                            stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
-                        except:
-                            self.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
-                    if renew and currItem and currItem[1]:
-                        if fromPosition[1] < 64:
-                            self.inventory[fromPosition[1]-1] = currItem[1]
-                            stream.addInventoryItem(fromPosition[1], self.inventory[fromPosition[1]-1])
-                        else:
-                            self.itemToContainer(self.inventory[2], currItem[1])
-
-                    stream.send(self.client)
-        else:
-            if game.map.getTile(toPosition).creatures():
-                self.notEnoughRoom()
-                return
-                
-            creature = game.map.getTile(fromPosition).getThing(fromStackPos) 
-            toTile = game.map.getTile(toPosition)
-            for i in toTile.getItems():
-                if i.solid:
-                    self.notPossible()
-                    return
-            if abs(creature.position[0]-self.position[0]) > 1 or abs(creature.position[1]-self.position[1]) > 1:
-                walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
-                if len(walkPattern) > 1:
-                    self.outOfRange()
-                else:
-                    game.engine.autoWalkCreatureTo(self, creature.position, -1, True, lambda: game.engine.autoWalkCreature(creature, deque(walkPattern)))
-            else:
-                game.engine.autoWalkCreatureTo(creature, toPosition)
-            
-    def handleLookAt(self, packet):
-        from game.item import sid, cid, items
-        position = packet.position()
-        print "Look at"
-        print position
-            
-        clientId = packet.uint16()
-        stackpos = packet.uint8()
-
-        thing = self.findItem(position, stackpos)     
-        
-        if thing:
-            if isinstance(thing, game.item.Item):
-                def afterScript():
-                    extra = ""
-                    # TODO propper description handling
-                    if config.debugItems:
-                        extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    self.message(thing.description() + extra, game.enum.MSG_INFO_DESCR)
-            elif isinstance(thing, Creature):
-                def afterScript():
-                    if self == thing:
-                        self.message(thing.description(True), game.enum.MSG_INFO_DESCR)
-                    else:
-                        self.message(thing.description(), game.enum.MSG_INFO_DESCR)
-            game.scriptsystem.get('lookAt').run(thing, self, afterScript, position=position, stackpos=stackpos)
-        else:
-            self.notPossible()
-
-    def handleLookAtTrade(self, packet):
-        from game.item import sid
-        clientId = packet.uint16()
-        count = packet.uint8()
-        
-        item = game.item.Item(sid(clientId), count)
-        self.message(item.description(), game.enum.MSG_INFO_DESCR)
-        del item
-        
-    def handleRotateItem(self, packet):
-        position = packet.position() # Yes, we don't support backpack rotations
-        clientId = packet.uint16()
-        stackpos = packet.uint8()
-        
-        # TODO: WalkTo
-        item = game.map.getTile(position).getThing(stackpos)
-        game.engine.transformItem(item, item.rotateTo, position, stackpos)
-        
-    def handleSetOutfit(self, packet):
-        self.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
-        self.addon = packet.uint8()
-        self.mount = packet.uint16() # Not really supported
-        self.refreshOutfit()
-    
-    def handleSetMounted(self, packet):
-        if self.mount:
-            mount = packet.uint8() != 0
-            self.changeMountStatus(mount)
-        else:
-            self.outfitWindow()
-            
-    def handleUse(self, packet):
-        position = packet.position()
-
-        clientId = packet.uint16() # Junk I tell you :p
-        stackpos = packet.uint8()
-        index = packet.uint8()
-        thing = self.findItem(position, stackpos)
-
-        if thing:
-            game.scriptsystem.get('use').run(thing, self, None, position=position, stackpos=stackpos, index=index)
-
-    def handleUseWith(self, packet):
-        game.engine.explainPacket(packet)
-        position = packet.position()
-        clientId = packet.uint16() # Junk I tell you :p
-        stackpos = packet.uint8()
-        
-        onPosition = packet.position()
-        onId = packet.uint16()
-        onStack = packet.uint8()
-        
-        thing = self.findItem(position, stackpos)
-        
-        if thing:
-            game.scriptsystem.get('useWith').run(thing, self, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
-
-    def attackTarget(self):
-        if self.target and self.inRange(self.target.position, 1, 1):
-            if not self.inventory[5]:
-                self.message("Fist is not supported, targetcheck failed!")
-            else:
-                
-                if not self.target.data["health"]:
-                    self.target = None
-                else:
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
-                    self.target.onHit(self, dmg, game.enum.PHYSICAL)
-                
-                
-        if self.target:        
-            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
-                
-    def handleAttack(self, packet):
-        cid = packet.uint32()
-        print "CreatureID %d" %  cid
-        if self.targetMode == 1:
-            self.targetMode = 0
-            self.target = None
-            try:
-                self.targetChecker.cancel()
-            except:
-                pass
-            return
-            
-        if cid in allCreatures:
-            print allCreatures[cid].position
-            self.target = allCreatures[cid]
-            self.targetMode = 1
-        else:
-            self.notPossible()
-            
-        if self.modes[1] == game.enum.CHASE:
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.__followCallback)
-
-        try:
-            self.targetChecker.cancel()
-        except:
-            pass        
-        self.attackTarget()
-        
-    def __followCallback(self, who):
-        if self.target == who:
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.__followCallback)
-            
-    def handleFollow(self, packet):
-        cid = packet.uint32()
-        
-        if self.targetMode == 2:
-            self.targetMode = 0
-            self.target = None
-            return
-            
-        if cid in allCreatures:
-            self.target = allCreatures[cid]
-            self.targetMode = 2
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.__followCallback)
-        else:
-            self.notPossible()
-
-    def handleUpdateContainer(self, packet):
-        openId = packet.uint8()
-        
-        parent = False
-        try:
-            parent = bool(container.parent)
-        except:
-            pass
-        self.openContainer(self.openContainers[openId], parent=parent, update=True)
-        
-    def handlePlayerBuy(self, packet):
-        from game.item import sid
-        if not self.openTrade:
-            return
-            
-        clientId = packet.uint16()
-        count = packet.uint8()
-        amount = packet.uint8()
-        ignoreCapasity = packet.uint8()
-        withBackpack = packet.uint8()
-        
-        self.openTrade.buy(self, sid(clientId), count, amount, ignoreCapasity, withBackpack)
-        
-    def handlePlayerSale(self, packet):
-        from game.item import sid
-        if not self.openTrade:
-            return
-            
-        clientId = packet.uint16()
-        count = packet.uint8()
-        amount = packet.uint8()
-        ignoreEquipped = packet.uint8() 
-        
-        self.openTrade.sell(self, sid(clientId), count, amount, ignoreEquipped)
-
-    def handleWriteBack(self, packet):
-        windowId = packet.uint32()
-        text = packet.string()
-        
-        if windowId in self.windowHandlers:
-            self.windowHandlers[windowId](text)

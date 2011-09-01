@@ -11,6 +11,7 @@ import game.pathfinder
 import bindconstant
 import sql
 import otjson
+import game.protocol
 
 try:
     import cPickle as pickle
@@ -29,10 +30,29 @@ def loader(timer):
     # Begin loading items in the background
     d = loadItems()
     
-    
+    @defer.deferredGenerator
+    def _sql_():
+        d = defer.waitForDeferred(sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`"))
+        yield d
+        for x in d.getResult():
+            if x['type'] == 'json':
+                globalStorage[x['key']] = otjson.loads(x['data'])
+            elif x['type'] == 'pickle':
+                globalStorage[x['key']] = pickle.loads(x['data'])
+            else:
+                globalStorage[x['key']] = x['data']
+    _sql_()
+                    
     def sync(d, timer):
+        # Load protocols
+        for version in config.supportProtocols:
+            game.protocol.loadProtocol(version)
+            
+        # Load scripts
         from game.scriptsystem import importer
         importer()
+        
+        # Load map (if configurated to do so)
         if config.loadEntierMap:
             from game.map import load
             import glob
@@ -46,27 +66,20 @@ def loader(timer):
                 
                 ret = threads.deferToThread(__, fileSec)
             ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
-            
+        
+        # Just a inner funny call
         def looper(f, t):
             f()
             reactor.callLater(t, looper, f, t)
         
+        # Do we issue saves?
         if config.doSaveAll:
             reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight) * 7
-        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+            
+        # Light stuff
+        #lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight) * 7
+        #reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         
-        @defer.deferredGenerator
-        def _sql_():
-            d = defer.waitForDeferred(sql.conn.runQuery("SELECT `key`, `data` FROM `globals`"))
-            yield d
-            for x in d.getResult():
-                if x['type'] == 'json':
-                    globalStorage[x['key']] = otjson.loads(x['data'])
-                elif x['type'] == 'pickle':
-                    globalStorage[x['key']] = pickle.loads(x['data'])
-                else:
-                    globalStorage[x['key']] = x['data']
             
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         

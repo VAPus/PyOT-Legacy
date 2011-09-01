@@ -1,4 +1,5 @@
 import protocolbase
+import game.protocol
 
 from twisted.internet.defer import deferredGenerator, waitForDeferred
 from twisted.python import log
@@ -10,7 +11,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onInit(self):
         self.player = None
-
+        self.protocol = None
     def onConnect(self):
         from packet import TibiaPacket
         pkg = TibiaPacket()
@@ -40,7 +41,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.pos += 1 # Packet Type, we don't really care about it in the first packet
         packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
-         
+        self.protocol = game.protocol.getProtocol(version)
+        if not self.protocol:
+            log.msg("Trying to load a invalid protocol")
+            self.transport.loseConnection()
+            return
+            
         if (packet.length - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
             packet.pos = 0 # Reset position
@@ -137,113 +143,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.data = packet.data[2:2+packet.uint16()]
         packet.pos = 0
         
-        packetType = packet.uint8()
+        self.protocol.handle(self.player, packet)
 
-        if packetType == 0x14 or self.player.data["health"] < 1: # Logout
-            self.transport.loseConnection()
-            
-        elif packetType == 0x1E: # Keep alive
-            self.player.pong()
-            
-        elif packetType == 0xA0: # Set modes
-            self.player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
-            
-        elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
-            self.player.turn(packetType - 0x6F)
-            
-        elif packetType == 0x64: # movement with multiple steps
-            self.player.handleAutoWalk(packet)
-    
-        elif packetType == 0x69: # Stop autowalking
-            self.player.stopAutoWalk()
-            
-        elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
-            self.player.handleWalk(packetType - 0x65)
-        
-        elif packetType == 0x6A: # Northeast
-            self.player.handleWalk(7)
-            
-        elif packetType == 0x6B: # Southeast
-            self.player.handleWalk(5)
-
-        elif packetType == 0x6C: # Northwest
-            self.player.handleWalk(4)
-            
-        elif packetType == 0x6D: # Southwest
-            self.player.handleWalk(6)
-            
-        elif packetType == 0x96: # Say
-            self.player.handleSay(packet)
-            
-        elif packetType == 0x78: # Throw/move item
-            self.player.handleMoveItem(packet)
-        
-        elif packetType == 0x79: # Look at in trade window
-            self.player.handleLookAtTrade(packet)
-            
-        elif packetType == 0x7A: # Player brought from store
-            self.player.handlePlayerBuy(packet)
-            
-        elif packetType == 0x7B: # Player sold to store
-            self.player.handlePlayerSale(packet)
-        
-        elif packetType == 0x80: # Player close trade
-            self.player.closeTrade()
-            
-        elif packetType == 0x82:
-            self.player.handleUse(packet)
-
-        elif packetType == 0x83:
-            self.player.handleUseWith(packet)
-            
-        elif packetType == 0x85: # Rotate item
-            self.player.handleRotateItem(packet)
-            
-        elif packetType == 0x87: # Close container
-            self.player.closeContainerId(packet.uint8())
-            
-        elif packetType == 0x88: # Arrow up container
-            self.player.arrowUpContainer(packet.uint8())
-        
-        elif packetType == 0x89: # Text from textWindow
-            self.player.handleWriteBack(packet)
-            
-        elif packetType == 0x97: # Request channels
-            self.player.openChannels()
-
-        elif packetType == 0x98: # Open channel
-            self.player.openChannel(packet.uint16())
-            
-        elif packetType == 0x99: # Close channel
-            self.player.closeChannel(packet.uint16())
-            
-        elif packetType == 0x8C: # Look at
-            self.player.handleLookAt(packet)
-        
-        elif packetType == 0xA1: # Attack
-            self.player.handleAttack(packet)
-
-        elif packetType == 0xA2: # Attack
-            self.player.handleFollow(packet)
-            
-        elif packetType == 0xCA:
-            self.player.handleUpdateContainer(packet)
-            
-        elif packetType == 0xD2: # Request outfit
-            self.player.outfitWindow()
-            
-        elif packetType == 0xD3: # Set outfit
-            self.player.handleSetOutfit(packet)
-        
-        elif packetType == 0xD4: # Set mount status
-            self.player.handleSetMounted(packet)
-            
-        elif packetType == 0xBE: # Stop action
-            self.player.stopAction()
-            
-        else:
-            log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
-            #self.transport.loseConnection()
 
     def onConnectionLost(self):
         if self.player:
@@ -253,6 +154,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.player.knownCreatures.remove(self.player.cid)
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
+        
+    def packet(self, *args):
+        return self.protocol.Packet(*args)
         
 class GameFactory(protocolbase.TibiaFactory):
     protocol = GameProtocol
