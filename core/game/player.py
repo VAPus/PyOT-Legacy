@@ -196,7 +196,10 @@ class TibiaPlayer(Creature):
         
     def refreshStatus(self, streamX=None):
         if not streamX:
-            stream = self.packet()
+            if self.client:
+                stream = self.packet()
+            else:
+                return False # No client
         else:
             stream = streamX
             
