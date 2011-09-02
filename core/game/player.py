@@ -49,7 +49,7 @@ class TibiaPlayer(Creature):
         self.windowTextId = 0
         self.windowHandlers = {}
         
-	self.solid = not config.playerWalkthrough
+        self.solid = not config.playerWalkthrough
 
         # Direction
         self.direction = self.data["direction"]
@@ -61,6 +61,14 @@ class TibiaPlayer(Creature):
         else:
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
         del self.data['inventory']
+        
+        # Depot, (yes, we load it here)
+        if self.data['depot']:
+            self.depot = self.unpickleInventory(self.data['depot'])
+        else:
+            self.depot = {} # {depotId : inventoryList}
+            
+        del self.data['depot']
         
         # Calculate level from experience
         vocation = self.getVocation()
@@ -1017,9 +1025,15 @@ class TibiaPlayer(Creature):
         d = pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
         print "pickle inventory took %f. Length is %d" % (time.time() - t, len(d))
         return d
+
+    def pickleDepot(self):
+        t = time.time()
+        d = pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
+        print "pickle player depot took %f. Length is %d" % (time.time() - t, len(d))
+        return d
         
     def _saveQuery(self):
-        return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.data["id"])
+        return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s, `depot` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.pickleDepot(), self.data["id"])
 
     @deferredGenerator
     def save(self):
@@ -1140,7 +1154,17 @@ class TibiaPlayer(Creature):
             del self.storage[field]
         except:
             pass
+
+    # Depot stuff
+    def getDepot(self, depotId):
+        if depotId in self.depot:
+            return self.depot[depotId]
+        else:
+            return []
             
+    def setDepot(self, depotId, storage):
+        self.depot[depotId] = storage
+        
     # Stuff from protocol:
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
