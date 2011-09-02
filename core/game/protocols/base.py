@@ -756,51 +756,11 @@ class BaseProtocol(object):
     def handleAttack(self, player, packet):
         cid = packet.uint32()
         print "CreatureID %d" %  cid
-        if player.targetMode == 1:
-            player.targetMode = 0
-            player.target = None
-            try:
-                player.targetChecker.cancel()
-            except:
-                pass
-            return
-            
-        if cid in allCreatures:
-            player.target = allCreatures[cid]
-            player.targetMode = 1
-        else:
-            player.notPossible()
-            
-        if player.modes[1] == game.enum.CHASE:
-            game.engine.autoWalkCreatureTo(player, player.target.position, -1, True)
-            player.target.scripts["onNextStep"].append(player.__followCallback)
-
-        try:
-            player.targetChecker.cancel()
-        except:
-            pass        
-        player.attackTarget()
-        
-    def __followCallback(self, player, who):
-        if player.target == who:
-            game.engine.autoWalkCreatureTo(player, player.target.position, -1, True)
-            player.target.scripts["onNextStep"].append(player.__followCallback)
+        player.setAttackTarget(cid)
             
     def handleFollow(self, player, packet):
         cid = packet.uint32()
         
-        if player.targetMode == 2:
-            player.targetMode = 0
-            player.target = None
-            return
-            
-        if cid in allCreatures:
-            player.target = allCreatures[cid]
-            player.targetMode = 2
-            game.engine.autoWalkCreatureTo(player, player.target.position, -1, True)
-            player.target.scripts["onNextStep"].append(player.__followCallback)
-        else:
-            player.notPossible()
 
     def handleUpdateContainer(self, player, packet):
         openId = packet.uint8()

@@ -1164,3 +1164,48 @@ class TibiaPlayer(Creature):
             game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, part1, text=' '.join(splits[1:]))
         else:
             part1()
+
+    def setAttackTarget(self, cid):
+        if self.targetMode == 1:
+            self.targetMode = 0
+            self.target = None
+            try:
+                self.targetChecker.cancel()
+            except:
+                pass
+            return
+            
+        if cid in allCreatures:
+            self.target = allCreatures[cid]
+            self.targetMode = 1
+        else:
+            self.notPossible()
+            
+        if self.modes[1] == game.enum.CHASE:
+            game.engine.autoWalkCreatureTo(player, self.target.position, -1, True)
+            self.target.scripts["onNextStep"].append(self.followCallback)
+
+        try:
+            self.targetChecker.cancel()
+        except:
+            pass        
+        self.attackTarget()
+        
+    def followCallback(self, who):
+        if self.target == who:
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.target.scripts["onNextStep"].append(self.followCallback)
+            
+    def setFollowTarget(self, cid):
+        if self.targetMode == 2:
+            self.targetMode = 0
+            self.target = None
+            return
+            
+        if cid in allCreatures:
+            self.target = allCreatures[cid]
+            self.targetMode = 2
+            game.engine.autoWalkCreatureTo(player, self.target.position, -1, True)
+            self.target.scripts["onNextStep"].append(self.followCallback)
+        else:
+            self.notPossible()
