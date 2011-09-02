@@ -698,21 +698,30 @@ class TibiaPlayer(Creature):
             
     def closeContainer(self, container):
         index = self.openContainers.index(container)
-        stream = self.packet(0x6F)
-        stream.uint8(index)
-        del self.openContainers[index]
-        container.opened = False
-        stream.send(self.client)
+        def end():
+            stream = self.packet(0x6F)
+            stream.uint8(index)
+            del self.openContainers[index]
+            container.opened = False
+            stream.send(self.client)
+        
+        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=[0xFFFF, 0, 0], stackpos=0, index=index)
+        
+        game.scriptsystem.get('close').run(container, self, callOpen, index=index)
 
 
     def closeContainerId(self, openId):
         try:
             container = self.openContainers[openId]
-            stream = self.packet(0x6F)
-            stream.uint8(openId)
-            del self.openContainers[openId]
-            container.opened = False
-            stream.send(self.client)
+            
+            def end():
+                stream = self.packet(0x6F)
+                stream.uint8(openId)
+                del self.openContainers[openId]
+                container.opened = False
+                stream.send(self.client)
+            
+            game.scriptsystem.get('close').run(container, self, end, index=openId)
             return True
             
         except:
@@ -725,7 +734,12 @@ class TibiaPlayer(Creature):
             bagFound.parent.opened = True
             bagFound.opened = False
             self.openContainers[openId] = bagFound.parent
-            self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
+            
+            def end():
+                self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
+                
+            game.scriptsystem.get('close').run(bagFound, self, end, index=openId)
+            
 
     # Item to container
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):

@@ -271,6 +271,7 @@ globalScripts["preWalkOn"] = ThingScripts()
 globalScripts["addMapItem"] = ThingScripts()
 globalScripts["lookAt"] = ThingScripts()
 globalScripts["playerSayTo"] = CreatureScripts()
+globalScripts["close"] = ThingScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
