@@ -222,6 +222,7 @@ class MonsterBase(CreatureBase):
                                 tile = map.getTile(position)
                                 if not tile.creatures():
                                     try:
+                                        monster = Monster(self, position, None)
                                         stackpos = map.getTile(position).placeCreature(monster)
                                         if stackpos > 9:
                                             log.msg("Can't place creatures on a stackpos > 9")
@@ -233,6 +234,7 @@ class MonsterBase(CreatureBase):
                         else:
                             
                             try:
+                                monster = Monster(self, position, None)
                                 stackpos = map.getTile(position).placeCreature(monster)
                                 if stackpos > 9:
                                     log.msg("Can't place creatures on a stackpos > 9")
@@ -247,12 +249,15 @@ class MonsterBase(CreatureBase):
                         return
                 else:
                     try:
-                        stackpos = map.getTile(position).placeCreature(monster)
+                        monster = Monster(self, position, None)
+                        stackpos = tile.placeCreature(monster)
                     except:
                         log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
                         
-            monster = Monster(self, position, None)
+            else:
+                monster = Monster(self, position, None)
+                
             if spawnTime:
                 monster.spawnTime = spawnTime
             monster.radius = radius
