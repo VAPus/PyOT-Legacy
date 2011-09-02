@@ -1,13 +1,13 @@
-from game.creature import Creature, CreatureBase, uniqueId
-import game.engine, game.map, game.scriptsystem
+from creature import Creature, CreatureBase, uniqueId
+import engine, map, scriptsystem
 from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.python import log
-import game.enum
-import game.errors
-import game.item
+import enum
+import errors
+import item
 import config
 
 monsters = {}
@@ -40,25 +40,26 @@ class Monster(Creature):
         self.noBrain = True
         self.spawnTime = None
         self.radius = 5
+        self.brainBegin = 0
 
     def damageToBlock(self, dmg, type):
-        if type == game.enum.MELEE:
+        if type == enum.MELEE:
             return dmg - self.base.armor
-        elif type == game.enum.PHYSICAL:
+        elif type == enum.PHYSICAL:
             return dmg * self.base.physical
-        elif type == game.enum.FIRE:
+        elif type == enum.FIRE:
             return dmg * self.base.fire
-        elif type == game.enum.EARTH:
+        elif type == enum.EARTH:
             return dmg * self.base.earth
-        elif type == game.enum.ENERGY:
+        elif type == enum.ENERGY:
             return dmg * self.base.energy
-        elif type == game.enum.ICE:
+        elif type == enum.ICE:
             return dmg * self.base.ice
-        elif type == game.enum.HOLY:
+        elif type == enum.HOLY:
             return dmg * self.base.holy
-        elif type == game.enum.DEATH:
+        elif type == enum.DEATH:
             return dmg * self.base.death
-        elif type == game.enum.DROWN:
+        elif type == enum.DROWN:
             return dmg * self.base.drown
         
         # What, no match?
@@ -66,18 +67,18 @@ class Monster(Creature):
         
     def onDeath(self):
         # Transform
-        tile = game.map.getTile(self.position)
+        tile = map.getTile(self.position)
         lootMsg = []
-        corpse = game.item.Item(self.base.data["corpse"])
-        if "containerSize" in game.item.items[self.base.data["corpse"]]:
-            maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+        corpse = item.Item(self.base.data["corpse"])
+        if "containerSize" in item.items[self.base.data["corpse"]]:
+            maxSize = item.items[self.base.data["corpse"]]["containerSize"]
             drops = []
             for loot in self.base.lootTable:
                 if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
                     if len(drops)+1 == maxSize:
                         if config.stockLootInBagsIfNeeded:
                             drops.insert(0, (config.stockLootBagId, None))
-                            maxSize += game.item.items[config.stockLootBagId]["containerSize"]
+                            maxSize += item.items[config.stockLootBagId]["containerSize"]
                         else:
                             drops.append(loot)
                             break
@@ -93,38 +94,38 @@ class Monster(Creature):
                 lenLoot = len(loot)
                 ret = 0
                 if lenLoot == 2:
-                    item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
-                    lootMsg.append(item.name())
-                    ret = corpse.container.placeItemRecursive(item)
+                    ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
+                    lootMsg.append(ritem.name())
+                    ret = corpse.container.placeItemRecursive(ritem)
                         
                 elif lenLoot == 3:
                     count = random.randint(1, loot[2]) * config.lootMaxRate
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                            lootMsg.append(item.name())
-                            ret = corpse.container.placeItemRecursive(item)
+                            ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            lootMsg.append(ritem.name())
+                            ret = corpse.container.placeItemRecursive(ritem)
                             count -= depCount
                     else:
-                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                        lootMsg.append(item.name())
-                        ret = corpse.container.placeItemRecursive(item)
+                        ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                        lootMsg.append(ritem.name())
+                        ret = corpse.container.placeItemRecursive(ritem)
                             
                 elif lenLoot == 4:
                     count = random.randint(loot[4], loot[2]) * config.lootMaxRate
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                            lootMsg.append(item.name())
-                            ret = corpse.container.placeItemRecursive(item)
+                            ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            lootMsg.append(ritem.name())
+                            ret = corpse.container.placeItemRecursive(ritem)
                             count -= depCount
                                 
                     else:
-                        item = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                        lootMsg.append(item.name())
-                        ret = corpse.container.placeItemRecursive(item)
+                        ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                        lootMsg.append(ritem.name())
+                        ret = corpse.container.placeItemRecursive(ritem)
                             
 
                 if ret == None:
@@ -132,7 +133,7 @@ class Monster(Creature):
                     break
                 
         corpse.decay(self.position)
-        splash = game.item.Item(game.enum.FULLSPLASH)
+        splash = item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
         splash.decay(self.position)
         
@@ -142,13 +143,13 @@ class Monster(Creature):
             tile.removeCreature(self)
         except:
             pass
-        game.engine.updateTile(self.position, tile)
+        engine.updateTile(self.position, tile)
 
         if self.lastDamager and self.lastDamager.isPlayer():
             if lootMsg:
-                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), game.enum.MSG_LOOT)
+                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), enum.MSG_LOOT)
             else:
-                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), game.enum.MSG_LOOT)
+                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), enum.MSG_LOOT)
                 
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience * config.experienceRate)
@@ -159,14 +160,14 @@ class Monster(Creature):
         # Begin respawn
         # TODO just respawn <this> class, can't possibly bind so many kb :p
         if self.spawnTime:
-            game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+            engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
         else:
-            game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+            engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
             
-    def say(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_SAY):
+    def say(self, message, messageType=enum.MSG_SPEAK_MONSTER_SAY):
         return Creature.say(self, message, messageType)
         
-    def yell(self, message, messageType=game.enum.MSG_SPEAK_MONSTER_YELL):
+    def yell(self, message, messageType=enum.MSG_SPEAK_MONSTER_YELL):
         return Creature.yell(self, message, messageType)
 
     def description(self):
@@ -206,8 +207,51 @@ class MonsterBase(CreatureBase):
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.25, radius=5, radiusTo=None):
         if spawnDelay:
-            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
+            return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
         else:
+            if place:
+                tile = map.getTile(position)
+                if tile.creatures():
+                    ok = False
+                    for testx in (-1,0,1):
+                        position[0] += testx
+                        tile = map.getTile(position)
+                        if tile.creatures():
+                            for testy in (-1,0,1):
+                                position[0] += testy
+                                tile = map.getTile(position)
+                                if not tile.creatures():
+                                    try:
+                                        stackpos = map.getTile(position).placeCreature(monster)
+                                        if stackpos > 9:
+                                            log.msg("Can't place creatures on a stackpos > 9")
+                                            return
+                                        ok = True
+                                    except:
+                                        pass
+                                    break
+                        else:
+                            
+                            try:
+                                stackpos = map.getTile(position).placeCreature(monster)
+                                if stackpos > 9:
+                                    log.msg("Can't place creatures on a stackpos > 9")
+                                    return
+                                ok = True
+                            except:
+                                pass
+                        if ok:
+                            break
+                    if not ok:
+                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        return
+                else:
+                    try:
+                        stackpos = map.getTile(position).placeCreature(monster)
+                    except:
+                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        return
+                        
             monster = Monster(self, position, None)
             if spawnTime:
                 monster.spawnTime = spawnTime
@@ -226,21 +270,12 @@ class MonsterBase(CreatureBase):
                 #log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
                 pass
             if place:
-                try:
-                    stackpos = game.map.getTile(position).placeCreature(monster)
-                    if stackpos > 9:
-                        log.msg("Can't place creatures on a stackpos > 9")
-                        return
-                        
-                    list = game.engine.getSpectators(position)
-                    for client in list:
-                        stream = TibiaPacket()
-                        stream.magicEffect(position, 0x03)
-                        stream.addTileCreature(position, stackpos, monster, client.player)
+                for client in engine.getSpectators(position):
+                    stream = client.packet()
+                    stream.magicEffect(position, 0x03)
+                    stream.addTileCreature(position, stackpos, monster, client.player)
                 
-                        stream.send(client)
-                except:
-                    log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                    stream.send(client)
             return monster
         
     def setHealth(self, health, healthmax=None):
@@ -255,7 +290,7 @@ class MonsterBase(CreatureBase):
         self.spawnTime = spawnTime
         
     def bloodType(self, color="blood"):
-        self.blood = getattr(game.enum, 'FLUID_'+color.upper())
+        self.blood = getattr(enum, 'FLUID_'+color.upper())
 
     def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
         self.data["lookhead"] = lookhead
@@ -345,7 +380,7 @@ class MonsterBase(CreatureBase):
                 # Id to name
                 if type(loot[0]) == int:
                     loot = list(loot)
-                    loot[0] = game.item.items[loot[0]]["name"]
+                    loot[0] = item.items[loot[0]]["name"]
         
                 cache.append(loot)  
                 
@@ -356,12 +391,12 @@ class MonsterBase(CreatureBase):
                     loot = list(loot)
                     loots = loot[0][:]
                     loot[0] = []
-                    for item in loots:
-                        loot[0].append(game.item.itemNames[item])
+                    for ritem in loots:
+                        loot[0].append(item.itemNames[ritem])
                         
                 else:
                     loot = list(loot)
-                    loot[0] = game.item.itemNames[loot[0]]
+                    loot[0] = item.itemNames[loot[0]]
         
                 self.lootTable.append(loot)  
             
@@ -371,23 +406,24 @@ class MonsterBase(CreatureBase):
                     loot = list(loot)
                     loots = loot[0][:]
                     loot[0] = []
-                    for item in loots:
-                        loot[0].append(game.item.itemNames[item])
+                    for ritem in loots:
+                        loot[0].append(item.itemNames[ritem])
                         
                 elif type(loot[0]) == str:
                     loot = list(loot)
-                    loot[0] = game.item.itemNames[loot[0]]
+                    loot[0] = item.itemNames[loot[0]]
         
                 self.lootTable.append(loot)
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
         monster.noBrain = False
+        monster.brainBegin = time.time()
         self.handleThink(monster)
         if monster.base.voiceslist:
             self.handleTalk(monster)
                 
-    @game.engine.loopInThread(0.5)
+    @engine.loopInThread(0.5)
     def handleThink(self, monster, check=True):
         monster.noBrain = False
         # Are we alive?
@@ -410,14 +446,15 @@ class MonsterBrain(object):
                     return ret
                     
         # Are anyone watching?
-        if check and not game.engine.getSpectators(monster.position, (11, 9)):
+        if check and not engine.getSpectators(monster.position, (11, 9)):
             monster.noBrain = True
             return False
-            
-        if monster.base.walkable and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+        
+        t = time.time()
+        if monster.base.walkable and not monster.action and not monster.target and t - monster.lastStep > monster.walkPer and t - monster.brainBegin > 1: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
-    @game.engine.loopInThread(2)        
+    @engine.loopInThread(2)        
     def handleTalk(self, monster):
         # Are we alive?
         if not monster.alive:
@@ -435,9 +472,9 @@ class MonsterBrain(object):
                 
     def walkRandomStep(self, monster, badDir=None):
         # Ignore autowalking when there is noone in range
-        spectators = game.engine.getPlayers(monster.position)
+        """spectators = engine.getSpectators(monster.position)
         if not spectators:
-            return False
+            return False"""
         
         # How far are we (x,y) from our spawn point?
         xFrom = monster.position[0]-monster.spawnPosition[0]
@@ -467,7 +504,7 @@ class MonsterBrain(object):
             elif step == 3 and monster.radiusTo[0]-(monster.position[0]-1) > monster.radius:
                 continue
             
-            elif monster.target and game.enine.positionInDirection(monster.position, step) == monster.target.position:
+            elif monster.target and enine.positionInDirection(monster.position, step) == monster.target.position:
                 continue
             
             badDir.append(step)
@@ -478,7 +515,7 @@ class MonsterBrain(object):
                 if config.monsterNeverSkipWalks:
                     self.walkRandomStep(monster, badDir)
             
-            d = monster.move(step, spectators)
+            d = monster.move(step)
             d.addCallback(success)
             
             d.addErrback(errback)

@@ -247,8 +247,8 @@ class Creature(object):
             
         for spectator in spectators:
             # Make packet
-            if not spectator and self.isPlayer():
-                spectator = self
+            if not spectator.client:
+                continue
 
             canSeeNew = spectator.canSee(position)
             canSeeOld = spectator.canSee(oldPosition)
@@ -602,7 +602,7 @@ class Creature(object):
             stream.uint8(messageType)
             stream.position(self.position)
             stream.string(message)
-            stream.sendto(spectator)
+            stream.send(spectator)
 
     def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
         for spectator in getSpectators(self.position, config.sayRange):
@@ -613,7 +613,7 @@ class Creature(object):
             stream.uint8(messageType)
             stream.position(self.position)
             stream.string(message)
-            stream.sendto(spectator)
+            stream.send(spectator)
 
     def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
         if not to.isPlayer(): return

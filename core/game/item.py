@@ -93,6 +93,10 @@ class Item(object):
     __conts__ = ('container', 'mailbox') # Just alias for cont
     
     def __init__(self, itemid, count=None, actions=[], **kwargs):
+        if not itemid in items:
+            log.msg("itemId %d doesn't exist" % itemid)
+            itemId = 100
+            
         self.itemId = itemid
         self.actions = map(str, actions)
         
@@ -104,18 +108,13 @@ class Item(object):
         if self.stackable:
             self.count = count
         
-        else:
-            try:        
-                # Extend items such as containers, beds and doors
-                if "containerSize" in items[self.itemId]:
-                    self.cont = Container(self.containerSize)
+        else:     
+            # Extend items such as containers, beds and doors
+            if "containerSize" in items[self.itemId]:
+                self.cont = Container(self.containerSize)
                     
-                if self.type == "mailbox":
-                    self.cont = Mailbox()
-                    
-            except:
-                print "Buggy itemId %d" % self.itemId
-                self.itemId = 100   
+            if self.type == "mailbox":
+                self.cont = Mailbox()
                 
 
 
