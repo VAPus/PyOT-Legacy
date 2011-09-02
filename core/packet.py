@@ -144,7 +144,7 @@ class TibiaPacket(object):
             data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         
         reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
-    """#@inThread
+    #@inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
@@ -162,4 +162,4 @@ class TibiaPacket(object):
                 lenCache = len(data)+4
              
             reactor.callFromThread(client.transport.write, struct.pack("<HI", lenCache, adler32(data) & 0xffffffff)+data)
-    """
+    

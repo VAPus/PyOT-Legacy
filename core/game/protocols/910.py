@@ -6,4 +6,5 @@ compatible_protocols = [860]
 
 def vertify(): return True
 
+class Packet(base.BasePacket): pass
 class Protocol(base.BaseProtocol): pass

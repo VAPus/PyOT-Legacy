@@ -93,10 +93,10 @@ class Item(object):
     __conts__ = ('container', 'mailbox') # Just alias for cont
     
     def __init__(self, itemid, count=None, actions=[], **kwargs):
-        if not itemid in items:
+        if type(items[itemid]) != dict:
             log.msg("itemId %d doesn't exist" % itemid)
-            itemId = 100
-            
+            itemid = 100
+           
         self.itemId = itemid
         self.actions = map(str, actions)
         
@@ -104,7 +104,7 @@ class Item(object):
             self.params = kwargs
         else:
             self.params = None
-            
+
         if self.stackable:
             self.count = count
         

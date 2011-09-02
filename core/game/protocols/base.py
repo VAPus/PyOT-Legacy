@@ -523,7 +523,7 @@ class BaseProtocol(object):
                         yield waitForDeferred(sleep(0.05))
                             
                     
-                stream = TibiaPacket()
+                stream = player.packet()
                 oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
 
                 # Before we remove it, can it be placed there?
@@ -545,7 +545,7 @@ class BaseProtocol(object):
                 stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
-                stream = TibiaPacket()
+                stream = player.packet()
                         
                 oldItem = player.findItemWithPlacement(fromPosition)
                 
@@ -582,7 +582,7 @@ class BaseProtocol(object):
                     
                 stream.send(player.client)
             if toMap:
-                stream = TibiaPacket()
+                stream = player.packet()
                 if renew:
                     newItem = Item(sid(clientId), count)
                 else:
@@ -608,7 +608,7 @@ class BaseProtocol(object):
                 elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
                     ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                 else:
-                    stream = TibiaPacket()
+                    stream = player.packet()
                     if toPosition[1] < 64:
                         if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
                             player.inventory[toPosition[1]-1].count += count
