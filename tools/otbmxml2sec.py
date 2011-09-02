@@ -280,7 +280,8 @@ while node:
                         while item.data.peekUint8():
                             attr = item.data.uint8()
                             if attr == 10: # depotId
-                                item.data.uint16() # TODO: care?
+                                _tile_.append("i.attribute(\"depotId\",%d)" % item.data.uint16())
+                                safe = False
                             elif attr == 14: # houseDoorId
                                 item.data.uint8() # TODO: care? We can autodetect it
                             elif attr == 20: # Sleeperguid
