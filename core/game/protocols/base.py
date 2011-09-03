@@ -1,6 +1,6 @@
 # This is the "common protocol" in which all other sub protocols is based upon
 from packet import TibiaPacket
-from twisted.internet.defer import deferredGenerator, waitForDeferred
+from twisted.internet.defer import Deferred, deferredGenerator, waitForDeferred
 from twisted.internet import defer, reactor
 import game.enum
 enum = game.enum
