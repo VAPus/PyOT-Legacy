@@ -40,7 +40,6 @@ class Monster(Creature):
         self.noBrain = True
         self.spawnTime = None
         self.radius = 5
-        self.brainBegin = 0
 
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:
@@ -269,11 +268,10 @@ class MonsterBase(CreatureBase):
             else:
                 monster.radiusTo = (position[0], position[1])
                 
-            self.brain.beginThink(monster) # begin the heavy thought process!
-
+            
             if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
-                #log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
-                pass
+                log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
+
             if place:
                 for client in engine.getSpectators(position):
                     stream = client.packet()
@@ -281,6 +279,8 @@ class MonsterBase(CreatureBase):
                     stream.addTileCreature(position, stackpos, monster, client.player)
                 
                     stream.send(client)
+                    
+            self.brain.beginThink(monster) # begin the heavy thought process!
             return monster
         
     def setHealth(self, health, healthmax=None):
@@ -423,7 +423,6 @@ class MonsterBase(CreatureBase):
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
         monster.noBrain = False
-        monster.brainBegin = time.time()
         self.handleThink(monster)
         if monster.base.voiceslist:
             self.handleTalk(monster)
@@ -455,8 +454,7 @@ class MonsterBrain(object):
             monster.noBrain = True
             return False
         
-        t = time.time()
-        if monster.base.walkable and not monster.action and not monster.target and t - monster.lastStep > monster.walkPer and t - monster.brainBegin > 1: # If no other action is available
+        if monster.base.walkable and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
     @engine.loopInThread(2)        

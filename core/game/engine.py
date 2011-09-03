@@ -117,8 +117,11 @@ def loopInThread(time):
             ret = f(*args, **kwargs)
             if ret != False:
                 safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
+        
+        def first(*args, **kwargs):
+            safeCallLater(time/2, reactor.callInThread, new_f, *args, **kwargs)
             
-        return new_f
+        return first
     return decor
 # First order of buisness, the autoWalker
 @action(True)
