@@ -527,7 +527,7 @@ class TibiaPlayer(Creature):
         
         if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.__followCallback)
+            self.target.scripts["onNextStep"].append(self.followCallback)
             
         self.modes[1] = chase
         self.modes[2] = secure
@@ -1206,6 +1206,22 @@ class TibiaPlayer(Creature):
         else:
             part1()
 
+    def attackTarget(self):
+        if self.target and self.inRange(self.target.position, 1, 1):
+            if not self.inventory[5]:
+                player.message("Fist is not supported, targetcheck failed!")
+            else:
+                
+                if not self.target.data["health"]:
+                    self.target = None
+                else:
+                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
+                    self.target.onHit(self, dmg, game.enum.PHYSICAL)
+                
+                
+        if self.target:        
+            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+            
     def setAttackTarget(self, cid):
         if self.targetMode == 1:
             self.targetMode = 0
@@ -1223,7 +1239,7 @@ class TibiaPlayer(Creature):
             self.notPossible()
             
         if self.modes[1] == game.enum.CHASE:
-            game.engine.autoWalkCreatureTo(player, self.target.position, -1, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
         try:
