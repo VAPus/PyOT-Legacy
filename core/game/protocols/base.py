@@ -518,7 +518,7 @@ class BaseProtocol(object):
                         return d
                     
                     walking = [True]
-                    game.engine.autoWalkCreature(player, deque(walkPattern), lambda: walking.pop())
+                    game.engine.autoWalkCreature(player, deque(walkPattern), lambda x: walking.pop())
                     while walking:
                         yield waitForDeferred(sleep(0.05))
                             
@@ -736,22 +736,6 @@ class BaseProtocol(object):
         
         if thing:
             game.scriptsystem.get('useWith').run(thing, player, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
-
-    def attackTarget(self):
-        if player.target and player.inRange(player.target.position, 1, 1):
-            if not player.inventory[5]:
-                player.message("Fist is not supported, targetcheck failed!")
-            else:
-                
-                if not player.target.data["health"]:
-                    player.target = None
-                else:
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(player.inventory[5].attack, 1, player.data["level"], 1)))
-                    player.target.onHit(player, dmg, game.enum.PHYSICAL)
-                
-                
-        if player.target:        
-            player.targetChecker = reactor.callLater(config.meleeAttackSpeed, player.attackTarget)
                 
     def handleAttack(self, player, packet):
         cid = packet.uint32()
