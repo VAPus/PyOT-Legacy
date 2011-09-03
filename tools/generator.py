@@ -235,29 +235,28 @@ class Map(object):
 
                     for y in xCom:
                         if "R(" in y:
-                            output.append("(C(%s),)" % (','.join(y)))
+                            output.append("C(%s)" % (','.join(y)))
                         else:
-                            output.append("(T(%s),)" % (','.join(y)))
+                            output.append("T(%s)" % (','.join(y)))
                             
                     if output:    
-                        return "(%s,)" % ('+'.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
+                        return "(%s)" % (','.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
 
-                    return '((None,)*%d,)' % areas[1]
+                    return 'None'
                     
                 # Level 2, X compare
                 def xComp(zCom):
                     output = []
                     noRows = 0
-                    no = ("((None,)*%d,)" % areas[1], "(None,)")
                     for x in zCom:
                         t = yComp(x)
                         if t:
                             output.append(t)
-                        if t in no:
+                        if t == "None":
                             noRows += 1
                             
                     if not noRows >= areas[0]:
-                        return '+'.join(output)
+                        return "(%s)" % ','.join(output)
                 
                 output = []
                 for zPos in sector:

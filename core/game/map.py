@@ -17,11 +17,11 @@ def getTile(pos):
     try:
         return knownMap[sectorSum][pos[2]][pX][pY]
     except:
-        loadTiles(pos[0], pos[1])
-        try:
-            return knownMap[sectorSum][pos[2]][pX][pY]
-        except:
-            return None
+        if loadTiles(pos[0], pos[1]):
+            try:
+                return knownMap[sectorSum][pos[2]][pX][pY]
+            except:
+                return None
             
 def placeCreature(creature, pos):
     try:
@@ -168,9 +168,6 @@ import data.map.info
 dummyItems = {} 
 
 knownMap = {}
-for i in xrange(data.map.info.levels[1], data.map.info.levels[0]):
-    knownMap[i] = {}
-sectors = []
 
 
 
@@ -256,11 +253,8 @@ def loadTiles(x,y, walk=True):
         return None
     elif x > data.map.info.height or y > data.map.info.width:
         return None
-        
-    sectorX = int(x / data.map.info.sectorSize[0])
-    sectorY = int(y / data.map.info.sectorSize[1])
     
-    load(sectorX, sectorY)
+    return load(int(x / data.map.info.sectorSize[0]), int(y / data.map.info.sectorSize[1]))
 
 def __loadOp(code): exec(code)
 
@@ -268,11 +262,9 @@ def load(sectorX, sectorY):
     sectorSum = (sectorX * 32768) + sectorY
     ybase = sectorY*data.map.info.sectorSize[1]
     xbase = sectorX*data.map.info.sectorSize[0]
-    if sectorSum in sectors or (ybase > data.map.info.height-1 or xbase > data.map.info.width-1):
+    if sectorSum in knownMap or ybase > data.map.info.height-1 or xbase > data.map.info.width-1:
         return False
-        
-       
-    sectors.append(sectorSum)
+
     global V # Should really be avioided 
     if not V:
         V = Tile((I(100),), 1)
@@ -291,9 +283,9 @@ def load(sectorX, sectorY):
         marshal.dump(compiled, open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb'), 2)
         exec(compiled)
     
-    if m:
-        knownMap[sectorSum] = m          
-            
+
+    knownMap[sectorSum] = m          
+        
     if l:    
         threads.deferToThread(__loadOp, l)
     
@@ -337,4 +329,3 @@ def unload(sectorX, sectorY):
         del knownMap[sectorSum]
     except:
         pass
-    sectors.remove(sectorSum)
