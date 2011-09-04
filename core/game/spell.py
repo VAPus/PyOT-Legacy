@@ -251,7 +251,7 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
     if game.item.items[make]["name"].title() in spells:
         print "Warning: Duplicate spell with name %s" % name
-    spells[game.item.items[make]["name"].title()] = (words, conjure)
+    spells[words] = (conjure, game.item.items[make]["name"].title(), level, mana)
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):
@@ -324,7 +324,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
     targetRunes[rune] = targetrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
-def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=1):
+def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=1):
     def selftargetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
@@ -343,10 +343,10 @@ def selfTargetSpell(words, icon, level, mana, group, effect, callback, cooldown=
             creature.cooldownSpell(icon, group, cooldown)
         callback(creature, creature.position, creature, creature.position, effect, strength)
             
-    spells[words] = selftargetspell
+    spells[words] = (selftargetspell, name, level, mana)
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
-def targetSpell(words, icon, level, mana, group, effect, area, callback, cooldown=2):
+def targetSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2):
     def targetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
@@ -368,7 +368,7 @@ def targetSpell(words, icon, level, mana, group, effect, area, callback, cooldow
         for pos in positions:
             callback(creature, pos, effect, strength)
             
-    spells[words] = targetspell
+    spells[words] = (targetspell, name, level, mana)
     game.scriptsystem.reg("talkaction", words, targetspell)
     
 def clear():

@@ -364,9 +364,9 @@ def saveAll():
         
 # Time stuff
 def getTibiaTime():
-    seconds = (time.time() - serverStart) % config.tibiaDayLength
-    hours = int(float(seconds / config.tibiaDayLength) * 24)
-    seconds = seconds - (config.tibiaDayLength * (hours / 24))
+    seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) / config.tibiaDayLength)
+    hours = int(float(seconds / 3600))
+    seconds = seconds - (hours * 3600)
     minutes = int(seconds / 60)
     seconds = seconds % 60
     

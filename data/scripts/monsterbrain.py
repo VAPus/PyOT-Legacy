@@ -35,7 +35,7 @@ def defaultBrainFeaturePriority(self, monster):
                     key = "s%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
                         if spell[2](monster):
-                            game.spell.spells[spell[1]](monster, spell[3])
+                            game.spell.spells[spell[1]][0](monster, spell[3])
                             monster.intervals[key] = time.time()
                             return True # Until next brain tick
                 
@@ -53,7 +53,7 @@ def defaultBrainFeaturePriority(self, monster):
                     key = "a%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
-                            game.spell.spells[spell[1]](monster, spell[4])
+                            game.spell.spells[spell[1]][0](monster, spell[4])
                             monster.intervals[key] = time.time()
                             return True # Until next brain tick     
                             

@@ -71,12 +71,6 @@ scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 
 # First use of actions :p
 def testContainer(creature, thing, position, stackpos, index):
-    # Each time you open it, add a bag. I use this code to test max capasity stuff
-    if position[1] == 3:
-        bag1 = game.item.Item(1987)
-        thing.container.placeItem(bag1)
-    
-    
     if not thing.opened:
         # Open a bag inside a bag?
         open = True

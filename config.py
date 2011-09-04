@@ -72,7 +72,7 @@ doSaveAll = True # Issue saves
 saveEvery = 300 # in seconds. Even down to a few seconds won't really make server lag since it's async, but you will definitly risk binding up sql connections if your below 1second, this in turn can cause lag
 
 # Tibia day
-tibiaDayLength = 60 # One hour
+tibiaDayLength = 60*60 # One hour
 tibiaDayFullLightStart = 14
 tibiaDayFullLightEnds = 20
 tibiaFullDayLight = 215
