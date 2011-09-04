@@ -9,4 +9,4 @@ rift_scythe.setSpeed(370)
 rift_scythe.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 rift_scythe.walkAround(energy=1, fire=1, poison=1)
 rift_scythe.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
-rift_Scythe.regMelee(200)#wrong
+rift_scythe.regMelee(200)#wrong
