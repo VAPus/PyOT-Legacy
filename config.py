@@ -72,11 +72,12 @@ doSaveAll = True # Issue saves
 saveEvery = 300 # in seconds. Even down to a few seconds won't really make server lag since it's async, but you will definitly risk binding up sql connections if your below 1second, this in turn can cause lag
 
 # Tibia day
-tibiaDayLength = 60*60 # One hour
+tibiaTimeOffset = 1200 # This is used as a base time for when the server started. If day is 3600, this means the clock will be 8 when the server starts
+tibiaDayLength = 3600 # One hour
 tibiaDayFullLightStart = 14
 tibiaDayFullLightEnds = 20
-tibiaFullDayLight = 215
-tibiaNightLight = 40
+tibiaFullDayLight = 215 # Highest light level
+tibiaNightLight = 40 # Lowest light level
 
 # Mounts
 allowMounts = False # Disabled for 8.6 compatibility

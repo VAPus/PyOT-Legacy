@@ -17,7 +17,7 @@ try:
 except:
     import pickle
     
-serverStart = time.time()
+serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 jsonFields = ['storage']
 pickleFields = ['objectStorage']
@@ -76,8 +76,8 @@ def loader(timer):
             reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
             
         # Light stuff
-        #lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight) * 7
-        #reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         
             
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
@@ -381,8 +381,12 @@ def getLightLevel():
         dayHours = 24 - (config.tibiaDayFullLightEnds - config.tibiaDayFullLightStart)
         hoursleft = (abs(24 - tibiaTime[0]) + config.tibiaDayFullLightStart) % 24
 
-        lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft - dayHours)
-        return config.tibiaFullDayLight + lightChange
+        if hoursleft >= 12:
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft-12)
+            return config.tibiaNightLight + lightChange            
+        else:
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft)
+            return config.tibiaFullDayLight - lightChange
         
 def checkLightLevel(lightValue=[None]):
     l = getLightLevel()
