@@ -10,3 +10,4 @@ zombie.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convin
 zombie.walkAround(energy=0, fire=1, poison=0)
 zombie.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 zombie.voices("Mst.... klll....", "Whrrrr... ssss.... mmm.... grrrrl", "Dnnnt... cmmm... clsrrr....", "Httt.... hmnnsss...")
+zombie.regMelee(130)

@@ -10,3 +10,4 @@ undead_gladiator.setBehavior(summonable=0, attackable=1, hostile=1, illusionable
 undead_gladiator.walkAround(energy=1, fire=0, poison=1)
 undead_gladiator.setImmunity(paralyze=0, invisible=1, lifedrain=1, drunk=0)
 undead_gladiator.voices("Let's battle it out in a duel!", "Bring it!", "I'll fight here in eternity and beyond.", "I will not give up!", "Another foolish adventurer who tries to beat me.")
+udead_gladiator.regMelee(250)

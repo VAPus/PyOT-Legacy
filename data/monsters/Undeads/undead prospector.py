@@ -10,3 +10,4 @@ undead_prospector.setBehavior(summonable=440, attackable=1, hostile=1, illusiona
 undead_prospector.walkAround(energy=1, fire=1, poison=1)
 undead_prospector.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 undead_prospector.voices("Our mine... leave us alone.", "Turn back...", "These mine is ours... you shall not pass.")
+undead_prospector.regMelee(50)

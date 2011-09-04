@@ -10,3 +10,4 @@ lost_soul.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, con
 lost_soul.walkAround(energy=1, fire=0, poison=0)
 lost_soul.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=0)
 lost_soul.voices("Mouuuurn meeee!", "Forgive Meee!", "Help meee!")
+lost_soul.regMelee(420)

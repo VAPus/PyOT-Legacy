@@ -10,3 +10,4 @@ ghoulish_hyaena.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=
 ghoulish_hyaena.walkAround(energy=0, fire=0, poison=0)
 ghoulish_hyaena.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 ghoulish_hyaena.voices("Grawrrr!!", "Hoouu!")
+ghoulish_hyaena.regMelee(170)#incorrect

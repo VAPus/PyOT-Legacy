@@ -10,3 +10,4 @@ mummy.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, convinc
 mummy.walkAround(energy=1, fire=1, poison=0)
 mummy.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=0)
 mummy.voices("I will ssswallow your sssoul!", "Mort ulhegh dakh visss.", "Flesssh to dussst!", "I will tassste life again!", "Ahkahra exura belil mort!", "Yohag Sssetham!")
+mummy.regMelee(85)

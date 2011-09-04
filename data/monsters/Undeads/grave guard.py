@@ -9,3 +9,4 @@ grave_guard.setSpeed(250)#unknown speed
 grave_guard.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 grave_guard.walkAround(energy=0, fire=0, poison=0)
 grave_guard.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=1)
+grave_guard.regMelee(200)#unknown?

@@ -10,3 +10,4 @@ troll_champion.setBehavior(summonable=340, attackable=1, hostile=1, illusionable
 troll_champion.walkAround(energy=1, fire=1, poison=1)
 troll_champion.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 troll_champion.voices("Meee maity!", "Grrrr", "Whaaaz up!?", "Gruntz!", "Groar")
+troll_champion.regMelee(35)

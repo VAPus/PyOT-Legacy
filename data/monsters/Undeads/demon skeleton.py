@@ -9,3 +9,4 @@ demon_skeleton.setSpeed(230)
 demon_skeleton.setBehavior(summonable=620, attackable=1, hostile=1, illusionable=1, convinceable=620, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 demon_skeleton.walkAround(energy=1, fire=0, poison=0)
 demon_skeleton.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
+demon_skeleton.regMelee(180)#approx~

@@ -10,3 +10,4 @@ bonebeast.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, con
 bonebeast.walkAround(energy=1, fire=1, poison=0)
 bonebeast.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 bonebeast.voices("Knooorrrrr!", "Cccchhhhhhhhh!")
+bonebeast.regMelee(200)#+poison up to 5/hp turn

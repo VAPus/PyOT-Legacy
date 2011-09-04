@@ -10,3 +10,4 @@ frost_troll.setBehavior(summonable=300, attackable=1, hostile=1, illusionable=1,
 frost_troll.walkAround(energy=1, fire=1, poison=1)
 frost_troll.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 frost_troll.voices("Brrr", "Broar!")
+frost_troll.regMelee(20)

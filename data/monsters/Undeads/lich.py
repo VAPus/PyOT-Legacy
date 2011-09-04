@@ -10,3 +10,4 @@ lich.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convince
 lich.walkAround(energy=0, fire=1, poison=0)
 lich.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=0)
 lich.voices("Doomed be the living!", "Death awaits all!", "Thy living flesh offends me!", "Death and Decay!", "You will endure agony beyond thy death!", "Pain sweet pain!", "Come to me my children!")
+lich.regMelee(75)

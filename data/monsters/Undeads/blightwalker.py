@@ -10,3 +10,4 @@ blightwalker.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, 
 blightwalker.walkAround(energy=1, fire=0, poison=0)
 blightwalker.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 blightwalker.voices("I can see you decaying!", "Let me taste your mortality!", "Your lifeforce is waning!")
+blightwalker.regMelee(490)

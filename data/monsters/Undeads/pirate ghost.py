@@ -10,3 +10,4 @@ pirate_ghost.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, 
 pirate_ghost.walkAround(energy=1, fire=1, poison=0)
 pirate_ghost.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=0)
 pirate_ghost.voices("Yooh Ho Hooh Ho!", "Hell is waiting for You!", "It's alive!", "The curse! Aww the curse!", "You will not get my treasure!")
+prate_ghost.regMelee(95)#also causes poison damage up to 2/hp turn

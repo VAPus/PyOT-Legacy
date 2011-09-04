@@ -10,3 +10,4 @@ grim_reaper.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, c
 grim_reaper.walkAround(energy=1, fire=1, poison=0)
 grim_reaper.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 grim_reaper.voices("Death!", "Come a little closer!", "The end is near!")
+grim_reaper.regMelee(813)

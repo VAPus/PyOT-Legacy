@@ -10,3 +10,4 @@ phantasm_summon.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=
 phantasm_summon.walkAround(energy=1, fire=1, poison=1)
 phantasm_summon.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 phantasm_summon.voices("Oh my, you forgot to put your pants on!", "Weeheeheeheehee!", "Its nothing but a dream.", "Dream a little dream with me!", "Give in.")
+phantasm_summon.regMelee(200)#wrong

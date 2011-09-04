@@ -10,3 +10,4 @@ undead_mine_worker.setBehavior(summonable=435, attackable=1, hostile=1, illusion
 undead_mine_worker.walkAround(energy=1, fire=1, poison=1)
 undead_mine_worker.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 undead_mine_worker.voices("Ahrrr... uhmmm... hmm...", "Grrr...", "Urrrgh... gnarrr...")
+undead_mine_worker.regMelee(20)#could be wrong

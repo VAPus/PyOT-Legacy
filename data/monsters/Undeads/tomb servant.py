@@ -10,3 +10,4 @@ tomb_servant.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, 
 tomb_servant.walkAround(energy=0, fire=0, poison=0)
 tomb_servant.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 tomb_servant.voices("Chaarr!!", "Ngl..Nglll...Gll")
+tomb_servant.regMelee(130)#close~

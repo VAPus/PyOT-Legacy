@@ -10,3 +10,4 @@ vampire_bride.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0,
 vampire_bride.walkAround(energy=1, fire=1, poison=1)#incorrect?
 vampire_bride.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=1)
 vampire_bride.voices("Kneel before your Mistress!", "Dead is the new alive.", "Come, let me kiss you, darling. Oh wait, I meant kill.", "Enjoy the pain - I know you love it.", "Are you suffering nicely enough?")
+vampire_bride.regMelee(200)

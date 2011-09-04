@@ -10,3 +10,4 @@ island_troll.setBehavior(summonable=290, attackable=1, hostile=1, illusionable=1
 island_troll.walkAround(energy=1, fire=1, poison=1)
 island_troll.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 island_troll.voices("Hmmm, turtles", "Hmmm, dogs", "Hmmm, worms", "Groar", "Gruntz!")
+island_troll.regMelee(10)

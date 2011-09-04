@@ -10,3 +10,4 @@ souleater.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, con
 souleater.walkAround(energy=1, fire=1, poison=1)
 souleater.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 souleater.voices("Life is such a fickle thing!", "I will devour your soul.", "Souuuls!", "I will feed on you.", "Aaaahh")
+souleater.regMelee(209)

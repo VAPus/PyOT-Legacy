@@ -10,3 +10,4 @@ troll_legionnaire.setBehavior(summonable=0, attackable=1, hostile=1, illusionabl
 troll_legionnaire.walkAround(energy=0, fire=0, poison=0)
 troll_legionnaire.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=0)
 troll_legionnaire.voices("Attack!", "Graaaaar!")
+troll_legionnaire.regMelee(40)

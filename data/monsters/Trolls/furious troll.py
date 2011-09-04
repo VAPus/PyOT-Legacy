@@ -10,3 +10,4 @@ furious_troll.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1,
 furious_troll.walkAround(energy=0, fire=0, poison=0)
 furious_troll.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=0)
 furious_troll.voices("Slice! Slice!", "DIE!!!")
+furious_troll.regMelee(100)

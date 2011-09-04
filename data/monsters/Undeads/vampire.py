@@ -10,3 +10,4 @@ vampire.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, convi
 vampire.walkAround(energy=1, fire=1, poison=0)
 vampire.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 vampire.voices("Kneel before your Mistress!", "Dead is the new alive.", "Come, let me kiss you, darling. Oh wait, I meant kill.", "Enjoy the pain - I know you love it.", "Are you suffering nicely enough?")
+vampire.regMelee(150)

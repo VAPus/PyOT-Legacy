@@ -10,3 +10,4 @@ betrayed_wraith.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=
 betrayed_wraith.walkAround(energy=0, fire=0, poison=0)
 betrayed_wraith.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 betrayed_wraith.voices("Rrrah!", "Gnarr!", "Tcharrr!")
+betrayed_wraith.regMelee(455)

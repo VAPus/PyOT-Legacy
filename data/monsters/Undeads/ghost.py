@@ -10,3 +10,4 @@ ghost.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1, convinc
 ghost.walkAround(energy=1, fire=1, poison=0)
 ghost.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 ghost.voices("Huh!", "Shhhhhh", "Buuuuuh")
+ghost.regMelee(80)

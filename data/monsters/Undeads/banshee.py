@@ -10,3 +10,4 @@ banshee.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=0, convi
 banshee.walkAround(energy=1, fire=0, poison=0)
 banshee.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 banshee.voices("Dance for me your dance of death!", "Let the music play!", "I will mourn your death!", "Are you ready to rock?", "Feel my gentle kiss of death.", "That's what I call easy listening!", "IIIIEEEeeeeeehhhHHHH!")
+banshee.regMelee(100)#+poison up to 3/hp turn

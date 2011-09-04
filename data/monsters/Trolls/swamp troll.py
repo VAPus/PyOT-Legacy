@@ -10,3 +10,4 @@ swamp_troll.setBehavior(summonable=320, attackable=1, hostile=1, illusionable=1,
 swamp_troll.walkAround(energy=1, fire=1, poison=1)
 swamp_troll.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 swamp_troll.voices("Me strong! Me ate spinach!", "Groar!", "Grrrr")
+swamp_troll.regMelee(13)#+1hp/turn poison

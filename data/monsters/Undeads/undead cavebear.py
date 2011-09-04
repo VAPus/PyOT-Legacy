@@ -10,3 +10,4 @@ undead_cavebear.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=
 undead_cavebear.walkAround(energy=0, fire=0, poison=0)
 undead_cavebear.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 undead_cavebear.voices("Grrrrrrrrrrr")
+udead_cavebear.regMelee(150) #not accurate

@@ -10,3 +10,4 @@ troll.setBehavior(summonable=290, attackable=1, hostile=1, illusionable=1, convi
 troll.walkAround(energy=1, fire=1, poison=1)
 troll.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 troll.voices("Hmmm, bugs", "Hmmm, dogs", "Grrr", "Groar", "Gruntz!")
+troll.regMelee(15)

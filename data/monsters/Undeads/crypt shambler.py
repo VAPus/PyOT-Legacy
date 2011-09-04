@@ -10,3 +10,4 @@ crypt_shambler.setBehavior(summonable=0, attackable=1, hostile=1, illusionable=1
 crypt_shambler.walkAround(energy=1, fire=1, poison=0)
 crypt_shambler.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=0)
 crypt_shambler.voices("Aaaaahhhh!", "Hoooohhh!", "Uhhhhhhh!", "Chhhhhhh!")
+crypt_shambler.regMelee(140)
