@@ -275,7 +275,6 @@ class MonsterBase(CreatureBase):
             if place:
                 for client in engine.getSpectators(position):
                     stream = client.packet()
-                    stream.magicEffect(position, 0x03)
                     stream.addTileCreature(position, stackpos, monster, client.player)
                 
                     stream.send(client)

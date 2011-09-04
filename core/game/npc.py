@@ -179,7 +179,6 @@ class NPCBase(CreatureBase):
                     list = game.engine.getSpectators(position)
                     for client in list:
                         stream = TibiaPacket()
-                        stream.magicEffect(position, 0x03)
                         stream.addTileCreature(position, stackpos, npc, client.player)
                 
                         stream.send(client)
