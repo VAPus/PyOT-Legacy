@@ -179,6 +179,7 @@ class Item(object):
         if self.count > 1 and "plural" in items[self.itemId]:
             return items[self.itemId]["plural"].title()
         return items[self.itemId]["name"].title()
+        
     def reduceCount(self, count):
         self.count -= count
             
