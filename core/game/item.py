@@ -287,7 +287,7 @@ def loadItems():
 
     # Async SQL (it's funny isn't it?)
     result = yield sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
-    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
+    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid") # We'll be waiting, won't we?
     
     
     # Make two new values while we are loading
@@ -338,16 +338,22 @@ def loadItems():
                 loadItems[sid+x] = attributes
             
     del result
-
+    sid = 0
+    attributes = None
     for data in (yield d2):
+        if sid != data["sid"]:
+            attributes = loadItems[data["sid"]]
+            sid = data["sid"]
+            
         if data["key"] == "fluidSource":
-            data["value"] = getattr(game.enum, 'FLUID_'+data["value"].upper())
-        if data["value"]:
+            attributes[data["key"]] = getattr(game.enum, 'FLUID_'+data["value"].upper())
+        elif data["value"]:
             try:
-                loadItems[int(data["sid"])][data["key"]] = int(data["value"])
+                attributes[data["key"]] = int(data["value"])
             except:
-                loadItems[int(data["sid"])][data["key"]] = data["value"]
+                attributes[data["key"]] = data["value"]
     del d2
+
     log.msg("%d Items loaded" % len(loadItems))
     
     # Replace the existing items
