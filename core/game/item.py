@@ -304,20 +304,35 @@ def loadItems():
     for item in result:
         subs = item["subs"]
         del item["subs"]
+        
+        sid = item["sid"]
+        del item["sid"]
+        
         if item["plural"] == item["name"] or not item["plural"]:
             del item["plural"]
             
-                    
-        reverseLoadItems[item["cid"]] = item["sid"]
-        
+        if not item["article"]:
+            del item["article"]
+
         if item['type'] != 1:
-            loadItemNames[item['name']] = item['sid']
+            loadItemNames[item['name']] = sid
             
-        loadItems[item["sid"]] = item
+        if not item["type"]:
+            del item["type"]
+        
+        if not item["name"]:
+            del item["name"]
+            
+        reverseLoadItems[item["cid"]] = sid
+
+        loadItems[sid] = item
         if subs:
             for x in xrange(1, subs+1):
-                reverseLoadItems[item["cid"]+x] = item["sid"]+x
-                loadItems[item["sid"]+x] = loadItems[item["sid"]]
+                attributes = item.copy()
+                attributes["cid"] = item["cid"]+x
+                reverseLoadItems[attributes["cid"]] = sid+x
+                
+                loadItems[sid+x] = attributes
             
     del result
 

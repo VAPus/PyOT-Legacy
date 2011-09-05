@@ -109,7 +109,7 @@ def testContainer(creature, thing, position, stackpos, index):
 useScript = scriptsystem.get("use")
 for item in game.item.items:
     if item and "containerSize" in item:
-        useScript.reg(item["sid"], testContainer)
+        useScript.reg(game.item.reverseItems[item["cid"]], testContainer)
 
 
 def makeitem(creature, text):

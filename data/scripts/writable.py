@@ -23,4 +23,4 @@ def writable(creature, thing, position, stackpos, **k):
 useScript = scriptsystem.get("use")
 for item in game.item.items:
     if item and "writeable" in item:
-        useScript.reg(item["sid"], writable)
+        useScript.reg(game.item.reverseItems[item["cid"]], writable)
