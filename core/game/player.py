@@ -1265,3 +1265,12 @@ class TibiaPlayer(Creature):
             self.target.scripts["onNextStep"].append(self.followCallback)
         else:
             self.notPossible()
+            
+    # Skull and emblems and such
+    def square(self, creature, color=27):
+        stream = self.packet(0x86)
+        stream.uint32(creature.cid)
+        stream.uint8(color)
+        stream.send(self.client)
+        
+    

@@ -79,6 +79,9 @@ class Creature(object):
         self.alive = True
         self.lastDamager = None
         self.solid = not config.creatureWalkthrough
+        self.shield = 0
+        self.emblem = 0
+        self.skull = 0
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -754,3 +757,69 @@ class Creature(object):
 
     def playerSay(self, player, say, type, channel):
         pass # Override me
+
+    # Change passability
+    def setSolid(self, solid):
+        if self.solid == solid:
+            return
+            
+        self.solid = solid
+        
+        for client in getSpectators(self.position):
+            stream = client.packet(0x92)
+            stream.uint32(self.cid)
+            stream.uint8(self.solid)
+            stream.send(client)
+            
+    def setSolidFor(self, player. solid):
+        stream = player.packet(0x92)
+        stream.uint32(self.cid)
+        stream.uint8(solid)
+        stream.send(player.client)
+        
+    # Shields
+    def setPartyShield(self, shield):
+        if self.shield == shield:
+            return
+            
+        self.shield = shield
+    
+        for player in getPlayers(self.position):
+            stream = player.packet(0x90)
+            stream.uint32(self.cid)
+            stream.uint8(self.getPartShield(player))
+            stream.send(player.client)
+            
+    def getPartyShield(self, creature):
+        return self.shield # TODO
+        
+    # Emblem
+    def setEmblem(self, emblem):
+        if self.emblem == emblem:
+            return
+        
+        self.emblem = emblem
+
+        for player in getPlayers(self.position):
+            stream = player.packet()
+            stream.addTileCreature(self.position, game.map.getTile(self.position).findStackpos(self), self, player)
+            stream.send(player.client)
+            
+    # Skull
+    def setSkull(self, skull):
+        if self.skull == skull:
+            return
+        
+        self.skull = skull
+
+        for player in getPlayers(self.position):
+            stream = player.packet(0x90)
+            stream.uint32(self.cid)
+            stream.uint8(self.getSkull(player))
+            stream.send(player.client)    
+            
+    def getSkull(self, creature):
+        return self.skull # TODO
+        
+    def square(self, creature, color=27):
+        pass
