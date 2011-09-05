@@ -322,6 +322,9 @@ def loadItems():
         
         if not item["name"]:
             del item["name"]
+        
+        if not item["speed"]:
+            del item["speed"]
             
         reverseLoadItems[item["cid"]] = sid
 
