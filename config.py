@@ -86,6 +86,11 @@ applyMountSpeedChange = True
 # Game modes
 playerWalkthrough = False # can also be modified in scripts
 creatureWalkthrough = False # can also be modified in scripts
+
+# Mailboxes
+maxMails = 20
+maxMailsWithin = 600 # 10min, default on tibia as of 9.aug
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

@@ -1,6 +1,6 @@
 import protocolbase
 
-from twisted.internet.defer import deferredGenerator, waitForDeferred
+from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 from packet import TibiaPacket
 import sql
@@ -10,7 +10,7 @@ import hashlib
 import socket
 
 class LoginProtocol(protocolbase.TibiaProtocol):
-    @deferredGenerator
+    @inlineCallbacks
     def onFirstPacket(self, packet):
         packet.pos += 1
         packet.uint16() # OS 0x00 and 0x01
@@ -52,21 +52,14 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         pkg = TibiaPacket()
 
         # Our funny way of doing async SQL
-        d = waitForDeferred(sql.conn.runQuery("SELECT `id`, `name`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
-
-        yield d # Tell the core to come back to use once the query above is finished
-
-        account = d.getResult()
+        account = yield sql.conn.runQuery("SELECT `id`, `name`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
         if not account:
             self.exitWithError("Invalid username or password")
             return
 
-        d = waitForDeferred(sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id'])))
 
-        yield d # Tell the core to come back to use once the query above is finished
-
-        characters = d.getResult()
+        characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id']))
 
         # Send motd
         pkg.uint8(0x14)

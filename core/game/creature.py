@@ -1,4 +1,4 @@
-from twisted.internet import defer
+from twisted.internet.defer import inlineCallbacks, Deferred
 from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
@@ -138,11 +138,11 @@ class Creature(object):
     def refreshSkills(self, streamX=None): pass
     
     def move(self, direction, spectators=None, level=0):
-        d = defer.Deferred()
+        d = Deferred()
         game.engine.safeCallLater(0, self.__move, d, direction, spectators, level)
         return d
         
-    @defer.deferredGenerator
+    @inlineCallbacks
     def __move(self, d, direction, spectators=None, level=0):
         if not level and not self.actionLock(self.__move, d, direction, spectators, level):
             return
@@ -220,11 +220,11 @@ class Creature(object):
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            yield defer.waitForDeferred(game.scriptsystem.get('walkOff').runDefer(item, self, None, position=oldPosition))
+            yield game.scriptsystem.get('walkOff').runDefer(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            yield defer.waitForDeferred(game.scriptsystem.get('preWalkOn').runDefer(item, self, None, oldTile=oldTile, newTile=newTile, position=position))
+            yield game.scriptsystem.get('preWalkOn').runDefer(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             
             
         newStackPos = newTile.placeCreature(self)

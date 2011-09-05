@@ -5,7 +5,6 @@ import config
 from collections import deque
 import game.scriptsystem
 from game.item import Item
-from twisted.internet.defer import deferredGenerator, waitForDeferred, Deferred
 from twisted.internet import reactor
 from game.creature import Creature, CreatureBase, uniqueId, allCreatures
 import time
@@ -1038,23 +1037,20 @@ class TibiaPlayer(Creature):
     def _saveQuery(self):
         return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s, `depot` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.pickleDepot(), self.data["id"])
 
-    @deferredGenerator
     def save(self):
-        r = waitForDeferred(sql.conn.runOperation(*self._saveQuery()))
-        yield r
-        r = r.getResult()
+        sql.conn.runOperation(*self._saveQuery())
 
-    @deferredGenerator
+
     def saveSkills(self):
-        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"])))
+        sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
     
-    @deferredGenerator
+
     def saveExperience(self):
-        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"])))
+        sql.conn.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"]))
     
-    @deferredGenerator
+
     def saveStorage(self):
-        yield waitForDeferred(sql.conn.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"])))
+        sql.conn.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"]))
 
     # Shopping
     def setTrade(self, npc):

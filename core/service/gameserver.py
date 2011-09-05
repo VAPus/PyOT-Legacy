@@ -1,7 +1,7 @@
 import protocolbase
 import game.protocol
 
-from twisted.internet.defer import deferredGenerator, waitForDeferred
+from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
 import hashlib
@@ -28,7 +28,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.send(self)
         self.loseConnection()
         
-    @deferredGenerator
+    @inlineCallbacks
     def onFirstPacket(self, packet):
         import sql
         import otcrypto
@@ -87,21 +87,13 @@ class GameProtocol(protocolbase.TibiaProtocol):
         pkg = TibiaPacket()
 
         # Our funny way of doing async SQL
-        d = waitForDeferred(sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest())))
-
-        yield d # Tell the core to come back to use once the query above is finished
-
-        account = d.getResult()
+        account = yield sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
         if not account:
             self.exitWithError("Invalid username or password")
             return
 
-        d = waitForDeferred(sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s", (account[0]['id'])))
-
-        yield d # Tell the core to come back to use once the query above is finished
-
-        character = d.getResult()
+        character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s", (account[0]['id']))
 
         if not character:
             self.exitWithError("Character can't be loaded")

@@ -1,6 +1,6 @@
 # This is the "common protocol" in which all other sub protocols is based upon
 from packet import TibiaPacket
-from twisted.internet.defer import Deferred, deferredGenerator, waitForDeferred
+from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet import defer, reactor
 import game.enum
 enum = game.enum
@@ -477,7 +477,7 @@ class BaseProtocol(object):
     def handleWalk(self, player, direction):
         game.engine.autoWalkCreature(player, deque([direction]))
             
-    @deferredGenerator
+    @inlineCallbacks
     def handleMoveItem(self, player, packet):
         from game.item import Item, sid, items
         fromPosition = packet.position()
@@ -492,7 +492,8 @@ class BaseProtocol(object):
         toPosition = packet.position()
         if toPosition[0] != 0xFFFF:
             toMap = True
-           
+        
+        print toPosition
         count = packet.uint8()
         oldItem = None
         renew = False
@@ -520,7 +521,7 @@ class BaseProtocol(object):
                     walking = [True]
                     game.engine.autoWalkCreature(player, deque(walkPattern), lambda x: walking.pop())
                     while walking:
-                        yield waitForDeferred(sleep(0.05))
+                        yield sleep(0.05)
                             
                     
                 stream = player.packet()
@@ -587,19 +588,29 @@ class BaseProtocol(object):
                     newItem = Item(sid(clientId), count)
                 else:
                     newItem = oldItem[1]
-                findItem = game.map.getTile(toPosition).findClientItem(clientId, True) # Find item for stacking
+                thisTile = game.map.getTile(toPosition)
+                findItem = thisTile.findClientItem(clientId, True) # Find item for stacking
                 if findItem and newItem.stackable and count < 100 and findItem[1].count + count <= 100:
                     newItem.count += findItem[1].count
                     stream.removeTileItem(toPosition, findItem[0])
                     game.map.getTile(toPosition).removeItem(findItem[1])
-                    
-                toStackPos = game.map.getTile(toPosition).placeItem(newItem)
-                stream.addTileItem(toPosition, toStackPos, newItem )
-                
-                if not renew and newItem.containerSize and newItem.opened:
-                    player.closeContainer(newItem)
-                stream.sendto(game.engine.getSpectators(toPosition))
+                else:
+                    toStackPos = None
 
+                    process = [0]
+                    
+                    _items_ = thisTile.getItems()
+                    count = len(_items_)    
+                    for item in _items_:
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onId=newItem.itemId, onStackpos=fromStackPos, onThing=newItem)
+
+                    if process[0] == count:
+                        print "Said ", process[0]
+                        toStackPos = game.map.getTile(toPosition).placeItem(newItem)
+                        stream.addTileItem(toPosition, toStackPos, newItem)
+                        if not renew and newItem.containerSize and newItem.opened:
+                            player.closeContainer(newItem)
+                stream.sendto(game.engine.getSpectators(toPosition))
             else:
                 
                 if currItem and currItem[1] and currItem[1].containerSize:
@@ -733,9 +744,11 @@ class BaseProtocol(object):
         onStack = packet.uint8()
         
         thing = player.findItem(position, stackpos)
-        
+        onThing = player.findItem(onPosition, onStack)
+        print clientId
+        print onId
         if thing:
-            game.scriptsystem.get('useWith').run(thing, player, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack)
+            game.scriptsystem.get('useWith').run(thing, player, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack, onThing=onThing)
                 
     def handleAttack(self, player, packet):
         cid = packet.uint32()

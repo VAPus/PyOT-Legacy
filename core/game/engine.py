@@ -1,5 +1,6 @@
 # This act as the core event system
-from twisted.internet import reactor, threads, defer
+from twisted.internet import reactor, threads
+from twisted.internet.defer import inlineCallbacks, returnValue
 from collections import deque
 from twisted.python import log
 import time
@@ -29,11 +30,9 @@ def loader(timer):
     # Begin loading items in the background
     d = loadItems()
     
-    @defer.deferredGenerator
+    @inlineCallbacks
     def _sql_():
-        d = defer.waitForDeferred(sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`"))
-        yield d
-        for x in d.getResult():
+        for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
             if x['type'] == 'json':
                 globalStorage[x['key']] = otjson.loads(x['data'])
             elif x['type'] == 'pickle':
@@ -212,7 +211,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
         pattern = pattern[:skipFields]
         
     return pattern
-    
+
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=tuple()):
     players = set()
@@ -396,4 +395,52 @@ def checkLightLevel(lightValue=[None]):
             stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
             stream.send(c)
         lightValue[0] = l
+        
+# Player lookup and mail
+# Usually blocking calls, but we're only called from scripts so i suppose it's ok
+@inlineCallbacks
+def getPlayerIDByName(name):
+    try:
+        returnValue(game.player.allPlayers[name].data["id"])
+    except:
+        d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
+        if d:
+            defer.returnValue(d['id'])
+        else:
+            defer.returnValue(None)
+
+def townNameToId(name):
+    import data.map.info as i
+    for id in i.towns:
+        if i.towns[id][0] == name:
+            return id
+
+@inlineCallbacks
+def placeInDepot(name, depotId, items):
+    if not type(items) == list:
+        items = [items]
+        
+    def __inPlace(place):
+        for i in items:
+            place.append(i)
+            
+    if name in game.player.allPlayers:
+        try:
+            __inPlace(game.player.allPlayers[name].depot[depotId])
+        except:
+            game.player.allPlayers[name].depot[depotId] = items
+        returnValue(True)
+    else:
+        result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
+        if result:
+            result = pickle.loads(result['depot'])
+            try:
+                __inPlace(result[depotId])
+            except:
+                result[depotId] = items
+            result = pickle.dumps(result, pickle.HIGHEST_PROTOCOL)
+            sql.conn.runOperation("UPDATE `players` SET `depot` = %s" % result)
+            returnValue(True)
+        else:
+            returnValue(False)
         

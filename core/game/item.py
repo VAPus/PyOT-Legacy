@@ -1,4 +1,4 @@
-from twisted.internet.defer import waitForDeferred, deferredGenerator
+from twisted.internet.defer import inlineCallbacks
 import sql
 from twisted.python import log
 from collections import deque
@@ -277,14 +277,13 @@ def sid(itemid):
         return None
         
             
-@deferredGenerator
+@inlineCallbacks
 def loadItems():
     log.msg("Loading items...")
 
     # Async SQL (it's funny isn't it?)
-    d = waitForDeferred(sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items"))
-    d2 = waitForDeferred(sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes"))
-    yield d
+    result = yield sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
+    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
     
     
     # Make two new values while we are loading
@@ -298,7 +297,7 @@ def loadItems():
         reverseLoadItems = [None] * (config.itemMaxClientId + 1)
 
 
-    for item in d.getResult():
+    for item in result:
         subs = item["subs"]
         del item["subs"]
         if item["plural"] == item["name"] or not item["plural"]:
@@ -316,10 +315,9 @@ def loadItems():
                 reverseLoadItems[item["cid"]+x] = item["sid"]+x
                 loadItems[item["sid"]+x] = loadItems[item["sid"]]
             
-    del d
-    yield d2
-    autoCastValue = game.engine.autoCastValue
-    for data in d2.getResult():
+    del result
+
+    for data in (yield d2):
         if data["key"] == "fluidSource":
             data["value"] = getattr(game.enum, 'FLUID_'+data["value"].upper())
         if data["value"]:

@@ -1,12 +1,16 @@
 # The script system
-from twisted.internet import reactor, threads
+from twisted.internet import reactor, threads, defer
 from twisted.python.threadpool import ThreadPool
 import config
 import weakref
 import sys
+import time
 
 modPool = []
 globalScripts = {}
+
+class Value(object):
+    pass
 
 class Scripts(object):
     __slots__ = ('scripts')
@@ -152,20 +156,34 @@ class ThingScripts(object):
     def runDefer(self, thing, creature, end=None, **kwargs):
         return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, True, **kwargs)
 
+    def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
+        return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, False, **kwargs)
+        
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)
+
+    def makeResult(self, obj):
+        def _handleResult(result):
+            cache = True
+            for (success, value) in result:
+                if value is False:
+                    cache = False
+                    break
+                else:
+                    cache = value
+            obj.value = cache
+        return _handleResult
         
     def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = True
-        
+        ok = Value()
+
+        deferList = []
         for weakthing in self.thingScripts:
             if weakthing() == thing:
                 for script in self.thingScripts[weakthing][:]:
                     func = script()
                     if func:
-                        ok = func(creature=creature, thing=thing, **kwargs)
-                        if not ok is not False:
-                            break
+                        deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
                     else:
                         try:
                             self.thingScripts[weakthing].remove(script) 
@@ -173,39 +191,46 @@ class ThingScripts(object):
                             pass
             elif weakthing() == None:
                 del self.thingScripts[weakthing]
-        if ok and thing.thingId() in self.scripts:
+        if thing.thingId() in self.scripts:
             for script in self.scripts[thing.thingId()][:]:
                 func = script()
-
                 if func:
-                    ok = func(creature=creature, thing=thing, **kwargs)
-                    if not ok is not False:
-                        break
+                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
                 else:
                     try:
                         self.scripts[thing.thingId()].remove(script) 
                     except:
                         pass   
 
-        if ok:
-            for aid in thing.actionIds():
-                if aid in self.scripts:
-                    for script in self.scripts[aid][:]:
-                        func = script()
-                        if func:
-                            ok = func(creature=creature, thing=thing, **kwargs)
-                            if not ok is not False:
-                                break
-                        else:
-                            try:
-                                self.scripts[aid].remove(script) 
-                            except:
-                                pass   
-        if not returnVal and end and ok is not False:
-            return end()
-        elif returnVal:
-            return ok if type(ok) != bool else None
 
+        for aid in thing.actionIds():
+            if aid in self.scripts:
+                for script in self.scripts[aid][:]:
+                    func = script()
+                    if func:
+                        deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                    else:
+                        try:
+                            self.scripts[aid].remove(script) 
+                        except:
+                            pass
+        
+        if returnVal:
+            # This is actually blocking code, but is rarely used.
+            d = defer.DeferredList(deferList)
+            d.addCallback(self.makeResult(ok))
+            while True:
+                try:
+                    ok.value
+                    break
+                except:
+                    time.sleep(0.001)
+            
+            return ok.value if type(ok.value) != bool else None
+        elif end:
+            d = defer.DeferredList(deferList)
+            d.addCallback(lambda x: end())
+            
 class CreatureScripts(ThingScripts):
     def _run(self, thing, creature, end, returnVal, **kwargs):
         ok = True
@@ -216,7 +241,7 @@ class CreatureScripts(ThingScripts):
                     func = script()
                     if func:
                         ok = func(creature=creature, creature2=thing, **kwargs)
-                        if not ok is not False:
+                        if ok is False:
                             break
                     else:
                         try:
@@ -231,7 +256,7 @@ class CreatureScripts(ThingScripts):
 
                 if func:
                     ok = func(creature=creature, creature2=thing, **kwargs)
-                    if not ok is not False:
+                    if ok is False:
                         break
                 else:
                     try:
@@ -246,7 +271,7 @@ class CreatureScripts(ThingScripts):
                         func = script()
                         if func:
                             ok = func(creature=creature, creature2=thing, **kwargs)
-                            if not ok is not False:
+                            if ok is False:
                                 break
                         else:
                             try:
