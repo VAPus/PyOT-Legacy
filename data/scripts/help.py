@@ -71,6 +71,9 @@ scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
 
 # First use of actions :p
 def testContainer(creature, thing, position, stackpos, index):
+    if thing.owners and creature not in thing.owners: # Prevent people to open owned things
+        return
+        
     if not thing.opened:
         # Open a bag inside a bag?
         open = True
