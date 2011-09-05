@@ -273,11 +273,12 @@ class MonsterBase(CreatureBase):
                 log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
 
             if place:
-                for client in engine.getSpectators(position):
-                    stream = client.packet()
-                    stream.addTileCreature(position, stackpos, monster, client.player)
-                
-                    stream.send(client)
+                for player in engine.getPlayers(position):
+                    if not monster.cid in player.knownCreatures:
+                        stream = player.packet()
+                        stream.addTileCreature(position, stackpos, monster, player)
+                        
+                        stream.send(player.client)
                     
             self.brain.beginThink(monster) # begin the heavy thought process!
             return monster

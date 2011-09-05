@@ -395,13 +395,7 @@ class Creature(object):
         
     def onHit(self, by, dmg, type):
         self.lastDamager = by
-
-        if by.isPlayer():
-            if by.modes[1] == game.enum.BALANCED:
-                dmg = dmg / 0.75
-            elif by.modes[1] == game.enum.DEFENSIVE:
-                dmg = dmg / 0.5
-                
+          
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
         dmg = max(self.data["health"] * -1, dmg)
@@ -410,6 +404,8 @@ class Creature(object):
 
         if type == game.enum.MELEE:
             textColor, magicEffect = self.hitEffects()
+            if by.isPlayer():
+                by.meleeBloodHit()
         
         elif type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
@@ -771,7 +767,7 @@ class Creature(object):
             stream.uint8(self.solid)
             stream.send(client)
             
-    def setSolidFor(self, player. solid):
+    def setSolidFor(self, player, solid):
         stream = player.packet(0x92)
         stream.uint32(self.cid)
         stream.uint8(solid)

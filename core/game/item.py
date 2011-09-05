@@ -346,7 +346,12 @@ def loadItems():
             sid = data["sid"]
             
         if data["key"] == "fluidSource":
-            attributes[data["key"]] = getattr(game.enum, 'FLUID_'+data["value"].upper())
+            attributes["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data["value"].upper())
+        elif data["key"] == "weaponType":
+            try:
+                attributes["weaponType"] = getattr(game.enum, 'SKILL_%s' % data["value"].upper())
+            except:
+                attributes["weaponType"] = data["value"]
         elif data["value"]:
             try:
                 attributes[data["key"]] = int(data["value"])

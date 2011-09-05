@@ -122,12 +122,14 @@ class TibiaPlayer(Creature):
         
 
         # Storage & skills
-        if self.data["skills"]:
+        try:
             self.skills = otjson.loads(self.data["skills"])
-        else:
+            if len(self.skills) != (game.enum.SKILL_LAST*2)+1:
+                raise
+        except:
             self.skills = []
-            for i in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-                self.skills.append(1)
+            for i in xrange(game.enum.SKILL_FIRST, (game.enum.SKILL_LAST*2)+2):
+                self.skills.append(10)
             
         del self.data["skills"]
         
@@ -477,6 +479,38 @@ class TibiaPlayer(Creature):
             if level:
                 self.setLevel(self.data["level"]-level)            
         self.refreshStatus()
+
+    # Skills
+    def addSkillLevel(self, skill, levels):
+        self.skills[skill] += levels
+        self.skills[skill + game.enum.SKILL_LAST + 1] += levels
+        goal = config.skillFormula(self.getVocation().meleeSkill, self.skills[skill])
+        self.setStorage('__skill%d' % skill, 0)
+        self.setStorage('__skillGoal%d' % skill, goal)
+        
+        self.refreshSkills()
+
+    def tempAddSkillLevel(self, skill, level):
+        self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill] + levels
+        self.refreshSkills()
+        
+    def tempRemoveSkillLevel(self, skill):
+        self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill]
+        self.refreshSkills()
+        
+    def meleeBloodHit(self):
+        key = '__skill%d' % self.inventory[5].weaponType
+        try:
+            self.modifyStorage(key, -1)
+            self.refreshSkills()
+        except:
+            # Happends on new members using new weapons
+            self.setStorage(key, 1)
+            self.refreshSkills()
+
+    def getActiveSkill(self, skill):
+        return self.skills[skill + game.enum.SKILL_LAST + 1]
+        
     # Soul
     def soulGain(self):
         def doSoulGain(gainOverX):
@@ -1150,7 +1184,10 @@ class TibiaPlayer(Creature):
             return self.storage[field]
         except:
             return default
-            
+
+    def modifyStorage(self, field, change):
+        self.storage[field] += change
+
     def removeStorage(self, field):
         try:
             del self.storage[field]
@@ -1214,10 +1251,15 @@ class TibiaPlayer(Creature):
                 if not self.target.data["health"]:
                     self.target = None
                 else:
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, 1, self.data["level"], 1)))
-                    self.target.onHit(self, dmg, game.enum.PHYSICAL)
-                
-                
+                    factor = 1
+                    if self.modes[1] == game.enum.BALANCED:
+                        factor = 0.75
+                    elif self.modes[1] == game.enum.DEFENSIVE:
+                        factor = 0.5 
+                        
+                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(self.inventory[5].weaponType), self.data["level"], factor)))
+                    self.target.onHit(self, dmg, game.enum.MELEE)
+                             
         if self.target:        
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
             

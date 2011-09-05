@@ -306,9 +306,14 @@ class BasePacket(TibiaPacket):
     def skills(self, player):
         self.uint8(0xA1) # Skill type
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-            self.uint8(player.skills[x]) # Value / Level
-            self.uint8(1) # Base
-            self.uint8(0) # %
+            self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
+            self.uint8(player.skills[x]) # Base
+            currHits = player.getStorage('__skill%d'%x) or 0
+            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(player.getVocation().meleeSkill, 10)
+            if not currHits:
+                self.uint8(0)
+            else:
+                self.uint8(round((goalHits / currHits) * 100)) # %
 
     def cooldownIcon(self, icon, cooldown):
         self.uint(0xA4)
