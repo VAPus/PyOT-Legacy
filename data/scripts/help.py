@@ -183,3 +183,13 @@ def saveAll(creature, text):
     return False
     
 scriptsystem.get("talkaction").reg('saveall', saveAll)
+
+def spawnDepot(creature, text):
+    depotId = int(text)
+    box = game.item.Item(2594, depotId=depotId)
+    position = creature.positionInDirection(creature.direction)
+    tile = game.map.getTile(position)
+    tile.placeItem(box)
+    game.engine.updateTile(position, tile)
+    
+scriptsystem.reg('talkactionFirstWord', 'depot', spawnDepot)

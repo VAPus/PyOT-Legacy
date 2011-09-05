@@ -416,7 +416,10 @@ class TibiaPlayer(Creature):
                 stream.send(self.client)
                 
     def getContainer(self, openId):
+        print openId
+        
         try:
+            print self.openContainers[openId]
             return self.openContainers[openId]
         except:
             return

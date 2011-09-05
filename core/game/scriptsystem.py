@@ -111,12 +111,14 @@ class ThingScripts(object):
                 id = weakref.ref(id, self.unregAll) 
                 
                 if not id in self.thingScripts:
-                    self.thingScripts[id] = []
-                self.thingScripts[id].append(weakref.ref(callback, self.unregCallback ))
+                    self.thingScripts[id] = [weakref.ref(callback, self.unregCallback)]
+                else:
+                    self.thingScripts[id].append(weakref.ref(callback, self.unregCallback))
             else:
                 if not id in self.scripts:
-                    self.scripts[id] = []
-                self.scripts[id].append(weakref.ref(callback, self.unregCallback))
+                    self.scripts[id] = [weakref.ref(callback, self.unregCallback)]
+                else:
+                    self.scripts[id].append(weakref.ref(callback, self.unregCallback))
         else:
             func = weakref.ref(callback, self.unregCallback)
             for xid in xrange(id, toid+1):
@@ -124,6 +126,37 @@ class ThingScripts(object):
                     self.scripts[xid] = [func]
                 else:
                     self.scripts[xid].append(func)
+
+    def regFirst(self, id, callback, toid=None):
+        if not toid:
+            if type(id) in (tuple, list):
+                func = weakref.ref(callback, self.unregCallback)
+                for xid in id:
+                    if not xid in self.scripts:
+                        self.scripts[xid] = [func]
+                    else:
+                        self.scripts[xid].insert(0, func)                
+            elif type(id) not in (int, str):
+                # This ensures we remove the script object if the object disappear
+                id = weakref.ref(id, self.unregAll) 
+                
+                if not id in self.thingScripts:
+                    self.thingScripts[id] = [weakref.ref(callback, self.unregCallback )]
+                else:
+                    self.thingScripts[id].insert(0, weakref.ref(callback, self.unregCallback ))
+            else:
+                if not id in self.scripts:
+                    self.scripts[id] = [weakref.ref(callback, self.unregCallback)]
+                else:
+                    self.scripts[id].insert(0, weakref.ref(callback, self.unregCallback))
+        else:
+            func = weakref.ref(callback, self.unregCallback)
+            for xid in xrange(id, toid+1):
+                if not xid in self.scripts:
+                    self.scripts[xid] = [func]
+                else:
+                    self.scripts[xid].insert(0, func)
+                    
     def unreg(self, id, callback):
         try:
             for ref in self.scripts[id]:
@@ -172,6 +205,15 @@ class ThingScripts(object):
                 else:
                     cache = value
             obj.value = cache
+        return _handleResult
+
+    def handleCallback(self, callback):
+        def _handleResult(result):
+            for (success, value) in result:
+                if value is False:
+                    return
+
+            callback()
         return _handleResult
         
     def _run(self, thing, creature, end, returnVal, **kwargs):
@@ -229,7 +271,7 @@ class ThingScripts(object):
             return ok.value if type(ok.value) != bool else None
         elif end:
             d = defer.DeferredList(deferList)
-            d.addCallback(lambda x: end())
+            d.addCallback(self.handleCallback(end))
             
 class CreatureScripts(ThingScripts):
     def _run(self, thing, creature, end, returnVal, **kwargs):
@@ -368,3 +410,6 @@ def get(type):
     
 def reg(type, *argc, **kwargs):
     globalScripts[type].reg(*argc, **kwargs)
+
+def regFirst(type, *argc, **kwargs):
+    globalScripts[type].regFirst(*argc, **kwargs)

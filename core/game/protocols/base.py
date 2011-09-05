@@ -510,7 +510,6 @@ class BaseProtocol(object):
                 currItem[1] = None
             """
             if fromMap:
-                
                 walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
                 if len(walkPattern):
                     def sleep(seconds):
@@ -519,10 +518,15 @@ class BaseProtocol(object):
                         return d
                     
                     walking = [True]
+                    count = 0
                     game.engine.autoWalkCreature(player, deque(walkPattern), lambda x: walking.pop())
-                    while walking:
-                        yield sleep(0.05)
-                            
+                    while walking and count < 100:
+                        yield sleep(0.1)
+                        count += 1
+                    
+                    if toPosition[1] >= 64 and not player.getContainer(toPosition[1]-64):
+                        player.notPossible()
+                        return
                     
                 stream = player.packet()
                 oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
