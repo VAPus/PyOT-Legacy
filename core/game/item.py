@@ -137,8 +137,10 @@ class Item(object):
     def __getattr__(self, name):
         if name == 'params': return None # bugfix
         
-        if self.params and name in self.params:
+        try:
             return self.params[name]
+        except:
+            pass
         
         if name in self.__conts__:
             return self.cont
@@ -147,10 +149,11 @@ class Item(object):
             attrVal = 1 << self.attributes.index(name)
             return items[self.itemId]["a"] & attrVal == attrVal
         except:
-            if name in items[self.itemId]:
+            try:
                 return items[self.itemId][name]
-            elif not "__" in name:
-                return None
+            except:
+                if not "__" in name:
+                    return None
                 
         raise AttributeError, name
 
