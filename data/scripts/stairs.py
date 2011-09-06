@@ -16,9 +16,11 @@ scriptsystem.get("walkOn").reg(stairwest, walker(3))
 scriptsystem.get("walkOn").reg(staireast, walker(1))"""
 
 def floorchange(creature, thing, position, **k):
+    # Check if we can do this
+    if not config.monsterStairHops or not creature.isPlayer():
+        return
+        
     # Note this is the correct direction
-    print "Floor change"
-    print thing.floorchange
     if thing.floorchange == "north":
         creature.move(0, level=-1)
         
@@ -58,8 +60,11 @@ def floordown(creature, thing, position, **k):
         creature.teleport([position[0],position[1],position[2]+1])
 
 def teleportDirection(creature, thing, position, **k):
-    # Grab the position of the player/creature
-    print thing.floorchange
+    # Check if we can do this
+    if not config.monsterStairHops or not creature.isPlayer():
+        return
+        
+    # Grab the position of the player/creature    
     pos = creature.position[:]
     pos[2] -= 1
     

@@ -101,7 +101,7 @@ def findPath(mapZ, relX, relY, xB, yB):
 
             try:
                 if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not tile or closed_nodes_map[ydy][xdx]):
-                    for t in tile.getItems():
+                    for t in tile.things:
                         if t.solid:
                             isSolid = True
                             break
