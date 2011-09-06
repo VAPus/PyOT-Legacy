@@ -497,16 +497,6 @@ class TibiaPlayer(Creature):
     def tempRemoveSkillLevel(self, skill):
         self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill]
         self.refreshSkills()
-        
-    def meleeBloodHit(self):
-        key = '__skill%d' % self.inventory[5].weaponType
-        try:
-            self.modifyStorage(key, -1)
-            self.refreshSkills()
-        except:
-            # Happends on new members using new weapons
-            self.setStorage(key, 1)
-            self.refreshSkills()
 
     def getActiveSkill(self, skill):
         return self.skills[skill + game.enum.SKILL_LAST + 1]
@@ -1244,22 +1234,34 @@ class TibiaPlayer(Creature):
 
     def attackTarget(self):
         if self.target and self.inRange(self.target.position, 1, 1):
-            if not self.inventory[5]:
-                player.message("Fist is not supported, targetcheck failed!")
+            if not self.target.data["health"]:
+                self.target = None
             else:
-                
-                if not self.target.data["health"]:
-                    self.target = None
+                factor = 1
+                if self.modes[1] == game.enum.BALANCED:
+                    factor = 0.75
+                elif self.modes[1] == game.enum.DEFENSIVE:
+                    factor = 0.5 
+                    
+                if not self.inventory[5]:
+                    skillType = game.enum.SKILL_FIST
+                    dmg = -1 * random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    
                 else:
-                    factor = 1
-                    if self.modes[1] == game.enum.BALANCED:
-                        factor = 0.75
-                    elif self.modes[1] == game.enum.DEFENSIVE:
-                        factor = 0.5 
-                        
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(self.inventory[5].weaponType), self.data["level"], factor)))
+                    skillType = self.inventory[5].weaponType
+                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    
+                if dmg != 0:
                     self.target.onHit(self, dmg, game.enum.MELEE)
-                             
+                    key = '__skill%d' % skillType
+                    try:
+                        self.modifyStorage(key, -1)
+                        self.refreshSkills()
+                    except:
+                        # Happends on new members using new weapons
+                        self.setStorage(key, 1)
+                        self.refreshSkills()
+                        
         if self.target:        
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
             

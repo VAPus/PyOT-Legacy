@@ -316,12 +316,12 @@ class BasePacket(TibiaPacket):
                 self.uint8(round((goalHits / currHits) * 100)) # %
 
     def cooldownIcon(self, icon, cooldown):
-        self.uint(0xA4)
+        self.uint8(0xA4)
         self.uint8(icon)
         self.uint32(cooldown * 1000)
         
     def cooldownGroup(self, group, cooldown):
-        self.uint(0xA5)
+        self.uint8(0xA5)
         self.uint8(group)
         self.uint32(cooldown * 1000)
         

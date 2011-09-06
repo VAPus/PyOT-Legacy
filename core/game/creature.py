@@ -404,9 +404,7 @@ class Creature(object):
 
         if type == game.enum.MELEE:
             textColor, magicEffect = self.hitEffects()
-            if by.isPlayer():
-                by.meleeBloodHit()
-        
+            
         elif type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
