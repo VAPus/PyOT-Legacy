@@ -92,6 +92,11 @@ creatureWalkthrough = False # can also be modified in scripts
 maxMails = 20
 maxMailsWithin = 600 # 10min, default on tibia as of 9.aug
 
+# Psyco
+# Psyco can give a speed up so long you have psyco installed, doesn't work on 64-bit python, nor anything other than CPython.
+# It's not much, and it also increase memory usage
+tryPsyco = False
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
