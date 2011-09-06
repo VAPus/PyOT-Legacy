@@ -1,5 +1,6 @@
 import game.scriptsystem as scriptsystem
 import game.map
+import config
 
 # Stairfronts
 """stairnorth = None,

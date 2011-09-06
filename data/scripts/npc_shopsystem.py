@@ -22,36 +22,35 @@ def saidTo(creature, creature2, said, channelType, channelId):
                 break
         if ok:
             creature2.focus.add(creature)
-            creature2.sayTo(creature, creature2.base.shopGreet % _sayParams)
+            creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
             creature2.turnAgainst(creature.position)
             
     elif channelType == 11 and not creature in creature2.focus:
-        creature2.sayTo(creature, "Do I know you?")
+        creature2.sayTo(creature, "One moment...")
     elif channelType == 11:
         # Check for goodbyes
         if said in farwells:
-            creature2.sayTo(creature, creature2.base.shopFarewell % _sayParams)
+            creature2.sayTo(creature, creature2.base.speakFarewell % _sayParams)
             creature2.focus.remove(creature)
-            creature.closeTrade()
-            
-        elif said in offers:
-            
-            if creature2.base.offers:
-                creature2.sayTo(creature, creature2.base.shopTrade % _sayParams)
-                creature2.sendTradeOffers(creature)
-                creature.setTrade(creature2)
-            else:
-                creature2.sayTo(creature, creature2.base.shopEmpty % _sayParams)
+            if creature2.activeModule:
+                creature2.activeModule.close()
+            try:
+                creature2.base._onSaid[creature2.activeSaid][1](creature2, creature)
+            except:
+                pass
+        
         else:
-            creature2.sayTo(creature, "i HEAR: '%s'" % said)
+            try:
+                creature2.activeModule.send(said)
+            except:
+                creature2.handleSpeak(creature, said)
+            
 
 
 # The offers action
 class Shop(ClassAction):
     def action(self):
         self.on.offers = []
-        self.on.shopGreet = "Welcome, %(playerName)s! I have been expecting you."
-        self.on.shopFarewell = "Good bye, %(playerName)s!"
         self.on.shopBuy = "Do you want to buy %(itemCount)d %(itemName)s for %(totalcost)d gold coins?"
         self.on.shopOnBuy = "It was a pleasure doing business with you."
         self.on.shopDecline = "Not good enough, is it... ?"
@@ -59,6 +58,8 @@ class Shop(ClassAction):
         self.on.shopWalkAway = "How rude!"
         self.on.shopEmpty = "Sorry, I'm not offering anything."
         self.on.shopTrade = "Here's my offer, %(playerName)s. Don't you like it?"
+        
+        self.on.onSaid(offers, self.handleOffers, self.handleClose)
         
     def offer(self, name, sellPrice=-1, buyPrice=-1, count=255):
         if type(name) == str:
@@ -68,12 +69,22 @@ class Shop(ClassAction):
 
     def offerContainer(self, name, contains, count, buyPrice=0):
         pass # TODO
+    
+    def handleOffers(self, npc, player):
+        _sayParams = {"playerName":creature.name()}
         
-    def decline(self, text):
-        self.on.shopDecline = text
+        if self.on.offers:
+            npc.sayTo(player, self.on.shopTrade % _sayParams)
+            npc.sendTradeOffers(player)
+            player.setTrade(npc)
+        else:
+            npc.sayTo(player, self.on.shopEmpty % _sayParams)
+
+    def handleClose(self, npc, player):
+        player.closeTrade()
         
-    def greet(self, text):
-        self.on.shopGreet = text
+    def decline(self, decline):
+        self.on.shopDecline = decline
         
 regClassAction('shop', Shop)
 
@@ -134,4 +145,4 @@ class RuneShop(Shop):
 regClassAction('runeshop', RuneShop)
 
 # Have to apply on all prestores
-scriptsystem.reg("playerSayTo", 'shop', saidTo)
+scriptsystem.reg("playerSayTo", 'npc', saidTo)

@@ -43,6 +43,8 @@ class NPC(Creature):
         self.openChannels = []
         self.focus = set()
         self.forSale = None
+        self.activeModule = None
+        self.activeSaid = None
         
     def description(self):
         return "You see %s" % self.base.data["description"]
@@ -138,6 +140,18 @@ class NPC(Creature):
                     if self.forSale and player.openTrade == self: # Resend my items
                         self.sendGoods(player, self.forSale)
 
+    def handleSpeak(self, player, said):
+        if said in self.base._onSaid:
+            self.activeModule = self.base._onSaid[said][0](self, player)
+            self.activeSaid = said
+            try:
+                self.activeModule.send(None)
+                
+            except:
+                self.activeModule = None
+        else:
+            pass # Get some ideas for this
+            
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):
         self.data = data
@@ -150,13 +164,15 @@ class NPCBase(CreatureBase):
         self.walkable = True
         self.attackable = False
         self.walkPer = config.monsterWalkPer
-        
+   
         self.brainFeatures = ["default"]
         self.classActions = []
-        self.actions = ['99']
-        
+        self.actions = ['99','npc']
+        self.speakGreet ="Welcome, %(playerName)s! I have been expecting you."
+        self.speakFarewell = "Good bye, %(playerName)s!" 
         self.brain = brain
-        
+        self._onSaid = {}
+
     def spawn(self, position, place=True, spawnDelay=0.25, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
             return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
@@ -176,12 +192,12 @@ class NPCBase(CreatureBase):
                         log.msg("Can't place creatures on a stackpos > 9")
                         return
                         
-                    list = game.engine.getSpectators(position)
-                    for client in list:
-                        stream = TibiaPacket()
-                        stream.addTileCreature(position, stackpos, npc, client.player)
-                
-                        stream.send(client)
+                    for player in game.engine.getPlayers(position):
+                        if not npc.cid in player.knownCreatures:
+                            stream = player.packet()
+                            stream.addTileCreature(position, stackpos, npc, player)
+                        
+                            stream.send(player.client)
                 except:
                     log.msg("Spawning of npc('%s') on %s failed" % (self.data["name"], str(position)))
             return npc    
@@ -229,8 +245,31 @@ class NPCBase(CreatureBase):
         
     def regAction(self, action):
         self.actions.append(action)
-        return classActions[action](self)
+
+    def module(self, action):
+        if isinstance(action, type):
+            actionClass = action(self)
+            self.actions.append(actionClass)
+            return actionClass
+            
+        else:
+            self.actions.append(action)
+            return classActions[action](self)
+
+    def greet(self, greet):
+        self.speakGreet = greet
         
+    def farewell(self, farewell):
+        self.speakFarewell = farewell
+        
+    def onSaid(self, what, open, close=None):
+        if type(what) == tuple:
+            for x in what:
+                self._onSaid[x] = (open, close)
+                
+        else:
+            self._onSaid[what] = (open, close)
+
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):
