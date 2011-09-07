@@ -191,6 +191,7 @@ class MonsterBase(CreatureBase):
         self.speed = 100
         self.experience = 0
         
+        self.attackable = True
         
         self.setBehavior()
         self.setImmunity()
@@ -322,7 +323,8 @@ class MonsterBase(CreatureBase):
         self.death = death
         self.drown = drown
         self.physical = physical
-
+        if armor == -1:
+            self.attackable = False
     def setTargetChance(self, chance=10):
         self.targetChance = chance
     
@@ -335,9 +337,8 @@ class MonsterBase(CreatureBase):
     def setSpeed(self, speed):
         self.speed = speed
         
-    def setBehavior(self, summonable=0, attackable=1, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
+    def setBehavior(self, summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
         self.summonable = summonable
-        self.attackable = attackable
         self.hostile = hostile
         self.illusionable = illusionable
         self.convinceable = convinceable
