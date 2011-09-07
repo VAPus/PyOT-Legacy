@@ -54,10 +54,6 @@ class NPC(Creature):
         
     def description(self):
         return "You see %s" % self.base.data["description"]
-
-    def onHit(self, by, dmg, type):
-        if self.base.attackable:
-            Monster.onHit(self, by, dmg, type)
     
     def actionIds(self):
         return self.base.actions
@@ -157,7 +153,10 @@ class NPC(Creature):
                 self.activeModule = None
         else:
             pass # Get some ideas for this
-            
+
+    def isAttackable(self, by):
+        return self.base.attackable
+        
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):
         self.data = data
