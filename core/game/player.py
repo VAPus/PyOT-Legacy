@@ -62,7 +62,7 @@ class TibiaPlayer(Creature):
         else:
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
             for item in self.inventory:
-                if isinstance(item, game.item.Item):
+                if item:
                     weight = item.weight
                     if weight:
                         self.inventoryWeight += weight * (item.count or 1)
@@ -72,8 +72,6 @@ class TibiaPlayer(Creature):
                     except:
                         self.inventoryCache[item.itemId] = [item.count or 1, item]
                     
-                    if item.containerSize:
-                        self.__buildInventoryCache(item.container)
         del self.data['inventory']
         
         # Depot, (yes, we load it here)
@@ -1153,7 +1151,7 @@ class TibiaPlayer(Creature):
     def __buildInventoryCache(self, container):
         for item in container.items:
             weight = item.weight
-            item.container = container # Funny call to simplefy lookups
+            item.inContainer = container # Funny call to simplefy lookups
             if weight:
                 self.inventoryWeight += weight * (item.count or 1)
             try:
@@ -1161,6 +1159,9 @@ class TibiaPlayer(Creature):
                 self.inventoryCache[item.itemId][0] += item.count or 1
             except:
                 self.inventoryCache[item.itemId] = [item.count or 1, item]
+                
+            if item.containerSize:
+                self.__buildInventoryCache(item.container)
                 
     def unpickleInventory(self, inventoryData):
         self.inventory = pickle.loads(inventoryData)
