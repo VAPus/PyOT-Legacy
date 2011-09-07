@@ -59,7 +59,7 @@ class Packet(base.BasePacket):
                     else:
                         self.uint16(1780)
                 else:
-                    self.uint16(100)
+                    self.uint16(104)
                     
             else:    
                 self.uint16(item.cid)
