@@ -15,6 +15,33 @@ def vertify():
     return True
     
 class Packet(base.BasePacket):
+    protocolEnums = {}
+    protocolEnums["MSG_NONE"] = 0
+    protocolEnums["MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    
+    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["MSG_INFO_DESCR"] = 0x19
+    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B
+    
+    # Alias
+    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_LOOT'] = protocolEnums["MSG_INFO_DESCR"]
+    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["MSG_EVENT_ADVANCE"]
+    def enum(self, key):
+        return self.protocolEnums[key]
+        
     def item(self, item, count=None):
         import game.item
         if isinstance(item, game.item.Item):
@@ -32,6 +59,36 @@ class Packet(base.BasePacket):
             self.uint16(item)
             if count:
                 self.uint8(count)
+
+    def tileDescription(self, tile, player=None):
+        # self.uint16(0x00) No animations!
+        isSolid = False
+        for item in tile.topItems():
+            if item.solid:
+                isSolid = True
+                
+            self.item(item)
+        
+        if not isSolid:
+            for creature in tile.creatures():
+                if creature == None:
+                    del creature
+                    continue
+                
+                known = False
+                if player:
+                    known = creature.cid in player.knownCreatures
+                    
+                    if not known:
+                        player.knownCreatures.append(creature.cid)
+    
+                self.creature(creature, known)
+                if creature.creatureType != 0 and creature.noBrain:
+                    print "Begin think 1"
+                    creature.base.brain.handleThink(creature, False)
+
+            for item in tile.bottomItems():
+                self.item(item)
                 
     def creature(self, creature, known):
         print "860!"
@@ -111,6 +168,10 @@ class Packet(base.BasePacket):
         
     def cooldownGroup(self, group, cooldown):
         pass # Not sendt
+
+    def violation(self, flag):
+        self.uint8(0x0B)
+        self.uint8(flag)
         
 class Protocol(base.BaseProtocol):
     Packet = Packet

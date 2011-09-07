@@ -170,6 +170,8 @@ class TibiaPlayer(Creature):
         stream.uint16(config.drawingSpeed) # Drawing speed
         stream.uint8(1) # Rule violations?
 
+        #stream.violation(0)
+        
         stream.uint8(0x64) # Map description
         stream.position(self.position)
         stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14, self)
@@ -189,8 +191,7 @@ class TibiaPlayer(Creature):
         
         stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
         stream.creaturelight(self.cid, 0,0)
-        stream.uint8(0xA2) # Icons
-        stream.uint16(0) # TODO: Icons
+        stream.icons(0)
 
         stream.magicEffect(self.position, 0x03)
         stream.send(self.client)
@@ -448,9 +449,9 @@ class TibiaPlayer(Creature):
             
             if send:
                 if level > oldLevel:
-                    self.message("You advanced from level %d to Level %d." % (oldLevel, level), game.enum.MSG_EVENT_ADVANCE)
+                    self.message("You advanced from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
                 elif level < oldLevel:
-                    self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), game.enum.MSG_EVENT_ADVANCE)
+                    self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
                 self.refreshStatus()
         
     def modifyExperience(self, exp):
@@ -462,7 +463,7 @@ class TibiaPlayer(Creature):
         
         if up:
             level = 0
-            self.message("You gained %d experience points." % exp, game.enum.MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
+            self.message("You gained %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break
@@ -471,7 +472,7 @@ class TibiaPlayer(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message("You lost %d experience points." % exp, game.enum.MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
+            self.message("You lost %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -582,10 +583,10 @@ class TibiaPlayer(Creature):
         stream.string(desc)
         stream.send(self.client)
         
-    def message(self, message, msgType=enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
         stream = self.packet(0xB4)
-        stream.uint8(msgType)
-        if msgType in (enum.MSG_DAMAGE_DEALT, enum.MSG_DAMAGE_RECEIVED, enum.MSG_DAMAGE_OTHERS):
+        stream.uint8(stream.enum(msgType))
+        if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
             if pos:
                 stream.position(pos)
             else:
@@ -594,7 +595,7 @@ class TibiaPlayer(Creature):
             stream.uint8(color)
             stream.uint32(0)
             stream.uint8(0)
-        elif msgType in (enum.MSG_EXPERIENCE, enum.MSG_EXPERIENCE_OTHERS, enum.MSG_HEALED, enum.MSG_HEALED_OTHERS):
+        elif msgType in ('MSG_EXPERIENCE', 'MSG_EXPERIENCE_OTHERS', 'MSG_HEALED', 'MSG_HEALED_OTHERS'):
             if pos:
                 stream.position(pos)
             else:

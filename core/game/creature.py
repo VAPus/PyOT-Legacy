@@ -454,13 +454,13 @@ class Creature(object):
             
             
         if by and by.isPlayer():
-            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
+            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
 
         if self.isPlayer():
             if by:
-                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), game.enum.MSG_DAMAGE_RECEIVED)
+                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), 'MSG_DAMAGE_RECEIVED')
             else:
-                self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), game.enum.MSG_DAMAGE_RECEIVED)
+                self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_RECEIVED')
 
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
@@ -579,35 +579,35 @@ class Creature(object):
         elif position[0] < self.position[0]:
             return self.turn(3)
             
-    def say(self, message, messageType=enum.MSG_SPEAK_SAY):
+    def say(self, message, messageType='MSG_SPEAK_SAY'):
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(messageType)
+            stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(spectator)
 
-    def yell(self, message, messageType=enum.MSG_SPEAK_YELL):
+    def yell(self, message, messageType='MSG_SPEAK_YELL'):
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(messageType)
+            stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(spectator)
 
-    def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
+    def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(messageType)
+            stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(spectator)

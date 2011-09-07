@@ -6,6 +6,7 @@ from twisted.python import log
 import config
 import hashlib
 import otcrypto
+import random
 
 class GameProtocol(protocolbase.TibiaProtocol):
 
@@ -16,9 +17,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
         from packet import TibiaPacket
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
-        pkg.uint16(0xFFFF)
+        pkg.uint16(random.randint(0, 0xFFFF))
         pkg.uint16(0x00)
-        pkg.uint8(0xFF)
+        pkg.uint8(random.randint(0, 0xFF))
         pkg.send(self)
 
     def exitWithError(self, message, error = 0x14):

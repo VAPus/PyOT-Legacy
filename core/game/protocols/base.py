@@ -11,6 +11,29 @@ import game.scriptsystem
 from collections import deque
 
 class BasePacket(TibiaPacket):
+    protocolEnums = {}
+    """protocolEnums["MSG_NONE"] = 0
+    protocolEnums["MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    
+    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["MSG_INFO_DESCR"] = 0x19
+    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B""" # TODO fix this!
+
+    def enum(self, key):
+        #return self.protocolEnums[key]
+        return getattr(game.enum, key)
+        
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
@@ -324,6 +347,13 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA5)
         self.uint8(group)
         self.uint32(cooldown * 1000)
+
+    def violation(self, flag):
+        pass # Not on 9.1
+
+    def icons(self, icons):
+        self.uint8(0xA2)
+        self.uint16(icons)
         
 class BaseProtocol(object):
     Packet = BasePacket

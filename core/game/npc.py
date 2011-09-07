@@ -25,7 +25,13 @@ class ClassAction(object):
         
     def action(self):
         pass
-    
+
+def Conversation(words, open, close=None):
+    class Conv(ClassAction):
+        def action(self):
+            self.on.onSaid(words, open, close)
+            
+    return Conv
 class NPC(Creature):
     def generateClientID(self):
         return 0x80000000 + uniqueId()
@@ -193,7 +199,7 @@ class NPCBase(CreatureBase):
                         return
                         
                     for player in game.engine.getPlayers(position):
-                        if not npc.cid in player.knownCreatures:
+                        if player.client and not npc.cid in player.knownCreatures:
                             stream = player.packet()
                             stream.addTileCreature(position, stackpos, npc, player)
                         

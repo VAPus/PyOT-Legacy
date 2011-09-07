@@ -146,9 +146,9 @@ class Monster(Creature):
 
         if self.lastDamager and self.lastDamager.isPlayer():
             if lootMsg:
-                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), enum.MSG_LOOT)
+                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), 'MSG_LOOT')
             else:
-                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), enum.MSG_LOOT)
+                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), 'MSG_LOOT')
                 
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience * config.experienceRate)
@@ -163,10 +163,10 @@ class Monster(Creature):
         else:
             engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
             
-    def say(self, message, messageType=enum.MSG_SPEAK_MONSTER_SAY):
+    def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
         return Creature.say(self, message, messageType)
         
-    def yell(self, message, messageType=enum.MSG_SPEAK_MONSTER_YELL):
+    def yell(self, message, messageType='MSG_SPEAK_MONSTER_YELL'):
         return Creature.yell(self, message, messageType)
 
     def description(self):
@@ -274,7 +274,7 @@ class MonsterBase(CreatureBase):
 
             if place:
                 for player in engine.getPlayers(position):
-                    if not monster.cid in player.knownCreatures:
+                    if player.client and not monster.cid in player.knownCreatures:
                         stream = player.packet()
                         stream.addTileCreature(position, stackpos, monster, player)
                         
