@@ -584,26 +584,8 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
         
     def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
-        stream = self.packet(0xB4)
-        stream.uint8(stream.enum(msgType))
-        if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
-            if pos:
-                stream.position(pos)
-            else:
-                stream.position(self.position)
-            stream.uint32(value)
-            stream.uint8(color)
-            stream.uint32(0)
-            stream.uint8(0)
-        elif msgType in ('MSG_EXPERIENCE', 'MSG_EXPERIENCE_OTHERS', 'MSG_HEALED', 'MSG_HEALED_OTHERS'):
-            if pos:
-                stream.position(pos)
-            else:
-                stream.position(self.position)
-            stream.uint32(value)
-            stream.uint8(color)
-            
-        stream.string(message)
+        stream = self.packet()
+        stream.message(message, msgType, color, value, pos)
         stream.send(self.client)
         
         
@@ -678,25 +660,25 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
     
     def notPossible(self):
-        self.message("Sorry, not possible.", enum.MSG_STATUS_SMALL)
+        self.message("Sorry, not possible.", 'MSG_STATUS_SMALL')
 
     def outOfRange(self):
-        self.message("Destination is out of range.", enum.MSG_STATUS_SMALL)
+        self.message("Destination is out of range.", 'MSG_STATUS_SMALL')
 
     def notEnoughRoom(self):
-        self.message("There is not enough room.", enum.MSG_STATUS_SMALL)
+        self.message("There is not enough room.", 'MSG_STATUS_SMALL')
         
     def exhausted(self):
-        self.message("You are exhausted.", enum.MSG_STATUS_SMALL)
+        self.message("You are exhausted.", 'MSG_STATUS_SMALL')
 
     def needMagicItem(self):
-        self.message("You need a magic item to cast this spell.", enum.MSG_STATUS_SMALL)
+        self.message("You need a magic item to cast this spell.", 'MSG_STATUS_SMALL')
     
     def notEnough(self, word):
-        self.message("You do not have enough %s." % word, enum.MSG_STATUS_SMALL)
+        self.message("You do not have enough %s." % word, 'MSG_STATUS_SMALL')
 
     def onlyOnCreatures(self):
-        self.message("You can only use it on creatures.", enum.MSG_STATUS_SMALL)
+        self.message("You can only use it on creatures.", 'MSG_STATUS_SMALL')
         
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:

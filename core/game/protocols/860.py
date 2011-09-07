@@ -172,6 +172,23 @@ class Packet(base.BasePacket):
     def violation(self, flag):
         self.uint8(0x0B)
         self.uint8(flag)
-        
+
+    def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
+        self.uint8(0xB4)
+        """if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
+            if pos:
+                self.position(pos)
+            else:
+                self.position(self.position)
+            self.uint8(color)
+        elif msgType in ('MSG_EXPERIENCE', 'MSG_EXPERIENCE_OTHERS', 'MSG_HEALED', 'MSG_HEALED_OTHERS'):
+            if pos:
+                self.position(pos)
+            else:
+                self.position(self.position)
+            self.uint8(color)
+        else:"""
+        self.uint8(self.enum(msgType))
+        self.string(message)
 class Protocol(base.BaseProtocol):
     Packet = Packet
