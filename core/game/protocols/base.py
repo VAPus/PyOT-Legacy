@@ -610,13 +610,16 @@ class BaseProtocol(object):
                 stream = player.packet()
                         
                 oldItem = player.findItemWithPlacement(fromPosition)
-                
+
                 # Before we remove it, can it be placed there?
                 if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     player.notPossible()
                     return
                     
                 if oldItem[1].stackable and count < 100:
+                    if player.modifyCache(oldItem[1].itemId, -1 * count):
+                        player.refreshStatus(stream)
+                        
                     renew = True
                     oldItem[1].count -= count
                     if oldItem[1].count > 0:
@@ -624,6 +627,7 @@ class BaseProtocol(object):
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
                         elif oldItem[0] == 2:
                             stream.updateContainerItem(player.openContainers.index(oldItem[2]), fromPosition[2], oldItem[1])
+                            
                     else:
                         if oldItem[0] == 1:
                             player.inventory[fromPosition[1]-1] = None
@@ -631,7 +635,11 @@ class BaseProtocol(object):
                         elif oldItem[0] == 2:
                             oldItem[2].container.removeItem(oldItem[1])
                             stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition[2])
+
                 else:
+                    if player.removeCache(oldItem[1]):
+                        player.refreshStatus(stream)
+                        
                     if oldItem[0] == 1:
                         player.inventory[fromPosition[1]-1] = None
                         stream.removeInventoryItem(fromPosition[1])
@@ -673,7 +681,6 @@ class BaseProtocol(object):
                             player.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
-                
                 if currItem and currItem[1] and currItem[1].containerSize:
                     ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
@@ -684,20 +691,38 @@ class BaseProtocol(object):
                     if toPosition[1] < 64:
                         if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
                             player.inventory[toPosition[1]-1].count += count
+                            # Into inventory? Update cache
+                            if player.modifyCache(player.inventory[toPosition[1]-1].itemId, count):
+                                player.refreshStatus(stream)
                         else:       
                             player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
+                            # Into inventory? Update cache
+                            if player.addCache(player.inventory[toPosition[1]-1]):
+                                player.refreshStatus(stream)                            
                         stream.addInventoryItem(toPosition[1], player.inventory[toPosition[1]-1])
                     else:
                         container = player.getContainer(toPosition[1]-64)
                         try:
                             container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
                             stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
+                            
+                            try:
+                                player.inventoryCache[container.itemId].index(container)
+                                # Into inventory? Update cache
+                                if player.addCache(container.container.items[toPosition[2]]):
+                                    player.refreshStatus(stream)
+                            except:
+                                pass
+                            
                         except:
                             player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
                     if renew and currItem and currItem[1]:
                         if fromPosition[1] < 64:
                             player.inventory[fromPosition[1]-1] = currItem[1]
                             stream.addInventoryItem(fromPosition[1], player.inventory[fromPosition[1]-1])
+                            
+                            if player.addCache(currItem[1]):
+                                player.refreshStatus(stream)
                         else:
                             player.itemToContainer(player.inventory[2], currItem[1])
 

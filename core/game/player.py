@@ -496,17 +496,20 @@ class TibiaPlayer(Creature):
     def removeCache(self, item):
         # Update cached data
         try:
+            print "Remove from cache ", item
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
-            weight = item[1].weight
+            weight = item.weight
             if weight:
                 self.inventoryWeight -= weight * (item.count or 1)
+                print "3"
                 return True
         except:
             pass
         
     def addCache(self, item):
         try:
+            print "Add to cache ",item
             self.inventoryCache[item.itemId].append(item)
             self.inventoryCache[item.itemId][0] += item.count or 1
         except:
@@ -524,7 +527,7 @@ class TibiaPlayer(Creature):
             self.inventoryCache[itemId][0] += count
             weight = item.weight
             if weight:
-                self.inventoryWeight -= weight * (count)
+                self.inventoryWeight += weight * (count)
                 return True
                 
         except:
