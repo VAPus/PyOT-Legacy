@@ -45,14 +45,31 @@ class Packet(base.BasePacket):
     def item(self, item, count=None):
         import game.item
         if isinstance(item, game.item.Item):
-            self.uint16(item.cid)
+            cid = item.cid
+            if cid > 11703:
+                if item.solid:
+                    self.uint16(100)
+                elif item.pickable and item.movable:
+                    if item.containerSize:
+                        self.uint16(1987)
+                    elif item.weaponType:
+                        self.uint16(3264)
+                    elif item.usable:
+                        self.uint16(110)
+                    else:
+                        self.uint16(1780)
+                else:
+                    self.uint16(100)
+                    
+            else:    
+                self.uint16(item.cid)
 
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type == 11 or item.type == 12:
-                self.uint8(item.fluidSource or 0)
-            """if item.animation:
-                self.uint8(0xFE)""" # No animations in 8.6
+                if item.stackable:
+                    self.uint8(item.count or 1)
+                elif item.type == 11 or item.type == 12:
+                    self.uint8(item.fluidSource or 0)
+                """if item.animation:
+                    self.uint8(0xFE)""" # No animations in 8.6
             
         else:
             print item
