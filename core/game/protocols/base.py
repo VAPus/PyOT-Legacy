@@ -732,7 +732,12 @@ class BaseProtocol(object):
                 player.notEnoughRoom()
                 return
                 
-            creature = game.map.getTile(fromPosition).getThing(fromStackPos) 
+            creature = game.map.getTile(fromPosition).getThing(fromStackPos)
+            
+            if not creature.isPushable(player):
+                player.message("Creature can't be pushed")
+                return
+                
             toTile = game.map.getTile(toPosition)
             for i in toTile.getItems():
                 if i.solid:

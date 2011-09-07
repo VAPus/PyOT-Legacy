@@ -171,6 +171,12 @@ class Monster(Creature):
 
     def description(self):
         return "You see %s" % self.base.data["description"]
+
+    def isPushable(self, by):
+        return self.base.pushable
+
+    def isAttackable(self, by):
+        return self.base.attackable
         
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain):

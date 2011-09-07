@@ -102,6 +102,12 @@ class Creature(object):
         
     def isMonster(self):
         return False
+
+    def isPushable(self, by):
+        return False
+    
+    def isAttackable(self, by):
+        return False
         
     def name(self):
         return self.data["name"]
@@ -467,6 +473,10 @@ class Creature(object):
         
         # Modify health
         self.modifyHealth(dmg)
+        
+        if by and not self.data["health"]:
+            by.target = None
+            by.targetMode = 0
         
         
     def onSpawn(self):

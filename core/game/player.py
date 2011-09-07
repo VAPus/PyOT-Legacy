@@ -159,6 +159,12 @@ class TibiaPlayer(Creature):
     def isPlayer(self):
         return True
 
+    def isPushable(self, by):
+        return config.playerIsPushable
+
+    def isAttackable(self, by):
+        return True
+        
     def sexPrefix():
         if self.data["sex"] == 1:
             return "He"
@@ -1365,7 +1371,7 @@ class TibiaPlayer(Creature):
             part1()
 
     def attackTarget(self):
-        if self.target and self.inRange(self.target.position, 1, 1):
+        if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
                 self.target = None
             else:
@@ -1408,12 +1414,16 @@ class TibiaPlayer(Creature):
             return
             
         if cid in allCreatures:
-            self.target = allCreatures[cid]
-            self.targetMode = 1
+            if allCreatures[cid].isAttackable(self):
+                self.target = allCreatures[cid]
+                self.targetMode = 1
+            else:
+                return
         else:
             self.notPossible()
             
         if self.modes[1] == game.enum.CHASE:
+            print "did"
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
