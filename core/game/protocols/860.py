@@ -135,7 +135,7 @@ class Packet(base.BasePacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.data["capasity"] * 100) # TODO: Free Capasity
+        self.uint32(player.data["capasity"] - player.inventoryWeight) # TODO: Free Capasity
         #self.uint32(player.data["capasity"] * 100) # TODO: Cap
         if player.data["experience"] <= 0x7FFFFFFF:
             self.uint32(player.data["experience"]) # TODO: Virtual cap? Experience

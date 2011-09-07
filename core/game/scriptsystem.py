@@ -346,14 +346,8 @@ scriptPool.start()
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
 def handleModule(name):
-    try:
-        modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
-    except:
-        import traceback
-        t = traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
-        if t:
-            print t
-        return
+    modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+
     for module in modules.__all__:
         try:
             if not module == "__init__":

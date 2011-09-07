@@ -307,7 +307,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.data["capasity"] * 100) # TODO: Free Capasity
+        self.uint32(player.data["capasity"] - player.inventoryWeight) # TODO: Free Capasity
         self.uint32(player.data["capasity"] * 100) # TODO: Cap
         self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
         if player.data["level"] > 0xFFFF:
@@ -740,13 +740,13 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    player.message(thing.description() + extra, game.enum.MSG_INFO_DESCR)
+                    player.message(thing.description() + extra, 'MSG_INFO_DESCR')
             elif isinstance(thing, Creature):
                 def afterScript():
                     if self == thing:
-                        player.message(thing.description(True), game.enum.MSG_INFO_DESCR)
+                        player.message(thing.description(True), 'MSG_INFO_DESCR')
                     else:
-                        player.message(thing.description(), game.enum.MSG_INFO_DESCR)
+                        player.message(thing.description(), 'MSG_INFO_DESCR')
             game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=position, stackpos=stackpos)
         else:
             player.notPossible()
@@ -757,7 +757,7 @@ class BaseProtocol(object):
         count = packet.uint8()
         
         item = game.item.Item(sid(clientId), count)
-        player.message(item.description(), game.enum.MSG_INFO_DESCR)
+        player.message(item.description(), 'MSG_INFO_DESCR')
         del item
         
     def handleRotateItem(self, player, packet):

@@ -50,20 +50,35 @@ class TibiaPlayer(Creature):
         
         self.solid = not config.playerWalkthrough
 
+        self.inventoryWeight = 0
         # Direction
         self.direction = self.data["direction"]
         del self.data["direction"]
 
         # Inventory
+        self.inventoryCache = {}
         if self.data['inventory']:
-            self.inventory = self.unpickleInventory(self.data['inventory'])
+            self.unpickleInventory(self.data['inventory'])
         else:
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+            for item in self.inventory:
+                if isinstance(item, game.item.Item):
+                    weight = item.weight
+                    if weight:
+                        self.inventoryWeight += weight * (item.count or 1)
+                    try:
+                        self.inventoryCache[item.itemId].append(item)
+                        self.inventoryCache[item.itemId][0] += item.count or 1
+                    except:
+                        self.inventoryCache[item.itemId] = [item.count or 1, item]
+                    
+                    if item.containerSize:
+                        self.__buildInventoryCache(item.container)
         del self.data['inventory']
         
         # Depot, (yes, we load it here)
         if self.data['depot']:
-            self.depot = self.unpickleInventory(self.data['depot'])
+            self.depot = pickle.loads(self.data['depot'])
         else:
             self.depot = {} # {depotId : inventoryList}
             
@@ -105,7 +120,7 @@ class TibiaPlayer(Creature):
         self.data["maglevel"] = maglevel
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
-    
+
         # Stamina loose
         if self.data["stamina"]:
             def loseStamina():
@@ -251,25 +266,10 @@ class TibiaPlayer(Creature):
         # Option 4, find any item the player might posess
         if sid:
             # Inventory
-            bags = []
-            itemFound = None
-            for item in self.inventory:
-                if item.itemId == sid:
-                    itemFound = item
-                    break
-                elif item.containerSize:
-                    bags.append(item)
-                    
-            # Bags
-            for bag in bags.pop(0):
-                for item in bag.items:
-                    if item.itemId == sid:
-                        itemFound = item
-                        break
-                    elif item.containerSize:
-                        bags.append(item)
-                        
-            return itemFound
+            try:
+                return self.inventoryCache[sid][-1]
+            except:
+                return None
             
     def findItemWithPlacement(self, position, stackpos=1, sid=None):
         # Option 1, from the map:
@@ -292,7 +292,13 @@ class TibiaPlayer(Creature):
 
         # Option 4, find any item the player might posess
         if sid:
-            return None # TODO
+            # Inventory
+            try:
+                itemFound = self.inventoryCache[sid][-1]
+                if item.container:
+                    return (3, itemFound, itemFound.container)
+            except:
+                return None
 
     def findItemById(self, itemId, count=0):
         items = []
@@ -334,12 +340,22 @@ class TibiaPlayer(Creature):
             if items[0][0] == 1:
                 self.inventory[items[0][3]] = None
                 stream.removeInventoryItem(items[0][2]+1)
+
             elif items[0][0] == 2:
                 items[0][2].container.removeItem(items[0][1])
                 try:
                     stream.removeContainerItem(self.openContainers.index(items[0][2]), items[0][3])
                 except:
                     pass
+            
+            # Update cached data
+            try:
+                self.inventoryCache[itemId].remove(items[0][1])
+                self.inventoryCache[itemId][0] -= 1
+                self.inventoryWeight -= items[0][1].weight
+            except:
+                pass
+            
             stream.send(self.client)
             return items[0][1]
         else:
@@ -358,6 +374,15 @@ class TibiaPlayer(Creature):
                             stream.updateContainerItem(self.openContainers.index(item[2]), item[3], item[1])
                         except:
                             pass
+
+                    # Update cached data
+                    try:
+                        self.inventoryCache[itemId].remove(item[1])
+                        self.inventoryCache[itemId][0] -= item[1].count
+                        self.inventoryWeight -= item[1].weight * item[1].count
+                    except:
+                        pass
+                    
                 else:
                     if item[0] == 1:
                         self.inventory[item[2]+1-1] = None
@@ -365,6 +390,15 @@ class TibiaPlayer(Creature):
                     elif item[0] == 2:
                         item[2].container.removeItem(item[1])
                         stream.removeContainerItem(self.openContainers.index(item[2]), item[3])
+                        
+                    # Update cached data
+                    try:
+                        self.inventoryCache[itemId].remove(item[1])
+                        self.inventoryCache[itemId][0] -= 1
+                        self.inventoryWeight -= item[1].weight
+                    except:
+                        pass
+                    
             stream.send(self.client)
             return newItem
 
@@ -439,7 +473,7 @@ class TibiaPlayer(Creature):
             
             self.data["healthmax"] = vocation.maxHP(self.data["level"])
             self.data["manamax"] = vocation.maxMana(self.data["level"])
-            self.data["capasity"] = vocation.maxCapasity(self.data["level"])
+            self.data["capasity"] = vocation.maxCapasity(self.data["level"]) * 100
             
             if self.data["health"] > self.data["healthmax"]:
                 self.data["health"] = self.data["healthmax"]
@@ -1028,8 +1062,35 @@ class TibiaPlayer(Creature):
         return dmg
 
     # Loading:
+    def __buildInventoryCache(self, container):
+        for item in container.items:
+            weight = item.weight
+            item.container = container # Funny call to simplefy lookups
+            if weight:
+                self.inventoryWeight += weight * (item.count or 1)
+            try:
+                self.inventoryCache[item.itemId].append(item)
+                self.inventoryCache[item.itemId][0] += item.count or 1
+            except:
+                self.inventoryCache[item.itemId] = [item.count or 1, item]
+                
     def unpickleInventory(self, inventoryData):
-        return pickle.loads(inventoryData)
+        self.inventory = pickle.loads(inventoryData)
+        print self.inventory
+        # Generate the inventory cache
+        for item in self.inventory:
+            if isinstance(item, game.item.Item):
+                weight = item.weight
+                if weight:
+                    self.inventoryWeight += weight * (item.count or 1)
+                try:
+                    self.inventoryCache[item.itemId].append(item)
+                    self.inventoryCache[item.itemId][0] += item.count or 1
+                except:
+                    self.inventoryCache[item.itemId] = [item.count or 1, item]
+                
+                if item.containerSize:
+                    self.__buildInventoryCache(item.container)
         
     # Saving
     def pickleInventory(self):
@@ -1049,7 +1110,6 @@ class TibiaPlayer(Creature):
 
     def save(self):
         sql.conn.runOperation(*self._saveQuery())
-
 
     def saveSkills(self):
         sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))

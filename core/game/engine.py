@@ -29,7 +29,7 @@ def loader(timer):
     from game.item import loadItems
     # Begin loading items in the background
     d = loadItems()
-    
+
     @inlineCallbacks
     def _sql_():
         for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
