@@ -249,6 +249,11 @@ if config.stackTiles:
     dummyTiles = {}
     
 def loadTiles(x,y, walk=True):
+    if x < 0 or y < 0:
+        return None
+    elif x > data.map.info.height or y > data.map.info.width:
+        return None
+    
     return load(int(x / data.map.info.sectorSize[0]), int(y / data.map.info.sectorSize[1]))
 
 def __loadOp(code): exec(code)
@@ -260,11 +265,12 @@ def load(sectorX, sectorY):
     xbase = sectorX*data.map.info.sectorSize[0]
     if sectorSum in knownMap or ybase > data.map.info.height-1 or xbase > data.map.info.width-1:
         return False
-    print "Loading %d,%d,sec" % (sectorX, sectorY)
+
     global V # Should really be avioided 
     if not V:
         V = Tile((I(100),), 1)
           
+    print "Loading %d,%d,sec" % (sectorX, sectorY)
     
     # Attempt to load a cached file
     l = None
