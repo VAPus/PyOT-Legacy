@@ -113,7 +113,8 @@ for item in game.item.items:
 
 
 def makeitem(creature, text):
-    try:
+    #try:
+    if True:
         count = 1
         if ' ' in text:
             count = int(text.split(" ")[1])
@@ -127,8 +128,8 @@ def makeitem(creature, text):
                 count -= rcount
         else:
             raise
-    except:
-        creature.message("Invalid Item!")
+    #except:
+    #    creature.message("Invalid Item!")
          
     return False
 

@@ -349,17 +349,14 @@ class TibiaPlayer(Creature):
                     pass
             
             # Update cached data
-            try:
-                self.inventoryCache[itemId].remove(items[0][1])
-                self.inventoryCache[itemId][0] -= 1
-                self.inventoryWeight -= items[0][1].weight
-            except:
-                pass
+            if self.removeCache(items[0][1]):
+                self.refreshStatus(stream)
             
             stream.send(self.client)
             return items[0][1]
         else:
             newItem = game.item.Item(itemId, count)
+            sendUpdate = False
             for item in items:
                 if not count:
                     break
@@ -376,12 +373,8 @@ class TibiaPlayer(Creature):
                             pass
 
                     # Update cached data
-                    try:
-                        self.inventoryCache[itemId].remove(item[1])
-                        self.inventoryCache[itemId][0] -= item[1].count
-                        self.inventoryWeight -= item[1].weight * item[1].count
-                    except:
-                        pass
+                    if self.removeCache(item[1]) and not sendUpdate:
+                        sendUpdate = True
                     
                 else:
                     if item[0] == 1:
@@ -392,13 +385,11 @@ class TibiaPlayer(Creature):
                         stream.removeContainerItem(self.openContainers.index(item[2]), item[3])
                         
                     # Update cached data
-                    try:
-                        self.inventoryCache[itemId].remove(item[1])
-                        self.inventoryCache[itemId][0] -= 1
-                        self.inventoryWeight -= item[1].weight
-                    except:
-                        pass
-                    
+                    if self.removeCache(item[1]) and not sendUpdate:
+                        sendUpdate = True
+            
+            if sendUpdate:
+                self.refreshStatus(stream)
             stream.send(self.client)
             return newItem
 
@@ -412,19 +403,46 @@ class TibiaPlayer(Creature):
                 
             # Option 2, the inventory
             elif position[1] < 64:
+                sendUpdate = False
+                currItem = self.inventory[position[1]-1]
+                if currItem:
+                    # Update cached data
+                    if self.removeCache(currItem):
+                        sendUpdate = True
                 self.inventory[position[1]-1] = item
+                if self.addCache(item):
+                    sendUpdate = True
+                    
+                if sendUpdate:
+                    self.refreshStatus()
+                
                 self.updateInventory(position[1])
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
+                update = False
                 try:
                     bag = self.openContainers[position[1] - 64]
                 except:
                     return
-                    
+                
+                try:
+                    self.inventoryCache[bag.itemId].index(bag)
+                    currItem = bag.container.items[position[2]]
+                    if currItem:
+                        if self.removeCache(currItem):
+                            update = True
+                            
+                    if self.addCache(item):
+                        update = True
+                except:
+                    pass
+                
                 bag.container.items[position[2]] = item
                 stream = self.packet()
                 stream.updateContainerItem(position[1] - 64, position[2], item)
+                if update:
+                    self.refreshStatus(stream)
                 stream.send(self.client)
             
     def removeItem(self, position, stackpos):
@@ -437,19 +455,33 @@ class TibiaPlayer(Creature):
                 
             # Option 2, the inventory
             elif position[1] < 64:
+                if self.removeCache(self.inventory[position[1]-1]):
+                    self.refreshStatus()
                 self.inventory[position[1]-1] = None
                 self.updateInventory(position[1])
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
+                update = False
                 try:
                     bag = self.openContainers[position[1] - 64]
                 except:
                     return
-                    
+                
+                try:
+                    self.inventoryCache[bag.itemId].index(bag)
+                    currItem = bag.container.items[position[2]]
+                    if currItem:
+                        if self.removeCache(currItem):
+                            update = True
+                except:
+                    pass
+                
                 del bag.container.items[position[2]]
                 stream = self.packet()
                 stream.removeContainerItem(position[1] - 64, position[2])
+                if update:
+                    self.refreshStatus(stream)
                 stream.send(self.client)
                 
     def getContainer(self, openId):
@@ -461,6 +493,43 @@ class TibiaPlayer(Creature):
         except:
             return
 
+    def removeCache(self, item):
+        # Update cached data
+        try:
+            self.inventoryCache[item.itemId].remove(item)
+            self.inventoryCache[item.itemId][0] -= item.count or 1
+            weight = item[1].weight
+            if weight:
+                self.inventoryWeight -= weight * (item.count or 1)
+                return True
+        except:
+            pass
+        
+    def addCache(self, item):
+        try:
+            self.inventoryCache[item.itemId].append(item)
+            self.inventoryCache[item.itemId][0] += item.count or 1
+        except:
+            self.inventoryCache[item.itemId] = [item.count or 1, item]
+            
+        weight = item.weight
+        if weight:
+            self.inventoryWeight += weight * (item.count or 1)
+            return True
+            
+    def modifyCache(self, item, count):
+        if not count: return
+        
+        try:
+            self.inventoryCache[itemId][0] += count
+            weight = item.weight
+            if weight:
+                self.inventoryWeight -= weight * (count)
+                return True
+                
+        except:
+            pass
+        
     # Experience & level
     def setLevel(self, level, send=True):
         vocation = self.getVocation()
@@ -755,7 +824,7 @@ class TibiaPlayer(Creature):
         def end():
             stream = self.packet(0x6F)
             stream.uint8(index)
-            del self.openContainers[index]
+            self.openContainers.remove(container)
             container.opened = False
             stream.send(self.client)
         
@@ -798,11 +867,19 @@ class TibiaPlayer(Creature):
     # Item to container
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
         stream = streamX
+        update = False
+        
         if not streamX:
             stream = self.packet()
         
         if not count:
             count = 1 if item.count == None else item.count
+        
+        try:
+            self.inventoryCache[container.itemId].index(container)
+            update = True
+        except:
+            pass
         
         # Find item to stack with
         if stack and item.stackable and count < 100:
@@ -818,6 +895,9 @@ class TibiaPlayer(Creature):
                         # Is it a open container, if so, send item update
                         if bag in self.openContainers:
                             stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
+                        
+                        if update:
+                            self.replaceCache(itemX)
                             
                         if not count:
                             break
@@ -847,8 +927,13 @@ class TibiaPlayer(Creature):
                     
             elif container.opened:
                 stream.addContainerItem(self.openContainers.index(container), item)
-        
+            
+            if update:
+                self.addCache(item)
+                
         if not streamX:
+            if update:
+                self.refreshStatus(stream)
             stream.send(self.client)
             
         return True
