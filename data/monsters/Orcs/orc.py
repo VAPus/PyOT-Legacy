@@ -10,3 +10,4 @@ orc.setBehavior(summonable=300, hostile=1, illusionable=1, convinceable=300, pus
 orc.walkAround(energy=1, fire=1, poison=1)
 orc.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 orc.voices("Grow truk grrrrr.", "Prek tars, dekklep zurk.", "Grak brrretz!")
+orc.regMelee(35)

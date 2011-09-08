@@ -10,3 +10,4 @@ young_sea_serpent.setBehavior(summonable=0, hostile=1, illusionable=0, convincea
 young_sea_serpent.walkAround(energy=0, fire=0, poison=0)
 young_sea_serpent.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 young_sea_serpent.voices("HISSSS", "CHHHRRRR")
+young_sea_serpent.regMelee(200) #or more

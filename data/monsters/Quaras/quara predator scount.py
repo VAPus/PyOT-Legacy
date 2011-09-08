@@ -10,3 +10,4 @@ quara_predator_scount.setBehavior(summonable=0, hostile=1, illusionable=1, convi
 quara_predator_scount.walkAround(energy=1, fire=0, poison=1)
 quara_predator_scount.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 quara_predator_scount.voices("Gnarrr!", "Tcharrr!", "Rrrah!", "Rraaar!")
+quara_predator_scount.regMelee(190)

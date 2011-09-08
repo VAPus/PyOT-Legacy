@@ -10,3 +10,4 @@ minotaur_guard.setBehavior(summonable=550, hostile=1, illusionable=1, convinceab
 minotaur_guard.walkAround(energy=1, fire=1, poison=1)
 minotaur_guard.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 minotaur_guard.voices("Kirrl Karrrl!", "Kaplar")
+minotaur_guard.regMelee(100)

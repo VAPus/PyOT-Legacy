@@ -10,3 +10,4 @@ quara_mantassin_scout.setBehavior(summonable=0, hostile=1, illusionable=0, convi
 quara_mantassin_scout.walkAround(energy=1, fire=0, poison=1)
 quara_mantassin_scout.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_mantassin_scout.voices("Shrrrr", "Zuerk Pachak!")
+quara_mantassin_scout.regMelee(110)

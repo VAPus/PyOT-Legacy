@@ -10,3 +10,4 @@ minotaur_archer.setBehavior(summonable=390, hostile=1, illusionable=1, convincea
 minotaur_archer.walkAround(energy=0, fire=0, poison=0)
 minotaur_archer.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 minotaur_archer.voices("Ruan Wihmpy!", "Kaplar!")
+minotaur_archer.regMelee(25)

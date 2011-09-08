@@ -10,3 +10,4 @@ wyvern.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, push
 wyvern.walkAround(energy=1, fire=1, poison=0)
 wyvern.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 wyvern.voices("Shriiiek")
+wyvern.regMelee(120) #(poisons you, starting from up to 24

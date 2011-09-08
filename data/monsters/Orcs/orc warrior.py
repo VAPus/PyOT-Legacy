@@ -10,3 +10,4 @@ orc_warrior.setBehavior(summonable=360, hostile=1, illusionable=1, convinceable=
 orc_warrior.walkAround(energy=1, fire=1, poison=1)
 orc_warrior.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 orc_warrior.voices("Alk!", "Trak grrrr brik.", "Grow truk grrrr.")
+orc_warrior.regMelee(60)

@@ -9,3 +9,4 @@ carniphila.setSpeed(240)
 carniphila.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 carniphila.walkAround(energy=1, fire=1, poison=0)
 carniphila.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
+carniphila.regMelee(100) #poisons you 5 hp/turn

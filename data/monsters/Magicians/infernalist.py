@@ -11,3 +11,4 @@ infernalist.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 infernalist.walkAround(energy=0, fire=0, poison=0)
 infernalist.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 infernalist.voices("Nothing will remain but your scorched bones!", "Some like it hot!", "It's cooking time!", "Feel the heat of battle!")
+infernalist.regMelee(100)

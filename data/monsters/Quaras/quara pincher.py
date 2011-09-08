@@ -10,3 +10,4 @@ quara_pincher.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 quara_pincher.walkAround(energy=1, fire=0, poison=1)
 quara_pincher.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 quara_pincher.voices("Clank! Clank!", "Clap!", "Crrrk! Crrrk!")
+quara_pincher.regMelee(340)

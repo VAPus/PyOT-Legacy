@@ -10,3 +10,4 @@ mutated_tiger.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=
 mutated_tiger.walkAround(energy=0, fire=0, poison=0)
 mutated_tiger.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 mutated_tiger.voices("GRAAARRRRRR", "CHHHHHHHHHHH")
+mutated_tiger.regMelee(145)

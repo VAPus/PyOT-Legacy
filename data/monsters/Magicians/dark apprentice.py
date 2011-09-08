@@ -11,3 +11,4 @@ dark_apprentice.setBehavior(summonable=0, hostile=1, illusionable=0, convinceabl
 dark_apprentice.walkAround(energy=1, fire=1, poison=1)
 dark_apprentice.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=0)
 dark_apprentice.voices("Outch!", "I must dispose of my masters enemies!", "Oops, I did it again.", "From the spirits that I called Sir, deliver me!")
+dark_apprentice.regMelee(30)

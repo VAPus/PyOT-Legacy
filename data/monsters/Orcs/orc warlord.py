@@ -10,3 +10,4 @@ orc_warlord.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 orc_warlord.walkAround(energy=1, fire=0, poison=1)
 orc_warlord.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 orc_warlord.voices("Ikem rambo zambo!", "Orc buta bana!", "Ranat Ulderek!", "Fetchi Maruk Buta")
+orc_warlord.regMelee(250)

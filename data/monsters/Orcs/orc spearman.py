@@ -10,3 +10,4 @@ orc_spearman.setBehavior(summonable=310, hostile=1, illusionable=1, convinceable
 orc_spearman.walkAround(energy=1, fire=1, poison=1)
 orc_spearman.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 orc_spearman.voices("Ugaar!")
+orc_spearman.regMelee(25)

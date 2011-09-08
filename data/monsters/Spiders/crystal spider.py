@@ -10,3 +10,4 @@ crystal_spider.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable
 crystal_spider.walkAround(energy=1, fire=0, poison=0)
 crystal_spider.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 crystal_spider.voices("Screeech!")
+crystal_spider.regMelee(250) #poisons you for up to 8hp/turn

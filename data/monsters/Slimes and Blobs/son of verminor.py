@@ -1,5 +1,5 @@
 import game.monster
-
+#move to misc/shapeshifter folder
 son_of_verminor = game.monster.genMonster("Son Of Verminor", (19, 1496), "a son of verminor")
 son_of_verminor.setHealth(8500)
 son_of_verminor.bloodType(color="slime")
@@ -10,3 +10,4 @@ son_of_verminor.setBehavior(summonable=0, hostile=1, illusionable=0, convinceabl
 son_of_verminor.walkAround(energy=0, fire=1, poison=0)
 son_of_verminor.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 son_of_verminor.voices("Blubb.")
+son_of_verminor.regMelee(460)

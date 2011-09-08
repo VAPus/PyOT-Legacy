@@ -10,3 +10,4 @@ medusa.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, push
 medusa.walkAround(energy=0, fire=0, poison=0)
 medusa.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 medusa.voices("You will make sssuch a fine ssstatue!", "There isss no chhhanccce of essscape", "Are you tired or why are you moving thhat ssslow <chuckle>", "Jussst look at me!")
+medusa.regMelee(450)  #poisons you 42 hp at start per turn

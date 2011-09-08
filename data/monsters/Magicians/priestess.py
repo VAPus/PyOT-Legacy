@@ -10,3 +10,4 @@ priestess.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, p
 priestess.walkAround(energy=1, fire=1, poison=1)
 priestess.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 priestess.voices("Your energy is mine.", "Now your life is come to the end, hahahaha!", "Throw the soul on the altar!")
+priestess.regMelee(75)

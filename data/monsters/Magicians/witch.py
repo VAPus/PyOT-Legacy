@@ -10,3 +10,4 @@ witch.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pusha
 witch.walkAround(energy=0, fire=1, poison=1)
 witch.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 witch.voices("Herba budinia ex!", "Horax Pokti!", "Hihihihi!")
+witch.regMelee(20)

@@ -10,3 +10,5 @@ mercury_blob.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0
 mercury_blob.walkAround(energy=1, fire=1, poison=1)
 mercury_blob.setImmunity(paralyze=0, invisible=0, lifedrain=1, drunk=1)
 mercury_blob.voices("Crackle")
+mercury_blob.regMelee(75) 
+#summons might not cause drunkness

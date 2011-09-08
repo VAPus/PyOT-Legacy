@@ -10,3 +10,4 @@ orc_marauder.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=4
 orc_marauder.walkAround(energy=1, fire=1, poison=1)
 orc_marauder.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 orc_marauder.voices("Grrrrrr")
+orc_marauder.regMelee(80)#unknown

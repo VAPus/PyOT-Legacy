@@ -10,3 +10,4 @@ mutated_rat.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 mutated_rat.walkAround(energy=0, fire=0, poison=0)
 mutated_rat.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 mutated_rat.voices("Grrrrrrrrrrrrrr!", "Fcccccchhhhhh")
+mutated_rat.regMelee(155) #poisons you 5 hp/turn

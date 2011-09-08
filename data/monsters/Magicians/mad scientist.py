@@ -11,3 +11,4 @@ mad_scientist.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 mad_scientist.walkAround(energy=1, fire=1, poison=1)
 mad_scientist.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 mad_scientist.voices("Die in the name of Science!", "You will regret interrupting my studies!", "Let me test this!", "I will study your corpse!")
+mad_scientist.regMelee(35)

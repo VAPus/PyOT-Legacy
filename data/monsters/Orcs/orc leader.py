@@ -10,3 +10,4 @@ orc_leader.setBehavior(summonable=640, hostile=1, illusionable=1, convinceable=6
 orc_leader.walkAround(energy=1, fire=0, poison=1)
 orc_leader.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 orc_leader.voices("Ulderek futgyr human!")
+orc_leader.regMelee(185)

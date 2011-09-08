@@ -11,3 +11,4 @@ dark_magician.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 dark_magician.walkAround(energy=1, fire=1, poison=1)
 dark_magician.setImmunity(paralyze=0, invisible=1, lifedrain=1, drunk=0)
 dark_magician.voices("Feel the power of my runes!", "Killing you gets expensive!", "My secrets are mine alone!", "Stand still!")
+dark_magician.regMelee(30)

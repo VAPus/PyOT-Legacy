@@ -10,3 +10,4 @@ sea_serpent.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 sea_serpent.walkAround(energy=0, fire=0, poison=0)
 sea_serpent.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 sea_serpent.voices("CHHHRRRR", "HISSSS")
+sea_serpent.regMelee(250)

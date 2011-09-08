@@ -10,3 +10,4 @@ serpent_spawn.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 serpent_spawn.walkAround(energy=1, fire=1, poison=0)
 serpent_spawn.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 serpent_spawn.voices("HISSSS", "I bring your deathhh, mortalssss", "Sssssouls for the one", "Tsssse one will risssse again")
+serpent_spawn.regMelee(250)

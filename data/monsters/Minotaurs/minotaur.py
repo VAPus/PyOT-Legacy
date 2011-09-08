@@ -10,3 +10,4 @@ minotaur.setBehavior(summonable=330, hostile=1, illusionable=1, convinceable=330
 minotaur.walkAround(energy=1, fire=1, poison=1)
 minotaur.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 minotaur.voices("Kaplar!")
+minotaur.regMelee(45)

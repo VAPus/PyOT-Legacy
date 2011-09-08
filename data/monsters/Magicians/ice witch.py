@@ -11,3 +11,4 @@ ice_witch.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, p
 ice_witch.walkAround(energy=1, fire=1, poison=1)
 ice_witch.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=0)
 ice_witch.voices("So you think you are cool?", "I hope it is not too cold for you! HeHeHe.", "Freeze!")
+ice_witch.regMelee(60)

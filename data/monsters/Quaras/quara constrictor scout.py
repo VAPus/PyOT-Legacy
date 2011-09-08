@@ -10,3 +10,4 @@ quara_constrictor_scout.setBehavior(summonable=0, hostile=1, illusionable=1, con
 quara_constrictor_scout.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor_scout.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor_scout.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
+quara_constrictor_scout.regMelee(130) #or more

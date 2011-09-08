@@ -10,3 +10,4 @@ mutated_human.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=
 mutated_human.walkAround(energy=1, fire=1, poison=0)
 mutated_human.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 mutated_human.voices("Take that creature off my back!! I can feel it!", "You will regret interrupting my studies!", "You will be the next infected one... CRAAAHHH!", "Science... is a curse.", "Run as fast as you can.", "Oh by the gods! What is this... aaaaaargh!")
+mutated_human.regMelee(90) #poisons you 3 hp/turn

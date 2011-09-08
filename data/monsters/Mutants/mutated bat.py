@@ -10,3 +10,4 @@ mutated_bat.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 mutated_bat.walkAround(energy=0, fire=0, poison=0)
 mutated_bat.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 mutated_bat.voices("Shriiiiiek")
+mutated_bat.regMelee(169) #poisons you starting at 6 hp per turn)

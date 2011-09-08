@@ -10,3 +10,4 @@ haunted_treeling.setBehavior(summonable=0, hostile=1, illusionable=0, convinceab
 haunted_treeling.walkAround(energy=0, fire=0, poison=0)
 haunted_treeling.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 haunted_treeling.voices("Knarrrz", "Huuhuuhuuuhuuaarrr", "Knorrrrrr")
+haunted_treeling.regMelee(150)

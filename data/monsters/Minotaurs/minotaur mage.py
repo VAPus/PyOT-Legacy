@@ -10,3 +10,4 @@ minotaur_mage.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=
 minotaur_mage.walkAround(energy=1, fire=1, poison=1)
 minotaur_mage.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 minotaur_mage.voices("Learrn tha secrret uf deathhh!", "Kaplar!")
+minotaur_mage.regMelee(20)

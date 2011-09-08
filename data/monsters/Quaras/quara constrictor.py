@@ -10,3 +10,4 @@ quara_constrictor.setBehavior(summonable=0, hostile=1, illusionable=1, convincea
 quara_constrictor.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
+quara_constrictor.regMelee(150) #poisons you for 1 hp/turn

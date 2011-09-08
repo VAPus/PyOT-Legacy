@@ -10,3 +10,4 @@ orc_berserker.setBehavior(summonable=590, hostile=1, illusionable=1, convinceabl
 orc_berserker.walkAround(energy=1, fire=1, poison=1)
 orc_berserker.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 orc_berserker.voices("KRAK ORRRRRRK!")
+orc_berserker.regMelee(200)

@@ -10,3 +10,4 @@ acid_blob.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, p
 acid_blob.walkAround(energy=1, fire=1, poison=0)
 acid_blob.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 acid_blob.voices("Kzzchhhh")
+acid_blob.regMelee(80)

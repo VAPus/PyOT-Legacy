@@ -9,3 +9,4 @@ giant_spider.setSpeed(280)
 giant_spider.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 giant_spider.walkAround(energy=0, fire=1, poison=0)
 giant_spider.setImmunity(paralyze=0, invisible=0, lifedrain=1, drunk=1)
+giant_spider.regMelee(300) #poisons you for 5-8 hp/turn

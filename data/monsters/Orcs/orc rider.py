@@ -10,3 +10,4 @@ orc_rider.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=490,
 orc_rider.walkAround(energy=0, fire=0, poison=0)
 orc_rider.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 orc_rider.voices("Orc arga Huummmak!", "Grrrrrrr")
+orc_rider.regMelee(130)
