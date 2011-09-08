@@ -356,14 +356,14 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA2)
         self.uint16(icons)
 
-    def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
+    def message(self, player, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
         self.uint8(0xB4)
         self.uint8(self.enum(msgType))
         if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
             if pos:
                 self.position(pos)
             else:
-                self.position(self.position)
+                self.position(player.position)
             self.uint32(value)
             self.uint8(color)
             self.uint32(0)
@@ -372,7 +372,7 @@ class BasePacket(TibiaPacket):
             if pos:
                 self.position(pos)
             else:
-                self.position(self.position)
+                self.position(player.position)
             self.uint32(value)
             self.uint8(color)
             

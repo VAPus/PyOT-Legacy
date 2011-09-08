@@ -695,7 +695,7 @@ class TibiaPlayer(Creature):
         
     def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
         stream = self.packet()
-        stream.message(message, msgType, color, value, pos)
+        stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
         
         
