@@ -1528,3 +1528,64 @@ class TibiaPlayer(Creature):
                 stream.string(questObj.descriptions[x])
         
         stream.send(self.client)
+        
+    def questProgress(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        try:
+            return quests[questIdentifier][1]
+        except:
+            return 0
+            
+    def questStarted(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        try:
+            quests[questIdentifier]
+            return True
+        except:
+            return False
+            
+    def questCompleted(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        try:
+            return quests[questIdentifier][2]
+        except:
+            return False
+            
+    # VIP system
+    def getVips(self):
+        vips = self.getStorage('__vips')
+        if not vips:
+            return []
+        return vips
+        
+    def addVip(self, playerId):
+        vips = self.getStorage('__vips')
+        if not vips:
+            vips = [playerId]
+        else:
+            vips.append(playerId)
+            
+        self.setStorage('__vips', vips)
+        
+    def removeVip(self, playerId):
+        vips = self.getStorage('__vips')
+        if not vips:
+            return
+        else:
+            try:
+                vips.remove(playerId)
+            except:
+                return
+            
+        self.setStorage('__vips', vips)
+        
+    def isVip(self, playerId):
+        vips = self.getStorage('__vips')
+        if not vips:
+            return False
+        else:
+            try:
+                vips.index(playerId)
+                return True
+            except:
+                return False    

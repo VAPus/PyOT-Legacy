@@ -377,7 +377,21 @@ class BasePacket(TibiaPacket):
             self.uint8(color)
             
         self.string(message)
-      
+
+    def vipLogin(self, playerId):
+        self.uint8(0xD3)
+        self.uint32(playerId)
+        
+    def vipLogout(self, playerId):
+        self.uint8(0xD4)
+        self.uint32(playerId)
+        
+    def vip(self, playerId, playerName, online=False):
+        self.uint8(0xD2)
+        self.uint32(playerId)
+        self.string(playerName)
+        self.uint8(online)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
