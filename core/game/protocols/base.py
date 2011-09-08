@@ -9,6 +9,7 @@ import config
 import sys
 import game.scriptsystem
 from collections import deque
+import game.resource
 
 class BasePacket(TibiaPacket):
     protocolEnums = {}
@@ -483,6 +484,12 @@ class BaseProtocol(object):
             
         elif packetType == 0xBE: # Stop action
             player.stopAction()
+        
+        elif packetType == 0xF0:
+            player.questLog()
+            
+        elif packetType == 0xF1:
+            self.handleQuestLine(player, packet)
             
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
@@ -892,3 +899,6 @@ class BaseProtocol(object):
         if windowId in player.windowHandlers:
             player.windowHandlers[windowId](text)
             
+    def handleQuestLine(self, player, packet):
+        questId = packet.uint16()-1
+        player.questLine(game.resource.getQuest(questId).name)

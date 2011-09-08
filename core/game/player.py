@@ -1458,5 +1458,73 @@ class TibiaPlayer(Creature):
         stream.uint32(creature.cid)
         stream.uint8(color)
         stream.send(self.client)
+
+    # Quest system
+    def beginQuest(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        if not quests:
+            quests = {}
+            
+        quests[questIdentifier] = [1, 0, False, time.time(), False] # Mission, completed steps, startTime, endTime
         
-    
+        self.setStorage('__quests', quests)
+        
+    def progressQuest(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        quests[questIdentifier][1] += 1
+        self.setStorage('__quests', quests)
+
+    def progressQuestMission(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        quests[questIdentifier][0] += 1
+        self.setStorage('__quests', quests)
+        
+    def finishQuest(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        quests[questIdentifier][1] += 1 # Finish the last step
+        quests[questIdentifier][2] = True
+        quests[questIdentifier][4] = time.time()
+        self.setStorage('__quests', quests)
+        
+    def questLog(self):
+        quests = self.getStorage('__quests')
+        if not quests:
+            quests = {}
+        
+        print quests
+        # Vertify the quests
+        for quest in quests.copy():
+            try:
+                game.resource.getQuest(quest)
+            except:
+                print "Debug, ending quest %s" % quest
+                del quests[quest]
+                self.setStorage('__quests', quests)
+        
+        stream = self.packet(0xF0)
+        stream.uint16(len(quests))
+        for quest in quests:
+            questObj = game.resource.getQuest(quest)
+            if not questObj.missions:
+                stream.uint16(0)
+            stream.uint16(game.resource.reverseQuests[quest]+1)
+            stream.string(questObj.name)
+            stream.uint8(quests[quest][2])
+        
+        stream.send(self.client)
+        
+    def questLine(self, questIdentifier):
+        quests = self.getStorage('__quests')
+        questObj = game.resource.getQuest(questIdentifier)
+        stream = self.packet(0xF1)
+        stream.uint16(game.resource.reverseQuests[questIdentifier]+1)
+
+        stream.uint8(questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2])
+        print questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2]
+        for i in xrange(quests[questIdentifier][0]):
+            for x in xrange(questObj.missions[i][1], questObj.missions[i][2]):
+                print x
+                stream.string(questObj.missions[i][0] + (' (completed)' if quests[questIdentifier][1] > x else ''))
+                stream.string(questObj.descriptions[x])
+        
+        stream.send(self.client)

@@ -87,6 +87,7 @@ applyMountSpeedChange = True
 # Game modes
 playerWalkthrough = False # can also be modified in scripts
 creatureWalkthrough = False # can also be modified in scripts
+playerIsPushable = True
 
 # Mailboxes
 maxMails = 20

@@ -57,3 +57,33 @@ def genMount(name, cid, speed=0, premium=False):
     mount = Mount(name, cid, speed, premium)
     regMount(mount)
     return mount
+    
+### Quest ###
+quests = []
+reverseQuests = {}
+class Quest(object):
+    def __init__(self, name):
+        self.name = name
+        self.steps = 0
+        self.descriptions = []
+        self.missions = []
+        
+    def mission(self, name):
+        self.missions.append([name, len(self.descriptions), 0])
+        
+    def description(self, description):
+        self.descriptions.append(description)
+        self.missions[-1][2] += 1
+        self.steps += 1
+        
+def genQuest(name):
+    quest = Quest(name)
+    quests.append(quest)
+    reverseQuests[name] = len(quests)-1
+    return quest
+    
+def getQuest(name):
+    try:
+        return quests[name]
+    except:
+        return quests[reverseQuests[name]]
