@@ -9,7 +9,7 @@ def defaultBrainFeaturePriority(self, monster):
         # Walking
         if monster.target: # We need a target for this code check to run
             # If target is out of sight, stop following it and begin moving back to base position
-            if not monster.canSee(monster.target.position) or monster.target.data["health"] < 1:
+            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1:
                 monster.base.onTargetLost(monster.target)
                 monster.target = None
                 monster.intervals = {} # Zero them out
