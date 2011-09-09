@@ -1,7 +1,6 @@
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.python import log
-from twisted.application.service import Service
 from packet import TibiaPacketReader, TibiaPacket
 import config
 import struct
@@ -30,7 +29,7 @@ class TibiaProtocol(Protocol):
         self.factory.addClient(self)
 
         # Inform the Protocol that we had a connection
-        self.onConnect();
+        self.onConnect()
 
     def connectionLost(self, reason):
         peer = self.transport.getPeer()
@@ -127,8 +126,7 @@ class TibiaProtocol(Protocol):
 
 class TibiaFactory(Factory):
     protocol = None # This HAVE to be overrided!
-    def __init__(self, service):
-        self.service = service
+    def __init__(self):
         self.clients = []
         self.clientCount = 0
 
@@ -141,6 +139,3 @@ class TibiaFactory(Factory):
         if client in self.clients:
             self.clients.remove(client)
         self.clientCount = self.clientCount - 1
-
-class TibiaService(Service):
-    pass

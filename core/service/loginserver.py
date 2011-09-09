@@ -87,6 +87,3 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         
 class LoginFactory(protocolbase.TibiaFactory):
     protocol = LoginProtocol
-
-class LoginService(protocolbase.TibiaService):
-    pass

@@ -45,22 +45,16 @@ otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], 
 
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from service.gameserver import GameProtocol, GameFactory, GameService
+from service.gameserver import GameProtocol, GameFactory
 import time
 
 startTime = time.time()
-topService = service.MultiService()
-
-GameServiceInstance = GameService()
-GameServiceInstance.setServiceParent(topService)
-
-factory = GameFactory(GameServiceInstance)
-tcpService = internet.TCPServer(config.gamePort, factory, interface=config.gameInterface)
-tcpService.setServiceParent(topService)
 
 application = service.Application("pyot-game-server")
 
-topService.setServiceParent(application)
+factory = GameFactory()
+tcpService = internet.TCPServer(config.gamePort, factory, interface=config.gameInterface)
+tcpService.setServiceParent(application)
 
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't

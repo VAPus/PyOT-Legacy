@@ -153,6 +153,3 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
 class GameFactory(protocolbase.TibiaFactory):
     protocol = GameProtocol
-
-class GameService(protocolbase.TibiaService):
-    pass

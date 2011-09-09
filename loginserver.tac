@@ -40,20 +40,12 @@ otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], 
 
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from service.loginserver import LoginProtocol, LoginFactory, LoginService
-
-
-
-topService = service.MultiService()
-
-LoginServiceInstance = LoginService()
-LoginServiceInstance.setServiceParent(topService)
-
-factory = LoginFactory(LoginServiceInstance)
-tcpService = internet.TCPServer(config.loginPort, factory, interface=config.loginInterface)
-tcpService.setServiceParent(topService)
+from service.loginserver import LoginProtocol, LoginFactory
 
 application = service.Application("pyot-login-server")
 
-topService.setServiceParent(application)
+factory = LoginFactory()
+tcpService = internet.TCPServer(config.loginPort, factory, interface=config.loginInterface)
+tcpService.setServiceParent(application)
+
 
