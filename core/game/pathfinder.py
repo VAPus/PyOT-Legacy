@@ -35,6 +35,11 @@ class node(object):
 # A-star algorithm.
 # The path returned will be a string of digits of directions.
 def findPath(mapZ, relX, relY, xB, yB):
+    _goalX = xB
+    _goalY = yB
+    _fromX = relX
+    _fromY = relY
+    
     """dx = [1, 1, 0, -1, -1, -1, 0, 1]
     dy = [0, 1, 1, 1, 0, -1, -1, -1]"""
     dx = [0, 1, 0, -1]
@@ -43,6 +48,7 @@ def findPath(mapZ, relX, relY, xB, yB):
     yA = 15
     xB = xB - relX + 15
     yB = yB - relY + 15
+    
     """dy = [0, 1, 0, -1, -1, 1, -1, 1]
     dx = [1, 0, -1, 0, 1, 1, -1, -1]"""
     closed_nodes_map = [] # map of closed (tried-out) nodes
@@ -101,12 +107,14 @@ def findPath(mapZ, relX, relY, xB, yB):
 
             try:
                 if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not tile or closed_nodes_map[ydy][xdx]):
-                    for t in tile.things:
-                        if t.solid:
-                            isSolid = True
-                            break
-                    if isSolid:
-                        continue
+                    if not (mx == _fromX and my == _fromY) and not (mx == _goalX and my == _goalY):
+                        for t in tile.things:
+                            if t.solid:
+                                print t
+                                isSolid = True
+                                break
+                        if isSolid:
+                            continue
                     #print "%d %d" % (mx, my)
                     # generate a child node
                     m0 = node(xdx, ydy, n0.distance, n0.priority)
@@ -136,9 +144,9 @@ def findPath(mapZ, relX, relY, xB, yB):
                             pqi = 1 - pqi
                         while pq[pqi]:
                             heappush(pq[1-pqi], pq[pqi][0])
-                            heappop(pq[pqi])       
+                            heappop(pq[pqi])      
                         pqi = 1 - pqi
                         heappush(pq[pqi], m0) # add the better node instead
             except:
                 pass # Out of map position
-    return [] # if no route found
+    return [] # if no route found 

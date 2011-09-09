@@ -474,7 +474,7 @@ class Creature(object):
         # Modify health
         self.modifyHealth(dmg)
         
-        if by and not self.data["health"]:
+        if by and not by.data["health"]:
             by.target = None
             by.targetMode = 0
         
@@ -530,13 +530,15 @@ class Creature(object):
         if not newTile or newTile.things[0].solid:
             raise game.errors.SolidTile()
 
-        oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
-        for spectator in getSpectators(oldPosition, ignore=(self,)):
-            stream = spectator.packet()
-            stream.removeTileItem(oldPosition, oldStackpos)
-            stream.magicEffect(oldPosition, 0x02)
-            stream.send(spectator)
-        
+        try:
+            oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
+            for spectator in getSpectators(oldPosition, ignore=(self,)):
+                stream = spectator.packet()
+                stream.removeTileItem(oldPosition, oldStackpos)
+                stream.magicEffect(oldPosition, 0x02)
+                stream.send(spectator)
+        except:
+            pass # Just append creature
         
         stackpos = placeCreature(self, position)
         if not stackpos:
@@ -544,9 +546,12 @@ class Creature(object):
         
         removeCreature(self, oldPosition)
         self.position = position 
-        if self.creatureType == 0:
+        if self.creatureType == 0 and self.client:
             stream = self.packet()
-            stream.removeTileItem(oldPosition, oldStackpos)
+            try:
+                stream.removeTileItem(oldPosition, oldStackpos)
+            except:
+                pass # Just append
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
@@ -658,7 +663,15 @@ class Creature(object):
         if (position[0] >= self.position[0] - radius[0] + offsetz) and (position[0] <= self.position[0] + radius[0]+1 + offsetz) and (position[1] >= self.position[1] - radius[1] + offsetz) and (position[1] <= self.position[1] + radius[1]+1 + offsetz):
             return True
         return False
-    
+
+    def canTarget(self, position, radius=(8,6)):
+        if self.position[2] != position[2]: # We are on ground level and we can't see underground
+            return False
+        
+        if (position[0] >= self.position[0] - radius[0]) and (position[0] <= self.position[0] + radius[0]+1) and (position[1] >= self.position[1] - radius[1]) and (position[1] <= self.position[1] + radius[1]+1):
+            return True
+        return False
+        
     def distanceStepsTo(self, position):
         return abs(self.position[0]-position[0])+abs(self.position[1]-position[1])
         

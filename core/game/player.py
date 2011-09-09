@@ -1101,6 +1101,8 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
         
     def onDeath(self):
+        self.sendReloginWindow()
+        
         tile = game.map.getTile(self.position)
 
         corpse = game.item.Item(3058)
@@ -1116,8 +1118,13 @@ class TibiaPlayer(Creature):
             tile.removeCreature(self)
         except:
             pass
-        game.engine.updateTile(self.position, tile)
-        self.sendReloginWindow()
+        for spectator in game.engine.getSpectators(self.position, ignore=[self]):
+            stream = spectator.packet(0x69)
+            stream.position(pos)
+            stream.tileDescription(tile)
+            stream.uint8(0x00)
+            stream.uint8(0xFF)
+            stream.send(spectator)
         
     def onSpawn(self):
         if not self.data["health"]:

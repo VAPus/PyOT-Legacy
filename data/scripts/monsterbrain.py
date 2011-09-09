@@ -65,22 +65,25 @@ def defaultBrainFeature(self, monster):
             spectators = game.engine.getPlayers(monster.position) # Get all creaturse in range
             if spectators: # If we find any
                 target = None
-                
-                # Only run this code if there is more then one in range
-                if len(spectators) > 1: 
-                    bestDist = 0
-                    for x in spectators:
+
+                bestDist = 127
+                for player in spectators:
+                    # Can we target him, same floor
+                    if monster.canTarget(player.position):
                         # Calc x+y distance, diagonal is honored too.
-                        dist = monster.distanceStepsTo(x.position) 
+                        dist = monster.distanceStepsTo(player.position) 
+                        print "%s vs %s" % (dist, bestDist)
                         if dist < bestDist:
                             # If it's smaller then the previous value
                             bestDist = dist
-                            target = x
+                            target = player
+                    else:
+                        print "%s vs %s" % (str(monster.position), str(player.position))
+                if target:
+                    monster.target = target
                 else:
-                    # Target the singel spectator
-                    target = spectators.pop()
-                monster.target = target
-                
+                    return
+                print "Test"
                 # Call the scripts
                 monster.base.onFollow(monster.target)
                 

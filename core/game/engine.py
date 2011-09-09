@@ -137,7 +137,7 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
 
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
-
+    print pattern
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
     elif callback:

@@ -144,7 +144,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             import game.scriptsystem
             from game.map import removeCreature
             self.player.client = None
-            self.player.knownCreatures.remove(self.player.cid)
+            self.player.knownCreatures = []
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
         

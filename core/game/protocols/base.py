@@ -13,7 +13,6 @@ import game.resource
 
 # Probably not a good place, but
 from game.creature import Creature
-from game.player import Player
 
 class BasePacket(TibiaPacket):
     protocolEnums = {}
