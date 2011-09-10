@@ -14,7 +14,8 @@ def startQuest(creature, **k):
     return False
 
 def endQuest(creature, **k):
-    creature.finishQuest("The hello world")
+    if creature.isPlayer() and creature.questStarted("The hello world") and not creature.questCompleted("The hello world"):
+        creature.finishQuest("The hello world")
     
 scriptsystem.reg("talkaction", "begin quest", startQuest)
 scriptsystem.reg("talkaction", "hello world", endQuest)

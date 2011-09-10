@@ -71,7 +71,7 @@ class Shop(ClassAction):
         pass # TODO
     
     def handleOffers(self, npc, player):
-        _sayParams = {"playerName":creature.name()}
+        _sayParams = {"playerName":player.name()}
         
         if self.on.offers:
             npc.sayTo(player, self.on.shopTrade % _sayParams)
