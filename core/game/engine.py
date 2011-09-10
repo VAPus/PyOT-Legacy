@@ -87,14 +87,35 @@ def loader(timer):
 
 # Useful for windows
 def safeTime():
+    """Gives the time rounded so it can be divided by 60. This gives the same time on both unix systems and Windows.
+    
+    :rtype: float time.
+    :returns: Time rounded so it can be divided by 60.
+    
+    """
     return math.ceil(time.time() * 60) / 60
 
 def safeCallLater(sec, *args):
+    """This is a thread safe and time safe call for reactor.callLater. Passes args to callLater.
+    
+    :param sec: The number of seconds to delay the calls.
+    :type sec: float.
+    
+    """
     reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
 
 
 # The action decorator :)
 def action(forced=False, delay=0):
+    """Action decorator.
+    
+    :param forced: Supress any other action.
+    :type forced: bool.
+    :param delay: Delay the start this action.
+    :type delay: float (seconds).
+    
+    """
+    
     def decor(f):
         def new_f(creature, *args, **argw):
             if creature.action and forced:
@@ -111,6 +132,13 @@ def action(forced=False, delay=0):
     return decor
 
 def loopInThread(time):
+    """Loop function in a thread decorator.
+    
+    :param time: Run the function every ``time`` seconds.
+    :type time: float (seconds).
+
+    """
+    
     def decor(f):
         def new_f(*args, **kwargs):
             ret = f(*args, **kwargs)
@@ -124,7 +152,18 @@ def loopInThread(time):
     return decor
 # First order of buisness, the autoWalker
 @action(True)
-def autoWalkCreature(creature, walkPatterns, callback=None): 
+def autoWalkCreature(creature, walkPatterns, callback=None):
+    """Autowalk the creature using the walk patterns. This binds the action slot.
+    
+    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+    :type creature: :class:`game.creature.Creature`.
+    :param walkPatterns: List of steps to take.
+    :type walkPatterns: deque.
+    :param callback: Call this function when the creature reach it's destination.
+    :type callback: function.
+    
+    """
+    
     try:
         creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
     except:
@@ -135,7 +174,25 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
         
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
-
+    """Autowalk the creature using the walk patterns. This binds the action slot.
+    
+    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+    :type creature: :class:`game.creature.Creature`.
+    
+    :param to: Destination position.
+    :type to: list or tuple.
+    
+    :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
+    :type skipFields: int.
+    
+    :param diagonal: Allow diagonal walking?
+    :type diagonal: bool.
+    
+    :param callback: Call this function when the creature reach it's destination.
+    :type callback: function.
+    
+    """
+    
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
     print pattern
     if pattern:
@@ -166,6 +223,22 @@ def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
 
 # Calculate walk patterns
 def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
+    """Calculate the route from ``fromPos`` to ``to``.
+    
+    :param fromPos: Start position.
+    :type fromPos: list or tuple.
+    
+    :param to: Destination position.
+    :type to: list or tuple.
+    
+    :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
+    :type skipFields: int or None.
+    
+    :param diagonal: Allow diagonal walking?
+    :type diagonal: bool.
+    
+    """
+    
     pattern = []
     currPos = fromPos
     # First diagonal if possible
@@ -214,6 +287,19 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
 
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=tuple()):
+    """Gives you the spectators (:class:`service.gameserver.GameProtocol`) in the area.
+    
+    :param pos: Position of the center point.
+    :type pos: list or tuple.
+    :param radius: Radius from center point to check for players.
+    :type radius: list or tuple.
+    :param ignore: known spectators to ignore in the set.
+    :type ignore: list, tuple or set.
+    
+    :rtype: set of :class:`service.gameserver.GameProtocol`
+    
+    """
+    
     players = set()
     try:       
         for player in game.player.allPlayersObject:
@@ -228,6 +314,19 @@ getSpectators = bindconstant._make_constants(getSpectators)
 
     
 def getCreatures(pos, radius=(8,6), ignore=tuple()):
+    """Gives you the creatures in the area.
+    
+    :param pos: Position of the center point.
+    :type pos: list or tuple.
+    :param radius: Radius from center point to check for creatures.
+    :type radius: list or tuple.
+    :param ignore: known creatures to ignore in the set.
+    :type ignore: list, tuple or set.
+    
+    :rtype: set of :class:`game.creature.Creature` compatible objects
+    
+    """
+    
     creatures = set()
                 
     for creature in game.creature.allCreaturesObject:
@@ -238,6 +337,19 @@ def getCreatures(pos, radius=(8,6), ignore=tuple()):
 getCreatures = bindconstant._make_constants(getCreatures)
 
 def getPlayers(pos, radius=(8,6), ignore=tuple()):
+    """Gives you the players in the area.
+    
+    :param pos: Position of the center point.
+    :type pos: list or tuple.
+    :param radius: Radius from center point to check for players.
+    :type radius: list or tuple.
+    :param ignore: known players to ignore in the set.
+    :type ignore: list, tuple or set.
+    
+    :rtype: set of :class:`game.player.Player` compatible objects
+    
+    """
+    
     players = set()
     
     try:            
@@ -253,6 +365,22 @@ getPlayers = bindconstant._make_constants(getPlayers)
 
 # Calculate new position by direction
 def positionInDirection(nposition, direction, amount=1):
+    """Gives the position in a direction
+    
+    :param nposition: Current position.
+    :type nposition: list.
+    
+    :param direction: The direction.
+    :type direction: int (range 0-7).
+    
+    :param amount: Amount of steps in that direction.
+    :type amount: int.
+    
+    :rtype: list.
+    :returns: New position.
+    
+    """
+    
     position = nposition[:] # Important not to remove the : here, we don't want a reference!
     if direction == 0:
         position[1] = nposition[1] - amount
@@ -276,6 +404,16 @@ def positionInDirection(nposition, direction, amount=1):
         position[0] = nposition[0] + amount
     return position
 def updateTile(pos, tile):
+    """ Send the update to a tile to all who can see the position.
+    *Note that this function does NOT replace the known tile in :mod:`game.map`'s knownMap array.*
+    
+    :param pos: Position of tile.
+    :type pos: list or tuple.
+    :param tile: The tile that replace the currently known tile at the position.
+    :type tile: Tile of type :class:`game.map.Tile`.
+    
+    """
+    
     for spectator in getSpectators(pos):
         stream = spectator.packet(0x69)
         stream.position(pos)
@@ -284,21 +422,50 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo, pos, stack=None):
+def transformItem(item, transformTo, pos, stackPos=None):
+    """ Transform item to a new Id.
+    
+    :param item: The item you want to transform.
+    :type item: Object of type :class:`game.item.Item`.
+    
+    :param transformTo: New itemID. Leave to 0 or None to delete the item.
+    :type transformTo: int or None.
+    
+    :param pos: Position of the item.
+    :type pos: List of tuple.
+    
+    :param stackPos: StackPos (if it's known, otherwise it's autodetected internally).
+    :type stackPos: int.
+    
+    """
+    item.itemId = transformTo
+    if not stackPos:
+        stackPos = game.map.getTile(pos).findStackpos(item)
+        
     for spectator in getSpectators(pos):
         stream = spectator.packet()
-        item.itemId = transformTo
-        if not stack:
-            stack = game.map.getTile(pos).findStackpos(item)
-            
+
         if transformTo:
-            stream.updateTileItem(pos, stack, item)
+            stream.updateTileItem(pos, stackPos, item)
         else:
-            stream.removeTileItem(pos, stack)
+            stream.removeTileItem(pos, stackPos)
             game.map.getTile(pos).removeItem(item)
         stream.send(spectator)
 
 def placeItem(item, position):
+    """ Place a item to a position
+    
+    :param item: The item to place.
+    :type item: Object of type :class:`game.item.Item`.
+    
+    :param position: The position to place the item on.
+    :type position: list or tuple.
+    
+    :rtype: int.
+    :returns: Stack position of item.
+    
+    """
+    
     stackpos = game.map.getTile(position).placeItem(item)
     for spectator in getSpectators(position):
         stream = spectator.packet()
@@ -308,6 +475,13 @@ def placeItem(item, position):
     
 # The development debug system
 def explainPacket(packet):
+    """ Explains the packet structure in hex
+    
+    :param packet: Packet to explain.
+    :type packet: subclass of :class:`packet.TibiaPacket`.
+    
+    """
+    
     currPos = packet.pos
     packet.pos = 0
     log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
@@ -336,6 +510,8 @@ def ignore(result):
 
 # Save system, async :)
 def saveAll():
+    """Save all players and all global variables."""
+    
     # Build query
     try:
         def callback(result):
@@ -363,6 +539,11 @@ def saveAll():
         
 # Time stuff
 def getTibiaTime():
+    """ Return the Time inside the game.
+    
+    :rtype: tuple (hours, minutes, seconds).
+    """
+    
     seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) / config.tibiaDayLength)
     hours = int(float(seconds / 3600))
     seconds = seconds - (hours * 3600)
@@ -372,6 +553,11 @@ def getTibiaTime():
     return (hours, minutes, seconds)
     
 def getLightLevel():
+    """ Get the light level relevant to the time of the day.
+    
+    :rtype: int.
+    """
+    
     tibiaTime = getTibiaTime()
     light = 0
     if tibiaTime[0] >= config.tibiaDayFullLightStart and tibiaTime[0] < config.tibiaDayFullLightEnds:
@@ -388,6 +574,11 @@ def getLightLevel():
             return config.tibiaFullDayLight - lightChange
         
 def checkLightLevel(lightValue=[None]):
+    """ Check if the lightlevel have changed and send updates to the players.
+    **NEVER call with parameters!**
+    
+    """
+    
     l = getLightLevel()
     if lightValue[0] != l:
         for c in getSpectators((0x7FFF,0x7FFF,7), (100000, 100000)):
@@ -400,6 +591,12 @@ def checkLightLevel(lightValue=[None]):
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok
 @inlineCallbacks
 def getPlayerIDByName(name):
+    """ Returns the playerID based on the name.
+    
+    :rtype: int or None.
+    
+    """
+    
     try:
         returnValue(game.player.allPlayers[name].data["id"])
     except:
@@ -410,6 +607,12 @@ def getPlayerIDByName(name):
             defer.returnValue(None)
 
 def townNameToId(name):
+    """ Return the townID based on town name.
+    
+    :rtype: int or None.
+    
+    """
+    
     import data.map.info as i
     for id in i.towns:
         if i.towns[id][0] == name:
@@ -417,6 +620,21 @@ def townNameToId(name):
 
 @inlineCallbacks
 def placeInDepot(name, depotId, items):
+    """ Place items into the depotId of player with a name. This can be used even if the player is offline.
+    
+    :param name: Player name.
+    :type name: str.
+    
+    :param depotId: DepotID to place items into.
+    :type depotId: int or str.
+    
+    :param items: Either one Item or a list of items to place into the depot.
+    :type items: Either one object of type :class:`game.item.Item`, or a list of objects.
+    
+    :rtype: bool.
+    :returns: True on success, False otherwise.
+    
+    """
     if not type(items) == list:
         items = [items]
         
