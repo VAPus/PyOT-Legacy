@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # PyOT documentation build configuration file, created by
-# sphinx-quickstart on Sat Sep 10 05:44:52 2011.
+# sphinx-quickstart on Sat Sep 10 06:06:50 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
 #
@@ -17,6 +17,8 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(1, os.path.abspath('../core'))
 
 # -- General configuration -----------------------------------------------------
 
@@ -25,7 +27,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.jsmath', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_sphinx_templates']
@@ -64,7 +66,7 @@ release = '0.1-dev'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_sphinx_build']
+exclude_patterns = ['data']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
