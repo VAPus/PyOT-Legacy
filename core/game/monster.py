@@ -481,11 +481,6 @@ class MonsterBrain(object):
                 monster.say(text)
                 
     def walkRandomStep(self, monster, badDir=None):
-        # Ignore autowalking when there is noone in range
-        """spectators = engine.getSpectators(monster.position)
-        if not spectators:
-            return False"""
-        
         # How far are we (x,y) from our spawn point?
         xFrom = monster.position[0]-monster.spawnPosition[0]
         yFrom = monster.position[1]-monster.spawnPosition[1]
