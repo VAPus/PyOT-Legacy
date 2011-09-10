@@ -272,7 +272,7 @@ class Map(object):
                     output = "m=None"
 
                 if extras:
-                    output += '\nl="%s"' % ';'.join(extras)
+                    output += '\ndef l():%s' % ';'.join(extras)
                     
                 if output != "m=None":
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:

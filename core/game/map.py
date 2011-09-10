@@ -256,8 +256,6 @@ def loadTiles(x,y, walk=True):
     
     return load(int(x / data.map.info.sectorSize[0]), int(y / data.map.info.sectorSize[1]))
 
-def __loadOp(code): exec(code)
-
 def load(sectorX, sectorY):
     sectorSum = (sectorX * 32768) + sectorY
     
@@ -289,7 +287,7 @@ def load(sectorX, sectorY):
     knownMap[sectorSum] = m          
         
     if l:    
-        threads.deferToThread(__loadOp, l)
+        threads.deferToThread(l)
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
