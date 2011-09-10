@@ -1,37 +1,71 @@
+### Light ###
+#: No light.
 LIGHTLEVEL_NONE = 0
+
+#: Light with a touch.
 LIGHTLEVEL_TORCH = 7
+
+#: Full light within a area.
 LIGHTLEVEL_FULL = 27
+
+#: Light over the entier world.
 LIGHTLEVEL_WORLD = 255
 
+### Light colors ###
+#: Dark light.
 LIGHTCOLOR_NONE = 0
+
+#: Default, orange light.
 LIGHTCOLOR_DEFAULT = 206 # Orange
+
+#: White light.
 LIGHTCOLOR_WHITE = 215
 
+### Slots ###
 SLOT_WHEREEVER = 0
 SLOT_FIRST = 1
+#: Inventory slot for the head.
 SLOT_HEAD = SLOT_FIRST
+#: Inventory slot for the necklace.
 SLOT_NECKLACE = 2
+#: Inventory slot for the backpack.
 SLOT_BACKPACK = 3
+#: Inventory slot for the armor.
 SLOT_ARMOR = 4
+#: Inventory slot for the right hand.
 SLOT_RIGHT = 6
+#: Inventory slot for the left hand.
 SLOT_LEFT = 5
+#: Inventory slot for legs.
 SLOT_LEGS = 7
+#: Inventory slot for feets.
 SLOT_FEET = 8
+#: Inventory slot for the rings.
 SLOT_RING = 9
+#: Inventory slot for the ammonition.
 SLOT_AMMO = 10
+
 SLOT_DEPOT = 11
+
 SLOT_LAST = SLOT_DEPOT
 SLOT_HAND = 12
 SLOT_TWO_HAND = 12
 
 # Skills
 SKILL_FIRST = 0
+#: Skill ID for fisting.
 SKILL_FIST = SKILL_FIRST
+#: Skill ID for clubs.
 SKILL_CLUB = 1
+#: Skill ID for swords.
 SKILL_SWORD = 2
+#: Skill ID for axes.
 SKILL_AXE = 3
+#: Skill ID for distance weapons.
 SKILL_DISTANCE = 4
+#: Skill ID for shielding.
 SKILL_SHIELD = 5
+#: Skill ID for fishing.
 SKILL_FISH = 6
 SKILL_LAST = SKILL_FISH
 
