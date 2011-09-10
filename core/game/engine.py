@@ -442,7 +442,8 @@ def transformItem(item, transformTo, pos, stackPos=None):
     item.itemId = transformTo
     if not stackPos:
         stackPos = game.map.getTile(pos).findStackpos(item)
-        
+    game.map.getTile(pos).removeItem(item)
+    
     for spectator in getSpectators(pos):
         stream = spectator.packet()
 
@@ -450,9 +451,49 @@ def transformItem(item, transformTo, pos, stackPos=None):
             stream.updateTileItem(pos, stackPos, item)
         else:
             stream.removeTileItem(pos, stackPos)
-            game.map.getTile(pos).removeItem(item)
+            
         stream.send(spectator)
 
+def teleportItem(item, fromPos, toPos, fromStackPos=None):
+    """ "teleport" a item from ``fromPos`` to ``toPos``
+    
+    :param item: The item you want to transform.
+    :type item: :class:`core.game.item.Item`
+    
+    :param fromPos: From this position
+    :type fromPos: :func:`tuple` or :func:`list`
+    
+    :param toPos: To this position
+    :type toPos: :func:`tuple` or :func:`list`
+    
+    :param fromStackPos: Stack`position (if it's known, otherwise it's autodetected internally).
+    :type fromStackPos: :func:`int`
+    
+    :rtype: :func:`int`
+    :returns: New stack position
+    
+    
+    """
+    if fromPos[0] != 0xFFFF:
+        tile = game.map.getTile(fromPos)
+        if not fromStackPos:
+            fromStackPos = tile.findStackpos(item)
+        tile.removeItem(item)
+        for spectator in getSpectators(fromPos):
+            stream = spectator.packet()
+            stream.removeTileItem(fromPos, fromStackPos)
+            stream.send(spectator)
+    print toPos        
+    newTile = game.map.getTile(toPos)
+    toStackPos = newTile.placeItem(item)
+        
+    for spectator in getSpectators(toPos):
+        stream = spectator.packet()
+        stream.addTileItem(toPos, toStackPos, item)
+        stream.send(spectator)
+        
+    return toStackPos
+        
 def placeItem(item, position):
     """ Place a item to a position
     

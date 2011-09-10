@@ -51,7 +51,47 @@ def floorchange(creature, thing, position, **k):
             
         elif destThing.floorchange == "east":
             creature.move(3, level=1)
+
+def itemFloorChange(thing, position, onPosition, onThing, **k):
+    newPos = position[:]
+    if thing.floorchange == "north":
+        newPos[1] -= 1
+        newPos[2] -= 1
+        
+    elif thing.floorchange == "south":
+        newPos[1] += 1
+        newPos[2] -= 1
+        
+    elif thing.floorchange == "east":
+        newPos[0] += 1
+        newPos[2] -= 1
+        
+    elif thing.floorchange == "west":
+        newPos[0] -= 1
+        newPos[2] -= 1
+        
+    elif thing.floorchange == "down":  
+        # This is a reverse direction, get the tile under it, then all four sides checked depending on it
+        destTile = game.map.getTile([position[0], position[1], position[2]+1])
+        destThing = destTile.getThing(1)
+        newPos[2] += 1
+        # Note: It's the reverse direction
+        if destThing.floorchange == "north":
+            newPos[1] += 1
             
+        elif destThing.floorchange == "south":
+            newPos[1] -= 1
+            
+        elif destThing.floorchange == "west":
+            newPos[0] += 1
+            
+        elif destThing.floorchange == "east":
+            newPos[1] -= 1
+            
+    game.engine.teleportItem(onThing, onPosition, newPos)
+    
+    return False
+    
 def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]-1])
@@ -86,6 +126,7 @@ def teleportDirection(creature, thing, position, **k):
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
 scriptsystem.get("walkOn").reg(stairs, floorchange)
+scriptsystem.reg('useWith', stairs, itemFloorChange)
 
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398, 459
