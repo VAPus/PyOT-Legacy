@@ -496,7 +496,7 @@ class BaseProtocol(object):
         elif packetType == 0xD3: # Set outfit
             self.handleSetOutfit(player,packet)
         
-        elif packetType == 0xD4 and config.config.allowMounts: # Set mount status
+        elif packetType == 0xD4 and config.allowMounts: # Set mount status
             self.handleSetMounted(player,packet)
             
         elif packetType == 0xBE: # Stop action
