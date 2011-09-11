@@ -9,3 +9,12 @@ for mod in glob.glob("data/scripts/*.py"):
         continue
 
     __all__.append(modm)
+
+#Our own kind of scriptsystem use this
+paths = []
+for mod in glob.glob("data/scripts/*/__init__.py"):
+    modm = mod.split(os.sep)[-2]
+    if modm == "." or modm == "..":
+        continue
+
+    paths.append(modm)
