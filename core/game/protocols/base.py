@@ -693,10 +693,10 @@ class BaseProtocol(object):
                     process = [0]
                     
                     _items_ = thisTile.getItems()
-                    count = len(_items_)    
+                    count = len(_items_) * 2
                     for item in _items_:
-                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onId=newItem.itemId, onStackpos=fromStackPos, onThing=newItem)
-
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onStackpos=None, onThing=newItem)
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, stackpos=None, onPosition=toPosition, onStackpos=None, onThing=item)
                     if process[0] == count:
                         print "Said ", process[0]
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
@@ -855,7 +855,6 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         
         onPosition = packet.position()
-        onId = packet.uint16()
         onStack = packet.uint8()
         
         thing = player.findItem(position, stackpos)
@@ -863,7 +862,8 @@ class BaseProtocol(object):
         print clientId
         print onId
         if thing:
-            game.scriptsystem.get('useWith').run(thing, player, None, position=position, stackpos=stackpos, onPosition=onPosition, onId=onId, onStackpos=onStack, onThing=onThing)
+            end = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
+            game.scriptsystem.get('useWith').run(thing, player, end, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
                 
     def handleAttack(self, player, packet):
         cid = packet.uint32()
