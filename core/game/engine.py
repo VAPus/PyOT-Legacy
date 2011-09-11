@@ -475,15 +475,18 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     
     """
     if fromPos[0] != 0xFFFF:
-        tile = game.map.getTile(fromPos)
-        if not fromStackPos:
-            fromStackPos = tile.findStackpos(item)
-        tile.removeItem(item)
-        for spectator in getSpectators(fromPos):
-            stream = spectator.packet()
-            stream.removeTileItem(fromPos, fromStackPos)
-            stream.send(spectator)
-    print toPos        
+        try:
+            tile = game.map.getTile(fromPos)
+            if not fromStackPos:
+                fromStackPos = tile.findStackpos(item)
+            tile.removeItem(item)
+            for spectator in getSpectators(fromPos):
+                stream = spectator.packet()
+                stream.removeTileItem(fromPos, fromStackPos)
+                stream.send(spectator)
+        except:
+            pass
+              
     newTile = game.map.getTile(toPos)
     toStackPos = newTile.placeItem(item)
         
