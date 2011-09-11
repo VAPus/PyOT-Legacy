@@ -153,8 +153,12 @@ class Creature(object):
         
     @inlineCallbacks
     def __move(self, d, direction, spectators=None, level=0):
-        if not level and not self.actionLock(self.__move, d, direction, spectators, level):
+        if not self.alive or not level and not self.actionLock(self.__move, d, direction, spectators, level):
             return
+            
+        if not self.alive or not self.data["health"]:
+            return
+            
         import data.map.info
         
         
