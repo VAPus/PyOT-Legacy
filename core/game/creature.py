@@ -149,12 +149,12 @@ class Creature(object):
     
     def move(self, direction, spectators=None, level=0):
         d = Deferred()
-        game.engine.safeCallLater(0, self.__move, d, direction, spectators, level)
+        game.engine.safeCallLater(0, self._move, d, direction, spectators, level)
         return d
         
     @inlineCallbacks
-    def __move(self, d, direction, spectators=None, level=0):
-        if not self.alive or not level and not self.actionLock(self.__move, d, direction, spectators, level):
+    def _move(self, d, direction, spectators=None, level=0):
+        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level):
             return
             
         if not self.alive or not self.data["health"]:
@@ -443,7 +443,21 @@ class Creature(object):
         elif type == game.enum.DROWN:
             textColor = game.enum.COLOR_LIGHTBLUE
             magicEffect = game.enum.EFFECT_ICEATTACK
+        
+        dmg = [dmg]
+        textColor = [textColor]
+        magicEffect = [magicEffect]
+        type = [type]
+        
+        process = game.scriptsystem.get("hit").runSync(self, self.lastDamager, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        if process == False:
+            return
             
+        dmg = dmg[0]
+        textColor = textColor[0]
+        magicEffect = magicEffect[0]
+        type = type[0]
+        
         self.magicEffect(self.position, magicEffect) 
         
         tile = game.map.getTile(self.position)

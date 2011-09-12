@@ -1,7 +1,7 @@
 """A collection of functions that almost every other component requires"""
 
 from twisted.internet import reactor, threads
-from twisted.internet.defer import inlineCallbacks, returnValue
+from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 from collections import deque
 from twisted.python import log
 import time
@@ -79,7 +79,8 @@ def loader(timer):
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
         reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         
-            
+        game.scriptsystem.get("startup").runSync(None)
+        
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         
@@ -216,10 +217,12 @@ def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
             else:
                 pass #creature2.cancelWalk(walkPatterns[0])
-                
-    ret = creature.move(direction, level=level)
+    
+    d = Deferred()
     if mcallback:
-        ret.addCallback(mcallback)
+        d.addCallback(mcallback)
+    creature._move(d, direction, level=level)
+    
     
 
 # Calculate walk patterns

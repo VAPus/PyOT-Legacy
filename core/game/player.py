@@ -1101,36 +1101,39 @@ class TibiaPlayer(Creature):
         stream.send(self.client)
         
     def onDeath(self):
-        self.sendReloginWindow()
         
+        self.sendReloginWindow()
+            
         tile = game.map.getTile(self.position)
 
         corpse = game.item.Item(3058)
-        corpse.decay(self.position)
-        splash = game.item.Item(game.enum.FULLSPLASH)
-        splash.fluidSource = game.enum.FLUID_BLOOD
-        splash.decay(self.position)
-        
-        tile.placeItem(corpse)
-        tile.placeItem(splash)
-        
-        try:
-            tile.removeCreature(self)
-        except:
-            pass
-        for spectator in game.engine.getSpectators(self.position, ignore=[self]):
-            stream = spectator.packet(0x69)
-            stream.position(pos)
-            stream.tileDescription(tile)
-            stream.uint8(0x00)
-            stream.uint8(0xFF)
-            stream.send(spectator)
+        game.scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
+        if not self.alive and self.data["health"] < 1:
+            corpse.decay(self.position)
+            splash = game.item.Item(game.enum.FULLSPLASH)
+            splash.fluidSource = game.enum.FLUID_BLOOD
+            splash.decay(self.position)
+            
+            tile.placeItem(corpse)
+            tile.placeItem(splash)
+            
+            try:
+                tile.removeCreature(self)
+            except:
+                pass
+            for spectator in game.engine.getSpectators(self.position, ignore=[self]):
+                stream = spectator.packet(0x69)
+                stream.position(pos)
+                stream.tileDescription(tile)
+                stream.uint8(0x00)
+                stream.uint8(0xFF)
+                stream.send(spectator)
         
     def onSpawn(self):
         if not self.data["health"]:
             self.data["health"] = self.data["healthmax"]
             self.data["mana"] = self.data["manamax"]
-            
+            game.scriptsystem.get("respawn").run(self)
             import data.map.info
             self.teleport(data.map.info.towns[self.data['town_id']][1])
 

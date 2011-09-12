@@ -2,7 +2,7 @@ from creature import Creature, CreatureBase, uniqueId
 import engine, map, scriptsystem
 from packet import TibiaPacket
 import copy, random, time
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 from twisted.python import log
 import enum
@@ -64,7 +64,7 @@ class Monster(Creature):
         # What, no match?
         return dmg
         
-    def onDeath(self):
+    def onDeath(self):            
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
@@ -130,7 +130,10 @@ class Monster(Creature):
                 if ret == None:
                     log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
                     break
-                
+
+        scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
+        if self.alive or self.data["health"] > 0:
+            return
         corpse.decay(self.position)
         splash = item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
@@ -289,8 +292,8 @@ class MonsterBase(CreatureBase):
                         stream.addTileCreature(position, stackpos, monster, player)
                         
                         stream.send(player.client)
-                    
-            self.brain.beginThink(monster) # begin the heavy thought process!
+            if engine.getPlayers(position):        
+                self.brain.beginThink(monster) # begin the heavy thought process!
             return monster
         
     def setHealth(self, health, healthmax=None):
@@ -523,10 +526,12 @@ class MonsterBrain(object):
                 if config.monsterNeverSkipWalks:
                     self.walkRandomStep(monster, badDir)
             
-            d = monster.move(step)
+            d = defer.Deferred()
             d.addCallback(success)
             
             d.addErrback(errback)
+            monster._move(d, step)
+
             return True
         return False
         

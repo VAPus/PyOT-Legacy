@@ -34,15 +34,16 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
 ============================
   Scriptsystem
 ============================
-* Add script events for death
-* Add script events for hit
-* Add script events for respawn
+* Add script events for death [Done, rev 521]
+* Add script events for hit [Done, rev 521]
+* Add script events for respawn [Done, rev 521]
 * Add script events for levelup
 * Add script events for leveldown
 * Add script events for channels
 * Add script events for receivemail
-* Add script events for serverstartup
-* Add script events for reload
+* Add script events for startup [Done, rev 521]
+* Add script events for reload [Done, rev 521]
+* Add script events for shutdown [Done, rev 521]
 
 ============================
   Scripts

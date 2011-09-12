@@ -18,20 +18,35 @@ class Scripts(object):
         self.scripts = []
         
     def reg(self, callback):
-        self.scripts.append(callback)
+        self.scripts.append(weakref.ref(callback, self.unregCallback))
         
     def unreg(self, callback):
-        self.scripts.remove(callback)
-
+        for ref in self.scripts:
+            if ref() == callback:
+                self.scripts.remove(ref)
+    
+    def unregCallback(self, callback):
+        for c in self.scripts:
+            if c == callback:
+                self.scripts.remove(c)
+                
     def run(self, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, creature, end, **kwargs)
+
+    def runSync(self, creature, end=None, **kwargs):
+        return self._run(creature, end, **kwargs)
         
     def _run(self, creature, end=None, **kwargs):
         ok = True
         for script in self.scripts:
-            ok = script(creature=creature, **kwargs)
-            if not (ok if ok is not None else True):
-               break
+            func = script()
+            if func:
+                ok = func(creature=creature, **kwargs)
+                if not (ok if ok is not None else True):
+                    break
+            else:
+                self.scripts.remove(script)
+                
         if end and (ok if ok is not None else True):
             end()
             
@@ -339,10 +354,21 @@ globalScripts["addMapItem"] = ThingScripts()
 globalScripts["lookAt"] = ThingScripts()
 globalScripts["playerSayTo"] = CreatureScripts()
 globalScripts["close"] = ThingScripts()
+globalScripts["hit"] = CreatureScripts()
+globalScripts["death"] = CreatureScripts()
+globalScripts["respawn"] = Scripts()
+globalScripts["reload"] = Scripts()
+globalScripts["startup"] = Scripts()
+globalScripts["shutdown"] = Scripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
+
+def run():
+    get('shutdown').runSync(None)
+    
+reactor.addSystemEventTrigger('before','shutdown',run)
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
 def handleModule(name):
@@ -373,6 +399,10 @@ def importer():
     
 
 def reimporter():
+    process = get("reload").runSync(None)
+    if process == False:
+        return
+        
     import game.spell
     game.spell.clear()
     

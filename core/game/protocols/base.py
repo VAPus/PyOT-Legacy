@@ -149,8 +149,8 @@ class BasePacket(TibiaPacket):
                                 return
                         player.knownCreatures.add(creature)
                         creature.knownBy.add(player)
-    
-                self.creature(creature, known, removeKnown)
+                    
+                    self.creature(creature, known, removeKnown)
                 if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
