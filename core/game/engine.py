@@ -520,7 +520,29 @@ def placeItem(item, position):
         stream.addTileItem(position, stackpos, item)
         stream.send(spectator)
     return stackpos
-    
+
+def relocate(fromPos, toPos):
+    tile = game.map.getTile(fromPos)
+    toPos = game.map.getTile(toPos)
+    items = []
+    for item in tile.getItems():
+        stackpos = toPos.placeItem(item)
+        items.append((item, tile.getSlot(item), stackpos))
+        
+    for item in items:    
+        tile.removeItem(item)
+        
+    for spectator in getSpectators(fromPos):
+        stream = spectator.packet()
+        for pair in items:
+            stream.removeTileItem(fromPos, pair[1])
+        stream.send(self.client)
+
+    for spectator in getSpectators(toPos):
+        stream = spectator.packet()
+        for pair in items:
+            stream.addTileItem(toPos, pair[2], pair[0])
+        stream.send(self.client)
 # The development debug system
 def explainPacket(packet):
     """ Explains the packet structure in hex
