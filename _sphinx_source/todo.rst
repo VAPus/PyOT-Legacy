@@ -18,6 +18,7 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
   Core
 ============================
 * Don't display/process errors for non-existing players (etc, after debug)
+* Don't display for monsters walking into things [Done?]
 
 ============================
   Protocols
