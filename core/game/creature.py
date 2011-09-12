@@ -199,6 +199,10 @@ class Creature(object):
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
+        val = yield game.scriptsystem.get("move").run(self)
+        if val == False:
+            return
+            
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
@@ -338,9 +342,21 @@ class Creature(object):
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
                     del item.teledest
 
+        
         if d.callback:
             d.callback((self, oldPosition, position))
+            
+        # Deal with appear and disappear. Ahh the power of sets :)
+        oldPosCreatures = game.engine.getCreatures(oldPosition)
+        newPosCreatures = game.engine.getCreatures(position)
+        disappearFrom = oldPosCreatures - newPosCreatures
+        appearTo = newPosCreatures - oldPosCreatures
+        for creature2 in disappearFrom:
+            game.scriptsystem.get('disappear').run(creature2, self)
 
+        for creature2 in appearTo:
+            game.scriptsystem.get('appear').run(creature2, self)
+            
     def magicEffect(self, pos, type):
         for spectator in getSpectators(pos):
             stream = spectator.packet()

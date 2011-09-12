@@ -35,6 +35,9 @@ class Scripts(object):
 
     def runSync(self, creature, end=None, **kwargs):
         return self._run(creature, end, **kwargs)
+
+    def runDefer(self, creature, end=None, **kwargs):
+        return threads.deferToThreadPool(reactor, scriptPool, self._run, creature, end, **kwargs)
         
     def _run(self, creature, end=None, **kwargs):
         ok = True
@@ -49,6 +52,8 @@ class Scripts(object):
                 
         if end and (ok if ok is not None else True):
             end()
+        else:
+            return ok
             
 class TriggerScripts(object):
     __slots__ = ('scripts')
@@ -111,7 +116,18 @@ class ThingScripts(object):
     def __init__(self):
         self.scripts = {}
         self.thingScripts = {}
-        
+
+    def haveScripts(self, id):
+        if type(id) in (list, tuple):
+            for i in id:
+                if i in self.scripts:
+                    return True
+                    
+        elif id in self.scripts or (type(id) not in (int, str) and id in self.thingScripts):
+            return True
+        else:
+            return False
+            
     def reg(self, id, callback, toid=None):
         if not toid:
             if type(id) in (tuple, list):
@@ -360,7 +376,9 @@ globalScripts["respawn"] = Scripts()
 globalScripts["reload"] = Scripts()
 globalScripts["startup"] = Scripts()
 globalScripts["shutdown"] = Scripts()
-
+globalScripts["move"] = Scripts()
+globalScripts["appear"] = CreatureScripts()
+globalScripts["disappear"] = CreatureScripts()
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
