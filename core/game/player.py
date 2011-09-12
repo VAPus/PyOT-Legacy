@@ -1621,6 +1621,6 @@ class TibiaPlayer(Creature):
             elif creature.data["health"] < 1:
                 dead.append(creature)
         try:
-            return dead.pop()
+            return self.removeKnown(dead.pop())
         except:
             return None
