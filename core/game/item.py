@@ -176,7 +176,7 @@ class Item(object):
                 return items[self.itemId]["name"]
     
     def description(self):
-        return "You see %s%s. %s" % (items[self.itemId]["article"]+" " if items[self.itemId]["article"] else "", items[self.itemId]["name"], items[self.itemId]["description"] if "description" in items[self.itemId] else "")
+        return "You see %s. %s" % (self.name(), items[self.itemId]["description"] if "description" in items[self.itemId] else "")
 
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:

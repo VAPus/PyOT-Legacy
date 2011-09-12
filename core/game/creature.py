@@ -561,7 +561,7 @@ class Creature(object):
         oldPosition = self.position[:]
         
         newTile = getTile(position)
-        
+        oldPosCreatures = set()
         if not newTile or newTile.things[0].solid:
             raise game.errors.SolidTile()
 
@@ -572,6 +572,7 @@ class Creature(object):
                 stream.removeTileItem(oldPosition, oldStackpos)
                 stream.magicEffect(oldPosition, 0x02)
                 stream.send(spectator)
+            oldPosCreatures = game.engine.getCreatures(oldPosition)
         except:
             pass # Just append creature
         
@@ -592,7 +593,15 @@ class Creature(object):
             stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
             #stream.magicEffect(position, 0x02)
             stream.send(self.client)
-            
+        
+        newPosCreatures = game.engine.getCreatures(position)
+        disappearFrom = oldPosCreatures - newPosCreatures
+        appearTo = newPosCreatures - oldPosCreatures
+        for creature2 in disappearFrom:
+            game.scriptsystem.get('disappear').run(creature2, self)
+
+        for creature2 in appearTo:
+            game.scriptsystem.get('appear').run(creature2, self)    
          
         
         for spectator in getSpectators(position, ignore=(self,)):

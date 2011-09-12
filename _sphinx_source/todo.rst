@@ -44,6 +44,9 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
 * Add script events for startup [Done, rev 521]
 * Add script events for reload [Done, rev 521]
 * Add script events for shutdown [Done, rev 521]
+* Add script events for move [Done, rev 522]
+* Add script events for appear [Done, rev 522]
+* Add script events for disappear [Done, rev 522]
 
 ============================
   Scripts

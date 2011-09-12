@@ -292,6 +292,7 @@ class MonsterBase(CreatureBase):
                         stream.addTileCreature(position, stackpos, monster, player)
                         
                         stream.send(player.client)
+
             if engine.getPlayers(position):        
                 self.brain.beginThink(monster) # begin the heavy thought process!
             return monster
@@ -463,7 +464,7 @@ class MonsterBrain(object):
                     return ret
                     
         # Are anyone watching?
-        if check and not engine.getSpectators(monster.position, (11, 9)):
+        if check and not engine.getSpectators(monster.position, (9, 7)):
             monster.noBrain = True
             return False
         
