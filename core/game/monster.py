@@ -217,7 +217,7 @@ class MonsterBase(CreatureBase):
         else:
             if place:
                 tile = map.getTile(position)
-                if tile.creatures():
+                if tile.creatures() and config.tryToSpawnCreaturesNextToEachother:
                     ok = False
                     for testx in (-1,0,1):
                         position[0] += testx
@@ -253,13 +253,16 @@ class MonsterBase(CreatureBase):
                     if not ok:
                         log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
-                else:
+                elif not tile.creatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
                     try:
                         monster = Monster(self, position, None)
                         stackpos = tile.placeCreature(monster)
                     except:
                         log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
+                else:
+                    log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                    return
                         
             else:
                 monster = Monster(self, position, None)
@@ -281,7 +284,7 @@ class MonsterBase(CreatureBase):
 
             if place:
                 for player in engine.getPlayers(position):
-                    if player.client and not monster.cid in player.knownCreatures:
+                    if player.client and not monster in player.knownCreatures and player.canSee(monster.position):
                         stream = player.packet()
                         stream.addTileCreature(position, stackpos, monster, player)
                         

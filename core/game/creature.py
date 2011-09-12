@@ -82,6 +82,7 @@ class Creature(object):
         self.shield = 0
         self.emblem = 0
         self.skull = 0
+        self.knownBy = set()
         
         # We are trackable
         allCreatures[self.cid] = self

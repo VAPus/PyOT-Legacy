@@ -15,6 +15,7 @@ def vertify():
     return True
     
 class Packet(base.BasePacket):
+    maxKnownCreatures = 250
     protocolEnums = {}
     protocolEnums["MSG_NONE"] = 0
     protocolEnums["MSG_SPEAK_SAY"] = 0x01

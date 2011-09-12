@@ -37,7 +37,7 @@ class TibiaPlayer(Creature):
         self.modes = [0,0,0]
         self.gender = 0
         self.base = anyPlayer
-        self.knownCreatures = []
+        self.knownCreatures = set()
         self.openContainers = []
         self.doingSoulGain = False
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
@@ -1596,3 +1596,31 @@ class TibiaPlayer(Creature):
                 return True
             except:
                 return False    
+    # Exit
+    def exit(self, message):
+        stream = self.packet()
+        stream.exit(message)
+        stream.send(self.client)
+        
+    # Cleanup the knownCreatures
+    def removeKnown(self, creature):
+        cid = 0
+        try:
+            self.knownCreatures.remove(creature)
+            creature.knownBy(self)
+            cid = creature.cid
+        except:
+            pass
+        return cid
+        
+    def checkRemoveKnown(self):
+        dead = []
+        for creature in self.knownCreatures:
+            if not self.canSee(creature.position, radius=(16,16)):
+                return self.removeKnown(creature)
+            elif creature.data["health"] < 1:
+                dead.append(creature)
+        try:
+            return dead.pop()
+        except:
+            return None

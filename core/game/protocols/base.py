@@ -15,6 +15,7 @@ import game.resource
 from game.creature import Creature
 
 class BasePacket(TibiaPacket):
+    maxKnownCreatures = 1300
     protocolEnums = {}
     """protocolEnums["MSG_NONE"] = 0
     protocolEnums["MSG_SPEAK_SAY"] = 0x01
@@ -136,19 +137,30 @@ class BasePacket(TibiaPacket):
                     continue
                 
                 known = False
+                removeKnown = 0
                 if player:
-                    known = creature.cid in player.knownCreatures
+                    known = creature in player.knownCreatures
                     
                     if not known:
-                        player.knownCreatures.append(creature.cid)
+                        if len(player.knownCreatures) > self.maxKnownCreatures:
+                            removeKnown = player.checkRemoveKnown()
+                            if not removeKnown:
+                                player.exit("Too many creatures in known list. Please relogin")
+                                return
+                        player.knownCreatures.add(creature)
+                        creature.knownBy.add(player)
     
-                self.creature(creature, known)
+                self.creature(creature, known, removeKnown)
                 if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
 
             for item in tile.bottomItems():
                 self.item(item)
+
+    def exit(self, message):
+        self.uint8(0x14)
+        self.string(message) # Error message
 
     def outfit(self, look, addon=0, mount=0x00):
         
@@ -166,26 +178,26 @@ class BasePacket(TibiaPacket):
         else:
             self.uint16(0)
             
-    def creature(self, creature, known):
+    def creature(self, creature, known, removeKnown=0):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
         else:
             self.uint16(0x61)
-            self.uint32(0) # Remove known
+            self.uint32(removeKnown) # Remove known
             self.uint32(creature.clientId())
             self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(100) # Health %
+        self.uint8(round(creature.data["healthmax"] / creature.data["health"]) * 100) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
         self.uint8(0) # Light
         self.uint16(creature.speed) # Speed
-        self.uint8(0) # Skull
-        self.uint8(0) # Party/Shield
+        self.uint8(creature.skull) # Skull
+        self.uint8(creature.shield) # Party/Shield
         if not known:
-            self.uint8(0) # Emblem
+            self.uint8(creature.emblem) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def worldlight(self, level, color):
@@ -235,13 +247,20 @@ class BasePacket(TibiaPacket):
         self.position(pos)
         self.uint8(stackpos)
         known = False
-        if player and creature != player:
-            known = creature.cid in player.knownCreatures
-                
+        removeKnown = 0
+        if player:
+            known = creature in player.knownCreatures
+                    
             if not known:
-                player.knownCreatures.append(creature.cid)
- 
-        self.creature(creature, known)
+                if len(player.knownCreatures) > self.maxKnownCreatures:
+                    removeKnown = player.checkRemoveKnown()
+                    if not removeKnown:
+                        player.exit("Too many creatures in known list. Please relogin")
+                        return
+                player.knownCreatures.add(creature)
+                creature.knownBy.add(player)
+    
+        self.creature(creature, known, removeKnown)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)

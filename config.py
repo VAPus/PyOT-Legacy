@@ -89,6 +89,10 @@ playerWalkthrough = False # can also be modified in scripts
 creatureWalkthrough = False # can also be modified in scripts
 playerIsPushable = True
 
+# Spawn
+tryToSpawnCreaturesNextToEachother = True # Try the sides of a spawn field if there is a creature on top of them
+tryToSpawnCreatureRegardlessOfCreatures = False # Try to spawn creatures on top of eachother, this and previous option doesn't stack.
+
 # Mailboxes
 maxMails = 20
 maxMailsWithin = 600 # 10min, default on tibia as of 9.aug
