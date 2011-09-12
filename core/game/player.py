@@ -611,7 +611,25 @@ class TibiaPlayer(Creature):
 
     def getActiveSkill(self, skill):
         return self.skills[skill + game.enum.SKILL_LAST + 1]
+
+    def skillAttempt(self, skillType):
+        key = '__skill%d' % skillType
+        goalKey = '__skillGoal' % skillType
         
+        try:
+            self.modifyStorage(key, 1)
+            
+        except:
+            # Happends on new members using new weapons
+            self.setStorage(key, 1)
+        
+        skill = self.getStorage(key)
+        skillGoal = self.getStorage(goalKey)
+        if skill >= skillGoal:
+            self.addSkillLevel(skillType, 1)
+            self.setStorage(key, skillGoal - skill)
+            
+        self.refreshSkills() 
     # Soul
     def soulGain(self):
         def doSoulGain(gainOverX):
@@ -1378,8 +1396,8 @@ class TibiaPlayer(Creature):
         if len(splits) > 1:
             game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, part1, text=' '.join(splits[1:]))
         else:
-            part1()
-
+            part1()   
+            
     def attackTarget(self):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
@@ -1401,14 +1419,7 @@ class TibiaPlayer(Creature):
                     
                 if dmg != 0:
                     self.target.onHit(self, dmg, game.enum.MELEE)
-                    key = '__skill%d' % skillType
-                    try:
-                        self.modifyStorage(key, -1)
-                        self.refreshSkills()
-                    except:
-                        # Happends on new members using new weapons
-                        self.setStorage(key, 1)
-                        self.refreshSkills()
+                    self.skillAttempt(skillType)
                         
         if self.target:        
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
