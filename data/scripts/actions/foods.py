@@ -122,9 +122,9 @@ def onUse(creature, thing, position, stackpos, **a):
         creature.regenerate += duration
         if creature.regenerate > 1500:
             creature.regenerate = max(creature.regenerate, 1500)
-            creature.message("You are full.", game.enum.MSG_SPEAK_MONSTER_SAY)
+            creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
         else:
-            creature.message(sound, game.enum.MSG_SPEAK_MONSTER_SAY)
+            creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
     else:
         creature.regenerate = duration
         playerEat(creature)

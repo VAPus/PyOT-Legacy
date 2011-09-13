@@ -311,7 +311,7 @@ def _unloadCheck(sectorX, sectorY):
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
         
         # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if pos[0] < xMax and pos[0] > xMin and pos[1] < yMax and pos[1] > yMin:
+        if (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
             return False # He can see us, cancel the unloading
             
     return True

@@ -791,7 +791,7 @@ class BaseProtocol(object):
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
-                    game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda: game.engine.autoWalkCreature(creature, deque(walkPattern)))
+                    game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda x: game.engine.autoWalkCreature(creature, deque(walkPattern)))
             else:
                 game.engine.autoWalkCreatureTo(creature, toPosition)
             
