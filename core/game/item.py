@@ -6,6 +6,7 @@ import game.enum
 import bindconstant
 import config
 import game.engine
+import copy
 
 items = None
 reverseItems = None
@@ -105,14 +106,15 @@ class Item(object):
         else:
             self.params = None
 
-        if self.stackable:
+        if items[self.itemId]["a"] & 64 == 64:
             self.count = count
         
         else:     
             # Extend items such as containers, beds and doors
-            if "containerSize" in items[self.itemId]:
-                self.cont = Container(self.containerSize)
-                
+            try:
+                self.cont = Container(items[self.itemId]["containerSize"])
+            except:
+                pass
 
 
             
@@ -267,7 +269,15 @@ class Item(object):
             del self.params["opened"]
         except:
             pass
-            
+
+    def copy(self):
+        newItem = copy.deepcopy(self)
+        try:
+            del newItem.params["tileStacked"]
+        except:
+            pass
+        return newItem
+        
 def cid(itemid):
     try:
         return items[itemid]["cid"]

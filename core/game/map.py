@@ -212,6 +212,7 @@ def I(itemId, **kwargs):
             itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options={})
 
             if not itemX:
+                item.tileStacked = True
                 dummyItems[itemId] = item
             else:
                 return itemX

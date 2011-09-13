@@ -448,6 +448,9 @@ def transformItem(item, transformTo, pos, stackPos=None):
         stackPos = tile.findStackpos(item)
 
     tile.removeItem(item)
+    if item.tileStacked:
+        item = item.copy()
+        
     item.itemId = transformTo
     if transformTo:
         newStackpos = tile.placeItem(item)
