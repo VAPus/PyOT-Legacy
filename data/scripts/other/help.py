@@ -196,3 +196,26 @@ def spawnDepot(creature, text):
     game.engine.updateTile(position, tile)
     
 scriptsystem.reg('talkactionFirstWord', 'depot', spawnDepot)
+
+def trackScripts(creature, text):
+    import inspect
+    try:
+        text = int(text) # Support ids
+    except:
+        pass
+    
+    scripts = []
+    for script in scriptsystem.globalScripts:
+        if text in scriptsystem.globalScripts[script].scripts:
+            for _script in scriptsystem.globalScripts[script].scripts[text]:
+                scripts.append((script, inspect.getfile(_script())[2:]))
+                
+    t = ""
+    for script in scripts:
+        t += "'%s' event in: '%s'\n" % (script[0], script[1])
+    if t:
+        creature.windowMessage("===Scripts bound to '%s'===\n%s" % (text, t))
+    else:
+        creature.message("No scripts what so ever on %s" % text)
+
+scriptsystem.reg('talkactionFirstWord', 'track', trackScripts)
