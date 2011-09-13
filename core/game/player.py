@@ -833,7 +833,7 @@ class TibiaPlayer(Creature):
             stream.uint8(self.openContainers.index(container))
             
             stream.uint16(container.cid)
-            stream.string(container.name())
+            stream.string(container.rawName())
             
             stream.uint8(container.containerSize)
             stream.uint8(parent)
