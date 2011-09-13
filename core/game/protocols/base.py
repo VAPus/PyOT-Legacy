@@ -863,9 +863,13 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         index = packet.uint8()
         thing = player.findItem(position, stackpos)
-
-        if thing:
-            game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
+        
+        if thing and position[2] == player.position[2] and player.canSee(position):
+            end = None
+            if (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):
+                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
+            game.scriptsystem.get('farUse').run(thing, player, end, position=position, stackpos=stackpos, index=index)
+            
 
     def handleUseWith(self, player, packet):
         game.engine.explainPacket(packet)
@@ -880,10 +884,15 @@ class BaseProtocol(object):
         onThing = player.findItem(onPosition, onStack)
         print clientId
         print onId
-        if thing:
-            end = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
-            game.scriptsystem.get('useWith').run(thing, player, end, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+        if thing and ((position[2] == player.position[2] and player.canSee(position)) or position[0] == 0xFFFF) and ((onPosition[2] == player.position[2] and player.canSee(onPosition)) or onPosition[0] == 0xFFFF):
+            if (position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (onPosition[0] == 0xFFFF or (abs(onPosition[0] - player.position[0]) <= 1 and abs(onPosition[1] - player.position[1]) <= 1)):
+                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
                 
+            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+
+
     def handleAttack(self, player, packet):
         cid = packet.uint32()
         print "CreatureID %d" %  cid
