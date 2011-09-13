@@ -52,10 +52,19 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
 ============================
   Scripts
 ============================
+* Add support for shovels
+* Add support for ropes
+* Add support for picks
+* Add support for blessed wooden stake
+* Add support for obsidian knife
+* Add support for scythe
+* Add support for machete
 
 ============================
   Monsters
 ============================
+* Summon support
+* Ability to inflect poison damage on melee and spark hit
 
 ============================
   NPC
