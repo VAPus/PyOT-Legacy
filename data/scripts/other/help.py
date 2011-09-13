@@ -106,7 +106,7 @@ def testContainer(creature, thing, position, stackpos, index):
     else:
         creature.closeContainer(thing)
 
-useScript = scriptsystem.get("use")
+useScript = scriptsystem.get("farUse")
 for item in game.item.items:
     if item and "containerSize" in item:
         useScript.reg(game.item.reverseItems[item["cid"]], testContainer)
