@@ -217,7 +217,7 @@ class Creature(object):
         
         for thing in newTile.things:
             if thing.solid:
-                self.turn(direction) # Fix me?
+                #self.turn(direction) # Fix me?
                 self.notPossible()
                 d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
                 return
