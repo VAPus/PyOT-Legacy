@@ -847,11 +847,14 @@ class TibiaPlayer(Creature):
     def closeContainer(self, container):
         index = self.openContainers.index(container)
         def end():
-            stream = self.packet(0x6F)
-            stream.uint8(index)
-            self.openContainers.remove(container)
-            container.opened = False
-            stream.send(self.client)
+            try:
+                stream = self.packet(0x6F)
+                stream.uint8(index)
+                self.openContainers.remove(container)
+                container.opened = False
+                stream.send(self.client)
+            except:
+                pass
         
         def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=[0xFFFF, 0, 0], stackpos=0, index=index)
         
@@ -913,6 +916,9 @@ class TibiaPlayer(Creature):
             for bag in bags:
                 for itemX in container.container.items:
                     if itemX.itemId == item.itemId and itemX.count < 100:
+                        if update:
+                            self.removeCache(itemX)
+                            
                         total = itemX.count + count
                         itemX.count = min(itemX.count + count, 100)
                         count = total - itemX.count
@@ -922,7 +928,7 @@ class TibiaPlayer(Creature):
                             stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
                         
                         if update:
-                            self.replaceCache(itemX)
+                            self.addCache(itemX)
                             
                         if not count:
                             break
