@@ -421,7 +421,7 @@ def updateTile(pos, tile):
     for spectator in getSpectators(pos):
         stream = spectator.packet(0x69)
         stream.position(pos)
-        stream.tileDescription(tile)
+        stream.tileDescription(tile, spectator.player)
         stream.uint8(0x00)
         stream.uint8(0xFF)
         stream.send(spectator)
@@ -442,18 +442,21 @@ def transformItem(item, transformTo, pos, stackPos=None):
     :type stackPos: int.
     
     """
-    item.itemId = transformTo
-    if not stackPos:
-        stackPos = game.map.getTile(pos).findStackpos(item)
-    game.map.getTile(pos).removeItem(item)
     
+    tile = game.map.getTile(pos)
+    if not stackPos:
+        stackPos = tile.findStackpos(item)
+
+    tile.removeItem(item)
+    item.itemId = transformTo
+    if transformTo:
+        newStackpos = tile.placeItem(item)
+
     for spectator in getSpectators(pos):
         stream = spectator.packet()
-
+        stream.removeTileItem(pos, stackPos)
         if transformTo:
-            stream.updateTileItem(pos, stackPos, item)
-        else:
-            stream.removeTileItem(pos, stackPos)
+            stream.addTileItem(pos, stackPos, item)
             
         stream.send(spectator)
 

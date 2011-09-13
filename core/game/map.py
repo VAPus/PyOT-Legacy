@@ -42,7 +42,8 @@ class Tile(object):
             self.itemCount = 1
             
             if itemLen == 1:
-                self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
+                #self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
+                self.things = [items[0]]
             else:
                 workItems = deque(items)
                 self.things = [workItems.popleft()]
@@ -202,7 +203,7 @@ bindconstant.bind_all(S)
 
 def I(itemId, **kwargs):
     # Do not stack
-    if not kwargs:
+    if not kwargs and config.stackItems:
         try:
             return dummyItems[itemId]
         except:
@@ -287,7 +288,7 @@ def load(sectorX, sectorY):
     knownMap[sectorSum] = m          
         
     if l:    
-        threads.deferToThread(l)
+        reactor.callInThread(l)
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)

@@ -112,9 +112,6 @@ class Item(object):
             # Extend items such as containers, beds and doors
             if "containerSize" in items[self.itemId]:
                 self.cont = Container(self.containerSize)
-                    
-            if self.type == "mailbox":
-                self.cont = Mailbox()
                 
 
 

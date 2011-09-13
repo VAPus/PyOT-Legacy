@@ -9,6 +9,7 @@ keys = range(2086, 2092+1)
 def onUseDoor(creature, thing, position, **k):
     if not thing.actions:
         # Shouldn't happend
+        print "Bad door on %s. It might bug" % str(position)
         transformItem(thing, thing.itemId+2, position)
     else:
         creature.message("It is locked.")

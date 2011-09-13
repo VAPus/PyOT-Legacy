@@ -331,7 +331,7 @@ class Creature(object):
             for script in self.scripts["onNextStep"][:]:
                 script(self)
                 self.scripts["onNextStep"].remove(script)
-                     
+        print newTile.things             
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').run(item, self, None, position=position)
