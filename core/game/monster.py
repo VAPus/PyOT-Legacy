@@ -287,12 +287,11 @@ class MonsterBase(CreatureBase):
 
             if place:
                 for player in engine.getPlayers(position):
-                    if player.client and not monster in player.knownCreatures and player.canSee(monster.position):
+                    if player.client and player.canSee(monster.position):
                         stream = player.packet()
                         stream.addTileCreature(position, stackpos, monster, player)
-                        
+                            
                         stream.send(player.client)
-
             if engine.getPlayers(position):        
                 self.brain.beginThink(monster) # begin the heavy thought process!
             return monster
