@@ -18,17 +18,13 @@ class Scripts(object):
         self.scripts = []
         
     def reg(self, callback):
-        self.scripts.append(weakref.ref(callback, self.unregCallback))
+        self.scripts.append(weakref.proxy(callback, self.unregCallback))
         
     def unreg(self, callback):
-        for ref in self.scripts:
-            if ref() == callback:
-                self.scripts.remove(ref)
+        self.scripts.remove(callback)
     
     def unregCallback(self, callback):
-        for c in self.scripts:
-            if c == callback:
-                self.scripts.remove(c)
+        self.scripts.remove(c)
                 
     def run(self, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, creature, end, **kwargs)
@@ -41,14 +37,13 @@ class Scripts(object):
         
     def _run(self, creature, end=None, **kwargs):
         ok = True
-        for script in self.scripts:
-            func = script()
+        for func in self.scripts:
             if func:
                 ok = func(creature=creature, **kwargs)
                 if not (ok if ok is not None else True):
                     break
             else:
-                self.scripts.remove(script)
+                self.scripts.remove(func)
                 
         if end and (ok if ok is not None else True):
             end()
@@ -64,19 +59,16 @@ class TriggerScripts(object):
     def reg(self, trigger, callback):
         if not trigger in self.scripts:
             self.scripts[trigger] = []
-        self.scripts[trigger].append(weakref.ref(callback, self.unregCallback))
+        self.scripts[trigger].append(weakref.proxy(callback, self.unregCallback))
 
     def regFirst(self, trigger, callback):
         if not trigger in self.scripts:
             self.reg(trigger, callback)
         else:
-            self.scripts[trigger].insert(0, weakref.ref(callback, self.unregCallback))
+            self.scripts[trigger].insert(0, weakref.proxy(callback, self.unregCallback))
             
     def unreg(self, trigger, callback):
-        for ref in self.scripts[trigger]:
-            if ref() == callback:
-                self.scripts[trigger].remove(ref)
-
+        self.scripts[trigger].remove(callback)
 
         if not len(self.scripts[trigger]):
             del self.scripts[trigger]
@@ -85,26 +77,31 @@ class TriggerScripts(object):
         scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
 
     def unregCallback(self, callback):
+        remove = []
         for s in self.scripts:
-            for c in self.scripts[s]:
-                if c == callback:
-                    del c
+            try:
+                self.scripts[s].remove(callback)
+            except:
+                pass
+            
             if not len(self.scripts[s]):
-                del self.scripts[s]
+                remove.append(s)
+        
+        for s in remove:
+            del self.scripts[s]
                 
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
         if not trigger in self.scripts:
             return end()
-        for script in self.scripts[trigger][:]:
-            func = script()
+        for func in self.scripts[trigger][:]:
             if func:
                 ok = func(creature=creature, **kwargs)
                 if not (ok if ok is not None else True):
                     break
             else:
                 try:
-                    self.scripts[trigger].remove(script)
+                    self.scripts[trigger].remove(func)
                 except:
                     pass
         if end and (ok if ok is not None else True):
@@ -131,7 +128,7 @@ class ThingScripts(object):
     def reg(self, id, callback, toid=None):
         if not toid:
             if type(id) in (tuple, list):
-                func = weakref.ref(callback, self.unregCallback)
+                func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
                         self.scripts[xid] = [func]
@@ -142,16 +139,16 @@ class ThingScripts(object):
                 id = weakref.ref(id, self.unregAll) 
                 
                 if not id in self.thingScripts:
-                    self.thingScripts[id] = [weakref.ref(callback, self.unregCallback)]
+                    self.thingScripts[id] = [weakref.proxy(callback, self.unregCallback)]
                 else:
-                    self.thingScripts[id].append(weakref.ref(callback, self.unregCallback))
+                    self.thingScripts[id].append(weakref.proxy(callback, self.unregCallback))
             else:
                 if not id in self.scripts:
-                    self.scripts[id] = [weakref.ref(callback, self.unregCallback)]
+                    self.scripts[id] = [weakref.proxy(callback, self.unregCallback)]
                 else:
-                    self.scripts[id].append(weakref.ref(callback, self.unregCallback))
+                    self.scripts[id].append(weakref.proxy(callback, self.unregCallback))
         else:
-            func = weakref.ref(callback, self.unregCallback)
+            func = weakref.proxy(callback, self.unregCallback)
             for xid in xrange(id, toid+1):
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]
@@ -161,7 +158,7 @@ class ThingScripts(object):
     def regFirst(self, id, callback, toid=None):
         if not toid:
             if type(id) in (tuple, list):
-                func = weakref.ref(callback, self.unregCallback)
+                func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
                         self.scripts[xid] = [func]
@@ -172,16 +169,16 @@ class ThingScripts(object):
                 id = weakref.ref(id, self.unregAll) 
                 
                 if not id in self.thingScripts:
-                    self.thingScripts[id] = [weakref.ref(callback, self.unregCallback )]
+                    self.thingScripts[id] = [weakref.proxy(callback, self.unregCallback )]
                 else:
-                    self.thingScripts[id].insert(0, weakref.ref(callback, self.unregCallback ))
+                    self.thingScripts[id].insert(0, weakref.proxy(callback, self.unregCallback ))
             else:
                 if not id in self.scripts:
-                    self.scripts[id] = [weakref.ref(callback, self.unregCallback)]
+                    self.scripts[id] = [weakref.proxy(callback, self.unregCallback)]
                 else:
-                    self.scripts[id].insert(0, weakref.ref(callback, self.unregCallback))
+                    self.scripts[id].insert(0, weakref.proxy(callback, self.unregCallback))
         else:
-            func = weakref.ref(callback, self.unregCallback)
+            func = weakref.proxy(callback, self.unregCallback)
             for xid in xrange(id, toid+1):
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]
@@ -190,9 +187,7 @@ class ThingScripts(object):
                     
     def unreg(self, id, callback):
         try:
-            for ref in self.scripts[id]:
-                if ref() == callback:
-                    self.scripts[id].remove(ref)
+            self.scripts[id].remove(callback)
 
             if not self.scripts[id]:
                 del self.scripts[id]
@@ -207,12 +202,18 @@ class ThingScripts(object):
             pass
      
     def unregCallback(self, callback):
+        remove = []
         for s in self.scripts:
-            for c in self.scripts[s]:
-                if c == callback:
-                    del c
+            try:
+                self.scripts[s].remove(callback)
+            except:
+                pass
+            
             if not len(self.scripts[s]):
-                del self.scripts[s]
+                remove.append(s)
+        
+        for s in remove:
+            del self.scripts[s]
                 
     def run(self, thing, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
@@ -253,41 +254,42 @@ class ThingScripts(object):
         deferList = []
         for weakthing in self.thingScripts:
             if weakthing() == thing:
-                for script in self.thingScripts[weakthing][:]:
-                    func = script()
+                for func in self.thingScripts[weakthing][:]:
                     if func:
                         deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
                     else:
                         try:
-                            self.thingScripts[weakthing].remove(script) 
+                            self.thingScripts[weakthing].remove(func) 
                         except:
                             pass
             elif weakthing() == None:
                 del self.thingScripts[weakthing]
-        if thing.thingId() in self.scripts:
-            for script in self.scripts[thing.thingId()][:]:
-                func = script()
+        try:
+            for func in self.scripts[thing.thingId()][:]:
                 if func:
                     deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
                 else:
                     try:
-                        self.scripts[thing.thingId()].remove(script) 
+                        self.scripts[thing.thingId()].remove(func) 
                     except:
                         pass   
 
-
+        except:
+            pass
+        
         for aid in thing.actionIds():
-            if aid in self.scripts:
-                for script in self.scripts[aid][:]:
-                    func = script()
+            try:
+                for func in self.scripts[aid][:]:
                     if func:
                         deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
                     else:
                         try:
-                            self.scripts[aid].remove(script) 
+                            self.scripts[aid].remove(func) 
                         except:
                             pass
-        
+            except:
+                pass
+            
         if returnVal:
             # This is actually blocking code, but is rarely used.
             d = defer.DeferredList(deferList)
@@ -310,47 +312,45 @@ class CreatureScripts(ThingScripts):
         
         for weakthing in self.thingScripts:
             if weakthing() == thing:
-                for script in self.thingScripts[weakthing][:]:
-                    func = script()
+                for func in self.thingScripts[weakthing][:]:
                     if func:
                         ok = func(creature=creature, creature2=thing, **kwargs)
                         if ok is False:
                             break
                     else:
                         try:
-                            self.thingScripts[weakthing].remove(script) 
+                            self.thingScripts[weakthing].remove(func) 
                         except:
                             pass
             elif weakthing() == None:
                 del self.thingScripts[weakthing]
+                
         if ok and thing.thingId() in self.scripts:
-            for script in self.scripts[thing.thingId()][:]:
-                func = script()
-
+            for func in self.scripts[thing.thingId()][:]:
                 if func:
                     ok = func(creature=creature, creature2=thing, **kwargs)
                     if ok is False:
                         break
                 else:
                     try:
-                        self.scripts[thing.thingId()].remove(script) 
+                        self.scripts[thing.thingId()].remove(func) 
                     except:
                         pass   
 
         if ok:
             for aid in thing.actionIds():
                 if aid in self.scripts:
-                    for script in self.scripts[aid][:]:
-                        func = script()
+                    for func in self.scripts[aid][:]:
                         if func:
                             ok = func(creature=creature, creature2=thing, **kwargs)
                             if ok is False:
                                 break
                         else:
                             try:
-                                self.scripts[aid].remove(script) 
+                                self.scripts[aid].remove(func) 
                             except:
-                                pass   
+                                pass
+                            
         if not returnVal and end and ok is not False:
             return end()
         elif returnVal:
