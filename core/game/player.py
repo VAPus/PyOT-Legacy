@@ -182,7 +182,9 @@ class TibiaPlayer(Creature):
         return self.client.protocol.Packet(*args)
         
     def sendFirstPacket(self):
-        
+        if not self.data["health"]:
+            self.data["health"] = 1
+            
         stream = self.packet(0x0A)
 
         stream.uint32(self.clientId()) # Cid

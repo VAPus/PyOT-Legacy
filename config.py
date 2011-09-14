@@ -50,7 +50,7 @@ monsterMeleeFactor = 1 # 1x damage
 monsterWalkBack = False # Walk or Teleport back to spawn point
 monsterWalkPer = 3 # Amount of seconds between walks without target
 monsterNeverSkipWalks = True # This makes monsters always calculate a new rute if it runs into solid tiles etc. Walking will be smooth
-monsterStairHops = True # Allow monsters to walk up and down stairs
+monsterStairHops = False # Allow monsters to walk up and down stairs
 
 # Loot / Drop
 lootDropRate = 1
