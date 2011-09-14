@@ -152,13 +152,13 @@ levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
 
 # This formula is too complex to put into a lambda
-from math import pow,sqrt,log,floor
+from math import log,floor
 def levelFromExpFormula(y): # y = experience
-    l1 = pow(sqrt(3)*sqrt((243*(y**2))-(48600*y)+3680000)+(27*y)-2700, 1.0/3)
+    l1 = ((3 ** 0.5)*(((243*(y**2))-(48600*y)+3680000) ** 0.5)+(27*y)-2700) ** (1.0/3)
     l2 = 30**(2.0/3)
     l3 = 5 * 10**(2.0/3)
-    l4 = pow(3,1.0/3) * l1
-    return floor(round((l1/l2)-(l3/l4)+2, 10))
+    l4 = (3 ** (1.0/3)) * l1
+    return floor(round((l1/l2)-(l3/l4)+2, 10)) # Use floor to get the level, and not the progress (eg 10.7 instead of 10), we only want 10 in that case.
 
 magicLevelFormula = lambda a,b: 1600*(b**a)
 totalMagicLevelFormula = lambda a,b:(1600*(b**a-1))/b-1 # a = level, b = vocation constant
