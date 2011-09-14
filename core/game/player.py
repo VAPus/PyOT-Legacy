@@ -727,21 +727,32 @@ class TibiaPlayer(Creature):
         stream.outfit(self.outfit, self.addon, self.mount)
         looks = []
         for outfit in game.resource.outfits:
-            # TODO, can wear
-            looks.append(outfit)
+            if len(looks) == stream.maxOutfits:
+                break
+            if outfit and self.canWearOutfit(outfit.name):
+                looks.append(outfit)
                 
-        stream.uint8(len(looks))
-        for outfit in looks:
-            look = outfit.getLook(self.gender)
-            stream.uint16(look[0])
-            stream.string(outfit.name)
-            stream.uint8(3) # TODO addons
-        
+        if looks:        
+            stream.uint8(len(looks))
+            for outfit in looks:
+                look = outfit.getLook(self.gender)
+                stream.uint16(look[0])
+                stream.string(outfit.name)
+                stream.uint8(self.getAddonsForOutfit(outfit.name))
+        else:
+            # Send the current outfit only
+            stream.uint8(1)
+            stream.uint16(self.outfit[0])
+            stream.string("Current outfit")
+            stream.uint8(self.addon)
+            
         if config.allowMounts:
             mounts = []
             for mount in game.resource.mounts:
-                # TODO, can use
-                mounts.append(mount)
+                if len(mounts) == stream.maxMounts:
+                    break
+                if mount and self.canUseMount(mount.name):
+                    mounts.append(mount)
                 
             stream.uint8(len(mounts))
             for mount in mounts:
@@ -1646,3 +1657,40 @@ class TibiaPlayer(Creature):
             return self.removeKnown(dead.pop())
         except:
             return None
+            
+    # Outfit and mount
+    def canWearOutfit(self, name):
+        return self.getStorage('__outfit%s' % game.resource.reverseOutfits[name])
+    
+    def addOutfit(self, name):
+        self.setStorage('__outfit%s' % game.resource.reverseOutfits[name], True)
+        
+    def removeOutfit(self, name):
+        self.removeStorage('__outfit%s' % game.resource.reverseOutfits[name])
+    
+    def getAddonsForOutfit(self, name):
+        return self.getStorage('__outfitAddons%s' % game.resource.reverseOutfits[name])
+        
+    def addOutfitAddon(self, name, addon):
+        addons = self.getAddonsForOutfit(name)
+        if addons & addon == addon:
+            return
+        else:
+            addons += addon
+            self.setStorage('__outfitAddons%s' % game.resource.reverseOutfits[name], addons)
+            
+    def removeOutfitAddon(self, name, addon):
+        addons = self.getAddonsForOutfit(name)
+        if addons & addon == addon:
+            addons -= addon
+            self.setStorage('__outfitAddons%s' % game.resource.reverseOutfits[name], addons)  
+        else:
+            return
+    def canUseMount(self, name):
+        return self.getStorage('__mount%s' % game.resource.reverseMounts[name])
+    
+    def addMount(self, name):
+        self.setStorage('__mount%s' % game.resource.reverseMounts[name], True)
+        
+    def removeMount(self, name):
+        self.removeStorage('__mount%s' % game.resource.reverseMounts[name])

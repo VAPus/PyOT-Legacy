@@ -9,13 +9,15 @@ provide = []
 compatible_protocols = [910]
 
 def vertify():
-    if config.allowMounts:
+    """if config.allowMounts:
         log.msg("Protocol 860 doesn't allow mounts")
-        return False
+        return False"""
     return True
     
 class Packet(base.BasePacket):
     maxKnownCreatures = 250
+    maxOutfits = 25
+    maxMounts = 0
     protocolEnums = {}
     protocolEnums["MSG_NONE"] = 0
     protocolEnums["MSG_SPEAK_SAY"] = 0x01

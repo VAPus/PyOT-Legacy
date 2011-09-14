@@ -52,6 +52,12 @@ monsterWalkPer = 3 # Amount of seconds between walks without target
 monsterNeverSkipWalks = True # This makes monsters always calculate a new rute if it runs into solid tiles etc. Walking will be smooth
 monsterStairHops = False # Allow monsters to walk up and down stairs
 
+# Outfits
+playerCanChangeOutfit = True
+playerCanChangeColor = True
+playerCanWearAllOutfits = False
+playerCanUseAllMounts = False
+
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1
@@ -81,7 +87,7 @@ tibiaFullDayLight = 215 # Highest light level
 tibiaNightLight = 40 # Lowest light level
 
 # Mounts
-allowMounts = False # Disabled for 8.6 compatibility
+allowMounts = True
 applyMountSpeedChange = True
 
 # Game modes

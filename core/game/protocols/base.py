@@ -16,6 +16,8 @@ from game.creature import Creature
 
 class BasePacket(TibiaPacket):
     maxKnownCreatures = 1300
+    maxOutfits = 29
+    maxMounts = 25
     protocolEnums = {}
     """protocolEnums["MSG_NONE"] = 0
     protocolEnums["MSG_SPEAK_SAY"] = 0x01
@@ -843,7 +845,11 @@ class BaseProtocol(object):
         game.engine.transformItem(item, item.rotateTo, position, stackpos)
         
     def handleSetOutfit(self, player, packet):
-        player.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
+        if config.playerCanChangeColor:
+            player.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
+        else:
+            player.outfit[0] = packet.uint16()
+            
         player.addon = packet.uint8()
         if config.allowMounts:
             player.mount = packet.uint16()

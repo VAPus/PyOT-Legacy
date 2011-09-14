@@ -26,6 +26,10 @@ def getOutfit(name):
     return outfits[reverseOutfits[name]]
 # Helper call
 def genOutfit(name, premium=False):
+    if name == "<Placeholder>":
+        outfits.append(None)
+        return
+        
     outfit = Outfit(name, premium)
     regOutfit(outfit)
     return outfit
@@ -54,6 +58,10 @@ def getMount(name):
     
 # Helper call
 def genMount(name, cid, speed=0, premium=False):
+    if name == "<Placeholder>":
+        mounts.append(None)
+        return
+        
     mount = Mount(name, cid, speed, premium)
     regMount(mount)
     return mount
@@ -78,6 +86,9 @@ class Quest(object):
         
 def genQuest(name):
     quest = Quest(name)
+    if name == "<Placeholder>":
+        quests.append(None)
+        return
     quests.append(quest)
     reverseQuests[name] = len(quests)-1
     return quest

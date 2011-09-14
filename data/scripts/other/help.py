@@ -219,3 +219,50 @@ def trackScripts(creature, text):
         creature.message("No scripts what so ever on %s" % text)
 
 scriptsystem.reg('talkactionFirstWord', 'track', trackScripts)
+
+def mountPlayer(creature, text):
+    if not config.allowMounts:
+        return
+        
+    import game.resource
+    if text and text != "!mount":
+        try:
+            if creature.canUseMount(text):
+                creature.mount = game.resource.getMount(text).cid
+        except:
+            creature.message("Invalid mount.")
+            
+    elif not creature.mount:
+        creature.message("You have no mount.")
+    else:
+        status = not creature.mounted
+        creature.changeMountStatus(status)
+        
+        if status:
+            creature.message("You're now mounted.")
+        else:
+            creature.message("You're now unmouned.")
+        
+    return False
+scriptsystem.reg('talkactionFirstWord', '!mount', mountPlayer)
+scriptsystem.reg('talkaction', '!mount', mountPlayer)
+
+def addMount(creature, text):
+    try:
+        creature.addMount(text)
+        creature.message("You can now use %s" % text)
+    except:
+        creature.message("Invalid mount.")
+    return False
+
+scriptsystem.reg('talkactionFirstWord', 'mount', addMount)
+
+def addOutfit(creature, text):
+    try:
+        creature.addOutfit(text)
+        creature.message("You can now use %s" % text)
+    except:
+        creature.message("Invalid outfit.")
+    return False
+
+    scriptsystem.reg('talkactionFirstWord', 'outfit', addOutfit)
