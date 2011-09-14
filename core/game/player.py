@@ -84,38 +84,11 @@ class TibiaPlayer(Creature):
         
         # Calculate level from experience
         vocation = self.getVocation()
-        level = 0
-        bit = 32
-        cache = 2**bit
-        while bit:
-            if config.totalExpFormula(level + cache) > self.data["experience"]:
-                bit -= 1
-                if bit == 0:
-                    if config.totalExpFormula(level + 1) > self.data["experience"]:
-                        level += 1
-                    break
-                else:
-                    cache = 2 ** bit
-            else:
-                level += cache
+        level = config.levelFromExpFormula(self.data["experience"])
         
         # Calculate magic level from manaspent
-        maglevel = 0
-        bit = 12
-        cache = 2 ** bit
-        while bit:
-            if config.totalMagicLevelFormula(maglevel + cache, vocation.mlevel) > self.data["manaspent"]:
-                bit -= 1
-                if bit == 0:
-                    if config.totalMagicLevelFormula(maglevel + 1, vocation.mlevel) > self.data["manaspent"]:
-                        maglevel += 1
-                    break
-                else:
-                    cache = 2 ** bit
-            else:
-                maglevel += cache
-
-        self.data["maglevel"] = maglevel
+        self.data["maglevel"] = config.magicLevelFromManaFormula(self.data["manaspent"], vocation.mlevel)
+        
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
 

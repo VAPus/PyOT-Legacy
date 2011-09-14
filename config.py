@@ -149,9 +149,20 @@ drawingSpeed = 25
 
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
-totalExpFormula = lambda x: (50*(x**3)-150*(x**2) + 400*x)/3
+totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+
+# This formula is too complex to put into a lambda
+from math import pow,sqrt,log,floor
+def levelFromExpFormula(y): # y = experience
+    l1 = pow(sqrt(3)*sqrt((243*(y**2))-(48600*y)+3680000)+(27*y)-2700, 1.0/3)
+    l2 = 30**(2.0/3)
+    l3 = 5 * 10**(2.0/3)
+    l4 = pow(3,1.0/3) * l1
+    return floor(round((l1/l2)-(l3/l4)+2, 10))
+
 magicLevelFormula = lambda a,b: 1600*(b**a)
-totalMagicLevelFormula = lambda a,b:(1600*(b**a-1))/b-1
+totalMagicLevelFormula = lambda a,b:(1600*(b**a-1))/b-1 # a = level, b = vocation constant
+magicLevelFromManaFormula = lambda n,b: floor(round((log((1.0+n+(1600.0/b)) / 1600.0) + log(b)) / (log(b)), 8)) # n = mana, b = vocation constant
 skillFormula = lambda a,b: 50*(b**(a-10))
 magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
 fishingFormula = lambda x: 20*(1.1)**(x-10)
