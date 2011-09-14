@@ -172,7 +172,7 @@ class NPCBase(CreatureBase):
    
         self.brainFeatures = ["default"]
         self.classActions = []
-        self.actions = ['99','npc']
+        self.actions = ['creature', 'npc', self.data["name"]]
         self.speakGreet ="Welcome, %(playerName)s! I have been expecting you."
         self.speakFarewell = "Good bye, %(playerName)s!" 
         self.brain = brain

@@ -164,6 +164,9 @@ class TibiaPlayer(Creature):
 
     def isAttackable(self, by):
         return True
+
+    def actionIds(self):
+        return ('creature', 'player') # Static actionID
         
     def sexPrefix():
         if self.data["sex"] == 1:

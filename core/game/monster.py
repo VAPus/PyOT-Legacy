@@ -41,6 +41,9 @@ class Monster(Creature):
         self.spawnTime = None
         self.radius = 5
 
+    def actionIds(self):
+        return ('creature', 'monster', self.data["name"]) # Static actionIDs
+        
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:
             return dmg - self.base.armor

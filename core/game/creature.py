@@ -123,7 +123,7 @@ class Creature(object):
         return self.creatureType # Used to indentify my "thing"
     
     def actionIds(self):
-        return ('99',) # Static actionID
+        return ('creature',) # Static actionID
         
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
