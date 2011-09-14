@@ -5,7 +5,7 @@ import config
 from collections import deque
 import game.scriptsystem
 from game.item import Item
-from twisted.internet import reactor
+from twisted.internet import reactor, defer
 from game.creature import Creature, CreatureBase, uniqueId, allCreatures
 import time
 
@@ -216,6 +216,8 @@ class TibiaPlayer(Creature):
 
         stream.magicEffect(self.position, 0x03)
         stream.send(self.client)
+        
+        self.sendVipList()
         
     def refreshStatus(self, streamX=None):
         if not streamX:
@@ -1597,16 +1599,45 @@ class TibiaPlayer(Creature):
         if not vips:
             return []
         return vips
-        
+
+    @defer.inlineCallbacks
+    def sendVipList(self):
+        vips = self.getStorage('__vips')
+        if not vips:
+            return
+ 
+        result = yield sql.conn.runQuery("SELECT `id`, `name` FROM players WHERE `id` IN (%s)" % (tuple(vips)))
+        if result:
+            stream = self.packet()
+            for player in result:
+                online = bool(player['name'] in allPlayers and allPlayers[player['name']].client)
+                stream.vip(player['id'], player['name'], online)
+                if online:
+                    pkg = allPlayers[player['name']].packet()
+                    pkg.vipLogin(self.data["id"])
+                    pkg.send(allPlayers[player['name']].client)
+            stream.send(self.client)
+            
     def addVip(self, playerId):
         vips = self.getStorage('__vips')
         if not vips:
             vips = [playerId]
         else:
-            vips.append(playerId)
+            try:
+                vips.index(playerId)
+                return
+            except:
+                vips.append(playerId)
             
         self.setStorage('__vips', vips)
-        
+        self.sendVipList()
+
+    @defer.inlineCallbacks
+    def addVipByName(self, name):
+        result = yield game.engine.getPlayerIDByName(name)
+        if result:
+            self.addVip(result)
+            
     def removeVip(self, playerId):
         vips = self.getStorage('__vips')
         if not vips:
@@ -1618,7 +1649,14 @@ class TibiaPlayer(Creature):
                 return
             
         self.setStorage('__vips', vips)
-        
+        #self.sendVipList()
+
+    @defer.inlineCallbacks
+    def removeVipByName(self, name):
+        result = yield game.engine.getPlayerIDByName(name)
+        if result:
+            self.removeVip(result)
+            
     def isVip(self, playerId):
         vips = self.getStorage('__vips')
         if not vips:

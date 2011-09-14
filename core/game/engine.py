@@ -678,9 +678,9 @@ def getPlayerIDByName(name):
     except:
         d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            defer.returnValue(d['id'])
+            returnValue(d[0]['id'])
         else:
-            defer.returnValue(None)
+            returnValue(None)
 
 def townNameToId(name):
     """ Return the townID based on town name.

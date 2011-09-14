@@ -7,14 +7,17 @@ import config
 import hashlib
 import otcrypto
 import random
-
+import game.scriptsystem
+from packet import TibiaPacket
+import sql
+import game.player
+from game.map import getTile,removeCreature
 class GameProtocol(protocolbase.TibiaProtocol):
 
     def onInit(self):
         self.player = None
         self.protocol = None
     def onConnect(self):
-        from packet import TibiaPacket
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
         pkg.uint16(random.randint(0, 0xFFFF))
@@ -31,14 +34,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
     @inlineCallbacks
     def onFirstPacket(self, packet):
-        import sql
-        import otcrypto
-        
-        from packet import TibiaPacket
-        import game.player
-        from game.map import getTile
-        import game.scriptsystem
-        
         packet.pos += 1 # Packet Type, we don't really care about it in the first packet
         packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
@@ -119,9 +114,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     getTile(self.player.position).placeCreature(self.player)
                 except AttributeError:
                     import data.map.info
-                    import game.map
                     self.player.position = data.map.info.towns[1][1]
-                    print game.map.knownMap
                     getTile(self.player.position).placeCreature(self.player)
                 
         self.player.sendFirstPacket()
@@ -141,10 +134,13 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onConnectionLost(self):
         if self.player:
-            import game.scriptsystem
-            from game.map import removeCreature
             self.player.client = None
             self.player.knownCreatures = set()
+            for x in game.player.allPlayersObject:
+                if x.client and self.player.data["id"] in x.getVips():
+                    stream = x.packet()
+                    stream.vipLogout(self.player.data["id"])
+                    stream.send(x.client)
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
         

@@ -519,6 +519,12 @@ class BaseProtocol(object):
         
         elif packetType == 0xD4 and config.allowMounts: # Set mount status
             self.handleSetMounted(player,packet)
+
+        elif packetType == 0xDC: # Add VIP
+            self.handleAddVip(player,packet)
+            
+        elif packetType == 0xDD: # remove VIP
+            self.handleRemoveVip(player,packet)
             
         elif packetType == 0xBE: # Stop action
             player.stopAction()
@@ -953,3 +959,9 @@ class BaseProtocol(object):
     def handleQuestLine(self, player, packet):
         questId = packet.uint16()-1
         player.questLine(game.resource.getQuest(questId).name)
+        
+    def handleAddVip(self, player, packet):
+        player.addVipByName(packet.string())
+        
+    def handleRemoveVip(self, player, packet):
+        player.removeVip(packet.uint32())
