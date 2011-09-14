@@ -261,7 +261,7 @@ class Creature(object):
         
         # Send to everyone   
         if not spectators:
-            spectators = getPlayers(position)
+            spectators = getPlayers(position, (10, 8))
             
         for spectator in spectators:
             # Make packet
@@ -286,7 +286,7 @@ class Creature(object):
                         
                 elif oldPosition[2] < position[2]:
                     stream.moveDownPlayer(self, oldPosition)
-                
+                print "Send move"
                 # Y movements
                 if oldPosition[1] > position[1]:
                     stream.uint8(0x65)
@@ -310,6 +310,7 @@ class Creature(object):
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
+                print "Remove potensial double"
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
                 

@@ -260,7 +260,7 @@ class BasePacket(TibiaPacket):
                 player.knownCreatures.add(creature)
                 creature.knownBy.add(player)
     
-        self.creature(creature, known, removeKnown)
+            self.creature(creature, known, removeKnown)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
