@@ -1,4 +1,5 @@
-<-- Gazer -->
+import game.monster
+
 Gazer = game.monster.genMonster("Gazer", (226, 6079), "a Gazer")
 Gazer.setTargetChance(10)
 Gazer.bloodType("blood")

@@ -1,4 +1,5 @@
-<-- Valkyrie -->
+import game.monster
+
 Valkyrie = game.monster.genMonster("Valkyrie", (139, 6080), "a Valkyrie")
 Valkyrie.setOutfit(113, 57, 95, 113)
 Valkyrie.setTargetChance(10)

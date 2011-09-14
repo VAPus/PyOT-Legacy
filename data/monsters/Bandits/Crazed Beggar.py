@@ -1,4 +1,5 @@
-<-- Crazed Beggar -->
+import game.monster
+
 Crazed_Beggar = game.monster.genMonster("Crazed Beggar", (153, 6080), "a Crazed Beggar")
 Crazed_Beggar.setOutfit(38, 97, 59, 38)
 Crazed_Beggar.setAddons(3)

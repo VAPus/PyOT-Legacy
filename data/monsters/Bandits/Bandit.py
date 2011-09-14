@@ -1,4 +1,5 @@
-<-- Bandit -->
+import game.monster
+
 Bandit = game.monster.genMonster("Bandit", (129, 6080), "a Bandit")
 Bandit.setOutfit(58, 59, 45, 114)
 Bandit.setTargetChance(10)

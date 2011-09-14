@@ -1,4 +1,5 @@
-<-- Smuggler -->
+import game.monster
+
 Smuggler = game.monster.genMonster("Smuggler", (134, 6080), "a Smuggler")
 Smuggler.setOutfit(95, 0, 113, 115)
 Smuggler.setTargetChance(10)

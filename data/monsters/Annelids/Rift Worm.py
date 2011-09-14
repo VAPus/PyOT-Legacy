@@ -1,4 +1,5 @@
-<-- Rift Worm -->
+import game.monster
+
 Rift_Worm = game.monster.genMonster("Rift Worm", (295, 0), "a Rift Worm")
 Rift_Worm.setTargetChance(10)
 Rift_Worm.bloodType("blood")

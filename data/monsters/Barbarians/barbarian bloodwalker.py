@@ -1,4 +1,5 @@
-<-- barbarian Bloodwalker -->
+import game.monster
+
 Barbarian_Bloodwalker = game.monster.genMonster("Barbarian Bloodwalker", (255, 6080), "a Barbarian Bloodwalker")
 Barbarian_Bloodwalker.setOutfit(114,132,132,132)
 Barbarian_Bloodwalker.setTargetChance(10)
