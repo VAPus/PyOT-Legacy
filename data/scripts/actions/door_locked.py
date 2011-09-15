@@ -13,7 +13,7 @@ def onUseDoor(creature, thing, position, **k):
 
 def onUseKey(creature, thing, onThing, onPosition, **k):
     if not onThing.actions or not onThing.itemId in lockedDoors or not onThing.itemId-1 in lockedDoors or not onThing.itemId-2 in lockedDoors:
-        return False
+        return
     
     canOpen = False
     for aid in thing.actions:
@@ -22,6 +22,7 @@ def onUseKey(creature, thing, onThing, onPosition, **k):
             
     if not canOpen:
         creature.message("The key does not match.")
+        return
         
     if onThing.itemId in lockedDoors:
         engine.transformItem(onThing, onThing.itemId+2, onPosition)
