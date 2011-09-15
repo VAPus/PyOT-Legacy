@@ -394,23 +394,21 @@ reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 def handleModule(name):
     modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
 
-    for module in modules.__all__:
+    """for module in modules.__all__:
         try:
-            if not module == "__init__":
+            if module == "__init__":
                 sys.modules["data.%s.%s" % (name, module)].init()
         except AttributeError:
             pass
-    
+    """
     try:
-        modules.paths
-    except:
-        pass
-    else:
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))
-    
+    except:
+        pass
+
     modPool.append([name, modules])
-        
+
 def importer():
     handleModule("scripts")
     handleModule("spells")
@@ -422,8 +420,7 @@ def reimporter():
     process = get("reload").runSync(None)
     if process == False:
         return
-        
-    import game.spell
+
     game.spell.clear()
     
     for mod in modPool:
@@ -452,8 +449,8 @@ def reimporter():
 def get(type):
     return globalScripts[type]
     
-def reg(type, *argc, **kwargs):
-    globalScripts[type].reg(*argc, **kwargs)
+def reg(type, *argc):
+    globalScripts[type].reg(*argc)
 
-def regFirst(type, *argc, **kwargs):
-    globalScripts[type].regFirst(*argc, **kwargs)
+def regFirst(type, *argc):
+    globalScripts[type].regFirst(*argc)

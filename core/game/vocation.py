@@ -1,4 +1,3 @@
-
 vocations = {}
 vocationsId = {}
 class Vocation(object):

@@ -538,26 +538,19 @@ class MonsterBrain(object):
             return True
         return False
         
-brains = {}
-brains["default"] = MonsterBrain()
-def genMonster(name, look, description="", brain="default"):
-    # First build the common creature data
-    data = {"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0}
+brain = MonsterBrain()
+def genMonster(name, look, description=""):
+    # baseMonsters
+    baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look[0], "corpse":look[1], "name":name, "description":description or "a %s." % name}, brain)
+    monsters[name] = baseMonster
 
-    data["looktype"] = look[0]
-    data["corpse"] = look[1]
-    data["name"] = name
-    data["description"] = description or "a %s." % name
-    # Then monster only data
-    monsters[name] = MonsterBase(data, brains[brain])
-
-    return monsters[name]
+    return baseMonster
 
 def getMonster(name):
-    if name in monsters:
+    try:
         return monsters[name]
-    else:
-        return None
+    except:
+        pass
         
 def regBrainFeature(name, function, priority=1):
     if not name in brainFeatures[priority]:

@@ -15,6 +15,11 @@ import otjson
 import game.enum
 import sys
 import random
+import game.vocation
+import game.resource
+import game.scriptsystem
+import glob
+import game.protocol
 
 try:
     import cPickle as pickle
@@ -23,13 +28,14 @@ except:
     
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
-jsonFields = ['storage']
-pickleFields = ['objectStorage']
+jsonFields = 'storage',
+pickleFields = 'objectStorage',
 
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")
     import game.item
+
     # Begin loading items in the background
     d = game.item.loadItems()
 
@@ -42,19 +48,12 @@ def loader(timer):
                 globalStorage[x['key']] = pickle.loads(x['data'])
             else:
                 globalStorage[x['key']] = x['data']
-    _sql_()
-                    
-    def sync(d, timer):
-        import game.protocol
-        # Load protocols
-        for version in config.supportProtocols:
-            game.protocol.loadProtocol(version)
-            
 
-        
+    _sql_()            
+    def sync(d, timer):
         # Load map (if configurated to do so)
         if config.loadEntierMap:
-            import glob
+            
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
@@ -65,67 +64,68 @@ def loader(timer):
                 
                 ret = threads.deferToThread(__, fileSec)
             ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
-        
-        # Just a inner funny call
-        def looper(f, t):
-            f()
-            reactor.callLater(t, looper, f, t)
-        
-        # Do we issue saves?
-        if config.doSaveAll:
-            reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-            
-        # Light stuff
-        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
-        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-        
-        
-        
-        # Globalize certain things
-        import game.player, game.creature, game.npc, game.monster, game.spell, game.resource, game.vocation
-        import game.scriptsystem
-        __builtins__["enum"] = game.enum
-        __builtins__["sql"] = sql
-        __builtins__["config"] = config
-        __builtins__["reg"] = game.scriptsystem.reg
-        __builtins__["regFirst"] = game.scriptsystem.regFirst
-        __builtins__["defer"] = defer
-        __builtins__["reactor"] = reactor
-        __builtins__["engine"] = sys.modules["game.engine"]
-        __builtins__["sys"] = sys
-        __builtins__["inlineCallbacks"] = inlineCallbacks
-        __builtins__["returnValue"] = returnValue
-        __builtins__["Deferred"] = Deferred
-        __builtins__["deque"] = deque
-        __builtins__["random"] = random
-        __builtins__["time"] = time
-        __builtins__["spell"] = game.spell # Simplefy spell making
-        __builtins__["callLater"] = safeCallLater
-        
-        class Globalizer(object):
-            __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation')
-            monster = game.monster
-            npc = game.npc
-            creature = game.creature
-            player = game.player
-            map = game.map
-            item = game.item
-            scriptsystem = game.scriptsystem
-            spell = game.spell
-            resource = game.resource
-            vocation = game.vocation
-            
-        __builtins__["game"] = Globalizer() 
+
         # Load scripts
-        game.scriptsystem.importer()            
-        game.scriptsystem.get("startup").runSync(None)    
-         
+        game.scriptsystem.importer()
+        game.scriptsystem.get("startup").run(None)
+        
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         
+         
+        
     d.addCallback(sync, timer)
 
+    
+    # Load protocols
+    for version in config.supportProtocols:
+        game.protocol.loadProtocol(version)
 
+    # Do we issue saves?
+    if config.doSaveAll:
+        reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
+            
+    # Light stuff
+    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        
+        
+        
+    # Globalize certain things
+    import game.player, game.creature, game.npc, game.monster, game.spell
+    __builtins__["enum"] = game.enum
+    __builtins__["sql"] = sql
+    __builtins__["config"] = config
+    __builtins__["reg"] = game.scriptsystem.reg
+    __builtins__["regFirst"] = game.scriptsystem.regFirst
+    __builtins__["defer"] = defer
+    __builtins__["reactor"] = reactor
+    __builtins__["engine"] = sys.modules["game.engine"]
+    __builtins__["sys"] = sys
+    __builtins__["inlineCallbacks"] = inlineCallbacks
+    __builtins__["returnValue"] = returnValue
+    __builtins__["Deferred"] = Deferred
+    __builtins__["deque"] = deque
+    __builtins__["random"] = random
+    __builtins__["time"] = time
+    __builtins__["spell"] = game.spell # Simplefy spell making
+    __builtins__["callLater"] = safeCallLater
+        
+    class Globalizer(object):
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation')
+        monster = game.monster
+        npc = game.npc
+        creature = game.creature
+        player = game.player
+        map = game.map
+        item = game.item
+        scriptsystem = game.scriptsystem
+        spell = game.spell
+        resource = game.resource
+        vocation = game.vocation
+            
+    __builtins__["game"] = Globalizer
+    
 # Useful for windows
 def safeTime():
     """Gives the time rounded so it can be divided by 60. This gives the same time on both unix systems and Windows.
@@ -145,7 +145,12 @@ def safeCallLater(sec, *args):
     """
     reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
 
-
+# Just a inner funny call
+def looper(function, time):
+    """Looper decorator"""
+    
+    function()
+    reactor.callLater(time, looper, function, time)
 # The action decorator :)
 def action(forced=False, delay=0):
     """Action decorator.

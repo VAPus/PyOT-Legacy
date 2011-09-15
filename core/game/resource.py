@@ -1,4 +1,3 @@
-
 # This is a shared resource maanger that we will use for quests, mounts and outfits
 
 ### Outfits ###
