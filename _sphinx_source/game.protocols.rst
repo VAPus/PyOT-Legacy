@@ -4,7 +4,7 @@ protocols Package
 :mod:`860` Module
 -----------------
 
-.. automodule:: core.game.protocols.860
+.. automodule:: game.protocols.860
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ protocols Package
 :mod:`910` Module
 -----------------
 
-.. automodule:: core.game.protocols.910
+.. automodule:: game.protocols.910
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ protocols Package
 :mod:`base` Module
 ------------------
 
-.. automodule:: core.game.protocols.base
+.. automodule:: game.protocols.base
     :members:
     :undoc-members:
     :show-inheritance:

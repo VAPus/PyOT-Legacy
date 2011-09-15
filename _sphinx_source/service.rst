@@ -4,7 +4,7 @@ service Package
 :mod:`gameserver` Module
 ------------------------
 
-.. automodule:: core.service.gameserver
+.. automodule:: service.gameserver
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ service Package
 :mod:`loginserver` Module
 -------------------------
 
-.. automodule:: core.service.loginserver
+.. automodule:: service.loginserver
     :members:
     :undoc-members:
     :show-inheritance:

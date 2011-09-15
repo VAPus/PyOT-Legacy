@@ -4,7 +4,7 @@ game Package
 :mod:`chat` Module
 ------------------
 
-.. automodule:: core.game.chat
+.. automodule:: game.chat
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ game Package
 :mod:`creature` Module
 ----------------------
 
-.. automodule:: core.game.creature
+.. automodule:: game.creature
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ game Package
 :mod:`engine` Module
 --------------------
 
-.. automodule:: core.game.engine
+.. automodule:: game.engine
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ game Package
 :mod:`enum` Module
 ------------------
 
-.. automodule:: core.game.enum
+.. automodule:: game.enum
     :members:
     :undoc-members:
     :show-inheritance:
@@ -36,7 +36,7 @@ game Package
 :mod:`errors` Module
 --------------------
 
-.. automodule:: core.game.errors
+.. automodule:: game.errors
     :members:
     :undoc-members:
     :show-inheritance:
@@ -44,7 +44,7 @@ game Package
 :mod:`item` Module
 ------------------
 
-.. automodule:: core.game.item
+.. automodule:: game.item
     :members:
     :undoc-members:
     :show-inheritance:
@@ -52,7 +52,7 @@ game Package
 :mod:`map` Module
 -----------------
 
-.. automodule:: core.game.map
+.. automodule:: game.map
     :members:
     :undoc-members:
     :show-inheritance:
@@ -60,7 +60,7 @@ game Package
 :mod:`monster` Module
 ---------------------
 
-.. automodule:: core.game.monster
+.. automodule:: game.monster
     :members:
     :undoc-members:
     :show-inheritance:
@@ -68,7 +68,7 @@ game Package
 :mod:`npc` Module
 -----------------
 
-.. automodule:: core.game.npc
+.. automodule:: game.npc
     :members:
     :undoc-members:
     :show-inheritance:
@@ -76,7 +76,7 @@ game Package
 :mod:`pathfinder` Module
 ------------------------
 
-.. automodule:: core.game.pathfinder
+.. automodule:: game.pathfinder
     :members:
     :undoc-members:
     :show-inheritance:
@@ -84,7 +84,7 @@ game Package
 :mod:`player` Module
 --------------------
 
-.. automodule:: core.game.player
+.. automodule:: game.player
     :members:
     :undoc-members:
     :show-inheritance:
@@ -92,7 +92,7 @@ game Package
 :mod:`protocol` Module
 ----------------------
 
-.. automodule:: core.game.protocol
+.. automodule:: game.protocol
     :members:
     :undoc-members:
     :show-inheritance:
@@ -100,7 +100,7 @@ game Package
 :mod:`resource` Module
 ----------------------
 
-.. automodule:: core.game.resource
+.. automodule:: game.resource
     :members:
     :undoc-members:
     :show-inheritance:
@@ -108,7 +108,7 @@ game Package
 :mod:`scriptsystem` Module
 --------------------------
 
-.. automodule:: core.game.scriptsystem
+.. automodule:: game.scriptsystem
     :members:
     :undoc-members:
     :show-inheritance:
@@ -116,7 +116,7 @@ game Package
 :mod:`spell` Module
 -------------------
 
-.. automodule:: core.game.spell
+.. automodule:: game.spell
     :members:
     :undoc-members:
     :show-inheritance:
@@ -124,7 +124,7 @@ game Package
 :mod:`vocation` Module
 ----------------------
 
-.. automodule:: core.game.vocation
+.. automodule:: game.vocation
     :members:
     :undoc-members:
     :show-inheritance:
@@ -134,5 +134,5 @@ Subpackages
 
 .. toctree::
 
-    core.game.protocols
+    game.protocols
 

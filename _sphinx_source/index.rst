@@ -2,7 +2,7 @@
   What's PyOT
 ****************************
 
-:Author: Stian Andreassen (stian at vapus.net)
+:Author: Stian Andreassen (:vapus:`members/1-Stian`)
 :Release: |release|
 :Date: |today|
 
@@ -65,4 +65,4 @@ Indices and tables
 
    todo
    modules
-
+   scriptevents

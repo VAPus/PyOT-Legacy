@@ -4,7 +4,7 @@ core Package
 :mod:`bindconstant` Module
 --------------------------
 
-.. automodule:: core.bindconstant
+.. automodule:: bindconstant
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ core Package
 :mod:`otjson` Module
 --------------------
 
-.. automodule:: core.otjson
+.. automodule:: otjson
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ core Package
 :mod:`packet` Module
 --------------------
 
-.. automodule:: core.packet
+.. automodule:: packet
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ core Package
 :mod:`protocolbase` Module
 --------------------------
 
-.. automodule:: core.protocolbase
+.. automodule:: protocolbase
     :members:
     :undoc-members:
     :show-inheritance:
@@ -36,7 +36,7 @@ core Package
 :mod:`sql` Module
 -----------------
 
-.. automodule:: core.sql
+.. automodule:: sql
     :members:
     :undoc-members:
     :show-inheritance:
@@ -46,6 +46,6 @@ Subpackages
 
 .. toctree::
 
-    core.game
-    core.service
+    game
+    service
 

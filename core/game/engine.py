@@ -206,8 +206,8 @@ def loopInThread(time):
 def autoWalkCreature(creature, walkPatterns, callback=None):
     """Autowalk the creature using the walk patterns. This binds the action slot.
     
-    :param creature: The creature to autowalk of type :class:`core.game.creature.Creature` or any subclass of it.
-    :type creature: :class:`core.game.creature.Creature`.
+    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+    :type creature: :class:`game.creature.Creature`.
     :param walkPatterns: List of steps to take.
     :type walkPatterns: :class:`collections.deque`.
     :param callback: Call this function when the creature reach it's destination.
@@ -227,8 +227,8 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
     """Autowalk the creature using the walk patterns. This binds the action slot.
     
-    :param creature: The creature to autowalk of type :class:`core.game.creature.Creature` or any subclass of it.
-    :type creature: :class:`core.game.creature.Creature`.
+    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+    :type creature: :class:`game.creature.Creature`.
     
     :param to: Destination position.
     :type to: list or tuple.
@@ -376,7 +376,7 @@ def getCreatures(pos, radius=(8,6), ignore=tuple()):
     :param ignore: known creatures to ignore in the set.
     :type ignore: list, tuple or set.
     
-    :rtype: set of :class:`core.game.creature.Creature` compatible objects
+    :rtype: set of :class:`game.creature.Creature` compatible objects
     
     """
     
@@ -399,7 +399,7 @@ def getPlayers(pos, radius=(8,6), ignore=tuple()):
     :param ignore: known players to ignore in the set.
     :type ignore: list, tuple or set.
     
-    :rtype: set of :class:`core.game.player.Player` compatible objects
+    :rtype: set of :class:`game.player.Player` compatible objects
     
     """
     
@@ -458,12 +458,12 @@ def positionInDirection(nposition, direction, amount=1):
     return position
 def updateTile(pos, tile):
     """ Send the update to a tile to all who can see the position.
-    *Note that this function does NOT replace the known tile in :mod:`core.game.map`'s knownMap array.*
+    *Note that this function does NOT replace the known tile in :mod:`game.map`'s knownMap array.*
     
     :param pos: Position of tile.
     :type pos: list or tuple.
     :param tile: The tile that replace the currently known tile at the position.
-    :type tile: Tile of type :class:`core.game.map.Tile`.
+    :type tile: Tile of type :class:`game.map.Tile`.
     
     """
     
@@ -479,7 +479,7 @@ def transformItem(item, transformTo, pos, stackPos=None):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
-    :type item: Object of type :class:`core.game.item.Item`.
+    :type item: Object of type :class:`game.item.Item`.
     
     :param transformTo: New itemID. Leave to 0 or None to delete the item.
     :type transformTo: int or None.
@@ -516,7 +516,7 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     """ "teleport" a item from ``fromPos`` to ``toPos``
     
     :param item: The item you want to transform.
-    :type item: :class:`core.game.item.Item`
+    :type item: :class:`game.item.Item`
     
     :param fromPos: From this position
     :type fromPos: :func:`tuple` or :func:`list`
@@ -559,7 +559,7 @@ def placeItem(item, position):
     """ Place a item to a position
     
     :param item: The item to place.
-    :type item: Object of type :class:`core.game.item.Item`.
+    :type item: Object of type :class:`game.item.Item`.
     
     :param position: The position to place the item on.
     :type position: list or tuple.
@@ -754,7 +754,7 @@ def placeInDepot(name, depotId, items):
     :type depotId: int or str.
     
     :param items: Either one Item or a list of items to place into the depot.
-    :type items: Either one object of type :class:`core.game.item.Item`, or a list of objects.
+    :type items: Either one object of type :class:`game.item.Item`, or a list of objects.
     
     :rtype: bool.
     :returns: True on success, False otherwise.
