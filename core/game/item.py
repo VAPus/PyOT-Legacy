@@ -117,7 +117,18 @@ class Item(object):
                 pass
 
 
-            
+    def isPlayer(self):
+        return False
+
+    def isNPC(self):
+        return False
+        
+    def isMonster(self):
+        return False
+
+    def isItem(self):
+        return True
+        
     def thingId(self):
         return self.itemId # Used for scripts
 

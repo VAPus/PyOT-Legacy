@@ -104,6 +104,9 @@ class Creature(object):
     def isMonster(self):
         return False
 
+    def isItem(self):
+        return False
+        
     def isPushable(self, by):
         return False
     
