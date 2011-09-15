@@ -87,7 +87,7 @@ The events are:
     :param creature: The creature that tries to use something.
     :type creature: usually :class:`game.player.Player`
     :param thing: The thing that was used.
-    :type thing: usually :class:`core.item.Item`
+    :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
     :param stackpos: The position in the tile stack the thing have.
@@ -114,7 +114,7 @@ The events are:
     :param creature: The creature that tries to use something.
     :type creature: usually :class:`game.player.Player`
     :param thing: The thing that was used.
-    :type thing: usually :class:`core.item.Item`
+    :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
     :param stackpos: The position in the tile stack the thing have.
@@ -140,7 +140,7 @@ The events are:
     :param creature: The creature that tries to use something.
     :type creature: usually :class:`game.player.Player`
     :param thing: The thing that matched the register functions parameters.
-    :type thing: usually :class:`core.item.Item`
+    :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
     :param stackpos: The position in the tile stack the thing have.
