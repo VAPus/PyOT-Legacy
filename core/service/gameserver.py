@@ -109,7 +109,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             print self.player
             getTile(self.player.position).placeCreature(self.player)
         else:
-            game.player.allPlayers[character[0]['name']] = game.player.TibiaPlayer(self, character[0])
+            game.player.allPlayers[character[0]['name']] = game.player.Player(self, character[0])
             self.player = game.player.allPlayers[character[0]['name']]
             if self.player.data["health"]:
                 try:

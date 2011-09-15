@@ -28,7 +28,7 @@ anyPlayer = CreatureBase()
 allPlayers = {}
 allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
-class TibiaPlayer(Creature):
+class Player(Creature):
     def __init__(self, client, data):
         Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
         self.client = client
