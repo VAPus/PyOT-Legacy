@@ -4,6 +4,7 @@ from twisted.python import log
 import config
 import math
 import game.enum
+import game.item
 
 provide = []
 
@@ -49,7 +50,6 @@ class Packet(base.BasePacket):
         return self.protocolEnums[key]
         
     def item(self, item, count=None):
-        import game.item
         if isinstance(item, game.item.Item):
             cid = item.cid
             if cid > 11703:
@@ -85,6 +85,7 @@ class Packet(base.BasePacket):
 
     def tileDescription(self, tile, player=None):
         # self.uint16(0x00) No animations!
+        print "8.6 tile description called"
         isSolid = False
         for item in tile.topItems():
             if item.solid:

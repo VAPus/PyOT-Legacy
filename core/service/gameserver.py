@@ -38,6 +38,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
         self.protocol = game.protocol.getProtocol(version)
+        print "Client protocol version %d" % version
+        
         if not self.protocol:
             log.msg("Trying to load a invalid protocol")
             self.transport.loseConnection()

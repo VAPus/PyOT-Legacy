@@ -116,7 +116,7 @@ def loader(timer):
     __builtins__["callLater"] = safeCallLater
         
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -127,6 +127,7 @@ def loader(timer):
         spell = game.spell
         resource = game.resource
         vocation = game.vocation
+        enum = game.enum
             
     __builtins__["game"] = Globalizer
     

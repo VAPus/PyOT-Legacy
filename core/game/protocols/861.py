@@ -22,4 +22,5 @@ class Packet(sys.modules["game.protocols.860"].Packet):
     protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x16
     
 
-class Protocol(sys.modules["game.protocols.860"].Protocol): pass
+class Protocol(sys.modules["game.protocols.860"].Protocol):
+    Packet = Packet
