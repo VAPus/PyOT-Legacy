@@ -73,10 +73,16 @@ def defaultBrainFeature(self, monster):
                     else:
                         print "%s vs %s" % (str(monster.position), str(player.position))
                 if target:
-                    monster.target = target
+                    ret = game.scriptsystem.get('target').run(monster, target, attack=True)
+                    if ret == False:
+                        return
+                    elif ret != None:
+                        monster.target = ret
+                    else:
+                        monster.target = target
                 else:
                     return
-                print "Test"
+                    
                 # Call the scripts
                 monster.base.onFollow(monster.target)
                 

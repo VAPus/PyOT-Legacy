@@ -1433,7 +1433,15 @@ class TibiaPlayer(Creature):
             
         if cid in allCreatures:
             if allCreatures[cid].isAttackable(self):
-                self.target = allCreatures[cid]
+                target = allCreatures[cid]
+                ret = game.scriptsystem.get('target').run(self, target, attack=True)
+                if ret == False:
+                   return
+                elif ret != None:
+                    self.target = ret
+                else:
+                    self.target = target
+                    
                 self.targetMode = 1
             else:
                 return
@@ -1463,7 +1471,15 @@ class TibiaPlayer(Creature):
             return
             
         if cid in allCreatures:
-            self.target = allCreatures[cid]
+            target = allCreatures[cid]
+            ret = game.scriptsystem.get('target').run(self, target, attack=True)
+            if ret == False:
+                return
+            elif ret != None:
+                self.target = ret
+            else:
+                self.target = target
+                    
             self.targetMode = 2
             game.engine.autoWalkCreatureTo(player, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)

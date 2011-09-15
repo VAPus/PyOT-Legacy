@@ -382,6 +382,7 @@ globalScripts["move"] = Scripts()
 globalScripts["appear"] = CreatureScripts()
 globalScripts["disappear"] = CreatureScripts()
 globalScripts["loot"] = CreatureScripts()
+globalScripts["target"] = CreatureScripts()
 
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
