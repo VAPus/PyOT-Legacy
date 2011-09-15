@@ -1,4 +1,3 @@
-
 crypt_shambler = game.monster.genMonster("Crypt Shambler", (100, 6029), "a crypt shambler")
 crypt_shambler.setHealth(330)
 crypt_shambler.bloodType(color="undead")

@@ -1,4 +1,3 @@
-
 zombie = game.monster.genMonster("Zombie", (311, 9875), "a zombie")
 zombie.setHealth(500)
 zombie.bloodType(color="undead")

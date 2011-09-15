@@ -1,4 +1,3 @@
-
 Husky = game.monster.genMonster("Husky", (258, 7316), "a husky")
 Husky.setTargetChance(10)
 Husky.bloodType("blood")

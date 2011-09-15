@@ -1,4 +1,3 @@
-
 death_priest = game.monster.genMonster("Death Priest", (99, 6028), "a death_priest")#unknown corpse might be ash
 death_priest.setHealth(800)
 death_priest.bloodType(color="undead")

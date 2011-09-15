@@ -1,4 +1,3 @@
-
 undead_cavebear = game.monster.genMonster("Undead Cavebear", (384, 5995), "an undead cavebear")#unknown corpse
 undead_cavebear.setHealth(450)
 undead_cavebear.bloodType(color="undead")

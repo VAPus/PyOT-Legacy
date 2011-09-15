@@ -1,4 +1,3 @@
-
 spectre = game.monster.genMonster("Spectre", (235, 6348), "a spectre")
 spectre.setHealth(1350)
 spectre.bloodType(color="undead")

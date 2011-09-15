@@ -1,4 +1,3 @@
-
 vampire = game.monster.genMonster("Vampire", (68, 6006), "a vampire")
 vampire.setHealth(475)
 vampire.bloodType(color="blood")

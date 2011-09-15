@@ -1,4 +1,3 @@
-
 black_sheep = game.monster.genMonster("black sheep", (13, 5994), "a black sheep")
 black_sheep.bloodType("blood")
 black_sheep.setHealth(20)

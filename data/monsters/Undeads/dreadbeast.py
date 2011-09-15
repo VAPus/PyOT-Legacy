@@ -1,4 +1,3 @@
-
 dreadbeast = game.monster.genMonster("Dreadbeast", (101, 6030), "a dreadbeast")
 dreadbeast.setHealth(795)
 dreadbeast.bloodType(color="undead")

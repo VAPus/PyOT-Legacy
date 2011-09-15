@@ -1,4 +1,3 @@
-
 Rat = game.monster.genMonster("Rat", (21, 5964), "a rat")
 Rat.setTargetChance(10)
 Rat.bloodType("blood")

@@ -1,4 +1,3 @@
-
 Penguin = game.monster.genMonster("Penguin", (250, 7334), "a penguin")
 Penguin.setTargetChance(0)
 Penguin.bloodType("blood")

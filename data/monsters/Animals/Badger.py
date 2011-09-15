@@ -1,4 +1,3 @@
-
 Badger = game.monster.genMonster("Badger", (105, 6034), "a badger")
 Badger.bloodType("blood")
 Badger.setHealth(23)

@@ -1,4 +1,3 @@
-
 blightwalker = game.monster.genMonster("Blightwalker", (246, 6354), "a blightwalker")
 blightwalker.setHealth(8900)
 blightwalker.bloodType(color="undead")

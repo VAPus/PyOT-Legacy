@@ -1,4 +1,3 @@
-
 betrayed_wraith = game.monster.genMonster("Betrayed Wraith", (233, 6316), "a betrayed wraith")
 betrayed_wraith.setHealth(4200)
 betrayed_wraith.bloodType(color="blood")

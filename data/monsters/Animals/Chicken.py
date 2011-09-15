@@ -1,4 +1,3 @@
-
 chicken = game.monster.genMonster("chicken", (111, 6042), "a chicken")
 chicken.bloodType("blood")
 chicken.setHealth(15)

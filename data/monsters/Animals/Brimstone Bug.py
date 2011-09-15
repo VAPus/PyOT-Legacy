@@ -1,4 +1,3 @@
-
 brimstone_bug = game.monster.genMonster("brimstone bug", (352, 12527), "a brimstone bug")
 brimstone_bug.bloodType("slime")
 brimstone_bug.setHealth(1300)

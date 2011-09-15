@@ -1,4 +1,3 @@
-
 lich = game.monster.genMonster("Lich", (99, 6028), "a lich")
 lich.setHealth(880)
 lich.bloodType(color="undead")

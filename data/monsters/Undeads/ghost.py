@@ -1,4 +1,3 @@
-
 ghost = game.monster.genMonster("Ghost", (48, 5993), "a ghost")
 ghost.setHealth(150)
 ghost.bloodType(color="undead")

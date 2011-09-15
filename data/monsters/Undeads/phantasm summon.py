@@ -1,4 +1,3 @@
-
 phantasm_summon = game.monster.genMonster("Phantasm", (241, 6344), "a phantasm")
 phantasm_summon.setHealth(65)
 phantasm_summon.bloodType(color="undead")

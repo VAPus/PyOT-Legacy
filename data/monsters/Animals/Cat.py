@@ -1,4 +1,3 @@
-
 cat = game.monster.genMonster("Cat", (276, 7637), "a cat")
 cat.bloodType("blood")
 cat.setHealth(20)

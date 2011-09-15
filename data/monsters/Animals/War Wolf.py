@@ -1,4 +1,3 @@
-
 War_Wolf = game.monster.genMonster("War Wolf", (3, 6009), "a war wolf")
 War_Wolf.setTargetChance(10)
 War_Wolf.bloodType("blood")

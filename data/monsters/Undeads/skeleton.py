@@ -1,4 +1,3 @@
-
 skeleton = game.monster.genMonster("Skeleton", (33, 5972), "a skeleton")
 skeleton.setHealth(50)
 skeleton.bloodType(color="undead")

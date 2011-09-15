@@ -1,4 +1,3 @@
-
 wisp = game.monster.genMonster("Wisp", (294, 6324), "a wisp")
 wisp.setHealth(115)
 wisp.bloodType(color="undead")

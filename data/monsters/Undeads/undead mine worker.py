@@ -1,4 +1,3 @@
-
 undead_mine_worker = game.monster.genMonster("Undead Mine Worker", (33, 5972), "an undead mine worker")
 undead_mine_worker.setHealth(65)
 undead_mine_worker.bloodType(color="undead")

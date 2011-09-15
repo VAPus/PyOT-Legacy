@@ -1,4 +1,3 @@
-
 Squirrel = game.monster.genMonster("Squirrel", (274, 7628), "a squirrel")
 Squirrel.setTargetChance(0)
 Squirrel.bloodType("blood")
