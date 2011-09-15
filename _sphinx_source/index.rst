@@ -60,8 +60,10 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 * :ref:`todo`
+
 .. toctree::
    :maxdepth: 2
 
    todo
+   modules
 
