@@ -100,6 +100,7 @@ def loader(timer):
         __builtins__["random"] = random
         __builtins__["time"] = time
         __builtins__["spell"] = game.spell # Simplefy spell making
+        __builtins__["callLater"] = safeCallLater
         
         class Globalizer(object):
             __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation')
