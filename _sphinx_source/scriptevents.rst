@@ -6,6 +6,8 @@
 :Release: |release|
 :Date: |today|
 
+**NB! This page is work in progress!**
+
 PyOT have several scriptable events you and use to interact with the core behavior (you and also overwrite the core calls from scripts aswell):
 
 Events are registered using the global function ``reg`` (linkes to :func:`game.scriptsystem.reg`) or ``regFirst`` (linkes to :func:`game.scriptsystem.regFirst`).
@@ -351,3 +353,38 @@ The events are:
 
            
         reg("lookAt", 1234, lookAt)
+
+.. function:: addMapItem(thing)
+    
+    Called in the map loader when ``thing`` is gonna be put on to the map. (ThingScript)
+    
+    :returns: Item to add to the map (usually just ``thing``)
+    
+.. function:: playerSayTo(creature, creature2, ...)
+
+    Currently not in use. (CreatureScript)
+    
+.. function:: close(creature, thing, index)
+    
+    Called when a container is closed.
+    
+.. function:: hit(creature, creature2, damage, type, textColor, magicEffect)
+
+    Called when ``creature2`` hits ``creature``. damage, type, textColor and magicEffect is one item lists. Update them update the data used in the hit process. (CreatureScript)
+    
+    :returns: Return False prevent the hit from happening.
+    
+.. function:: death(creature, creature2, corpse)
+
+    Called when ``creature`` gets killed by ``creature2``. Change the creature.alive value or add health to the creature to resurect him and prevent the rest of the death code from happening (CreatureScript)
+
+Currently undocumented (TODO):
+globalScripts["respawn"] = Scripts()
+globalScripts["reload"] = Scripts()
+globalScripts["startup"] = Scripts()
+globalScripts["shutdown"] = Scripts()
+globalScripts["move"] = Scripts()
+globalScripts["appear"] = CreatureScripts()
+globalScripts["disappear"] = CreatureScripts()
+globalScripts["loot"] = CreatureScripts()
+globalScripts["target"] = CreatureScripts()
