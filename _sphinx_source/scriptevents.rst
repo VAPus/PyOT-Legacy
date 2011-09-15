@@ -9,19 +9,48 @@
 PyOT have several scriptable events you and use to interact with the core behavior (you and also overwrite the core calls from scripts aswell):
 
 Events are registered using the global function ``reg`` (linkes to :func:`game.scriptsystem.reg`) or ``regFirst`` (linkes to :func:`game.scriptsystem.regFirst`).
-All parameters are optional, if you don't intend to use them all (we suggest to add it regardless) you add "**k" parameter to the end.
+All parameters are optional, if you don't intend to use them all (we suggest to add it regardless) you add "\**k" parameter to the end.
 
+The registration function:
+
+**For Scripts()**:
+
+    .. function:: reg(type, callback)
+    
+    Register a ``callback`` (function) to the ``type`` script event.
+    
+**For TriggerScripts()**:
+
+    .. function:: reg(type, trigger, callback)
+    
+    Register a ``callback`` (function) to the ``type`` script event. Which is called when the ``trigger`` matches.
+
+**For ThingScripts() and CreatureScripts()**:
+
+    .. function:: reg(type, id, callback [, toid=None])
+    
+    Register a ``callback`` (function) to the ``type`` script event. ``id`` is the identifier in which things are identified for this callback to be called.
+
+    * It can be a number and it will be checked up against the things thingId(). Example: reg("use", 1234, onUse)
+    * It can also a list of number to register bind to, or a range. Example: reg("useWith", (1142, 1234), onUse)
+    * The third option is to use a string, a script will match against the things actions. Actionids is strings aswell. reg("use", "item", onUseAnyItem) or reg("lookAt", "Wolf", onLookAtWolf)
+    * The fourth option is to bind it directly to a thing, this is usually only good if you intend to make one item chain the next, for instance if you use two pieces of wood together, then the next time you use the wood you want it to burst into flames. Example (inside a callback): reg("use", thing, someCallback)
+
+    
 The events are:
 
-.. function:: talkaction(creature, test)
+.. function:: talkaction(creature, text)
 
-   :param creature: The creature that tries to say something.
-   :type creature: usually :class:`game.player.Player`
-   :param text: What was said.
-   :type text: :func:`str`
-   :returns: Return True/None will use the default internal behavior, while return False will stop it.
+    Called when a creature(Player) say something. (TriggerScript)
     
-   :example:
+    :param creature: The creature that tries to say something.
+    :type creature: usually :class:`game.player.Player`
+    :param text: What was said.
+    :type text: :func:`str`
+    :returns: Return True/None will use the default internal behavior, while return False will stop it.
+    
+    :example:
+    
     .. code-block:: python
            
         def onSay(creature, text):
@@ -30,3 +59,76 @@ The events are:
            
         reg("talkaction", "Hello", onSay)
 
+
+.. function:: talkactionFirstWord(creature, text)
+
+    Called with the remaining text (can also be blank) when the creature(Player) say something that begins with the action it was registered for. (TriggerScript)
+  
+    :param creature: The creature that tries to say something.
+    :type creature: usually :class:`game.player.Player`
+    :param text: What was said.
+    :type text: :func:`str`
+    :returns: Return True/None will use the default internal behavior, while return False will stop it.
+    
+    :example:
+    
+    .. code-block:: python
+           
+        def onSay(creature, text):
+            creature.message("I was asked to repeat %s" % text)
+            return False
+           
+        reg("talkactionFirstWord", "!repeater", onSay)
+        
+.. function:: use(creature, thing, position, stackpos, index)
+
+    Called when a thing is used and the creature is max 1 square away from it. This is called AFTER farUse. (ThingScript)
+    
+    :param creature: The creature that tries to use something.
+    :type creature: usually :class:`game.player.Player`
+    :param thing: The thing that was used.
+    :type thing: usually :class:`core.item.Item`
+    :param position: The positon the thing have.
+    :type position: :func:`list`
+    :param stackpos: The position in the tile stack the thing have.
+    :type stackpos: :func:`int`
+    :param index: If the item was called inside a container, this is the position in the container stack.
+    :type index: :func:`int`    
+    :returns: Have no meaning.
+    
+    :example:
+    
+    .. code-block:: python
+           
+        def onUse(creature, thing, position, **k):
+            if thing.isItem():
+                creature.message("I seem to have used a '%s' on position %s" % (thing.name(), str(position)))
+
+           
+        reg("use", 1234, onUse)
+        
+.. function:: farUse(creature, thing, position, stackpos, index)
+
+    Called when a thing is used. This is called BEFORE use. (ThingScript)
+    
+    :param creature: The creature that tries to use something.
+    :type creature: usually :class:`game.player.Player`
+    :param thing: The thing that was used.
+    :type thing: usually :class:`core.item.Item`
+    :param position: The positon the thing have.
+    :type position: :func:`list`
+    :param stackpos: The position in the tile stack the thing have.
+    :type stackpos: :func:`int`
+    :param index: If the item was called inside a container, this is the position in the container stack.
+    :type index: :func:`int`    
+    :returns: ``False`` will prevent the use events from running.
+    
+    :example:
+    
+    .. code-block:: python
+           
+        def onUse(creature, position, **k):
+            creature.message("I seem to be %d steps away from this thing" % creature.distanceStepsTo(position))
+
+           
+        reg("farUse", 1234, onUse)

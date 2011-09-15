@@ -99,6 +99,7 @@ class Item(object):
             itemid = 100
            
         self.itemId = itemid
+        actions.append('item')
         self.actions = map(str, actions)
         
         if kwargs:
