@@ -90,8 +90,10 @@ class Monster(Creature):
                 elif len(loot) == 4:
                     drops.append((loot[0], None, loot[4]))
                     
-            
-            
+            ret = scriptsystem.get("loot").runSync(self, self.lastDamager, loot=drops, maxSize=mazSize)
+            if type(ret) == list:
+                drops = ret
+
             for loot in drops:
                 lenLoot = len(loot)
                 ret = 0
