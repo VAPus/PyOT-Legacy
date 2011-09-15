@@ -875,7 +875,7 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         index = packet.uint8()
         thing = player.findItem(position, stackpos)
-        
+
         if thing and position[2] == player.position[2] and player.canSee(position):
             end = None
             if (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):

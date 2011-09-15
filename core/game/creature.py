@@ -124,7 +124,7 @@ class Creature(object):
     
     def actionIds(self):
         return ('creature',) # Static actionID
-        
+
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
@@ -146,7 +146,25 @@ class Creature(object):
 
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
-    
+
+    def despawn(self):
+        self.alive = False
+        tile = game.map.getTile(self.position)
+        stackpos = tile.findCreatureStackpos(self)
+        tile.removeCreature(self)
+        
+        for spectator in getSpectators(self.position):
+            stream = spectator.packet()
+            stream.removeTileItem(self.position, stackpos)
+            stream.send(spectator)
+        try:
+            if self.spawnTime:
+                game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+            else:
+                game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+        except:
+            pass
+        
     def move(self, direction, spectators=None, level=0):
         d = Deferred()
         game.engine.safeCallLater(0, self._move, d, direction, spectators, level)

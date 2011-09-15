@@ -256,3 +256,8 @@ def addOutfit(creature, text):
     return False
 
 reg('talkactionFirstWord', 'outfit', addOutfit)
+
+def testdespawn(thing, **k):
+    thing.despawn()
+    
+reg("lookAt", "Wolf", testdespawn)

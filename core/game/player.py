@@ -594,7 +594,7 @@ class TibiaPlayer(Creature):
 
     def skillAttempt(self, skillType):
         key = '__skill%d' % skillType
-        goalKey = '__skillGoal' % skillType
+        goalKey = '__skillGoal%s' % skillType
         
         try:
             self.modifyStorage(key, 1)
