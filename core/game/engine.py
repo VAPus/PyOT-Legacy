@@ -94,7 +94,7 @@ def loader(timer):
     # Globalize certain things
     import game.player, game.creature, game.npc, game.monster, game.spell
     __builtins__["enum"] = game.enum
-    __builtins__["sql"] = sql
+    __builtins__["sql"] = sql.conn
     __builtins__["config"] = config
     __builtins__["reg"] = game.scriptsystem.reg
     __builtins__["regFirst"] = game.scriptsystem.regFirst

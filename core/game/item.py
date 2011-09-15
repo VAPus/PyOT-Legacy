@@ -358,7 +358,6 @@ def loadItems():
                 
                 loadItems[sid+x] = attributes
             
-    del d1
     sid = 0
     attributes = None
     for data in (yield d2):
@@ -378,7 +377,6 @@ def loadItems():
                 attributes[data["key"]] = int(data["value"])
             except:
                 attributes[data["key"]] = data["value"]
-    del d2
 
     log.msg("%d Items loaded" % len(loadItems))
     

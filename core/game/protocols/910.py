@@ -2,7 +2,7 @@
 import base
 
 provide = []
-compatible_protocols = [860]
+compatible_protocols = [860, 861, 862]
 
 def vertify(): return True
 

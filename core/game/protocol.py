@@ -1,7 +1,7 @@
 from twisted.python import log
 import sys
 
-protocolsAvailable = (860, 910)
+protocolsAvailable = (860, 861, 862, 910)
 protocolsUsed = {}
 
 def getProtocol(version):

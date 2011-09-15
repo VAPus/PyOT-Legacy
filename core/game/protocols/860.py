@@ -6,7 +6,7 @@ import math
 import game.enum
 
 provide = []
-compatible_protocols = [910]
+compatible_protocols = [910, 861, 862]
 
 def vertify():
     """if config.allowMounts:
