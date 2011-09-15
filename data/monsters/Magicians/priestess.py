@@ -1,4 +1,3 @@
-import game.monster
 
 priestess = game.monster.genMonster("Priestess", (58, 6081), "a priestess")
 priestess.setHealth(390)

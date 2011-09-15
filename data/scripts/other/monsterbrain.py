@@ -1,10 +1,3 @@
-import game.monster
-import game.engine
-import random
-import game.enum
-import time
-import config
-
 def defaultBrainFeaturePriority(self, monster):
         # Walking
         if monster.target: # We need a target for this code check to run

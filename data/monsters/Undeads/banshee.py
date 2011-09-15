@@ -1,4 +1,3 @@
-import game.monster
 
 banshee = game.monster.genMonster("Banshee", (78, 6019), "a banshee")
 banshee.setHealth(1000)

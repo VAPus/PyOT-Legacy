@@ -1,8 +1,5 @@
-import game.resource as resource
-import game.scriptsystem as scriptsystem
-
 # The quest itself
-quest = resource.genQuest("The hello world")
+quest = game.resource.genQuest("The hello world")
 quest.mission("Say hello world")
 quest.description("Simply type 'hello world' to finish this quest")
 
@@ -17,8 +14,8 @@ def endQuest(creature, **k):
     if creature.isPlayer() and creature.questStarted("The hello world") and not creature.questCompleted("The hello world"):
         creature.finishQuest("The hello world")
     
-scriptsystem.reg("talkaction", "begin quest", startQuest)
-scriptsystem.reg("talkaction", "hello world", endQuest)
+reg("talkaction", "begin quest", startQuest)
+reg("talkaction", "hello world", endQuest)
 
 
 

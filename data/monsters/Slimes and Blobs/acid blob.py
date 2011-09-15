@@ -1,4 +1,3 @@
-import game.monster
 
 acid_blob = game.monster.genMonster("Acid Blob", (314, 9962), "an acid blob")
 acid_blob.setHealth(250)

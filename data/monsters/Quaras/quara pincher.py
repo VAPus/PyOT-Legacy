@@ -1,4 +1,3 @@
-import game.monster
 
 quara_pincher = game.monster.genMonster("Quara Pincher", (77, 6063), "a quara pincher")
 quara_pincher.setHealth(1800)

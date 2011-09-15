@@ -1,5 +1,3 @@
-import game.scriptsystem as scriptsystem
-
 depots = (2594, 2592)
 
 def openDepot(creature, thing, **k):
@@ -18,5 +16,5 @@ def closeDepot(creature, thing, **k):
         thing.container.items = []
         thing.owners = []
 
-scriptsystem.regFirst('use', depots, openDepot) # We got to register it first so we call it before container open
-scriptsystem.reg('close', depots, closeDepot)
+regFirst('use', depots, openDepot) # We got to register it first so we call it before container open
+reg('close', depots, closeDepot)

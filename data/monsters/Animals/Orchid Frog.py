@@ -1,4 +1,3 @@
-import game.monster
 
 Orchid_Frog = game.monster.genMonster("Orchid Frog", (226, 6079), "an orchid frog")
 Orchid_Frog.setOutfit(109, 14, 109, 114)

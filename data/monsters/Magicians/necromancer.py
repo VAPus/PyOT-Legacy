@@ -1,4 +1,3 @@
-import game.monster
 
 necromancer = game.monster.genMonster("Necromancer", (9, 6080), "a necromancer")
 necromancer.setHealth(580, healthmax=580)

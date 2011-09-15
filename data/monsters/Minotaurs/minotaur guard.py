@@ -1,4 +1,3 @@
-import game.monster
 
 minotaur_guard = game.monster.genMonster("Minotaur Guard", (29, 5983), "a minotaur guard")
 minotaur_guard.setHealth(185)

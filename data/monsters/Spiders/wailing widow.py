@@ -1,4 +1,3 @@
-import game.monster
 
 wailing_widow = game.monster.genMonster("Wailing Widow", (347, 11310), "a wailing widow")
 wailing_widow.setHealth(850)

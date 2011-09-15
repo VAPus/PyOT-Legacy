@@ -1,4 +1,3 @@
-import game.monster
 
 Werewolf = game.monster.genMonster("Werewolf", (308, 6080), "a werewolf")
 Werewolf.setTargetChance(10)

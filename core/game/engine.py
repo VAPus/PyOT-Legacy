@@ -1,6 +1,6 @@
 """A collection of functions that almost every other component requires"""
 
-from twisted.internet import reactor, threads
+from twisted.internet import reactor, threads, defer
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 from collections import deque
 from twisted.python import log
@@ -12,7 +12,9 @@ import game.pathfinder
 import bindconstant
 import sql
 import otjson
-import game.protocol
+import game.enum
+import sys
+import random
 
 try:
     import cPickle as pickle
@@ -27,9 +29,9 @@ pickleFields = ['objectStorage']
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")
-    from game.item import loadItems
+    import game.item
     # Begin loading items in the background
-    d = loadItems()
+    d = game.item.loadItems()
 
     @inlineCallbacks
     def _sql_():
@@ -43,17 +45,15 @@ def loader(timer):
     _sql_()
                     
     def sync(d, timer):
+        import game.protocol
         # Load protocols
         for version in config.supportProtocols:
             game.protocol.loadProtocol(version)
             
-        # Load scripts
-        from game.scriptsystem import importer
-        importer()
+
         
         # Load map (if configurated to do so)
         if config.loadEntierMap:
-            from game.map import load
             import glob
             begin = time.time()
             files = glob.glob('data/map/*.sec')
@@ -61,7 +61,7 @@ def loader(timer):
                 def __(fileSec):
                     fileSec = fileSec.split('/')[-1]
                     x, y, junk = fileSec.split('.')
-                    load(int(x),int(y))
+                    game.map.load(int(x),int(y))
                 
                 ret = threads.deferToThread(__, fileSec)
             ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
@@ -79,8 +79,46 @@ def loader(timer):
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
         reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
         
-        game.scriptsystem.get("startup").runSync(None)
         
+        
+        # Globalize certain things
+        import game.player, game.creature, game.npc, game.monster, game.spell, game.resource, game.vocation
+        import game.scriptsystem
+        __builtins__["enum"] = game.enum
+        __builtins__["sql"] = sql
+        __builtins__["config"] = config
+        __builtins__["reg"] = game.scriptsystem.reg
+        __builtins__["regFirst"] = game.scriptsystem.regFirst
+        __builtins__["defer"] = defer
+        __builtins__["reactor"] = reactor
+        __builtins__["engine"] = sys.modules["game.engine"]
+        __builtins__["sys"] = sys
+        __builtins__["inlineCallbacks"] = inlineCallbacks
+        __builtins__["returnValue"] = returnValue
+        __builtins__["Deferred"] = Deferred
+        __builtins__["deque"] = deque
+        __builtins__["random"] = random
+        __builtins__["time"] = time
+        __builtins__["spell"] = game.spell # Simplefy spell making
+        
+        class Globalizer(object):
+            __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation')
+            monster = game.monster
+            npc = game.npc
+            creature = game.creature
+            player = game.player
+            map = game.map
+            item = game.item
+            scriptsystem = game.scriptsystem
+            spell = game.spell
+            resource = game.resource
+            vocation = game.vocation
+            
+        __builtins__["game"] = Globalizer() 
+        # Load scripts
+        game.scriptsystem.importer()            
+        game.scriptsystem.get("startup").runSync(None)    
+         
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         

@@ -1,4 +1,3 @@
-import game.monster
 
 mercury_blob = game.monster.genMonster("Mercury Blob", (316, 9961), "a mercury blob")
 mercury_blob.setHealth(150)

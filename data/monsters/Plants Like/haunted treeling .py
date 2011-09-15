@@ -1,4 +1,3 @@
-import game.monster
 
 haunted_treeling = game.monster.genMonster("Haunted Treeling ", (310, 9867), "a haunted treeling")
 haunted_treeling.setHealth(450)

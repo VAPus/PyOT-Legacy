@@ -1,4 +1,3 @@
-import game.monster
 
 sea_serpent = game.monster.genMonster("Sea Serpent", (275, 8307), "a sea serpent")
 sea_serpent.setHealth(1750)

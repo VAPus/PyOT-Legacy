@@ -1,4 +1,3 @@
-import game.monster
 
 lich = game.monster.genMonster("Lich", (99, 6028), "a lich")
 lich.setHealth(880)

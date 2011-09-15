@@ -1,4 +1,3 @@
-import game.monster
 
 vampire_bride = game.monster.genMonster("Vampire Bride", (312, 9660), "a vampire bride")
 vampire_bride.setHealth(1200)

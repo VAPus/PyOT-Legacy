@@ -1,4 +1,3 @@
-import game.monster
 
 bear = game.monster.genMonster("bear", (16, 5974), "a bear")
 bear.bloodType("blood")

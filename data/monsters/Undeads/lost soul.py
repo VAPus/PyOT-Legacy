@@ -1,4 +1,3 @@
-import game.monster
 
 lost_soul = game.monster.genMonster("Lost Soul", (232, 6310), "a lost soul")
 lost_soul.setHealth(5800)

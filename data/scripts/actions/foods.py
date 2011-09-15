@@ -1,7 +1,3 @@
-import game.scriptsystem
-import game.engine
-import game.enum
-
 global foods
 foods = {}
 foods[2328] = (84, "Gulp.")
@@ -101,7 +97,7 @@ def playerEat(creature, ticker=0, lastHP=0, lastMana=0):
     creature.regenerate -= 1
     ticker += 1
     if creature.regenerate >= 0:
-        game.engine.safeCallLater(1, playerEat, creature, ticker, lastHP, lastMana)
+        engine.safeCallLater(1, playerEat, creature, ticker, lastHP, lastMana)
     else:
         creature.regenerate = 0
     
@@ -129,5 +125,5 @@ def onUse(creature, thing, position, stackpos, **a):
         creature.regenerate = duration
         playerEat(creature)
         creature.message(sound)
-game.scriptsystem.reg('use', foods.keys(), onUse)
+reg('use', foods.keys(), onUse)
     

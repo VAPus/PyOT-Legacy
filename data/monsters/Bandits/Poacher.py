@@ -1,4 +1,3 @@
-import game.monster
 
 Poacher = game.monster.genMonster("Poacher", (129, 6080), "a Poacher")
 Poacher.setOutfit(115, 119, 119, 115)

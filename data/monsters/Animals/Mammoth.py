@@ -1,4 +1,3 @@
-import game.monster
 
 Mammoth = game.monster.genMonster("Mammoth", (199, 6074), "a mammoth")
 Mammoth.setTargetChance(10)

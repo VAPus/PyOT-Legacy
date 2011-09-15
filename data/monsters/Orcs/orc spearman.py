@@ -1,4 +1,3 @@
-import game.monster
 
 orc_spearman = game.monster.genMonster("Orc Spearman", (50, 5996), "an orc spearman")
 orc_spearman.setHealth(105)

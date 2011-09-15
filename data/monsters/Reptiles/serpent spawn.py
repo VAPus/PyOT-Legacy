@@ -1,4 +1,3 @@
-import game.monster
 
 serpent_spawn = game.monster.genMonster("Serpent Spawn", (220, 4323), "a serpent spawn")
 serpent_spawn.setHealth(3000)

@@ -1,4 +1,3 @@
-import game.monster
 
 Barbarian_Brutetamer = game.monster.genMonster("Barbarian Brutetamer", (264, 6081), "a Barbarian Brutetamer")
 Barbarian_Brutetamer.setOutfit(78,116,95,121)

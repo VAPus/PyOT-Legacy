@@ -1,6 +1,3 @@
-from game.scriptsystem import reg
-import game.map
-
 ropeSpots = 384, 418, 8278, 8592
 openHoles = 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
 openTraps = 462, 9625

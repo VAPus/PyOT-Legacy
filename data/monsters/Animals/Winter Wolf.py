@@ -1,4 +1,3 @@
-import game.monster
 
 Winter_Wolf = game.monster.genMonster("Winter Wolf", (52, 5997), "a winter wolf")
 Winter_Wolf.setTargetChance(0)

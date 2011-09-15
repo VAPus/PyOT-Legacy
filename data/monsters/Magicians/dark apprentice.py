@@ -1,4 +1,3 @@
-import game.monster
 
 dark_apprentice = game.monster.genMonster("Dark Apprentice", (133, 3058), "a dark apprentice")
 dark_apprentice.setOutfit(78, 38, 95, 115) #needs addon

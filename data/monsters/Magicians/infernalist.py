@@ -1,4 +1,3 @@
-import game.monster
 
 infernalist = game.monster.genMonster("Infernalist", (130, 6080), "a infernalist")
 infernalist.setOutfit(78, 76, 94, 115) #needs 2 addons

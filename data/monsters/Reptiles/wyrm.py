@@ -1,4 +1,3 @@
-import game.monster
 
 wyrm = game.monster.genMonster("Wyrm", (291, 8941), "a wyrm")
 wyrm.setHealth(1825)

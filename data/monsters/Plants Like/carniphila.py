@@ -1,4 +1,3 @@
-import game.monster
 
 carniphila = game.monster.genMonster("Carniphila", (120, 6047), "a carniphila")
 carniphila.setHealth(255)

@@ -1,7 +1,3 @@
-import game.scriptsystem as scriptsystem
-import game.map
-import config
-
 # Stairfronts
 """stairnorth = None,
 stairsouth = None
@@ -125,21 +121,21 @@ def teleportDirection(creature, thing, position, **k):
     
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
-scriptsystem.get("walkOn").reg(stairs, floorchange)
-scriptsystem.reg('useWith', stairs, itemFloorChange)
+reg("walkOn", stairs, floorchange)
+reg('useWith', stairs, itemFloorChange)
 
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398, 459
-scriptsystem.get("walkOn").reg(ramps, teleportDirection)
+reg("walkOn", ramps, teleportDirection)
 
 # Ladders up
 laddersUp = 1386, 3678, 5543, 8599
-scriptsystem.get("use").reg(laddersUp, floorup)
+reg("use", laddersUp, floorup)
 
 # Ladders down
 laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
-scriptsystem.get("use").reg(laddersDown, floordown)
+reg("use", laddersDown, floordown)
 
 # Trapdoors, holes etc
 trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
-scriptsystem.get("walkOn").reg(trapsAndHoles, floordown)
+reg("walkOn", trapsAndHoles, floordown)

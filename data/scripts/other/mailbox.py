@@ -1,8 +1,3 @@
-import game.engine as engine
-import game.enum as enum
-import game.scriptsystem as scriptsystem
-from twisted.internet.defer import inlineCallbacks, returnValue
-
 mailboxes = (2593,)
 
 def parseText(text):
@@ -60,4 +55,4 @@ def onSend(creature, position, thing, onId, onThing, **k):
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
             
-scriptsystem.reg('useWith', mailboxes, onSend)
+reg('useWith', mailboxes, onSend)

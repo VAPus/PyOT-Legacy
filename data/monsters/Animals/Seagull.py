@@ -1,4 +1,3 @@
-import game.monster
 
 Seagull = game.monster.genMonster("Seagull", (223, 6076), "a seagull")
 Seagull.setTargetChance(0)

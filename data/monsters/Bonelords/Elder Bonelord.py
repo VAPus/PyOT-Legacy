@@ -1,4 +1,3 @@
-import game.monster
 
 Elder_Bonelord = game.monster.genMonster("Elder Bonelord", (226, 6079), "a Elder Bonelord")
 Elder_Bonelord.setTargetChance(10)

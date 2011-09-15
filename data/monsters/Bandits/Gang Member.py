@@ -1,4 +1,3 @@
-import game.monster
 
 Gang_Member = game.monster.genMonster("Gang Member", (151, 6080), "a Gang Member")
 Gang_Member.setOutfit(114, 19, 42, 20)

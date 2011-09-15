@@ -1,4 +1,3 @@
-import game.monster
 
 Merlkin = game.monster.genMonster("Merlkin", (117, 6044), "a Merlkin")
 Merlkin.setTargetChance(10)

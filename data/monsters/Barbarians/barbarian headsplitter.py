@@ -1,4 +1,3 @@
-import game.monster
 
 Barbarian_Headsplitter = game.monster.genMonster("Barbarian Headsplitter", (253, 6080), "a Barbarian Headsplitter")
 Barbarian_Headsplitter.setOutfit(115,105,119,132)

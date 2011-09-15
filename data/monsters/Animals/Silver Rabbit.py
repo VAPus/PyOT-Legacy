@@ -1,4 +1,3 @@
-import game.monster
 
 Silver_Rabbit = game.monster.genMonster("Silver Rabbit", (252, 7338), "a silver rabbit")
 Silver_Rabbit.setTargetChance(10)

@@ -1,4 +1,3 @@
-import game.monster
 #mostly unknown
 raging_mage = game.monster.genMonster("Raging Mage", (35, 5995), "the raging mage") #unknown looktype or corpse
 #raging_mage.setOutfit(69, 66, 69, 66)

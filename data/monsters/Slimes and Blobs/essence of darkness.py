@@ -1,4 +1,3 @@
-import game.monster
 #mostly incorrect?
 essence_of_darkness = game.monster.genMonster("Essence Of Darkness", (315, 9960), "an essence of darkness")
 essence_of_darkness.setHealth(1000) #or more

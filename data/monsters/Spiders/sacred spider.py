@@ -1,4 +1,3 @@
-import game.monster
 #most values are unknown
 Sacred_Spider = game.monster.genMonster("Sacred Spider", (219, 5995), "a sacred spider")
 Sacred_Spider.setHealth(550)

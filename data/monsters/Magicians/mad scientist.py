@@ -1,4 +1,3 @@
-import game.monster
 
 mad_scientist = game.monster.genMonster("Mad Scientist", (133, 6080), "a mad scientist")
 mad_scientist.setOutfit(97, 0, 38, 97) #needs 1 addon

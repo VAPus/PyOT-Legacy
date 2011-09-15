@@ -1,4 +1,3 @@
-import game.monster
 
 Stampor = game.monster.genMonster("Stampor", (381, 13246), "a stampor")
 Stampor.setTargetChance(10)

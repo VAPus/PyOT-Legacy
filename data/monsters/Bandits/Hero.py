@@ -1,4 +1,3 @@
-import game.monster
 
 Hero = game.monster.genMonster("Hero", (73, 6080), "a Hero")
 Hero.setTargetChance(10)

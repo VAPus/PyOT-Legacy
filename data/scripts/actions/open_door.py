@@ -1,6 +1,3 @@
-from game.scriptsystem import reg
-from game.engine import transformItem, relocate
-
 openHorizontal = 1214, 1222, 1226, 1230, 1236, 1240, 1244, 1248, 1254, 1258, 1262, 1542, 1637, 1641, 3537, 3539, 3541, 3543, 4918, 5085, 5100,\
                 5102, 5104, 5106, 5118, 5120, 5122, 5124, 5136, 5139, 5280, 5287, 5291, 5295, 5518, 5734, 5746, 6197, 6201, 6205, 6209, 6254,\
                 6258, 6262, 6266, 6796, 6800, 6893, 6895, 6897, 6899, 7035, 7037, 7039, 7041, 7057, 8546, 8550, 8554, 8558, 9170, 9174, 9178,\
@@ -15,15 +12,15 @@ def openHorizontalDoor(creature, thing, position, **k):
     newPos = position[:]
     newPos[1] += 1
     
-    transformItem(thing, thing.itemId+1, position)
-    relocate(position, newPos)
+    engine.transformItem(thing, thing.itemId+1, position)
+    engine.relocate(position, newPos)
 
 def openVerticalDoor(creature, thing, position, **k):
     newPos = position[:]
     newPos[1] += 1
     
-    transformItem(thing, thing.itemId+1, position)
-    relocate(position, newPos)
+    engine.transformItem(thing, thing.itemId+1, position)
+    engine.relocate(position, newPos)
 
 reg('use', openHorizontal, openHorizontalDoor)
 reg('use', openVertical, openVerticalDoor)

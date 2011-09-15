@@ -1,4 +1,3 @@
-import game.monster
 
 fury = game.monster.genMonster("Fury", (149, 6081), "a fury")
 fury.setOutfit(94, 77, 96, 0) #needs addons

@@ -1,4 +1,3 @@
-import game.monster
 
 medusa = game.monster.genMonster("Medusa", (330, 10524), "a medusa")
 medusa.setHealth(4500)

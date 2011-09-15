@@ -1,4 +1,3 @@
-import game.monster
 
 crystal_spider = game.monster.genMonster("Crystal Spider", (263, 7344), "a crystal spider")
 crystal_spider.setHealth(1250)

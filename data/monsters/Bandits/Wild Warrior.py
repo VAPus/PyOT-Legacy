@@ -1,4 +1,3 @@
-import game.monster
 
 Wild_Warrior = game.monster.genMonster("Wild Warrior", (131, 6090), "a Wild Warrior")
 Wild_Warrior.setOutfit(57, 57, 57, 57)

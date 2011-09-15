@@ -1,4 +1,3 @@
-import game.monster
  # Bad fixed
 crystal_wolf = game.monster.genMonster("crystal wolf", (226, 6079), "a crystal wolf") # unkown yet
 crystal_wolf.setTargetChance(10)

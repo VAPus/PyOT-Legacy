@@ -1,7 +1,3 @@
-# Example of outfits (resource) file
-
-import game.resource
-
 # The system will id them 1,2,3,4,5....
 # Ow, and by the way, gender 0 is boy
 

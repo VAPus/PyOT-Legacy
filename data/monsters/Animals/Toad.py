@@ -1,4 +1,3 @@
-import game.monster
 
 Toad = game.monster.genMonster("Toad", (222, 6077), "a toad")
 Toad.setTargetChance(10)

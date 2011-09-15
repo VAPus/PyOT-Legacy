@@ -1,4 +1,3 @@
-import game.monster
 
 Amazon = game.monster.genMonster("Amazon", (137, 6081), "a Amazon")
 Amazon.setOutfit(113, 120, 114, 132)

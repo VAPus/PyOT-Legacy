@@ -1,4 +1,3 @@
-import game.monster
 #still somewhat unknown
 furious_orc_berserker = game.monster.genMonster("Durious Orc Berserker", (35, 5995), "a furious orc berserker")
 furious_orc_berserker.setHealth(2, healthmax=2)

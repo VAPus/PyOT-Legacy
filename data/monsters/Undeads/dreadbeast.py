@@ -1,4 +1,3 @@
-import game.monster
 
 dreadbeast = game.monster.genMonster("Dreadbeast", (101, 6030), "a dreadbeast")
 dreadbeast.setHealth(795)

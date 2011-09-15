@@ -1,4 +1,3 @@
-import game.monster
 
 Stalker = game.monster.genMonster("Stalker", (128, 6080), "a Stalker")
 Stalker.setOutfit(95, 116, 95, 114)

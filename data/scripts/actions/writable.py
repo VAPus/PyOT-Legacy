@@ -1,7 +1,3 @@
-import game.scriptsystem as scriptsystem
-import game.item
-import time
-
 def writable(creature, thing, position, stackpos, **k):
     windowId = creature.textWindow(thing, True, thing.maxTextLen or 0xFF, thing.text if thing.text else "", thing.writtenBy if thing.writtenBy else "", thing.written if thing.written else "") 
 
@@ -20,7 +16,7 @@ def writable(creature, thing, position, stackpos, **k):
             
     creature.windowHandlers[windowId] = writeback
     
-useScript = scriptsystem.get("use")
+useScript = game.scriptsystem.get("use")
 for item in game.item.items:
     if item and "writeable" in item:
         useScript.reg(game.item.reverseItems[item["cid"]], writable)

@@ -1,4 +1,3 @@
-import game.monster
 
 tarantula = game.monster.genMonster("Tarantula", (219, 5995), "a tarantula")
 tarantula.setHealth(225)

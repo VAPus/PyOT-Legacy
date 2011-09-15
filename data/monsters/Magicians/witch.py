@@ -1,4 +1,3 @@
-import game.monster
 
 witch = game.monster.genMonster("Witch", (54, 6081), "a witch")
 witch.setHealth(300)

@@ -1,4 +1,3 @@
-import game.monster
 
 bug = game.monster.genMonster("Bug", (45, 5990), "a bug")
 bug.bloodType("slime")

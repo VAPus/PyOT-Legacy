@@ -1,4 +1,3 @@
-import game.monster
 
 Flamingo = game.monster.genMonster("Flamingo", (212, 6054), "a flamingo")
 Flamingo.setTargetChance(10)

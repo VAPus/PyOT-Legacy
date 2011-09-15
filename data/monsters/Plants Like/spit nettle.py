@@ -1,4 +1,3 @@
-import game.monster
 
 spit_nettle = game.monster.genMonster("Spit Nettle", (221, 6062), "a spit nettle")
 spit_nettle.setHealth(150, healthmax=150)

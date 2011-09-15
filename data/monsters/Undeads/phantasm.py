@@ -1,4 +1,3 @@
-import game.monster
 
 phantasm = game.monster.genMonster("Phantasm", (241, 6344), "a phantasm")
 phantasm.setHealth(3950)

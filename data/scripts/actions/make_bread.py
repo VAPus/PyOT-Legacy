@@ -1,8 +1,3 @@
-from game.scriptsystem import reg
-from game.engine import transformItem, updateTile
-import random
-import game.enum as enum
-
 wheat = 2694
 flour = 2692
 dough = 2693

@@ -1,8 +1,8 @@
-import game.scriptsystem
+"""import game.scriptsystem
 import game.item
 
 # Magicly transform closed doors to open doors!
-"""def addMapItem(creature, thing, options):
+def addMapItem(creature, thing, options):
     if game.item.items[thing.itemId+1]["name"] == "open door":
         item = game.item.Item(thing.itemId+1, **options)
     else:

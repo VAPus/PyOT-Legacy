@@ -1,4 +1,3 @@
-import game.monster
 
 Gnarlhound = game.monster.genMonster("Gnarlhound", (341, 11250), "a gnarlhound")
 Gnarlhound.setTargetChance(10)

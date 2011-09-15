@@ -1,4 +1,3 @@
-import game.monster
 
 souleater = game.monster.genMonster("Souleater", (355, 12631), "a souleater")
 souleater.setHealth(1100)

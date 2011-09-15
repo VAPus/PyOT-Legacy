@@ -1,4 +1,3 @@
-import game.monster
 
 Polar_Bear = game.monster.genMonster("Polar Bear", (42, 5987), "a polar bear")
 Polar_Bear.setTargetChance(10)

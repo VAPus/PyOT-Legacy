@@ -1,4 +1,3 @@
-import game.monster
 
 Sibang = game.monster.genMonster("Sibang", (118, 6045), "a Sibang")
 Sibang.setTargetChance(10)

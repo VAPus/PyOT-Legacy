@@ -1,11 +1,3 @@
-import game.scriptsystem as scriptsystem
-from packet import TibiaPacket
-from game.map import placeCreature, getTile
-import game.engine, game.item
-from game.creature import Creature
-import game.errors
-import game.item
-
 def callback(creature, text):
     creature.message("No you!!")
     
@@ -17,7 +9,7 @@ def teleporter(creature, text):
     pos = [int(x),int(y),int(z)]
     try:
         creature.teleport(pos)
-    except game.errors.SolidTile:
+    except:
         creature.message("Can't teleport to solid tiles!")
     else:
         creature.message("Welcome to %s" % text)
@@ -54,18 +46,18 @@ def tilerE(creature, text):
 def mypos(creature, text):
     creature.message("Your position is: "+str(creature.position))
     print str(creature.position) # Print to console to be sure
-scriptsystem.get("talkaction").reg("help", callback)
-scriptsystem.get("talkactionFirstWord").reg('rep', repeater)
-scriptsystem.get("talkactionFirstWord").reg('teleport', teleporter)
-scriptsystem.get("talkactionFirstWord").reg('set', tiler)
-scriptsystem.get("talkaction").reg('t', tilerE)
-scriptsystem.get("talkaction").reg('mypos', mypos)
+reg("talkaction", "help", callback)
+reg("talkactionFirstWord", 'rep', repeater)
+reg("talkactionFirstWord", 'teleport', teleporter)
+reg("talkactionFirstWord", 'set', tiler)
+reg("talkaction", 't', tilerE)
+reg("talkaction", 'mypos', mypos)
 def speedsetter(creature, text):
     try:
         creature.setSpeed(int(text))
     except:
         creature.message("Invalid speed!")
-scriptsystem.get("talkactionFirstWord").reg('speed', speedsetter)
+reg("talkactionFirstWord", 'speed', speedsetter)
 
 
 
@@ -105,11 +97,10 @@ def testContainer(creature, thing, position, stackpos, index):
             creature.scripts["onNextStep"].append(lambda who: thing.opened and creature.closeContainer(thing))
     else:
         creature.closeContainer(thing)
-
-useScript = scriptsystem.get("farUse")
+_script_ = game.scriptsystem.get("farUse")
 for item in game.item.items:
     if item and "containerSize" in item:
-        useScript.reg(game.item.reverseItems[item["cid"]], testContainer)
+        _script_.reg(game.item.reverseItems[item["cid"]], testContainer)
 
 
 def makeitem(creature, text):
@@ -132,7 +123,7 @@ def makeitem(creature, text):
          
     return False
 
-scriptsystem.get("talkactionFirstWord").reg('i', makeitem)
+reg("talkactionFirstWord", 'i', makeitem)
 
 
 # Reimport tester
@@ -144,8 +135,8 @@ def saySomething(creature, text):
     creature.say("Test 1")
     return False
     
-scriptsystem.get("talkaction").reg('reload', reimporter)
-scriptsystem.get("talkaction").reg('reloadtest', saySomething)
+reg("talkaction", 'reload', reimporter)
+reg("talkaction", 'reloadtest', saySomething)
 
 # Tester of container functions
 def popItems(creature, text):
@@ -153,7 +144,7 @@ def popItems(creature, text):
     item = creature.findItemById(i,c)
     return False
     
-scriptsystem.get("talkactionFirstWord").reg('pop', popItems)
+reg("talkactionFirstWord", 'pop', popItems)
 
 # Experience tester
 def modexp(creature, text):
@@ -161,7 +152,7 @@ def modexp(creature, text):
     creature.modifyExperience(exp)
     return False
     
-scriptsystem.get("talkactionFirstWord").reg('exp', modexp)
+reg("talkactionFirstWord", 'exp', modexp)
 
 # Creature tester
 def creatureSpawn(creature, text):
@@ -173,19 +164,19 @@ def creatureSpawn(creature, text):
         
     return False
     
-scriptsystem.get("talkactionFirstWord").reg('s', creatureSpawn)
+reg("talkactionFirstWord", 's', creatureSpawn)
 
 def saveMe(creature, text):
     creature.save()
     return False
     
-scriptsystem.get("talkaction").reg('saveme', saveMe)
+reg("talkaction", 'saveme', saveMe)
 
 def saveAll(creature, text):
     game.engine.saveAll()
     return False
     
-scriptsystem.get("talkaction").reg('saveall', saveAll)
+reg("talkaction", 'saveall', saveAll)
 
 def spawnDepot(creature, text):
     depotId = int(text)
@@ -195,7 +186,7 @@ def spawnDepot(creature, text):
     tile.placeItem(box)
     game.engine.updateTile(position, tile)
     
-scriptsystem.reg('talkactionFirstWord', 'depot', spawnDepot)
+reg('talkactionFirstWord', 'depot', spawnDepot)
 
 def trackScripts(creature, text):
     import inspect
@@ -218,13 +209,12 @@ def trackScripts(creature, text):
     else:
         creature.message("No scripts what so ever on %s" % text)
 
-scriptsystem.reg('talkactionFirstWord', 'track', trackScripts)
+reg('talkactionFirstWord', 'track', trackScripts)
 
 def mountPlayer(creature, text):
     if not config.allowMounts:
         return
         
-    import game.resource
     if text and text != "!mount":
         try:
             if creature.canUseMount(text):
@@ -244,8 +234,8 @@ def mountPlayer(creature, text):
             creature.message("You're now unmouned.")
         
     return False
-scriptsystem.reg('talkactionFirstWord', '!mount', mountPlayer)
-scriptsystem.reg('talkaction', '!mount', mountPlayer)
+reg('talkactionFirstWord', '!mount', mountPlayer)
+reg('talkaction', '!mount', mountPlayer)
 
 def addMount(creature, text):
     try:
@@ -255,7 +245,7 @@ def addMount(creature, text):
         creature.message("Invalid mount.")
     return False
 
-scriptsystem.reg('talkactionFirstWord', 'mount', addMount)
+reg('talkactionFirstWord', 'mount', addMount)
 
 def addOutfit(creature, text):
     try:
@@ -265,4 +255,4 @@ def addOutfit(creature, text):
         creature.message("Invalid outfit.")
     return False
 
-    scriptsystem.reg('talkactionFirstWord', 'outfit', addOutfit)
+reg('talkactionFirstWord', 'outfit', addOutfit)

@@ -1,4 +1,3 @@
-import game.monster
 
 rift_scythe = game.monster.genMonster("Rift Scythe", (300, 6070), "a rift scythe")#no corpse
 rift_scythe.setHealth(3600)

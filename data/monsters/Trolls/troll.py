@@ -1,4 +1,3 @@
-import game.monster
 
 troll = game.monster.genMonster("troll", (15, 5960), "a troll")
 troll.setHealth(50)

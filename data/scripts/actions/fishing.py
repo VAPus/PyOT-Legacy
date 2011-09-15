@@ -1,10 +1,3 @@
-from game.scriptsystem import reg
-import game.map
-import game.enum as enum
-import random
-import game.item
-from game.engine import transformItem
-
 fishWater = 4608, 4609, 4610, 4611, 4612, 4613, 4614, 4615, 4616
 nofishWater = 493, 4617, 4618, 4619, 4210, 4621, 4622, 4623, 4624, 4625, 4820, 4821, 4822, 4823, 4824, 4825
 iceHoleFish = 7236
@@ -54,7 +47,7 @@ def onUse(creature, thing, position, onThing, onPosition):
             except:
                 pass
 
-            transformItem(onThing, onThing.itemId+9, position)
+            engine.transformItem(onThing, onThing.itemId+9, position)
             creature.skillAttempt(enum.SKILL_FISH)
     elif onThing.itemId == iceHoleFish:
         if thing.itemId == mechanicalFishingRod:
@@ -75,7 +68,7 @@ def onUse(creature, thing, position, onThing, onPosition):
         except:
             pass
 
-        transformItem(onThing, onThing.itemId+1, position)
+        engine.transformItem(onThing, onThing.itemId+1, position)
         creature.skillAttempt(enum.SKILL_FISH, 2)
 
     onThing.decay()

@@ -1,4 +1,3 @@
-import game.monster
 
 troll_champion = game.monster.genMonster("Troll Champion", (281, 7926), "a troll champion")
 troll_champion.setHealth(75)

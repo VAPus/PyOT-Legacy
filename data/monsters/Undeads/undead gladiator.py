@@ -1,4 +1,3 @@
-import game.monster
 
 undead_gladiator = game.monster.genMonster("Undead Gladiator", (306, 9823), "an undead gladiator")
 undead_gladiator.setHealth(1000)

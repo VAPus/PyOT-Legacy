@@ -1,4 +1,3 @@
-import game.monster
 #move to misc/shapeshifter folder
 son_of_verminor = game.monster.genMonster("Son Of Verminor", (19, 1496), "a son of verminor")
 son_of_verminor.setHealth(8500)

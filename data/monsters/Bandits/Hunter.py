@@ -1,4 +1,3 @@
-import game.monster
 
 Hunter = game.monster.genMonster("Hunter", (129, 6080), "a Hunter")
 Hunter.setOutfit(95, 116, 121, 115)

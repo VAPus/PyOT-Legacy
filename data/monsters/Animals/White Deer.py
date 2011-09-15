@@ -1,4 +1,3 @@
-import game.monster
 # bad
 White_Deer = game.monster.genMonster("White Deer", (400, 6079), "a white deer") # uknown yet
 White_Deer.setTargetChance(10)

@@ -1,4 +1,3 @@
-import game.monster
 
 ghoul = game.monster.genMonster("Ghoul", (18, 5976), "a ghoul")
 ghoul.setHealth(100)

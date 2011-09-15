@@ -1,4 +1,3 @@
-import game.monster
 
 cobra = game.monster.genMonster("Cobra", (81, 10603), "a cobra")
 cobra.setHealth(65)

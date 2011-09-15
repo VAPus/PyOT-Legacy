@@ -1,6 +1,3 @@
-import game.scriptsystem as scriptsystem
-import game.spell
-
 spellBooks = 2175, 6120, 8900, 8901, 8902, 8903, 8904, 8918
 
 def spellBook(creature, thing, **k):
@@ -23,4 +20,4 @@ def spellBook(creature, thing, **k):
         text += "\n"
     creature.textWindow(thing, text=text)
     
-scriptsystem.reg('use', spellBooks, spellBook)
+reg('use', spellBooks, spellBook)

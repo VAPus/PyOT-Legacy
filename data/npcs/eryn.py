@@ -1,11 +1,9 @@
-import game.npc as npc
-
-Eryn = npc.genNPC("Eryn", (130, 39, 122, 125, 37, 2212), "Eryn, the rune vendor")
+Eryn = game.npc.genNPC("Eryn", (130, 39, 122, 125, 37, 2212), "Eryn, the rune vendor")
 Eryn.setWalkable(False)
 
 Eryn.greet("Hello %(playerName)s. I sell runes, potions, wands and rods.")
 
-class Test(npc.ClassAction):
+class Test(game.npc.ClassAction):
     def action(self): self.on.onSaid('test', self.test)
     def test(self, npc, player):
         npc.sayTo(player, "I can multiply any number by two! Please tell me one!")

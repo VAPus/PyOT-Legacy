@@ -1,4 +1,3 @@
-import game.monster
 
 quara_hydromancer_scout = game.monster.genMonster("Quara Hydromancer Scout", (47, 6066), "a quara hydromancer scout")
 quara_hydromancer_scout.setHealth(1100)

@@ -1,4 +1,3 @@
-import game.monster
 
 mutated_human = game.monster.genMonster("Mutated Human", (323, 9107), "a mutated human")
 mutated_human.setHealth(240)

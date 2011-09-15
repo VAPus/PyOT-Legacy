@@ -1,4 +1,3 @@
-import game.monster
 
 ghoulish_hyaena = game.monster.genMonster("Ghoulish Hyaena", (94, 6026), "a ghoulish hyaena")
 ghoulish_hyaena.setHealth(400)

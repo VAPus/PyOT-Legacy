@@ -1,5 +1,3 @@
-from game.scriptsystem import reg
-
 containers = 2005
 
 def onUse(creature, thing, position, stackpos, onThing, **k):

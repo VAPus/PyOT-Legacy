@@ -1,4 +1,3 @@
-import game.monster
 
 crocodile = game.monster.genMonster("Crocodile", (119, 6046), "a crocodile")
 crocodile.setHealth(105)

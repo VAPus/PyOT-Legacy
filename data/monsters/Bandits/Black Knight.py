@@ -1,4 +1,3 @@
-import game.monster
 
 Black_Knight = game.monster.genMonster("Black Knight", (131, 6080), "a Black Knight")
 Black_Knight.setOutfit(95, 95, 95, 95)

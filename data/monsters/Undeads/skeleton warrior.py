@@ -1,4 +1,3 @@
-import game.monster
 
 skeleton_warrior = game.monster.genMonster("Skeleton Warrior", (298, 5972), "a skeleton warrior")
 skeleton_warrior.setHealth(65)

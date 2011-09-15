@@ -1,4 +1,3 @@
-import game.monster
 
 running_elite_orc_guard = game.monster.genMonster("Running Elite Orc Guard", (7, 5979), "a running elite orc guard")
 running_elite_orc_guard.setHealth(1)

@@ -1,4 +1,3 @@
-import game.monster
 
 orc_marauder = game.monster.genMonster("Orc Marauder ", (342, 11254), "an orc marauder ")
 orc_marauder.setHealth(185, healthmax=185)

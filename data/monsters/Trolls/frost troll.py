@@ -1,4 +1,3 @@
-import game.monster
 
 frost_troll = game.monster.genMonster("Frost Troll", (53, 5998), "a frost troll")
 frost_troll.setHealth(55)

@@ -1,4 +1,3 @@
-import game.monster
 
 pirate_skeleton = game.monster.genMonster("Pirate Skeleton", (195, 6070), "a pirate skeleton")
 pirate_skeleton.setHealth(190)

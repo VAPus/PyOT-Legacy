@@ -1,4 +1,3 @@
-import game.monster
 
 coral_frog = game.monster.genMonster("Coral Frog", (226, 6079), "a coral frog")
 coral_frog.setOutfit(69, 66, 69, 66)

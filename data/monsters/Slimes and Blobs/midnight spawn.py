@@ -1,4 +1,3 @@
-import game.monster
 #some incorrect information
 midnight_spawn = game.monster.genMonster("Midnight Spawn", (315, 9960), "a midnight spawn")
 midnight_spawn.setHealth(320)

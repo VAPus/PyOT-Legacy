@@ -1,4 +1,3 @@
-import game.monster
 
 mummy = game.monster.genMonster("Mummy", (65, 6004), "a mummy")
 mummy.setHealth(240)

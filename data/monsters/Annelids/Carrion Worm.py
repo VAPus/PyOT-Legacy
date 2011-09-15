@@ -1,4 +1,3 @@
-import game.monster
 
 Carrion_Worm = game.monster.genMonster("Carrion Worm", (192, 6069), "a Carrion Worm")
 Carrion_Worm.setTargetChance(0)

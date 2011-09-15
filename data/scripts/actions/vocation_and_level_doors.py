@@ -1,13 +1,10 @@
-from game.scriptsystem import reg
-from game.engine import transformItem, safeCallLater, autoWalkCreatureTo
-
 doors = 1227, 1229, 1245, 1247, 1259, 1261, 3540, 3549, 5103, 5112, 5121, 5130, 5292, 5294, 6206, 6208, 6263, 6265, 6896, 6905, 7038, 7047, 8555,\
         8557, 9179, 9181, 9281, 9283, 10280, 10282, 10284, 10473, 10482
 
 
 def openDoor(creature, thing, position, **k):
     if not thing.actions:
-        transformItem(thing, thing.itemId+1, position)
+        engine.transformItem(thing, thing.itemId+1, position)
         return
 
     canEnter = True
@@ -24,9 +21,6 @@ def openDoor(creature, thing, position, **k):
     if not canEnter:
         creature.message("Only the worthy may pass.")
     
-    transformItem(thing, thing.itemId+1, position)
-    """autoWalkCreatureTo(creature, position)
-
-    safeCallLater(3, transformItem, thing, thing.itemId-1, position)"""
+    engine.transformItem(thing, thing.itemId+1, position)
 
 reg('use', doors, openDoor)

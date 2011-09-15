@@ -1,4 +1,3 @@
-import game.monster
 
 Terror_Bird = game.monster.genMonster("Terror Bird", (218, 6057), "a terror bird")
 Terror_Bird.setTargetChance(10)

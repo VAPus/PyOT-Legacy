@@ -1,4 +1,3 @@
-import game.monster
 
 wyvern = game.monster.genMonster("Wyvern", (239, 6302), "a wyvern")
 wyvern.setHealth(795)

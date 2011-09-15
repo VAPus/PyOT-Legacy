@@ -1,4 +1,3 @@
-import game.monster
 
 crypt_shambler = game.monster.genMonster("Crypt Shambler", (100, 6029), "a crypt shambler")
 crypt_shambler.setHealth(330)

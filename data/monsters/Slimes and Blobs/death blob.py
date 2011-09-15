@@ -1,4 +1,3 @@
-import game.monster
 
 death_blob = game.monster.genMonster("Death Blob", (315, 9960), "a death blob")
 death_blob.setHealth(320)

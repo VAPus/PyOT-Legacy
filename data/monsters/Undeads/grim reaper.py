@@ -1,4 +1,3 @@
-import game.monster
 
 grim_reaper = game.monster.genMonster("Grim Reaper", (300, 8955), "a grim reaper")
 grim_reaper.setHealth(3900)

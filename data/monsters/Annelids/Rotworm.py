@@ -1,4 +1,3 @@
-import game.monster
 
 Rotworm = game.monster.genMonster("Rotworm", (26, 5967), "a Rotworm")
 Rotworm.setTargetChance(0)

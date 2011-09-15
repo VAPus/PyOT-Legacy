@@ -1,6 +1,3 @@
-from game.scriptsystem import reg
-from game.engine import transformItem
-
 increase = 1210, 1213, 1219, 1221, 1232, 1235, 1237, 1239, 1250, 1253, 1539, 1541, 1634, 1636, 1638, 1640, 3536, 3538, 3545, 3547, 4914, 4917,\
             5082, 5084, 5099, 5101, 5108, 5110, 5117, 5119, 5126, 5126, 5128, 5135, 5138, 5141, 5144, 5279, 5282, 5284, 5286, 5515, 5517,\
             5733, 5736, 6163, 6196, 6198, 6200, 6250, 6253, 6255, 6257, 6795, 6797, 6799, 6801, 6892, 6894, 6901, 6903, 7034, 7036, 7043,\
@@ -15,6 +12,6 @@ def onUse(creature, thing, position, stackpos, **k):
         thing.itemId += 1
         creature.replaceItem(position, stackpos, thing)
     else:
-        transformItem(thing, thing.itemId+1, position)
+        engine.transformItem(thing, thing.itemId+1, position)
 
 reg('use', increase, onUse)

@@ -1,8 +1,4 @@
-import game.scriptsystem as scriptsystem
 from game.npc import ClassAction, regClassAction
-import game.item
-import game.enum
-
 greetings = ('hi ', 'hey ', 'hello ', 'hail ')
 farwells = ('bye', 'farewell', 'cya')
 offers = ('offer', 'trade')
@@ -145,4 +141,4 @@ class RuneShop(Shop):
 regClassAction('runeshop', RuneShop)
 
 # Have to apply on all prestores
-scriptsystem.reg("playerSayTo", 'npc', saidTo)
+reg("playerSayTo", 'npc', saidTo)

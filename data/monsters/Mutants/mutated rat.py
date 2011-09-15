@@ -1,4 +1,3 @@
-import game.monster
 
 mutated_rat = game.monster.genMonster("Mutated Rat", (305, 9871), "a mutated rat")
 mutated_rat.setHealth(550)

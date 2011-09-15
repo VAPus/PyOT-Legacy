@@ -1,4 +1,3 @@
-import game.monster
 
 killer_caiman = game.monster.genMonster("Killer Caiman ", (358, 11138), "a killer caiman ")
 killer_caiman.setHealth(1500)
