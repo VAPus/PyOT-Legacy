@@ -2,7 +2,6 @@
 import sys
 
 provide = []
-compatible_protocols = [860, 861, 910]
 
 def vertify(): return True
 

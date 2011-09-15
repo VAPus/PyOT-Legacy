@@ -6,7 +6,6 @@ import math
 import game.enum
 
 provide = []
-compatible_protocols = [910, 861, 862]
 
 def vertify():
     """if config.allowMounts:
@@ -42,6 +41,10 @@ class Packet(base.BasePacket):
     protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["MSG_EVENT_DEFAULT"]
     protocolEnums['MSG_LOOT'] = protocolEnums["MSG_INFO_DESCR"]
     protocolEnums['MSG_EXPERIENCE'] = protocolEnums["MSG_EVENT_ADVANCE"]
+    
+    # Skulls
+    protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
+    
     def enum(self, key):
         return self.protocolEnums[key]
         
@@ -96,13 +99,21 @@ class Packet(base.BasePacket):
                     continue
                 
                 known = False
+                removeKnown = 0
                 if player:
-                    known = creature.cid in player.knownCreatures
+                    known = creature in player.knownCreatures
                     
                     if not known:
-                        player.knownCreatures.append(creature.cid)
-    
-                self.creature(creature, known)
+                        if len(player.knownCreatures) > self.maxKnownCreatures:
+                            removeKnown = player.checkRemoveKnown()
+                            if not removeKnown:
+                                player.exit("Too many creatures in known list. Please relogin")
+                                return
+                        player.knownCreatures.add(creature)
+                        creature.knownBy.add(player)
+                    
+                    self.creature(creature, known, removeKnown)
+                    
                 if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
@@ -110,29 +121,29 @@ class Packet(base.BasePacket):
             for item in tile.bottomItems():
                 self.item(item)
                 
-    def creature(self, creature, known):
-        print "860!"
+
+    def creature(self, creature, known, removeKnown=0):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
         else:
             self.uint16(0x61)
-            self.uint32(0) # Remove known
+            self.uint32(removeKnown) # Remove known
             self.uint32(creature.clientId())
             #self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(100) # Health %
+        self.uint8(round(creature.data["healthmax"] / creature.data["health"]) * 100) # Health %
         self.uint8(creature.direction) # Direction
-        self.outfit(creature.outfit, creature.addon)
+        self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
         self.uint8(0) # Light
         self.uint16(creature.speed) # Speed
-        self.uint8(0) # Skull
-        self.uint8(0) # Party/Shield
+        self.uint8(creature.skull) # Skull
+        self.uint8(creature.shield) # Party/Shield
         if not known:
-            self.uint8(0) # Emblem
+            self.uint8(creature.emblem) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
-
+        
     def status(self, player):
         print "860"
         self.uint8(0xA0)

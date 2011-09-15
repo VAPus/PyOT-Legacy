@@ -1,7 +1,7 @@
 from twisted.python import log
 import sys
 
-protocolsAvailable = (860, 861, 862, 910)
+protocolsAvailable = (860, 861, 862, 870, 910)
 protocolsUsed = {}
 
 def getProtocol(version):
@@ -18,10 +18,6 @@ def loadProtocol(version):
         
     protocol = __import__('game.protocols.%d' % version, globals(), locals())
     protocol = sys.modules['game.protocols.%d' % version]
-    for x in protocolsUsed:
-        if not x in protocol.compatible_protocols:
-            log.msg("Can't load protocol %d do to incompatibility")
-            return
             
     protocol.vertify()
     protocolsUsed[version] = protocol.Protocol()
