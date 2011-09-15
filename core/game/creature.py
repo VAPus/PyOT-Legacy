@@ -263,7 +263,9 @@ class Creature(object):
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            yield game.scriptsystem.get('preWalkOn').runDefer(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
+            r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
+            if r == False:
+                return
             
             
         newStackPos = newTile.placeCreature(self)

@@ -135,7 +135,7 @@ The events are:
         
 .. function:: useWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos)
 
-    Called when a thing is used. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. (ThingScript)
+    Called when a thing is used and the thing is 1 square or less away from the creature. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. (ThingScript)
     
     :param creature: The creature that tries to use something.
     :type creature: usually :class:`game.player.Player`
@@ -183,3 +183,171 @@ The events are:
                 engine.transformItem(onThing, onThing.itemId-1, onPosition)
 
         reg('useWith', keys, onUseKey)
+        
+.. function:: farUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos)
+
+    Called when a thing is used. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. And it's called BEFORE useWith. (ThingScript)
+    
+    :param creature: The creature that tries to use something.
+    :type creature: usually :class:`game.player.Player`
+    :param thing: The thing that matched the register functions parameters.
+    :type thing: usually :class:`game.item.Item`
+    :param position: The positon the thing have.
+    :type position: :func:`list`
+    :param stackpos: The position in the tile stack the thing have.
+    :type stackpos: :func:`int`
+    
+    :param onThing: The thing that the ``thing``` was used against.
+    :type onThing: :class:`game.item.Item` or :class:`game.creature.Creature`
+    :param onPosition: The positon the ``onThing`` have.
+    :type onPosition: :func:`list`
+    :param onStackpos: The position in the tile stack the ``onThing`` have.
+    :type onStackpos: :func:`int`
+    
+    :returns: Have no meaning.
+    
+    :example:
+    
+    .. code-block:: python
+    
+        lockedDoors = 1209, 1212, 1231, 1234, 1249, 1252, 3535, 3544, 4913, 4616, 5098, 5107, 5116, 5125, 5134, 5137, 5140, 5143, 5278, 5281, 5732, 5735,\
+                    6192, 6195, 6249, 6252, 6891, 6900, 7033, 7042, 8541, 8544, 9165, 9168, 9267, 9270, 10268, 10271, 10468, 10477 
+        keys = range(2086, 2092+1)
+        def onUseKey(creature, onThing, **k):
+            if onThing.itemId in lockedDoors:
+                creature.message("Can't reach the lock of the %s" % onThing.rawName())
+
+        reg('farUseWith', keys, onUseKey)
+        
+.. function:: login(creature)
+
+    Called when a player login. (Script)
+    
+    :param creature: Player object.
+    :type creature: :class:`game.player.Player`
+    
+    :returns: Have no meaning.
+    
+    :example:
+        
+    .. code-block:: python
+    
+        def onLogin(creature):
+            creature.message("Welcome back %s" % creature.name())
+           
+        reg("login", onLogin)
+            
+.. function:: logout(creature)
+
+    Called when a player logout. (Script)
+    
+    :param creature: Player object.
+    :type creature: :class:`game.player.Player`
+    
+    :returns: Have no meaning.
+    
+    :example:
+        
+    .. code-block:: python
+    
+        def onLogout(creature):
+            creature.save()
+                
+        reg("logout", onLogout)
+        
+.. function:: walkOn(creature, thing, position):
+    
+    Called when the creature walks on a item. (ThingScript)
+    
+    :param creature: The creature that walked on this item.
+    :type creature: :class:`game.creature.Creature`
+    :param thing: The item that triggered this call.
+    :type thing: :class:`game.item.Item`
+    :param positon: The position where this item is.
+    :type position: :func:`list`
+
+    :returns: Have no meaning.
+    
+    :example:
+        
+    .. code-block:: python
+        
+        def walkOn(creature, thing, **k):
+            creature.message("You can't stand here!")
+            creature.move(NORTH)
+            
+        reg("walkOn", 1234, walkOn)
+        
+.. function:: walkOff(creature, thing, position):
+    
+    Called when the creature walks off a item. (ThingScript)
+    
+    :param creature: The creature that walked on this item.
+    :type creature: :class:`game.creature.Creature`
+    :param thing: The item that triggered this call.
+    :type thing: :class:`game.item.Item`
+    :param positon: The position where this item is.
+    :type position: :func:`list`
+
+    :returns: Have no meaning.
+    
+    :example:
+        
+    .. code-block:: python
+        
+        def walkOff(creature, **k):
+            creature.message("You left this holy place!")
+            creature.modifyHealth(-30)
+            
+        reg("walkOff", 1234, walkOff)
+        
+.. function:: preWalkOn(creature, thing, position, oldTile, newTile):
+    
+    Called when the creature walks on a item. (ThingScript)
+    
+    :param creature: The creature that walked on this item.
+    :type creature: :class:`game.creature.Creature`
+    :param thing: The item that triggered this call.
+    :type thing: :class:`game.item.Item`
+    :param positon: The position where this item is.
+    :type position: :func:`list`
+    :param newTile: The new tile that the creature might walk on.
+    :param oldTile: The current tile where the creature is placed.
+    
+    :returns: ``False`` will prevent the creature from walking on to this tile.
+    
+    :example:
+        
+    .. code-block:: python
+        
+        def tileCheck(creature, **k):
+            creature.message("We won't allow you to touch this holy ground!")
+            return False
+            
+        reg("preWalkOn", 1234, tileCheck)
+        
+.. function:: lookAt(creature, thing, position, stackpos)
+
+    Called when a player looks at a thing. (ThingScript)
+    
+    :param creature: The creature that looks at something.
+    :type creature: :class:`game.player.Player`
+    :param thing: The thing that the player tries to look at.
+    :type thing: :class:`game.item.Item` or :class:`game.creature.Creature`
+    :param position: The positon the thing have.
+    :type position: :func:`list`
+    :param stackpos: The position in the tile stack the thing have.
+    :type stackpos: :func:`int`
+ 
+    :returns: Return False prevents the default behavior.
+    
+    :example:
+    
+    .. code-block:: python
+           
+        def lookAt(creature, **k):
+            creature.say("I can't look, that thing scare the crap out of me!")
+            return False
+
+           
+        reg("lookAt", 1234, lookAt)
