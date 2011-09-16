@@ -666,7 +666,7 @@ class BaseProtocol(object):
                 if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_AMMO and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     player.notPossible()
                     return
-                elif toPosition[0] == 0xFFFF and toPosition[1] >= 64 and currItem[1].containerSize:
+                elif currItem and currItem[1] and toPosition[0] == 0xFFFF and toPosition[1] >= 64 and currItem[1].containerSize:
                     container = currItem[1].inContainer
                     if container:
                         if container == oldItem[1]:
