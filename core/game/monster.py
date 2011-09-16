@@ -219,7 +219,7 @@ class MonsterBase(CreatureBase):
         
         self.brainFeatures = ["default"]
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.25, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.10, radius=5, radiusTo=None):
         if spawnDelay:
             return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
         else:
