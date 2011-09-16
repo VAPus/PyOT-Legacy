@@ -1,5 +1,5 @@
-width = 2000
-height = 2000
+width = 1309
+height = 1265
 author = 'OTBMXML2sec generator'
 description = """Saved with Remere's Map Editor 2.1
 SimOne MapEditor 0.4.49

@@ -56,7 +56,7 @@ try:
     import numpy as N
 except:
     USE_NUMPY = False
-    
+
 # Python 3
 try:
     xrange()
@@ -65,7 +65,7 @@ except:
     
 class Map(object):
     def __init__(self, xA, yA, ground=100, zs=16):
-        
+        self.levels = zs
         self.size = (xA, yA)
         self._author = ""
         self._description = ""
@@ -191,7 +191,7 @@ class Map(object):
                         levels.append(level)
                 except:
                     pass  """
-            return range(16)
+            return range(self.levels)
         return levels
     def compile(self, areas=(32,32)):
         print("--Begin compilation")

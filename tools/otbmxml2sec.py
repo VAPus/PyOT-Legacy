@@ -201,13 +201,13 @@ _output_ = []
 _output_.append("""
 from generator import Map, Item, Tile, Spawn
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
-m = Map(%d,%d, ground=None)
+m = Map($$$MAX_X$$$,$$$MAX_Y$$$,None,$$$MAX_Z$$$)
 at = m.addTo
 a = m.add
 I = Item
 T = Tile
 print ("--Done generating the map layout")
-""" % (width, height))
+""")
 # Prepopulate map with a ground level of voids
 
 nodes = root.next()
@@ -239,6 +239,9 @@ node = nodes.next()
 onTile = 0
 lastPrint = 0
 print("--Begin OTBM nodes")
+MAX_X = 0
+MAX_Y = 0
+MAX_Z = 0
 while node:
     type = node.data.uint8()
     if type == 4: # Tile area
@@ -252,11 +255,19 @@ while node:
             if tileType == 5 or tileType == 14: # Tile
                 tileX = tile.data.uint8() + baseX
                 tileY = tile.data.uint8() + baseY
+                
+                if tileX > MAX_X:
+                    MAX_X = tileX
+                if tileY > MAX_Y:
+                    MAX_Y = tileY
+                if baseZ > MAX_Z:
+                    MAX_Z = baseZ
+                    
                 houseId = 0
                 if tileType == 14:
                     houseId = tile.data.uint32()
                 _render_ = False
-                _itemG_ = 'None'
+                _itemG_ = None
                 # Attributes
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
@@ -270,58 +281,61 @@ while node:
                     else:
                         print("Unknown tile attrubute")
                 
-
-                _tile_ = ["t=T(%d,%d,%s%s)" % (tileX, tileY, _itemG_, ', %d'%baseZ if baseZ != 7 else '')]
+                if _itemG_:
+                    _tile_ = ["ti=[%s]" % _itemG_]
+                else:
+                    _tile_ = ["ti=[]"]
+                    
                 item = tile.next()
+                itemNum = 0
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _tile_.append("i=I(%d)" % (itemId))
-                        safe = True
+                        _tile_.append("i%d=I(%d)" % (itemNum, itemId))
                         
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
                             if attr == 10: # depotId
-                                _tile_.append("i.attribute(\"depotId\",%d)" % item.data.uint16())
+                                _tile_.append("i%d.attribute(\"depotId\",%d)" % (itemNum, item.data.uint16()))
                                 safe = False
                             elif attr == 14: # houseDoorId
                                 safe = False
                                 item.data.uint8() # We don't need this
-                                _tile_.append("i.action('houseDoor')")
+                                _tile_.append("i%d.action('houseDoor')" % itemNum)
                             elif attr == 20: # Sleeperguid
                                 item.data.uint32() # TODO: care?
                             elif attr == 21: # sleepstart
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
                                 safe = False
-                                _tile_.append("i.attribute(\"teledest\",[%d,%d,%d])" % (item.data.uint16(),item.data.uint16(),item.data.uint8()))
+                                _tile_.append("i%d.attribute(\"teledest\",(%d,%d,%d))" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
                             elif attr == 15: # Item count
                                 safe = False
-                                _tile_.append("i.attribute(\"count\",%d)" % (item.data.uint8()))
+                                _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
                             elif attr == 4: # action id
                                 safe = False
-                                _tile_.append("i.action(%d)" % item.data.uint16())
+                                _tile_.append("i%d.action(%d)" % (itemNum, item.data.uint16()))
                             elif attr == 5:
                                 safe = False
-                                _tile_.append("i.action(%d)" % (item.data.uint16() + 0xFFFF))
+                                _tile_.append("i%d.action(%d)" % (itemNum, item.data.uint16() + 0xFFFF))
                             elif attr == 6:
                                 safe = False
-                                _tile_.append('i.attribute("text","""%s""")' % (item.data.string()))
+                                _tile_.append('i%d.attribute("text","""%s""")' % (itemNum, item.data.string()))
                             elif attr == 18:
                                 safe = False
-                                _tile_.append("i.attribute(\"written\",%d)" % (item.data.uint32()))
+                                _tile_.append("i%d.attribute(\"written\",%d)" % (itemNum, item.data.uint32()))
                             elif attr == 19:
                                 safe = False
-                                _tile_.append("i.attribute(\"writtenBy\",\"%s\")" % (item.data.string()))
+                                _tile_.append("i%d.attribute(\"writtenBy\",\"%s\")" % (itemNum, item.data.string()))
                             elif attr == 7:
                                 safe = False
-                                _tile_.append("i.attribute(\"description\",\"%s\")" % (item.data.string()))
+                                _tile_.append("i%d.attribute(\"description\",\"%s\")" % (itemNum, item.data.string()))
                             elif attr == 12:
                                 runeCharges = item.data.uint8()
                             elif attr == 22:
                                 safe = False
-                                _tile_.append("i.attribute(\"count\",%d)" % (item.data.uint8()))
+                                _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
                             elif attr == 16:
                                 duration = item.data.uint32()
                                 print("duration = %d" % duration)
@@ -334,12 +348,9 @@ while node:
                             else:
                                 print("Unknown item attribute %d" % attr)
                         _render_ = True
-                        if safe:
-                            t = _tile_[-1].replace("i=", '')
-                            del _tile_[-1]
-                            _tile_.append("t.add(%s)" % t)
-                        else:
-                            _tile_.append("t.add(i)")
+                        
+                        _tile_.append("ti.append(i%d)" % itemNum)
+                        itemNum += 1
                     else:
                         print("Unknown item header")
                     item = tile.next()
@@ -347,9 +358,9 @@ while node:
                 print("Unknown tile node")
             if _render_:
                 if len(_tile_) == 1:
-                    _output_.append("a(%s)" % _tile_[0].replace("t=", ''))
+                    _output_.append("at(%d,%d,%s%s)" % (tileX, tileY, _tile_[0].replace("ti=",""), ',%d'%baseZ if baseZ != 7 else ''))
                 else:
-                    _tile_.append("a(t)")
+                    _tile_.append("at(%d,%d,ti%s)" % (tileX, tileY, ',%d'%baseZ if baseZ != 7 else ''))
                     _output_.append("\n".join(_tile_))
                 if houseId:
                     _output_.append("m.houses[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, houseId))
@@ -406,7 +417,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     baseY = int(xSpawn.getAttribute("centery"))
     baseZ = int(xSpawn.getAttribute("centerz"))
     radius = int(xSpawn.getAttribute("radius"))
-    spawn = "s = Spawn(%d,(%d,%d))" % (radius, baseX, baseY)
+    spawn = "s = Spawn(%d, (%d, %d))" % (radius, baseX, baseY)
     spawnSectors = []
     spawnData = {}
     
@@ -417,7 +428,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         monsterZ  = int(xMonster.getAttribute("z"))
         if monsterZ != baseZ:
             print("UNSUPPORTED spawns!")
-        
+
         monsterName = xMonster.getAttribute("name") 
 
         sector = (int((baseX+monsterX)/32), int((baseY+monsterY)/32))
@@ -425,7 +436,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             spawnSectors.append(sector)
             spawnData[sector] = []
         
-        spawnData[sector].append("s.monster(\"%s\",%d,%d,%d)" % (monsterName, monsterX, monsterY, monsterZ))    
+        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d)" % (monsterName, monsterX, monsterY, monsterZ))    
 
     for xMonster in xSpawn.getElementsByTagName("npc"):
         npcX = int(xMonster.getAttribute("x"))
@@ -440,12 +451,20 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if not sector in spawnSectors:
             spawnSectors.append(sector)
             spawnData[sector] = []
-        spawnData[sector].append("s.npc(\"%s\",%d,%d,%d)" % (npcName, npcX, npcY, npcZ))  
+        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d)" % (npcName, npcX, npcY, npcZ))  
         
     for entry in spawnSectors:
+        x = (entry[0]*32)+16
+        y = (entry[1]*32)+16
         _output_.append(spawn)
         _output_.append('\n'.join(spawnData[entry]))
-        _output_.append("at(%d, %d, s, %d)" % ((entry[0]*32)+16, (entry[1]*32)+16, baseZ))
+        _output_.append("at(%d, %d, s, %d)\n" % (x, y, baseZ))
+        if x > MAX_X:
+            MAX_X = x
+        if y > MAX_Y:
+            MAX_Y = y
+        if baseZ > MAX_Z:
+            MAX_Z = baseZ
         
 print("---Done with spawns")
 
@@ -465,7 +484,7 @@ open("house.py", "wb").write(houseoutput)
 print("---Done houses")
 
 _output_.append("m.compile()")
-
+_output_[0] = _output_[0].replace("$$$MAX_X$$$", str(MAX_X+1)).replace("$$$MAX_Y$$$", str(MAX_Y+1)).replace("$$$MAX_Z$$$", str(MAX_Z+1))
 lef = len(_output_)
 le = lef / 100
 co = 1
@@ -476,4 +495,5 @@ for i in xrange(le, lef, le):
 print("-- Writing genmap.py")
 with open("genmap.py", "wb") as f:
     f.write("\n".join(_output_))
-print("-- Done!")
+
+print("-- Done! (map truncated to %dx%dx%d)" % (MAX_X, MAX_Y, MAX_Z))
