@@ -9,10 +9,10 @@ if config.checkAdler32:
     from zlib import adler32
     
 class TibiaProtocol(Protocol):
-
+    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength' 
     def __init__(self):
         self.gotFirst = False
-        self.xtea = ()
+        self.xtea = None
         self.onInit()
         self.buffer = ""
         self.nextPacketLength = 0
@@ -125,17 +125,18 @@ class TibiaProtocol(Protocol):
         reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
 class TibiaFactory(Factory):
+    __slots__ = 'clientCount'
     protocol = None # This HAVE to be overrided!
     def __init__(self):
-        self.clients = []
+        #self.clients = []
         self.clientCount = 0
 
     def addClient(self, client):
-        self.clients.append(client)
+        #self.clients.append(client)
         self.clientCount = self.clientCount + 1
         
 
     def removeClient(self, client):
-        if client in self.clients:
-            self.clients.remove(client)
+        #if client in self.clients:
+        #    self.clients.remove(client)
         self.clientCount = self.clientCount - 1

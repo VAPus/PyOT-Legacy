@@ -6,14 +6,14 @@ from twisted.python import log
 import config
 import hashlib
 import otcrypto
-import random
 import game.scriptsystem
 from packet import TibiaPacket
 import sql
 import game.player
 from game.map import getTile,removeCreature
 class GameProtocol(protocolbase.TibiaProtocol):
-
+    __slots__ = 'player', 'protocol'
+    
     def onInit(self):
         self.player = None
         self.protocol = None
@@ -34,8 +34,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         
     @inlineCallbacks
     def onFirstPacket(self, packet):
-        packet.pos += 1 # Packet Type, we don't really care about it in the first packet
-        packet.uint16() # OS 0x00 and 0x01
+        packet.pos += 3 # Packet Type, we don't really care about it in the first packet
+        #packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
         self.protocol = game.protocol.getProtocol(version)
         print "Client protocol version %d" % version
@@ -45,7 +45,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.transport.loseConnection()
             return
             
-        if (packet.length - packet.pos) == 128: # RSA 1024 is always 128
+        if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
             packet.pos = 0 # Reset position
 
@@ -150,4 +150,5 @@ class GameProtocol(protocolbase.TibiaProtocol):
         return self.protocol.Packet(*args)
         
 class GameFactory(protocolbase.TibiaFactory):
+    __slots__ = ()
     protocol = GameProtocol

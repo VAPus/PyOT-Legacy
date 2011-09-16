@@ -9,9 +9,8 @@ def inThread(f):
     return func
 
 class TibiaPacketReader(object):
-    __slots__ = ('length', 'pos', 'data')
+    __slots__ = ('pos', 'data')
     def __init__(self, data):
-        self.length = len(data)
         self.pos = 0
         self.data = data
 

@@ -10,15 +10,16 @@ import hashlib
 import socket
 
 class LoginProtocol(protocolbase.TibiaProtocol):
+    __slots__ = ()
     @inlineCallbacks
     def onFirstPacket(self, packet):
-        packet.pos += 1
-        packet.uint16() # OS 0x00 and 0x01
+        packet.pos += 3
+        #packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
         
         packet.pos += 12 # Checksum for files
          
-        if (packet.length - packet.pos) == 128: # RSA 1024 is always 128
+        if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
             packet.pos = 0 # Reset position
 
@@ -86,4 +87,5 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         self.loseConnection()
         
 class LoginFactory(protocolbase.TibiaFactory):
+    __slots__ = ()
     protocol = LoginProtocol
