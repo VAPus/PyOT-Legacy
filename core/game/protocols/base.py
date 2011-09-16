@@ -663,10 +663,22 @@ class BaseProtocol(object):
                 oldItem = player.findItemWithPlacement(fromPosition)
 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
+                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_AMMO and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     player.notPossible()
                     return
-                    
+                elif toPosition[0] == 0xFFFF and toPosition[1] >= 64 and currItem[1].containerSize:
+                    container = currItem[1].inContainer
+                    if container:
+                        if container == oldItem[1]:
+                            player.notPossible()
+                            return
+                        else:
+                            container = container.inContainer
+                            while container:
+                                if container == oldItem[1]:
+                                    player.notPossible()
+                                    return
+                                
                 if oldItem[1].stackable and count < 100:
                     if player.modifyCache(oldItem[1].itemId, -1 * count):
                         player.refreshStatus(stream)
@@ -760,7 +772,7 @@ class BaseProtocol(object):
                             try:
                                 player.inventoryCache[container.itemId].index(container)
                                 # Into inventory? Update cache
-                                if player.addCache(container.container.items[toPosition[2]]):
+                                if player.addCache(container.container.items[toPosition[2]], container):
                                     player.refreshStatus(stream)
                             except:
                                 pass
@@ -808,12 +820,23 @@ class BaseProtocol(object):
         position = packet.position()
         print "Look at"
         print position
-            
+        
         clientId = packet.uint16()
         stackpos = packet.uint8()
-
-        thing = player.findItem(position, stackpos)     
-        
+        if stackpos == 0 and clientId == 99:
+            try:
+                thing = game.map.getTile(position).creatures()[0]
+            except:
+                player.notPossible()
+                return
+        else:
+            thing = player.findItem(position, stackpos)     
+            if not thing or thing.cid != clientId:
+                for thing2 in game.map.getTile(position).things:
+                    if thing2.cid == clientId:
+                        thing = thing2
+                        break
+                    
         if thing:
             if isinstance(thing, game.item.Item):
                 def afterScript():

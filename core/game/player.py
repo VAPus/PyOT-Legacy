@@ -417,7 +417,7 @@ class Player(Creature):
                         if self.removeCache(currItem):
                             update = True
                             
-                    if self.addCache(item):
+                    if self.addCache(item, bag):
                         update = True
                 except:
                     pass
@@ -481,6 +481,11 @@ class Player(Creature):
         # Update cached data
         try:
             print "Remove from cache ", item
+            try:
+                del item.inContainer
+            except:
+                pass
+            
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
             weight = item.weight
@@ -491,13 +496,16 @@ class Player(Creature):
         except:
             pass
         
-    def addCache(self, item):
+    def addCache(self, item, container=None):
         try:
             print "Add to cache ",item
             self.inventoryCache[item.itemId].append(item)
             self.inventoryCache[item.itemId][0] += item.count or 1
         except:
             self.inventoryCache[item.itemId] = [item.count or 1, item]
+        
+        if container:
+            item.inContainer = container
             
         weight = item.weight
         if weight:
@@ -922,7 +930,7 @@ class Player(Creature):
                             stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
                         
                         if update:
-                            self.addCache(itemX)
+                            self.addCache(itemX, container)
                             
                         if not count:
                             break
@@ -954,7 +962,7 @@ class Player(Creature):
                 stream.addContainerItem(self.openContainers.index(container), item)
             
             if update:
-                self.addCache(item)
+                self.addCache(item, container)
                 
         if not streamX:
             if update:
@@ -1183,7 +1191,7 @@ class Player(Creature):
 
     # Loading:
     def __buildInventoryCache(self, container):
-        for item in container.items:
+        for item in container.container.items:
             weight = item.weight
             item.inContainer = container # Funny call to simplefy lookups
             if weight:
@@ -1195,11 +1203,10 @@ class Player(Creature):
                 self.inventoryCache[item.itemId] = [item.count or 1, item]
                 
             if item.containerSize:
-                self.__buildInventoryCache(item.container)
+                self.__buildInventoryCache(item)
                 
     def unpickleInventory(self, inventoryData):
         self.inventory = pickle.loads(inventoryData)
-        print self.inventory
         # Generate the inventory cache
         for item in self.inventory:
             if isinstance(item, game.item.Item):
@@ -1213,7 +1220,7 @@ class Player(Creature):
                     self.inventoryCache[item.itemId] = [item.count or 1, item]
                 
                 if item.containerSize:
-                    self.__buildInventoryCache(item.container)
+                    self.__buildInventoryCache(item)
         
     # Saving
     def pickleInventory(self):
