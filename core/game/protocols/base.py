@@ -879,9 +879,9 @@ class BaseProtocol(object):
         index = packet.uint8()
         thing = player.findItem(position, stackpos)
 
-        if thing and position[2] == player.position[2] and player.canSee(position):
+        if thing and (position[0] == 0xFFFF or (position[2] == player.position[2] and player.canSee(position))):
             end = None
-            if (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):
+            if position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):
                 end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
             game.scriptsystem.get('farUse').run(thing, player, end, position=position, stackpos=stackpos, index=index)
             
