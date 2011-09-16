@@ -257,7 +257,7 @@ The events are:
                 
         reg("logout", onLogout)
         
-.. function:: walkOn(creature, thing, position):
+.. function:: walkOn(creature, thing, position)
     
     Called when the creature walks on a item. (ThingScript)
     
@@ -280,7 +280,7 @@ The events are:
             
         reg("walkOn", 1234, walkOn)
         
-.. function:: walkOff(creature, thing, position):
+.. function:: walkOff(creature, thing, position)
     
     Called when the creature walks off a item. (ThingScript)
     
@@ -303,7 +303,7 @@ The events are:
             
         reg("walkOff", 1234, walkOff)
         
-.. function:: preWalkOn(creature, thing, position, oldTile, newTile):
+.. function:: preWalkOn(creature, thing, position, oldTile, newTile)
     
     Called when the creature walks on a item. (ThingScript)
     
