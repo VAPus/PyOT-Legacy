@@ -4,6 +4,7 @@ import game.enum
 import game.engine
 import game.map
 import random
+import game.creature
 
 spells = {}
 fieldRunes = {}
@@ -212,6 +213,7 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
     return callback
     
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
+    @game.creature.Creature.actionDecor
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
             creature.exhausted()
@@ -255,6 +257,7 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):
+    @game.creature.Creature.actionDecor
     def fieldrune(creature, position, thing, stackpos, onPosition, **k):
 
         if not creature.canDoSpell(icon, group):
@@ -289,6 +292,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
 
 def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, useCount=1):
+    @game.creature.Creature.actionDecor
     def targetrune(creature, thing, position, onPosition, stackpos, onStackpos, **k):
 
         if not creature.canDoSpell(icon, group):
@@ -325,6 +329,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
 def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=1):
+    @game.creature.Creature.actionDecor
     def selftargetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
@@ -347,6 +352,7 @@ def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, coo
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
 def targetSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2):
+    @game.creature.Creature.actionDecor
     def targetspell(creature, strength=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):

@@ -70,6 +70,7 @@ class Creature(object):
         self.addon = self.data["lookaddons"]
         self.action = None
         self.lastAction = 0
+        self.extAction = 0
         self.lastStep = 0
         self.target = None # target for follow/attacks
         self.targetMode = 0 # 0 = no particular reason, 1 = attack, 2 = follow
@@ -87,13 +88,31 @@ class Creature(object):
         # We are trackable
         allCreatures[self.cid] = self
 
-    def actionLock(self, *args):
+    def actionLock(self, *argc, **kwargs):
         if self.lastAction >= time.time():
-            game.engine.safeCallLater(0.1, *args)
+            game.engine.safeCallLater(0.1, *argc, **kwargs)
             return False
         else:
-            self.lastAction = time.time()
+            self.lastAction = time.time() + 0.1
             return True
+
+    def extActionLock(self, *argc, **kwargs):
+        if self.extAction >= time.time():
+            game.engine.safeCallLater(0.1, *argc, **kwargs)
+            return False
+        else:
+            return True
+            
+    @staticmethod
+    def actionDecor(f):
+        """ Decorator used by external actions """
+        def new_f(creature, *argc, **kwargs):
+            if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs) or not creature.extActionLock(new_f, creature, *argc, **kwargs) :
+                return
+            else:
+                f(creature, *argc, **kwargs)
+
+        return new_f
 
     def isPlayer(self):
         return False
@@ -253,7 +272,8 @@ class Creature(object):
             self.lastStep = time.time()"""
 
         self.lastStep = time.time()
-        self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > config.diagonalWalkCost else 1)
+        self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
+        self.extAction = time.time() + 1
                 
         
             
@@ -636,12 +656,15 @@ class Creature(object):
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
                 
-
     def turn(self, direction):
         if self.direction == direction:
             return
             
+        if not self.alive or not self.actionLock(self.turn, direction):
+            return
+
         self.direction = direction
+        self.extAction = time.time() + 1
         
         # Make package
         for spectator in getSpectators(self.position):

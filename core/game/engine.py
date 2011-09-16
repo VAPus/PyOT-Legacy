@@ -141,14 +141,14 @@ def safeTime():
     """
     return math.ceil(time.time() * 60) / 60
 
-def safeCallLater(sec, *args):
+def safeCallLater(sec, *argc, **kwargs):
     """This is a thread safe and time safe call for reactor.callLater. Passes args to callLater.
     
     :param sec: The number of seconds to delay the calls.
     :type sec: float.
     
     """
-    reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *args) # Closest step to the accurecy of windows clock
+    reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *argc, **kwargs) # Closest step to the accurecy of windows clock
 
 # Just a inner funny call
 def looper(function, time):
