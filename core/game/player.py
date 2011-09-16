@@ -1437,7 +1437,7 @@ class Player(Creature):
         if cid in allCreatures:
             if allCreatures[cid].isAttackable(self):
                 target = allCreatures[cid]
-                ret = game.scriptsystem.get('target').run(self, target, attack=True)
+                ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
                 if ret == False:
                    return
                 elif ret != None:

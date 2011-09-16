@@ -378,13 +378,69 @@ The events are:
 
     Called when ``creature`` gets killed by ``creature2``. Change the creature.alive value or add health to the creature to resurect him and prevent the rest of the death code from happening (CreatureScript)
 
-Currently undocumented (TODO):
-globalScripts["respawn"] = Scripts()
-globalScripts["reload"] = Scripts()
-globalScripts["startup"] = Scripts()
-globalScripts["shutdown"] = Scripts()
-globalScripts["move"] = Scripts()
-globalScripts["appear"] = CreatureScripts()
-globalScripts["disappear"] = CreatureScripts()
-globalScripts["loot"] = CreatureScripts()
-globalScripts["target"] = CreatureScripts()
+.. function:: respawn(creature)
+
+    Called as a notification call when a creature respawns. (Script)
+
+.. function:: reload()
+
+    Called when the server reloads.
+
+.. function:: startup()
+
+    Called when the server starts up. Useful to invoke core hooks or initialize your own scripts.
+
+.. function:: shutdown()
+
+    Called just before the server shuts down.
+
+.. function:: move(creature)
+
+    Called when a creature moves.
+
+    :returns: False will prevent the creature from moving.
+
+    :example:
+
+    .. code-block:: python
+
+        def preventWalking(creature):
+            if random.randint(0, 10) == 1:
+                creature.message("Your leg hurt too much")
+                return False
+
+        reg('move', preventWalking)
+
+.. function:: appear(creature, creature2)
+    
+    Called when creature2 appear in the view field of creature (and reverse). (CreatureScript)
+
+.. function:: disappear(creature, creature2)
+
+    Called when creature2 appear in the view field of creature (and reverse). (CreatureScript)
+
+.. function:: loot(creature, creature2, loot, maxSize)
+
+    Called when creature dies and generate loot for creature2. maxSize is the amount of slots currently in the bag, you can't add items over this. (CreatureScript)
+
+    :returns: New loot list.
+
+.. function:: target(creature, creature2, attack)
+
+    Called when creature target creature2, attack=True if the creature intend to attack it, false otherwise (follow etc). (CreatureScript)
+
+.. function:: rotate(creature, thing, position, stackpos)
+
+    Called when creature tries to rotate ``thing`` on ``position`` with ``stackpos``. (ThingScript)
+
+    :returns: ``False`` prevent the rotation of the thing.
+
+.. function:: questLog(creature, questLog)
+
+    Called with the raw questLog, modify it to change the questLog that is sent to the client. (script)
+
+.. function:: modeChange(creature, chase, attack, secure)
+
+    Called when a ``creature`` (Player) change the modes. The parameters are the new modes, you can compare them against the old modes (creature.modes). (Script)
+
+    :returns: False to prevent mode change.

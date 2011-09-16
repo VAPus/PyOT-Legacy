@@ -377,9 +377,11 @@ class Creature(object):
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
             game.scriptsystem.get('disappear').run(creature2, self)
-
+            game.scriptsystem.get('disappear').run(self, creature2)
+            
         for creature2 in appearTo:
             game.scriptsystem.get('appear').run(creature2, self)
+            game.scriptsystem.get('appear').run(self, creature2)
             
     def magicEffect(self, pos, type):
         for spectator in getSpectators(pos):
