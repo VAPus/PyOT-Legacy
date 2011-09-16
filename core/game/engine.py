@@ -197,7 +197,7 @@ def loopInThread(time):
                 safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
         
         def first(*args, **kwargs):
-            safeCallLater(time/2, reactor.callInThread, new_f, *args, **kwargs)
+            safeCallLater(0, reactor.callInThread, new_f, *args, **kwargs)
             
         return first
     return decor

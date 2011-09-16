@@ -927,6 +927,8 @@ class Player(Creature):
                         
                         # Is it a open container, if so, send item update
                         if bag in self.openContainers:
+                            print "TOOOOO"
+                            print slot
                             stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
                         
                         if update:
@@ -967,6 +969,7 @@ class Player(Creature):
         if not streamX:
             if update:
                 self.refreshStatus(stream)
+            print "Sending"
             stream.send(self.client)
             
         return True
