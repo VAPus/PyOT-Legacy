@@ -11,9 +11,9 @@ def defaultBrainFeaturePriority(self, monster):
                     monster.setSpeed(monster.speed / 2)
                 
                 if config.monsterWalkBack:
-                    game.engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
+                    engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
                 else:
-                    game.engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
+                    engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
                     
                 return
             
@@ -55,7 +55,7 @@ def defaultBrainFeaturePriority(self, monster):
 def defaultBrainFeature(self, monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
-            spectators = game.engine.getPlayers(monster.position) # Get all creaturse in range
+            spectators = engine.getPlayers(monster.position) # Get all creaturse in range
             if spectators: # If we find any
                 target = None
 
@@ -87,13 +87,13 @@ def defaultBrainFeature(self, monster):
                 monster.base.onFollow(monster.target)
                 
                 # Begin autowalking
-                game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                 
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         monster.stopAction()
-                        game.engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                        engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         monster.target.scripts["onNextStep"].append(__followCallback)
                         
                 monster.target.scripts["onNextStep"].append(__followCallback)
