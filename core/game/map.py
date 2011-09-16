@@ -231,6 +231,9 @@ def T(*args):
 
 T = bindconstant._make_constants(T)
 
+def H(*args):
+    return Tile(args, itemLen=len(args))
+    
 def C(*args):
     if config.stackTiles:
         code = 0
