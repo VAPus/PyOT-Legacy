@@ -658,14 +658,17 @@ class Player(Creature):
         return False
         
     def setModes(self, attack, chase, secure):
-        self.modes[0] = attack
-        
-        if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.followCallback)
+        def end():
+            self.modes[0] = attack
             
-        self.modes[1] = chase
-        self.modes[2] = secure
+            if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
+                game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+                self.target.scripts["onNextStep"].append(self.followCallback)
+                
+            self.modes[1] = chase
+            self.modes[2] = secure
+            
+        game.scriptsystem.get('modeChange').run(self, end, attack=attack, chase=chase, secure=secure)
         
         
             
@@ -1525,7 +1528,8 @@ class Player(Creature):
         if not quests:
             quests = {}
         
-        print quests
+        game.scriptsystem.get("questLog").runSync(self, None, questLog=quests)
+        
         # Vertify the quests
         for quest in quests.copy():
             try:

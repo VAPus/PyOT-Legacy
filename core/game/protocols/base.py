@@ -846,9 +846,12 @@ class BaseProtocol(object):
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
-        # TODO: WalkTo
-        item = game.map.getTile(position).getThing(stackpos)
-        game.engine.transformItem(item, item.rotateTo, position, stackpos)
+        if player.inRange(position, 1, 1):
+            item = game.map.getTile(position).getThing(stackpos)
+            def end():
+                game.engine.transformItem(item, item.rotateTo, position, stackpos)
+            game.scriptsystem.get('rotate').run(item, player, end, position=position, stackpos=stackpos)
+            
         
     def handleSetOutfit(self, player, packet):
         if config.playerCanChangeColor:
