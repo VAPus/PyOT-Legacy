@@ -194,7 +194,7 @@ majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
 # Tiles
-tiles = width * height # This also count null tiles which we doesn't pass, bad
+tiles = (width * height) / 4 # This also count null tiles which we doesn't pass, bad
 
 print("OTBM v%d, %dx%d" % (version, width, height)) 
 _output_ = []
@@ -214,7 +214,7 @@ nodes = root.next()
 nodes.data.pos += 1
 description = ""
 spawns = ""
-house = ""
+houses = ""
 
 _output_.append("""m.author("OTBMXML2sec generator")
 print ("--Beging parsing description, spawns, and houses")
@@ -222,17 +222,19 @@ print ("--Beging parsing description, spawns, and houses")
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
-        description = nodes.data.string()
-        print(description+"\n")
-        _output_.append('m.description("""%s""")' % (description))
+        description += nodes.data.string()+"\n"
+        
     elif attr == 11:
         spawns = nodes.data.string()
         print("--Using spawns: %s" % spawns)
     elif attr == 13:
-        house = nodes.data.string()
+        houses = nodes.data.string()
+        print("--Using houses: %s" % houses)
     else:
         print("Unknown nodes data")
-
+        
+_output_.append('m.description("""%s""")' % (description))
+print (description)
 node = nodes.next()
 onTile = 0
 lastPrint = 0
@@ -250,9 +252,9 @@ while node:
             if tileType == 5 or tileType == 14: # Tile
                 tileX = tile.data.uint8() + baseX
                 tileY = tile.data.uint8() + baseY
+                houseId = 0
                 if tileType == 14:
-                    # TODO
-                    tile.data.uint32()
+                    houseId = tile.data.uint32()
                 _render_ = False
                 _itemG_ = 'None'
                 # Attributes
@@ -267,8 +269,9 @@ while node:
                         
                     else:
                         print("Unknown tile attrubute")
-                        
-                _tile_ = ["t=T(%d,%d,%s,%d)" % (tileX, tileY, _itemG_, baseZ)]
+                
+
+                _tile_ = ["t=T(%d,%d,%s%s)" % (tileX, tileY, _itemG_, ', %d'%baseZ if baseZ != 7 else '')]
                 item = tile.next()
                 while item:
                     if item.data.uint8() == 6: # more items
@@ -283,7 +286,9 @@ while node:
                                 _tile_.append("i.attribute(\"depotId\",%d)" % item.data.uint16())
                                 safe = False
                             elif attr == 14: # houseDoorId
-                                item.data.uint8() # TODO: care? We can autodetect it
+                                safe = False
+                                item.data.uint8() # We don't need this
+                                _tile_.append("i.action('houseDoor')")
                             elif attr == 20: # Sleeperguid
                                 item.data.uint32() # TODO: care?
                             elif attr == 21: # sleepstart
@@ -346,6 +351,8 @@ while node:
                 else:
                     _tile_.append("a(t)")
                     _output_.append("\n".join(_tile_))
+                if houseId:
+                    _output_.append("m.houses[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, houseId))
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000
@@ -390,8 +397,8 @@ del root
 del otbm
 
 ### Begin XML reading
-import xml.dom.minidom as dom
-dom = dom.parse(spawns)
+import xml.dom.minidom
+dom = xml.dom.minidom.parse(spawns)
 
 print("---Begin spawns")
 for xSpawn in dom.getElementsByTagName("spawn"):
@@ -441,6 +448,21 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         _output_.append("at(%d, %d, s, %d)" % ((entry[0]*32)+16, (entry[1]*32)+16, baseZ))
         
 print("---Done with spawns")
+
+print("---Begin houses")
+dom = xml.dom.minidom.parse(houses)
+houseoutput = """# Generated house info
+# houseId => name,(entryX,entryY,entryZ),rent,townId,size
+houses = {}
+"""
+
+for xHouse in dom.getElementsByTagName("house"):
+    houseoutput +="houses[%s] = (%s, (%s, %s, %s), %s, %s, %s)" % (xHouse.getAttribute("houseid"),xHouse.getAttribute("name"),xHouse.getAttribute("entryx"),xHouse.getAttribute("entryy"),xHouse.getAttribute("entryz"),xHouse.getAttribute("rent"),xHouse.getAttribute("townid"),xHouse.getAttribute("size"))
+
+print ("---Writing house.py")    
+open("house.py", "wb").write(houseoutput)
+
+print("---Done houses")
 
 _output_.append("m.compile()")
 

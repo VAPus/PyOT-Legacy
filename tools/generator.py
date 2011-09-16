@@ -71,6 +71,7 @@ class Map(object):
         self._description = ""
         self.towns = {}
         self.waypoints = {}
+        self.houses = {}
         
         if USE_NUMPY:
             self.area = N.empty((zs, xA, yA), dtype=list)
@@ -136,10 +137,14 @@ class Map(object):
                         
     def addTo(self,x,y,thing,level=7):
         self._level(level)
-        try:
-            self.area[level][x][y].append(thing)
-        except:
-            self.area[level][x][y] = [thing]
+        if type(thing) != list:
+            try:
+                self.area[level][x][y].append(thing)
+            except:
+                self.area[level][x][y] = [thing]
+        else:
+            self.area[level][x][y] = thing
+                
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
         try:
@@ -230,37 +235,43 @@ class Map(object):
                 # Begin by rebuilding ranges of tiles in x,y,z
                        
                 # Level 3, y compare:
-                def yComp(xCom):
+                def yComp(xCom, z, x):
                     output = []
-
+                    row = 0
                     for y in xCom:
-                        if "R(" in y:
-                            output.append("C(%s)" % (','.join(y)))
+                        pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
+                        if pos in self.houses:
+                            output.append("H(%d,%s)" % (self.houses[pos],','.join(y)))
+                            print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
                         else:
-                            output.append("T(%s)" % (','.join(y)))
-                            
+                            if "R(" in y:
+                                output.append("C(%s)" % (','.join(y)))
+                            else:
+                                output.append("T(%s)" % (','.join(y)))
+                        row += 1    
                     if output:    
                         return "(%s)" % (','.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
 
                     return 'None'
                     
                 # Level 2, X compare
-                def xComp(zCom):
+                def xComp(zCom, z):
                     output = []
                     noRows = 0
+                    row = 0
                     for x in zCom:
-                        t = yComp(x)
+                        t = yComp(x, z, row)
                         if t:
                             output.append(t)
                         if t == "None":
                             noRows += 1
-                            
+                        row += 1    
                     if not noRows >= areas[0]:
                         return "(%s)" % ','.join(output)
                 
                 output = []
                 for zPos in sector:
-                    data = xComp(sector[zPos])
+                    data = xComp(sector[zPos], zPos)
                     if data:
                         if zPos in nothingness:
                             nothingness.remove(zPos)
@@ -285,7 +296,7 @@ class Map(object):
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]
         output += "author = '%s'\n" % self._author
-        output += "description = '%s'\n" % self._description
+        output += 'description = """%s"""\n' % self._description
         output += "sectorSize = (%d, %d)\n" % (areas[0], areas[1])
         output += "towns = %s\n" % str(self.towns)
         output += "waypoints = %s\n" % str(self.waypoints)
@@ -382,13 +393,14 @@ class Tile(object):
             self.area = [ground]
         else:
             self.area = []
-            
+        
     def add(self, thing):
         self.area.append(thing)
         
     def get(self): # Unique for tiles i presume
         return self.area
-        
+
+                
 ### Things
 class Item(object):
     __slots__ = ('id', 'attributes', 'actions')
