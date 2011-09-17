@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `players` (
   `conditions` blob,
   `storage` mediumblob,
   `depot` mediumblob,
-  `inventory` mediumblob
+  `inventory` mediumblob,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `account_id` (`account_id`),

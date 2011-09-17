@@ -170,6 +170,7 @@ dummyItems = {}
 
 knownMap = {}
 
+houseTiles = {}
 
 
 # Ops codes
@@ -213,15 +214,19 @@ def I(itemId, **kwargs):
 
             if not itemX:
                 item.tileStacked = True
+                item.fromMap = True
                 dummyItems[itemId] = item
             else:
+                itemX.fromMap = True
                 return itemX
             return item
     else:
         item = Item(itemId, **kwargs)
         itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options=kwargs)
         if itemX:
+            itemX.fromMap = True
             return itemX
+        item.fromMap = True
         return item
 
 R = I # TODO
@@ -231,8 +236,23 @@ def T(*args):
 
 T = bindconstant._make_constants(T)
 
-def H(*args):
-    return Tile(args, itemLen=len(args))
+def H(houseId, position, *args, g=[None]):
+    if not g:
+        import game.engine
+        g[0] = game.engine
+        
+    tile = Tile(args, itemLen=len(args))
+    try:
+        houseTiles[houseId].append((tile, position))
+    except:
+        houseTiles[houseId] = [(tile, position)]
+    try:
+        for item in g[0].savedItems[position]:
+            tile.placeItem(item)
+    except:
+        pass
+    
+    return tile
     
 def C(*args):
     if config.stackTiles:
@@ -245,7 +265,7 @@ def C(*args):
             dummyTiles[code] = T(*args)
         return dummyTiles[code]
     else:
-        T(*args)
+        return T(*args)
         
 global V
 V = None

@@ -470,18 +470,15 @@ print("---Done with spawns")
 
 print("---Begin houses")
 dom = xml.dom.minidom.parse(houses)
-houseoutput = """# Generated house info
-# houseId => name,(entryX,entryY,entryZ),rent,townId,size
-houses = {}
-"""
-
+housesql = """INSERT INTO `houses` (`id`,`name`,`town`,`size`,`rent`) VALUES"""
+houses = []
 for xHouse in dom.getElementsByTagName("house"):
-    houseoutput +="houses[%s] = (%s, (%s, %s, %s), %s, %s, %s)" % (xHouse.getAttribute("houseid"),xHouse.getAttribute("name"),xHouse.getAttribute("entryx"),xHouse.getAttribute("entryy"),xHouse.getAttribute("entryz"),xHouse.getAttribute("rent"),xHouse.getAttribute("townid"),xHouse.getAttribute("size"))
+    houses.append("('%s', '%s', '%s', '%s', '%s')" % (xHouse.getAttribute("houseid"),xHouse.getAttribute("name"),xHouse.getAttribute("townid"),xHouse.getAttribute("size"),xHouse.getAttribute("rent")))
+if houses:
+    print ("---Writing houses.sql")    
+    open("houses.sql", "wb").write(housesql + ','.join(houses) + ";")
 
-print ("---Writing house.py")    
-open("house.py", "wb").write(houseoutput)
-
-print("---Done houses")
+    print("---Done houses")
 
 _output_.append("m.compile()")
 _output_[0] = _output_[0].replace("$$$MAX_X$$$", str(MAX_X+1)).replace("$$$MAX_Y$$$", str(MAX_Y+1)).replace("$$$MAX_Z$$$", str(MAX_Z+1))

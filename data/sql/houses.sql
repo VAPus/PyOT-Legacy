@@ -1,0 +1,1 @@
+INSERT INTO `houses` (`id`,`name`,`town`,`size`,`rent`) VALUES('1', 'The W House', '1', '126', '1000');

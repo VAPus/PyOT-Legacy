@@ -30,7 +30,19 @@ serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
+savedItems = {}
+houseData = {}
 
+class House(object):
+    def __init__(self, owner, guild, paid, name, town, rent, data):
+        self.owner = owner
+        self.guild = guild
+        self.paid = paid
+        self.name = name
+        self.town = town
+        self.rent = rent
+        self.data = data # TODO
+        
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")
@@ -49,6 +61,9 @@ def loader(timer):
             else:
                 globalStorage[x['key']] = x['data']
 
+        for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
+            houseData[x["id"]] = House(x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
+            
     _sql_()            
     def sync(d, timer):
         # Load map (if configurated to do so)

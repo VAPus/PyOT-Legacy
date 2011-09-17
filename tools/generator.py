@@ -241,7 +241,7 @@ class Map(object):
                     for y in xCom:
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
                         if pos in self.houses:
-                            output.append("H(%d,%s)" % (self.houses[pos],','.join(y)))
+                            output.append("H(%d,(%d,%d,%d),%s)" % (self.houses[pos],pos[0],pos[1],pos[2],','.join(y)))
                             print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
                         else:
                             if "R(" in y:
