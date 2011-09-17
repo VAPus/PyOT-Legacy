@@ -40,9 +40,14 @@ class Monster(Creature):
         self.noBrain = True
         self.spawnTime = None
         self.radius = 5
-
+        self.activeSummons = []
+        self.master = None
+        
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
+
+    def setMaster(self, creature):
+        self.master = creature
         
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:
@@ -193,6 +198,7 @@ class MonsterBase(CreatureBase):
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         self.summons = []
+        self.maxSummons = 1
         
         self.spawnTime = 60
         
@@ -339,8 +345,11 @@ class MonsterBase(CreatureBase):
     def setTargetChance(self, chance=10):
         self.targetChance = chance
     
-    def setSummon(self, monster=None, chance=10, max=1):
-        self.summons.append([monster, chance, max]) 
+    def maxSummons(self, max):
+        self.maxSummons = max
+        
+    def summon(self, monster=None, chance=10):
+        self.summons.append((monster, chance)) 
         
     def setExperience(self, experience):
         self.experience = experience

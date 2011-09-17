@@ -261,3 +261,10 @@ def testdespawn(thing, **k):
     thing.despawn()
     
 reg("lookAt", "Wolf", testdespawn)
+
+def testsummon(creature,**k):
+    tiger = game.monster.getMonster("Tiger").spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
+    tiger.setMaster(creature)
+    return False
+    
+reg("talkaction", "summon tiger", testsummon)

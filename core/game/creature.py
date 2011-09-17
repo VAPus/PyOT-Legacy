@@ -112,8 +112,8 @@ class Creature(object):
             if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs) or not creature.extActionLock(new_f, creature, *argc, **kwargs) :
                 return
             else:
-                creature.extAction = time.time() + 0.1
-                creature.lastAction = time.time() + 0.1
+                creature.extAction = time.time() + 0.2
+                creature.lastAction = time.time() + 0.2
                 f(creature, *argc, **kwargs)
 
         return new_f
