@@ -173,7 +173,7 @@ def saveMe(creature, text):
 reg("talkaction", 'saveme', saveMe)
 
 def saveAll(creature, text):
-    game.engine.saveAll()
+    engine.saveAll()
     return False
     
 reg("talkaction", 'saveall', saveAll)
@@ -268,3 +268,11 @@ def testsummon(creature,**k):
     return False
     
 reg("talkaction", "summon tiger", testsummon)
+
+def setowner(creature,text):
+    id = int(text)
+    engine.houseData[id].owner = creature.data["id"]
+    return False
+    
+    
+reg("talkactionFirstWord", "setowner", setowner)

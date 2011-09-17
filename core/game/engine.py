@@ -34,14 +34,23 @@ savedItems = {}
 houseData = {}
 
 class House(object):
-    def __init__(self, owner, guild, paid, name, town, rent, data):
+    def __init__(self, owner, guild, paid, name, town, size, rent, data):
         self.owner = owner
         self.guild = guild
         self.paid = paid
         self.name = name
         self.town = town
         self.rent = rent
-        self.data = data # TODO
+        self.size = size
+        if data:
+            self.data = pickle.loads(data)
+        else:
+            self.data = {}
+        try:
+            for pos in self.data["items"]:
+                savedItems[pos] = self.data["items"][pos]
+        except:
+            pass
         
 # The loader rutines, async loading :)
 def loader(timer):
@@ -652,7 +661,9 @@ def ignore(result):
 def saveAll():
     """Save all players and all global variables."""
     
+    import game.map
     # Build query
+    
     try:
         def callback(result):
             sql.conn.runOperation(*result)
@@ -676,7 +687,24 @@ def saveAll():
             data = globalStorage[field]
             
         sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
-        
+
+    # Houses
+    for houseId in houseData:
+        print "House ", houseId
+        items = {}
+        try:
+            for tileData in game.map.houseTiles[houseId]:
+                _items = []
+                for item in tileData[0].bottomItems():
+                    if item.movable:
+                        _items.append(item)
+                if _items:
+                    items[tileData[1]] = _items
+        except:
+            pass
+        houseData[houseId].data["items"] = items
+        print items
+        sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (houseData[houseId].owner, houseData[houseId].guild, houseData[houseId].paid, pickle.dumps(houseData[houseId].data), houseId))
 # Time stuff
 def getTibiaTime():
     """ Return the Time inside the game.

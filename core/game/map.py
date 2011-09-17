@@ -161,9 +161,13 @@ class Tile(object):
                 
     def findCreatureStackpos(self, creature):
         return self.things.index(creature)
-                
+        
+bindconstant.bind_all(Tile) # Apply constanting to Tile  
 
-bindconstant.bind_all(Tile) # Apply constanting to Tile
+class HouseTile(Tile):
+    __slots__ = 'houseId'
+    
+bindconstant.bind_all(HouseTile) # Apply constanting to Tile 
 
 import data.map.info
 dummyItems = {} 
@@ -239,7 +243,8 @@ T = bindconstant._make_constants(T)
 def H(houseId, position, *args):
     import game.engine as g
         
-    tile = Tile(args, itemLen=len(args))
+    tile = HouseTile(args, itemLen=len(args))
+    tile.houseId = houseId
     try:
         houseTiles[houseId].append((tile, position))
     except:

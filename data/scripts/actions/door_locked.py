@@ -9,6 +9,12 @@ def onUseDoor(creature, thing, position, **k):
         print "Bad door on %s. It might bug" % str(position)
         engine.transformItem(thing, thing.itemId+2, position)
     else:
+        if "houseDoor" in thing.actions:
+            houseId = game.map.getTile(position).houseId
+            if creature.data["id"] == engine.houseData[houseId].owner:
+                engine.transformItem(thing, thing.itemId+2, position)
+                callLater(4, engine.transformItem, thing, thing.itemId-2, position)
+                return
         creature.message("It is locked.")
 
 def onUseKey(creature, thing, onThing, onPosition, **k):
