@@ -184,10 +184,11 @@ class Creature(object):
             stream.removeTileItem(self.position, stackpos)
             stream.send(spectator)
         try:
-            if self.spawnTime:
-                game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
-            else:
-                game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+            if self.respawn:
+                if self.spawnTime:
+                    game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+                else:
+                    game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:
             pass
         

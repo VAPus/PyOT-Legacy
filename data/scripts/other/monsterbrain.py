@@ -45,7 +45,13 @@ def defaultBrainFeaturePriority(self, monster):
                         if summon[1] > random.ranint(0, 100):
                             creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
                             creature.setMaster(self)
+                            monster.activeSummons.append(creature)
                             break
+                else:
+                    for summon in monster.activeSummons[:]:
+                        if not summon.alive:
+                            monster.activeSummons.remove(summon)
+                            
                 # Melee attacks
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                     attack = random.choice(monster.base.meleeAttacks)

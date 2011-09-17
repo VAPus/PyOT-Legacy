@@ -51,12 +51,16 @@ class NPC(Creature):
         self.forSale = None
         self.activeModule = None
         self.activeSaid = None
+        self.respawn = True
         
     def description(self):
         return "You see %s" % self.base.data["description"]
     
     def actionIds(self):
         return self.base.actions
+
+    def setRespawn(self, state):
+        self.respawn = state
         
     def playerSay(self, player, said, type, channel):
         game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)

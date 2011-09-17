@@ -42,12 +42,17 @@ class Monster(Creature):
         self.radius = 5
         self.activeSummons = []
         self.master = None
+        self.respawn = True
         
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
 
     def setMaster(self, creature):
         self.master = creature
+        self.respawn = False
+
+    def setRespawn(self, state):
+        self.respawn = state
         
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:
@@ -171,10 +176,11 @@ class Monster(Creature):
         
         # Begin respawn
         # TODO just respawn <this> class, can't possibly bind so many kb :p
-        if self.spawnTime:
-            engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
-        else:
-            engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+        if self.respawn:
+            if self.spawnTime:
+                engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+            else:
+                engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
             
     def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
         return Creature.say(self, message, messageType)
