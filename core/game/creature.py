@@ -90,10 +90,12 @@ class Creature(object):
 
     def actionLock(self, *argc, **kwargs):
         if self.lastAction >= time.time():
+            if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
+                return False
             game.engine.safeCallLater(0.1, *argc, **kwargs)
             return False
         else:
-            self.lastAction = time.time() + 0.1
+            self.lastAction = time.time()
             return True
 
     def extActionLock(self, *argc, **kwargs):
@@ -110,6 +112,8 @@ class Creature(object):
             if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs) or not creature.extActionLock(new_f, creature, *argc, **kwargs) :
                 return
             else:
+                creature.extAction = time.time() + 0.1
+                creature.lastAction = time.time() + 0.1
                 f(creature, *argc, **kwargs)
 
         return new_f
@@ -187,14 +191,14 @@ class Creature(object):
         except:
             pass
         
-    def move(self, direction, spectators=None, level=0):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False):
         d = Deferred()
-        game.engine.safeCallLater(0, self._move, d, direction, spectators, level)
+        game.engine.safeCallLater(0, self._move, d, direction, spectators, level, stopIfLock)
         return d
         
     @inlineCallbacks
-    def _move(self, d, direction, spectators=None, level=0):
-        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level):
+    def _move(self, d, direction, spectators=None, level=0, stopIfLock=False):
+        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level, stopIfLock=stopIfLock):
             return
             
         if not self.alive or not self.data["health"]:
@@ -272,8 +276,9 @@ class Creature(object):
             self.lastStep = time.time()"""
 
         self.lastStep = time.time()
-        self.lastAction += self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
-        self.extAction = time.time() + 1
+        delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
+        self.lastAction += delay
+        self.extAction = time.time() + (delay/2)
                 
         
             
@@ -664,7 +669,7 @@ class Creature(object):
             return
 
         self.direction = direction
-        self.extAction = time.time() + 1
+        self.extAction = time.time() + 0.15
         
         # Make package
         for spectator in getSpectators(self.position):

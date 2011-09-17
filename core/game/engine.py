@@ -285,7 +285,7 @@ def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
     d = Deferred()
     if mcallback:
         d.addCallback(mcallback)
-    creature._move(d, direction, level=level)
+    creature._move(d, direction, level=level, stopIfLock=True)
     
     
 

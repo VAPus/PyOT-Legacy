@@ -236,10 +236,8 @@ def T(*args):
 
 T = bindconstant._make_constants(T)
 
-def H(houseId, position, *args, g=[None]):
-    if not g:
-        import game.engine
-        g[0] = game.engine
+def H(houseId, position, *args):
+    import game.engine as g
         
     tile = Tile(args, itemLen=len(args))
     try:
@@ -247,7 +245,7 @@ def H(houseId, position, *args, g=[None]):
     except:
         houseTiles[houseId] = [(tile, position)]
     try:
-        for item in g[0].savedItems[position]:
+        for item in g.savedItems[position]:
             tile.placeItem(item)
     except:
         pass
