@@ -17,7 +17,7 @@ def onUse(creature, position, onThing, onPosition, **k):
     elif onThing in openedHoles or onThing in openTraps or onThing in ladders:
         newPos[2] += 1
         newPos[1] += 1
-        downThing = game.map.getTile(newPos).getThing(0)
+        downThing = getTile(newPos).getThing(0)
         if downThing:
             creature.teleport(newPos)
         else:

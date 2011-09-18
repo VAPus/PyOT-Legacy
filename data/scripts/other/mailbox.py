@@ -3,7 +3,7 @@ mailboxes = (2593,)
 def parseText(text):
     lines = text.split("\n")
     if lines >= 2:
-        townId = engine.townNameToId(lines[1])
+        townId = townNameToId(lines[1])
         if townId:
             return (lines[0], townId)
 
@@ -11,7 +11,7 @@ def parseText(text):
 @inlineCallbacks        
 def onSend(creature, position, thing, onId, onThing, **k):
     # Is it a letter perhaps?
-    if onId == enum.ITEM_LETTER:
+    if onId == ITEM_LETTER:
         if not onThing.text:
             creature.message("To whom shall this letter be sent?", onPos=position)
             return
@@ -20,19 +20,19 @@ def onSend(creature, position, thing, onId, onThing, **k):
         if not parse:
             creature.message("Did you spell it right?", onPos=position)
             
-        onThing.itemId = enum.ITEM_LETTER_STAMPED # We need to change the Id before the placeInDepot takes place in case the player is offline, the data is saved right away
+        onThing.itemId = ITEM_LETTER_STAMPED # We need to change the Id before the placeInDepot takes place in case the player is offline, the data is saved right away
         result = yield engine.placeInDepot(parse[0], parse[1], onThing)
         
         if not result:
-            onThing.itemId = enum.ITEM_LETTER # Convert the item back to it's original Id
+            onThing.itemId = ITEM_LETTER # Convert the item back to it's original Id
             creature.message("Did you spell it right?", onPos=position)
             return
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
-    elif onId == enum.ITEM_PARCEL:
+    elif onId == ITEM_PARCEL:
         found = None
         for item in onThing.container.items:
-            if item.itemId == enum.ITEM_LABEL:
+            if item.itemId == ITEM_LABEL:
                 found = item
                 break
                 
@@ -45,11 +45,11 @@ def onSend(creature, position, thing, onId, onThing, **k):
         if not parse:
             creature.message("Did you spell it right?", onPos=position)
             
-        onThing.itemId = enum.ITEM_PARCEL_STAMPED
+        onThing.itemId = ITEM_PARCEL_STAMPED
         result = yield engine.placeInDepot(parse[0], parse[1], onThing)
 
         if not result:
-            onThing.itemId = enum.ITEM_PARCEL # Convert the item back to it's original Id
+            onThing.itemId = ITEM_PARCEL # Convert the item back to it's original Id
             creature.message("Did you spell it right?", onPos=position)
             return
         else:

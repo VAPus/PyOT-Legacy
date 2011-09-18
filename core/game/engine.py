@@ -162,6 +162,7 @@ def loader(timer):
     __builtins__["spell"] = game.spell # Simplefy spell making
     __builtins__["callLater"] = safeCallLater
     __builtins__["Item"] = game.item.Item
+    __builtins__["getTile"] = game.map.getTile
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster

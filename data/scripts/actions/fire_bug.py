@@ -5,10 +5,10 @@ def onUse(creature, position, stackpos, onId, onThing, onPosition, onStackpos, *
     if onId == 5466: # Sugar cane
         if(random.randint(0,20) == 0):
             creature.modifyHealth(-5)
-            creature.magicEffect(position, enum.EFFECT_EXPLOSIONAREA)
+            magicEffect(position, EFFECT_EXPLOSIONAREA)
             creature.removeItem(position, stackpos)
 
-        engine.transformItem(onThing, 5465, onPosition)
+        onThing.transform(5465, onPosition)
 
     else:
         return False

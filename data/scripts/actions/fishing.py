@@ -19,7 +19,7 @@ def onUse(creature, thing, position, onThing, onPosition):
         return
 
     if onThing.itemId in nofishWater:
-        creature.magicEffect(onPosition, enum.EFFECT_LOSENERGY)
+        magicEffect(onPosition, EFFECT_LOSENERGY)
         return
 
     if onThing.itemId == waterElementCorpse:
@@ -27,7 +27,7 @@ def onUse(creature, thing, position, onThing, onPosition):
 
         return
 
-    formula = (creature.getActiveSkill(enum.SKILL_FISH) / 200.0) + (0.85 * random.random())
+    formula = (creature.getActiveSkill(SKILL_FISH) / 200.0) + (0.85 * random.random())
     if thing.itemId == mechanicalFishingRod:
         useItem = creature.findItemById(nail, 1)
     else:
@@ -43,12 +43,12 @@ def onUse(creature, thing, position, onThing, onPosition):
                 addfish = fish
 
             try:
-                creature.itemToContainer(creature.inventory[2], gam.item.Item(addfish))
+                creature.addItem(Item(addfish))
             except:
                 pass
 
-            engine.transformItem(onThing, onThing.itemId+9, position)
-            creature.skillAttempt(enum.SKILL_FISH)
+            onThing.transform(onThing.itemId+9, position)
+            creature.skillAttempt(SKILL_FISH)
     elif onThing.itemId == iceHoleFish:
         if thing.itemId == mechanicalFishingRod:
             if formula > 0.5:
@@ -64,12 +64,12 @@ def onUse(creature, thing, position, onThing, onPosition):
                 addfish = fish
     
         try:
-            creature.itemToContainer(creature.inventory[2], gam.item.Item(addfish))
+            creature.addItem(Item(addfish))
         except:
             pass
 
-        engine.transformItem(onThing, onThing.itemId+1, position)
-        creature.skillAttempt(enum.SKILL_FISH, 2)
+        onThing.transform(onThing.itemId+1, position)
+        creature.skillAttempt(SKILL_FISH, 2)
 
-    onThing.decay()
+    onThing.decay(onPosition)
             

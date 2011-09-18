@@ -97,7 +97,7 @@ def playerEat(creature, ticker=0, lastHP=0, lastMana=0):
     creature.regenerate -= 1
     ticker += 1
     if creature.regenerate >= 0:
-        engine.safeCallLater(1, playerEat, creature, ticker, lastHP, lastMana)
+        callLater(1, playerEat, creature, ticker, lastHP, lastMana)
     else:
         creature.regenerate = 0
     

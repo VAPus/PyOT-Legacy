@@ -12,6 +12,6 @@ def onUse(creature, thing, position, stackpos, **k):
         thing.itemId += 1
         creature.replaceItem(position, stackpos, thing)
     else:
-        engine.transformItem(thing, thing.itemId+1, position)
+        thing.transform(thing.itemId+1, position)
 
 reg('use', increase, onUse)

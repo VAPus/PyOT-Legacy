@@ -19,34 +19,34 @@ def floorchange(creature, thing, position, **k):
         
     # Note this is the correct direction
     if thing.floorchange == "north":
-        creature.move(0, level=-1)
+        creature.move(NORTH, level=-1)
         
     elif thing.floorchange == "south":
-        creature.move(2, level=-1)
+        creature.move(SOUTH, level=-1)
         
     elif thing.floorchange == "east":
-        creature.move(1, level=-1)
+        creature.move(EAST, level=-1)
         
     elif thing.floorchange == "west":
-        creature.move(3, level=-1)
+        creature.move(WEST, level=-1)
         
     elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
-        destTile = game.map.getTile([position[0], position[1], position[2]+1])
+        destTile = getTile([position[0], position[1], position[2]+1])
         destThing = destTile.getThing(1)
 
         # Note: It's the reverse direction
         if destThing.floorchange == "north":
-            creature.move(2, level=1)
+            creature.move(SOUTH, level=1)
             
         elif destThing.floorchange == "south":
-            creature.move(0, level=1)
+            creature.move(NORTH, level=1)
             
         elif destThing.floorchange == "west":
-            creature.move(1, level=1)
+            creature.move(EAST, level=1)
             
         elif destThing.floorchange == "east":
-            creature.move(3, level=1)
+            creature.move(WEST, level=1)
 
 def itemFloorChange(thing, position, onPosition, onThing, **k):
     newPos = position[:]
@@ -68,7 +68,7 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
         
     elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
-        destTile = game.map.getTile([position[0], position[1], position[2]+1])
+        destTile = getTile([position[0], position[1], position[2]+1])
         destThing = destTile.getThing(1)
         newPos[2] += 1
         # Note: It's the reverse direction
@@ -84,7 +84,7 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
         elif destThing.floorchange == "east":
             newPos[1] -= 1
             
-    game.engine.teleportItem(onThing, onPosition, newPos)
+    teleportItem(onThing, onPosition, newPos)
     
     return False
     

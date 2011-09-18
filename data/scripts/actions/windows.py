@@ -5,10 +5,10 @@ closeWindows = 6438, 6439, 6442, 6443, 6446, 6447, 6452, 6453, 6456, 6457, 6460,
             7031, 7032, 10266, 10267, 10490, 10491
 
 def openWindow(creature, thing, position, **k):
-    engine.transformItem(thing, thing.itemId+2, position)
+    thing.transform(thing.itemId+2, position)
 
 def closeWindow(creature, thing, position, **k):
-    engine.transformItem(thing, thing.itemId-2, position)
+    thing.transform(thing.itemId-2, position)
 
 reg('use', openWindows, openWindow)
 reg('use', closeWindows, closeWindow)
