@@ -7,6 +7,12 @@ import marshal
 import scriptsystem
 from collections import deque
 import config
+
+try:
+    import io # Python 2.7+
+    _open = io.open
+except:
+    _open = open # Less than 2.7
     
 def getTile(pos):
     iX = int(pos[0] / 32)
@@ -302,14 +308,17 @@ def load(sectorX, sectorY):
     l = None
     m = None
     try:
-        exec(marshal.loads(open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb").read()))
+        with _open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
+            exec marshal.loads(f.read())
     except:
         # Build cache data
         # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
-        compiled = compile(open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb').read(), "%d.%d" % (sectorX, sectorY), 'exec')
+        with _open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
+            compiled = compile(f.read(), "%d.%d" % (sectorX, sectorY), 'exec')
         # Write it
-        marshal.dump(compiled, open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb'), 2)
-        exec(compiled)
+        with _open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
+            f.write(marshal.dumps(compiled, 2))
+        exec compiled
     
 
     knownMap[sectorSum] = m          

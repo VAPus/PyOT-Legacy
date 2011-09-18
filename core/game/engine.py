@@ -35,6 +35,7 @@ houseData = {}
 globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem"]
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
+        self.save = False
         self.owner = owner
         self.guild = guild
         self.paid = paid
@@ -72,6 +73,11 @@ class House(object):
             self.data["subowners"].remove(id)
         except:
             pass
+
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        if name != "save":
+            object.__setattr__(self, "save", True)
         
 # The loader rutines, async loading :)
 def loader(timer):
@@ -98,18 +104,13 @@ def loader(timer):
     def sync(d, timer):
         # Load map (if configurated to do so)
         if config.loadEntierMap:
-            
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
-                def __(fileSec):
-                    fileSec = fileSec.split('/')[-1]
-                    x, y, junk = fileSec.split('.')
-                    game.map.load(int(x),int(y))
-                
-                ret = threads.deferToThread(__, fileSec)
-            ret.addCallback(lambda x: log.msg("Loaded entier map in %f" % (time.time() - begin)))
-
+                x, y, junk = fileSec.split('/')[-1].split('.')
+                game.map.load(int(x),int(y))
+            log.msg("Loaded entier map in %f" % (time.time() - begin))
+            
         # Load scripts
         game.scriptsystem.importer()
         game.scriptsystem.get("startup").run(None)
@@ -684,7 +685,7 @@ def saveAll():
             data = otjson.dumps(globalStorage[field])
             type = "json"
         elif field in pickleFields:
-            data = pickle.dumps(globalStorage[field])
+            data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCO)
             type = "pickle"
         else:
             data = globalStorage[field]
@@ -694,7 +695,8 @@ def saveAll():
     # Houses
     for houseId in houseData:
         print "House ", houseId
-        items = {}
+        house = houseData[houseId]
+        items = house.data["items"].copy()
         try:
             for tileData in game.map.houseTiles[houseId]:
                 _items = []
@@ -705,9 +707,15 @@ def saveAll():
                     items[tileData[1]] = _items
         except:
             pass
-        houseData[houseId].data["items"] = items
-        print items
-        sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (houseData[houseId].owner, houseData[houseId].guild, houseData[houseId].paid, pickle.dumps(houseData[houseId].data), houseId))
+        if items != house.data["items"]:
+            house.data["items"] = items
+            house.save = True # Force save
+        if house.save:
+            print "Saving house ", houseId
+            sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCO), houseId))
+            house.save = False
+        else:
+            print "Not saving house", houseId
 # Time stuff
 def getTibiaTime():
     """ Return the Time inside the game.
