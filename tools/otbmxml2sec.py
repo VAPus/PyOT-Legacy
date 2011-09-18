@@ -301,7 +301,8 @@ while node:
                                 safe = False
                             elif attr == 14: # houseDoorId
                                 safe = False
-                                item.data.uint8() # We don't need this
+                                _tile_.append("i%d.attribute(\"doorId\",%d)" % (itemNum, item.data.uint8()))
+                                
                                 _tile_.append("i%d.action('houseDoor')" % itemNum)
                             elif attr == 20: # Sleeperguid
                                 item.data.uint32() # TODO: care?

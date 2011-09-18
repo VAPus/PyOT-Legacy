@@ -11,9 +11,8 @@ def onUseDoor(creature, thing, position, **k):
     else:
         if "houseDoor" in thing.actions:
             houseId = game.map.getTile(position).houseId
-            if creature.data["id"] == engine.houseData[houseId].owner:
+            if creature.data["id"] == engine.houseData[houseId].owner or creature.data["id"] in engine.houseData[houseId].data["subowners"]:
                 engine.transformItem(thing, thing.itemId+2, position)
-                callLater(4, engine.transformItem, thing, thing.itemId-2, position)
                 return
         creature.message("It is locked.")
 

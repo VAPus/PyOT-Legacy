@@ -32,7 +32,7 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
-
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem"]
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
         self.owner = owner
@@ -45,10 +45,31 @@ class House(object):
         if data:
             self.data = pickle.loads(data)
         else:
-            self.data = {}
+            self.data = {"items":[], "subowners":[], "guests":[]}
         try:
             for pos in self.data["items"]:
                 savedItems[pos] = self.data["items"][pos]
+        except:
+            pass
+
+    def addGuest(self, id):
+        try:
+            self.data["guests"].append(id)
+        except:
+            self.data["guests"] = [id]
+    def removeGuest(self, id):
+        try:
+            self.data["guests"].remove(id)
+        except:
+            pass
+    def addSubOwner(self, id):
+        try:
+            self.data["subowners"].append(id)
+        except:
+            self.data["subowners"] = [id]
+    def removeSubOwner(self, id):
+        try:
+            self.data["subowners"].remove(id)
         except:
             pass
         
@@ -121,7 +142,9 @@ def loader(timer):
     for i in dir(game.enum):
         if not "__" in i:
             __builtins__[i] = getattr(game.enum, i)
-            
+    for i in globalize:
+        __builtins__[i] = getattr(sys.modules["game.engine"], i)
+        
     __builtins__["sql"] = sql.conn
     __builtins__["config"] = config
     __builtins__["reg"] = game.scriptsystem.reg
@@ -138,7 +161,7 @@ def loader(timer):
     __builtins__["time"] = time
     __builtins__["spell"] = game.spell # Simplefy spell making
     __builtins__["callLater"] = safeCallLater
-        
+    __builtins__["Item"] = game.item.Item
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster
@@ -636,27 +659,6 @@ def explainPacket(packet):
     log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
     packet.pos = currPos
 
-# The auto type caster
-def autoCastValue(data): # We get a string, then find the simplest possible value for it
-    if not data:
-        return None
-
-    try:
-        data = int(data)
-        if data == 1:
-            return True
-        elif data == 0:
-            return False
-        else:
-            return data
-
-    except:
-        return data
-        
-# Call that ignores failours
-def ignore(result):
-    pass
-
 # Save system, async :)
 def saveAll():
     """Save all players and all global variables."""
@@ -829,4 +831,19 @@ def placeInDepot(name, depotId, items):
             returnValue(True)
         else:
             returnValue(False)
-        
+
+# Helper calls
+def summonCreature(name, position, master=None):
+    import game.monster
+    creature = game.monster.getMonster(name).spawn(position, spawnDelay=0)
+    if master:
+        creature.setMaster(master)
+    else:
+        creature.setRespawn(False)
+    return creature
+    
+def magicEffect(pos, type):
+    for spectator in getSpectators(pos):
+        stream = spectator.packet()
+        stream.magicEffect(pos, type)
+        stream.send(spectator)

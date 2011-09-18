@@ -290,6 +290,29 @@ class Item(object):
             pass
         return newItem
         
+    def transform(self, toId, position, stackPos=None):
+        import game.map, game.engine
+        tile = game.map.getTile(pos)
+        if not stackPos:
+            stackPos = tile.findStackpos(self)
+
+        tile.removeItem(self)
+        item = self
+        if item.tileStacked:
+            item = item.copy()
+            
+        item.itemId = transformTo
+        if transformTo:
+            newStackpos = tile.placeItem(item)
+
+        for spectator in game.engine.getSpectators(pos):
+            stream = spectator.packet()
+            stream.removeTileItem(pos, stackPos)
+            if transformTo:
+                stream.addTileItem(pos, stackPos, item)
+                
+            stream.send(spectator)
+            
 def cid(itemid):
     try:
         return items[itemid]["cid"]

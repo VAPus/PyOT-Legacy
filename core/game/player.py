@@ -895,6 +895,24 @@ class Player(Creature):
             
 
     # Item to container
+    def addItem(self, item):
+        ret = None
+        try:
+            ret = self.itemToContainer(self.inventory[2], item)
+        except:
+            ret = False
+            
+        if ret == False and not self.inventory[9]:
+            self.inventory[9] = item
+            stream = self.packet()
+            stream.addInventoryItem(10, self.inventory[9])
+            stream.send(self.client)            
+            return True
+        elif ret == False:
+            return False
+        else:
+            return True
+            
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
         stream = streamX
         update = False
@@ -955,7 +973,7 @@ class Player(Creature):
                 info = container.container.placeItem(item)
                 
             if info == None:
-                return # Not possible
+                return False # Not possible
                 
             if recursive and info and info.opened:
                 stream.addContainerItem(self.openContainers.index(info), item)
