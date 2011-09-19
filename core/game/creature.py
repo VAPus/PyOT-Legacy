@@ -156,7 +156,7 @@ class Creature(object):
         
     def stepDuration(self, ground, delay=1.5):
         #if time.time() - self.lastStep < delay:
-        if True: # Ignore delay system
+        if True:
             if not ground.speed:
                 ground.speed = 100
                 
@@ -199,7 +199,7 @@ class Creature(object):
         
     @inlineCallbacks
     def _move(self, d, direction, spectators=None, level=0, stopIfLock=False):
-        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level, stopIfLock=stopIfLock):
+        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level):
             return
             
         if not self.alive or not self.data["health"]:
@@ -459,6 +459,35 @@ class Creature(object):
         #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
+    def rename(self, name):
+        newSpectators = game.engine.getPlayers(self.position)
+        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+        
+        self.data["name"] = name
+        for player in self.knownBy:
+            stream = player.packet()
+            stream.removeTileItem(self.position, stackpos)
+            if player in newSpectators:
+                stream.addTileCreature(self.position, stackpos, self, player, True)
+
+            stream.send(player.client)
+
+    def privRename(self, player, name):
+        if player in self.knownBy:
+            stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+            stream = player.packet()
+            stream.removeTileItem(self.position, stackpos)
+            originalName = self.data["name"]
+            
+            def doRename():
+                self.data["name"] = name
+                stream.addTileCreature(self.position, stackpos, self, player, True)
+                self.data["name"] = originalName
+                stream.send(player.client)     
+                
+            reactor.callFromThread(doRename) # For thread safety
+
+            
     def hitEffects(self):
         if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
             return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD

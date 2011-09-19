@@ -244,7 +244,7 @@ class BasePacket(TibiaPacket):
         self.uint8(stackpos)
         self.item(item)
 
-    def addTileCreature(self, pos, stackpos, creature, player=None):
+    def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
@@ -261,7 +261,9 @@ class BasePacket(TibiaPacket):
                         return
                 player.knownCreatures.add(creature)
                 creature.knownBy.add(player)
-    
+            elif resend:
+                removeKnown = creature.clientId()
+                known = False
             self.creature(creature, known, removeKnown)
 
     def moveUpPlayer(self, player, oldPos):

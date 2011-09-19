@@ -685,7 +685,7 @@ def saveAll():
             data = otjson.dumps(globalStorage[field])
             type = "json"
         elif field in pickleFields:
-            data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCO)
+            data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCOL)
             type = "pickle"
         else:
             data = globalStorage[field]
