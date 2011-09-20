@@ -44,3 +44,9 @@ apt-get update
 apt-get upgrade
 
 Then follow the Debian Wheezy installation instructions above.
+
+You can find additional documentation of PyOT on this link:
+http://vapus.net/pyot_doc/index.html
+
+Useful scripting guide:
+http://vapus.net/pyot_doc/scriptevents.html
