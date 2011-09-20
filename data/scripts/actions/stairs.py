@@ -14,9 +14,11 @@ scriptsystem.get("walkOn").reg(staireast, walker(1))"""
 
 def floorchange(creature, thing, position, **k):
     # Check if we can do this
+    print config.monsterStairHops
+    print creature.isPlayer()
     if not config.monsterStairHops and not creature.isPlayer():
         return
-        
+    print "Move"
     # Note this is the correct direction
     if thing.floorchange == "north":
         creature.move(NORTH, level=-1)

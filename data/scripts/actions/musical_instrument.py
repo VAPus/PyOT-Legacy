@@ -23,7 +23,7 @@ def onUse(creature, thing, positon, **k):
         creature.say("TOOOOOOT!", 'MSG_SPEAK_MONSTER_SAY')
         magicEffect(position, EFFECT_SOUND_BLUE)
         thing.decay(position)
-    elif thing.itemId = cornucopia:
+    elif thing.itemId == cornucopia:
         for i in range(0, 10):
             creature.addItem(game.item.Item(2681))
 
@@ -37,4 +37,4 @@ def onUse(creature, thing, positon, **k):
             magicEffect(None, EFFECT_SOUND_PURPLE)
             summonCreature("Wolf", creature.positionInDirection(NORTH))
             
-reg("use", extras+instruemnts, onUse)
+reg("use", extras|instruments, onUse)

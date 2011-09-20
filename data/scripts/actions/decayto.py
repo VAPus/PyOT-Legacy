@@ -11,4 +11,4 @@ def onUse(thing, position, **k):
 
     thing.decay(position)
 
-reg("use", decayIncrease+decayDecrease, onUse)
+reg("use", decayIncrease|decayDecrease, onUse)

@@ -115,7 +115,7 @@ class ThingScripts(object):
         self.thingScripts = {}
 
     def haveScripts(self, id):
-        if type(id) in (list, tuple):
+        if type(id) in (list, tuple, set):
             for i in id:
                 if i in self.scripts:
                     return True
@@ -127,7 +127,7 @@ class ThingScripts(object):
             
     def reg(self, id, callback, toid=None):
         if not toid:
-            if type(id) in (tuple, list):
+            if type(id) in (tuple, list, set):
                 func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
@@ -157,7 +157,7 @@ class ThingScripts(object):
 
     def regFirst(self, id, callback, toid=None):
         if not toid:
-            if type(id) in (tuple, list):
+            if type(id) in (tuple, list, set):
                 func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
@@ -400,17 +400,10 @@ reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 def handleModule(name):
     modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
 
-    """for module in modules.__all__:
-        try:
-            if module == "__init__":
-                sys.modules["data.%s.%s" % (name, module)].init()
-        except AttributeError:
-            pass
-    """
     try:
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))
-    except:
+    except AttributeError:
         pass
 
     modPool.append([name, modules])
