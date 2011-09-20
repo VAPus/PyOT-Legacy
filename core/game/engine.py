@@ -712,7 +712,7 @@ def saveAll():
             house.save = True # Force save
         if house.save:
             print "Saving house ", houseId
-            sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCO), houseId))
+            sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
             house.save = False
         else:
             print "Not saving house", houseId
