@@ -1,5 +1,5 @@
 You need:
-* Python 2.6+
+* Python 2.7+
 * Twisted 10+
 * zope.interface
 * MySQLdb 1.2.3 (or pymysql)
@@ -28,5 +28,19 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of
 Archlinux:
 pacman -S python2 mysql-python twisted python-cjson python-distribute
 
-Ubuntu (10.04+):
-apt-get install python-twisted python-setuptools python-cjson python-mysqldb python2.7 (might need to install 2.6 here!)
+Ubuntu(10.10+) or Debian 6 wheezy (testing)+:
+apt-get install python-twisted python-setuptools python-cjson python-mysqldb python2.7
+
+An alternative method is required on older versions of Ubuntu and Debian, since those versions only have python 2.6
+or below as standard support. 
+
+Debian 6 Squeeze:
+The easy way will be to update your debian sources to get Python 2.7, like this:
+nano (or vi) /etc/apt/sources.list
+add this line in the end of the document:
+deb http://ftp.no.debian.org/debian/ testing main contrib
+and save (nano = ctrl + O, followed up by CTRL + X to quit), (vi = ESC :w, followed up by :quit)
+apt-get update
+apt-get upgrade
+
+Then follow the Debian Wheezy installation instructions above.
