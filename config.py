@@ -1,9 +1,9 @@
 # Note: Don't do imports here
 
 # Network:
-loginInterface = 'localhost'
+loginInterface = '' # Leave blank to accept connections on any hostname
 loginPort = 7171
-gameInterface = 'localhost'
+gameInterface = '' # Leave blank to accept connections on any hostname
 gamePort = 7172
 
 # Server ips, for the loginserver
