@@ -696,7 +696,7 @@ def saveAll():
     for houseId in houseData:
         print "House ", houseId
         house = houseData[houseId]
-        items = house.data["items"].copy()
+        items = house.data["items"][:]
         try:
             for tileData in game.map.houseTiles[houseId]:
                 _items = []
