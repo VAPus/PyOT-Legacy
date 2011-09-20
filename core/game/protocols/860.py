@@ -85,7 +85,6 @@ class Packet(base.BasePacket):
 
     def tileDescription(self, tile, player=None):
         # self.uint16(0x00) No animations!
-        print "8.6 tile description called"
         isSolid = False
         for item in tile.topItems():
             if item.solid:

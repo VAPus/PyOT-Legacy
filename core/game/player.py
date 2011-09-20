@@ -611,8 +611,8 @@ class Player(Creature):
             # Happends on new members using new weapons
             self.setStorage(key, 1)
         
-        skill = self.getStorage(key)
-        skillGoal = self.getStorage(goalKey)
+        skill = self.getStorage(key, 0)
+        skillGoal = self.getStorage(goalKey, 0)
         if skill >= skillGoal:
             self.addSkillLevel(skillType, 1)
             self.setStorage(key, skillGoal - skill)
