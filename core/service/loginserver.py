@@ -72,7 +72,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         for character in characters:
             pkg.string(character['name'])
             pkg.string(config.name)
-            pkg.raw(socket.inet_aton(config.servers[character['world_id']]))
+            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character['world_id']])))
             pkg.uint16(config.gamePort)
 
         # Add premium days
