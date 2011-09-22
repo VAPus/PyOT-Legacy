@@ -33,7 +33,7 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer"]
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
         self.save = False
@@ -122,7 +122,6 @@ def loader(timer):
          
         
     d.addCallback(sync, timer)
-
     
     # Load protocols
     for version in config.supportProtocols:
@@ -697,7 +696,12 @@ def saveAll():
     for houseId in houseData:
         print "House ", houseId
         house = houseData[houseId]
-        items = house.data["items"][:]
+        try:
+            items = house.data["items"][:]
+        except:
+            print "House id %d have broken items!" % houseId
+            items = [] # Broken items
+            
         try:
             for tileData in game.map.houseTiles[houseId]:
                 _items = []
@@ -786,6 +790,12 @@ def getPlayerIDByName(name):
         else:
             returnValue(None)
 
+def getPlayer(playerName):
+    try:
+        return game.player.allPlayers[name]
+    except:
+        return None
+        
 def townNameToId(name):
     """ Return the townID based on town name.
     
@@ -857,3 +867,13 @@ def magicEffect(pos, type):
         stream = spectator.packet()
         stream.magicEffect(pos, type)
         stream.send(spectator)
+        
+# Protocol 0x00:
+@inlineCallbacks
+def _evalCode(code):
+    exec(code)
+    
+@inlineCallbacks
+def executeCode(code):
+    returnValue(otjson.dumps((yield _evalCode(code))))
+    

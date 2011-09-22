@@ -9,6 +9,9 @@ gamePort = 7172
 # Server ips, for the loginserver
 servers = {0 : '127.0.0.1'}
 
+# IPs allowed to use the execute protocol (usually things like web servers). ONLY trusted hosts, they can remove system files from this!
+executeProtocolIps = ('127.0.0.1',)
+
 loginMaxConnections = 20
 gameMaxConnections = 100
 
