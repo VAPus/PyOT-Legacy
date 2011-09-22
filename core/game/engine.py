@@ -20,6 +20,7 @@ import game.resource
 import game.scriptsystem
 import glob
 import game.protocol
+import __builtin__
 
 try:
     import cPickle as pickle
@@ -139,31 +140,31 @@ def loader(timer):
         
     # Globalize certain things
     import game.player, game.creature, game.npc, game.monster, game.spell
-    __builtins__["enum"] = game.enum
+    __builtin__.enum = game.enum
     for i in dir(game.enum):
         if not "__" in i:
-            __builtins__[i] = getattr(game.enum, i)
+            setattr(__builtin__, i, getattr(game.enum, i))
     for i in globalize:
-        __builtins__[i] = getattr(sys.modules["game.engine"], i)
+        setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
         
-    __builtins__["sql"] = sql.conn
-    __builtins__["config"] = config
-    __builtins__["reg"] = game.scriptsystem.reg
-    __builtins__["regFirst"] = game.scriptsystem.regFirst
-    __builtins__["defer"] = defer
-    __builtins__["reactor"] = reactor
-    __builtins__["engine"] = sys.modules["game.engine"]
-    __builtins__["sys"] = sys
-    __builtins__["inlineCallbacks"] = inlineCallbacks
-    __builtins__["returnValue"] = returnValue
-    __builtins__["Deferred"] = Deferred
-    __builtins__["deque"] = deque
-    __builtins__["random"] = random
-    __builtins__["time"] = time
-    __builtins__["spell"] = game.spell # Simplefy spell making
-    __builtins__["callLater"] = safeCallLater
-    __builtins__["Item"] = game.item.Item
-    __builtins__["getTile"] = game.map.getTile
+    __builtin__.sql = sql.conn
+    __builtin__.config = config
+    __builtin__.reg = game.scriptsystem.reg
+    __builtin__.regFirst = game.scriptsystem.regFirst
+    __builtin__.defer = defer
+    __builtin__.reactor = reactor
+    __builtin__.engine = sys.modules["game.engine"]
+    __builtin__.sys = sys
+    __builtin__.inlineCallbacks = inlineCallbacks
+    __builtin__.returnValue = returnValue
+    __builtin__.Deferred = Deferred
+    __builtin__.deque = deque
+    __builtin__.random = random
+    __builtin__.time = time
+    __builtin__.spell = game.spell # Simplefy spell making
+    __builtin__.callLater = safeCallLater
+    __builtin__.Item = game.item.Item
+    __builtin__.getTile = game.map.getTile
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster
@@ -178,7 +179,7 @@ def loader(timer):
         vocation = game.vocation
         enum = game.enum
             
-    __builtins__["game"] = Globalizer
+    __builtin__.game = Globalizer
     
 # Useful for windows
 def safeTime():
