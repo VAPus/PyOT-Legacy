@@ -17,8 +17,12 @@ class Scripts(object):
     def __init__(self):
         self.scripts = []
         
-    def reg(self, callback):
-        self.scripts.append(weakref.proxy(callback, self.unregCallback))
+    def reg(self, callback, weakfunc=True):
+        if weakfunc:
+            func = weakref.proxy(callback, self.unregCallback)
+        else:
+            func = callback
+        self.scripts.append(func)
         
     def unreg(self, callback):
         self.scripts.remove(callback)
@@ -56,16 +60,25 @@ class TriggerScripts(object):
         self.scripts = {}
         
         
-    def reg(self, trigger, callback):
+    def reg(self, trigger, callback, weakfunc=True):
+        if weakfunc:
+            func = weakref.proxy(callback, self.unregCallback)
+        else:
+            func = callback
+            
         if not trigger in self.scripts:
             self.scripts[trigger] = []
-        self.scripts[trigger].append(weakref.proxy(callback, self.unregCallback))
+        self.scripts[trigger].append(func)
 
-    def regFirst(self, trigger, callback):
+    def regFirst(self, trigger, callback, weakfunc=True):
         if not trigger in self.scripts:
-            self.reg(trigger, callback)
+            self.reg(trigger, callback, weakfunc)
         else:
-            self.scripts[trigger].insert(0, weakref.proxy(callback, self.unregCallback))
+            if weakfunc:
+                func = weakref.proxy(callback, self.unregCallback)
+            else:
+                func = callback
+            self.scripts[trigger].insert(0, func)
             
     def unreg(self, trigger, callback):
         self.scripts[trigger].remove(callback)
@@ -125,10 +138,14 @@ class ThingScripts(object):
         else:
             return False
             
-    def reg(self, id, callback, toid=None):
+    def reg(self, id, callback, toid=None, weakfunc=True):
+        if weakfunc:
+            func = weakref.proxy(callback, self.unregCallback)
+        else:
+            func = callback
+            
         if not toid:
             if type(id) in (tuple, list, set):
-                func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
                         self.scripts[xid] = [func]
@@ -139,26 +156,29 @@ class ThingScripts(object):
                 id = weakref.ref(id, self.unregAll) 
                 
                 if not id in self.thingScripts:
-                    self.thingScripts[id] = [weakref.proxy(callback, self.unregCallback)]
+                    self.thingScripts[id] = [func]
                 else:
-                    self.thingScripts[id].append(weakref.proxy(callback, self.unregCallback))
+                    self.thingScripts[id].append(func)
             else:
                 if not id in self.scripts:
-                    self.scripts[id] = [weakref.proxy(callback, self.unregCallback)]
+                    self.scripts[id] = [func]
                 else:
-                    self.scripts[id].append(weakref.proxy(callback, self.unregCallback))
+                    self.scripts[id].append(func)
         else:
-            func = weakref.proxy(callback, self.unregCallback)
             for xid in xrange(id, toid+1):
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]
                 else:
                     self.scripts[xid].append(func)
 
-    def regFirst(self, id, callback, toid=None):
+    def regFirst(self, id, callback, toid=None, weakfunc=True):
+        if weakfunc:
+            func = weakref.proxy(callback, self.unregCallback)
+        else:
+            func = callback
+            
         if not toid:
             if type(id) in (tuple, list, set):
-                func = weakref.proxy(callback, self.unregCallback)
                 for xid in id:
                     if not xid in self.scripts:
                         self.scripts[xid] = [func]
@@ -169,16 +189,15 @@ class ThingScripts(object):
                 id = weakref.ref(id, self.unregAll) 
                 
                 if not id in self.thingScripts:
-                    self.thingScripts[id] = [weakref.proxy(callback, self.unregCallback )]
+                    self.thingScripts[id] = [func]
                 else:
-                    self.thingScripts[id].insert(0, weakref.proxy(callback, self.unregCallback ))
+                    self.thingScripts[id].insert(0, func)
             else:
                 if not id in self.scripts:
-                    self.scripts[id] = [weakref.proxy(callback, self.unregCallback)]
+                    self.scripts[id] = [func]
                 else:
-                    self.scripts[id].insert(0, weakref.proxy(callback, self.unregCallback))
+                    self.scripts[id].insert(0, func)
         else:
-            func = weakref.proxy(callback, self.unregCallback)
             for xid in xrange(id, toid+1):
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]

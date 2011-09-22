@@ -17,19 +17,19 @@ The registration function:
 
 **For Scripts()**:
 
-    .. function:: reg(type, callback)
+    .. function:: reg(type, callback [, weakfunc=True])
     
-    Register a ``callback`` (function) to the ``type`` script event.
+    Register a ``callback`` (function) to the ``type`` script event. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded! 
     
 **For TriggerScripts()**:
 
-    .. function:: reg(type, trigger, callback)
+    .. function:: reg(type, trigger, callback [, weakfunc=True])
     
-    Register a ``callback`` (function) to the ``type`` script event. Which is called when the ``trigger`` matches.
+    Register a ``callback`` (function) to the ``type`` script event. Which is called when the ``trigger`` matches. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
 
 **For ThingScripts() and CreatureScripts()**:
 
-    .. function:: reg(type, id, callback [, toid=None])
+    .. function:: reg(type, id, callback [, toid=None [, weakfunc=True]])
     
     Register a ``callback`` (function) to the ``type`` script event. ``id`` is the identifier in which things are identified for this callback to be called.
 
@@ -38,7 +38,8 @@ The registration function:
     * The third option is to use a string, a script will match against the things actions. Actionids is strings aswell. reg("use", "item", onUseAnyItem) or reg("lookAt", "Wolf", onLookAtWolf)
     * The fourth option is to bind it directly to a thing, this is usually only good if you intend to make one item chain the next, for instance if you use two pieces of wood together, then the next time you use the wood you want it to burst into flames. Example (inside a callback): reg("use", thing, someCallback)
 
-    
+    ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
+   
 The events are:
 
 .. function:: talkaction(creature, text)

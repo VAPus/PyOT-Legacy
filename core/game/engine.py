@@ -130,7 +130,11 @@ def loader(timer):
     # Do we issue saves?
     if config.doSaveAll:
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-            
+    
+    # Do we save on shutdowns?
+    if config.saveOnShutdown:
+        game.scriptsystem.reg("shutdown", lambda **k: saveAll(), False)
+        
     # Light stuff
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)

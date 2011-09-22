@@ -80,6 +80,7 @@ performSectorUnloadEvery = 900 # 15 minutes is good
 # Save system
 doSaveAll = True # Issue saves
 saveEvery = 300 # in seconds. Even down to a few seconds won't really make server lag since it's async, but you will definitly risk binding up sql connections if your below 1second, this in turn can cause lag
+saveOnShutdown = True # Issue saves on shutdowns
 
 # Tibia day
 tibiaTimeOffset = 1200 # This is used as a base time for when the server started. If day is 3600, this means the clock will be 8 when the server starts
