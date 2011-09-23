@@ -168,6 +168,7 @@ def loader(timer):
     __builtin__.callLater = safeCallLater
     __builtin__.Item = game.item.Item
     __builtin__.getTile = game.map.getTile
+    __builtin__.Condition = game.creature.Condition
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster
