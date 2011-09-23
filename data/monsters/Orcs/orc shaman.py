@@ -8,5 +8,7 @@ orc_shaman.setSpeed(180)
 orc_shaman.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=4, runOnHealth=0)
 orc_shaman.walkAround(energy=1, fire=1, poison=1)
 orc_shaman.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=1)
+orc_shaman.summon("snake", 10)
+orc_shaman.maxSummons(4)
 orc_shaman.voices("Huumans stinkk!", "Grak brrretz gulu.")
 orc_shaman.regMelee(15) #incorrect

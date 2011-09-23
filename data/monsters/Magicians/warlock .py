@@ -10,4 +10,6 @@ warlock.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pus
 warlock.walkAround(energy=0, fire=0, poison=0)
 warlock.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 warlock.voices("Even a rat is a better mage than you!", "Learn the secret of our magic! YOUR death!", "We don't like intruders!")
+warlock.summon("stone golem", 10)
+warlock.maxSummons(1)
 warlock.regMelee(130)
