@@ -283,3 +283,8 @@ def poisonme(creature, **k):
     print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
     
 reg("talkaction", "poisonme", poisonme)
+
+def conditionme(creature, **k):
+    creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
+    
+reg("talkaction", "conditionme", conditionme)

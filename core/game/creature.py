@@ -999,6 +999,19 @@ class Creature(object):
             
         self.refreshConditions()
 
+    def multiCondition(self, *argc, **kwargs):
+        try:
+            stackbehavior = kwargs["stackbehavior"]
+        except:
+            stackbehavior = enum.CONDITION_LATER
+        
+        currCon = argc[0]
+        for con in argc[1:]:
+            currCon.callback = lambda: self.condition(con, stackbehavior)
+            currCon = con
+            
+        self.condition(argc[0], stackbehavior)
+        
     def hasCondition(self, conditionType, subtype=""):
         if subtype and isinstance(conditionType, str):
             conditionType = "%s_%s" % (conditionType, subtype)
@@ -1053,10 +1066,13 @@ class Condition(object):
         
     def init(self):
         pass
+
+    def callback(self): pass
     
     def finish(self):
         del self.creature.conditions[self.type]
         self.creature.refreshConditions()
+        self.callback()
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
         self.creature.magicEffect(None, EFFECT_HITBYPOISON)
