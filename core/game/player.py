@@ -188,7 +188,7 @@ class Player(Creature):
         
         stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
         stream.creaturelight(self.cid, 0,0)
-        stream.icons(0)
+        self.refreshConditions(stream)
 
         stream.magicEffect(self.position, 0x03)
         stream.send(self.client)
@@ -205,6 +205,28 @@ class Player(Creature):
             stream = streamX
             
         stream.status(self)
+
+        if not streamX:
+            stream.send(self.client)
+
+    def refreshConditions(self, streamX=None):
+        if not streamX:
+            if self.client:
+                stream = self.packet()
+            else:
+                return False # No client
+        else:
+            stream = streamX
+        
+        send = 0
+        for conId in self.conditions:
+            try:
+                conId = int(conId)
+                send += conId
+            except:
+                pass
+            
+        stream.icons(send)
 
         if not streamX:
             stream.send(self.client)
@@ -1756,3 +1778,5 @@ class Player(Creature):
         
     def removeMount(self, name):
         self.removeStorage('__mount%s' % game.resource.reverseMounts[name])
+        
+        

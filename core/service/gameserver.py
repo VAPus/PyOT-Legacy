@@ -11,6 +11,8 @@ from packet import TibiaPacket
 import sql
 import game.player
 from game.map import getTile,removeCreature
+import struct
+
 class GameProtocol(protocolbase.TibiaProtocol):
     __slots__ = 'player', 'protocol'
     
@@ -35,6 +37,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
+
         if packetType == 0x0A:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
@@ -123,13 +126,27 @@ class GameProtocol(protocolbase.TibiaProtocol):
             # Call the login script
             game.scriptsystem.get("login").run(self.player)
         elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
-            op = packet.string()
-            if op == "CALL":
-                result = yield game.engine.executeCode(packet.string())
-                print result
-                t = TibiaPacket()
-                t.string(result)
-                t.send(self)
+            t = TibiaPacket()
+            isAuthorized = not config.executeProtocolAuthKeys
+            try:
+                while True:
+                    op = packet.string()
+                    print op
+                    if op == "CALL" and isAuthorized:
+                        print "do this"
+                        result = yield game.engine.executeCode(packet.string())
+                        t.string(result)
+                    elif op == "AUTH":
+                        print "auth"
+                        result = packet.string() in config.executeProtocolAuthKeys
+                        if result:
+                            t.string("True")
+                            isAuthorized = True
+                        else:
+                            t.string("False")
+            except struct.error:
+                pass # End of the line
+            t.send(self)
             self.transport.loseConnection()
     def onPacket(self, packet):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)

@@ -84,6 +84,7 @@ class Creature(object):
         self.emblem = 0
         self.skull = 0
         self.knownBy = set()
+        self.conditions = {}
         
         # We are trackable
         allCreatures[self.cid] = self
@@ -172,7 +173,8 @@ class Creature(object):
 
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
-
+    def refreshConditions(self, streamX=None): pass
+    
     def despawn(self):
         self.alive = False
         tile = game.map.getTile(self.position)
@@ -410,7 +412,7 @@ class Creature(object):
             game.scriptsystem.get('appear').run(self, creature2)
             
     def magicEffect(self, pos, type):
-        if pos[0] == 0xFFFF or not pos:
+        if not pos or pos[0] == 0xFFFF:
             pos = self.position
         for spectator in getSpectators(pos):
             stream = spectator.packet()
@@ -970,3 +972,100 @@ class Creature(object):
         
     def square(self, creature, color=27):
         pass
+    
+    # Conditions
+    def condition(self, condition, stackbehavior=enum.CONDITION_LATER):
+        try:
+            oldCondition = self.conditions[condition.type]
+            if not oldCondition.ticks:
+                raise
+            
+            if stackbehavior == enum.CONDITION_IGNORE:
+                return False
+            elif stackbehavior == enum.CONDITION_LATER:
+                return engine.safeCallLater(oldCondition.ticks * oldCondition.per, self.condition, condition, stackbehavior)
+            elif stackbehavior == enum.CONDITION_ADD:
+                oldCondition.ticks += forticks
+            elif stackbehavior == enum.CONDITION_MODIFY:
+                condition.ticks += oldCondition.ticks
+                self.conditions[condition.type] = condition
+        except:
+            self.conditions[condition.type] = condition
+            condition.start(self)
+            
+        self.refreshConditions()
+
+    def hasCondition(self, conditionType, subtype=""):
+        if subtype and isinstance(conditionType, str):
+            conditionType = "%s_%s" % (conditionType, subtype)
+        try:
+            self.conditions[conditionType]
+            return True
+        except:
+            return False
+
+    def loseCondition(self, conditionType, subtype=""):
+        if subtype and isinstance(conditionType, str):
+            conditionType = "%s_%s" % (conditionType, subtype)
+        try:
+            self.condions[conditionType].stop()
+            return True
+        except:
+            return False
+            
+class Condition(object):
+    def __init__(self, type, subtype="", ticks=1, per=1, *argc, **kwargs):
+        self.ticks = ticks
+        self.per = per
+        self.creature = None
+        self.tickEvent = None
+        if subtype and isinstance(type, str):
+            self.type = "%s_%s" % (type, subtype)
+        else:
+            self.type = type
+        self.effectArgs = argc
+        self.effectKwargs = kwargs
+        
+        try:
+            self.effect
+        except:
+            if type == CONDITION_FIRE:
+                self.effect = self.effectFire
+            elif type == CONDITION_POISON:
+                self.effect = self.effectPoison
+        
+    def start(self, creature):
+        self.creature = creature
+        self.init()
+        self.tick()
+        
+    def stop(self):
+        try:
+            self.tickEvent.cancel()
+        except:
+            pass
+        
+        self.finish()
+        
+    def init(self):
+        pass
+    
+    def finish(self):
+        del self.creature.conditions[self.type]
+        self.creature.refreshConditions()
+
+    def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
+        self.creature.magicEffect(None, EFFECT_HITBYPOISON)
+        self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
+
+    def effectFire(self, damage=0, minDamage=0, maxDamage=0):
+        self.creature.magicEffect(None, EFFECT_HITBYFIRE)
+        self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
+        
+    def tick(self):
+        self.effect(*self.effectArgs, **self.effectKwargs)
+        self.ticks -= 1
+        if self.ticks:
+            self.tickEvent = engine.safeCallLater(self.per, self.tick)
+        else:
+            self.finish()

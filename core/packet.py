@@ -141,7 +141,7 @@ class TibiaPacket(object):
             data = otcrypto.encryptXTEA(struct.pack("<H", len(self.bytes[0]))+self.bytes[0], stream.xtea)
         else:
             data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
-        
+
         reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
     #@inThread
     def sendto(self, list):

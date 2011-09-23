@@ -11,7 +11,7 @@ servers = {0 : '127.0.0.1'}
 
 # IPs allowed to use the execute protocol (usually things like web servers). ONLY trusted hosts, they can remove system files from this!
 executeProtocolIps = ('127.0.0.1',)
-
+executeProtocolAuthKeys = ("myAuthKey",) # Add keys here if you will demand authorization
 loginMaxConnections = 20
 gameMaxConnections = 100
 

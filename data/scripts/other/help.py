@@ -277,3 +277,9 @@ def setowner(creature,text):
     
     
 reg("talkactionFirstWord", "setowner", setowner)
+
+def poisonme(creature, **k):
+    creature.condition(game.creature.Condition(CONDITION_POISON, 0, 10, damage=10))
+    print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
+    
+reg("talkaction", "poisonme", poisonme)
