@@ -40,7 +40,7 @@ def defaultBrainFeaturePriority(self, monster):
                             return True # Until next brain tick
                 
                 # Summons
-                if len(monster.activeSummons) < monster.base.maxSummons:
+                if len(monster.activeSummons) < monster.base.maxSummon:
                     for summon in monster.base.summons:
                         if summon[1] > random.ranint(0, 100):
                             creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)

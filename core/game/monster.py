@@ -204,7 +204,7 @@ class MonsterBase(CreatureBase):
         self.brain = brain
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         self.summons = []
-        self.maxSummons = 1
+        self.maxSummon = 1
         
         self.spawnTime = 60
         
@@ -352,7 +352,7 @@ class MonsterBase(CreatureBase):
         self.targetChance = chance
     
     def maxSummons(self, max):
-        self.maxSummons = max
+        self.maxSummon = max
         
     def summon(self, monster=None, chance=10):
         self.summons.append((monster, chance)) 
