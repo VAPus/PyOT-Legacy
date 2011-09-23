@@ -989,6 +989,10 @@ class Creature(object):
             elif stackbehavior == enum.CONDITION_MODIFY:
                 condition.ticks += oldCondition.ticks
                 self.conditions[condition.type] = condition
+            elif stackbehavior == enum.CONDITION_REPLACE:
+                oldCondition.stop()
+                self.conditions[condition.type] = condition
+                condition.start(self)
         except:
             self.conditions[condition.type] = condition
             condition.start(self)
