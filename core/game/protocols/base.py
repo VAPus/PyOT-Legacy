@@ -628,11 +628,11 @@ class BaseProtocol(object):
                         return d
                     
                     walking = [True]
-                    count = 0
+                    scount = 0
                     game.engine.autoWalkCreature(player, deque(walkPattern), lambda x: walking.pop())
-                    while walking and count < 100:
+                    while walking and scount < 100:
                         yield sleep(0.1)
-                        count += 1
+                        scount += 1
                     
                     if toPosition[1] >= 64 and not player.getContainer(toPosition[1]-64):
                         player.notPossible()
@@ -649,7 +649,8 @@ class BaseProtocol(object):
                 if oldItem[1].stackable and count < 100:
                     renew = True
                     oldItem[1].count -= count
-                    if oldItem[1].count:
+                    if oldItem[1].count > 0:
+                        print "Update item count", oldItem[1].count
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
                     else:
                         stream.removeTileItem(fromPosition, fromStackPos)
@@ -742,7 +743,6 @@ class BaseProtocol(object):
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onStackpos=None, onThing=newItem)
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, stackpos=None, onPosition=toPosition, onStackpos=None, onThing=item)
                     if process[0] == count:
-                        print "Said ", process[0]
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                         stream.addTileItem(toPosition, toStackPos, newItem)
                         if not renew and newItem.containerSize and newItem.opened:
