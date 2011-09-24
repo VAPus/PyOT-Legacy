@@ -141,7 +141,7 @@ class Player(Creature):
     def actionIds(self):
         return ('creature', 'player') # Static actionID
         
-    def sexPrefix():
+    def sexPrefix(self):
         if self.data["sex"] == 1:
             return "He"
         else:
