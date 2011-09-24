@@ -288,10 +288,3 @@ def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
     
 reg("talkaction", "conditionme", conditionme)
-
-def test__(creature, **k):
-    creature.tutorial(3)
-    creature.closeWindow()
-    #callLater(2, wrap, creature, 1)
-    
-reg("talkaction", "testti", test__)    
