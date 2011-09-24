@@ -810,7 +810,15 @@ class Player(Creature):
         stream = self.packet(0x15)
         stream.string(text)
         stream.send(self.client)
-    
+
+    def closeWindow(self):
+        stream = self.packet(0x7E)
+        stream.string("")
+        stream.uint8(1)
+        stream.uint16(100)
+        stream.uint8(0x7F)
+        stream.send(self.client)
+        
     def notPossible(self):
         self.message("Sorry, not possible.", 'MSG_STATUS_SMALL')
 
