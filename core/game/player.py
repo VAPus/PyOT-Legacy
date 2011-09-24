@@ -993,6 +993,12 @@ class Player(Creature):
                 info = container.container.placeItemRecursive(item)
             else:
                 info = container.container.placeItem(item)
+            
+            if item.decayCreature:
+                item.decayCreature = self
+                
+            if item.decayPosition:
+                item.decayPosition = (0xFFFF, 65)
                 
             if info == None:
                 return False # Not possible
@@ -1237,6 +1243,8 @@ class Player(Creature):
         for item in container.container.items:
             weight = item.weight
             item.inContainer = container # Funny call to simplefy lookups
+            if item.decayCreature:
+                item.decayCreature = self
             if weight:
                 self.inventoryWeight += weight * (item.count or 1)
             try:
@@ -1254,6 +1262,8 @@ class Player(Creature):
         for item in self.inventory:
             if isinstance(item, game.item.Item):
                 weight = item.weight
+                if item.decayCreature:
+                    item.decayCreature = self
                 if weight:
                     self.inventoryWeight += weight * (item.count or 1)
                 try:

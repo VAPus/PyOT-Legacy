@@ -688,9 +688,6 @@ class BaseProtocol(object):
                         
                     renew = True
                     oldItem[1].count -= count
-                    print "Old code", oldItem[1].count
-                    print "From", fromPosition[2]
-                    print "Type: ", oldItem[0]
                     if oldItem[1].count:
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
@@ -720,6 +717,7 @@ class BaseProtocol(object):
                     stack = False
                     
                 stream.send(player.client)
+                
             if toMap:
                 stream = player.packet()
                 if renew:
@@ -743,6 +741,9 @@ class BaseProtocol(object):
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onStackpos=None, onThing=newItem)
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, stackpos=None, onPosition=toPosition, onStackpos=None, onThing=item)
                     if process[0] == count:
+                        if newItem.decayPosition:
+                            newItem.decayPosition = toPosition
+                            
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                         stream.addTileItem(toPosition, toStackPos, newItem)
                         if not renew and newItem.containerSize and newItem.opened:
@@ -765,6 +766,13 @@ class BaseProtocol(object):
                                 player.refreshStatus(stream)
                         else:       
                             player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
+                            
+                            if player.inventory[toPosition[1]-1].decayPosition:
+                                player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])
+                                
+                            if player.inventory[toPosition[1]-1].decayCreature:
+                                player.inventory[toPosition[1]-1].decayCreature = player
+                                
                             # Into inventory? Update cache
                             if player.addCache(player.inventory[toPosition[1]-1]):
                                 player.refreshStatus(stream)                            
@@ -775,7 +783,13 @@ class BaseProtocol(object):
                         try:
                             container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
                             sendUpdate = True
-                            
+
+                            if container.container.items[toPosition[2]].decayPosition:
+                                container.container.items[toPosition[2]].decayPosition = (toPosition[0], 65)
+                                
+                            if container.container.items[toPosition[2]].decayCreature:
+                                container.container.items[toPosition[2]].decayCreature = player
+                                
                             try:
                                 player.inventoryCache[container.itemId].index(container)
                                 # Into inventory? Update cache
@@ -790,6 +804,13 @@ class BaseProtocol(object):
                     if renew and currItem and currItem[1]:
                         if fromPosition[1] < 64:
                             player.inventory[fromPosition[1]-1] = currItem[1]
+                            
+                            if container.container.items[toPosition[2]].decayPosition:
+                                container.container.items[toPosition[2]].decayPosition = (0xFFFF, fromPosition[1])
+                                
+                            if container.container.items[toPosition[2]].decayCreature:
+                                container.container.items[toPosition[2]].decayCreature = player
+                                
                             stream.addInventoryItem(fromPosition[1], player.inventory[fromPosition[1]-1])
                             
                             if player.addCache(currItem[1]):

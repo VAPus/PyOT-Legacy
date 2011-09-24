@@ -600,6 +600,8 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
             pass
               
     newTile = game.map.getTile(toPos)
+    if item.decayPosition:
+            item.decayPosition = toPos
     toStackPos = newTile.placeItem(item)
         
     for spectator in getSpectators(toPos):
@@ -635,6 +637,9 @@ def relocate(fromPos, toPos):
     toPos = game.map.getTile(toPos)
     items = []
     for item in tile.getItems():
+        if item.decayPosition:
+            item.decayPosition = toPos
+            
         stackpos = toPos.placeItem(item)
         items.append((item, tile.getSlot(item), stackpos))
         

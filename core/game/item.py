@@ -176,7 +176,10 @@ class Item(object):
             self.params[name] = value
         else:
             self.params = {name: value}
-            
+
+    def __delattr__(self, name):
+        del self.params[name]
+        
     def name(self):
         if self.count > 1 and "plural" in items[self.itemId]:
             return str(self.count) + " " + items[self.itemId]["plural"]
@@ -225,11 +228,14 @@ class Item(object):
                 else:
                     return None
 
-    def decay(self, position, to=None, duration=None, callback=None):
+    def decay(self, position, to=None, duration=None, callback=None, creature=None):
         import game.map
         
         if to == None:
             to = self.decayTo
+        
+        if self.itemId == to:
+            return # Not decay to self
             
         if duration == None:
             duration = self.duration
@@ -241,13 +247,42 @@ class Item(object):
         except:
             pass
         
+        # Store position:
+        self.decayPosition = position
+        if position[0] == 0xFFFF:
+            self.decayCreature = creature
         def executeDecay():
             try:
-                game.engine.transformItem(self, self.decayTo, position)
+                if self.decayCreature:
+                    # Remove cache
+                    self.decayCreature.removeCache(self)
+                    
+                    # Change itemId
+                    self.itemid = self.decayTo
+                    
+                    # Add cache
+                    self.decayCreature.addCache(self)
+                    
+                    # We can assume the bag is open. And the inventory is always visible.
+                    if position[1] < 64:
+                        stream = self.decayCreature.packet()
+                        stream.addInventoryItem(position[1], self)
+                        stream.send(self.decayCreature.client)
+                    else:
+                        self.decayCreature.updateAllContainers()
+                        
+                else:
+                    self.transform(self.decayTo, self.decayPosition)
                 
                 # Hack for chained decay
                 if self.itemId and self.decayTo != None:
-                    self.decay(position, callback=callback)
+                    self.decay(self.decayPosition, callback=callback, creature=creature)
+                else:
+                    del self.decayPosition
+                    try:
+                        del self.decayCreature
+                    except:
+                        pass
                     
                 if self.itemId and callback:
                     callback(self)
@@ -268,6 +303,11 @@ class Item(object):
         except:
             cont = None
    
+        if self.executeDecay:
+            delay = round(self.executeDecay.getTime() - time.time(), 1)
+            if delay > 0:
+                return (self.itemId, self.actions, count, cont, self.params, delay)
+            
         return (self.itemId, self.actions, count, cont, self.params)
     
     def __setstate__(self, state):
@@ -285,6 +325,9 @@ class Item(object):
         except:
             pass
 
+        if len(state) == 6:
+            self.decay(self.decayPosition, duration=state[5])
+            
     def copy(self):
         newItem = copy.deepcopy(self)
         try:
@@ -294,7 +337,7 @@ class Item(object):
         return newItem
         
     def transform(self, toId, position, stackPos=None):
-        import game.map, game.engine
+        import game.map
         tile = game.map.getTile(pos)
         if not stackPos:
             stackPos = tile.findStackpos(self)
