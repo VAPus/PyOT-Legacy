@@ -648,7 +648,7 @@ class BaseProtocol(object):
                     
                 if oldItem[1].stackable and count < 100:
                     renew = True
-                    oldItem[1].reduceCount(count)
+                    oldItem[1].count -= count
                     if oldItem[1].count:
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
                     else:
@@ -687,7 +687,10 @@ class BaseProtocol(object):
                         
                     renew = True
                     oldItem[1].count -= count
-                    if oldItem[1].count > 0:
+                    print "Old code", oldItem[1].count
+                    print "From", fromPosition[2]
+                    print "Type: ", oldItem[0]
+                    if oldItem[1].count:
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition[1], oldItem[1])
                         elif oldItem[0] == 2:
@@ -746,6 +749,7 @@ class BaseProtocol(object):
                             player.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
+                sendUpdate = False
                 if currItem and currItem[1] and currItem[1].containerSize:
                     ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
@@ -767,9 +771,10 @@ class BaseProtocol(object):
                         stream.addInventoryItem(toPosition[1], player.inventory[toPosition[1]-1])
                     else:
                         container = player.getContainer(toPosition[1]-64)
+                        print "Pos",toPosition[2]
                         try:
                             container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
-                            stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
+                            sendUpdate = True
                             
                             try:
                                 player.inventoryCache[container.itemId].index(container)
@@ -780,7 +785,8 @@ class BaseProtocol(object):
                                 pass
                             
                         except:
-                            player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack, streamX=stream)                  
+                            pass
+                            #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     if renew and currItem and currItem[1]:
                         if fromPosition[1] < 64:
                             player.inventory[fromPosition[1]-1] = currItem[1]
@@ -789,8 +795,10 @@ class BaseProtocol(object):
                             if player.addCache(currItem[1]):
                                 player.refreshStatus(stream)
                         else:
-                            player.itemToContainer(player.inventory[2], currItem[1])
-
+                            player.itemToContainer(currItem[2], currItem[1])
+                    
+                    if sendUpdate:
+                        stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
                     stream.send(player.client)
         else:
             if game.map.getTile(toPosition).creatures():
