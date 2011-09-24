@@ -126,7 +126,8 @@ class Packet(base.BasePacket):
             self.uint32(creature.clientId())
             #self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(round(creature.data["healthmax"] / creature.data["health"]) * 100) # Health %
+        
+        self.uint8(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100)) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
