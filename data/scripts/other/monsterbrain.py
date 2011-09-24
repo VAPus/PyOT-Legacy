@@ -42,7 +42,7 @@ def defaultBrainFeaturePriority(self, monster):
                 # Summons
                 if len(monster.activeSummons) < monster.base.maxSummon:
                     for summon in monster.base.summons:
-                        if summon[1] > random.ranint(0, 100):
+                        if summon[1] > random.randint(0, 100):
                             creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
                             creature.setMaster(self)
                             monster.activeSummons.append(creature)
