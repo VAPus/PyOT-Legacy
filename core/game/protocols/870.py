@@ -11,7 +11,36 @@ def vertify(): return True
 
 class Packet(base.BasePacket):
     maxOutfits = 25
-
+    protocolEnums = {}
+    protocolEnums["MSG_NONE"] = 0
+    protocolEnums["MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    
+    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["MSG_INFO_DESCR"] = 0x19
+    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B
+    
+    # Alias
+    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_LOOT'] = protocolEnums["MSG_INFO_DESCR"]
+    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["MSG_EVENT_ADVANCE"]
+    
+    # Skulls
+    protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
+    
+    def enum(self, key):
+        return self.protocolEnums[key]
     # Couple of things from 8.6
     def item(self, item, count=None):
         import game.item

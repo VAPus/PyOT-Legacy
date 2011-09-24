@@ -1138,7 +1138,7 @@ class Player(Creature):
         except:
             return False
             
-    def sendChannelMessage(self, by, text, type=game.enum.MSG_SPEAK_SAY, channelId=0):
+    def sendChannelMessage(self, by, text, type="MSG_SPEAK_SAY", channelId=0):
         stream = self.packet(0xAA)
         stream.uint32(1)
         print by.data["name"]
@@ -1147,8 +1147,8 @@ class Player(Creature):
             stream.uint16(by.data["level"])
         else:
             stream.uint16(0)
-        stream.uint8(type)
-        if type in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+        stream.uint8(stream.enum(type))
+        if type in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
             stream.uint16(channelId)
         
         print text
