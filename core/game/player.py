@@ -814,8 +814,7 @@ class Player(Creature):
     def closeWindow(self):
         stream = self.packet(0x7E)
         stream.string("")
-        stream.uint8(1)
-        stream.uint16(100)
+        stream.uint8(0)
         stream.uint8(0x7F)
         stream.send(self.client)
         
