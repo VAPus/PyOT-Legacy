@@ -321,7 +321,8 @@ class Creature(object):
 
             canSeeNew = spectator.canSee(position)
             canSeeOld = spectator.canSee(oldPosition)
-
+            isKnown = self in spectator.knownCreatures
+            
             if spectator == self:
                 if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
                     stream = spectator.packet(0x6D)
@@ -356,12 +357,11 @@ class Creature(object):
 
                     
                     
-            elif not canSeeOld and canSeeNew:
+            elif (not canSeeOld or not isKnown) and canSeeNew:
                 stream = spectator.packet()
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
-                print "Remove potensial double"
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
                 
