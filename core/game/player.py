@@ -1565,23 +1565,35 @@ class Player(Creature):
         quests[questIdentifier] = [1, 0, False, time.time(), False] # Mission, completed steps, startTime, endTime
         
         self.setStorage('__quests', quests)
-        
+
+        if config.sendTutorialSignalUponQuestLogUpdate:
+            self.tutorial(3)
+            
     def progressQuest(self, questIdentifier):
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1
         self.setStorage('__quests', quests)
 
+        if config.sendTutorialSignalUponQuestLogUpdate:
+            self.tutorial(3)
+            
     def progressQuestMission(self, questIdentifier):
         quests = self.getStorage('__quests')
         quests[questIdentifier][0] += 1
         self.setStorage('__quests', quests)
-        
+
+        if config.sendTutorialSignalUponQuestLogUpdate:
+            self.tutorial(3)
+            
     def finishQuest(self, questIdentifier):
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1 # Finish the last step
         quests[questIdentifier][2] = True
         quests[questIdentifier][4] = time.time()
         self.setStorage('__quests', quests)
+        
+        if config.sendTutorialSignalUponQuestLogUpdate:
+            self.tutorial(3)
         
     def questLog(self):
         quests = self.getStorage('__quests')

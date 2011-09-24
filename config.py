@@ -107,6 +107,9 @@ tryToSpawnCreatureRegardlessOfCreatures = False # Try to spawn creatures on top 
 maxMails = 20
 maxMailsWithin = 600 # 10min, default on tibia as of 9.aug
 
+# Questlog
+sendTutorialSignalUponQuestLogUpdate = True # This is a non-cipsoft feature originally thought up by Big Vamp.
+
 # Psyco
 # Psyco can give a speed up so long you have psyco installed, doesn't work on 64-bit python, nor anything other than CPython.
 # It's not much, and it also increase memory usage
