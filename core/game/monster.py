@@ -398,8 +398,8 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed):
-        self.meleeAttacks.append([interval, check, maxDamage])
+    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
+        self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
         
     def regTargetSpell(self, spellName, min, max, interval=1, check=chance(10), range=1):
         self.spellAttacks.append([interval, spellName, check, range, (min, max)])

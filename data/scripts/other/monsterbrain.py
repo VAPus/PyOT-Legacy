@@ -56,6 +56,9 @@ def defaultBrainFeaturePriority(self, monster):
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                     attack = random.choice(monster.base.meleeAttacks)
                     if monster.lastMelee + attack[0] <= time.time() and attack[1](monster):
+                        if attack[4] and random.randint(1,100) < attack[5]:
+                            monster.target.condition(attack[4], attack[6])
+                            
                         monster.target.onHit(monster, -1 * random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
                         monster.lastMelee = time.time()
                     
