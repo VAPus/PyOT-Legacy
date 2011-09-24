@@ -242,14 +242,17 @@ class Item(object):
             pass
         
         def executeDecay():
-            game.engine.transformItem(self, self.decayTo, position)
-            
-            # Hack for chained decay
-            if self.itemId and self.decayTo != None:
-                self.decay(position, callback=callback)
+            try:
+                game.engine.transformItem(self, self.decayTo, position)
                 
-            if self.itemId and callback:
-                callback(self)
+                # Hack for chained decay
+                if self.itemId and self.decayTo != None:
+                    self.decay(position, callback=callback)
+                    
+                if self.itemId and callback:
+                    callback(self)
+            except:
+                pass # I don't exist here anymore.
                 
         self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
 

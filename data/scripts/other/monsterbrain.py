@@ -86,13 +86,10 @@ def defaultBrainFeature(self, monster):
                         if monster.canTarget(player.position):
                             # Calc x+y distance, diagonal is honored too.
                             dist = monster.distanceStepsTo(player.position) 
-                            print "%s vs %s" % (dist, bestDist)
                             if dist < bestDist:
                                 # If it's smaller then the previous value
                                 bestDist = dist
                                 target = player
-                        else:
-                            print "%s vs %s" % (str(monster.position), str(player.position))
                     if target:
                         ret = game.scriptsystem.get('target').run(monster, target, attack=True)
                         if ret == False:

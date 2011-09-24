@@ -110,7 +110,6 @@ def findPath(mapZ, relX, relY, xB, yB):
                     if not (mx == _fromX and my == _fromY) and not (mx == _goalX and my == _goalY):
                         for t in tile.things:
                             if t.solid:
-                                print t
                                 isSolid = True
                                 break
                         if isSolid:
