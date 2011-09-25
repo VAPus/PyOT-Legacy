@@ -15,29 +15,23 @@ itemNames = {}
 
 ### Container class ###
 class Container(object):
-    __slots__ = ('items', 'maxSize')
+    __slots__ = ('items')
     def __init__(self, size):
-        self.items = []
-        self.maxSize = size
+        self.items = deque(size)
     
     def __getstate__(self): # For pickle functions such as jsonpickle
-        return (self.items, self.maxSize)
+        return self.items
     
     def __setstate__(self, state):
-        self.items = state[0]
-        self.maxSize = state[1]
+        self.items = state
         
     def placeItem(self, item):
-        length = len(self.items)
-        if length < self.maxSize:
+        if len(self.items) < self.items.maxlen:
             self.items.insert(0, item)
             return 0
-        else:
-            return None
 
     def placeItemRecursive(self, item):
-        length = len(self.items)
-        if length < self.maxSize:
+        if len(self.items) < self.items.maxlen:
             self.items.insert(0, item)
             return 0
         else:
@@ -91,32 +85,26 @@ class Mailbox(object):
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
-    __slots__ = ('itemId', 'actions', 'count', 'cont', 'params')
-    __conts__ = ('container', 'mailbox') # Just alias for cont
+    __slots__ = ('itemId', 'actions', 'params')
     
-    def __init__(self, itemid, count=None, actions=[], **kwargs):
-        if type(items[itemid]) != dict:
-            log.msg("itemId %d doesn't exist" % itemid)
-            itemid = 100
-           
-        self.itemId = itemid
-        actions.append('item')
+    def __init__(self, itemId, count=1, actions=[], **kwargs):
+        self.itemId = itemId
         self.actions = map(str, actions)
+        self.actions.append('item')
         
         if kwargs:
             self.params = kwargs
         else:
             self.params = None
 
-        if items[self.itemId]["a"] & 64 == 64:
+        if items[itemId]["a"] & 64:
             self.count = count
-        
-        else:     
-            # Extend items such as containers, beds and doors
-            try:
-                self.cont = Container(items[self.itemId]["containerSize"])
-            except:
-                pass
+            
+        # Extend items such as containers, beds and doors
+        try:
+            self.container = Container(items[itemId]["containerSize"])
+        except:
+            pass
 
 
     def isPlayer(self):
@@ -147,26 +135,19 @@ class Item(object):
         return self.actions
             
     def __getattr__(self, name):
-        if name == 'params': return None # bugfix
-        
-        try:
-            return self.params[name]
-        except:
-            pass
-        
-        if name in self.__conts__:
-            return self.cont
-            
         try:
             attrVal = 1 << self.attributes.index(name)
-            return items[self.itemId]["a"] & attrVal == attrVal
+            return items[self.itemId]["a"] & attrVal
         except:
             try:
                 return items[self.itemId][name]
             except:
-                if not "__" in name:
-                    return None
-                
+                try:
+                    return self.params[name]
+                except:
+                    if not "__" in name:
+                        return None
+                       
         raise AttributeError, name
 
     def __setattr__(self, name, value):
@@ -293,42 +274,28 @@ class Item(object):
         self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
 
     def __getstate__(self):
-        count = None
-        try:
-            count = self.count
-        except:
-            pass
-        
-        try:
-            cont = self.cont
-        except:
-            cont = None
-   
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
             if delay > 0:
-                return (self.itemId, self.actions, count, cont, self.params, delay)
+                return (self.itemId, self.actions, self.params, delay)
             
-        return (self.itemId, self.actions, count, cont, self.params)
+        return (self.itemId, self.actions, self.params)
     
     def __setstate__(self, state):
         self.itemId = state[0]
         self.actions = state[1]
-        if state[2]:
-            self.count = state[2]
-        if state[3]:
-            self.cont = state[3]
                 
-        self.params = state[4]
+        self.params = state[2]
+
+        if len(state) == 4:
+            self.decay(self.decayPosition, duration=state[3])
+        
         # Bugfix
         try:
             del self.params["opened"]
         except:
             pass
-
-        if len(state) == 6:
-            self.decay(self.decayPosition, duration=state[5])
-            
+        
     def copy(self):
         newItem = copy.deepcopy(self)
         try:
@@ -455,6 +422,7 @@ def loadItems():
     global items
     global reverseItems
     global itemNames
+
     items = loadItems
     reverseItems = reverseLoadItems
     itemNames = loadItemNames

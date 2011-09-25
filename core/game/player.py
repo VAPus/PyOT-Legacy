@@ -1253,7 +1253,7 @@ class Player(Creature):
             except:
                 self.inventoryCache[item.itemId] = [item.count or 1, item]
                 
-            if item.containerSize:
+            if item.container:
                 self.__buildInventoryCache(item)
                 
     def unpickleInventory(self, inventoryData):
@@ -1272,7 +1272,7 @@ class Player(Creature):
                 except:
                     self.inventoryCache[item.itemId] = [item.count or 1, item]
                 
-                if item.containerSize:
+                if item.container:
                     self.__buildInventoryCache(item)
         
     # Saving

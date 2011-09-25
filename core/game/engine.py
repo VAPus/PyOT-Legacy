@@ -34,9 +34,9 @@ pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
 globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer"]
+
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
-        self.save = False
         self.owner = owner
         self.guild = guild
         self.paid = paid
@@ -53,7 +53,8 @@ class House(object):
                 savedItems[pos] = self.data["items"][pos]
         except:
             pass
-
+        self.save = False
+        
     def addGuest(self, id):
         try:
             self.data["guests"].append(id)
