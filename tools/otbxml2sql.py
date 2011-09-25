@@ -319,26 +319,23 @@ CREATE TABLE `item_attributes` ( \n\
 
 for item in items:
     if not item.sid in data:
-        data[item.sid] = {"name":"<insert name here>", "plural": "<insert plural form here (if required)>", "article": "<article here>"}
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
         # Bugfix for TFS format
         #if not "article" in data[item.sid]:
         #    continue
-        
+
         print ("INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
 
         del data[item.sid]["name"]
         del data[item.sid]["plural"]
         del data[item.sid]["article"]
-        try:
-            if data[item.sid]:
-                output = "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
-                for key in data[item.sid]:
-                    output += "(%d, '%s', '%s'),\n" % (item.sid, key, data[item.sid][key])
-                print (output[:-2]+";\n").encode('utf-8')
-        except:
-            pass
+        
+        if data[item.sid]:
+            output = "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
+            for key in data[item.sid]:
+               output += "(%d, '%s', '%s'),\n" % (item.sid, key, data[item.sid][key])
+            print (output[:-2]+";\n").encode('utf-8')
 
     #else:
     #    print("---WARNING, item with sid=%d not no data!" % item.sid)
