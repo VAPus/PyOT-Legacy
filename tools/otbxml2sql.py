@@ -318,7 +318,7 @@ CREATE TABLE `item_attributes` ( \n\
 ) ENGINE = MYISAM ;"
 
 for item in items:
-    if not item.sid in data:
+    if item.sid in data:
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
         # Bugfix for TFS format
