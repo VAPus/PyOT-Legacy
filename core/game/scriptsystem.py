@@ -467,8 +467,8 @@ def reimporter():
 def get(type):
     return globalScripts[type]
     
-def reg(type, *argc):
+def reg(type, *argc, **kwargs):
     globalScripts[type].reg(*argc)
 
-def regFirst(type, *argc):
+def regFirst(type, *argc, **kwargs):
     globalScripts[type].regFirst(*argc)

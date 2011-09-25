@@ -288,3 +288,9 @@ def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
     
 reg("talkaction", "conditionme", conditionme)
+
+def test(creature, **k):
+    creature.cancelWalk()
+    return False
+    
+reg("move", "player", test, weakfunc=False)
