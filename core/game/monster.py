@@ -394,6 +394,9 @@ class MonsterBase(CreatureBase):
 
     def setBrainFeatures(self, *argc):
         self.brainFeatures = argc
+
+    def setManaCost(self, mana):
+        self.manacost = mana
         
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
