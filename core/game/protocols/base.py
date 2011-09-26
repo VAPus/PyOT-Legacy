@@ -334,7 +334,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.data["capasity"] - player.inventoryWeight) # TODO: Free Capasity
+        self.uint32(max(player.data["capasity"] - player.inventoryWeight, 0)) # TODO: Free Capasity
         self.uint32(player.data["capasity"] * 100) # TODO: Cap
         self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
         if player.data["level"] > 0xFFFF:
@@ -751,56 +751,63 @@ class BaseProtocol(object):
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
                 sendUpdate = False
-                if currItem and currItem[1] and currItem[1].containerSize:
-                    ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
+                if player.inventoryWeight - ((oldItem[1].weight or 0) * (oldItem[1].count or 1)) < 0:
+                    player.tooHeavy()
+                    tile = game.map.getTile(player.position)
+                    tile.placeItem(Item(sid(clientId), count) if renew else oldItem[1])
+                    game.engine.updateTile(player.position, tile)
+                else:    
+                    
+                    if currItem and currItem[1] and currItem[1].containerSize:
+                        ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
-                elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
-                    ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
-                else:
-                    stream = player.packet()
-                    if toPosition[1] < 64:
-                        if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
-                            player.inventory[toPosition[1]-1].count += count
-                            # Into inventory? Update cache
-                            if player.modifyCache(player.inventory[toPosition[1]-1].itemId, count):
-                                player.refreshStatus(stream)
-                        else:       
-                            player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                            
-                            if player.inventory[toPosition[1]-1].decayPosition:
-                                player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])
-                                
-                            if player.inventory[toPosition[1]-1].decayCreature:
-                                player.inventory[toPosition[1]-1].decayCreature = player
-                                
-                            # Into inventory? Update cache
-                            if player.addCache(player.inventory[toPosition[1]-1]):
-                                player.refreshStatus(stream)                            
-                        stream.addInventoryItem(toPosition[1], player.inventory[toPosition[1]-1])
+                    elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
+                        ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                     else:
-                        container = player.getContainer(toPosition[1]-64)
-                        print "Pos",toPosition[2]
-                        try:
-                            container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
-                            sendUpdate = True
-
-                            if container.container.items[toPosition[2]].decayPosition:
-                                container.container.items[toPosition[2]].decayPosition = (toPosition[0], 65)
-                                
-                            if container.container.items[toPosition[2]].decayCreature:
-                                container.container.items[toPosition[2]].decayCreature = player
-                                
-                            try:
-                                player.inventoryCache[container.itemId].index(container)
+                        stream = player.packet()
+                        if toPosition[1] < 64:
+                            if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
+                                player.inventory[toPosition[1]-1].count += count
                                 # Into inventory? Update cache
-                                if player.addCache(container.container.items[toPosition[2]], container):
+                                if player.modifyCache(player.inventory[toPosition[1]-1].itemId, count):
                                     player.refreshStatus(stream)
+                            else:       
+                                player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
+                                
+                                if player.inventory[toPosition[1]-1].decayPosition:
+                                    player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])
+                                    
+                                if player.inventory[toPosition[1]-1].decayCreature:
+                                    player.inventory[toPosition[1]-1].decayCreature = player
+                                    
+                                # Into inventory? Update cache
+                                if player.addCache(player.inventory[toPosition[1]-1]):
+                                    player.refreshStatus(stream)                            
+                            stream.addInventoryItem(toPosition[1], player.inventory[toPosition[1]-1])
+                        else:
+                            container = player.getContainer(toPosition[1]-64)
+                            print "Pos",toPosition[2]
+                            try:
+                                container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
+                                sendUpdate = True
+
+                                if container.container.items[toPosition[2]].decayPosition:
+                                    container.container.items[toPosition[2]].decayPosition = (toPosition[0], 65)
+                                    
+                                if container.container.items[toPosition[2]].decayCreature:
+                                    container.container.items[toPosition[2]].decayCreature = player
+                                    
+                                try:
+                                    player.inventoryCache[container.itemId].index(container)
+                                    # Into inventory? Update cache
+                                    if player.addCache(container.container.items[toPosition[2]], container):
+                                        player.refreshStatus(stream)
+                                except:
+                                    pass
+                                
                             except:
                                 pass
-                            
-                        except:
-                            pass
-                            #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
+                                #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     if renew and currItem and currItem[1]:
                         if fromPosition[1] < 64:
                             player.inventory[fromPosition[1]-1] = currItem[1]

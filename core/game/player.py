@@ -415,9 +415,16 @@ class Player(Creature):
                     # Update cached data
                     if self.removeCache(currItem):
                         sendUpdate = True
-                self.inventory[position[1]-1] = item
-                if self.addCache(item):
+                        
+                ret = self.addCache(item)
+                if ret:
                     sendUpdate = True
+                    self.inventory[position[1]-1] = item
+                elif ret == False:
+                    self.inventory[position[1]-1] = None
+                    tile = game.map.getTile(self.position)
+                    tile.placeItem(item)
+                    self.tooHeavy()
                     
                 if sendUpdate:
                     self.refreshStatus()
@@ -438,19 +445,21 @@ class Player(Creature):
                     if currItem:
                         if self.removeCache(currItem):
                             update = True
-                            
-                    if self.addCache(item, bag):
+                    
+                    ret = self.addCache(item, bag)
+                    if ret == False:
+                        del bag.container.items[position[2]]
+                    elif ret == True:    
                         update = True
+                        bag.container.items[position[2]] = item
+                        
+                    stream = self.packet()
+                    stream.updateContainerItem(position[1] - 64, position[2], item)
+                    if update:
+                        self.refreshStatus(stream)
+                    stream.send(self.client)
                 except:
                     pass
-                
-                bag.container.items[position[2]] = item
-                stream = self.packet()
-                stream.updateContainerItem(position[1] - 64, position[2], item)
-                if update:
-                    self.refreshStatus(stream)
-                stream.send(self.client)
-            
     def removeItem(self, position, stackpos):
         # Option 1, from the map:
         if position:
@@ -519,6 +528,12 @@ class Player(Creature):
             pass
         
     def addCache(self, item, container=None):
+        weight = item.weight
+        if weight:
+            self.inventoryWeight += weight * (item.count or 1)
+            if self.inventoryWeight < 0:
+                self.inventoryWeight -= weight * (item.count or 1)
+                return False
         try:
             print "Add to cache ",item
             self.inventoryCache[item.itemId].append(item)
@@ -529,11 +544,9 @@ class Player(Creature):
         if container:
             item.inContainer = container
             
-        weight = item.weight
         if weight:
-            self.inventoryWeight += weight * (item.count or 1)
             return True
-            
+                
     def modifyCache(self, item, count):
         if not count: return
         
@@ -814,6 +827,9 @@ class Player(Creature):
     def notPossible(self):
         self.message("Sorry, not possible.", 'MSG_STATUS_SMALL')
 
+    def tooHeavy(self):
+        self.message("This object is too heavy for you to carry.", 'MSG_STATUS_SMALL')
+        
     def outOfRange(self):
         self.message("Destination is out of range.", 'MSG_STATUS_SMALL')
 
@@ -917,7 +933,7 @@ class Player(Creature):
             
 
     # Item to container
-    def addItem(self, item):
+    def addItem(self, item, placeOnGround=True):
         ret = None
         try:
             ret = self.itemToContainer(self.inventory[2], item)
@@ -925,17 +941,26 @@ class Player(Creature):
             ret = False
             
         if ret == False and not self.inventory[9]:
-            self.inventory[9] = item
-            stream = self.packet()
-            stream.addInventoryItem(10, self.inventory[9])
-            stream.send(self.client)            
-            return True
+            if self.addCache(item) != False:
+                self.inventory[9] = item
+                stream = self.packet()
+                stream.addInventoryItem(10, self.inventory[9])
+                stream.send(self.client)            
+                return True
+            elif placeOnGround:
+                tile = game.map.getTile(self.position)
+                tile.placeItem(item)
+                game.engine.updateTile(self.position, tile)
+                return True
+            else:
+                return False
+                
         elif ret == False:
             return False
         else:
             return True
             
-    def itemToContainer(self, container, item, count=None, recursive=True, stack=True, streamX=None):
+    def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
         stream = streamX
         update = False
         
@@ -958,21 +983,26 @@ class Player(Creature):
             for bag in bags:
                 for itemX in container.container.items:
                     if itemX.itemId == item.itemId and itemX.count < 100:
-                        if update:
-                            self.removeCache(itemX)
-                            
                         total = itemX.count + count
-                        itemX.count = min(itemX.count + count, 100)
+                        Tcount = min(itemX.count + count, 100)
                         count = total - itemX.count
+                        if update:
+                            ret = self.modifyCache(itemX, itemX.count - Tcount)
+                            if ret == False:
+                                tile = game.map.getTile(self.position)
+                                tile.placeItem(item)
+                                game.engine.updateTile(self.position, tile)
+                                self.tooHeavy()
+                                return
+                                
+                        itemX.count = Tcount        
+
                         
                         # Is it a open container, if so, send item update
                         if bag in self.openContainers:
-                            print "TOOOOO"
-                            print slot
                             stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
                         
-                        if update:
-                            self.addCache(itemX, container)
+
                             
                         if not count:
                             break
@@ -989,6 +1019,10 @@ class Player(Creature):
             
         if count:
             # Add item
+            if self.inventoryWeight - ((item.weight or 0) * (item.count or 1)) < 0:
+                self.tooHeavy()
+                return False
+                
             if recursive:
                 info = container.container.placeItemRecursive(item)
             else:
@@ -1015,7 +1049,6 @@ class Player(Creature):
         if not streamX:
             if update:
                 self.refreshStatus(stream)
-            print "Sending"
             stream.send(self.client)
             
         return True

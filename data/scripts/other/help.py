@@ -104,7 +104,8 @@ for item in game.item.items:
 
 
 def makeitem(creature, text):
-    try:
+    #try:
+    if True:    
         count = 1
         if ' ' in text:
             count = int(text.split(" ")[1])
@@ -114,12 +115,14 @@ def makeitem(creature, text):
                 rcount = min(100, count)
                 newitem = game.item.Item(text, rcount)
                 bag = creature.inventory[2]
+                print bag
+                print bag.params
                 creature.itemToContainer(bag, newitem)
                 count -= rcount
         else:
             raise
-    except:
-        creature.message("Invalid Item!")
+    #except:
+    #    creature.message("Invalid Item!")
          
     return False
 

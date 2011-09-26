@@ -17,7 +17,7 @@ itemNames = {}
 class Container(object):
     __slots__ = ('items')
     def __init__(self, size):
-        self.items = deque(size)
+        self.items = deque(maxlen=size)
     
     def __getstate__(self): # For pickle functions such as jsonpickle
         return self.items
@@ -27,12 +27,12 @@ class Container(object):
         
     def placeItem(self, item):
         if len(self.items) < self.items.maxlen:
-            self.items.insert(0, item)
+            self.items.appendleft(item)
             return 0
 
     def placeItemRecursive(self, item):
         if len(self.items) < self.items.maxlen:
-            self.items.insert(0, item)
+            self.items.appendleft(item)
             return 0
         else:
             for itemX in self.items:
@@ -103,7 +103,7 @@ class Item(object):
         # Extend items such as containers, beds and doors
         try:
             self.container = Container(items[itemId]["containerSize"])
-        except:
+        except KeyError:
             pass
 
 
