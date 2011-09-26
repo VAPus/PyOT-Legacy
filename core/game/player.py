@@ -460,6 +460,17 @@ class Player(Creature):
                     stream.send(self.client)
                 except:
                     pass
+    def modifyItem(self, thing, position, stackpos, mod):
+        try:
+            thing.count += mod
+        except:
+            pass
+        
+        if thing.count > 0:
+            self.replaceItem(position, stackpos, thing)
+        else:
+            self.removeItem(position, stackpos)
+                
     def removeItem(self, position, stackpos):
         # Option 1, from the map:
         if position:
@@ -737,7 +748,7 @@ class Player(Creature):
         stream.string(desc)
         stream.send(self.client)
         
-    def message(self, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
+    def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)

@@ -28,13 +28,13 @@ def onUse(creature, thing, positon, **k):
             creature.addItem(game.item.Item(2681))
 
         thing.transform(0, position)
-        creature.magicEffect(position, EFFECT_SOUND_YELLOW)
+        creature.magicEffect(EFFECT_SOUND_YELLOW, position)
 
     elif thing.itemId == woodenWhistle:
         if chance == 2:
             magicEffect(position, EFFECT_SOUND_RED)
         else:
-            magicEffect(None, EFFECT_SOUND_PURPLE)
+            creature.magicEffect(EFFECT_SOUND_PURPLE)
             summonCreature("Wolf", creature.positionInDirection(NORTH))
             
 reg("use", extras|instruments, onUse)

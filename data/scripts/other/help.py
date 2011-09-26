@@ -32,7 +32,7 @@ def tiler(creature, text):
         getTile([pos[0], pos[1]-1, pos[2]]).setThing(0, item)
 
         game.engine.updateTile([pos[0], pos[1]-1, pos[2]], getTile([pos[0], pos[1]-1, pos[2]]))
-        creature.magicEffect([pos[0], pos[1]-1, pos[2]], 0x03)
+        creature.magicEffect(0x03, [pos[0], pos[1]-1, pos[2]])
 
         return False
         

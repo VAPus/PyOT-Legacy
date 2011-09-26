@@ -275,11 +275,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                thing.count -= useCount
-                if thing.count:
-                    creature.replaceItem(position, stackpos, thing)
-                else:
-                    creature.removeItem(position, stackpos)
+                creature.modifyItem(thing, position, stackpos, -1 * useCount)
                 
                 creature.cooldownSpell(icon, group, cooldown)
                 for a in area:
@@ -310,11 +306,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
                 creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                 
             else:
-                thing.count -= useCount
-                if thing.count:
-                    creature.replaceItem(position, stackpos, thing)
-                else:
-                    creature.removeItem(position, stackpos)
+                creature.modifyItem(thing, position, stackpos, -1 * useCount)
                     
                 creature.cooldownSpell(icon, group, cooldown)
                 try:

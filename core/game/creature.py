@@ -411,7 +411,7 @@ class Creature(object):
             game.scriptsystem.get('appear').run(creature2, self)
             game.scriptsystem.get('appear').run(self, creature2)
             
-    def magicEffect(self, pos, type):
+    def magicEffect(self, type, pos=None):
         if not pos or pos[0] == 0xFFFF:
             pos = self.position
         for spectator in getSpectators(pos):
@@ -505,7 +505,7 @@ class Creature(object):
     def damageToBlock(self, dmg, type):
         return dmg
         
-    def onHit(self, by, dmg, type):
+    def onHit(self, by, dmg, type, effect=None):
         self.lastDamager = by
           
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
@@ -545,6 +545,9 @@ class Creature(object):
             textColor = game.enum.COLOR_LIGHTBLUE
             magicEffect = game.enum.EFFECT_ICEATTACK
         
+        if effect:
+            magicEffect = effect
+            
         dmg = [dmg]
         textColor = [textColor]
         magicEffect = [magicEffect]
