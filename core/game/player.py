@@ -597,6 +597,9 @@ class Player(Creature):
                 elif level < oldLevel:
                     self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
                 self.refreshStatus()
+
+    def modifyLevel(self, mod):
+        self.setLevel(self.data["level"] + mod)
         
     def modifyExperience(self, exp):
         up = True

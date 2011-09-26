@@ -28,9 +28,16 @@ file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMe
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(getThingPos(item2.uid), ", "magicEffect(onPosition, ")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
-file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doPlayerAddItem(cid, ", "creature.addItem(Item(").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
-file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
+file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()")replace(" ~= ", " != ").replace("doPlayerAddItem(cid, ", "creature.addItem(Item(").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
+file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
+file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
+file = file.replace("isCreature(item2.uid)", "onThing.isCreature()").replace("isPlayer(item2.uid)", "onThing.isPlayer()").replace("isMonster(item2.uid)", "onThing.isMonster()").replace("isItem(item2.uid)", "onThing.isItem()")
+file = file.replace("getThingPos(cid)", "creature.position").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("CONTAINER_POSITION", "0xFFFF")
+file = file.replace("item2.uid == cid", "onThing == creature").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_YOUAREEXHAUSTED)", "creature.exhausted()").replace("== true", "")
+file = file.replace("getPlayerLevel(cid)", 'creature.data["level"]').replace("hasCondition(cid, ", "creature.hasCondition(").replace("getPlayerPosition(cid)", "creature.position").replace("getPlayerHealth(cid)", 'creature.data["health"]').replace("getPlayerMaxHealth(cid)", 'creature.data["healthmax"]')
+file = file.replace("getPlayerName(cid)", "creature.name()").replace("getCreaturePos(pos)", "creature.position").replace("getPlayerMoney(cid)", "creature.getMoney()")
+file = file.replace("doPlayerAddLevel(cid, ", "creature.modifyLevel(").replace("doPlayerRemoveLevel(cid, ", "creature.modifyLevel(-1 *")
 
 inArrayRe = re.compile(r"isInArray\((?P<a>[^,]*), (?P<b>[^,]*)\)", re.I)
 file = inArrayRe.sub(r"\g<b> in \g<a>", file)
@@ -61,9 +68,12 @@ file = arrays.sub(r"(\g<a>),\\", file)
 arrays = re.compile(r"\{(?P<a>[0-9, ]+)\}", re.M)
 file = arrays.sub(r"(\g<a>)\\", file)
 
-
+doChangeTypeItem = re.compile(r"doChangeTypeItem\((?P<item>.uid, (?P<type>[^)]+)\)")
+file = doChangeTypeItem.sun("\g<item>.type = \g<type>")
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
+file = file.replace(" ~= nil", "")
+
 skipNext = 0
 for line in file.split("\n"):
     if skipNext:
