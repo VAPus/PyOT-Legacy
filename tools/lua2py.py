@@ -18,17 +18,17 @@ newcode = ""
 level = 0
 regLine = ""
 if file.count("item2") >= 2 or file.count("topos") >= 2:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, onThing, onPosition)")
+    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, onThing, onPosition, **k)")
     regLine = 'reg("useWith", %s, onUseWith)' % tuple(list)
 else:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position)")
+    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, **k)")
     regLine = 'reg("use", %s, onUse)' % tuple(list)
     
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(getThingPos(item2.uid), ", "magicEffect(onPosition, ")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
-file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()")replace(" ~= ", " != ").replace("doPlayerAddItem(cid, ", "creature.addItem(Item(").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
+file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doPlayerAddItem(cid, ", "creature.addItem(Item(").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
 file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
@@ -68,8 +68,8 @@ file = arrays.sub(r"(\g<a>),\\", file)
 arrays = re.compile(r"\{(?P<a>[0-9, ]+)\}", re.M)
 file = arrays.sub(r"(\g<a>)\\", file)
 
-doChangeTypeItem = re.compile(r"doChangeTypeItem\((?P<item>.uid, (?P<type>[^)]+)\)")
-file = doChangeTypeItem.sun("\g<item>.type = \g<type>")
+doChangeTypeItem = re.compile(r"doChangeTypeItem\((?P<item>\w+)\.uid, (?P<type>[^)]+)\)")
+file = doChangeTypeItem.sub("\g<item>.type = \g<type>", file)
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
 file = file.replace(" ~= nil", "")
@@ -106,3 +106,4 @@ ifs = re.compile(r"(?P<type>(if|elif)) \((?P<param>.*)\):", re.M)
 newcode = ifs.sub(r"\g<type> \g<param>:", newcode)
 
 print newcode + "\n" + regLine
+raw_input()
