@@ -1,47 +1,50 @@
-rustyItems = {\
-# Rusty armor
-9808: (2463, 2464, 2465, 2476, 2483),\
-9809: (2463, 2464, 2465, 2476, 2483, 2487,8891),\
-9810: (2463, 2464, 2465, 2466, 2472, 2476, 2483, 2487, 8891),\
+item = {9808: ((2464, "Chain Armor", 33), (2483, "Scale Armor", 25), (2465, "Brass Armor", 10), (2463, "Plate Armor", 2)),
 
-# Rusty legs
-9811: (2468, 2477, 2478, 2647, 2648),\
-9812: (2468, 2477, 2478, 2488, 2647, 2648 ),\
-9813: (2468, 2470, 2477, 2478, 2488, 2647, 2648),\
+9809: ((2464, "Chain Armor", 16), (2465, "Brass Armor", 14), (2483, "Scale Armor", 13), (2463, "Plate Armor", 10),
+(2476, "Knight Armor", 6), (8891, "Paladin Armor", 3), (2487, "Crown Armor", 1)),
 
-# Rusty Shield
-9814: (2509, 2510, 2511, 2513, 2515, 2530),\
-9815: (2509, 2510, 2511, 2513, 2515, 2516, 2519, 2530),\
-9816: (2509, 2510, 2511, 2513, 2514, 2515, 2516, 2519, 2520, 2530),\
+9810: ((2464, "Chain Armor", 20), (2465, "Brass Armor", 17), (2483, "Scale Armor", 15), (2463, "Plate Armor", 12),
+(2476, "Knight Armor", 10), (8891, "Paladin Armor", 5), (2487, "Crown Armor", 4), (2466, "Golden Armor", 2), (2472, "Magic Plate Armor", 1)),
 
-# Rusty Boots
-9817: (2643, 3982, 5462, 7457),\
-9818: (2195, 2643, 3982, 5462, 7457),\
-9819: (2195, 2643, 2645, 3982, 5462, 7457),\
+9811: ((2468, "Studded Legs", 33), (2648, "Chain Legs", 25), (2478, "Brass Legs", 10), (2647, "Plate Legs", 2)),
 
-# Rusty Helmet
-9820: (2457, 2458, 2460, 2480, 2481, 2491),\
-9821: (2457, 2458, 2460, 2480, 2481, 2491, 2497),\
-9822: (2457, 2458, 2460, 2475, 2480, 2481, 2491, 2497, 2498)\
+9812: ((2468, "Studded Legs", 16), (2648, "Chain Legs", 14), (2478, "Brass Legs", 13), (2647, "Plate Legs", 10),
+(2477, "Knight Legs", 6), (2488, "Crown Legs", 1)),
 
+9813: ((2478, "Brass Legs", 17), (2647, "Plate Legs", 12), (2477, "Knight Legs", 10), (2488, "Crown Legs", 4), (2470, "Golden Legs", 2))
 }
 
-def onUseWith(creature, thing, position, onThing, onPosition, **k):
-    if onThing.itemId not in rustyItems:
-        return False
+effect_broke = 3
+effect_renew = 28
+
+def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
     
-    if random.randint(1, 100) > 50:
-        creature.removeItem(onPosition, onStackpos)
-        creature.message("You broken it.")
+    developed = None
+    const = onThing.itemId
+    
+    if const in item:
+        random_item = random.randint(1, 100)
+        
+        for i in item[const]:
+            if random_item <= i[2]:
+                developed = i
+        
+        if developed:
+            magicEffect(onPosition, effect_renew)
+            onThing.transform(item[const][developed][0])
+            creature.message("You have renewed the %s !" % (item[const][developed][1]))
+            creature.modifyItem(thing, position, stackpos, -1)
+            
+        else:
+            magicEffect(onPosition, effect_broke)
+            creature.modifyItem(onThing, onPosition, onStackpos, -1)
+            creature.modifyItem(thing, position, stackpos, -1)
+            creature.message("Your Rusty Remover has broken.")
+            return
+            
     else:
-        revealedItem = rustyItems[onThing.itemId][random.randint(len(rustyItems[onThing.itemId])-1)]
-        onThing.transform(revealedItem, onPosition)
-        creature.message("You removed the rust, revealing a " + revealedItem.rawName() )
+        creature.message("Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
+        return
     
-    creature.modifyItem(thing, position, stackpos, -1)
-    
-    return True
-
-
 
 reg("useWith", 9930, onUseWith)

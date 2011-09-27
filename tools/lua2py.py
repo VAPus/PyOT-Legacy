@@ -33,7 +33,7 @@ file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("d
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
 file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
 file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
-file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
+file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -").replace("doPlayerRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doPlayerRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
 file = file.replace("isCreature(item2.uid)", "onThing.isCreature()").replace("isPlayer(item2.uid)", "onThing.isPlayer()").replace("isMonster(item2.uid)", "onThing.isMonster()").replace("isItem(item2.uid)", "onThing.isItem()")
 file = file.replace("getThingPos(cid)", "creature.position").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("CONTAINER_POSITION", "0xFFFF")
@@ -44,10 +44,11 @@ file = file.replace("doPlayerAddLevel(cid, ", "creature.modifyLevel(").replace("
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHLEVEL)", "creature.notEnough('level')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHMANA)", "creature.notEnough('mana')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHSOUL)", "creature.notEnough('soul')")
 file = file.replace("getPlayerSoul(cid)", 'creature.data["soul"]').replace("getPlayerMana(cid)", 'creature.data["mana"]').replace("isPremium(cid)", "creature.isPremium()").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_YOUNEEDPREMIUMACCOUNT)", "creature.needPremium()")
 file = file.replace("doPlayerAddMana(cid, ", "creature.modifyMana(").replace("doPlayerAddSoul(cid, ", "creature.modifySoul(").replace(" <> ", " != ").replace("doSendMagicEffect(topos, ", "magicEffect(onPosition, ")
+file = file.replace("getCreaturePosition(cid)", "creature.position").replace("return False", "return")
+
+
 inArrayRe = re.compile(r"isInArray\((?P<a>[^,]*), (?P<b>[^)]*)\)", re.I)
 file = inArrayRe.sub(r"\g<b> in \g<a>", file)
-
-
 
 inArrayRe2 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\] == nil")
 file = inArrayRe2.sub(r"\g<b> not in \g<a>", file)
@@ -97,6 +98,9 @@ file = doPlayerAddItem.sub("creature.addItem(Item(\g<item>))", file)
 doCreateItem = re.compile(r"doCreateItem\((?P<item>\w+), (?P<count>\w+), (?P<pos>\w+)\)")
 file = doCreateItem.sub("placeItem(Item(\g<item>, \g<count>), \g<pos>)", file)
 
+forLoop = re.compile(r"for([ \t]+)(?P<val>\w+)([ \t]+)=([ \t]+)(\w+),([ \t]+)(?P<in>(.*?)):")
+file = forLoop.sub("for \g<val> in \g<in>:", file)
+
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
 file = file.replace(" ~= nil", "").replace("nil", "None")
 
@@ -124,6 +128,10 @@ for line in file.split("\n"):
         thislevel -= 1
     elif line[:5] == "else:":
         thislevel -= 1
+    elif line[:3] == "for":
+        level += 1
+        newcode += "%s%s:\n" % ("    "*thislevel, line[:-3])
+        continue
 
     newcode += "%s%s\n" % ("    "*thislevel, line)
 

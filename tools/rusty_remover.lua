@@ -1,51 +1,85 @@
-local rustyItems = {
-	 -- Rusty armor
-	[9808] = {2463, 2464, 2465, 2476, 2483},
-	[9809] = {2463, 2464, 2465, 2476, 2483, 2487,8891},
-	[9810] = {2463, 2464, 2465, 2466, 2472, 2476, 2483, 2487, 8891},
-
-	-- Rusty legs
-	[9811] = {2468, 2477, 2478, 2647, 2648},
-	[9812] = {2468, 2477, 2478, 2488, 2647, 2648 },
-	[9813] = {2468, 2470, 2477, 2478, 2488, 2647, 2648},
-
-	-- Rusty Shield
-	[9814] = {2509, 2510, 2511, 2513, 2515, 2530},
-	[9815] = {2509, 2510, 2511, 2513, 2515, 2516, 2519, 2530},
-	[9816] = {2509, 2510, 2511, 2513, 2514, 2515, 2516, 2519, 2520, 2530},
-
-	-- Rusty Boots
-	[9817] = {2643, 3982, 5462, 7457},
-	[9818] = {2195, 2643, 3982, 5462, 7457},
-	[9819] = {2195, 2643, 2645, 3982, 5462, 7457},
-
-	-- Rusty Helmet
-	[9820] = {2457, 2458, 2460, 2480, 2481, 2491},
-	[9821] = {2457, 2458, 2460, 2480, 2481, 2491, 2497},
-	[9822] = {2457, 2458, 2460, 2475, 2480, 2481, 2491, 2497, 2498}
-
-}
-
+        local item = 
+        {
+                [9808] = {
+                        [1] = {id = 2464, name = "Chain Armor", opportunity = 33},
+                        [2] = {id = 2483, name = "Scale Armor", opportunity = 25},
+                        [3] = {id = 2465, name = "Brass Armor", opportunity = 10},
+                        [4] = {id = 2463, name = "Plate Armor", opportunity = 2}
+                },
+                [9809] = {
+                        [1] = {id = 2464, name = "Chain Armor", opportunity = 16},
+                        [2] = {id = 2465, name = "Brass Armor", opportunity = 14},
+                        [3] = {id = 2483, name = "Scale Armor", opportunity = 13},
+                        [4] = {id = 2463, name = "Plate Armor", opportunity = 10},
+                        [5] = {id = 2476, name = "Knight Armor", opportunity = 6},
+                        [6] = {id = 8891, name = "Paladin Armor", opportunity = 3},
+                        [7] = {id = 2487, name = "Crown Armor", opportunity = 1}
+                },
+                [9810] = {
+                        [1] = {id = 2464, name = "Chain Armor", opportunity = 20},
+                        [2] = {id = 2465, name = "Brass Armor", opportunity = 17},
+                        [3] = {id = 2483, name = "Scale Armor", opportunity = 15},
+                        [4] = {id = 2463, name = "Plate Armor", opportunity = 12},
+                        [5] = {id = 2476, name = "Knight Armor", opportunity = 10},
+                        [6] = {id = 8891, name = "Paladin Armor", opportunity = 5},
+                        [7] = {id = 2487, name = "Crown Armor", opportunity = 4},
+                        [8] = {id = 2466, name = "Golden Armor", opportunity = 2},
+                        [9] = {id = 2472, name = "Magic Plate Armor", opportunity = 1}
+                },
+                [9811] = {
+                        [1] = {id = 2468, name = "Studded Legs", opportunity = 33},
+                        [2] = {id = 2648, name = "Chain Legs", opportunity = 25},
+                        [3] = {id = 2478, name = "Brass Legs", opportunity = 10},
+                        [4] = {id = 2647, name = "Plate Legs", opportunity = 2}
+                },
+                [9812] = {
+                        [1] = {id = 2468, name = "Studded Legs", opportunity = 16},
+                        [2] = {id = 2648, name = "Chain Legs", opportunity = 14},
+                        [3] = {id = 2478, name = "Brass Legs", opportunity = 13},
+                        [4] = {id = 2647, name = "Plate Legs", opportunity = 10},
+                        [5] = {id = 2477, name = "Knight Legs", opportunity = 6},
+                        [7] = {id = 2488, name = "Crown Legs", opportunity = 1}
+                },
+                [9813] = {
+                        [2] = {id = 2478, name = "Brass Legs", opportunity = 17},
+                        [4] = {id = 2647, name = "Plate Legs", opportunity = 12},
+                        [5] = {id = 2477, name = "Knight Legs", opportunity = 10},
+                        [7] = {id = 2488, name = "Crown Legs", opportunity = 4},
+                        [8] = {id = 2470, name = "Golden Legs", opportunity = 2}
+                }
+        }
 function onUse(cid, item, frompos, item2, topos)
+        local effect_broke = 3
+        local effect_renew = 28
+        local developed = 0
+        local const = item2.itemid
+        local pos = getCreaturePosition(cid)
 
-	if rustyItems[item2.itemid] == nil then
-		return false
-	end
+        if item[const] then
+                local random_item = math.random(1, 100)
 
-	if math.random(1, 100) > 50 then
-		doRemoveItem(item2.uid)
-		doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "You broken it.")
-	else
-		local revealedItem = rustyItems[item2.itemid][math.random(#rustyItems[item2.itemid])]
-		doTransformItem(item2.uid, revealedItem)
-		if item2.actionid ~= 0 then
-			doSetItemActionId(item2.uid, item2.actionid)
-		end
-		doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "You removed the rust, revealing a " .. getItemName(revealedItem) )
-	end
+                for i = 1, #item[const] do
+                        if random_item <= item[const][i].opportunity then
+                                developed = i
+                        end
+                end
 
-	doRemoveItem(item.uid, 1)
+                if developed > 0 then
+                        doSendMagicEffect(topos, effect_renew)
+                        doTransformItem(item2.uid, item[const][developed].id)
+                        doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "You have renewed the ".. item[const][developed].name .." !")
+                        doPlayerRemoveItem(item.uid, 1)
+                else
+                        doSendMagicEffect(topos, effect_broke)
+                        doPlayerRemoveItem(item2.uid, 1)
+                        doPlayerRemoveItem(item.uid, 1)
+                        doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "Your Rusty Remover has broken.")
+                        return false
+                end
+        else
+                doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, "Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
+                return false
+        end
 
-	return true
+        return true
 end
-
