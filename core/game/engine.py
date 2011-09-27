@@ -489,7 +489,7 @@ def positionInDirection(nposition, direction, amount=1):
     
     """
     
-    position = nposition[:] # Important not to remove the : here, we don't want a reference!
+    position = list(nposition[:]) # Important not to remove the : here, we don't want a reference!
     if direction == 0:
         position[1] = nposition[1] - amount
     elif direction == 1:
