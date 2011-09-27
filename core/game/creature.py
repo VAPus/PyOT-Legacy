@@ -122,6 +122,9 @@ class Creature(object):
     def isPlayer(self):
         return False
 
+    def isPremium(self):
+        return True
+        
     def isNPC(self):
         return False
         

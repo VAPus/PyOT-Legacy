@@ -837,30 +837,33 @@ class Player(Creature):
         stream = self.packet(0x15)
         stream.string(text)
         stream.send(self.client)
+    
+    def cancelMessage(message):
+        self.message(message, 'MSG_STATUS_SMALL')
         
     def notPossible(self):
-        self.message("Sorry, not possible.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("Sorry, not possible.")
 
     def tooHeavy(self):
-        self.message("This object is too heavy for you to carry.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("This object is too heavy for you to carry.")
         
     def outOfRange(self):
-        self.message("Destination is out of range.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("Destination is out of range.")
 
     def notEnoughRoom(self):
-        self.message("There is not enough room.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("There is not enough room.")
         
     def exhausted(self):
-        self.message("You are exhausted.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("You are exhausted.")
 
     def needMagicItem(self):
-        self.message("You need a magic item to cast this spell.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("You need a magic item to cast this spell.")
     
     def notEnough(self, word):
-        self.message("You do not have enough %s." % word, 'MSG_STATUS_SMALL')
+        self.cancelMessage("You do not have enough %s." % word)
 
     def onlyOnCreatures(self):
-        self.message("You can only use it on creatures.", 'MSG_STATUS_SMALL')
+        self.cancelMessage("You can only use it on creatures.")
         
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
