@@ -5,12 +5,12 @@ ITEM_PRE_SUGAR_CANE = 5471
 ITEM_SUGAR_CANE = 5463
 ITEM_BUNCH_SUGAR_CANE = 5467
 
-def onUseWith(creature, thing, position, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
     if onThing.itemId == ITEM_PRE_WHEAT:
-        doTransformItem(onThing.uid, ITEM_WHEAT)
+        onThing.transform(ITEM_WHEAT, onPosition)
         placeItem(Item(ITEM_BUNCH_WHEAT, 1), onPosition)
     elif onThing.itemId == ITEM_PRE_SUGAR_CANE:
-        doTransformItem(onThing.uid, ITEM_SUGAR_CANE)
+        onThing.transform(ITEM_SUGAR_CANE, onPosition)
         placeItem(Item(ITEM_BUNCH_SUGAR_CANE, 1), onPosition)
     else:
         return False
@@ -20,4 +20,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
 
 
 reg("useWith", 2550, onUseWith)
-

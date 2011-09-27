@@ -1,8 +1,32 @@
-def onUseWith(creature, thing, position, onThing, onPosition, **k):
-    if(onThing.itemId == HOTA_WEAK and thing.itemId == SMALL_RUBY):
+HOTA_WEAK = 2342
+HOTA_FULL = 2343
+
+SHRINES = {\
+# Fire Shrine
+SMALL_RUBY: (7504, 7505, 7506, 7507),\
+
+# Ice Shrine
+SMALL_SAPPHIRE: (7508, 7509, 7510, 7511),\
+
+# Energy Shrine
+SMALL_AMETHYST: (7512, 7513, 7514, 7515),\
+
+# Earth Shrine
+SMALL_EMERALD: (7516, 7517, 7518, 7519)\
+}
+
+ENCHANTED_GEMS = {\
+SMALL_SAPPHIRE: ENCHANTED_SMALL_SAPPHIRE,
+SMALL_RUBY: ENCHANTED_SMALL_RUBY,
+SMALL_EMERALD: ENCHANTED_SMALL_EMERALD,
+SMALL_AMETHYST: ENCHANTED_SMALL_AMETHYST
+}
+
+def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
+    if onThing.itemId == HOTA_WEAK and thing.itemId == SMALL_RUBY:
         creature.modifyItem(thing, position, stackpos, -1)
-        doTransformItem(onThing.uid, HOTA_FULL)
-        doSendMagicEffect(onPosition, EFFECT_MAGIC_RED)
+        onThing.transform(HOTA_FULL, onPosition)
+        magicEffect(onPosition, EFFECT_MAGIC_RED)
         return True
     
     if onThing.itemId in SHRINES[thing.itemId] == False:
@@ -31,10 +55,11 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     
     creature.modifyMana(-manaCost)
     creature.modifySoul(-soulCost)
-    doTransformItem(thing.uid, ENCHANTED_GEMS[thing.itemId], count)
+    
+    thing.count = count
+    thing.transform(ENCHANTED_GEMS[thing.itemId], position)
     
     return True
 
 
 reg("useWith", (2146, 2147, 2149, 2150), onUseWith)
-

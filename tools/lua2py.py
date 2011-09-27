@@ -18,13 +18,13 @@ newcode = ""
 level = 0
 regLine = ""
 if file.count("item2") >= 2 or file.count("topos") >= 2:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, onThing, onPosition, **k)")
+    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
     try:
         regLine = 'reg("useWith", %s, onUseWith)' % tuple(list)
     except:
         regLine = 'reg("useWith", %s, onUseWith)' % repr(tuple(list))
 else:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, **k)")
+    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
     regLine = 'reg("use", %s, onUse)' % tuple(list)
     
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
@@ -43,7 +43,7 @@ file = file.replace("getPlayerName(cid)", "creature.name()").replace("getCreatur
 file = file.replace("doPlayerAddLevel(cid, ", "creature.modifyLevel(").replace("doPlayerRemoveLevel(cid, ", "creature.modifyLevel(-").replace("doPlayerSendCancel(cid, ", "creature.cancelMessage(").replace("ITEM_GOLD_COIN", "2148").replace("ITEM_PLATINUM_COIN", "2152")
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHLEVEL)", "creature.notEnough('level')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHMANA)", "creature.notEnough('mana')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHSOUL)", "creature.notEnough('soul')")
 file = file.replace("getPlayerSoul(cid)", 'creature.data["soul"]').replace("getPlayerMana(cid)", 'creature.data["mana"]').replace("isPremium(cid)", "creature.isPremium()").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_YOUNEEDPREMIUMACCOUNT)", "creature.needPremium()")
-file = file.replace("doPlayerAddMana(cid, ", "creature.modifyMana(").replace("doPlayerAddSoul(cid, ", "creature.modifySoul(")
+file = file.replace("doPlayerAddMana(cid, ", "creature.modifyMana(").replace("doPlayerAddSoul(cid, ", "creature.modifySoul(").replace(" <> ", " != ").replace("doSendMagicEffect(topos, ", "magicEffect(onPosition, ")
 inArrayRe = re.compile(r"isInArray\((?P<a>[^,]*), (?P<b>[^)]*)\)", re.I)
 file = inArrayRe.sub(r"\g<b> in \g<a>", file)
 
@@ -58,17 +58,17 @@ file = inArrayRe3.sub("\g<a> in \g<b>", file)
 getItemName = re.compile(r"getItemName\((?P<arg>\w+)\)", re.I)
 file = getItemName.sub("\g<arg>.rawName()", file)
 
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[a-zA-Z0-9_.[]]*)\)")
+transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,]*)\)")
 file = transformItem.sub(r"thing.transform(\g<to>, position)", file)
 
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[a-zA-Z0-9_.[]]*)\)")
+transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,]*)\)")
 file = transformItem.sub(r"onThing.transform(\g<to>, onPosition)", file)
 
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[a-zA-Z0-9_.[]]*), (?P<count>\w+)\)")
-file = transformItem.sub(r"thing.count = \g<count>\nthing.transform(\g<to>, position)", file)
+transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,]*), (?P<count>\w+)\)")
+file = transformItem.sub(r"\nthing.count = \g<count>\nthing.transform(\g<to>, position)", file)
 
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[a-zA-Z0-9_.[]]*), (?P<count>\w+)\)")
-file = transformItem.sub(r"onThing.count = \g<count>\nonThing.transform(\g<to>, onPosition)", file)
+transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,]*), (?P<count>\w+)\)")
+file = transformItem.sub(r"\nonThing.count = \g<count>\nonThing.transform(\g<to>, onPosition)", file)
 
 arrays = re.compile(r"\[(?P<a>\w+)\]([ \t]*)=([ \t]*)")
 file = arrays.sub("\g<a>: ", file)
@@ -134,7 +134,7 @@ file = doSetItemActionId.sub("'\g<type>' in \g<item>.actions", file)
 doSetItemActionId = re.compile(r"(?P<item>\w+)\.actionid != (?P<type>\w+)")
 file = doSetItemActionId.sub("'\g<type>' not in \g<item>.actions", file)
 
-ifs = re.compile(r"(?P<type>(if|elif)) \((?P<param>.*)\):", re.M)
+ifs = re.compile(r"(?P<type>(if|elif))([ \t]*)\((?P<param>(.*?))\)([ \t]*):", re.M)
 newcode = ifs.sub(r"\g<type> \g<param>:", newcode).replace(" :\n", ":\n").replace("'0' not in ", "not ")
 
 print newcode + "\n" + regLine

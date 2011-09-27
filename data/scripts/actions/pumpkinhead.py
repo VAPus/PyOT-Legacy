@@ -4,12 +4,12 @@ PUMPKINHEAD_LIGHT_ON = 2097
 CANDLE = 2048
 KNIFE = 2566
 
-def onUseWith(creature, thing, position, onThing, onPosition, onStackpos, **k):
+def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
     if thing.itemId == PUMPKINHEAD_LIGHT_OFF and onThing.itemId == CANDLE:
-        doTransformItem(thing.uid, PUMPKINHEAD_LIGHT_ON)
+        thing.transform(PUMPKINHEAD_LIGHT_ON, position)
         creature.removeItem(onPosition, onStackpos)
     elif thing.itemId == KNIFE and onThing.itemId == PUMPKIN:
-        doTransformItem(onThing.uid, PUMPKINHEAD_LIGHT_OFF)
+        onThing.transform(PUMPKINHEAD_LIGHT_OFF, onPosition)
     else:
         return False
     
@@ -18,4 +18,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, onStackpos, **k):
 
 
 reg("useWith", (2566, 2096), onUseWith)
-
