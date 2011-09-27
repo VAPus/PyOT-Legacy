@@ -56,6 +56,9 @@ file = inArrayRe2.sub(r"\g<b> not in \g<a>", file)
 inArrayRe3 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\] != nil")
 file = inArrayRe3.sub("\g<a> in \g<b>", file)
 
+inArrayRe4 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\]")
+file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[<\g<a>]", file)
+
 getItemName = re.compile(r"getItemName\((?P<arg>\w+)\)", re.I)
 file = getItemName.sub("\g<arg>.rawName()", file)
 
