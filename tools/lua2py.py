@@ -160,6 +160,9 @@ file = ipairs.sub("\g<param>", file)
 forLoop = re.compile(r"for([ \t]+)(?P<val>\w+)([ \t]+)=([ \t]+)(\w+),([ \t]+)(?P<in>(.*?))")
 file = forLoop.sub("for \g<val> in \g<in>", file)
 
+forOverNumberic = re.compile(r"for (?P<var>\w+) in (?P<what>[^ ()\[\]]+) ")
+file = forOverNumberic.sub("for \g<var> in range(\g<what>) ", file)
+
 ifNone = re.compile(r"(?P<item>\w+).uid([ ]+)==([ ]+)")
 file = ifNone.sub("not \g<item>", file)
 
@@ -172,14 +175,23 @@ file = doCreatureAddMana.sub("\g<creature>.modifyMana(\g<param>)", file)
 getItemParent = re.compile(r"getItemParent\((?P<item>[^,]+).uid\)")
 file = getItemParent.sub("\g<item>.inContainer", file)
 
-getSpectators = re.compile(r"getSpectators\((?P<position>[^,]+), (?P<x>[^,]+), (?P<y>[^,]+)\)")
+getSpectators = re.compile(r"getSpectators\((?P<position>[^,]+), (?P<x>[^,]+), (?P<y>[^()]+)\)")
 file = getSpectators.sub("getPlayers(\g<position>, (\g<x>, \g<y>))", file)
 
 getContainerItem = re.compile(r"getContainerItem\((?P<container>[^,]+).uid, (?P<stackpos>(.*))\)") # Unsafe!
 file = getContainerItem.sub("\g<container>.container.getThing(\g<stackpos>)", file)
 
 getItemInfo = re.compile(r"getItemInfo\((?P<itemId>[^,]+)\)\.(?P<attr>\w+)")
-file = getItemInfo.sub("itemAttribute(\g<itemId>, \g<attr>)", file)
+file = getItemInfo.sub('itemAttribute(\g<itemId>, "\g<attr>")', file)
+
+getConfigInfo = re.compile(r"""getConfigInfo\(('|")(?P<opt>\w+)('|")\)""")
+file = getConfigInfo.sub("config.\g<opt>", file)
+
+getConfigInfo = re.compile(r"""getConfigInfo\((?P<opt>[^() ]+)\)""")
+file = getConfigInfo.sub('getattr(config, "\g<opt>")', file)
+
+doAddCondition = re.compile(r"doAddCondition\((?P<creature>[^,]+), (?P<condition>[^,()]+)\)")
+file = doAddCondition.sub("""\g<creature>.condition(<Add a PyOT compatible condition replacement for "\g<condition>" here ! >)""", file)
 
 # Do this last in case you convert some params before
 
