@@ -159,6 +159,7 @@ def loader(timer):
     __builtin__.reactor = reactor
     __builtin__.engine = sys.modules["game.engine"]
     __builtin__.sys = sys
+    __builtin__.math = math
     __builtin__.inlineCallbacks = inlineCallbacks
     __builtin__.returnValue = returnValue
     __builtin__.Deferred = Deferred
@@ -170,6 +171,8 @@ def loader(timer):
     __builtin__.Item = game.item.Item
     __builtin__.getTile = game.map.getTile
     __builtin__.Condition = game.creature.Condition
+    __builtin__.itemAttribute = game.item.attribute
+    
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
         monster = game.monster

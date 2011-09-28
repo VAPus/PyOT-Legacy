@@ -248,6 +248,12 @@ class Player(Creature):
 
     def getVocation(self):
         return game.vocation.getVocationById(self.data["vocation"])
+    
+    def getVocationId(self):
+        return self.data["vocation"]
+        
+    def freeCapasity(self):
+        return max(self.data["capasity"] - self.inventoryWeight, 0)
         
     def findItem(self, position, stackpos=1, sid=None):
         # Option 1, from the map:

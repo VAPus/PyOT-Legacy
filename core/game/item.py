@@ -39,6 +39,9 @@ class Container(object):
                 if itemX.containerSize and itemX.container.placeItemRecursive(item) == 0:
                     return itemX
 
+    def size(self):
+        return len(self.items)
+        
     def removeItem(self, item):
         return self.items.remove(item)
         
@@ -339,7 +342,16 @@ def sid(itemid):
     except:
         return None
         
+def attribute(itemId, attr):
+    check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
+    try:
+        if attr in check:
+            return items[itemId]["a"] & check.index(attr)
             
+        return items[itemId][attr]
+    except:
+        return
+        
 @inlineCallbacks
 def loadItems():
     log.msg("Loading items...")

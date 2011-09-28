@@ -334,7 +334,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(max(player.data["capasity"] - player.inventoryWeight, 0)) # TODO: Free Capasity
+        self.uint32(self.freeCapasity()) # TODO: Free Capasity
         self.uint32(player.data["capasity"] * 100) # TODO: Cap
         self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
         if player.data["level"] > 0xFFFF:

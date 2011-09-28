@@ -13,7 +13,7 @@ for element in dom.getElementsByTagName("action"):
 
 lenRe = re.compile(r"#(?P<a>[^)]*)")
 file = lenRe.sub(r"len(\g<a>)-1", file)
-file = file.replace("local ", "").replace(" then", ":").replace(" true", " True").replace(" false", " False").replace(" .. ", " + ").replace("-- ", "# ").replace("elseif", "elif").replace("else", "else:")
+file = file.replace("local ", "").replace(" then", ":").replace(" true", " True").replace(" false", " False").replace(" .. ", " + ").replace("-- ", "# ").replace("elseif", "elif").replace("else", "else:").replace("itemEx", "item2").replace("fromPosition", "frompos").replace("toPosition", "topos")
 newcode = ""
 level = 0
 regLine = ""
@@ -29,14 +29,14 @@ else:
     
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
-file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(getThingPos(item2.uid), ", "magicEffect(onPosition, ")
+file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(", "magicEffect(").replace("getThingPos(item2.uid)", "onPosition").replace("getThingPos(item.uid)", "position")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
 file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
-file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
+file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -").replace("doPlayerRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doPlayerRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
 file = file.replace("isCreature(item2.uid)", "onThing.isCreature()").replace("isPlayer(item2.uid)", "onThing.isPlayer()").replace("isMonster(item2.uid)", "onThing.isMonster()").replace("isItem(item2.uid)", "onThing.isItem()")
-file = file.replace("getThingPos(cid)", "creature.position").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("CONTAINER_POSITION", "0xFFFF")
+file = file.replace("getThingPos(cid)", "creature.position").replace("CONTAINER_POSITION", "0xFFFF")
 file = file.replace("item2.uid == cid", "onThing == creature").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_YOUAREEXHAUSTED)", "creature.exhausted()").replace("== true", "")
 file = file.replace("getPlayerLevel(cid)", 'creature.data["level"]').replace("hasCondition(cid, ", "creature.hasCondition(").replace("getPlayerPosition(cid)", "creature.position").replace("getPlayerHealth(cid)", 'creature.data["health"]').replace("getPlayerMaxHealth(cid)", 'creature.data["healthmax"]')
 file = file.replace("getPlayerName(cid)", "creature.name()").replace("getCreaturePos(pos)", "creature.position").replace("getPlayerMoney(cid)", "creature.getMoney()")
@@ -44,20 +44,56 @@ file = file.replace("doPlayerAddLevel(cid, ", "creature.modifyLevel(").replace("
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHLEVEL)", "creature.notEnough('level')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHMANA)", "creature.notEnough('mana')").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTENOUGHSOUL)", "creature.notEnough('soul')")
 file = file.replace("getPlayerSoul(cid)", 'creature.data["soul"]').replace("getPlayerMana(cid)", 'creature.data["mana"]').replace("isPremium(cid)", "creature.isPremium()").replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_YOUNEEDPREMIUMACCOUNT)", "creature.needPremium()")
 file = file.replace("doPlayerAddMana(cid, ", "creature.modifyMana(").replace("doPlayerAddSoul(cid, ", "creature.modifySoul(").replace(" <> ", " != ").replace("doSendMagicEffect(topos, ", "magicEffect(onPosition, ")
-file = file.replace("getCreaturePosition(cid)", "creature.position").replace("return False", "return")
+file = file.replace("getCreaturePosition(cid)", "creature.position").replace("return False", "return").replace("getPlayerVocation(cid)", "creature.getVocationId()")
+file = file.replace("for _,", "for").replace("for i,", "for") # TFS specific, properly fixed down below
+file = file.replace("CONST_", "") # TFS constants
+file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPlayerFreeCap(cid)", "creature.freeCapasity()")
+lists = re.compile(r"{(?P<params>[^={}]+)}")
+file = lists.sub("[\g<params>]", file)
 
+possibleKeys = []
 
-inArrayRe = re.compile(r"isInArray\((?P<a>[^,]*), (?P<b>[^)]*)\)", re.I)
+badKeys = attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'itemId', 'actions')
+# This is my dict builder
+def dictBuilder(m):
+    text = m.group("params")
+    # Resursive:
+    text = re.sub(r"{(?P<params>.+)}", dictBuilder, text)
+    parts = re.split(r"""(\w+ = \[[^]]*\])|(\w+ = \"[^"]*\")|, """, text)
+    toInsert = []
+    for part in parts:
+        if part:
+            key, value = part.split(" = ")
+            try:
+                key = "%d" % int(key) # number
+            except:
+                if not key.isupper() and "[" not in key: # Don't do constants or lists
+                    if not key in possibleKeys:
+                        possibleKeys.append(key)
+                    key = '"%s"' % key # string
+                    
+            toInsert.append("%s: %s" % (key, value))
+    return "{%s}" % ', '.join(toInsert)
+    
+file = re.sub(r"{(?P<params>.+)}", dictBuilder, file, re.M|re.DOTALL)
+
+for key in possibleKeys[:]:
+    if key in badKeys:
+        possibleKeys.remove(key)
+    
+inArrayRe = re.compile(r"isInArray\((?P<a>.*), (?P<b>.*)\)", re.I)
 file = inArrayRe.sub(r"\g<b> in \g<a>", file)
 
-inArrayRe2 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\] == nil")
+inArrayRe2 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\] == nil")
 file = inArrayRe2.sub(r"\g<b> not in \g<a>", file)
 
-inArrayRe3 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\] != nil")
+inArrayRe3 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\] != nil")
 file = inArrayRe3.sub("\g<a> in \g<b>", file)
 
-inArrayRe4 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_.]*)\]")
-file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[<\g<a>]", file)
+inArrayRe4 = re.compile(r"(!(=))(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\]")
+file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[\g<a>]", file)
+
+
 
 getItemName = re.compile(r"getItemName\((?P<arg>\w+)\)", re.I)
 file = getItemName.sub("\g<arg>.rawName()", file)
@@ -77,11 +113,13 @@ file = transformItem.sub(r"\nonThing.count = \g<count>\nonThing.transform(\g<to>
 arrays = re.compile(r"\[(?P<a>\w+)\]([ \t]*)=([ \t]*)")
 file = arrays.sub("\g<a>: ", file)
 
+"""
 arrays = re.compile(r"\{(?P<a>[0-9, ]+)\},", re.M)
 file = arrays.sub(r"(\g<a>),\\", file)
 
 arrays = re.compile(r"\{(?P<a>[0-9, ]+)\}", re.M)
 file = arrays.sub(r"(\g<a>)\\", file)
+"""
 
 doChangeTypeItem = re.compile(r"doChangeTypeItem\((?P<item>\w+)\.uid, (?P<type>[^)]+)\)")
 file = doChangeTypeItem.sub("\g<item>.type = \g<type>", file)
@@ -92,20 +130,64 @@ file = doSetItemSpecialDescription.sub("\g<item>.description = \g<type>", file)
 doSetItemActionId = re.compile(r"doSetItemActionId\((?P<item>\w+)\.uid, (?P<type>[^)]+)\)")
 file = doSetItemActionId.sub("\g<item>.actions.append('\g<type>')", file)
 
-doPlayerAddItem = re.compile(r"doPlayerAddItem\(cid, (?P<item>\w+), (?P<count>\w+)\)")
+doPlayerAddItem = re.compile(r"doPlayerAddItem\(cid, (?P<item>[^,]+), (?P<count>\w+)\)")
 file = doPlayerAddItem.sub("creature.addItem(Item(\g<item>, \g<count>))", file)
 
-doPlayerAddItem = re.compile(r"doPlayerAddItem\(cid, (?P<item>\w+)\)")
+doPlayerAddItem = re.compile(r"doPlayerAddItem\(cid, (?P<item>[^,]+)\)")
 file = doPlayerAddItem.sub("creature.addItem(Item(\g<item>))", file)
 
-doCreateItem = re.compile(r"doCreateItem\((?P<item>\w+), (?P<count>\w+), (?P<pos>\w+)\)")
+doCreateItem = re.compile(r"doCreateItem\((?P<item>[^,]+), (?P<count>[^,]+), (?P<pos>\w+)\)")
 file = doCreateItem.sub("placeItem(Item(\g<item>, \g<count>), \g<pos>)", file)
 
-forLoop = re.compile(r"for([ \t]+)(?P<val>\w+)([ \t]+)=([ \t]+)(\w+),([ \t]+)(?P<in>(.*?)):")
-file = forLoop.sub("for \g<val> in \g<in>:", file)
+getContainerSize = re.compile(r"getContainerSize\((?P<item>\w+).uid\)")
+file = getContainerSize.sub("\g<item>.container.size()", file)
+
+getContainerCap = re.compile(r"getContainerCap\((?P<item>\w+).uid\)")
+file = getContainerCap.sub("\g<item>.containerSize", file)
+
+getPlayerSlotItem = re.compile(r"getPlayerSlotItem\(cid,([ ]*)(?P<slot>\w+)\)")
+file = getPlayerSlotItem.sub("creature.inventory[\g<slot>]", file)
+
+doAddContainerItem = re.compile(r"doAddContainerItem\((?P<container>[^,]+).uid, (?P<item>[^,]+)\)")
+file = doAddContainerItem.sub("creature.itemToContainer(\g<container>, Item(\g<item>)", file)
+
+doAddContainerItem = re.compile(r"doAddContainerItem\((?P<container>[^,]+).uid, (?P<item>[^,]+), (?P<count>[^,]+)\)")
+file = doAddContainerItem.sub("creature.itemToContainer(\g<container>, Item(\g<item>, \g<count>)", file)
+
+ipairs = re.compile(r"ipairs\((?P<param>.*?)\)")
+file = ipairs.sub("\g<param>", file)
+
+forLoop = re.compile(r"for([ \t]+)(?P<val>\w+)([ \t]+)=([ \t]+)(\w+),([ \t]+)(?P<in>(.*?))")
+file = forLoop.sub("for \g<val> in \g<in>", file)
+
+ifNone = re.compile(r"(?P<item>\w+).uid([ ]+)==([ ]+)")
+file = ifNone.sub("not \g<item>", file)
+
+doCreatureAddHealth = re.compile(r"do(Creature|Player)AddHealth\((?P<creature>[^,]+).uid, (?P<param>(.*))\)")
+file = doCreatureAddHealth.sub("\g<creature>.modifyHealth(\g<param>)", file)
+
+doCreatureAddMana = re.compile(r"do(Creature|Player)AddMana\((?P<creature>[^,]+).uid, (?P<param>(.*))\)")
+file = doCreatureAddMana.sub("\g<creature>.modifyMana(\g<param>)", file)
+
+getItemParent = re.compile(r"getItemParent\((?P<item>[^,]+).uid\)")
+file = getItemParent.sub("\g<item>.inContainer", file)
+
+getSpectators = re.compile(r"getSpectators\((?P<position>[^,]+), (?P<x>[^,]+), (?P<y>[^,]+)\)")
+file = getSpectators.sub("getPlayers(\g<position>, (\g<x>, \g<y>))", file)
+
+getContainerItem = re.compile(r"getContainerItem\((?P<container>[^,]+).uid, (?P<stackpos>(.*))\)") # Unsafe!
+file = getContainerItem.sub("\g<container>.container.getThing(\g<stackpos>)", file)
+
+getItemInfo = re.compile(r"getItemInfo\((?P<itemId>[^,]+)\)\.(?P<attr>\w+)")
+file = getItemInfo.sub("itemAttribute(\g<itemId>, \g<attr>)", file)
+
+# Do this last in case you convert some params before
+
+dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
+file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
-file = file.replace(" ~= nil", "").replace("nil", "None")
+file = file.replace(" ~= nil", "").replace("nil", "None").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("cid", "creature").replace("onThing.uid", "onThing").replace("thing.uid", "thing")
 
 skipNext = 0
 for line in file.split("\n"):
@@ -134,6 +216,8 @@ for line in file.split("\n"):
     elif line[:3] == "for":
         level += 1
         newcode += "%s%s:\n" % ("    "*thislevel, line[:-3])
+        continue
+    elif "= getBooleanFromString" in line:
         continue
 
     newcode += "%s%s\n" % ("    "*thislevel, line)
