@@ -99,9 +99,11 @@ def testContainer(creature, thing, position, stackpos, index):
         creature.closeContainer(thing)
 _script_ = game.scriptsystem.get("farUse")
 for item in game.item.items:
-    if item and "containerSize" in item:
-        _script_.reg(game.item.reverseItems[item["cid"]], testContainer)
-
+    try:
+        item.containerSize
+        _script_.reg(game.item.reverseItems[item.cid], testContainer)
+    except:
+        pass
 
 def makeitem(creature, text):
     #try:

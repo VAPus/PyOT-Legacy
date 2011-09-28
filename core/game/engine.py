@@ -172,6 +172,7 @@ def loader(timer):
     __builtin__.getTile = game.map.getTile
     __builtin__.Condition = game.creature.Condition
     __builtin__.itemAttribute = game.item.attribute
+    __builtin__.getHouseId = game.map.getHouseId
     
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')

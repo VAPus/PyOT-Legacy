@@ -32,7 +32,7 @@ file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(", "magicEffect(").replace("getThingPos(item2.uid)", "onPosition").replace("getThingPos(item.uid)", "position")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
 file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
-file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
+file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("TALKTYPE_MONSTER", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -").replace("doPlayerRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doPlayerRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
 file = file.replace("isCreature(item2.uid)", "onThing.isCreature()").replace("isPlayer(item2.uid)", "onThing.isPlayer()").replace("isMonster(item2.uid)", "onThing.isMonster()").replace("isItem(item2.uid)", "onThing.isItem()")
@@ -47,7 +47,10 @@ file = file.replace("doPlayerAddMana(cid, ", "creature.modifyMana(").replace("do
 file = file.replace("getCreaturePosition(cid)", "creature.position").replace("return False", "return").replace("getPlayerVocation(cid)", "creature.getVocationId()")
 file = file.replace("for _,", "for").replace("for i,", "for") # TFS specific, properly fixed down below
 file = file.replace("CONST_", "") # TFS constants
-file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPlayerFreeCap(cid)", "creature.freeCapasity()")
+file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPlayerFreeCap(cid)", "creature.freeCapasity()").replace("getHouseFromPos(", "getHouseId(")
+file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "creature.notPossible()").replace("getCreatureSkullType(cid)", "creature.skull")
+
+
 lists = re.compile(r"{(?P<params>[^={}]+)}")
 file = lists.sub("[\g<params>]", file)
 
@@ -193,8 +196,12 @@ file = getConfigInfo.sub('getattr(config, "\g<opt>")', file)
 doAddCondition = re.compile(r"doAddCondition\((?P<creature>[^,]+), (?P<condition>[^,()]+)\)")
 file = doAddCondition.sub("""\g<creature>.condition(<Add a PyOT compatible condition replacement for "\g<condition>" here ! >)""", file)
 
-# Do this last in case you convert some params before
+addEvent = re.compile(r"addEvent\((?<callback>\w+), (?P<time>[^,]+)(?P<param>(.*))\)")
+file = addEvent.sub("callLater(\g<time>/1000.0, \g<callback>\g<param>)", file)
 
+
+
+# Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
 file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
 

@@ -251,9 +251,9 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=N
                 creature.cooldownSpell(icon, group, cooldown)
                 creature.message("Made %dx%s" % (makeCount, item.rawName()))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
-    if game.item.items[make]["name"].title() in spells:
+    if game.item.items[make].name.title() in spells:
         print "Warning: Duplicate spell with name %s" % name
-    spells[words] = (conjure, game.item.items[make]["name"].title(), level, mana)
+    spells[words] = (conjure, game.item.items[make].name.title(), level, mana)
     game.scriptsystem.get("talkaction").reg(words, conjure)
     
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):

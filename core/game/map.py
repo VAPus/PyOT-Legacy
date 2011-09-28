@@ -28,7 +28,13 @@ def getTile(pos):
                 return knownMap[sectorSum][pos[2]][pX][pY]
             except:
                 return None
-            
+
+def getHouseId(pos):
+    try:
+        return housePositions[(pos[0], pos[1])]
+    except:
+        return False
+        
 def placeCreature(creature, pos):
     try:
         return getTile(pos).placeCreature(creature)
@@ -182,6 +188,8 @@ knownMap = {}
 
 houseTiles = {}
 
+housePositions = {}
+
 
 # Ops codes
 class S(object):
@@ -253,8 +261,10 @@ def H(houseId, position, *args):
     tile.houseId = houseId
     try:
         houseTiles[houseId].append((tile, position))
+        housePositions[position] = houseId
     except:
         houseTiles[houseId] = [(tile, position)]
+        housePositions[position] = houseId
     try:
         for item in g.savedItems[position]:
             tile.placeItem(item)

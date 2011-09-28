@@ -421,7 +421,7 @@ class MonsterBase(CreatureBase):
                 # Id to name
                 if type(loot[0]) == int:
                     loot = list(loot)
-                    loot[0] = item.items[loot[0]]["name"]
+                    loot[0] = item.items[loot[0]].name
         
                 cache.append(loot)  
                 
