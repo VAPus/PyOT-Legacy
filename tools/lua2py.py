@@ -2,15 +2,28 @@ import re
 
 from xml.dom.minidom import parse
 
-fileName = raw_input("File: ")
+import argparse
+parser = argparse.ArgumentParser(description='Process a script')
+parser.add_argument('script', metavar='<script>', type=str, help='A script')
+                   
+args = parser.parse_args()
+if args.script:
+    fileName = args.script
+else:
+    fileName = raw_input("File: ")
 file = open(fileName).read()
 
 dom = parse("actions.xml")
 list = []
 for element in dom.getElementsByTagName("action"):
-        if element.getAttribute("script") == fileName:
+        if element.getAttribute("script").split("/")[-1] == fileName or element.getAttribute("value").split("/")[-1] == fileName:
+            try:
                 list.append(int(element.getAttribute("itemid")))
+            except:
+                for i in range(int(element.getAttribute("fromid")), int(element.getAttribute("toid"))+1):
+                    list.append(i)
 
+file = file.replace("math.random(1, #", "math.random(0, #")
 lenRe = re.compile(r"#(?P<a>[^)]*)")
 file = lenRe.sub(r"len(\g<a>)-1", file)
 file = file.replace("local ", "").replace(" then", ":").replace(" true", " True").replace(" false", " False").replace(" .. ", " + ").replace("-- ", "# ").replace("elseif", "elif").replace("else", "else:").replace("itemEx", "item2").replace("fromPosition", "frompos").replace("toPosition", "topos")
@@ -25,13 +38,16 @@ if file.count("item2") >= 2 or file.count("topos") >= 2:
         regLine = 'reg("useWith", %s, onUseWith)' % repr(tuple(list))
 else:
     file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
-    regLine = 'reg("use", %s, onUse)' % tuple(list)
-    
+    try:
+        regLine = 'reg("use", %s, onUse)' % tuple(list)
+    except:
+        regLine = 'reg("use", %s, onUse)' % repr(tuple(list))
+        
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(", "magicEffect(").replace("getThingPos(item2.uid)", "onPosition").replace("getThingPos(item.uid)", "position")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
-file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
+file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace("getCreatureName(item2.uid)", "onThing.name()").replace("getCreatureName(item.uid)", "thing.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
 file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("TALKTYPE_MONSTER", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -").replace("doPlayerRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doPlayerRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
@@ -49,7 +65,8 @@ file = file.replace("for _,", "for").replace("for i,", "for") # TFS specific, pr
 file = file.replace("CONST_", "") # TFS constants
 file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPlayerFreeCap(cid)", "creature.freeCapasity()").replace("getHouseFromPos(", "getHouseId(")
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "creature.notPossible()").replace("getCreatureSkullType(cid)", "creature.skull")
-
+file = file.replace("isNpc(item.uid)", "thing.isNPC()").replace("isNpc(item2.uid)", "onThing.isNPC()").replace("doPlayerSendTextMessage(cid, MESSAGE_STATUS_CONSOLE_ORANGE, ", "creature.orangeStatusMessage(")
+file = file.replace("isSummon(item.uid)", "thing.isSummon()").replace("isSummon(item2.uid)", "onThing.isSummon()")
 
 lists = re.compile(r"{(?P<params>[^={}]+)}")
 file = lists.sub("[\g<params>]", file)
@@ -101,16 +118,16 @@ file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[\g<a>]", file)
 getItemName = re.compile(r"getItemName\((?P<arg>\w+)\)", re.I)
 file = getItemName.sub("\g<arg>.rawName()", file)
 
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,]*)\)")
+transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,()]*)\)")
 file = transformItem.sub(r"thing.transform(\g<to>, position)", file)
 
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,]*)\)")
+transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,()]*)\)")
 file = transformItem.sub(r"onThing.transform(\g<to>, onPosition)", file)
 
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,]*), (?P<count>\w+)\)")
+transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,()]*), (?P<count>\w+)\)")
 file = transformItem.sub(r"\nthing.count = \g<count>\nthing.transform(\g<to>, position)", file)
 
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,]*), (?P<count>\w+)\)")
+transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,()]*), (?P<count>\w+)\)")
 file = transformItem.sub(r"\nonThing.count = \g<count>\nonThing.transform(\g<to>, onPosition)", file)
 
 arrays = re.compile(r"\[(?P<a>\w+)\]([ \t]*)=([ \t]*)")
@@ -196,17 +213,24 @@ file = getConfigInfo.sub('getattr(config, "\g<opt>")', file)
 doAddCondition = re.compile(r"doAddCondition\((?P<creature>[^,]+), (?P<condition>[^,()]+)\)")
 file = doAddCondition.sub("""\g<creature>.condition(<Add a PyOT compatible condition replacement for "\g<condition>" here ! >)""", file)
 
-addEvent = re.compile(r"addEvent\((?<callback>\w+), (?P<time>[^,]+)(?P<param>(.*))\)")
+addEvent = re.compile(r"addEvent\((?P<callback>\w+), (?P<time>[^,]+)(?P<param>(.*))\)")
 file = addEvent.sub("callLater(\g<time>/1000.0, \g<callback>\g<param>)", file)
 
+doRemoveCreature = re.compile(r"doRemoveCreature\((?P<creature>[^,]+).uid\)")
+file = doRemoveCreature.sub("\g<creature>.despawn()", file)
 
+doPlayerAddMount = re.compile(r"doPlayerAddMount\(cid, (?P<id>[^,()]+)\)")
+file = doPlayerAddMount.sub("creature.addMount(<Insert name of mount here to replace <'\g<id>'> >)", file)
+
+getPlayerMount = re.compile(r"getPlayerMount\(cid, (?P<id>[^,()]+)\)")
+file = getPlayerMount.sub("creature.canMount(<Insert name of mount here to replace <'\g<id>'> >)", file)
 
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
 file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
-file = file.replace(" ~= nil", "").replace("nil", "None").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("cid", "creature").replace("onThing.uid", "onThing").replace("thing.uid", "thing")
+file = file.replace(" ~= nil", "").replace("nil", "None").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("cid", "creature").replace(".uid", "")
 
 skipNext = 0
 for line in file.split("\n"):
@@ -238,6 +262,8 @@ for line in file.split("\n"):
         continue
     elif "= getBooleanFromString" in line:
         continue
+    elif line[:2] == "--": # Ugly scripts
+        line = "# %s" % line[2:]
 
     newcode += "%s%s\n" % ("    "*thislevel, line)
 
@@ -250,6 +276,9 @@ file = doSetItemActionId.sub("'\g<type>' not in \g<item>.actions", file)
 
 ifs = re.compile(r"(?P<type>(if|elif))([ \t]*)\((?P<param>(.*?))\)([ \t]*):", re.M)
 newcode = ifs.sub(r"\g<type> \g<param>:", newcode).replace(" :\n", ":\n").replace("'0' not in ", "not ")
+
+print "# Autoconverted script for PyOT"
+print "# Untested. Please remove this message when the script is working properly!\n"
 
 print newcode + "\n" + regLine
 raw_input()
