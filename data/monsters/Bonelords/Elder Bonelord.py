@@ -1,4 +1,3 @@
-
 Elder_Bonelord = game.monster.genMonster("Elder Bonelord", (226, 6037), "a Elder Bonelord")
 Elder_Bonelord.setTargetChance(10)
 Elder_Bonelord.bloodType("blood")
@@ -10,3 +9,7 @@ Elder_Bonelord.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable
 Elder_Bonelord.voices("Inferior creatures, bow before my power!", "Let me take a look at you!", "659978", "54764!", "653768764!")
 Elder_Bonelord.setImmunity(0,1,1) # paralyze, invisible, lifedrain
 Elder_Bonelord.setDefense(13, fire=1.1, earth=0, energy=0.8, ice=0.7, holy=1.0, death=0.7, physical=1.0, drown=1.0)
+Elder_Bonelord.summon("Gazer", 10)
+Elder_Bonelord.summon("Crypt Shambler", 10)
+Elder_Bonelord.maxSummons(6)
+Elder_Bonelord.regMelee(50)

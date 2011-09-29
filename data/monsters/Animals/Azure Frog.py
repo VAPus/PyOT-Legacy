@@ -11,3 +11,4 @@ Azure_Frog.voices("Ribbit!", "Ribbit! Ribbit!")
 Azure_Frog.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Azure_Frog.setDefense(9, fire=1.1, earth=1, energy=1, ice=0.85, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Azure_Frog.loot( ('worm', 9), ('gold coin', 30.5, 10) )
+Azure_Frog.regMelee(24)

@@ -1,4 +1,3 @@
-
 Amazon = game.monster.genMonster("Amazon", (137, 6081), "a Amazon")
 Amazon.setOutfit(113, 120, 114, 132)
 Amazon.setTargetChance(10)
@@ -11,3 +10,4 @@ Amazon.setBehavior(summonable=390, hostile=1, illusionable=1, convinceable=390, 
 Amazon.voices("Your head shall be mine!", "Your head will be mine!", "Yeee ha!")
 Amazon.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Amazon.setDefense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.05, drown=1.0)
+Amazon.regMelee(45)

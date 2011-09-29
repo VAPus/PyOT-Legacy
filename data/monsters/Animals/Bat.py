@@ -10,3 +10,4 @@ bat.voices("Flap! Flap!")
 bat.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 bat.setDefense(2, fire=1.0, earth=1.05, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 bat.loot( ('bat wing', 1.5, 3 ) )
+bat.regMelee(8)

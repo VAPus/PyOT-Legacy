@@ -1,4 +1,3 @@
-
 Hero = game.monster.genMonster("Hero", (73, 6080), "a Hero")
 Hero.setTargetChance(10)
 Hero.bloodType("blood")
@@ -10,3 +9,4 @@ Hero.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushab
 Hero.voices("Let's have a fight!", "I will sing a tune at your grave.", "Have you seen princess Lumelia?", "Welcome to my battleground!")
 Hero.setImmunity(1,1,1) # paralyze, invisible, lifedrain
 Hero.setDefense(39, fire=0.7, earth=0.5, energy=0.6, ice=0.9, holy=0.5, death=1.2, physical=0.9, drown=1.0)
+Hero.regMelee(240)

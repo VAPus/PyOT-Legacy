@@ -1,4 +1,3 @@
-
 Gladiator = game.monster.genMonster("Gladiator", (131, 6080), "a Gladiator")
 Gladiator.setOutfit(78, 3, 79, 114)
 Gladiator.setTargetChance(10)
@@ -11,3 +10,4 @@ Gladiator.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=470,
 Gladiator.voices("You are no match for me!", "Feel my prowess.", "Take this!")
 Gladiator.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Gladiator.setDefense(15, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.9, death=1.05, physical=0.95, drown=1.0)
+Gladiator.regMelee(90)

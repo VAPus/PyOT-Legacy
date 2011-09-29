@@ -10,3 +10,4 @@ Tiger.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Tiger.setDefense(4, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.0, drown=1.0)
 Tiger.regMelee(40)
 Tiger.loot( ('meat', 10.25, 3), ('striped fur', 5.75) )
+Tiger.regMelee(40)

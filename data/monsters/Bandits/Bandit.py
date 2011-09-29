@@ -1,4 +1,3 @@
-
 Bandit = game.monster.genMonster("Bandit", (129, 6080), "a Bandit")
 Bandit.setOutfit(58, 59, 45, 114)
 Bandit.setTargetChance(10)
@@ -11,3 +10,4 @@ Bandit.setBehavior(summonable=450, hostile=1, illusionable=1, convinceable=450, 
 Bandit.voices("Hand me your purse!", "Your money or your life!")
 Bandit.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Bandit.setDefense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.1, drown=1.0)
+Bandit.regMelee(43)

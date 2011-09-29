@@ -9,3 +9,4 @@ Tortoise.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=445, 
 Tortoise.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Tortoise.setDefense(24, fire=1.1, earth=0.8, energy=1.0, ice=0.8, holy=1.0, death=1.0, physical=0.8, drown=1.0)
 Tortoise.loot( ('tortoise shield', 0.75), ('turtle shell', 1.5, 3), ('tortoise egg', 8, 2), ('fish', 5.5), ('battle hammer', 1.25), ('plate shield', 3.25), ('gold coin', 31.25, 30) )
+Tortoise.regMelee(50)

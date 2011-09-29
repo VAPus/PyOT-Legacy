@@ -10,3 +10,4 @@ Toad.voices("Ribbit!", "Ribbit! Ribbit!")
 Toad.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Toad.setDefense(7, fire=1.1, earth=0.8, energy=1.0, ice=0.8, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Toad.loot( ('club', 2.25), ('fish', 19), ('mace', 3.75), ('gold coin', 24.5, 20), ('war hammer', 1.6), ('poisonous slime', 4.5) )
+Toad.regMelee(30) #poisons you 1 hp/turn

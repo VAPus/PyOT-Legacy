@@ -1,4 +1,3 @@
-
 Kongra = game.monster.genMonster("Kongra", (116, 6043), "a Kongra")
 Kongra.setTargetChance(10)
 Kongra.bloodType("blood")
@@ -10,3 +9,4 @@ Kongra.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, push
 Kongra.voices("Ungh! Ungh!", "Hugah!", "Huaauaauaauaa!")
 Kongra.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Kongra.setDefense(20, fire=0.8, earth=0.9, energy=0.95, ice=1.15, holy=1.0, death=1.05, physical=1.0, drown=1.0)
+Kongra.regMelee(60)

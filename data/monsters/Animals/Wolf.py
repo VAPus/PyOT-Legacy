@@ -10,3 +10,4 @@ Wolf.voices("Yooooohhuuuu!", "Grrrrrrrr")
 Wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Wolf.setDefense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.05, physical=1.0, drown=1.0)
 Wolf.loot( ('wolf paw', 1.75, 1), ('meat', 30, 2) )
+Wolf.regMelee(19)

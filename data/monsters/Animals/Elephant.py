@@ -10,3 +10,4 @@ Elephant.voices("Hooooot-Toooooot!", "Tooooot!", "Troooooot!")
 Elephant.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Elephant.setDefense(22, fire=1.0, earth=1.0, energy=1.1, ice=0.8, holy=1.0, death=1.0, physical=0.9, drown=1.0)
 Elephant.loot( ('tusk', 12.5, 2), ('ham', 12.5, 3), ('meat', 13.75, 4), ('tusk shield', 0.1) )
+Elephant.regMelee(100)

@@ -10,3 +10,4 @@ Hyaena.voices("Grrrrrr", "Hou hou hou!")
 Hyaena.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Hyaena.setDefense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Hyaena.loot( ('worm', 33, 3), ('meat', 12.75) )
+Hyaena.regMelee(20)

@@ -9,3 +9,4 @@ crab.setBehavior(summonable=305, hostile=1, illusionable=1, convinceable=305, pu
 crab.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 crab.setDefense(31, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1.0, death=1.0, physical=1.0, drown=0)
 crab.loot( ('fish', 20.25), ('gold coin', 44.25), ('crab pincers', 11.75) )
+crab.regMelee(20)

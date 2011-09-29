@@ -1,4 +1,4 @@
-bear = game.monster.genMonster("bear", (16, 5974), "a bear")
+bear = game.monster.genMonster("Bear", (16, 5974), "a bear")
 bear.bloodType("blood")
 bear.setHealth(80)
 bear.setExperience(23)
@@ -10,3 +10,4 @@ bear.voices("Grrrr", "Groar")
 bear.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 bear.setDefense(7, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.5, physical=1.0, drown=1.0)
 bear.loot( ('bear paw', 3, 3 ), ('honeycomb', 1.25, 3), ('ham', 9.5, 3), ('meat', 13.25, 4) )
+bear.regMelee(25)

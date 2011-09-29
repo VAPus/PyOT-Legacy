@@ -1,4 +1,3 @@
-
 Assassin = game.monster.genMonster("Assassin", (152, 6080), "a Assassin")
 Assassin.setOutfit(95, 95, 95, 95)
 Assassin.setAddons(3)
@@ -12,3 +11,4 @@ Assassin.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=450, 
 Assassin.voices("You are on my deathlist!", "Die!", "Feel the hand of death!")
 Assassin.setImmunity(0,1,0) # paralyze, invisible, lifedrain
 Assassin.setDefense(22, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.25, drown=1.0)
+Assassin.regMelee(120)

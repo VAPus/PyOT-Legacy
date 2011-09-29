@@ -1,4 +1,3 @@
-
 Barbarian_Headsplitter = game.monster.genMonster("Barbarian Headsplitter", (253, 6080), "a Barbarian Headsplitter")
 Barbarian_Headsplitter.setOutfit(115,105,119,132)
 Barbarian_Headsplitter.setTargetChance(10)
@@ -11,3 +10,4 @@ Barbarian_Headsplitter.setBehavior(summonable=0, hostile=1, illusionable=0, conv
 Barbarian_Headsplitter.voices("I will regain my honor with your blood!", "Surrender is not an option!", "It's you or me!", "Die! Die! Die!")
 Barbarian_Headsplitter.setImmunity(1,0,0) # paralyze, invisible, lifedrain
 Barbarian_Headsplitter.setDefense(7, fire=1.0, earth=1.1, energy=0.8, ice=0.5, holy=0.8, death=1.1, physical=1.0, drown=1.0)
+Barbarian_Headsplitter.regMelee(50)

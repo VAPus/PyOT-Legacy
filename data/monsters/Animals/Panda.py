@@ -10,3 +10,4 @@ Panda.voices("Groar", "Grrrrr")
 Panda.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Panda.setDefense(9, fire=1.1, earth=0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Panda.loot( ('meat', 17.25, 4), ('ham', 17.5, 2), ('bamboo stick', 1.75) )
+Panda.regMelee(16)

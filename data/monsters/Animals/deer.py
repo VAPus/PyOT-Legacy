@@ -9,3 +9,4 @@ Deer.setBehavior(summonable=260, hostile=0, illusionable=1, convinceable=260, pu
 Deer.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Deer.setDefense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Deer.loot( ('ham', 25, 2), ('meat', 20, 4), ('antlers', 1.25) )
+Deer.regMelee(1)#when a summon? probably incorrect information

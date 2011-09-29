@@ -9,3 +9,4 @@ blood_crab.setBehavior(summonable=505, hostile=1, illusionable=1, convinceable=5
 blood_crab.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 blood_crab.setDefense(31, fire=1.1, earth=0, energy=1.05, ice=0, holy=1.0, death=1.0, physical=0.5, drown=0)
 blood_crab.loot( ('fish', 15.5 ), ('chain armor', 5.5), ('white pearl', 1), ('brass legs', 2.5), ('gold coin', 29.5, 20), ('bloody pincer', 4.5) )
+blood_crab.regMelee(110)
