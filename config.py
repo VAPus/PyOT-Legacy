@@ -26,8 +26,8 @@ sqlSocket = "/var/run/mysqld/mysqld.sock"
 # Versions:
 versionMin = 860
 versionMax = 910
-versionError = "You must use 8.6-9.1"
-supportProtocols = (860, 861, 862, 870, 910) # We support these main branches + compatible protocols to them
+versionError = "You must use 8.6-9.2"
+supportProtocols = (860, 861, 862, 870, 910, 920) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"
