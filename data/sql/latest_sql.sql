@@ -21582,48 +21582,7 @@ INSERT INTO `item_attributes` (`sid`, `key`, `value`, `custom`) VALUES
 (12659, 'weight', '112', 0),
 (12660, 'weight', '2500', 0),
 (12660, 'description', 'They will expire within a short time, sell them back to Esrik be', 0);
--- 
--- OTB version 3.28 (Client: 9.10, build: 31)
--- Got a total of 13146 items!
--- 
 
-CREATE TABLE `items` ( 
-`sid` SMALLINT UNSIGNED NOT NULL,
-`cid` SMALLINT UNSIGNED NOT NULL,
-`type` TINYINT UNSIGNED NOT NULL, 
-`subs` TINYINT UNSIGNED NOT NULL, 
-`name` VARCHAR( 32 ) NOT NULL,
-`article` CHAR( 3 ) NOT NULL DEFAULT '',
-`plural` VARCHAR( 32 ) NOT NULL DEFAULT '',
-`speed` SMALLINT UNSIGNED NOT NULL, 
-`order` TINYINT UNSIGNED NOT NULL, 
-`solid` BOOL NOT NULL DEFAULT 0,
-`blockprojectile` BOOL NOT NULL DEFAULT 0,
-`blockpath` BOOL NOT NULL DEFAULT 0,
-`hasheight` BOOL NOT NULL DEFAULT 0,
-`usable` BOOL NOT NULL DEFAULT 0,
-`pickable` BOOL NOT NULL DEFAULT 0,
-`movable` BOOL NOT NULL DEFAULT 0,
-`stackable` BOOL NOT NULL DEFAULT 0,
-`ontop` BOOL NOT NULL DEFAULT 0,
-`vertical` BOOL NOT NULL DEFAULT 0,
-`horizontal` BOOL NOT NULL DEFAULT 0,
-`hangable` BOOL NOT NULL DEFAULT 0,
-`distanceread` BOOL NOT NULL DEFAULT 0,
-`rotatable` BOOL NOT NULL DEFAULT 0,
-`readable` BOOL NOT NULL DEFAULT 0,
-`charges` BOOL NOT NULL DEFAULT 0,
-`animation` BOOL NOT NULL DEFAULT 0,
-`lookthrough` BOOL NOT NULL DEFAULT 0,
-`custom` BOOL NOT NULL DEFAULT 0,
-PRIMARY KEY ( `sid` )
-) ENGINE = MYISAM; 
-CREATE TABLE `item_attributes` ( 
-`sid` SMALLINT UNSIGNED NOT NULL ,
-`key` VARCHAR( 20 ) NOT NULL ,
-`value` VARCHAR( 64 ) NOT NULL ,
-`custom` BOOL NOT NULL DEFAULT '0'
-) ENGINE = MYISAM ;
 INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `solid`, `blockprojectile`, `vertical`, `ontop`) VALUES(12678, 4140, 0, 'stone wall', 'a', '1', '1', '1', '1');
 INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `solid`, `horizontal`, `blockprojectile`, `ontop`) VALUES(12679, 4144, 0, 'stone wall', 'a', '1', '1', '1', '1');
 INSERT INTO items (`sid`, `cid`, `type`, `name`) VALUES(12681, 9141, 0, 'wooden boards');
@@ -22444,7 +22403,7 @@ INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES(13755, 'corpseType', 
 (13755, 'duration', '600'),
 (13755, 'decayTo', '0');
 
-INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `pickable`, `movable`) VALUES(13756, 12599, 0, 'mage\'s cap', 'a', '1', '1');
+INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `pickable`, `movable`) VALUES(13756, 12599, 0, "mage's cap'", 'a', '1', '1');
 INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES(13756, 'weight', '650');
 
 INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `stackable`, `usable`, `pickable`, `movable`) VALUES(13757, 12600, 0, 'coal', 'a', '1', '1', '1', '1');
