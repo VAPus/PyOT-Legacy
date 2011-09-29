@@ -7,5 +7,5 @@ cyclops_drone.setSpeed(220)
 cyclops_drone.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=525, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 cyclops_drone.walkAround(energy=1, fire=1, poison=1)
 cyclops_drone.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
-cyclops_drone.voices("Fee! Fie! Foe! Fum!"; "Luttl pest!", "Me makking you pulp!", "Humy tasy! Hum hum!")
+cyclops_drone.voices("Fee! Fie! Foe! Fum!", "Luttl pest!", "Me makking you pulp!", "Humy tasy! Hum hum!")
 cyclops_drone.regMelee(110)#ish?
