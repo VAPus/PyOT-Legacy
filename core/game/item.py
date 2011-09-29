@@ -13,13 +13,6 @@ items = None
 reverseItems = None
 itemNames = {}
 
-### Attributes ###
-class Attr(object):
-    __slots__ = ('a', 'cid', 'speed', 'type', 'article', "name", "plural", "weight", "decayTo", "duration")
-
-
-itemAttrCache = {}
-
 ### Container class ###
 class Container(object):
     __slots__ = ('items')
@@ -146,10 +139,11 @@ class Item(object):
             
     def __getattr__(self, name):
         try:
-            return items[self.itemId].a & (1 << self.attributes.index(name))
+            attrVal = 1 << self.attributes.index(name)
+            return items[self.itemId]["a"] & attrVal
         except:
             try:
-                return getattr(items[self.itemId], name)
+                return items[self.itemId][name]
             except:
                 try:
                     return self.params[name]
@@ -352,9 +346,9 @@ def attribute(itemId, attr):
     check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     try:
         if attr in check:
-            return items[itemId].a & check.index(attr)
+            return items[itemId]["a"] & check.index(attr)
             
-        return getattr(items[itemId], attr)
+        return items[itemId][attr]
     except:
         return
         
@@ -364,7 +358,7 @@ def loadItems():
 
     # Async SQL (it's funny isn't it?)
     d1 = sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
-    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid,`key`") # We'll be waiting, won't we?
+    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid") # We'll be waiting, won't we?
     
     
     # Make two new values while we are loading
@@ -377,30 +371,49 @@ def loadItems():
         loadItems = [None] * (config.itemMaxServerId + 1)
         reverseLoadItems = [None] * (config.itemMaxClientId + 1)
 
+
+    for item in (yield d1):
+        subs = item["subs"]
+        del item["subs"]
+        
+        sid = item["sid"]
+        del item["sid"]
+        
+        if item["plural"] == item["name"] or not item["plural"]:
+            del item["plural"]
+            
+        if not item["article"]:
+            del item["article"]
+
+        if item['type'] != 1:
+            loadItemNames[item['name']] = sid
+            
+        if not item["type"]:
+            del item["type"]
+        
+        if not item["name"]:
+            del item["name"]
+        
+        if not item["speed"]:
+            del item["speed"]
+            
+        reverseLoadItems[item["cid"]] = sid
+
+        loadItems[sid] = item
+        if subs:
+            for x in xrange(1, subs+1):
+                attributes = item.copy()
+                attributes["cid"] = item["cid"]+x
+                reverseLoadItems[attributes["cid"]] = sid+x
+                
+                loadItems[sid+x] = attributes
+            
     sid = 0
-    attributes = {}
+    attributes = None
     for data in (yield d2):
         if sid != data["sid"]:
-            if data["sid"] >= 100:
-                keys = tuple(attributes.keys())
-                try:
-                    a = itemAttrCache[keys]()
-                    
-                    for k in keys:
-                        setattr(a, k, attributes[k])
-                except:
-                    class _Attr(Attr):
-                        __slots__ = keys
-                    itemAttrCache[keys] = _Attr
-                    
-                    a = _Attr()
-                    
-                    for k in keys:
-                        setattr(a, k, attributes[k]) 
-                    
-                loadItems[data["sid"]] = a      
-                attributes = {} #loadItems[data["sid"]]
-                sid = data["sid"]
+            attributes = loadItems[data["sid"]]
+            sid = data["sid"]
             
         if data["key"] == "fluidSource":
             attributes["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data["value"].upper())
@@ -414,48 +427,6 @@ def loadItems():
                 attributes[data["key"]] = int(data["value"])
             except:
                 attributes[data["key"]] = data["value"]
-                
-    for item in (yield d1):
-        subs = item["subs"]
-        sid = item["sid"]
-        
-        
-        attr = loadItems[sid]
-        if not attr:
-            attr = Attr()
-            loadItems[sid] = attr
-            
-        if item["plural"] != item["name"] and not item["plural"]:
-            attr.plural = item["plural"]
-            
-        if item["article"]:
-            attr.article = item["article"]
-
-        if item['type'] != 1:
-            loadItemNames[item['name']] = sid
-            
-        if item["type"]:
-            attr.type = item["type"]
-        
-        if item["name"]:
-            attr.name = item["name"]
-        
-        if item["speed"]:
-            attr.speed = item["speed"]
-        
-        attr.a = a
-        attr.cid = item["cid"]
-        
-        reverseLoadItems[item["cid"]] = sid
-
-        if subs:
-            for x in xrange(1, subs+1):
-                attributes = copy.copy(attr)
-                attributes.cid = item["cid"]+x
-                reverseLoadItems[attributes.cid] = sid+x
-                
-                loadItems[sid+x] = attributes
-            
 
     log.msg("%d Items loaded" % len(loadItems))
     
@@ -464,8 +435,9 @@ def loadItems():
     global reverseItems
     global itemNames
 
-    items = tuple(loadItems)
+    items = loadItems
     reverseItems = reverseLoadItems
     itemNames = loadItemNames
+    
     
     

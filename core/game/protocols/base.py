@@ -334,7 +334,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(self.freeCapasity()) # TODO: Free Capasity
+        self.uint32(player.freeCapasity()) # TODO: Free Capasity
         self.uint32(player.data["capasity"] * 100) # TODO: Cap
         self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
         if player.data["level"] > 0xFFFF:
@@ -757,7 +757,7 @@ class BaseProtocol(object):
                     tile.placeItem(Item(sid(clientId), count) if renew else oldItem[1])
                     game.engine.updateTile(player.position, tile)
                 else:    
-                    
+                    print currItem[1].containerSize
                     if currItem and currItem[1] and currItem[1].containerSize:
                         ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 

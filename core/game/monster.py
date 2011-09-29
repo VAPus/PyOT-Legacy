@@ -53,6 +53,15 @@ class Monster(Creature):
 
     def setRespawn(self, state):
         self.respawn = state
+    
+    def isSummon(self):
+        if self.master:
+            return True
+        else:
+            return False
+            
+    def isSummonFor(self, creature):
+        return self.master == creature
         
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:
@@ -82,8 +91,8 @@ class Monster(Creature):
         tile = map.getTile(self.position)
         lootMsg = []
         corpse = item.Item(self.base.data["corpse"])
-        if "containerSize" in item.items[self.base.data["corpse"]]:
-            maxSize = item.items[self.base.data["corpse"]]["containerSize"]
+        try:
+            maxSize = item.items[self.base.data["corpse"]].containerSize
             drops = []
             for loot in self.base.lootTable:
                 if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
@@ -145,7 +154,9 @@ class Monster(Creature):
                 if ret == None:
                     log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
                     break
-
+        except:
+            pass
+        
         scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if self.alive or self.data["health"] > 0:
             return

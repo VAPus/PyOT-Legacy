@@ -139,6 +139,12 @@ class Creature(object):
     
     def isAttackable(self, by):
         return False
+
+    def isSummon(self):
+        return False
+            
+    def isSummonFor(self, creature):
+        return False
         
     def name(self):
         return self.data["name"]

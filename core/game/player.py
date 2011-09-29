@@ -761,8 +761,11 @@ class Player(Creature):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
-        
-        
+    
+    def orangeStatusMessage(self, message, msgType="MSG_STATUS_CONSOLE_ORANGE", color=0, value=0, pos=None):
+        stream = self.packet()
+        stream.message(self, message, msgType, color, value, pos)
+        stream.send(self.client)        
 
     def outfitWindow(self):
         stream = self.packet(0xC8)
@@ -844,7 +847,7 @@ class Player(Creature):
         stream.string(text)
         stream.send(self.client)
     
-    def cancelMessage(message):
+    def cancelMessage(self, message):
         self.message(message, 'MSG_STATUS_SMALL')
         
     def notPossible(self):
