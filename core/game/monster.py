@@ -43,7 +43,8 @@ class Monster(Creature):
         self.activeSummons = []
         self.master = None
         self.respawn = True
-        
+        self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.
+
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
 
@@ -90,7 +91,8 @@ class Monster(Creature):
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
-        corpse = item.Item(self.base.data["corpse"])
+        corpse = item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
+            
         try:
             maxSize = item.items[self.base.data["corpse"]].containerSize
             drops = []
@@ -241,6 +243,9 @@ class MonsterBase(CreatureBase):
         self.walkPer = config.monsterWalkPer
         
         self.brainFeatures = ["default"]
+        self.skull = 0
+        
+        self.corpseAction = []
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.10, radius=5, radiusTo=None):
         if spawnDelay:
@@ -373,6 +378,9 @@ class MonsterBase(CreatureBase):
         
     def setSpeed(self, speed):
         self.speed = speed
+
+    def regCorpseAction(self, action):
+        self.corpseAction.append(action)
         
     def setBehavior(self, summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
         self.summonable = summonable
@@ -412,6 +420,9 @@ class MonsterBase(CreatureBase):
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
+    def setSkull(self, skull):
+        self.skull = skull
+        
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
         
@@ -573,6 +584,10 @@ brain = MonsterBrain()
 def genMonster(name, look, description=""):
     # baseMonsters
     baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look[0], "corpse":look[1], "name":name, "description":description or "a %s." % name}, brain)
+    try:
+        baseMonster.regCorpseAction(look[2])
+    except:
+        pass
     monsters[name] = baseMonster
 
     return baseMonster
