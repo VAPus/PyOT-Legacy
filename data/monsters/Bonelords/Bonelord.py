@@ -9,6 +9,6 @@ Bonelord.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pu
 Bonelord.voices("You've got the look!", "Let me take a look at you.", "Eye for eye!", "I've got to look!", "Here's looking at you!")
 Bonelord.setImmunity(0,1,1) # paralyze, invisible, lifedrain
 Bonelord.setDefense(5, fire=1.1, earth=1.0, energy=1.0, ice=0.8, holy=1.0, death=1.0, physical=1.0, drown=1.0)
-name.summon("Skeleton", 10)
-name.maxSummons(2)
+Bonelord.summon("Skeleton", 10)
+Bonelord.maxSummons(2)
 Bonelord.regMelee(5)
