@@ -6,4 +6,3 @@ PyOT Modules
 
    config
    core
-   generate_doc_modules

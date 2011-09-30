@@ -11,8 +11,8 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
 ============================
   General
 ============================
-* Support for House Tile saving
-* Support for Houses
+* Support for House Tile saving [Implanted]
+* Support for Houses [Implanted]
 
 ============================
   Core
@@ -63,8 +63,8 @@ This is a list of things we need to do before we can tag version v0.9 (stabiliza
 ============================
   Monsters
 ============================
-* Summon support
-* Ability to inflect poison damage on melee and spark hit
+* Summon support [Implanted]
+* Ability to inflect poison damage on melee and spark hit [Implanted using conditional melee attacks]
 
 ============================
   NPC

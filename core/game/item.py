@@ -13,6 +13,9 @@ items = None
 reverseItems = None
 itemNames = {}
 
+### Attribute stragegy
+itemAttributes = {}
+
 ### Container class ###
 class Container(object):
     __slots__ = ('items')
@@ -357,7 +360,7 @@ def loadItems():
     log.msg("Loading items...")
 
     # Async SQL (it's funny isn't it?)
-    d1 = sql.conn.runQuery("SELECT sid,cid,name,`type`,plural,article,subs,speed,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
+    d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`plural` <> '' AND `plural` != `name`, `plural`, NULL) as `plural`,IF(`article` <> '', `article`, NULL) as `article`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
     d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid") # We'll be waiting, won't we?
     
     
@@ -396,15 +399,16 @@ def loadItems():
         
         if not item["speed"]:
             del item["speed"]
-            
-        reverseLoadItems[item["cid"]] = sid
+        
+        cid = item["cid"]
+        reverseLoadItems[cid] = sid
 
         loadItems[sid] = item
         if subs:
             for x in xrange(1, subs+1):
                 attributes = item.copy()
-                attributes["cid"] = item["cid"]+x
-                reverseLoadItems[attributes["cid"]] = sid+x
+                attributes["cid"] = cid+x
+                reverseLoadItems[cid+x] = sid+x
                 
                 loadItems[sid+x] = attributes
             
@@ -435,8 +439,8 @@ def loadItems():
     global reverseItems
     global itemNames
 
-    items = loadItems
-    reverseItems = reverseLoadItems
+    items = tuple(loadItems)
+    reverseItems = tuple(reverseLoadItems)
     itemNames = loadItemNames
     
     

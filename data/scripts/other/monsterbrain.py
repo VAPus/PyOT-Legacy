@@ -109,13 +109,13 @@ def defaultBrainFeature(self, monster):
                     monster.base.onFollow(monster.target)
                     
                     # Begin autowalking
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                     def __followCallback(who):
                         if monster.target == who:
                             monster.stopAction()
-                            engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                             monster.target.scripts["onNextStep"].append(__followCallback)
                             
                     monster.target.scripts["onNextStep"].append(__followCallback)
@@ -131,13 +131,13 @@ def defaultBrainFeature(self, monster):
                     # Call the scripts
                     monster.base.onFollow(monster.target)
                     # Begin autowalking
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                     def __followCallback(who):
                         if monster.target == who:
                             monster.stopAction()
-                            engine.autoWalkCreatureTo(monster, monster.target.position, -1 * monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                             monster.target.scripts["onNextStep"].append(__followCallback)
                             
                     monster.target.scripts["onNextStep"].append(__followCallback)

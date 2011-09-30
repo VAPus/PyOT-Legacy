@@ -405,7 +405,19 @@ globalScripts["loot"] = CreatureScripts()
 globalScripts["target"] = CreatureScripts()
 globalScripts["modeChange"] = Scripts()
 globalScripts["questLog"] = Scripts()
+globalEvents = []
 
+# Events
+def callEvent(time, func):
+    func()
+    globalEvents.append(reactor.callLater(time, callEvent, time, func))
+    
+def callEventDate(date, func):
+    import dateutil.parser.parse as parse
+    import datetime.datetime.now as now
+    func()
+    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, func))
+    
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
@@ -441,8 +453,19 @@ def reimporter():
     if process == False:
         return
 
+    # Unload all the global events
+    for event in globalEvents:
+        try:
+            event.cancel()
+        except:
+            pass
+    
+    globalEvents = []
+    
+    # Clear spells
     game.spell.clear()
     
+    # Reload modules
     for mod in modPool:
         # Step 1 reload self
         del mod[1]
@@ -474,3 +497,11 @@ def reg(type, *argc, **kwargs):
 
 def regFirst(type, *argc, **kwargs):
     globalScripts[type].regFirst(*argc)
+    
+def regEvent(timeleap, callback):
+    globalEvents.append(reactor.callLater(timeleap, callEvent, timeleap, callback))
+    
+def regEventTime(date, callback):
+    import dateutil.parser.parse as parse
+    import datetime.datetime.now as now
+    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, callback))

@@ -39,7 +39,23 @@ The registration function:
     * The fourth option is to bind it directly to a thing, this is usually only good if you intend to make one item chain the next, for instance if you use two pieces of wood together, then the next time you use the wood you want it to burst into flames. Example (inside a callback): reg("use", thing, someCallback)
 
     ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
-   
+
+Global Events use these registration functions:
+
+    .. function:: regEvent(timeleap, callback)
+
+    Register ``callback`` (function) to happend after ``timeleap`` seconds
+
+    .. function:: regEventDate(date, callback)
+
+    Register ``callback`` (function) to happend next time the clock is ``date``. Date is a string and can be "23:00", "10:00am", "16:00:15", or full date format such as "23:00 MM-DD-YYYY" or "Thu Sep 25 10:36:28", you can also use RFC822 format: "Thu, 25 Sep 2003 10:49:41 -0300".
+
+    The format is documented here: http://labix.org/python-dateutil#head-c0e81a473b647dfa787dc11e8c69557ec2c3ecd2
+
+A little note is that global events are always cleared on reload, there is no option to prevent it.
+
+
+
 The events are:
 
 .. function:: talkaction(creature, text)

@@ -18,7 +18,7 @@ PyOT is super fast, and uses diffrent methods than other projects. Some of which
 * Very flexible core
 * Very configurable core
 * Very fast save format (save takes 0.2ms per player, scales over several sql connections, allowing for upto 10k saves per second)
-* Sector maps, dynamic load and unload for optimal memory usage (down to ~22MB on a 32bit system)
+* Sector maps, dynamic load and unload for optimal memory usage (down to ~24MB on a 32bit system)
 
 
 The Future for PyOT
@@ -28,8 +28,6 @@ The Future for PyOT
 * Better NPC framework
 * Even more configurable behavior
 * Core support for all client features
-* Support for Houses
-* Support for Tile saving
 * Support for scripted mapping (say you want to add a extra floor to houses using scripts)
 * Finish a base of scripts that emulates the default behavior rather well (can also be configurable)
 * Document all features
