@@ -212,7 +212,7 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
         
     return callback
     
-def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocation=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
+def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocations=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     @game.creature.Creature.actionDecor
     def conjure(creature, text):
         if not creature.canDoSpell(icon, group):
