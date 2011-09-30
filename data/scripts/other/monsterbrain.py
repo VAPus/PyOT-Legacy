@@ -44,7 +44,7 @@ def defaultBrainFeaturePriority(self, monster):
                     for summon in monster.base.summons:
                         if summon[1] > random.randint(0, 100):
                             creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
-                            creature.setMaster(self)
+                            creature.setMaster(monster)
                             monster.activeSummons.append(creature)
                             break
                 else:
@@ -123,7 +123,7 @@ def defaultBrainFeature(self, monster):
         else:
             if not monster.master.alive:
                 monster.master = None # I've become independant
-            if monster.master.target and monster.master.targetMode == 1:
+            elif monster.master.target and monster.master.targetMode == 1:
                 # Target change
                 if monster.master.target != monster.target:
                     monster.target = monster.master.target

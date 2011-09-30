@@ -571,7 +571,7 @@ class Creature(object):
         magicEffect = magicEffect[0]
         type = type[0]
         
-        self.magicEffect(self.position, magicEffect) 
+        self.magicEffect(magicEffect) 
         
         tile = game.map.getTile(self.position)
         addSplash = True
@@ -1097,11 +1097,11 @@ class Condition(object):
         self.callback()
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
-        self.creature.magicEffect(None, EFFECT_HITBYPOISON)
+        self.creature.magicEffect(EFFECT_HITBYPOISON)
         self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
 
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
-        self.creature.magicEffect(None, EFFECT_HITBYFIRE)
+        self.creature.magicEffect(EFFECT_HITBYFIRE)
         self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
         
     def tick(self):

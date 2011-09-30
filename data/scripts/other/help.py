@@ -161,9 +161,10 @@ def creatureSpawn(creature, text):
     print "Spawner called"
     pos = creature.position[:]
     pos[1] += 2
-    
-    game.monster.getMonster(text).spawn(pos)
-        
+    try:
+        game.monster.getMonster(text).spawn(pos)
+    except:
+        creature.message("Monster named '%s' can't be spawned!" % text)
     return False
     
 reg("talkactionFirstWord", 's', creatureSpawn)

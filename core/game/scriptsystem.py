@@ -420,10 +420,12 @@ def handleModule(name):
     modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
 
     try:
+        modules.paths
+    except:
+        pass
+    else:
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))
-    except AttributeError:
-        pass
 
     modPool.append([name, modules])
 

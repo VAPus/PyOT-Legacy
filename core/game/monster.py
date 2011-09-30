@@ -443,7 +443,7 @@ class MonsterBase(CreatureBase):
                 # Id to name
                 if type(loot[0]) == int:
                     loot = list(loot)
-                    loot[0] = item.items[loot[0]].name
+                    loot[0] = item.items[loot[0]]["name"]
         
                 cache.append(loot)  
                 
@@ -584,10 +584,10 @@ brain = MonsterBrain()
 def genMonster(name, look, description=""):
     # baseMonsters
     baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look[0], "corpse":look[1], "name":name, "description":description or "a %s." % name}, brain)
-    try:
+    """try:
         baseMonster.regCorpseAction(look[2])
     except:
-        pass
+        pass"""
     monsters[name] = baseMonster
 
     return baseMonster
