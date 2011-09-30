@@ -689,11 +689,13 @@ class Player(Creature):
             gainTime = self.getVocation().soulticks
             game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
-    def cooldownSpell(self, icon, group, cooldown):
+    def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
+        if groupCooldown == None: groupCooldown = cooldown
+        
         stream = self.packet()
         stream.cooldownIcon(icon, cooldown)
         
-        stream.cooldownGroup(group, cooldown)
+        stream.cooldownGroup(group, groupCooldown)
         
         stream.send(self.client)        
         t = time.time()  + cooldown

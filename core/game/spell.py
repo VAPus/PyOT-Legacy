@@ -320,7 +320,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
     targetRunes[rune] = targetrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
-def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=1):
+def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=1, groupCooldown=None):
     @game.creature.Creature.actionDecor
     def selftargetspell(creature, strength=None, **k):
         if creature.isPlayer():
@@ -337,13 +337,13 @@ def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, coo
                 return False
             
             creature.modifyMana(-1 * mana)
-            creature.cooldownSpell(icon, group, cooldown)
+            creature.cooldownSpell(icon, group, cooldown, groupCooldown)
         callback(creature, creature.position, creature, creature.position, effect, strength)
             
     spells[words] = (selftargetspell, name, level, mana)
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
-def targetSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2):
+def targetSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2, groupCooldown=None):
     @game.creature.Creature.actionDecor
     def targetspell(creature, strength=None, **k):
         if creature.isPlayer():
@@ -360,7 +360,7 @@ def targetSpell(words, name, icon, level, mana, group, effect, area, callback, c
                 return False
             
             creature.modifyMana(-1 * mana)
-            creature.cooldownSpell(icon, group, cooldown)
+            creature.cooldownSpell(icon, group, cooldown, groupCooldown)
             
         positions = calculateAreaDirection(creature.position, creature.direction, area)
         for pos in positions:

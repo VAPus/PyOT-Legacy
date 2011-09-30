@@ -1,0 +1,1 @@
+#spell.selfTargetSpell(words="exevo pan", name="Food", icon=42, level=, mlevel=, mana=120, group=3, effect=<TODO>, callback=<TODO>, cooldown=, groupCooldown=3)
