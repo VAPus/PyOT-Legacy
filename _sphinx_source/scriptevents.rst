@@ -462,10 +462,10 @@ The events are:
 
     :returns: False to prevent mode change.
 
-.. function:: equip(creature, thing, slot)
+.. function:: equip(creature, thing, slot) / dress(creature, thing, slot) / wield(creature, thing, slot)
 
     Called when a Player equips ``thing`` on inventory slot ``slot`` (check up against enums). (ThingScript)
 
-.. function:: dequip(creature, thing, slot)
+.. function:: deEquip(creature, thing, slot) / undress(creature, thing, slot) / unwield(creature, thing, slot)
 
     Called when a Player dequips ``thing`` on inventory slot ``slot`` (check up against enums). (ThingScript)

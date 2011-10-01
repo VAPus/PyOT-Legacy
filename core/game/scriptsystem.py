@@ -405,8 +405,8 @@ globalScripts["loot"] = CreatureScripts()
 globalScripts["target"] = CreatureScripts()
 globalScripts["modeChange"] = Scripts()
 globalScripts["questLog"] = Scripts()
-globalScripts["equip"] = ThingScripts()
-globalScripts["dequip"] = ThingScripts()
+globalScripts["equip"] = globalScripts["dress"] = globalScripts["wield"] = ThingScripts()
+globalScripts["deEquip"] = globalScripts["undress"] = globalScripts["unwield"] =ThingScripts()
 globalEvents = []
 
 # Events
