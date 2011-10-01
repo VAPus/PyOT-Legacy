@@ -1051,7 +1051,12 @@ class Creature(object):
             return True
         except:
             return False
-            
+
+    # Spells
+    def castSpell(self, spell, strength=None, target=None):
+        game.spell.spells[spell][0](self, strength, target)
+        
+        
 class Condition(object):
     def __init__(self, type, subtype="", ticks=1, per=1, *argc, **kwargs):
         self.ticks = ticks

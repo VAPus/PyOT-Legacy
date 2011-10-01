@@ -322,7 +322,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
 
 def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=1, groupCooldown=None):
     @game.creature.Creature.actionDecor
-    def selftargetspell(creature, strength=None, **k):
+    def selftargetspell(creature, strength=None, target=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
                 creature.exhausted()
@@ -335,17 +335,19 @@ def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, coo
             elif creature.data["mana"] < mana:
                 creature.notEnough("mana")
                 return False
-            
+            if not target:
+                target = creature
+                
             creature.modifyMana(-1 * mana)
             creature.cooldownSpell(icon, group, cooldown, groupCooldown)
-        callback(creature, creature.position, creature, creature.position, effect, strength)
+        callback(creature, creature.position, target, target.position, effect, strength)
             
     spells[words] = (selftargetspell, name, level, mana)
     game.scriptsystem.reg("talkaction", words, selftargetspell)
         
-def targetSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2, groupCooldown=None):
+def areaSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2, groupCooldown=None):
     @game.creature.Creature.actionDecor
-    def targetspell(creature, strength=None, **k):
+    def areaspell(creature, strength=None, direction=None, **k):
         if creature.isPlayer():
             if not creature.canDoSpell(icon, group):
                 creature.exhausted()
@@ -365,6 +367,34 @@ def targetSpell(words, name, icon, level, mana, group, effect, area, callback, c
         positions = calculateAreaDirection(creature.position, creature.direction, area)
         for pos in positions:
             callback(creature, pos, effect, strength)
+            
+    spells[words] = (areaspell, name, level, mana)
+    game.scriptsystem.reg("talkaction", words, targetspell)
+
+def targetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=2, groupCooldown=None):
+    @game.creature.Creature.actionDecor
+    def targetspell(creature, strength=None, target=None, **k):
+        if creature.isPlayer():
+            if not creature.canDoSpell(icon, group):
+                creature.exhausted()
+                return False
+                    
+            if creature.data["level"] < level:
+                creature.notEnough("level")
+                return False
+                
+            elif creature.data["mana"] < mana:
+                creature.notEnough("mana")
+                return False
+            
+            creature.modifyMana(-1 * mana)
+            creature.cooldownSpell(icon, group, cooldown, groupCooldown)
+        if not target:
+            target = creature.target
+            if not target:
+                return
+                
+        callback(creature, creature.position, target, target.position, effect, strength)
             
     spells[words] = (targetspell, name, level, mana)
     game.scriptsystem.reg("talkaction", words, targetspell)
