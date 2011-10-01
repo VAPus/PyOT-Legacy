@@ -461,3 +461,11 @@ The events are:
     Called when a ``creature`` (Player) change the modes. The parameters are the new modes, you can compare them against the old modes (creature.modes). (Script)
 
     :returns: False to prevent mode change.
+
+.. function:: equip(creature, thing, slot)
+
+    Called when a Player equips ``thing`` on inventory slot ``slot`` (check up against enums). (ThingScript)
+
+.. function:: dequip(creature, thing, slot)
+
+    Called when a Player dequips ``thing`` on inventory slot ``slot`` (check up against enums). (ThingScript)

@@ -707,6 +707,7 @@ class BaseProtocol(object):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
+                        game.scriptsystem.get("dequip").run(player, player.inventory[fromPosition[1]-1], slot = fromPosition[1])
                         player.inventory[fromPosition[1]-1] = None
                         stream.removeInventoryItem(fromPosition[1])
                     elif oldItem[0] == 2:
@@ -773,6 +774,7 @@ class BaseProtocol(object):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
+                                game.scriptsystem.get("equip").run(player, player.inventory[fromPosition[1]-1], slot = toPosition[1])
                                 
                                 if player.inventory[toPosition[1]-1].decayPosition:
                                     player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])
