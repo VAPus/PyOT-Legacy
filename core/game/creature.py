@@ -396,7 +396,7 @@ class Creature(object):
             
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item, self, None, position=position)
+            game.scriptsystem.get('walkOn').run(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(item.teledest)

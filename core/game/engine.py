@@ -33,7 +33,7 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition"]
 
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
@@ -825,6 +825,10 @@ def townNameToId(name):
         if i.towns[id][0] == name:
             return id
 
+def townPosition(id):
+    import data.map.info as i
+    return i.towns[id][1]
+    
 @inlineCallbacks
 def placeInDepot(name, depotId, items):
     """ Place items into the depotId of player with a name. This can be used even if the player is offline.

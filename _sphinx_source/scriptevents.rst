@@ -274,7 +274,7 @@ The events are:
                 
         reg("logout", onLogout)
         
-.. function:: walkOn(creature, thing, position)
+.. function:: walkOn(creature, thing, position, fromPosition)
     
     Called when the creature walks on a item. (ThingScript)
     

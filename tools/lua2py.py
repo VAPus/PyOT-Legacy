@@ -30,18 +30,47 @@ file = file.replace("local ", "").replace(" then", ":").replace(" true", " True"
 newcode = ""
 level = 0
 regLine = ""
-if file.count("item2") >= 2 or file.count("topos") >= 2:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
+if file.find("onUse"):
+    if file.count("item2") >= 2 or file.count("topos") >= 2:
+        file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
+        try:
+            regLine = 'reg("useWith", %s, onUseWith)' % tuple(list)
+        except:
+            regLine = 'reg("useWith", %s, onUseWith)' % repr(tuple(list))
+    else:
+        file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
+        try:
+            regLine = 'reg("use", %s, onUse)' % tuple(list)
+        except:
+            regLine = 'reg("use", %s, onUse)' % repr(tuple(list))
+
+if file.find("onEquip"):
+    file = file.replace("onEquip(cid, item, slot)", "onEquip(creature, thing, slot, **k)")
     try:
-        regLine = 'reg("useWith", %s, onUseWith)' % tuple(list)
+        regLine = regLine + 'reg("equip", %s, onEquip)' % tuple(list)
     except:
-        regLine = 'reg("useWith", %s, onUseWith)' % repr(tuple(list))
-else:
-    file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
+        regLine = regLine + 'reg("equip", %s, onEquip' % repr(tuple(list))
+            
+if file.find("onDeEquip"):
+    file = file.replace("onDeEquip(cid, item, slot)", "unEquip(creature, thing, slot, **k)")
     try:
-        regLine = 'reg("use", %s, onUse)' % tuple(list)
+        regLine = regLine + 'reg("unEquip", %s, unEquip)' % tuple(list)
     except:
-        regLine = 'reg("use", %s, onUse)' % repr(tuple(list))
+        regLine = regLine + 'reg("unEquip", %s, unEquip)' % repr(tuple(list))
+            
+if file.find("onStepIn"):
+    file = file.replace("onStepIn(cid, item, position, fromPosition)", "walkOn(creature, thing, position, fromPosition, **k)")
+    try:
+        regLine = regLine + 'reg("walkOn", %s, walkOn)' % tuple(list)
+    except:
+        regLine = regLine + 'reg("walkOn", %s, walkOn)' % repr(tuple(list))
+
+if file.find("onStepOut"):
+    file = file.replace("onStepOut(cid, item, position, fromPosition)", "walkOff(creature, thing, position, fromPosition, **k)")
+    try:
+        regLine = regLine + 'reg("walkOff", %s, walkOff)' % tuple(list)
+    except:
+        regLine = regLine + 'reg("walkOff", %s, walkOff)' % repr(tuple(list))
         
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
@@ -66,7 +95,7 @@ file = file.replace("CONST_", "") # TFS constants
 file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPlayerFreeCap(cid)", "creature.freeCapasity()").replace("getHouseFromPos(", "getHouseId(")
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "creature.notPossible()").replace("getCreatureSkullType(cid)", "creature.skull")
 file = file.replace("isNpc(item.uid)", "thing.isNPC()").replace("isNpc(item2.uid)", "onThing.isNPC()").replace("doPlayerSendTextMessage(cid, MESSAGE_STATUS_CONSOLE_ORANGE, ", "creature.orangeStatusMessage(")
-file = file.replace("isSummon(item.uid)", "thing.isSummon()").replace("isSummon(item2.uid)", "onThing.isSummon()")
+file = file.replace("isSummon(item.uid)", "thing.isSummon()").replace("isSummon(item2.uid)", "onThing.isSummon()").replace("doPlayerSetExperienceRate(cid, ", "creature.setExperienceRate(").replace("getPlayerTown(cid)", 'creature.data["town_id"]')
 
 lists = re.compile(r"{(?P<params>[^={}]+)}")
 file = lists.sub("[\g<params>]", file)
@@ -224,6 +253,10 @@ file = doPlayerAddMount.sub("creature.addMount(<Insert name of mount here to rep
 
 getPlayerMount = re.compile(r"getPlayerMount\(cid, (?P<id>[^,()]+)\)")
 file = getPlayerMount.sub("creature.canMount(<Insert name of mount here to replace <'\g<id>'> >)", file)
+
+getTownTemplePosition = re.compile(r"getTownTemplePosition\((?P<param>(.*))\)")
+file = getTownTemplePosition.sub("townPosition(\g<param>)", file)
+
 
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
