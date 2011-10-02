@@ -861,6 +861,10 @@ class BaseProtocol(object):
         print "Look at"
         print position
         
+        import game.pathfinder, time
+        t = time.time()
+        print "Path: %s" % game.pathfinder.findPath(7, player.position[0], player.position[1], position[0], position[1])
+        print "Took: %f" % (time.time() - t)
         clientId = packet.uint16()
         stackpos = packet.uint8()
         if stackpos == 0 and clientId == 99:

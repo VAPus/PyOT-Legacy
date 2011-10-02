@@ -302,9 +302,12 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     :type callback: function.
     
     """
-    
+    if creature.position[2] != to[2]:
+        creature.message("Change floor")
+        return
+        
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
-    print pattern
+    
     if pattern:
         autoWalkCreature(creature, deque(pattern), callback)
     elif callback:

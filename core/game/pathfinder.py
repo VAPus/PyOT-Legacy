@@ -20,9 +20,9 @@ class node(object):
     # give higher priority to going straight instead of diagonally
     def nextMove(self, d): # d: direction to move
         if d % 2:
-            self.distance += 2
+            self.distance += 14
         else:
-            self.distance += 1
+            self.distance += 10
 
     # Estimation function for the remaining distance to the goal.
     def estimate(self, xDest, yDest):
@@ -103,16 +103,22 @@ def findPath(mapZ, relX, relY, xB, yB):
             mx = x+relX-15
             my = y+relY-15
             isSolid = False
-            tile = game.map.getTile((mx, my, mapZ))
+            
 
             try:
-                if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or not tile or closed_nodes_map[ydy][xdx]):
+                if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or closed_nodes_map[ydy][xdx]):
+                    tile = game.map.getTile((mx, my, mapZ))
+                    if not tile:
+                        closed_nodes_map[ydy][xdx] = True
+                        continue
+                    
                     if not (mx == _fromX and my == _fromY) and not (mx == _goalX and my == _goalY):
                         for t in tile.things:
                             if t.solid:
                                 isSolid = True
                                 break
                         if isSolid:
+                            closed_nodes_map[ydy][xdx] = True
                             continue
                     #print "%d %d" % (mx, my)
                     # generate a child node
