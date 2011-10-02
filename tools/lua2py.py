@@ -257,6 +257,17 @@ file = getPlayerMount.sub("creature.canMount(<Insert name of mount here to repla
 getTownTemplePosition = re.compile(r"getTownTemplePosition\((?P<param>(.*))\)")
 file = getTownTemplePosition.sub("townPosition(\g<param>)", file)
 
+isStackable = re.compile(r"isStackable\((?P<item>[^,]+).uid\)")
+file = isStackable.sub("\g<item>.stackable", file)
+
+isMoveable = re.compile(r"isMoveable\((?P<item>[^,]+).uid\)")
+file = isMoveable.sub("\g<item>.moveable", file)
+
+isSolid = re.compile(r"isSolid\((?P<item>[^,]+).uid\)")
+file = isMoveable.sub("\g<item>.solid", file)
+
+isHangable = re.compile(r"isHangable\((?P<item>[^,]+).uid\)")
+file = isMoveable.sub("\g<item>.hangable", file)
 
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
