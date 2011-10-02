@@ -50,6 +50,8 @@ class Player(Creature):
         
         self.solid = not config.playerWalkthrough
 
+        # Rates
+        self.rates = [config.experienceRate, 60, config.lootDropRate, config.lootMaxRate, 1] # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate, 3 => drop rate (max items), 4 => regain rate
         self.inventoryWeight = 0
         # Direction
         self.direction = self.data["direction"]
@@ -99,12 +101,12 @@ class Player(Creature):
                 if self.data["stamina"] < 0:
                     self.data["stamina"] = 0
                 else:
-                    game.engine.safeCallLater(60, loseStamina)
+                    game.engine.safeCallLater(config.rates[1], loseStamina)
                 
                 if self.data["stamina"] < (42*3600):
                     self.refreshStatus()
                     
-            game.engine.safeCallLater(60, loseStamina)
+            game.engine.safeCallLater(config.rates[1], loseStamina)
         
 
         # Storage & skills
@@ -682,11 +684,11 @@ class Player(Creature):
             else:
                 self.doingSoulGain = False
                 
-        if self.doingSoulGain:
-            self.doingSoulGain = time.time() + config.soulGain
+        if self.doingSoulGain > time.time():
+            self.doingSoulGain += (config.soulGain)
         else:
-            self.doingSoulGain = time.time() + config.soulGain
-            gainTime = self.getVocation().soulticks
+            self.doingSoulGain = time.time() + (config.soulGain)
+            gainTime = self.getVocation().soulticks * self.getRegainRate()
             game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
@@ -1862,4 +1864,13 @@ class Player(Creature):
     def removeMount(self, name):
         self.removeStorage('__mount%s' % game.resource.reverseMounts[name])
         
-        
+
+    # Rates
+    def getExperienceRate(self):
+        return self.rates[0]
+    def setExperienceRate(self, rate):
+        self.rates[0] = rate
+    def getRegainRate(self):
+        return self.rates[4]
+    def setRegainRate(self, rate):
+        self.rates[4] = rate
