@@ -85,6 +85,7 @@ class Creature(object):
         self.skull = 0
         self.knownBy = set()
         self.conditions = {}
+        self.walkPattern = None
         
         # We are trackable
         allCreatures[self.cid] = self

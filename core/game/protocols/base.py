@@ -581,11 +581,13 @@ class BaseProtocol(object):
                 walkPattern.append(5) # Southeast           
             else:
                 continue # We don't support them
-                
-        game.engine.autoWalkCreature(player, walkPattern)
+        
+        player.walkPattern = walkPattern
+        game.engine.autoWalkCreature(player)
 
     def handleWalk(self, player, direction):
-        game.engine.autoWalkCreature(player, deque([direction]))
+        player.walkPattern = deque([direction])
+        game.engine.autoWalkCreature(player)
             
     @inlineCallbacks
     def handleMoveItem(self, player, packet):
@@ -836,7 +838,7 @@ class BaseProtocol(object):
                 return
                 
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
-            
+            f
             if not creature.isPushable(player):
                 player.message("Creature can't be pushed")
                 return

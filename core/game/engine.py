@@ -262,7 +262,7 @@ def loopInThread(time):
     return decor
 # First order of buisness, the autoWalker
 @action(True)
-def autoWalkCreature(creature, walkPatterns, callback=None):
+def autoWalkCreature(creature, callback=None):
     """Autowalk the creature using the walk patterns. This binds the action slot.
     
     :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
@@ -275,10 +275,10 @@ def autoWalkCreature(creature, walkPatterns, callback=None):
     """
     
     try:
-        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(walkPatterns[0])).getThing(0)), handleAutoWalking, creature, walkPatterns, callback)
+        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
-        pos = positionInDirection(creature.position, walkPatterns[0], 2)
+        pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
         pos[2] += 1
         creature.teleport(pos)
         
@@ -309,25 +309,24 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
     
     if pattern:
-        autoWalkCreature(creature, deque(pattern), callback)
+        creature.walkPattern = deque(pattern)
+        autoWalkCreature(creature, callback)
     elif callback:
         callback(None)
         
 @action()
-def handleAutoWalking(creature, walkPatterns, callback=None, level=0):
-    if not walkPatterns:
+def handleAutoWalking(creature, callback=None, level=0):
+    if not creature.walkPattern:
         return
         
-    direction = walkPatterns.popleft()
+    direction = creature.walkPattern.popleft()
     currPos = creature.position[:]
     mcallback=callback
-    if walkPatterns:
+    if creature.walkPattern:
         def mcallback(ret):
             creature2, oldPos, newPos = ret
             if oldPos == currPos:
-                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, walkPatterns[0])).getThing(0)), handleAutoWalking, creature2, walkPatterns, callback)
-            else:
-                pass #creature2.cancelWalk(walkPatterns[0])
+                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
     
     d = Deferred()
     if mcallback:

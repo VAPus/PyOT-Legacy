@@ -108,15 +108,40 @@ def defaultBrainFeature(self, monster):
                     # Call the scripts
                     monster.base.onFollow(monster.target)
                     
+                    # When we reach our destination, can we target check
+                    def __walkComplete(x):
+                        # Are we OK?
+                        if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
+                            monster.turnAgainst(monster.target.position)
+                        else:
+                            # Apperently not. Try walking again.
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            
                     # Begin autowalking
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                     def __followCallback(who):
                         if monster.target == who:
-                            monster.stopAction()
+                            # Steps below is the old way of doing it, slow and ugly!
+                            """monster.stopAction()
                             engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
-                            monster.target.scripts["onNextStep"].append(__followCallback)
+                            """
+                            
+                            # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
+                            try:
+                                # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
+                                if who.direction != monster.walkPattern[-1]:
+                                    monster.walkPattern.pop()
+                            except:
+                                if monster.canTarget(monster.target.position):
+                                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                                else:
+                                    monster.target = None
+                                    
+                            if monster.target:
+                                # We shall be called again later
+                                monster.target.scripts["onNextStep"].append(__followCallback)
                             
                     monster.target.scripts["onNextStep"].append(__followCallback)
                     return True # Prevent random walking
@@ -130,15 +155,41 @@ def defaultBrainFeature(self, monster):
                     monster.targetMode = 1
                     # Call the scripts
                     monster.base.onFollow(monster.target)
+                    
+                    # When we reach our destination, can we target check
+                    def __walkComplete(x):
+                        # Are we OK?
+                        if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
+                            monster.turnAgainst(monster.target.position)
+                        else:
+                            # Apperently not. Try walking again.
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            
                     # Begin autowalking
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                     def __followCallback(who):
                         if monster.target == who:
-                            monster.stopAction()
+                            # Steps below is the old way of doing it, slow and ugly!
+                            """monster.stopAction()
                             engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
-                            monster.target.scripts["onNextStep"].append(__followCallback)
+                            """
+                            
+                            # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
+                            try:
+                                # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
+                                if who.direction != monster.walkPattern[-1]:
+                                    monster.walkPattern.pop()
+                            except:
+                                if monster.canTarget(monster.target.position):
+                                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                                else:
+                                    monster.target = None
+                                    
+                            if monster.target:
+                                # We shall be called again later
+                                monster.target.scripts["onNextStep"].append(__followCallback)
                             
                     monster.target.scripts["onNextStep"].append(__followCallback)
                     return True # Prevent random walking
@@ -150,15 +201,41 @@ def defaultBrainFeature(self, monster):
                 monster.targetMode = 2
                 # Call the scripts
                 monster.base.onFollow(monster.target)
+
+                # When we reach our destination, can we target check
+                def __walkComplete(x):
+                    # Are we OK?
+                    if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
+                        monster.turnAgainst(monster.target.position)
+                    else:
+                        # Apperently not. Try walking again.
+                        engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            
                 # Begin autowalking
-                engine.autoWalkCreatureTo(monster, monster.target.position, -1, lambda x: monster.turnAgainst(monster.target.position))
+                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
-                        monster.stopAction()
-                        engine.autoWalkCreatureTo(monster, monster.target.position, -1, lambda x: monster.turnAgainst(monster.target.position))
-                        monster.target.scripts["onNextStep"].append(__followCallback)
+                        # Steps below is the old way of doing it, slow and ugly!
+                        """monster.stopAction()
+                        engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                        """
+                            
+                        # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
+                        try:
+                            # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
+                            if who.direction != monster.walkPattern[-1]:
+                                monster.walkPattern.pop()
+                        except:
+                            if monster.canTarget(monster.target.position):
+                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            else:
+                                monster.target = None
+                                
+                        if monster.target:
+                            # We shall be called again later
+                            monster.target.scripts["onNextStep"].append(__followCallback)
                             
                 monster.target.scripts["onNextStep"].append(__followCallback)
                 return True # Prevent random walking                
