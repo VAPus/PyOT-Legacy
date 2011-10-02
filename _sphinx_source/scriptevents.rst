@@ -195,11 +195,11 @@ The events are:
                 return
                 
             if onThing.itemId in lockedDoors:
-                engine.transformItem(onThing, onThing.itemId+2, onPosition)
+                transformItem(onThing, onThing.itemId+2, onPosition)
             elif onThing.itemId-2 in lockedDoors:
-                engine.transformItem(onThing, onThing.itemId-2, onPosition)
+                transformItem(onThing, onThing.itemId-2, onPosition)
             else:
-                engine.transformItem(onThing, onThing.itemId-1, onPosition)
+                transformItem(onThing, onThing.itemId-1, onPosition)
 
         reg('useWith', keys, onUseKey)
         
