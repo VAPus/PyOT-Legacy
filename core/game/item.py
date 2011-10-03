@@ -146,10 +146,10 @@ class Item(object):
             return items[self.itemId]["a"] & attrVal
         except:
             try:
-                return items[self.itemId][name]
+                return self.params[name]
             except:
                 try:
-                    return self.params[name]
+                    return items[self.itemId][name]
                 except:
                     if not "__" in name:
                         return None

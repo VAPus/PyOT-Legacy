@@ -644,6 +644,8 @@ def relocate(fromPos, toPos):
     toPos = game.map.getTile(toPos)
     items = []
     for item in tile.getItems():
+        if not item.moveable: continue
+        
         if item.decayPosition:
             item.decayPosition = toPos
             

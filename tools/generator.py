@@ -5,14 +5,22 @@ import config
 import MySQLdb
 
 
-### Load all solid tiles
+### Load all solid and movable items
 items = set()
+moveable = set()
 db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
 cursor = db.cursor()
 cursor.execute("SELECT sid FROM items WHERE solid = 1")
 for row in cursor.fetchall():
     items.add(row[0])
 cursor.close()
+
+cursor = db.cursor()
+cursor.execute("SELECT sid FROM items WHERE moveable = 1")
+for row in cursor.fetchall():
+    moveable.add(row[0])
+cursor.close()
+
 db.close()
     
 # Ops:
@@ -419,12 +427,16 @@ class Item(object):
         extra = ""
         if self.actions:
             self.attributes["actions"] = self.actions
+        
+        if self.id in moveable:
+            print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
+            self.attributes["moveable"] = 0
             
         if self.attributes:
             eta = []
             for key in self.attributes:
                 eta.append("%s=%s" % (key, str(self.attributes[key]) if type(self.attributes[key]) != str else '"""%s"""' % self.attributes[key]))
-                
+            
             extra = ',%s' % ','.join(eta)
         if not self.id in items:
             return ('I(%d%s)' % (self.id, extra), extras)

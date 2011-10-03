@@ -857,6 +857,9 @@ class Player(Creature):
     def notPossible(self):
         self.cancelMessage("Sorry, not possible.")
 
+    def notPickupable(self):
+        self.cancelMessage("You cannot take this object.")
+        
     def tooHeavy(self):
         self.cancelMessage("This object is too heavy for you to carry.")
         

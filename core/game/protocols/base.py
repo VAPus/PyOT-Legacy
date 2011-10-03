@@ -642,10 +642,14 @@ class BaseProtocol(object):
                     
                 stream = player.packet()
                 oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
-
+                
                 # Before we remove it, can it be placed there?
                 if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     player.notPossible()
+                    return
+                    
+                if not oldItem[1].moveable or (toPosition[0] == 0xFFFF and not oldItem[1].pickable):
+                    player.notPickable()
                     return
                     
                 if oldItem[1].stackable and count < 100:
