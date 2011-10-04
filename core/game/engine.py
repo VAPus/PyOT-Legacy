@@ -121,27 +121,6 @@ def loader(timer):
         
         
          
-        
-    d.addCallback(sync, timer)
-    
-    # Load protocols
-    for version in config.supportProtocols:
-        game.protocol.loadProtocol(version)
-
-    # Do we issue saves?
-    if config.doSaveAll:
-        reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-    
-    # Do we save on shutdowns?
-    if config.saveOnShutdown:
-        game.scriptsystem.reg("shutdown", lambda **k: saveAll(), False)
-        
-    # Light stuff
-    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
-    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-        
-        
-        
     # Globalize certain things
     import game.player, game.creature, game.npc, game.monster, game.spell
     __builtin__.enum = game.enum
@@ -189,6 +168,24 @@ def loader(timer):
         enum = game.enum
             
     __builtin__.game = Globalizer
+    
+    d.addCallback(sync, timer)
+    
+    # Load protocols
+    for version in config.supportProtocols:
+        game.protocol.loadProtocol(version)
+
+    # Do we issue saves?
+    if config.doSaveAll:
+        reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
+    
+    # Do we save on shutdowns?
+    if config.saveOnShutdown:
+        game.scriptsystem.reg("shutdown", lambda **k: saveAll(), False)
+        
+    # Light stuff
+    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
     
 # Useful for windows
 def safeTime():

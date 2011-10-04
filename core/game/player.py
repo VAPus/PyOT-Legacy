@@ -101,12 +101,12 @@ class Player(Creature):
                 if self.data["stamina"] < 0:
                     self.data["stamina"] = 0
                 else:
-                    game.engine.safeCallLater(config.rates[1], loseStamina)
+                    game.engine.safeCallLater(self.rates[1], loseStamina)
                 
                 if self.data["stamina"] < (42*3600):
                     self.refreshStatus()
                     
-            game.engine.safeCallLater(config.rates[1], loseStamina)
+            game.engine.safeCallLater(self.rates[1], loseStamina)
         
 
         # Storage & skills

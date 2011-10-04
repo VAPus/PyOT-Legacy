@@ -115,6 +115,11 @@ sendTutorialSignalUponQuestLogUpdate = True # This is a non-cipsoft feature orig
 # It's not much, and it also increase memory usage
 tryPsyco = False
 
+# Item cache
+# This reduce both memory usage and the time it takes to start the server, but in turn, it won't use items from the DB whenever a cache file exists.
+# This also make item reloading impossible (will require restart)
+itemCache = False
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

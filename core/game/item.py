@@ -1,20 +1,28 @@
 from twisted.internet.defer import inlineCallbacks
 import sql
 from twisted.python import log
-from collections import deque
+from collections import deque, namedtuple
 import game.enum
 import bindconstant
 import config
 import game.engine
 import copy
 import time
+import marshal
 
-items = None
-reverseItems = None
+try:
+    import io # Python 2.7+
+    _open = io.open
+except:
+    _open = open # Less than 2.7
+    
+items = {}
+reverseItems = {}
 itemNames = {}
 
-### Attribute stragegy
-itemAttributes = {}
+"""if config.itemCache:
+    ### Attribute stragegy
+    itemAttributes = {}"""
 
 ### Container class ###
 class Container(object):
@@ -357,8 +365,20 @@ def attribute(itemId, attr):
         
 @inlineCallbacks
 def loadItems():
+    global items
+    global reverseItems
+    global itemNames
+    #global itemAttributes
     log.msg("Loading items...")
-
+    if config.itemCache:
+        try:
+            with _open("data/cache/items.cache", "rb") as f:
+                items, reverseItems, itemNames = marshal.loads(f.read())
+            log.msg("%d Items loaded (from cache)" % len(items))
+            return
+        except IOError:
+            pass
+        
     # Async SQL (it's funny isn't it?)
     d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`plural` <> '' AND `plural` != `name`, `plural`, NULL) as `plural`,IF(`article` <> '', `article`, NULL) as `article`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
     d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid") # We'll be waiting, won't we?
@@ -434,14 +454,33 @@ def loadItems():
 
     log.msg("%d Items loaded" % len(loadItems))
     
+    if config.itemCache:
+        """# Build namedtuples
+        for item in loadItems:
+            if item:
+                keys = tuple(item.keys())
+                try:
+                    item = itemAttributes[keys]._make(item.values())
+                except:
+                    itemAttributes[keys] = namedtuple("Attr", keys)
+                    item = itemAttributes[keys]._make(item.values())"""
+        cut = 0
+        for i in loadItems[::-1]:
+            if not i:
+                cut += 1
+        if cut:        
+            loadItems = loadItems[:-cut]
+            
     # Replace the existing items
-    global items
-    global reverseItems
-    global itemNames
-
     items = tuple(loadItems)
     reverseItems = tuple(reverseLoadItems)
     itemNames = loadItemNames
+    
+    # Cache
+    if config.itemCache:
+        with _open("data/cache/items.cache", "wb") as f:
+            f.write(marshal.dumps((items, reverseItems, itemNames), 2))
+            
     
     
     
