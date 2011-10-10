@@ -1016,10 +1016,11 @@ class Creature(object):
                 oldCondition.stop()
                 self.conditions[condition.type] = condition
                 condition.start(self)
+                print "Condition"
         except:
             self.conditions[condition.type] = condition
             condition.start(self)
-            
+   
         self.refreshConditions()
 
     def multiCondition(self, *argc, **kwargs):
@@ -1113,7 +1114,7 @@ class Condition(object):
     def tick(self):
         self.effect(*self.effectArgs, **self.effectKwargs)
         self.ticks -= 1
-        if self.ticks:
+        if self.ticks > 0:
             self.tickEvent = engine.safeCallLater(self.per, self.tick)
         else:
             self.finish()

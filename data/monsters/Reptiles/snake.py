@@ -9,4 +9,4 @@ snake.setBehavior(summonable=205, hostile=1, illusionable=1, convinceable=205, p
 snake.walkAround(energy=1, fire=1, poison=0)
 snake.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 snake.voices("Zzzzzzt")
-snake.regMelee(8, condition=Condition(Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
+snake.regMelee(8, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
