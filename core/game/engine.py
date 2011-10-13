@@ -29,6 +29,7 @@ except:
     
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
+saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 savedItems = {}
@@ -181,7 +182,7 @@ def loader(timer):
     
     # Do we save on shutdowns?
     if config.saveOnShutdown:
-        game.scriptsystem.reg("shutdown", lambda **k: saveAll(), False)
+        game.scriptsystem.reg("shutdown", lambda **k: saveAll(True), False)
         
     # Light stuff
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
@@ -678,65 +679,72 @@ def explainPacket(packet):
     packet.pos = currPos
 
 # Save system, async :)
-def saveAll():
+def saveAll(force=False):
     """Save all players and all global variables."""
     
     import game.map
     # Build query
-    
+    t = time.time()
     try:
         def callback(result):
-            sql.conn.runOperation(*result)
+            if result:
+                sql.conn.runOperation(*result)
             
         for player in game.player.allPlayersObject:
-            d = threads.deferToThread(player._saveQuery)
-            d.addCallback(callback)
+            threads.deferToThread(player._saveQuery, force).addCallback(callback)
+            
     except:
         pass # No players
         
     # Global storage
-    for field in globalStorage:
-        type = ""
-        if field in jsonFields:
-            data = otjson.dumps(globalStorage[field])
-            type = "json"
-        elif field in pickleFields:
-            data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCOL)
-            type = "pickle"
-        else:
-            data = globalStorage[field]
-            
-        sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
+    if saveGlobalStorage:
+        for field in globalStorage:
+            type = ""
+            if field in jsonFields:
+                data = otjson.dumps(globalStorage[field])
+                type = "json"
+            elif field in pickleFields:
+                data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCOL)
+                type = "pickle"
+            else:
+                data = globalStorage[field]
+                
+            sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
 
     # Houses
     for houseId in houseData:
         print "House ", houseId
-        house = houseData[houseId]
-        try:
-            items = house.data["items"][:]
-        except:
-            print "House id %d have broken items!" % houseId
-            items = [] # Broken items
+        # House is loaded?
+        if houseId in game.map.houseTiles:
+            house = houseData[houseId]
+            try:
+                items = house.data["items"][:]
+            except:
+                print "House id %d have broken items!" % houseId
+                items = [] # Broken items
+                
+            try:
+                for tileData in game.map.houseTiles[houseId]:
+                    _items = []
+                    for item in tileData[0].bottomItems():
+                        if item.movable:
+                            _items.append(item)
+                    if _items:
+                        items[tileData[1]] = _items
+            except:
+                pass
+            if items != house.data["items"]:
+                house.data["items"] = items
+                house.save = True # Force save
+            if house.save:
+                print "Saving house ", houseId
+                sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
+                house.save = False
+            else:
+                print "Not saving house", houseId
             
-        try:
-            for tileData in game.map.houseTiles[houseId]:
-                _items = []
-                for item in tileData[0].bottomItems():
-                    if item.movable:
-                        _items.append(item)
-                if _items:
-                    items[tileData[1]] = _items
-        except:
-            pass
-        if items != house.data["items"]:
-            house.data["items"] = items
-            house.save = True # Force save
-        if house.save:
-            print "Saving house ", houseId
-            sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
-            house.save = False
-        else:
-            print "Not saving house", houseId
+    log.msg("Full save took: %f" % (time.time() - t))
+    
 # Time stuff
 def getTibiaTime():
     """ Return the Time inside the game.

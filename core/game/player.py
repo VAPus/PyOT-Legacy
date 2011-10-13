@@ -130,7 +130,7 @@ class Player(Creature):
         
         # Storage states
         self.saveStorage = False
-        self.saveInventory = True # TODO
+        self.saveInventory = False
         self.saveDepot = False
         self.saveSkills = False
         
@@ -545,9 +545,12 @@ class Player(Creature):
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
             weight = item.weight
+            
+            # Save
+            self.saveInventory = True
+            
             if weight:
                 self.inventoryWeight -= weight * (item.count or 1)
-                print "3"
                 return True
         except:
             pass
@@ -568,6 +571,9 @@ class Player(Creature):
         
         if container:
             item.inContainer = container
+
+        # Save
+        self.saveInventory = True
             
         if weight:
             return True
@@ -578,6 +584,10 @@ class Player(Creature):
         try:
             self.inventoryCache[itemId][0] += count
             weight = item.weight
+            
+            # Save
+            self.saveInventory = True
+            
             if weight:
                 self.inventoryWeight += weight * (count)
                 return True
@@ -1357,26 +1367,34 @@ class Player(Creature):
     def pickleDepot(self):
         return pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
         
-    def _saveQuery(self):
+    def _saveQuery(self, force=False):
         depot = ""
         storage = ""
         skills = ""
-        if self.saveDepot:
+        inventory = ""
+        
+        if self.saveDepot or force:
             depot = ", `depot` = '%s'" % self.pickleDepot()
             self.saveDepot = False
-        if self.saveStorage:
+            
+        if self.saveStorage or force:
             storage = ", `storage` = '%s'" % otjson.dumps(self.storage)
             self.saveStorage = False
-        if self.saveSkills:
+            
+        if self.saveSkills or force:
             skills = ", `skills` = '%s'" % otjson.dumps(self.skills)
             self.saveSkills = False
+            
+        if self.saveInventory or force:
+            inventory = ", `inventory` = '%s'" % self.pickleInventory()
+            self.saveInventory = False
+            
+        extra = "%s%s%s" % (depot, storage, skills, inventory)
         
-        extra = "%s%s%s" % (depot, storage, skills)
-        
-        return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.data["id"])
+        return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
 
-    def save(self):
-        sql.conn.runOperation(*self._saveQuery())
+    def save(self, force=False):
+        sql.conn.runOperation(*self._saveQuery(force))
 
     def saveSkills(self):
         sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))

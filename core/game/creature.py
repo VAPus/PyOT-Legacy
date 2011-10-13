@@ -877,6 +877,7 @@ class Creature(object):
     def setGlobal(self, field, value):
         try:
             game.engine.globalStorage['storage'][field] = value
+            game.engine.saveGlobalStorage = True
         except:
             return False
     
@@ -889,6 +890,7 @@ class Creature(object):
     def removeGlobal(self, field):
         try:
             del game.engine.globalStorage['storage'][field]
+            game.engine.saveGlobalStorage = True
         except:
             pass
 
@@ -896,6 +898,7 @@ class Creature(object):
     def setGlobalObject(self, field, value):
         try:
             game.engine.globalStorage['objectStorage'][field] = value
+            game.engine.saveGlobalStorage = True
         except:
             return False
     
@@ -908,6 +911,7 @@ class Creature(object):
     def removeGlobalObject(self, field):
         try:
             del game.engine.globalStorage['objectStorage'][field]
+            game.engine.saveGlobalStorage = True
         except:
             pass
         
