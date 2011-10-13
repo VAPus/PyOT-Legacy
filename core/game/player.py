@@ -1363,10 +1363,13 @@ class Player(Creature):
         skills = ""
         if self.saveDepot:
             depot = ", `depot` = '%s'" % self.pickleDepot()
+            self.saveDepot = False
         if self.saveStorage:
             storage = ", `storage` = '%s'" % otjson.dumps(self.storage)
+            self.saveStorage = False
         if self.saveSkills:
             skills = ", `skills` = '%s'" % otjson.dumps(self.skills)
+            self.saveSkills = False
         
         extra = "%s%s%s" % (depot, storage, skills)
         
