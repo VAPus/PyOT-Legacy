@@ -128,6 +128,12 @@ class Player(Creature):
             
         del self.data["storage"]
         
+        # Storage states
+        self.saveStorage = False
+        self.saveInventory = True # TODO
+        self.saveDepot = False
+        self.saveSkills = False
+        
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -645,15 +651,18 @@ class Player(Creature):
         self.setStorage('__skillGoal%d' % skill, goal)
         
         self.refreshSkills()
-
+        self.saveSkills = True
+        
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill] + levels
         self.refreshSkills()
+        self.saveSkills = True
         
     def tempRemoveSkillLevel(self, skill):
         self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill]
         self.refreshSkills()
-
+        self.saveSkills = True
+        
     def getActiveSkill(self, skill):
         return self.skills[skill + game.enum.SKILL_LAST + 1]
 
@@ -1343,19 +1352,25 @@ class Player(Creature):
         
     # Saving
     def pickleInventory(self):
-        t = time.time()
-        d = pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
-        print "pickle inventory took %f. Length is %d" % (time.time() - t, len(d))
-        return d
+        return pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
 
     def pickleDepot(self):
-        t = time.time()
-        d = pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
-        print "pickle player depot took %f. Length is %d" % (time.time() - t, len(d))
-        return d
+        return pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
         
     def _saveQuery(self):
-        return "UPDATE `players` SET `skills`= %s, `storage` = %s, `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s, `depot` = %s WHERE `id` = %s", (otjson.dumps(self.skills), otjson.dumps(self.storage), self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.pickleDepot(), self.data["id"])
+        depot = ""
+        storage = ""
+        skills = ""
+        if self.saveDepot:
+            depot = ", `depot` = '%s'" % self.pickleDepot()
+        if self.saveStorage:
+            storage = ", `storage` = '%s'" % otjson.dumps(self.storage)
+        if self.saveSkills:
+            skills = ", `skills` = '%s'" % otjson.dumps(self.skills)
+        
+        extra = "%s%s%s" % (depot, storage, skills)
+        
+        return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s, `inventory` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.pickleInventory(), self.data["id"])
 
     def save(self):
         sql.conn.runOperation(*self._saveQuery())
@@ -1460,6 +1475,7 @@ class Player(Creature):
     # Storage
     def setStorage(self, field, value):
         self.storage[field] = value
+        self.saveStorage = True
         
     def getStorage(self, field, default=None):
         try:
@@ -1469,10 +1485,12 @@ class Player(Creature):
 
     def modifyStorage(self, field, change):
         self.storage[field] += change
+        self.saveStorage = True
 
     def removeStorage(self, field):
         try:
             del self.storage[field]
+            self.saveStorage = True
         except:
             pass
 
@@ -1485,6 +1503,7 @@ class Player(Creature):
             
     def setDepot(self, depotId, storage):
         self.depot[depotId] = storage
+        self.saveDepot = True
         
     # Stuff from protocol:
     def handleSay(self, channelType, channelId, reciever, text):
