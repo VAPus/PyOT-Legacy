@@ -34,7 +34,8 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition"]
+groups = {}
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast"]
 
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
@@ -103,6 +104,8 @@ def loader(timer):
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
             houseData[x["id"]] = House(x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
             
+        for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
+            groups[x["group_id"]] = (x["group_name"], otjson.loads(x["group_flags"]))
     _sql_()            
     def sync(d, timer):
         # Load map (if configurated to do so)
@@ -833,9 +836,27 @@ def townNameToId(name):
             return id
 
 def townPosition(id):
+    """ Returns the position of a town passed by id
+    
+    :rtype: list
+    
+    """
     import data.map.info as i
     return i.towns[id][1]
+
+def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level=0):
+    """ Broadcasts a message to every player
     
+    """
+    for player in game.player.allPlayersObject:
+        stream = player.packet(0xAA)
+        stream.uint32(0)
+        stream.string(senfrom)
+        stream.uint16(level)
+        stream.uint8(stream.enum(messageType))
+        stream.string(message)
+        stream.send(player.client)
+        
 @inlineCallbacks
 def placeInDepot(name, depotId, items):
     """ Place items into the depotId of player with a name. This can be used even if the player is offline.

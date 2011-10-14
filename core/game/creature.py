@@ -782,6 +782,18 @@ class Creature(object):
             stream.string(message)
             stream.send(spectator)
 
+    def broadcast(self, message, messageType='MSG_GAMEMASTER_BROADCAST'):
+        import game.players
+        for player in game.player.allPlayersObject:
+            stream = player.packet(0xAA)
+            stream.uint32(0)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"] if "level" in self.data else 0)
+            stream.uint8(stream.enum(messageType))
+            stream.position(self.position)
+            stream.string(message)
+            stream.send(player.client)
+            
     def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
         if not to.isPlayer(): return
         
