@@ -47,11 +47,15 @@ def removeCreature(creature, pos):
     except:
         return False  
 
+PACK_ITEMS = 0 # top items
+PACK_CREATURES = 6
+PACK_FLAGS = 12
+
 class Tile(object):
-    __slots__ = ('things', 'itemCount')
-    def __init__(self, items, topItemCount=0, itemLen=0):
+    __slots__ = ('things', 'countNflags')
+    def __init__(self, items, topItemCount=0, itemLen=0, flags=0):
         if not topItemCount:
-            self.itemCount = 1
+            self.countNflags = 1
             
             if itemLen == 1:
                 #self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
@@ -66,7 +70,7 @@ class Tile(object):
                     for item in workItems:
                         if item.ontop:
                             self.things.append(item)
-                            self.itemCount += 1
+                            self.countNflags += 1
                         else:
                             bottomItems.append(item)
                             
@@ -75,28 +79,46 @@ class Tile(object):
   
         else:
             self.things = items
-            self.itemCount = topItemCount
-             
+            self.countNflags = topItemCount
+
+        if flags:
+            self._modpack(PACK_FLAGS, flags)
+            
+    def _depack(self, level):
+        return (self.countNflags >> level) & 63
+        
+    def _modpack(self, level, mod):
+        self.countNflags += mod << level
+
+    def getCreatureCount(self):
+        return self._depack(PACK_CREATURES)
+    
+    def getItemCount(self):
+        return len(self.things) - self._depack(PACK_CREATURES)
+        
+    def getFlags(self):
+        return self._depack(PACK_FLAGS)
+        
     def placeCreature(self, creature):
-        pos = (self.itemCount >> 4) + self.itemCount & 0x0F
+        pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
         if pos > 9:
             return
-  
+
         self.things.insert(pos, creature)
-        self.itemCount += 1 << 4
+        self._modpack(PACK_CREATURES, 1)
 
         return pos
         
     def removeCreature(self,creature):
-        self.itemCount -= 1 << 4
+        self._modpack(PACK_CREATURES, -1)
         return self.things.remove(creature)
         
     def placeItem(self, item):
         if item.ontop:
-            pos = self.itemCount & 0x4F
-            self.itemCount += 1
+            pos = self._depack(PACK_ITEMS)
+            self._modpack(PACK_ITEMS, 1)
         else:
-            pos = (self.itemCount >> 4) + self.itemCount & 0x0F
+            pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
         self.things.insert(pos, item)
         return pos
     
@@ -108,10 +130,10 @@ class Tile(object):
         return self.things[0]
         
     def bottomItems(self):
-        return self.things[(self.itemCount >> 4) + self.itemCount & 0x0F:]
+        return self.things[self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES):]
         
     def topItems(self):
-        return self.things[:self.itemCount & 0x0F]
+        return self.things[:self._depack(PACK_ITEMS)]
 
     def getItems(self):
         items = self.topItems()[:]
@@ -119,16 +141,20 @@ class Tile(object):
             items.extend(self.bottomItems())
         except:
             pass
+        
         return items
+        
     def creatures(self):
-        return self.things[self.itemCount & 0x0F:(self.itemCount >> 4) + self.itemCount & 0x0F]
+        cc = self._depack(PACK_ITEMS)
+        return self.things[cc:cc + self._depack(PACK_CREATURES)]
         
     def removeItem(self, item):
         if item.ontop:
-            self.itemCount -= 1
+            self._modpack(PACK_ITEMS, -1)
         return self.things.remove(item)
-        
-    def removeClientItem(self, cid, stackpos=None):
+    
+    # Fase those calls out
+    """def removeClientItem(self, cid, stackpos=None):
         if stackpos and self.things[stackpos].cid == cid:
             return self.things.pop(stackpos)
         else:
@@ -145,7 +171,7 @@ class Tile(object):
     def placeClientItem(self, cid):
         import game.item
         item = game.item.Item(game.item.sid(cid))
-        return self.placeItem(item)
+        return self.placeItem(item)"""
         
     def getThing(self, stackpos):
         try:
@@ -253,6 +279,11 @@ def T(*args):
     return Tile(args, itemLen=len(args))
 
 T = bindconstant._make_constants(T)
+
+def Tf(flags, *args):
+    return Tile(args, itemLen=len(args), flags=flags)
+
+Tf = bindconstant._make_constants(Tf)
 
 def H(houseId, position, *args):
     import game.engine as g

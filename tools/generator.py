@@ -7,7 +7,7 @@ import MySQLdb
 
 ### Load all solid and movable items
 items = set()
-moveable = set()
+movable = set()
 db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
 cursor = db.cursor()
 cursor.execute("SELECT sid FROM items WHERE solid = 1")
@@ -16,9 +16,9 @@ for row in cursor.fetchall():
 cursor.close()
 
 cursor = db.cursor()
-cursor.execute("SELECT sid FROM items WHERE moveable = 1")
+cursor.execute("SELECT sid FROM items WHERE movable = 1")
 for row in cursor.fetchall():
-    moveable.add(row[0])
+    movable.add(row[0])
 cursor.close()
 
 db.close()
@@ -29,6 +29,7 @@ db.close()
     C: Closed tile
     R: "restricted"/solid Item
     T: Tile
+    Tf: Tile with flags
     V: Alias for a precached (reference) version of T(I(100))
     S: Spawn point
         M: Monster
@@ -80,6 +81,7 @@ class Map(object):
         self.towns = {}
         self.waypoints = {}
         self.houses = {}
+        self.flags = {}
         
         if USE_NUMPY:
             self.area = N.empty((zs, xA, yA), dtype=list)
@@ -251,6 +253,8 @@ class Map(object):
                         if pos in self.houses:
                             output.append("H(%d,(%d,%d,%d),%s)" % (self.houses[pos],pos[0],pos[1],pos[2],','.join(y)))
                             print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
+                        elif pos in self.flags:
+                            output.append("Tf(%s,%s)" % (self.flags[pos], ','.join(y)))
                         else:
                             if "R(" in y:
                                 output.append("C(%s)" % (','.join(y)))
@@ -428,7 +432,7 @@ class Item(object):
         if self.actions:
             self.attributes["actions"] = self.actions
         
-        if self.id in moveable:
+        if self.id in movable:
             print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
             self.attributes["moveable"] = 0
             

@@ -1389,7 +1389,7 @@ class Player(Creature):
             inventory = ", `inventory` = '%s'" % self.pickleInventory()
             self.saveInventory = False
             
-        extra = "%s%s%s" % (depot, storage, skills, inventory)
+        extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
         return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
 

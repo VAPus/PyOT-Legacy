@@ -268,11 +268,13 @@ while node:
                     houseId = tile.data.uint32()
                 _render_ = False
                 _itemG_ = None
+                flags = 0
+                
                 # Attributes
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
                     if attr == 3: # OTBM_ATTR_TILE_FLAGS
-                        tile.data.uint32() # TODO, parse those
+                        flags = tile.data.uint32()
                         
                     elif attr == 9: # ITEM, ground item
                         _itemG_ = "I(%d)" % (tile.data.uint16())
@@ -285,7 +287,7 @@ while node:
                     _tile_ = ["ti=[%s]" % _itemG_]
                 else:
                     _tile_ = ["ti=[]"]
-                    
+                
                 item = tile.next()
                 itemNum = 0
                 while item:
@@ -365,6 +367,8 @@ while node:
                     _output_.append("\n".join(_tile_))
                 if houseId:
                     _output_.append("m.houses[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, houseId))
+                if flags:
+                    _output_.append("m.flags[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, flags))
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000

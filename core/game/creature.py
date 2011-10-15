@@ -348,7 +348,7 @@ class Creature(object):
                         
                 elif oldPosition[2] < position[2]:
                     stream.moveDownPlayer(self, oldPosition)
-                print "Send move"
+
                 # Y movements
                 if oldPosition[1] > position[1]:
                     stream.uint8(0x65)

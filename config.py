@@ -30,7 +30,7 @@ sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # Versions:
 versionMin = 860
-versionMax = 910
+versionMax = 920
 versionError = "You must use 8.6-9.2"
 supportProtocols = (860, 861, 862, 870, 910, 920) # We support these main branches + compatible protocols to them
 
