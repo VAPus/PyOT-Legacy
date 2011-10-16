@@ -359,11 +359,11 @@ class BasePacket(TibiaPacket):
             self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
             self.uint8(player.skills[x]) # Base
             currHits = player.getStorage('__skill%d'%x) or 0
-            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(player.getVocation().meleeSkill, 10)
-            if not currHits:
+            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(10, player.getVocation().meleeSkill)
+            if currHits < 1:
                 self.uint8(0)
             else:
-                self.uint8(round((goalHits / currHits) * 100)) # %
+                self.uint8(round((currHits / goalHits) * 100)) # %
 
     def cooldownIcon(self, icon, cooldown):
         self.uint8(0xA4)
@@ -631,7 +631,8 @@ class BaseProtocol(object):
                     
                     walking = [True]
                     scount = 0
-                    game.engine.autoWalkCreature(player, deque(walkPattern), lambda x: walking.pop())
+                    player.walkPattern = deque(walkPattern)
+                    game.engine.autoWalkCreature(player, lambda x: walking.pop())
                     while walking and scount < 100:
                         yield sleep(0.1)
                         scount += 1
@@ -648,7 +649,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
                     
-                if not oldItem[1].moveable or (toPosition[0] == 0xFFFF and not oldItem[1].pickable):
+                if not oldItem[1].movable or (toPosition[0] == 0xFFFF and not oldItem[1].pickable):
                     player.notPickable()
                     return
                     
@@ -713,7 +714,7 @@ class BaseProtocol(object):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
-                        game.scriptsystem.get("dequip").run(player, player.inventory[fromPosition[1]-1], slot = fromPosition[1])
+                        game.scriptsystem.get("unequip").run(player, player.inventory[fromPosition[1]-1], slot = fromPosition[1])
                         player.inventory[fromPosition[1]-1] = None
                         stream.removeInventoryItem(fromPosition[1])
                     elif oldItem[0] == 2:
@@ -764,7 +765,6 @@ class BaseProtocol(object):
                     tile.placeItem(Item(sid(clientId), count) if renew else oldItem[1])
                     game.engine.updateTile(player.position, tile)
                 else:    
-                    print currItem[1].containerSize
                     if currItem and currItem[1] and currItem[1].containerSize:
                         ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
@@ -780,7 +780,7 @@ class BaseProtocol(object):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                                game.scriptsystem.get("equip").run(player, player.inventory[fromPosition[1]-1], slot = toPosition[1])
+                                game.scriptsystem.get("equip").run(player, player.inventory[toPosition[1]-1], slot = toPosition[1])
                                 
                                 if player.inventory[toPosition[1]-1].decayPosition:
                                     player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])

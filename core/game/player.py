@@ -656,7 +656,7 @@ class Player(Creature):
     def addSkillLevel(self, skill, levels):
         self.skills[skill] += levels
         self.skills[skill + game.enum.SKILL_LAST + 1] += levels
-        goal = config.skillFormula(self.getVocation().meleeSkill, self.skills[skill])
+        goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
         self.setStorage('__skill%d' % skill, 0)
         self.setStorage('__skillGoal%d' % skill, goal)
         

@@ -154,7 +154,7 @@ class Tile(object):
         return self.things.remove(item)
     
     # Fase those calls out
-    """def removeClientItem(self, cid, stackpos=None):
+    def removeClientItem(self, cid, stackpos=None):
         if stackpos and self.things[stackpos].cid == cid:
             return self.things.pop(stackpos)
         else:
@@ -162,7 +162,7 @@ class Tile(object):
                 if x.cid == cid:
                     self.things.remove(x)
                     break
-    
+    """
     def removeClientCreature(self, stackpos=None):
         if stackpos and self.things[stackpos]:
             self.creatureCount -= 1 << 4
