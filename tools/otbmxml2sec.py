@@ -318,10 +318,10 @@ while node:
                                 _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
                             elif attr == 4: # action id
                                 safe = False
-                                _tile_.append("i%d.action(%d)" % (itemNum, item.data.uint16()))
+                                _tile_.append("i%d.action('%d')" % (itemNum, item.data.uint16()))
                             elif attr == 5:
                                 safe = False
-                                _tile_.append("i%d.action(%d)" % (itemNum, item.data.uint16() + 0xFFFF))
+                                _tile_.append("i%d.action('%d')" % (itemNum, item.data.uint16() + 0xFFFF))
                             elif attr == 6:
                                 safe = False
                                 _tile_.append('i%d.attribute("text","""%s""")' % (itemNum, item.data.string()))

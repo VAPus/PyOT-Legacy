@@ -86,14 +86,6 @@ class Container(object):
         return self.items.index(item)
 
 bindconstant.bind_all(Container)
-
-# Mailbox
-class Mailbox(object):
-    def send(self, item):
-        if not item.itemId in (game.enum.ITEM_LETTER or game.enum.ITEM_PARCEL):
-            return False
-        else:
-            pass # TODO
             
 ### Item ###
 class Item(object):
@@ -103,7 +95,7 @@ class Item(object):
     
     def __init__(self, itemId, count=1, actions=[], **kwargs):
         self.itemId = itemId
-        self.actions = map(str, actions)
+        self.actions = actions
         self.actions.append('item')
         
         if kwargs:
@@ -114,7 +106,7 @@ class Item(object):
         if items[itemId]["a"] & 64:
             self.count = count
             
-        # Extend items such as containers, beds and doors
+        # Extend items such as containers
         try:
             self.container = Container(items[itemId]["containerSize"])
         except KeyError:
