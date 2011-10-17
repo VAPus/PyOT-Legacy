@@ -434,7 +434,7 @@ class Item(object):
         
         if self.id in movable:
             print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
-            self.attributes["moveable"] = 0
+            self.attributes["movable"] = 0
             
         if self.attributes:
             eta = []
