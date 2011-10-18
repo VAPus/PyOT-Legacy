@@ -753,7 +753,7 @@ class Player(Creature):
                 
             self.modes[1] = chase
             self.modes[2] = secure
-            
+            print "Modes", self.modes
         game.scriptsystem.get('modeChange').run(self, end, attack=attack, chase=chase, secure=secure)
         
         
@@ -1591,7 +1591,7 @@ class Player(Creature):
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
             
     def setAttackTarget(self, cid):
-        if self.targetMode == 1:
+        if self.targetMode == 1 and self.target:
             self.targetMode = 0
             self.target = None
             try:
@@ -1615,8 +1615,12 @@ class Player(Creature):
             else:
                 return
         else:
-            self.notPossible()
+            return self.notPossible()
+        
+        if not self.target:
+            return self.notPossible()
             
+        
         if self.modes[1] == game.enum.CHASE:
             print "did"
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
