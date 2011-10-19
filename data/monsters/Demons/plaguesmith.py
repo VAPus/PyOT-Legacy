@@ -1,0 +1,11 @@
+plaguesmith = game.monster.genMonster("Plaguesmith", (247, 6516), "a plaguesmith")
+plaguesmith.setHealth(8250, healthmax=8250)
+plaguesmith.bloodType(color="blood")
+plaguesmith.setDefense(armor=25, fire=0.7, earth=0, energy=1.1, ice=0.8, holy=1.1, death=0.9, physical=1, drown=1)
+plaguesmith.setExperience(4500)
+plaguesmith.setSpeed(340)
+plaguesmith.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=500)
+plaguesmith.walkAround(energy=1, fire=0, poison=0)
+plaguesmith.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+plaguesmith.voices("You are looking a bit feverish!", "You don't look that good!", "Hachoo!", "Cough Cough")
+plaguesmith.regMelee(540)#poisons you up to 10 hp/turn
