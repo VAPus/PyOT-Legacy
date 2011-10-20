@@ -1,0 +1,13 @@
+efreet = game.monster.genMonster("freet", (103, 6032), "a efreet")
+efreet.setHealth(550, healthmax=550)
+efreet.bloodType(color="blood")
+efreet.setDefense(armor=20, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=1.08, death=0.8, physical=1, drown=1)
+efreet.setExperience(410)#325?
+efreet.setSpeed(170)
+efreet.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+efreet.walkAround(energy=1, fire=1, poison=1)
+efreet.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+efreet.summon("green djinn", 10)
+efreet.maxSummons(2)
+efreet.voices("I grant you a deathwish!", "Good wishes are for fairytales")
+efreet.regMelee(110)

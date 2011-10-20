@@ -1,0 +1,10 @@
+hand_of_cursed_fate = game.monster.genMonster("Hand of Cursed Fate", (230, 6312), "a hand of cursed fate")
+hand_of_cursed_fate.setHealth(10500)
+hand_of_cursed_fate.bloodType(color="blood")
+hand_of_cursed_fate.setDefense(armor=10, fire=0, earth=0, energy=0, ice=1.1, holy=1.25, death=0, physical=1, drown=1)
+hand_of_cursed_fate.setExperience(5000)
+hand_of_cursed_fate.setSpeed(320)
+hand_of_cursed_fate.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=2000)
+hand_of_cursed_fate.walkAround(energy=0, fire=0, poison=0)
+hand_of_cursed_fate.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+hand_of_cursed_fate.regMelee(520) #poisons you up to 19 Hitpoints per turn
