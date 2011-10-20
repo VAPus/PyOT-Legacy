@@ -7,5 +7,5 @@ nightstalker.setSpeed(260)
 nightstalker.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 nightstalker.walkAround(energy=1, fire=1, poison=1)
 nightstalker.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
-nightstalker.voices("The sunlight is so depressing.",, "Come with me, my child.", "I've been in the shadow under your bed last night.", "You never know what hides in the night.", "I remember your face - and I know where you sleep.", "Only the sweetest and cruelest dreams for you, my love.")
+nightstalker.voices("The sunlight is so depressing.", "Come with me, my child.", "I've been in the shadow under your bed last night.", "You never know what hides in the night.", "I remember your face - and I know where you sleep.", "Only the sweetest and cruelest dreams for you, my love.")
 nightstalker.regMelee(90) #poisons you starting from 4hp
