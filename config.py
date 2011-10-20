@@ -22,11 +22,11 @@ sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 # Fedora/CentOS/RHEL
-# sqlSocket = "/var/lib/mysql/mysql.sock"
+sqlSocket = "/var/lib/mysql/mysql.sock"
 # Ubuntu/Kubuntu/Debian
 # sqlSocket = "/var/run/mysql/mysql.sock"
 # Others:
-sqlSocket = "/var/run/mysqld/mysqld.sock"
+# sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # Versions:
 versionMin = 860

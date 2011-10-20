@@ -94,6 +94,14 @@ class Item(object):
     __slots__ = ('itemId', 'actions', 'params')
     
     def __init__(self, itemId, count=1, actions=[], **kwargs):
+        try:
+            if not items[itemId]:
+                raise
+        except:
+            print "Len items: %d" % len(items)
+            print "ItemId %d doesn't exist!" % itemId
+            itemId = 100
+            
         self.itemId = itemId
         self.actions = actions
         self.actions.append('item')
