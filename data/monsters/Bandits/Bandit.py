@@ -11,4 +11,4 @@ Bandit.voices("Hand me your purse!", "Your money or your life!")
 Bandit.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Bandit.setDefense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.1, drown=1.0)
 Bandit.regMelee(43)
-Bandit.loot( (2148, 100, 27), ('axe', 31.5), ('brass shield', 17.5), ('mace', 10.75), ('chain helmet', 5.75), ('leather legs', 14.25), ('brass armor', 2.5), ('tomato', 10.25, 2), ('iron helmet', 0.25) )
+Bandit.loot( (2148, 100, 27), ("axe", 31.5), ("brass shield", 17.5), ("mace", 10.75), ("chain helmet", 5.75), ("leather legs", 14.25), ("brass armor", 2.5), ("tomato", 10.25, 2), ("iron helmet", 0.25) )

@@ -8,4 +8,4 @@ demon_skeleton.setBehavior(summonable=620, hostile=1, illusionable=1, convinceab
 demon_skeleton.walkAround(energy=1, fire=0, poison=0)
 demon_skeleton.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 demon_skeleton.regMelee(180)#approx~
-demon_skeleton.loot( ('torch', 31.75), (2148, 100, 45), ('battle shield', 1.0), ('demonic skeletal hand', 5.0), ('battle hammer', 2.75), ('throwing star', 19.5, 3), ('iron helmet', 2.0), ('mysterious fetish', 0.25), ('mana potion', 0.75), ('mind stone', 0.25), ('guardian shield', 0.0025) )
+demon_skeleton.loot( ("torch", 31.75), (2148, 100, 45), ("battle shield", 1.0), ("demonic skeletal hand", 5.0), ("battle hammer", 2.75), ("throwing star", 19.5, 3), ("iron helmet", 2.0), ("mysterious fetish", 0.25), ("mana potion", 0.75), ("mind stone", 0.25), ("guardian shield", 0.0025) )

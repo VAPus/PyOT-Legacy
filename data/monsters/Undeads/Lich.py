@@ -11,4 +11,4 @@ lich.voices("Doomed be the living!", "Death awaits all!", "Thy living flesh offe
 lich.summon("bonebeast", 10)
 lich.maxSummons(4)
 lich.regMelee(75)
-lich.loot( (2148, 100, 120), ('dirty cape', 18.5), ('staff', 61.5), ('black pearl', 5.25), ('ring of healing', 1.0), ('spellbook', 9.75), ('white pearl', 2.5), ('mind stone', 0.5), ('castle shield', 0.25), ('platinum amulet', 0.0025), ('strange helmet', 0.25), ('strong mana potion', 0.5), ('blue robe', 0.0025) )
+lich.loot( (2148, 100, 120), ("dirty cape", 18.5), ("staff", 61.5), ("black pearl", 5.25), ("ring of healing", 1.0), ("spellbook", 9.75), ("white pearl", 2.5), ("mind stone", 0.5), ("castle shield", 0.25), ("platinum amulet", 0.0025), ("strange helmet", 0.25), ("strong mana potion", 0.5), ("blue robe", 0.0025) )

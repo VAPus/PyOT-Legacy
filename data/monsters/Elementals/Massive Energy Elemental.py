@@ -8,4 +8,4 @@ massive_energy_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, co
 massive_energy_elemental.walkAround(energy=0, fire=0, poison=1)
 massive_energy_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 massive_energy_elemental.regMelee(220)
-massive_energy_elemental.loot( (2148, 100, 191), ('great mana potion', 9.75), ('strong mana potion', 14.5), ('rusty armor', 10.75), ('flash arrow', 52.25, 15), ('wand of starstorm', 0.75), (7869, 0.25), ('small amethyst', 6.75, 3), ('spellbook of warding', 0.5), ('lightning pendant', 0.25), ('shockwave amulet', 0.25), ('lightning legs', 0.25) )
+massive_energy_elemental.loot( (2148, 100, 191), ("great mana potion", 9.75), ("strong mana potion", 14.5), ("rusty armor", 10.75), ("flash arrow", 52.25, 15), ("wand of starstorm", 0.75), (7869, 0.25), ("small amethyst", 6.75, 3), ("spellbook of warding", 0.5), ("lightning pendant", 0.25), ("shockwave amulet", 0.25), ("lightning legs", 0.25) )

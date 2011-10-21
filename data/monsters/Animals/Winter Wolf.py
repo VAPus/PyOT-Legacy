@@ -9,5 +9,5 @@ Winter_Wolf.setBehavior(summonable=260, hostile=1, illusionable=1, convinceable=
 Winter_Wolf.voices("Yooooohhuuuu!")
 Winter_Wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Winter_Wolf.setDefense(2, fire=1.1, earth=1.0, energy=1.1, ice=0.8, holy=0.9, death=1.1, physical=1.0, drown=1.0)
-Winter_Wolf.loot( ('meat', 29.0, 2), ('winter wolf fur', 9.75) )
+Winter_Wolf.loot( ("meat", 29.0, 2), ("winter wolf fur", 9.75) )
 Winter_Wolf.regMelee(20)

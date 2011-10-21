@@ -9,5 +9,5 @@ Lion.setBehavior(summonable=320, hostile=1, illusionable=1, convinceable=320, pu
 Lion.voices("Groarrr!")
 Lion.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Lion.setDefense(7, fire=1.0, earth=0.8, energy=1.0, ice=1.15, holy=0.8, death=1.08, physical=1.0, drown=1.0)
-Lion.loot( ('meat', 48.0, 4), ('ham', 19.5, 2), (10606, 0.75) )
+Lion.loot( ("meat", 48.0, 4), ("ham", 19.5, 2), (10608, 0.75) )
 Lion.regMelee(40)

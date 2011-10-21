@@ -8,4 +8,4 @@ scarab.setBehavior(summonable=395, hostile=1, illusionable=1, convinceable=395, 
 scarab.walkAround(energy=1, fire=1, poison=0)
 scarab.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 scarab.regMelee(75)
-scarab.loot( ('scarab coin', 1.0), ('piece of scarab shell', 4.5), (2148, 100, 52), ('meat', 40.0, 2), ('small amethyst', 0.5), ('daramanian mace', 0.25), ('small emerald', 0.25) )
+scarab.loot( ("scarab coin", 1.0), ("piece of scarab shell", 4.5), (2148, 100, 52), ("meat", 40.0, 2), ("small amethyst", 0.5), ("daramanian mace", 0.25), ("small emerald", 0.25) )

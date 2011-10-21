@@ -8,4 +8,4 @@ bane_of_light.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 bane_of_light.walkAround(energy=0, fire=0, poison=0)
 bane_of_light.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 bane_of_light.regMelee(370)
-bane_of_light.loot( ('midnight shard', 8.25) )
+bane_of_light.loot( ("midnight shard", 8.25) )

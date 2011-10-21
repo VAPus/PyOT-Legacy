@@ -8,4 +8,4 @@ larva.setBehavior(summonable=355, hostile=1, illusionable=1, convinceable=355, p
 larva.walkAround(energy=1, fire=1, poison=0)
 larva.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 larva.regMelee(35)#poison 1p/turn
-larva.loot( ('meat', 14.5), (2148, 100, 15) )
+larva.loot( ("meat", 14.5), (2148, 100, 15) )

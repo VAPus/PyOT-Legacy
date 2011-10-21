@@ -9,4 +9,4 @@ weak_spawn_of_despair.setBehavior(summonable=0, hostile=1, illusionable=0, convi
 weak_spawn_of_despair.walkAround(energy=0, fire=0, poison=0)
 weak_spawn_of_despair.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 weak_spawn_of_despair.regMelee(200)
-weak_spawn_of_despair.loot( ('small ruby', 92.0, 5), ('rusty armor', 12.0), ('platinum coin', 100, 37), ('small diamond', 36.0, 3), (2148, 100, 153), ('gold ingot', 28.0), ('small topaz', 12.0), ('small sapphire', 24.0, 3), ('small emerald', 56.0, 5), ('midnight shard', 72.0), ('small amethyst', 4.0) )
+weak_spawn_of_despair.loot( ("small ruby", 92.0, 5), ("rusty armor", 12.0), ("platinum coin", 100, 37), ("small diamond", 36.0, 3), (2148, 100, 153), ("gold ingot", 28.0), ("small topaz", 12.0), ("small sapphire", 24.0, 3), ("small emerald", 56.0, 5), ("midnight shard", 72.0), ("small amethyst", 4.0) )

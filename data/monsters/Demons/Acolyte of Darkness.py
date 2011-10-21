@@ -8,4 +8,4 @@ acolyte_of_darkness.setBehavior(summonable=0, hostile=1, illusionable=0, convinc
 acolyte_of_darkness.walkAround(energy=0, fire=0, poison=0)
 acolyte_of_darkness.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 acolyte_of_darkness.regMelee(120)
-acolyte_of_darkness.loot( ('midnight shard', 4.5) )
+acolyte_of_darkness.loot( ("midnight shard", 4.5) )

@@ -9,4 +9,4 @@ midnight_spawn.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable
 midnight_spawn.walkAround(energy=1, fire=1, poison=0)
 midnight_spawn.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)#.99% immune to life drain?
 midnight_spawn.regMelee(150)
-midnight_spawn.loot( ('midnight shard', 15.25) )
+midnight_spawn.loot( ("midnight shard", 15.25) )

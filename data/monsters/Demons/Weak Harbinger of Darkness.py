@@ -9,4 +9,4 @@ weak_harbinger_of_darkness.setBehavior(summonable=0, hostile=1, illusionable=0, 
 weak_harbinger_of_darkness.walkAround(energy=0, fire=0, poison=0)
 weak_harbinger_of_darkness.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 weak_harbinger_of_darkness.regMelee(4100)
-weak_harbinger_of_darkness.loot( ('small diamond', 51.75, 3), ('small emerald', 66.75, 5), ('gold ingot', 33.25), ('small ruby', 100, 5), ('platinum coin', 100, 32), ('small amethyst', 22.25), (2148, 100, 183), ('midnight shard', 100.0), ('small sapphire', 18.5, 3) )
+weak_harbinger_of_darkness.loot( ("small diamond", 51.75, 3), ("small emerald", 66.75, 5), ("gold ingot", 33.25), ("small ruby", 100, 5), ("platinum coin", 100, 32), ("small amethyst", 22.25), (2148, 100, 183), ("midnight shard", 100.0), ("small sapphire", 18.5, 3) )

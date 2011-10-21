@@ -10,4 +10,4 @@ swamp_troll.walkAround(energy=1, fire=1, poison=1)
 swamp_troll.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 swamp_troll.voices("Me strong! Me ate spinach!", "Groar!", "Grrrr")
 swamp_troll.regMelee(13)#+1hp/turn poison
-swamp_troll.loot( ('leather boots', 10.0), (2148, 100, 5), ('fish', 59.5), ('torch', 14.5), ('swamp grass', 3.0), ('spear', 12.75), ('troll green', 1.0), ('fishing rod', 0.0025) )
+swamp_troll.loot( ("leather boots", 10.0), (2148, 100, 5), ("fish", 59.5), ("torch", 14.5), ("swamp grass", 3.0), ("spear", 12.75), ("troll green", 1.0), ("fishing rod", 0.0025) )

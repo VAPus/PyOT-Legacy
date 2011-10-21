@@ -8,4 +8,4 @@ skeleton_warrior.setBehavior(summonable=350, hostile=1, illusionable=1, convince
 skeleton_warrior.walkAround(energy=1, fire=1, poison=1)
 skeleton_warrior.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 skeleton_warrior.regMelee(30)
-skeleton_warrior.loot( ('bone', 51.75), (2148, 100, 10), ('white mushroom', 24.75), ('mace', 2.25), ('pelvis bone', 9.75), ('sword', 1.75), ('brown mushroom', 3.25) )
+skeleton_warrior.loot( ("bone", 51.75), (2148, 100, 10), ("white mushroom", 24.75), ("mace", 2.25), ("pelvis bone", 9.75), ("sword", 1.75), ("brown mushroom", 3.25) )

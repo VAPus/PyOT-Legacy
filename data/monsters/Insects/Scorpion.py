@@ -8,4 +8,4 @@ scorpion.setBehavior(summonable=310, hostile=1, illusionable=1, convinceable=310
 scorpion.walkAround(energy=1, fire=1, poison=0)
 scorpion.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 scorpion.regMelee(50)
-scorpion.loot( ('scorpion tail', 4.75) )
+scorpion.loot( ("scorpion tail", 4.75) )

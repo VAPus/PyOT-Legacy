@@ -9,4 +9,4 @@ bonebeast.walkAround(energy=1, fire=1, poison=0)
 bonebeast.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 bonebeast.voices("Knooorrrrr!", "Cccchhhhhhhhh!")
 bonebeast.regMelee(200)#+poison up to 5/hp turn
-bonebeast.loot( ('plate armor', 7.75), ('skull', 20.25), (2148, 100, 90), ('bone', 49.25), ('bony tail', 10.25), ('bone shield', 2.0), ('bone club', 5.0), ('green mushroom', 1.5), ('hardened bone', 1.0, 3), ('health potion', 0.5) )
+bonebeast.loot( ("plate armor", 7.75), ("skull", 20.25), (2148, 100, 90), ("bone", 49.25), ("bony tail", 10.25), ("bone shield", 2.0), ("bone club", 5.0), ("green mushroom", 1.5), ("hardened bone", 1.0, 3), ("health potion", 0.5) )

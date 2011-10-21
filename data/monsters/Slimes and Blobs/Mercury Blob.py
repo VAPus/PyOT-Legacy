@@ -13,4 +13,4 @@ mercury_blob.maxSummons(3)
 mercury_blob.voices("Crackle")
 mercury_blob.regMelee(75) 
 #summons might not cause drunkness
-mercury_blob.loot( ('glob of mercury', 16.75) )
+mercury_blob.loot( ("glob of mercury", 16.75) )

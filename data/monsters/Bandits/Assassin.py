@@ -12,4 +12,4 @@ Assassin.voices("You are on my deathlist!", "Die!", "Feel the hand of death!")
 Assassin.setImmunity(0,1,0) # paralyze, invisible, lifedrain
 Assassin.setDefense(22, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.25, drown=1.0)
 Assassin.regMelee(120)
-Assassin.loot( ('throwing star', 50.25, 14), (2148, 100, 50), ('knife', 10.25), ('torch', 42.5, 2), ('viper star', 18.25, 7), ('combat knife', 3.75), ('steel shield', 1.0), ('steel helmet', 2.75), ('plate shield', 2.0), ('battle shield', 1.5), ('leopard armor', 0.5), ('horseman helmet', 0.25), ('small diamond', 0.0025) )
+Assassin.loot( ("throwing star", 50.25, 14), (2148, 100, 50), ("knife", 10.25), ("torch", 42.5, 2), ("viper star", 18.25, 7), ("combat knife", 3.75), ("steel shield", 1.0), ("steel helmet", 2.75), ("plate shield", 2.0), ("battle shield", 1.5), ("leopard armor", 0.5), ("horseman helmet", 0.25), ("small diamond", 0.0025) )

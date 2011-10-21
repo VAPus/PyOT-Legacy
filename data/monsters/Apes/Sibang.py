@@ -10,4 +10,4 @@ Sibang.voices("Eeeeek! Eeeeek!", "Huh! Huh! Huh!", "Ahhuuaaa!")
 Sibang.setImmunity(0,1,0) # paralyze, invisible, lifedrain
 Sibang.setDefense(11, fire=0.75, earth=1.0, energy=1.0, ice=1.15, holy=0.9, death=1.05, physical=1.0, drown=1.0)
 Sibang.regMelee(40)
-Sibang.loot( ('orange', 61.0, 5), ('small stone', 62.0, 3), ('banana sash', 5.0), (2148, 100, 35), ('banana', 47.75, 11), ('ape fur', 1.25, 3), ('coconut', 4.0, 3), ('melon', 1.0) )
+Sibang.loot( ("orange", 61.0, 5), ("small stone", 62.0, 3), ("banana sash", 5.0), (2148, 100, 35), ("banana", 47.75, 11), ("ape fur", 1.25, 3), ("coconut", 4.0, 3), ("melon", 1.0) )

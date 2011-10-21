@@ -9,4 +9,4 @@ weak_gloombringer.setBehavior(summonable=0, hostile=1, illusionable=0, convincea
 weak_gloombringer.walkAround(energy=0, fire=0, poison=0)
 weak_gloombringer.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 weak_gloombringer.regMelee(3000)
-weak_gloombringer.loot( ('small diamond', 100, 5), ('gold ingot', 31.5), ('platinum coin', 100, 35), ('small ruby', 100, 5), (2148, 100, 156), ('midnight shard', 100.0), ('small topaz', 10.5), ('small emerald', 15.75, 2), ('small sapphire', 47.25, 4) )
+weak_gloombringer.loot( ("small diamond", 100, 5), ("gold ingot", 31.5), ("platinum coin", 100, 35), ("small ruby", 100, 5), (2148, 100, 156), ("midnight shard", 100.0), ("small topaz", 10.5), ("small emerald", 15.75, 2), ("small sapphire", 47.25, 4) )

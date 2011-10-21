@@ -8,4 +8,4 @@ muddy_earth_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, convi
 muddy_earth_elemental.walkAround(energy=0, fire=1, poison=0)
 muddy_earth_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 muddy_earth_elemental.regMelee(160)
-muddy_earth_elemental.loot( ('clay lump', 1.0), ('natural soil', 4.0), ('lump of earth', 20.0), ('small stone', 100, 5), (2148, 100, 130), (2244, 19.5) )
+muddy_earth_elemental.loot( ("clay lump", 1.0), ("natural soil", 4.0), ("lump of earth", 20.0), ("small stone", 100, 5), (2148, 100, 130), (2244, 19.5) )

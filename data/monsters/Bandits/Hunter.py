@@ -11,4 +11,4 @@ Hunter.voices("Guess who we are hunting!", "Guess who we're hunting, hahaha!", "
 Hunter.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Hunter.setDefense(9, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.8, death=1.0, physical=1.05, drown=1.0)
 Hunter.regMelee(20)
-Hunter.loot( ('arrow', 100, 22), ('orange', 28.5, 2), ('torch', 3.0), ('dragon necklace', 2.75), (12425, 10.25), ('bow', 6.0), ('brass armor', 4.5), ('deer trophy', 0.25), ('roll', 17.25, 2), ('brass helmet', 5.0), ('poison arrow', 12.5, 4), ('burst arrow', 10.25, 3), ('wolf trophy', 0.5), ('small ruby', 0.25), ('sniper gloves', 0.25), ('slingshot', 0.25) )
+Hunter.loot( ("arrow", 100, 22), ("orange", 28.5, 2), ("torch", 3.0), ("dragon necklace", 2.75), (12425, 10.25), ("bow", 6.0), ("brass armor", 4.5), ("deer trophy", 0.25), ("roll", 17.25, 2), ("brass helmet", 5.0), ("poison arrow", 12.5, 4), ("burst arrow", 10.25, 3), ("wolf trophy", 0.5), ("small ruby", 0.25), ("sniper gloves", 0.25), ("slingshot", 0.25) )

@@ -10,4 +10,4 @@ doomsday_cultist.setBehavior(summonable=0, hostile=1, illusionable=0, convinceab
 doomsday_cultist.walkAround(energy=0, fire=0, poison=0)
 doomsday_cultist.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 doomsday_cultist.regMelee(100)
-doomsday_cultist.loot( ('midnight shard', 4.0) )
+doomsday_cultist.loot( ("midnight shard", 4.0) )

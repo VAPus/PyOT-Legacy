@@ -9,4 +9,4 @@ tarantula.setBehavior(summonable=485, hostile=1, illusionable=1, convinceable=48
 tarantula.walkAround(energy=1, fire=1, poison=0)
 tarantula.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 tarantula.regMelee(90) #Poisons you for 1-2 hp/turn
-tarantula.loot( (2148, 100, 40), ('tarantula egg', 10.0), ('brass legs', 3.25), ('steel helmet', 1.0), ('plate shield', 2.0), ('time ring', 0.0025) )
+tarantula.loot( (2148, 100, 40), ("tarantula egg", 10.0), ("brass legs", 3.25), ("steel helmet", 1.0), ("plate shield", 2.0), ("time ring", 0.0025) )

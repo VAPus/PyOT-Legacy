@@ -9,4 +9,4 @@ carniphila.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, 
 carniphila.walkAround(energy=1, fire=1, poison=0)
 carniphila.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 carniphila.regMelee(100) #poisons you 5 hp/turn
-carniphila.loot( ('seeds', 0.5), ('dark mushroom', 8.0), ('shadow herb', 1.0), (2148, 100, 40), ('carniphila seeds', 4.0), ('corncob', 1.25), ('sling herb', 0.75, 2), ('carrot on a stick', 0.0025) )
+carniphila.loot( ("seeds", 0.5), ("dark mushroom", 8.0), ("shadow herb", 1.0), (2148, 100, 40), ("carniphila seeds", 4.0), ("corncob", 1.25), ("sling herb", 0.75, 2), ("carrot on a stick", 0.0025) )
