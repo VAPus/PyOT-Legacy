@@ -462,6 +462,7 @@ def reimporter():
         except:
             pass
     
+    # Reset global events
     globalEvents = []
     
     # Clear spells
@@ -473,22 +474,10 @@ def reimporter():
         del mod[1]
         mod.append(__import__('data.%s' % mod[0], globals(), locals(), ["*"], -1))
         
-        # Step 1, reload submodules
+        # Step 2, reload submodules
         for sub in mod[1].__all__:
-            try:
-                if sub != "__init__":
-                    reload(sys.modules["data.%s.%s" % (mod[0], sub)])
-            except:
-                pass
-            
-        # Step 3: Rerun init
-        for sub in mod[1].__all__:
-            try:
-                if sub != "__init__":
-                    sys.modules["data.%s.%s" % (mod[0], sub)].init()
-                    
-            except AttributeError:
-                pass
+            if sub != "__init__":
+                reload(sys.modules["data.%s.%s" % (mod[0], sub)])
                 
 # This is the function to get events, it should also be a getAll, and get(..., creature)
 def get(type):
