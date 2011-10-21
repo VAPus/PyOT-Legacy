@@ -8,4 +8,3 @@ fire_elemental.setBehavior(summonable=690, hostile=1, illusionable=1, convinceab
 fire_elemental.walkAround(energy=1, fire=0, poison=1)
 fire_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 fire_elemental.regMelee(100)
-fire_elemental.loot )

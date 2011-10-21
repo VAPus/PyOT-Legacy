@@ -9,4 +9,3 @@ Rift_Worm.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, p
 Rift_Worm.setImmunity(1,1,1) # paralyze, invisible, lifedrain
 Rift_Worm.setDefense(31, fire=1.05, earth=0.7, energy=0.9, ice=1.05, holy=1.05, death=0.95, physical=1.05, drown=1.0)
 Rift_Worm.regMelee(160)#ish?
-Rift_Worm.loot )

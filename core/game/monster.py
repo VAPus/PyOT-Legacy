@@ -443,8 +443,11 @@ class MonsterBase(CreatureBase):
                 # Id to name
                 if type(loot[0]) == int:
                     loot = list(loot)
-                    loot[0] = item.items[loot[0]]["name"]
-        
+                    try:
+                        loot[0] = item.items[loot[0]]["name"]
+                    except:
+                        print "ItemId %d not found in loot. Ignoring!" % loot[0]
+                        continue
                 cache.append(loot)  
                 
             cache.sort(reverse=True)    
