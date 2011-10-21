@@ -9,3 +9,4 @@ Carrion_Worm.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=3
 Carrion_Worm.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Carrion_Worm.setDefense(9, fire=1.05, earth=0.8, energy=0.9, ice=1.05, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Carrion_Worm.regMelee(45)
+Carrion_Worm.loot( (2148, 100, 45), ('carrion worm fang', 10.0), (3976, 3.0, 2), ('meat', 9.75, 2) )

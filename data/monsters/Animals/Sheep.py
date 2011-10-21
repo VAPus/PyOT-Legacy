@@ -9,4 +9,4 @@ Sheep.setBehavior(summonable=250, hostile=0, illusionable=1, convinceable=250, p
 Sheep.voices("Maeh")
 Sheep.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Sheep.setDefense(2, fire=1.1, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
-Sheep.loot( ('meat', 17), ('wool', 2) )
+Sheep.loot( ('meat', 67.0, 4), ('wool', 1.75) )

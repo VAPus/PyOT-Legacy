@@ -9,3 +9,4 @@ crocodile.setBehavior(summonable=350, hostile=1, illusionable=1, convinceable=35
 crocodile.walkAround(energy=1, fire=1, poison=1)
 crocodile.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 crocodile.regMelee(40)
+crocodile.loot( ('ham', 39.75), (2148, 100, 10), ('piece of crocodile leather', 19.5), ('crocodile boots', 0.0025) )

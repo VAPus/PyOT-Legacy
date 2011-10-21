@@ -12,3 +12,4 @@ Nomad.voices("I will leave your remains to the vultures!", "We are the true sons
 Nomad.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Nomad.setDefense(6, fire=0.8, earth=1.0, energy=1.0, ice=1.1, holy=0.8, death=1.1, physical=1.1, drown=1.0)
 Nomad.regMelee(80)
+Nomad.loot( (2148, 100, 39), ('axe', 19.5), ('leather legs', 9.25), ('brass shield', 10.75), ('mace', 7.75), ('brass armor', 2.25), ('chain helmet', 3.0), ('steel shield', 0.75), (8838, 8.25, 3), ('iron helmet', 0.75), ('parchment', 0.25), ('rope belt', 2.5), (12373, 0.75) )

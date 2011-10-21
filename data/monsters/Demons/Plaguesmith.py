@@ -9,3 +9,4 @@ plaguesmith.walkAround(energy=1, fire=0, poison=0)
 plaguesmith.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 plaguesmith.voices("You are looking a bit feverish!", "You don't look that good!", "Hachoo!", "Cough Cough")
 plaguesmith.regMelee(540)#poisons you up to 10 hp/turn
+plaguesmith.loot( ('onyx arrow', 20.5, 4), ('small amethyst', 10.25, 3), ('morning star', 30.75), (2148, 100, 270), ('dirty cape', 60.0), ('steel shield', 20.0), ('soul orb', 12.0), ('piece of iron', 20.25), ('club ring', 5.25), ('platinum coin', 12.0, 2), ('emerald bangle', 0.5), ('demonic essence', 9.0, 3), ('two handed sword', 19.5), ('rusty armor', 8.0), ('great health potion', 10.0), ('battle hammer', 19.75), (2235, 49.5), ('piece of hell steel', 1.0), ('knight legs', 7.0), ('war hammer', 2.0), ('steel boots', 1.25), ('silver brooch', 2.0), ('axe ring', 4.75), ('piece of draconian steel', 1.0), ('hammer of wrath', 0.75), ('piece of royal steel', 1.0), ('war horn', 0.0025) )

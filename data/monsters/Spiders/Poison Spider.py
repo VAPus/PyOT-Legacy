@@ -9,3 +9,4 @@ poison_spider.setBehavior(summonable=270, hostile=1, illusionable=1, convinceabl
 poison_spider.walkAround(energy=1, fire=1, poison=0)
 poison_spider.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 poison_spider.regMelee(20) #Poison with 1 hp per turn (15-20 turns) or starting with 2 hp per turn (20-25 turns, 21-30 hp).
+poison_spider.loot( (2148, 63.0, 4), ('poison spider shell', 1.0) )

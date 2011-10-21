@@ -8,3 +8,4 @@ rift_scythe.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 rift_scythe.walkAround(energy=1, fire=1, poison=1)
 rift_scythe.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 rift_scythe.regMelee(200)#wrong
+rift_scythe.loot )

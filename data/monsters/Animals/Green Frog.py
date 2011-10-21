@@ -10,3 +10,4 @@ Green_Frog.setBehavior(summonable=250, hostile=0, illusionable=1, convinceable=2
 Green_Frog.voices("Ribbit!", "Ribbit! Ribbit!")
 Green_Frog.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Green_Frog.setDefense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
+Green_Frog.loot )

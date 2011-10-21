@@ -9,3 +9,4 @@ spider.setBehavior(summonable=210, hostile=1, illusionable=1, convinceable=210, 
 spider.walkAround(energy=1, fire=1, poison=1)
 spider.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 spider.regMelee(25)
+spider.loot( (2148, 100, 5), (8859, 1.0) )

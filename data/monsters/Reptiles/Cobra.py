@@ -10,3 +10,4 @@ cobra.walkAround(energy=1, fire=1, poison=0)
 cobra.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=1)
 cobra.voices("Fsssss", "Zzzzzz")
 cobra.regMelee(5) #Poisons you up to 5 hp/turn only ##melee damage is wrong
+cobra.loot( ('cobra tongue', 4.75) )

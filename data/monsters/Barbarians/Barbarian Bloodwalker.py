@@ -11,3 +11,4 @@ Barbarian_Bloodwalker.voices("YAAAHEEE!", "SLAUGHTER!", "CARNAGE!", "You can run
 Barbarian_Bloodwalker.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Barbarian_Bloodwalker.setDefense(9, fire=1.0, earth=1.05, energy=0.9, ice=0.5, holy=0.8, death=1.1, physical=0.9, drown=1.0)
 Barbarian_Bloodwalker.regMelee(200)
+Barbarian_Bloodwalker.loot( (2148, 100, 12), ('chain helmet', 11.0), ('chain armor', 9.75), ('battle axe', 6.25), ('ham', 7.75), ('lamp', 8.5), ('halberd', 7.0), ('shard', 0.25), ('red piece of cloth', 0.75, 3), ('health potion', 1.25), ('beastslayer axe', 0.25), ('fur boots', 0.25) )

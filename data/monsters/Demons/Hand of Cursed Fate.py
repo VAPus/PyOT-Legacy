@@ -8,3 +8,4 @@ hand_of_cursed_fate.setBehavior(summonable=0, hostile=1, illusionable=0, convinc
 hand_of_cursed_fate.walkAround(energy=0, fire=0, poison=0)
 hand_of_cursed_fate.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 hand_of_cursed_fate.regMelee(520) #poisons you up to 19 Hitpoints per turn
+hand_of_cursed_fate.loot( ('platinum coin', 30.5, 5), (2148, 100, 241), ('concentrated demonic blood', 70.0, 3), ('soul orb', 6.75), ('mind stone', 5.0), ('demonic essence', 8.5, 3), ('energy ring', 0.5), ('onyx arrow', 32.25, 3), (5669, 0.25), ('wand of inferno', 1.75), ('knight armor', 2.75), ('small sapphire', 9.25, 4), ('protection amulet', 2.0), ('violet gem', 1.25), ('death ring', 1.25), ('crown armor', 0.75), ('assassin star', 0.5), ('skull staff', 0.5), ('emerald bangle', 3.0), ('book', 0.5), ('platinum amulet', 0.25) )

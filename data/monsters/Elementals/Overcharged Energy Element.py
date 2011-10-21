@@ -8,3 +8,4 @@ overcharged_energy_element.setBehavior(summonable=0, hostile=1, illusionable=1, 
 overcharged_energy_element.walkAround(energy=0, fire=0, poison=1)
 overcharged_energy_element.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 overcharged_energy_element.regMelee(100)
+overcharged_energy_element.loot( (2148, 100, 175), ('energy soil', 16.5), ('ring of healing', 0.75), ('great health potion', 9.0), ('berserk potion', 0.75), ('small amethyst', 7.25, 2), ('wand of starstorm', 0.25) )

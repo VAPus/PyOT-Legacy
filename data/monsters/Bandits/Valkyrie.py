@@ -11,3 +11,4 @@ Valkyrie.voices("Another head for me!", "Head off!", "Your hea will be mine!", "
 Valkyrie.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Valkyrie.setDefense(13, fire=0.9, earth=1.0, energy=1.0, ice=0.9, holy=0.95, death=1.05, physical=1.1, drown=1.0)
 Valkyrie.regMelee(70)
+Valkyrie.loot( ('girlish hair decoration', 5.25), ('red apple', 11.25, 2), ('hunting spear', 4.25), ('meat', 29.0, 3), (2148, 100, 12), ('spear', 100, 3), ('chain armor', 8.5), ('protective charm', 2.0), ('plate armor', 1.25), ('skull', 0.5), ('protection amulet', 1.0), ('double axe', 0.25), ('health potion', 0.25) )

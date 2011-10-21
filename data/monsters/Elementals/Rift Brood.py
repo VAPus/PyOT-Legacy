@@ -9,3 +9,4 @@ rift_brood.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, 
 rift_brood.walkAround(energy=0, fire=0, poison=1)
 rift_brood.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 rift_brood.regMelee(100)
+rift_brood.loot )

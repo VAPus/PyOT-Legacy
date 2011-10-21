@@ -10,3 +10,4 @@ Stalker.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pus
 Stalker.setImmunity(0,1,1) # paralyze, invisible, lifedrain
 Stalker.setDefense(0, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Stalker.regMelee(70)
+Stalker.loot( ('obsidian lance', 1.25), ('katana', 0.75), ('miraculum', 2.0), ('brass shield', 5.5), ('blank rune', 8.5), ('throwing knife', 15.25, 2), (2148, 59.5, 8), ('brass legs', 3.0) )

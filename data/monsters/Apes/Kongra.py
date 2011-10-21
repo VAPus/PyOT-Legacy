@@ -10,3 +10,4 @@ Kongra.voices("Ungh! Ungh!", "Hugah!", "Huaauaauaauaa!")
 Kongra.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Kongra.setDefense(20, fire=0.8, earth=0.9, energy=0.95, ice=1.15, holy=1.0, death=1.05, physical=1.0, drown=1.0)
 Kongra.regMelee(60)
+Kongra.loot( ('protection amulet', 0.75), (2148, 100, 40), ('banana', 51.25, 12), ('plate armor', 1.0), ('ape fur', 1.0, 3), (12388, 5.25), ('health potion', 0.75), ('power ring', 0.25), ('club ring', 0.25) )

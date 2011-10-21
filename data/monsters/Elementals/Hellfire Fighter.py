@@ -8,3 +8,4 @@ hellfire_fighter.setBehavior(summonable=0, hostile=1, illusionable=0, convinceab
 hellfire_fighter.walkAround(energy=1, fire=0, poison=1)
 hellfire_fighter.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 hellfire_fighter.regMelee(520)
+hellfire_fighter.loot( (2148, 100, 243), ('demonic essence', 15.5, 3), ('burnt scroll', 50.5), ('wand of inferno', 9.25), ('soul orb', 11.25), ('blank rune', 44.5, 2), ('fiery heart', 9.75), ('fire axe', 0.5), ('fire sword', 3.75), ('emerald bangle', 2.0), ('small diamond', 1.75), ('piece of hellfire armor', 4.75), ('magma legs', 0.75), ('platinum coin', 1.0), ('magma coat', 0.5), ('demonbone amulet', 0.25) )

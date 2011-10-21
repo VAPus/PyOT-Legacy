@@ -11,3 +11,4 @@ phantasm.voices("Oh my, you forgot to put your pants on!", "Weeheeheeheehee!", "
 phantasm.regMelee(470)
 phantasm.summon("phantasm summon", 15)
 phantasm.maxSummons(4)
+phantasm.loot( (2148, 100, 259), ('blank rune', 36.25, 2), ('shadow herb', 29.25), ('demonic essence', 19.5, 3), ('small emerald', 15.0, 3), ('rusty armor', 7.5), ('soul orb', 11.25), ('great mana potion', 5.0), ('platinum coin', 1.25), ('crown armor', 0.5), ('stealth ring', 0.75), ('abyss hammer', 0.25) )

@@ -10,3 +10,4 @@ midnight_warrior.walkAround(energy=0, fire=0, poison=0)
 midnight_warrior.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 midnight_warrior.voices("I am champion of darkness and you are nothing.")
 midnight_warrior.regMelee(150)#+or more and poisons up to 7 hp/turn
+midnight_warrior.loot( ('midnight shard', 9.25) )

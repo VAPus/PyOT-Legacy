@@ -10,3 +10,4 @@ quara_constrictor.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
 quara_constrictor.regMelee(150) #poisons you for 1 hp/turn
+quara_constrictor.loot( (2148, 100, 100), ('fish fin', 0.5, 3), ('brass armor', 2.25), ('small amethyst', 0.25), ('longsword', 5.0), ('shrimp', 5.5), ('quara tentacle', 10.0) )

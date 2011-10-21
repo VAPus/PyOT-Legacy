@@ -9,3 +9,4 @@ wasp.walkAround(energy=1, fire=1, poison=0)
 wasp.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 wasp.voices("Bssssss")
 wasp.regMelee(20)#plus poison
+wasp.loot( ('honeycomb', 3.0, 3) )

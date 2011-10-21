@@ -10,3 +10,4 @@ pirate_cutthroat.walkAround(energy=1, fire=1, poison=1)
 pirate_cutthroat.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 pirate_cutthroat.voices("Give up!", "Plundeeeeer!", "Hiyaa!")
 pirate_cutthroat.regMelee(175)#+poison
+pirate_cutthroat.loot( (2148, 100, 50), ('light shovel', 2.0), ('compass', 10.0), ('pirate bag', 1.0), ('steel shield', 3.0), ('treasure map', 1.0), ('scale armor', 2.75), ('eye patch', 0.5), ('pirate knee breeches', 1.0), ('peg leg', 0.5), ('hook', 0.5, 3), ('rum flask', 0.0025), ('dice', 0.0025) )

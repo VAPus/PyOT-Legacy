@@ -8,3 +8,4 @@ centipede.setBehavior(summonable=335, hostile=1, illusionable=1, convinceable=33
 centipede.walkAround(energy=1, fire=1, poison=0)
 centipede.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 centipede.regMelee(45)#poison 1hp/turn
+centipede.loot( (2148, 100, 15), ('centipede leg', 10.0) )

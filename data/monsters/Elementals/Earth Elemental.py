@@ -8,3 +8,4 @@ earth_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, convinceabl
 earth_elemental.walkAround(energy=0, fire=1, poison=0)
 earth_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 earth_elemental.regMelee(120)
+earth_elemental.loot( ('lump of earth', 19.5), (2148, 100, 130), ('earth arrow', 100, 30), ('blank rune', 9.75), ('strong mana potion', 2.0), ('rusty armor', 4.75), ('small stone', 54.25, 10), ('small topaz', 0.5), ('clay lump', 0.25) )

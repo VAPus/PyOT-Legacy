@@ -12,3 +12,4 @@ orc_shaman.summon("snake", 10)
 orc_shaman.maxSummons(4)
 orc_shaman.voices("Huumans stinkk!", "Grak brrretz gulu.")
 orc_shaman.regMelee(15) #incorrect
+orc_shaman.loot( ('shamanic hood', 7.0), (2148, 100, 5), ('broken shamanic staff', 9.25), ('orc tooth', 1.5), ('spear', 5.5), ('chain armor', 8.0), ('corncob', 15.0, 2), ('orc leather', 4.5), ('wand of decay', 1.0), ('book', 0.5) )

@@ -10,3 +10,4 @@ orc_marauder.walkAround(energy=1, fire=1, poison=1)
 orc_marauder.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 orc_marauder.voices("Grrrrrr")
 orc_marauder.regMelee(80)#unknown
+orc_marauder.loot( ('orc tooth', 3.0), ('broken crossbow', 5.0), ('orc leather', 4.75), ('bow', 5.5), (2148, 100, 88), ('shaggy tail', 11.0), ('meat', 23.5), ('crossbow', 0.25), ('obsidian lance', 1.0), ('orcish axe', 1.0), ('silkweaver bow', 0.0025) )

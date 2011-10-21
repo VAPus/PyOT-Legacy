@@ -11,3 +11,4 @@ giant_spider.setImmunity(paralyze=0, invisible=0, lifedrain=1, drunk=1)
 giant_spider.summon("poison spider", 10)
 giant_spider.maxSummons(2)
 giant_spider.regMelee(300) #poisons you for 5-8 hp/turn
+giant_spider.loot( (2148, 100, 98), ('poison arrow', 79.5, 12), ('steel helmet', 5.25), ('plate armor', 10.25), ('time ring', 0.75), ('brass legs', 8.5), (5879, 2.25), ('strong health potion', 1.0), ('knight legs', 0.25), ('knight armor', 0.25), ('platinum amulet', 0.25), ('lightning headband', 0.0025) )

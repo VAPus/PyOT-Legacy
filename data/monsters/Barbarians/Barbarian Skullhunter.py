@@ -11,3 +11,4 @@ Barbarian_Skullhunter.voices("You will become my trophy", "Fight harder, coward"
 Barbarian_Skullhunter.setImmunity(1,0,0) # paralyze, invisible, lifedrain
 Barbarian_Skullhunter.setDefense(9, fire=1.0, earth=1.1, energy=0.8, ice=0.5, holy=0.9, death=1.05, physical=0.9, drown=1.0)
 Barbarian_Skullhunter.regMelee(65)
+Barbarian_Skullhunter.loot( (2148, 100, 30), ('knife', 14.5), ('brass helmet', 21.0), ('torch', 60.25), ('skull', 3.25), ('viking helmet', 8.0), ('scale armor', 3.75), ('health potion', 0.75), ('crystal sword', 0.0025), ('brown piece of cloth', 0.5, 3), ('ragnir helmet', 0.0025), ('life ring', 0.25), ('fur boots', 0.0025) )

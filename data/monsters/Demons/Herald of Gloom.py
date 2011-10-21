@@ -8,3 +8,4 @@ herald_of_gloom.setBehavior(summonable=0, hostile=1, illusionable=0, convinceabl
 herald_of_gloom.walkAround(energy=0, fire=0, poison=0)
 herald_of_gloom.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 herald_of_gloom.regMelee(100)
+herald_of_gloom.loot( ('midnight shard', 20.5) )

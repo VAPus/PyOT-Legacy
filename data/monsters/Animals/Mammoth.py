@@ -9,5 +9,5 @@ Mammoth.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=500, p
 Mammoth.voices("Troooooot!", "Hooooot-Toooooot!", "Tooooot.")
 Mammoth.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Mammoth.setDefense(23, fire=1.1, earth=0.8, energy=1.0, ice=0.8, holy=1.0, death=1.0, physical=0.8, drown=1.0)
-Mammoth.loot( ('tusk shield', 0.55,), ('tusk', 0.4, 2), ('furry club', 1), ('ham', 12.5, 3), ('meat', 11.5, 4), ('gold coin', 15.5, 20), ('thick fur', 1.75), ('mammoth tusk', 3, 2) )
+Mammoth.loot( ('ham', 27.0, 3), ('thick fur', 2.0), (2148, 100, 20), ('mammoth tusk', 8.25, 2), ('furry club', 0.5), ('meat', 26.25), ('tusk shield', 0.0025) )
 Mammoth.regMelee(110)
