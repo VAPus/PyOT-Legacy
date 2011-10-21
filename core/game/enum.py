@@ -445,3 +445,41 @@ CONDITION_LATER = 1
 CONDITION_ADD = 2
 CONDITION_MODIFY = 3
 CONDITION_REPLACE = 4
+
+
+#spell information
+ATTACK_GROUP = 1
+HEALING_GROUP = 2
+SUPPORT_GROUP=3
+SPECIAL_GROUP = 4
+
+AREA_ONE = (0,0),
+
+AREA_WAVE4 = TARGET_DIRECTION, (0,), \
+            (-1, 0, 1), \
+            (-1, 0, 1), \
+            (-2, -1, 0, 1, 2)
+            
+AREA_WAVE5 = TARGET_DIRECTION, (0,), \
+            (-1, 0, 1), \
+            (-2, -1, 0, 1, 2), \
+            (-2, -1, 0, 1, 2), \
+            (-2, -1, 0, 1, 2), \
+             
+AREA_BEAM4 = TARGET_DIRECTION,(0,), (0,), (0,), (0,)
+
+AREA_BEAM7 = TARGET_DIRECTION,(0,), (0,), (0,), (0,), (0,), (0,), (0,)
+
+AREA_CIRCLE = TARGET_CASTER_AREA, (-1, 1), (0, -1), (0, 1)
+
+AREA_CIRCLE2 = TARGET_CASTER_AREA, (-1, -2), (0, -2), (1, -2), \
+               (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
+               (-2, 0), (-1, 0), (1, 0), (2, 0), \
+               (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), \
+               (-1, 2), (0, 2), (1, 2)
+
+AREA_SQUARE = TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
+              (-1, 0), (1, 0), \
+              (-1, 1), (0, 1), (1, 1)
+
+AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)

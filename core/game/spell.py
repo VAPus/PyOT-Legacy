@@ -9,41 +9,6 @@ import game.creature
 spells = {}
 fieldRunes = {}
 targetRunes = {}
-ATTACK_GROUP = 1
-HEALING_GROUP = 2
-SUPPORT_GROUP=3
-SPECIAL_GROUP = 4
-
-AREA_ONE = (0,0),
-
-AREA_WAVE4 = game.enum.TARGET_DIRECTION, (0,), \
-            (-1, 0, 1), \
-            (-1, 0, 1), \
-            (-2, -1, 0, 1, 2)
-            
-AREA_WAVE5 = game.enum.TARGET_DIRECTION, (0,), \
-            (-1, 0, 1), \
-            (-2, -1, 0, 1, 2), \
-            (-2, -1, 0, 1, 2), \
-            (-2, -1, 0, 1, 2), \
-             
-AREA_BEAM4 = game.enum.TARGET_DIRECTION,(0,), (0,), (0,), (0,)
-
-AREA_BEAM7 = game.enum.TARGET_DIRECTION,(0,), (0,), (0,), (0,), (0,), (0,), (0,)
-
-AREA_CIRCLE = game.enum.TARGET_CASTER_AREA, (-1, 1), (0, -1), (0, 1)
-
-AREA_CIRCLE2 = game.enum.TARGET_CASTER_AREA, (-1, -2), (0, -2), (1, -2), \
-               (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
-               (-2, 0), (-1, 0), (1, 0), (2, 0), \
-               (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), \
-               (-1, 2), (0, 2), (1, 2)
-
-AREA_SQUARE = game.enum.TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
-              (-1, 0), (1, 0), \
-              (-1, 1), (0, 1), (1, 1)
-
-AREA_WALL = game.enum.TARGET_DIRECTION, (-2, -1, 1, 2)
 
 def calculateAreaDirection(position, direction, area):
     positions = []
