@@ -539,6 +539,7 @@ class Player(Creature):
             print "Remove from cache ", item
             try:
                 del item.inContainer
+                del item.inPlayer
             except:
                 pass
             
@@ -571,7 +572,8 @@ class Player(Creature):
         
         if container:
             item.inContainer = container
-
+        item.inPlayer = self
+        
         # Save
         self.saveInventory = True
             
@@ -1341,7 +1343,10 @@ class Player(Creature):
     def __buildInventoryCache(self, container):
         for item in container.container.items:
             weight = item.weight
+            
             item.inContainer = container # Funny call to simplefy lookups
+            item.inPlayer = self
+            
             if item.decayCreature:
                 item.decayCreature = self
             if weight:
