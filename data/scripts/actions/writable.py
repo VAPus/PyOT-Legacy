@@ -13,8 +13,8 @@ def writable(creature, thing, position, stackpos, **k):
         if transformTo:
             thing.itemId = transformTo
             creature.replaceItem(position, stackpos, thing)
-            
-    creature.windowHandlers[windowId] = writeback
+    
+    creature.setWindowHandler(windowId, writeback)
     
 useScript = game.scriptsystem.get("use")
 for item in game.item.items:

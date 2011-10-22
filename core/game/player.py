@@ -832,7 +832,10 @@ class Player(Creature):
             stream.uint8(0)
             
         stream.send(self.client)
-    
+
+    def setWindowHandler(self, windowId, callback):
+        self.windowHandlers[windowId] = callback
+        
     def textWindow(self, item, canWrite=False, maxLen=0xFF, text="", writtenBy="", timestamp=0):
         stream = self.packet(0x96)
         
@@ -858,6 +861,17 @@ class Player(Creature):
             stream.string("")
         
         stream.send(self.client)
+        return self.windowTextId
+
+    def houseWindow(self, text):
+        stream = self.packet(0x97)
+        self.windowTextId += 1
+        
+        stream.uint8(0) # Unused in PyOT
+        stream.uint32(self.windowTextId)
+        stream.string(text)
+        stream.send(self.client)
+        
         return self.windowTextId
         
     def stopAutoWalk(self):

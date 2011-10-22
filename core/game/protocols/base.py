@@ -2,6 +2,7 @@
 from packet import TibiaPacket
 from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet import defer, reactor
+from twisted.python import log
 import game.enum
 enum = game.enum
 import math
@@ -491,6 +492,9 @@ class BaseProtocol(object):
         
         elif packetType == 0x89: # Text from textWindow
             self.handleWriteBack(player,packet)
+
+        elif packetType == 0x8A: # Text from houseWindow
+            self.handleWriteBackForHouses(player, packet)
             
         elif packetType == 0x97: # Request channels
             player.openChannels()
@@ -1030,6 +1034,14 @@ class BaseProtocol(object):
         player.openTrade.sell(player, sid(clientId), count, amount, ignoreEquipped)
 
     def handleWriteBack(self, player, packet):
+        windowId = packet.uint32()
+        text = packet.string()
+        
+        if windowId in player.windowHandlers:
+            player.windowHandlers[windowId](text)
+
+    def handleWriteBackForHouses(self, player, packet):
+        packet.pos += 1 # Skip doorId, no need in PyOT :)
         windowId = packet.uint32()
         text = packet.string()
         

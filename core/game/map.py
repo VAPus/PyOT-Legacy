@@ -31,7 +31,7 @@ def getTile(pos):
 
 def getHouseId(pos):
     try:
-        return housePositions[(pos[0], pos[1])]
+        return housePositions[(pos[0], pos[1], pos[2])]
     except:
         return False
         
@@ -215,7 +215,6 @@ knownMap = {}
 houseTiles = {}
 
 housePositions = {}
-
 
 # Ops codes
 class S(object):

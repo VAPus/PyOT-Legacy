@@ -12,14 +12,14 @@ def openHorizontalDoor(creature, thing, position, **k):
     newPos = position[:]
     newPos[1] += 1
     
-    thing.transform(thing.itemId+1, position)
+    thing.transform(thing.itemId-1, position)
     relocate(position, newPos)
 
 def openVerticalDoor(creature, thing, position, **k):
     newPos = position[:]
-    newPos[1] += 1
+    newPos[0] += 1
     
-    thing.transform(thing.itemId+1, position)
+    thing.transform(thing.itemId-1, position)
     relocate(position, newPos)
 
 reg('use', openHorizontal, openHorizontalDoor)

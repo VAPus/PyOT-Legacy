@@ -329,14 +329,14 @@ class Item(object):
         if item.tileStacked:
             item = item.copy()
             
-        item.itemId = transformTo
-        if transformTo:
+        item.itemId = toId
+        if toId:
             newStackpos = tile.placeItem(item)
 
         for spectator in game.engine.getSpectators(position):
             stream = spectator.packet()
             stream.removeTileItem(position, stackPos)
-            if transformTo:
+            if toId:
                 stream.addTileItem(position, stackPos, item)
                 
             stream.send(spectator)

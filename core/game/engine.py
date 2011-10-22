@@ -35,7 +35,7 @@ pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById"]
 
 class House(object):
     def __init__(self, owner, guild, paid, name, town, size, rent, data):
@@ -49,34 +49,90 @@ class House(object):
         if data:
             self.data = pickle.loads(data)
         else:
-            self.data = {"items":[], "subowners":[], "guests":[]}
+            self.data = {"items":[], "subowners": [], "guests": [], "doors":{}}
         try:
             for pos in self.data["items"]:
                 savedItems[pos] = self.data["items"][pos]
         except:
             pass
         self.save = False
+
+    # Doors
+    def getDoorAccess(self, doorId):
+        try:
+            return self.data["doors"][doorId]
+        except:
+            self.data["doors"][doorId] = []
+            return self.data["doors"][doorId]
+            
+    def addDoorAccess(self, doorId, name):
+        try:
+            self.data["doors"][doorId].append(name)
+        except:
+            self.data["doors"][doorId] = [name]
+            
+    def removeDoorAccess(self, doorId, name):
+        try:
+            self.data["doors"][doorId].remove(name)
+        except:
+            pass
+    def haveDoorAccess(self, doorId, nameOrPlayer):
+        # TODO: Regex and guild!
+        import game.player
         
-    def addGuest(self, id):
         try:
-            self.data["guests"].append(id)
+            if isinstance(nameOrPlayer, game.player.Player):
+                return nameOrPlayer.name() in self.data["doors"][doorId]
+            else:
+                return nameOrPlayer in self.data["doors"][doorId]
         except:
-            self.data["guests"] = [id]
-    def removeGuest(self, id):
+            return False
+            
+    # Guests
+    def addGuest(self, name):
         try:
-            self.data["guests"].remove(id)
+            self.data["guests"].append(name)
+        except:
+            self.data["guests"] = [name]
+    def removeGuest(self, name):
+        try:
+            self.data["guests"].remove(name)
         except:
             pass
-    def addSubOwner(self, id):
+    def isGuest(self, nameOrPlayer):
+        # TODO: Regex and guild!
+        import game.player
+        
         try:
-            self.data["subowners"].append(id)
+            if isinstance(nameOrPlayer, game.player.Player):
+                return nameOrPlayer.name() in self.data["guests"]
+            else:
+                return nameOrPlayer in self.data["guests"]
         except:
-            self.data["subowners"] = [id]
-    def removeSubOwner(self, id):
+            return False
+            
+    # Subowners
+    def addSubOwner(self, name):
         try:
-            self.data["subowners"].remove(id)
+            self.data["subowners"].append(name)
+        except:
+            self.data["subowners"] = [name]
+    def removeSubOwner(self, name):
+        try:
+            self.data["subowners"].remove(name)
         except:
             pass
+    def isSubOwner(self, nameOrPlayer):
+        # TODO: Regex and guild!
+        import game.player
+        
+        try:
+            if isinstance(nameOrPlayer, game.player.Player):
+                return nameOrPlayer.name() in self.data["subowners"]
+            else:
+                return nameOrPlayer in self.data["subowners"]
+        except:
+            return False
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
@@ -645,7 +701,7 @@ def relocate(fromPos, toPos):
     toPos = game.map.getTile(toPos)
     items = []
     for item in tile.getItems():
-        if not item.moveable: continue
+        if not item.movable: continue
         
         if item.decayPosition:
             item.decayPosition = toPos
@@ -660,13 +716,13 @@ def relocate(fromPos, toPos):
         stream = spectator.packet()
         for pair in items:
             stream.removeTileItem(fromPos, pair[1])
-        stream.send(self.client)
+        stream.send(spectator)
 
     for spectator in getSpectators(toPos):
         stream = spectator.packet()
         for pair in items:
             stream.addTileItem(toPos, pair[2], pair[0])
-        stream.send(self.client)
+        stream.send(spectator)
 # The development debug system
 def explainPacket(packet):
     """ Explains the packet structure in hex
@@ -916,6 +972,12 @@ def magicEffect(pos, type):
         stream = spectator.packet()
         stream.magicEffect(pos, type)
         stream.send(spectator)
+
+def getHouseById(id):
+    try:
+        return houseData[id]
+    except:
+        return None
         
 # Protocol 0x00:
 @inlineCallbacks
