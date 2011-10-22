@@ -855,7 +855,7 @@ class BaseProtocol(object):
                 return
                 
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
-            f
+            
             if not creature.isPushable(player):
                 player.message("Creature can't be pushed")
                 return
