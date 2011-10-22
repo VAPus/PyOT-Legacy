@@ -430,10 +430,13 @@ class Creature(object):
             stream.send(spectator)
         
     def shoot(self, fromPos, toPos, type):
-        for spectator in getSpectators(fromPos) | getSpectators(toPos):
-            stream = spectator.packet()
-            stream.shoot(fromPos, toPos, type)
-            stream.send(spectator)
+        if fromPos == toPos:
+            self.magicEffect(type, fromPos)
+        else:
+            for spectator in getSpectators(fromPos) | getSpectators(toPos):
+                stream = spectator.packet()
+                stream.shoot(fromPos, toPos, type)
+                stream.send(spectator)
 
     def refreshOutfit(self):
         for spectator in game.engine.getSpectators(self.position):

@@ -342,10 +342,10 @@ class Item(object):
                     
                 stream.send(spectator)
         else:
-            if item.tileStacked:
-                item = item.copy()
+            if self.tileStacked:
+                self = self.copy()
                 
-            item.itemId = toId
+            self.itemId = toId
             self.inPlayer.replaceItem(position, None, self)
             
 def cid(itemid):
