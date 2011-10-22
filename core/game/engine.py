@@ -66,12 +66,15 @@ class House(object):
             return self.data["doors"][doorId]
             
     def addDoorAccess(self, doorId, name):
+        self.save = True
+        
         try:
             self.data["doors"][doorId].append(name)
         except:
             self.data["doors"][doorId] = [name]
             
     def removeDoorAccess(self, doorId, name):
+        self.save = True
         try:
             self.data["doors"][doorId].remove(name)
         except:
@@ -90,11 +93,13 @@ class House(object):
             
     # Guests
     def addGuest(self, name):
+        self.save = True
         try:
             self.data["guests"].append(name)
         except:
             self.data["guests"] = [name]
     def removeGuest(self, name):
+        self.save = True
         try:
             self.data["guests"].remove(name)
         except:
@@ -113,11 +118,13 @@ class House(object):
             
     # Subowners
     def addSubOwner(self, name):
+        self.save = True
         try:
             self.data["subowners"].append(name)
         except:
             self.data["subowners"] = [name]
     def removeSubOwner(self, name):
+        self.save = True
         try:
             self.data["subowners"].remove(name)
         except:
@@ -740,20 +747,15 @@ def explainPacket(packet):
 # Save system, async :)
 def saveAll(force=False):
     """Save all players and all global variables."""
+    def callback(result):
+        if result:
+            sql.conn.runOperation(*result)
+            
     
-    import game.map
-    # Build query
     t = time.time()
-    try:
-        def callback(result):
-            if result:
-                sql.conn.runOperation(*result)
-            
-        for player in game.player.allPlayersObject:
-            threads.deferToThread(player._saveQuery, force).addCallback(callback)
-            
-    except:
-        pass # No players
+    # Build query   
+    for player in game.player.allPlayersObject:
+        threads.deferToThread(player._saveQuery, force).addCallback(callback)
         
     # Global storage
     if saveGlobalStorage:

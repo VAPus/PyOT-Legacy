@@ -18,19 +18,17 @@ def _houseCheck(creature):
 def guestList(creature, **k):
     house = _houseCheck(creature)
     if house:
-        windowId = creature.houseWindow('\n'.join(house.data["guests"]))
+        _text = '\n'.join(house.data["guests"])
+        windowId = creature.houseWindow(_text)
         def writeback(text):
-            # split entries
-            entries = text.split("\n")
+            if text != _text:
+                # Update guestlist
+                house.data["guests"] = text.split("\n")
 
-            # Reset guestlist
-            house.data["guests"] = []
-
-            # Parse
-            for entry in entries:
-                house.addGuest(entry)
-
-            creature.message("Guestlist have been updated!")
+                # Force save
+                house.save = True
+                
+                creature.message("Guestlist have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)
@@ -55,19 +53,17 @@ def doorAccess(creature, **k):
             creature.message("Your not standing in front of a door (with a doorId)")
             return False
 
-        windowId = creature.houseWindow('\n'.join(house.getDoorAccess(doorId)))
+        _text = '\n'.join(house.getDoorAccess(doorId))
+        windowId = creature.houseWindow(_text)
         def writeback(text):
-            # split entries
-            entries = text.split("\n")
-
-            # Reset guestlist
-            house.data["doors"][doorId] = []
-
-            # Parse
-            for entry in entries:
-                house.addDoorAccess(doorId, entry)
-
-            creature.message("door access have been updated!")
+            if text != _text:
+                # Update guestlist
+                house.data["doors"][doorId] = text.split("\n")
+                
+                # Force save
+                house.save = True
+                
+                creature.message("door access have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)
@@ -78,19 +74,19 @@ def doorAccess(creature, **k):
 def subownerList(creature, **k):
     house = _houseCheck(creature)
     if house:
-        windowId = creature.houseWindow('\n'.join(house.data["subowners"]))
+        
+        _text = '\n'.join(house.data["subowners"])
+        windowId = creature.houseWindow(_text)
         def writeback(text):
-            # split entries
-            entries = text.split("\n")
+            # We do this so we can compare and only invalidate the saved state of the house when it's actually updated!
+            if text != _text:
+                # Update sub-owner list
+                house.data["subowners"] = text.split("\n")
 
-            # Reset sub-owner list
-            house.data["subowners"] = []
-
-            # Parse
-            for entry in entries:
-                house.addSubOwner(entry)
-
-            creature.message("sub-owner list have been updated!")
+                # Force save
+                house.save = True
+                
+                creature.message("sub-owner list have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)
