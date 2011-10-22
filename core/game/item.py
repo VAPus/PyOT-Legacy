@@ -288,12 +288,26 @@ class Item(object):
         self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
 
     def __getstate__(self):
+        
+        if self.params:
+            params = self.params.copy()
+            try:
+                del params["inContainer"]
+            except:
+                pass
+            try:
+                del params["inPlayer"]
+            except:
+                pass
+        else:
+            params = None
+            
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
             if delay > 0:
-                return (self.itemId, self.actions, self.params, delay)
+                return (self.itemId, self.actions, params, delay)
             
-        return (self.itemId, self.actions, self.params)
+        return (self.itemId, self.actions, params)
     
     def __setstate__(self, state):
         self.itemId = state[0]

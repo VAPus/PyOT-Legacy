@@ -103,13 +103,11 @@ def playerEat(creature, ticker=0, lastHP=0, lastMana=0):
     
 def onUse(creature, thing, position, stackpos, **a):
     global foods
-    if not foods[thing.itemId]:
-        return
 
     duration = foods[thing.itemId][0]
     sound = foods[thing.itemId][1]
     thing.count -= 1
-    if thing.count:
+    if thing.count > 0:
         creature.replaceItem(position, stackpos, thing)
     else:
         creature.removeItem(position, stackpos)

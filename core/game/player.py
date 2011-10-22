@@ -274,7 +274,7 @@ class Player(Creature):
                 return self.inventory[position[1]-1]
             
             # Option 3, the bags, if there is one ofcource
-            elif self.inventory[2]:
+            else:
                 try:
                     bag = self.openContainers[position[1] - 64]
                 except:
@@ -446,7 +446,7 @@ class Player(Creature):
                 self.updateInventory(position[1])
             
             # Option 3, the bags, if there is one ofcource
-            elif self.inventory[2]:
+            else:
                 update = False
                 try:
                     bag = self.openContainers[position[1] - 64]
@@ -472,8 +472,12 @@ class Player(Creature):
                     if update:
                         self.refreshStatus(stream)
                     stream.send(self.client)
-                except:
-                    pass
+                except:  
+                    bag.container.items[position[2]] = item
+                    stream = self.packet()
+                    stream.updateContainerItem(position[1] - 64, position[2], item)
+                    stream.send(self.client)
+                    
     def modifyItem(self, thing, position, stackpos, mod):
         try:
             thing.count += mod
@@ -1003,9 +1007,12 @@ class Player(Creature):
     # Item to container
     def addItem(self, item, placeOnGround=True):
         ret = None
-        try:
-            ret = self.itemToContainer(self.inventory[2], item)
-        except:
+        if self.inventory[2]:
+            try:
+                ret = self.itemToContainer(self.inventory[2], item)
+            except:
+                ret = False
+        else:
             ret = False
             
         if ret == False and not self.inventory[9]:
@@ -1015,18 +1022,15 @@ class Player(Creature):
                 stream.addInventoryItem(10, self.inventory[9])
                 stream.send(self.client)            
                 return True
-            elif placeOnGround:
-                tile = game.map.getTile(self.position)
-                tile.placeItem(item)
-                game.engine.updateTile(self.position, tile)
-                return True
-            else:
-                return False
-                
+        if ret == False and placeOnGround:
+            tile = game.map.getTile(self.position)
+            tile.placeItem(item)
+            game.engine.updateTile(self.position, tile)
+            return True
         elif ret == False:
             return False
-        else:
-            return True
+
+        return True
             
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
         stream = streamX
@@ -1052,8 +1056,8 @@ class Player(Creature):
                 for itemX in container.container.items:
                     if itemX.itemId == item.itemId and itemX.count < 100:
                         total = itemX.count + count
-                        Tcount = min(itemX.count + count, 100)
-                        count = total - itemX.count
+                        Tcount = min(total, 100)
+                        count = total - Tcount
                         if update:
                             ret = self.modifyCache(itemX, itemX.count - Tcount)
                             if ret == False:
@@ -1084,7 +1088,7 @@ class Player(Creature):
                     break
                     
                 slot = 0
-            
+  
         if count:
             # Add item
             if self.inventoryWeight - ((item.weight or 0) * (item.count or 1)) < 0:

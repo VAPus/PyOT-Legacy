@@ -881,14 +881,9 @@ class BaseProtocol(object):
         print position
         clientId = packet.uint16()
         stackpos = packet.uint8()
-        try:
-            print "Look at got: "
-            for i in game.map.getTile(position).getItems():
-                print i.itemId,
-            print ""
-        except:
-            pass
-        if stackpos == 0 and clientId == 99:
+        if position[0] == 0xFFFF:
+            thing = player.findItem(position, stackpos)
+        elif stackpos == 0 and clientId == 99:
             try:
                 thing = game.map.getTile(position).creatures()[0]
             except:
@@ -966,7 +961,7 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         index = packet.uint8()
         thing = player.findItem(position, stackpos)
-
+        
         if thing and (position[0] == 0xFFFF or (position[2] == player.position[2] and player.canSee(position))):
             end = None
             if position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):

@@ -113,10 +113,7 @@ def makeitem(creature, text):
             while count:
                 rcount = min(100, count)
                 newitem = game.item.Item(text, rcount)
-                bag = creature.inventory[2]
-                print bag
-                print bag.params
-                creature.itemToContainer(bag, newitem)
+                creature.addItem(newitem)
                 count -= rcount
         else:
             raise
