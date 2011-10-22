@@ -978,8 +978,6 @@ class BaseProtocol(object):
         
         thing = player.findItem(position, stackpos)
         onThing = player.findItem(onPosition, onStack)
-        print clientId
-        print onId
         if thing and ((position[2] == player.position[2] and player.canSee(position)) or position[0] == 0xFFFF) and ((onPosition[2] == player.position[2] and player.canSee(onPosition)) or onPosition[0] == 0xFFFF):
             if (position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (onPosition[0] == 0xFFFF or (abs(onPosition[0] - player.position[0]) <= 1 and abs(onPosition[1] - player.position[1]) <= 1)):
                 end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
