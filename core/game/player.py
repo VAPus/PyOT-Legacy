@@ -494,7 +494,7 @@ class Player(Creature):
         if position:
             if position[0] != 0xFFFF:
                 tile = game.map.getTile(position)
-                del tile.things[position[2]]
+                del tile.things[stackpos]
                 game.engine.updateTile(position, tile)
                 
             # Option 2, the inventory
