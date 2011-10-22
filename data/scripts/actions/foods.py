@@ -115,15 +115,13 @@ def onUse(creature, thing, position, stackpos, **a):
         creature.removeItem(position, stackpos)
         
     if creature.regenerate:
-        creature.regenerate += duration
-        if creature.regenerate > 1500:
-            creature.regenerate = max(creature.regenerate, 1500)
+        if creature.regenerate + duration > 1500:
             creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
         else:
+            creature.regenerate += duration
             creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
     else:
         creature.regenerate = duration
         playerEat(creature)
-        creature.message(sound)
+        creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
 reg('use', foods.keys(), onUse)
-    

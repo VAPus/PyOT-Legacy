@@ -1,4 +1,4 @@
-bear = game.monster.genMonster("Bear", (16, 5974), "a bear")
+bear = game.monster.genMonster("Bear", (16, 5975), "a bear")
 bear.bloodType("blood")
 bear.setHealth(80)
 bear.setExperience(23)
