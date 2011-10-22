@@ -1037,17 +1037,23 @@ class BaseProtocol(object):
         windowId = packet.uint32()
         text = packet.string()
         
-        if windowId in player.windowHandlers:
+        try:
             player.windowHandlers[windowId](text)
-
+            del player.windowHandlers[windowId] # Cleanup
+        except:
+            pass
+        
     def handleWriteBackForHouses(self, player, packet):
         packet.pos += 1 # Skip doorId, no need in PyOT :)
         windowId = packet.uint32()
         text = packet.string()
         
-        if windowId in player.windowHandlers:
+        try: # Try blocks are better than x in y checks :)
             player.windowHandlers[windowId](text)
-            
+            del player.windowHandlers[windowId] # Cleanup
+        except:
+            pass
+        
     def handleQuestLine(self, player, packet):
         questId = packet.uint16()-1
         player.questLine(game.resource.getQuest(questId).name)

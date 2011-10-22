@@ -9,7 +9,7 @@ def _houseCheck(creature):
         creature.message("MAPPING/SQL ERROR! House not found")
         return False
 
-    if creature.data["id"] != house.owner:
+    if creature.data["id"] != house.owner and not house.isSubOwner(creature):
         creature.message("Your not the owner of this house")
         return False
     
@@ -74,7 +74,11 @@ def doorAccess(creature, **k):
 def subownerList(creature, **k):
     house = _houseCheck(creature)
     if house:
-        
+        # Perform owner check
+        if creature.data["id"] != house.owner:
+            creature.message("Your not the owner of this house")
+            return False  
+            
         _text = '\n'.join(house.data["subowners"])
         windowId = creature.houseWindow(_text)
         def writeback(text):
@@ -93,7 +97,41 @@ def subownerList(creature, **k):
 
     # Return False to not display text
     return False
-    
+
+# Is he allowed to enter the house?
+def guestListCheck(creature, thing, newTile, **k):
+    try:
+        house = getHouseById(newTile.houseId)
+        if not house:
+            return True
+        
+        elif house.isGuest(creature) or house.isSubOwner(creature) or creature.data["id"] == house.owner:
+            return True
+
+        else:
+            return False
+    except:
+        return True # Not a house. Mapping bug.
+        
+def houseDoorUseCheck(creature, thing, position, **k):
+    try:
+        if not thing.doorId:
+            return True # No doorId on this door.
+            
+        house = getHouseById(getTile(position).houseId)
+        if not house:
+            return True
+        
+        elif house.haveDoorAccess(thing.doorId, creature) or house.isSubOwner(creature) or creature.data["id"] == house.owner:
+            return True
+
+        else:
+            return False
+    except:
+        return True # Not a house. Mapping bug.
+        
+regFirst("use", "houseDoor", houseDoorUseCheck)
+regFirst("preWalkOn", "houseDoor", guestListCheck)
 reg("talkaction", "aleta sio", guestList)
 reg("talkaction", "aleta som", subownerList)
 reg("talkaction", "aleta grav", doorAccess)

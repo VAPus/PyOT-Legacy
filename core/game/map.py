@@ -48,8 +48,8 @@ def removeCreature(creature, pos):
         return False  
 
 PACK_ITEMS = 0 # top items
-PACK_CREATURES = 6
-PACK_FLAGS = 12
+PACK_CREATURES = 8
+PACK_FLAGS = 16
 
 class Tile(object):
     __slots__ = ('things', 'countNflags')
@@ -85,7 +85,7 @@ class Tile(object):
             self._modpack(PACK_FLAGS, flags)
             
     def _depack(self, level):
-        return (self.countNflags >> level) & 63
+        return (self.countNflags >> level) & 255
         
     def _modpack(self, level, mod):
         self.countNflags += mod << level
@@ -205,7 +205,7 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 class HouseTile(Tile):
     __slots__ = 'houseId'
     
-bindconstant.bind_all(HouseTile) # Apply constanting to Tile 
+bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
 import data.map.info
 dummyItems = {} 
@@ -226,7 +226,7 @@ class S(object):
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.monster.getMonster(name).spawn((self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
@@ -236,7 +236,7 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn([self.base[0]+x,self.base[1]+y,z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn((self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
