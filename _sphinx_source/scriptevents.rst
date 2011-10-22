@@ -29,7 +29,7 @@ The registration function:
 
 **For ThingScripts() and CreatureScripts()**:
 
-    .. function:: reg(type, id, callback [, toid=None [, weakfunc=True]])
+    .. function:: reg(type, id, callback [, weakfunc=True])
     
     Register a ``callback`` (function) to the ``type`` script event. ``id`` is the identifier in which things are identified for this callback to be called.
 
