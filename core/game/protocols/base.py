@@ -881,6 +881,13 @@ class BaseProtocol(object):
         print position
         clientId = packet.uint16()
         stackpos = packet.uint8()
+        try:
+            print "Look at got: "
+            for i in game.map.getTile(position).getItems():
+                print i.itemId,
+            print ""
+        except:
+            pass
         if stackpos == 0 and clientId == 99:
             try:
                 thing = game.map.getTile(position).creatures()[0]

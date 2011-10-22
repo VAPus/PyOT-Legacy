@@ -342,9 +342,10 @@ def autoWalkCreature(creature, callback=None):
         creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
-        pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
+        """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
         pos[2] += 1
-        creature.teleport(pos)
+        creature.teleport(pos)"""
+        pass
         
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):

@@ -118,16 +118,39 @@ def teleportDirection(creature, thing, position, **k):
         pos[0] -= 1
         
     creature.teleport(pos)
+
+def teleportDirectionDown(creature, thing, position, **k):
+    # Check if we can do this
+    if not config.monsterStairHops and not creature.isPlayer():
+        return
+        
+    # Grab the position of the player/creature    
+    pos = creature.position[:]
+    pos[2] += 1
     
+    # Change the position to match the floorchange.
+    if thing.floorchange == "north":
+        pos[1] += 2
+    elif thing.floorchange == "south":
+        pos[1] -= 2
+        
+    elif thing.floorchange == "east":
+        pos[0] -= 2
+        
+    elif thing.floorchange == "west":
+        pos[0] += 2
+        
+    creature.teleport(pos)
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
 reg("walkOn", stairs, floorchange)
 reg('useWith', stairs, itemFloorChange)
 
 # Ramps
-ramps = 1390, 1388, 1394, 1392, 1398, 459
+ramps = 1390, 1388, 1394, 1392, 1398
+rampsDown = 459,
 reg("walkOn", ramps, teleportDirection)
-
+reg("walkOn", rampsDown, teleportDirectionDown)
 # Ladders up
 laddersUp = 1386, 3678, 5543, 8599
 reg("use", laddersUp, floorup)

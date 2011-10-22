@@ -60,7 +60,7 @@ class Creature(object):
         self.data = data
         self.creatureType = 0
         self.direction = 0
-        self.position = position
+        self.position = list(position)
         self.speed = 100.0
         self.scripts = { "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()

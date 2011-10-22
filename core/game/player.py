@@ -1361,7 +1361,12 @@ class Player(Creature):
                 self.__buildInventoryCache(item)
                 
     def unpickleInventory(self, inventoryData):
-        self.inventory = pickle.loads(inventoryData)
+        try:
+            self.inventory = pickle.loads(inventoryData)
+        except:
+            print "Broken inventory (blame MySQL, it usually means you killed the connection in the middle of a save)"
+            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+            
         # Generate the inventory cache
         for item in self.inventory:
             if isinstance(item, game.item.Item):
@@ -1382,7 +1387,7 @@ class Player(Creature):
     # Saving
     def pickleInventory(self):
         return pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
-
+        
     def pickleDepot(self):
         return pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
         
