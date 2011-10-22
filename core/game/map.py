@@ -226,7 +226,7 @@ class S(object):
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn((self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.monster.getMonster(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
@@ -236,7 +236,7 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn((self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
