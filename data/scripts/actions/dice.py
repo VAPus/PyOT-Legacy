@@ -5,4 +5,4 @@ def onUse(creature, thing, position, **k):
     
     creature.magicEffect(EFFECT_CRAPS)
 
-reg("use", 5792, onUse, 5797)
+reg("use", range(5792, 5797+1), onUse)

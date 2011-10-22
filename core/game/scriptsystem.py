@@ -138,71 +138,57 @@ class ThingScripts(object):
         else:
             return False
             
-    def reg(self, id, callback, toid=None, weakfunc=True):
+    def reg(self, id, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
             func = callback
             
-        if not toid:
-            if type(id) in (tuple, list, set):
-                for xid in id:
-                    if not xid in self.scripts:
-                        self.scripts[xid] = [func]
-                    else:
-                        self.scripts[xid].append(func)                
-            elif type(id) not in (int, str):
-                # This ensures we remove the script object if the object disappear
-                id = weakref.ref(id, self.unregAll) 
-                
-                if not id in self.thingScripts:
-                    self.thingScripts[id] = [func]
-                else:
-                    self.thingScripts[id].append(func)
-            else:
-                if not id in self.scripts:
-                    self.scripts[id] = [func]
-                else:
-                    self.scripts[id].append(func)
-        else:
-            for xid in xrange(id, toid+1):
+        if type(id) in (tuple, list, set):
+            for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]
                 else:
-                    self.scripts[xid].append(func)
+                    self.scripts[xid].append(func)                
+        elif type(id) not in (int, str):
+            # This ensures we remove the script object if the object disappear
+            id = weakref.ref(id, self.unregAll) 
+                
+            if not id in self.thingScripts:
+                self.thingScripts[id] = [func]
+            else:
+                self.thingScripts[id].append(func)
+        else:
+            if not id in self.scripts:
+                self.scripts[id] = [func]
+            else:
+                self.scripts[id].append(func)
 
-    def regFirst(self, id, callback, toid=None, weakfunc=True):
+    def regFirst(self, id, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
             func = callback
             
-        if not toid:
-            if type(id) in (tuple, list, set):
-                for xid in id:
-                    if not xid in self.scripts:
-                        self.scripts[xid] = [func]
-                    else:
-                        self.scripts[xid].insert(0, func)                
-            elif type(id) not in (int, str):
-                # This ensures we remove the script object if the object disappear
-                id = weakref.ref(id, self.unregAll) 
-                
-                if not id in self.thingScripts:
-                    self.thingScripts[id] = [func]
-                else:
-                    self.thingScripts[id].insert(0, func)
-            else:
-                if not id in self.scripts:
-                    self.scripts[id] = [func]
-                else:
-                    self.scripts[id].insert(0, func)
-        else:
-            for xid in xrange(id, toid+1):
+        if type(id) in (tuple, list, set):
+            for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [func]
                 else:
-                    self.scripts[xid].insert(0, func)
+                    self.scripts[xid].insert(0, func)                
+        elif type(id) not in (int, str):
+            # This ensures we remove the script object if the object disappear
+            id = weakref.ref(id, self.unregAll) 
+                
+            if not id in self.thingScripts:
+                self.thingScripts[id] = [func]
+            else:
+                self.thingScripts[id].insert(0, func)
+        else:
+            if not id in self.scripts:
+                self.scripts[id] = [func]
+            else:
+                self.scripts[id].insert(0, func)
                     
     def unreg(self, id, callback):
         try:
