@@ -634,7 +634,7 @@ class Player(Creature):
         
         if up:
             level = 0
-            self.message("You gained %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
+            self.message("You gained %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp, pos=self.position)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break

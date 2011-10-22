@@ -151,7 +151,6 @@ class TibiaPacket(object):
         self.bytes = [''.join(self.bytes)]
         dataL = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
         lenCache = 0
-        
         for client in list:
             if not client:
                 continue

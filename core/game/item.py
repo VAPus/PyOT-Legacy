@@ -320,7 +320,7 @@ class Item(object):
         
     def transform(self, toId, position, stackPos=None):
         import game.map
-        tile = game.map.getTile(pos)
+        tile = game.map.getTile(position)
         if not stackPos:
             stackPos = tile.findStackpos(self)
 
@@ -333,11 +333,11 @@ class Item(object):
         if transformTo:
             newStackpos = tile.placeItem(item)
 
-        for spectator in game.engine.getSpectators(pos):
+        for spectator in game.engine.getSpectators(position):
             stream = spectator.packet()
-            stream.removeTileItem(pos, stackPos)
+            stream.removeTileItem(position, stackPos)
             if transformTo:
-                stream.addTileItem(pos, stackPos, item)
+                stream.addTileItem(position, stackPos, item)
                 
             stream.send(spectator)
             

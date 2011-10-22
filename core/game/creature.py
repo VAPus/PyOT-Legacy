@@ -597,7 +597,7 @@ class Creature(object):
 
         if self.isPlayer():
             if by:
-                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), 'MSG_DAMAGE_RECEIVED')
+                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=by.position)
             else:
                 self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_RECEIVED')
 

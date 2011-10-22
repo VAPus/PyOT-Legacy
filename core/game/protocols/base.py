@@ -641,7 +641,7 @@ class BaseProtocol(object):
                         player.notPossible()
                         return
                     
-                stream = player.packet()
+                #stream = player.packet()
                 oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
                 
                 # Before we remove it, can it be placed there?
@@ -658,14 +658,22 @@ class BaseProtocol(object):
                     oldItem[1].count -= count
                     if oldItem[1].count > 0:
                         print "Update item count", oldItem[1].count
+                        stream = player.packet() # Hack
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
+                        stream.sendto(game.engine.getSpectators(fromPosition)) # Hack
                     else:
-                        stream.removeTileItem(fromPosition, fromStackPos)
-                        game.map.getTile(fromPosition).removeItem(oldItem[1])
+                        #stream.removeTileItem(fromPosition, fromStackPos)
+                        #game.map.getTile(fromPosition).removeItem(oldItem[1])
+                        tile = game.map.getTile(fromPosition) # Hack
+                        tile.removeItem(oldItem[1])
+                        game.engine.updateTile(fromPosition, tile)
                 else:
-                    stream.removeTileItem(fromPosition, fromStackPos)
-                    game.map.getTile(fromPosition).removeClientItem(clientId, fromStackPos)
-                stream.sendto(game.engine.getSpectators(fromPosition))
+                    #stream.removeTileItem(fromPosition, fromStackPos)
+                    #game.map.getTile(fromPosition).removeItem(oldItem[1])
+                    tile = game.map.getTile(fromPosition) # Hack
+                    tile.removeItem(oldItem[1])
+                    game.engine.updateTile(fromPosition, tile)                    
+                #stream.sendto(game.engine.getSpectators(fromPosition))
                 
             else:
                 stream = player.packet()
@@ -759,19 +767,20 @@ class BaseProtocol(object):
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
                 sendUpdate = False
-                if player.inventoryWeight - ((oldItem[1].weight or 0) * (oldItem[1].count or 1)) < 0:
+                if player.freeCapasity() - ((oldItem[1].weight or 0) * (oldItem[1].count or 1)) < 0:
                     player.tooHeavy()
                     tile = game.map.getTile(player.position)
                     tile.placeItem(Item(sid(clientId), count) if renew else oldItem[1])
                     game.engine.updateTile(player.position, tile)
-                else:    
+                else:
+                    stream = player.packet()    
                     if currItem and currItem[1] and currItem[1].containerSize:
                         ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
                     elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
                         ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                     else:
-                        stream = player.packet()
+                        
                         if toPosition[1] < 64:
                             if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
                                 player.inventory[toPosition[1]-1].count += count
@@ -866,11 +875,6 @@ class BaseProtocol(object):
         position = packet.position()
         print "Look at"
         print position
-        
-        import game.pathfinder, time
-        t = time.time()
-        print "Path: %s" % game.pathfinder.findPath(7, player.position[0], player.position[1], position[0], position[1])
-        print "Took: %f" % (time.time() - t)
         clientId = packet.uint16()
         stackpos = packet.uint8()
         if stackpos == 0 and clientId == 99:
