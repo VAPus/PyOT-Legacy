@@ -692,7 +692,7 @@ class Creature(object):
             raise game.errors.ImpossibleMove()
         
         removeCreature(self, oldPosition)
-        self.position = position 
+        self.position = list(position) 
         if self.creatureType == 0 and self.client:
             stream = self.packet()
             try:
