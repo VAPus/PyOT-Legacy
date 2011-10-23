@@ -583,6 +583,8 @@ class Creature(object):
             if item.itemId == game.enum.SMALLSPLASH:
                 item.decay(self.position) # Reset decay
                 addSplash = False
+            if item.itemId == game.enum.FULLSPLASH:
+                addSplash = False
                         
         if addSplash:
             splash = game.item.Item(game.enum.SMALLSPLASH)

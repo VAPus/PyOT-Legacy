@@ -163,9 +163,10 @@ class Monster(Creature):
         if self.alive or self.data["health"] > 0:
             return
         corpse.decay(self.position)
-        # Remove small splash
+        # Remove bpth small and full splashes on the tile.
         tile.removeItemWithId(enum.SMALLSPLASH)
-
+        tile.removeItemWithId(enum.FULLSPLASH)
+        
         # Add full splash
         splash = item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
