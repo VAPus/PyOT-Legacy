@@ -578,23 +578,18 @@ class Creature(object):
         self.magicEffect(magicEffect) 
         
         tile = game.map.getTile(self.position)
-        addSplash = True
         for item in tile.getItems():
-            if item.itemId == game.enum.SMALLSPLASH:
-                item.decay(self.position) # Reset decay
-                addSplash = False
-            if item.itemId == game.enum.FULLSPLASH:
-                addSplash = False
+            if item.itemId == game.enum.FULLSPLASH or item.itemId == game.enum.SMALLSPLASH:
+                tile.removeItem(item)
                         
-        if addSplash:
-            splash = game.item.Item(game.enum.SMALLSPLASH)
+        splash = game.item.Item(game.enum.SMALLSPLASH)
             
-            if self.isPlayer():
-                splash.fluidSource = game.enum.FLUID_BLOOD
-            else:
-                splash.fluidSource = self.base.blood
-            if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
-                game.engine.placeItem(splash, self.position)
+        if self.isPlayer():
+            splash.fluidSource = game.enum.FLUID_BLOOD
+        else:
+            splash.fluidSource = self.base.blood
+        if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
+            game.engine.placeItem(splash, self.position)
             
             
         if by and by.isPlayer():
