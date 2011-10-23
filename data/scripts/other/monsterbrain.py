@@ -140,7 +140,7 @@ def defaultBrainFeature(self, monster):
                             except:
                                 if monster.canTarget(monster.target.position):
                                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                                elif not monster.canTarget(monster.target.position, True):
+                                elif not monster.canTarget(monster.target.position, allowGroundChange=True):
                                     monster.target = None
                                     
                             if monster.target:
