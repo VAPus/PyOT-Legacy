@@ -834,8 +834,8 @@ class Creature(object):
             return True
         return False
 
-    def canTarget(self, position, radius=(8,6)):
-        if self.position[2] != position[2]: # We are on ground level and we can't see underground
+    def canTarget(self, position, radius=(8,6), allowGroundChange=False):
+        if allowGroundChange and self.position[2] != position[2]: # We are on ground level and we can't see underground
             return False
         
         if (position[0] >= self.position[0] - radius[0]) and (position[0] <= self.position[0] + radius[0]+1) and (position[1] >= self.position[1] - radius[1]) and (position[1] <= self.position[1] + radius[1]+1):
