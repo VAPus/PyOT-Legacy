@@ -152,7 +152,12 @@ class Tile(object):
         if item.ontop:
             self._modpack(PACK_ITEMS, -1)
         return self.things.remove(item)
-    
+
+    def removeItemWithId(self, itemId):
+        for i in self.getItems():
+            if i.itemId == itemId:
+                self.removeItem(i)
+                
     # Fase those calls out
     def removeClientItem(self, cid, stackpos=None):
         if stackpos and self.things[stackpos].cid == cid:
