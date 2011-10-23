@@ -21,6 +21,7 @@ import game.scriptsystem
 import glob
 import game.protocol
 import __builtin__
+import re
 
 try:
     import cPickle as pickle
@@ -85,11 +86,33 @@ class House(object):
         
         try:
             if isinstance(nameOrPlayer, game.player.Player):
-                return nameOrPlayer.name() in self.data["doors"][doorId]
+                check = nameOrPlayer.name()
+                 
             else:
-                return nameOrPlayer in self.data["doors"][doorId]
+                check = nameOrPlayer
+            
+            for e in self.data["doors"][doorId]:
+                try:
+                    isnot = False
+                    if e[0] == "!":
+                        isnot = True
+                    if "@" in e:
+                        # No guild support yet
+                        continue
+                    if "#" in e:
+                        continue # Comment
+                        
+                    if re.match(e, nameOrPlayer, re.I):
+                        if isnot: continue
+                        else: return True
+                    else:
+                        if isnot: return True
+                        else: continue
+                except:
+                    continue
         except:
-            return False
+            pass
+        return False
             
     # Guests
     def addGuest(self, name):
@@ -110,11 +133,33 @@ class House(object):
         
         try:
             if isinstance(nameOrPlayer, game.player.Player):
-                return nameOrPlayer.name() in self.data["guests"]
+                check = nameOrPlayer.name()
+                 
             else:
-                return nameOrPlayer in self.data["guests"]
+                check = nameOrPlayer
+            
+            for e in self.data["guests"]:
+                try:
+                    isnot = False
+                    if e[0] == "!":
+                        isnot = True
+                    if "@" in e:
+                        # No guild support yet
+                        continue
+                    if "#" in e:
+                        continue # Comment
+                        
+                    if re.match(e, nameOrPlayer, re.I):
+                        if isnot: continue
+                        else: return True
+                    else:
+                        if isnot: return True
+                        else: continue
+                except: # Malformed regex, such as name**
+                    continue
         except:
-            return False
+            pass
+        return False
             
     # Subowners
     def addSubOwner(self, name):
@@ -135,11 +180,34 @@ class House(object):
         
         try:
             if isinstance(nameOrPlayer, game.player.Player):
-                return nameOrPlayer.name() in self.data["subowners"]
+                check = nameOrPlayer.name()
+                 
             else:
-                return nameOrPlayer in self.data["subowners"]
+                check = nameOrPlayer
+            
+            for e in self.data["subowners"]:
+                try:
+                    isnot = False
+                    if e[0] == "!":
+                        isnot = True
+                    if "@" in e:
+                        # No guild support yet
+                        continue
+                    if "#" in e:
+                        continue # Comment
+                        
+                    if re.match(e, nameOrPlayer, re.I):
+                        if isnot: continue
+                        else: return True
+                    else:
+                        if isnot: return True
+                        else: continue
+                except:
+                    continue
         except:
-            return False
+            pass
+        
+        return False
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
@@ -212,6 +280,7 @@ def loader(timer):
     __builtin__.deque = deque
     __builtin__.random = random
     __builtin__.time = time
+    __builtin__.re = re
     __builtin__.spell = game.spell # Simplefy spell making
     __builtin__.callLater = safeCallLater
     __builtin__.Item = game.item.Item
