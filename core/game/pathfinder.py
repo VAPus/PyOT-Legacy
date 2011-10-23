@@ -91,6 +91,8 @@ def findPath(mapZ, relX, relY, xB, yB):
                 j = dir_map[y][x]
                 c = (j + 4 / 2) % 4
                 path.append(c)
+                if len(path) > 15:
+                    return []
                 x += dx[j]
                 y += dy[j]
             path.reverse()

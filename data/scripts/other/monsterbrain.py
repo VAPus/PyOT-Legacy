@@ -7,7 +7,7 @@ def defaultBrainFeaturePriority(self, monster):
                 monster.intervals = {} # Zero them out
                 if monster.master:
                     monster.target = monster.master
-                    monster.targetMode = 1
+                    monster.targetMode = 2
                     #engine.autoWalkCreatureTo(monster, monster.master.position, -1, False)
                     return
                 else:
@@ -110,6 +110,10 @@ def defaultBrainFeature(self, monster):
                     
                     # When we reach our destination, can we target check
                     def __walkComplete(x):
+                        if not x:
+                            # Walk not possible. Loose target
+                            monster.target = None
+                            return
                         # Are we OK?
                         if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                             monster.turnAgainst(monster.target.position)
