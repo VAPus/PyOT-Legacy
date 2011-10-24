@@ -112,7 +112,8 @@ def guestListCheck(creature, thing, newTile, **k):
             return False
     except:
         return True # Not a house. Mapping bug.
-        
+
+# Close door?
 def houseDoorUseCheck(creature, thing, position, **k):
     try:
         if not thing.doorId:
@@ -129,9 +130,30 @@ def houseDoorUseCheck(creature, thing, position, **k):
             return False
     except:
         return True # Not a house. Mapping bug.
-        
+
+def kickFromHouse(creature, text, **k):
+    if creature.name() == text:
+        creature.kickFromHouse()
+        return
+
+    house = getHouseById(getTile(position).houseId)
+    if not house:
+        return
+    elif house.isSubOwner(creature) or creature.data["id"] == house.owner:
+        # Player is online?
+        try:
+            player = game.player.allPlayers[text]
+            
+            # Is he in our house?
+            if getTile(player.position).houseId == house.id:
+                creature.kickFromHouse()
+            
+        except:
+            return
+    
 regFirst("use", "houseDoor", houseDoorUseCheck)
 regFirst("preWalkOn", "houseDoor", guestListCheck)
 reg("talkaction", "aleta sio", guestList)
 reg("talkaction", "aleta som", subownerList)
 reg("talkaction", "aleta grav", doorAccess)
+reg("talkactionFirstWord", "alana sio", kickFromHouse)

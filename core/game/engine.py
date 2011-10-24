@@ -39,7 +39,8 @@ groups = {}
 globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById"]
 
 class House(object):
-    def __init__(self, owner, guild, paid, name, town, size, rent, data):
+    def __init__(self, id, owner, guild, paid, name, town, size, rent, data):
+        self.id = id
         self.owner = owner
         self.guild = guild
         self.paid = paid
@@ -233,7 +234,7 @@ def loader(timer):
                 globalStorage[x['key']] = x['data']
 
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            houseData[x["id"]] = House(x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
+            houseData[x["id"]] = House(x["id"], x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
             
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
             groups[x["group_id"]] = (x["group_name"], otjson.loads(x["group_flags"]))
