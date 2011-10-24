@@ -7,6 +7,7 @@ import marshal
 import scriptsystem
 from collections import deque
 import config
+import game.enum
 
 try:
     import io # Python 2.7+
@@ -99,6 +100,14 @@ class Tile(object):
     def getFlags(self):
         return self._depack(PACK_FLAGS)
         
+    def setFlag(self, flag):
+        if not self.getFlags() & flag:
+            self._modpack(PACK_FLAGS, flag)
+
+    def unsetFlag(self, flag):
+        if self.getFlags() & flag:
+            self._modpack(PACK_FLAGS, -flag)
+            
     def placeCreature(self, creature):
         pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
         if pos > 9:
@@ -208,7 +217,8 @@ class Tile(object):
 bindconstant.bind_all(Tile) # Apply constanting to Tile  
 
 class HouseTile(Tile):
-    __slots__ = 'houseId'
+    __slots__ = ('houseId')
+        
     
 bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
@@ -220,6 +230,8 @@ knownMap = {}
 houseTiles = {}
 
 housePositions = {}
+
+houseDoors = {}
 
 # Ops codes
 class S(object):
@@ -294,6 +306,20 @@ def H(houseId, position, *args):
         
     tile = HouseTile(args, itemLen=len(args))
     tile.houseId = houseId
+    
+    # Set protected zone
+    tile.setFlag(game.enum.TILEFLAGS_PROTECTIONZONE)
+        
+    # Find and cache doors
+    for i in tile.getItems():
+        if "houseDoor" in i.actions:
+            try:
+                houseDoors[houseId].append(position)
+            except:
+                houseDoors[houseId] = [position]
+            
+    tile.init(position) # Position is needed for door cache.
+    
     try:
         houseTiles[houseId].append((tile, position))
         housePositions[position] = houseId

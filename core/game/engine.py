@@ -81,7 +81,7 @@ class House(object):
         except:
             pass
     def haveDoorAccess(self, doorId, nameOrPlayer):
-        # TODO: Regex and guild!
+        # TODO: guild!
         import game.player
         
         try:
@@ -128,7 +128,7 @@ class House(object):
         except:
             pass
     def isGuest(self, nameOrPlayer):
-        # TODO: Regex and guild!
+        # TODO: guild!
         import game.player
         
         try:
@@ -175,7 +175,7 @@ class House(object):
         except:
             pass
     def isSubOwner(self, nameOrPlayer):
-        # TODO: Regex and guild!
+        # TODO: guild!
         import game.player
         
         try:

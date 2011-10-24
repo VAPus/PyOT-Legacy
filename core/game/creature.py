@@ -1074,6 +1074,73 @@ class Creature(object):
     def castSpell(self, spell, strength=None, target=None):
         game.spell.spells[spell][0](self, strength, target)
     
+    # House
+    def kickFromHouse(self):
+        tile = game.map.getTile(self.position)
+        try:
+            # Find door pos
+            doorPos = game.map.houseDoors[tile.houseId]
+            
+            
+            
+            # Try north
+            found = True
+            doorPos[1] -= 1
+            testTile = game.map.getTile(doorPos)
+            for i in testTile.getItems():
+                if i.solid:
+                    found = False
+                    break
+                    
+            if found:
+                self.teleport(doorPos)
+                return True
+            
+            # Try south
+            found = True
+            doorPos[1] += 2 # Two to counter north change
+            testTile = game.map.getTile(doorPos)
+            for i in testTile.getItems():
+                if i.solid:
+                    found = False
+                    break
+                    
+            if found:
+                self.teleport(doorPos)
+                return True
+                
+            # Try east
+            found = True
+            doorPos[1] -= 1 # counter south change
+            doorPos[0] -= 1
+            testTile = game.map.getTile(doorPos)
+            for i in testTile.getItems():
+                if i.solid:
+                    found = False
+                    break
+                    
+            if found:
+                self.teleport(doorPos)
+                return True
+
+            # Try west
+            found = True
+            doorPos[0] += 2 # counter east change
+            testTile = game.map.getTile(doorPos)
+            for i in testTile.getItems():
+                if i.solid:
+                    found = False
+                    break
+                    
+            if found:
+                self.teleport(doorPos)
+                return True
+                
+            return False # Not found
+            
+        except:
+            return False # Not in a house
+                
     # Compatibility
     def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
         pass

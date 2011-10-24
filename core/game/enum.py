@@ -483,3 +483,11 @@ AREA_SQUARE = TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
               (-1, 1), (0, 1), (1, 1)
 
 AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)
+
+# Same as otserv use i suppose. Optimize them?
+TILEFLAGS_NONE = 0
+TILEFLAGS_PROTECTIONZONE = 1 << 0
+TILEFLAGS_TRASHED = 1 << 1
+TILEFLAGS_OPTIONALZONE = 1 << 2
+TILEFLAGS_NOLOGOUT = 1 << 3
+TILEFLAGS_HARDCOREZONE = 1 << 4
