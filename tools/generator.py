@@ -289,13 +289,15 @@ class Map(object):
                             nothingness.remove(zPos)
                         output.append("%d:%s" % (zPos, data))
                         
+                if extras:
+                    output.append("'l':'''%s'''" % (';'.join(extras)))
+                          
                 if output:
                     output = "m={%s}" % ','.join(output)
                 else: # A very big load of nothing
                     output = "m=None"
 
-                if extras:
-                    output += '\ndef l():%s' % ';'.join(extras)
+                
                     
                 if output != "m=None":
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:

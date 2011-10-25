@@ -3,17 +3,13 @@ import game.item
 from twisted.internet import threads, reactor
 from twisted.python import log
 import bindconstant
-import marshal
+import cPickle
 import scriptsystem
 from collections import deque
 import config
 import game.enum
-
-try:
-    import io # Python 2.7+
-    _open = io.open
-except:
-    _open = open # Less than 2.7
+import time
+import io
     
 def getTile(pos):
     iX = int(pos[0] / 32)
@@ -222,7 +218,7 @@ class HouseTile(Tile):
     
 bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
-import data.map.info
+import data.map.info as mapInfo
 dummyItems = {} 
 
 knownMap = {}
@@ -318,7 +314,6 @@ def H(houseId, position, *args):
             except:
                 houseDoors[houseId] = [position]
             
-    tile.init(position) # Position is needed for door cache.
     
     try:
         houseTiles[houseId].append((tile, position))
@@ -356,17 +351,17 @@ if config.stackTiles:
 def loadTiles(x,y, walk=True):
     if x < 0 or y < 0:
         return None
-    elif x > data.map.info.height or y > data.map.info.width:
+    elif x > mapInfo.height or y > mapInfo.width:
         return None
     
-    return load(int(x / data.map.info.sectorSize[0]), int(y / data.map.info.sectorSize[1]))
+    return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]))
 
 def load(sectorX, sectorY):
     sectorSum = (sectorX * 32768) + sectorY
     
-    ybase = sectorY*data.map.info.sectorSize[1]
-    xbase = sectorX*data.map.info.sectorSize[0]
-    if sectorSum in knownMap or ybase > data.map.info.height-1 or xbase > data.map.info.width-1:
+    ybase = sectorY*mapInfo.sectorSize[1]
+    xbase = sectorX*mapInfo.sectorSize[0]
+    if sectorSum in knownMap or ybase > mapInfo.height-1 or xbase > mapInfo.width-1:
         return False
 
     global V # Should really be avioided 
@@ -376,27 +371,23 @@ def load(sectorX, sectorY):
     print "Loading %d,%d,sec" % (sectorX, sectorY)
     
     # Attempt to load a cached file
-    l = None
     m = None
     try:
-        with _open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
-            exec marshal.loads(f.read())
+        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
+            knownMap[sectorSum] = cPickle.loads(f.read())
     except:
         # Build cache data
         # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
-        with _open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
-            compiled = compile(f.read(), "%d.%d" % (sectorX, sectorY), 'exec')
+        with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
+            exec f.read()
+            knownMap[sectorSum] = m
+            
         # Write it
-        with _open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(marshal.dumps(compiled, 2))
-        exec compiled
-    
-
-    knownMap[sectorSum] = m          
+        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
+            f.write(cPickle.dumps(knownMap[sectorSum], 2))
+    if 'l' in knownMap[sectorSum]:    
+        exec knownMap[sectorSum]['l']
         
-    if l:    
-        reactor.callInThread(l)
-    
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
         
@@ -408,10 +399,10 @@ def _unloadCheck(sectorX, sectorY):
     # We're using a little higher values here to avoid reloading again 
     import game.player
     
-    xMin = (sectorX * data.map.info.sectorSize[0]) + 14
-    xMax = (xMin + data.map.info.sectorSize[0]) + 14
-    yMin = (sectorY * data.map.info.sectorSize[1]) + 11
-    yMax = (yMin + data.map.info.sectorSize[1]) + 11
+    xMin = (sectorX * mapInfo.sectorSize[0]) + 14
+    xMax = (xMin + mapInfo.sectorSize[0]) + 14
+    yMin = (sectorY * mapInfo.sectorSize[1]) + 11
+    yMax = (yMin + mapInfo.sectorSize[1]) + 11
     
     for player in game.player.allPlayersObject:
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
@@ -423,7 +414,6 @@ def _unloadCheck(sectorX, sectorY):
     return True
     
 def _unloadMap(sectorX, sectorY):
-    import time
     print "Checking %d.%d.sec" % (sectorX, sectorY)
     t = time.time()
     if _unloadCheck(sectorX, sectorY):

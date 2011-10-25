@@ -434,7 +434,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if monsterZ != baseZ:
             print("UNSUPPORTED spawns!")
 
-        monsterName = xMonster.getAttribute("name") 
+        monsterName = ' '.join([s[0].upper() + s[1:] for s in xMonster.getAttribute("name").split(' ')]).replace(" Of ", " of ")
 
         sector = (int((baseX+monsterX)/32), int((baseY+monsterY)/32))
         if not sector in spawnSectors:
@@ -450,7 +450,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if npcZ != baseZ:
             print("UNSUPPORTED spawns!")
         
-        npcName = xMonster.getAttribute("name") 
+        npcName = ' '.join([s[0].upper() + s[1:] for s in xMonster.getAttribute("name").split(' ')]).replace(" Of ", " of ")
 
         sector = (int((baseX+npcX)/32), int((baseY+npcY)/32))
         if not sector in spawnSectors:
