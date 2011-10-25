@@ -87,6 +87,13 @@ class TibiaPacket(object):
     def clear(self):
         self.bytes = []
 
+    def reserve(self):
+        curr = len(self.bytes)
+        self.bytes.append(None)
+        
+    def fillUint8(self, pos, data):
+        self.bytes[pos] = struct.pack("<B", data)
+        
     # 8bit - 1byte, C type: char
     def uint8(self, data):
         self.bytes.append(struct.pack("<B", data))
