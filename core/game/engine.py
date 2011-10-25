@@ -36,7 +36,7 @@ pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById", "loadPlayer", "loadPlayerById"]
 
 class House(object):
     def __init__(self, id, owner, guild, paid, name, town, size, rent, data):
@@ -1029,7 +1029,36 @@ def placeInDepot(name, depotId, items):
             returnValue(True)
         else:
             returnValue(False)
-
+            
+@inlineCallbacks
+def loadPlayer(playerName):
+    try:
+        # Quick load :p
+        returnValue(game.player.allPlayers[playerName])
+    except:
+        character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE name = %s", (playerName))
+        if not character:
+            returnValue(None)
+            return
+        game.player.allPlayers[playerName] = game.player.Player(None, character[0])
+        returnValue(game.player.allPlayers[playerName])
+        
+@inlineCallbacks
+def loadPlayerById(playerId):
+    try:
+        # Quick look
+        for player in game.player.allPlayersObject:
+            if player.data["id"] == playerId:
+                returnValue(player)
+                return
+    except:
+        character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE id = %d", (playerId))
+        if not character:
+            returnValue(None)
+            return
+        game.player.allPlayers[character[0]['name']] = game.player.Player(None, character[0])
+        returnValue(game.player.allPlayers[character[0]['name']])
+        
 # Helper calls
 def summonCreature(name, position, master=None):
     import game.monster

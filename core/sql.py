@@ -1,8 +1,8 @@
 from twisted.enterprise import adbapi
 import config
 
-def connect():
-    if config.sqlModule == "MySQLdb":
+def connect(module = config.sqlModule):
+    if module == "MySQLdb":
         from MySQLdb.cursors import DictCursor
         from MySQLdb.constants import FIELD_TYPE
         import MySQLdb.converters
@@ -14,13 +14,26 @@ def connect():
         MySQLdb.converters.conversions[FIELD_TYPE.DECIMAL] = autoFloat
         MySQLdb.converters.conversions[FIELD_TYPE.NEWDECIMAL] = autoFloat
         
-        return adbapi.ConnectionPool(config.sqlModule, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
+        return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=MySQLdb.converters.conversions)
 
-    elif config.sqlModule == "pymysql": # This module is indentical, but uses a diffrent name
-        from pymysql.cursors import DictCursor
-        from pymysql.constants import FIELD_TYPE
-        import pymysql.converters
+    elif module == "oursql":
+        try:
+            import oursql
+        except:
+            print "Falling oursql back to MySQLdb"
+            return connect("MySQLdb")
         
+        return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, default_cursor=oursql.DictCursor)
+
+    elif module == "pymysql": # This module is indentical, but uses a diffrent name
+        try:
+            from pymysql.cursors import DictCursor
+            from pymysql.constants import FIELD_TYPE
+            import pymysql.converters
+        except:
+            print "Falling pymysql back to MySQLdb"
+            return connect("MySQLdb")          
+              
         def autoFloat(s):
             return float(s) if '.' in s else int(s)
 
@@ -28,9 +41,9 @@ def connect():
         pymysql.converters.conversions[FIELD_TYPE.DECIMAL] = autoFloat
         pymysql.converters.conversions[FIELD_TYPE.NEWDECIMAL] = autoFloat
         
-        return adbapi.ConnectionPool(config.sqlModule, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=pymysql.converters.conversions)
+        return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cursorclass=DictCursor, conv=pymysql.converters.conversions)
 
-    elif config.sqlModule == "sqlite3":
+    elif module == "sqlite3":
         import sqlite3
         
         # Implode our little hack to allow both sqlite3 and mysql to work together!
@@ -44,9 +57,9 @@ def connect():
         
         def fixer(conn):
             conn.row_factory = sqlite3.Row
-        return adbapi.ConnectionPool(config.sqlModule, config.sqlDatabase, isolation_level=None, cp_openfun=fixer, check_same_thread=False)
+        return adbapi.ConnectionPool(module, config.sqlDatabase, isolation_level=None, cp_openfun=fixer, check_same_thread=False)
         
     else:
-        raise NameError("SQL module %s is invalid" % config.sqlModule)
+        raise NameError("SQL module %s is invalid" % module)
 # Setup the database pool when this module is imported for the first time
 conn = connect()

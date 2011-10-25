@@ -133,7 +133,7 @@ class ThingScripts(object):
                 if i in self.scripts:
                     return True
                     
-        elif id in self.scripts or (type(id) not in (int, str) and id in self.thingScripts):
+        elif id in self.scripts or (type(id) not in (int, long, str) and id in self.thingScripts):
             return True
         else:
             return False
@@ -150,7 +150,7 @@ class ThingScripts(object):
                     self.scripts[xid] = [func]
                 else:
                     self.scripts[xid].append(func)                
-        elif type(id) not in (int, str):
+        elif type(id) not in (int, long, str):
             # This ensures we remove the script object if the object disappear
             id = weakref.ref(id, self.unregAll) 
                 
@@ -176,7 +176,7 @@ class ThingScripts(object):
                     self.scripts[xid] = [func]
                 else:
                     self.scripts[xid].insert(0, func)                
-        elif type(id) not in (int, str):
+        elif type(id) not in (int, long, str):
             # This ensures we remove the script object if the object disappear
             id = weakref.ref(id, self.unregAll) 
                 

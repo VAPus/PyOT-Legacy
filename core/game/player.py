@@ -94,21 +94,6 @@ class Player(Creature):
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
 
-        # Stamina loose
-        if self.data["stamina"]:
-            def loseStamina():
-                self.data["stamina"] -= 60
-                if self.data["stamina"] < 0:
-                    self.data["stamina"] = 0
-                else:
-                    game.engine.safeCallLater(self.rates[1], loseStamina)
-                
-                if self.data["stamina"] < (42*3600):
-                    self.refreshStatus()
-                    
-            game.engine.safeCallLater(self.rates[1], loseStamina)
-        
-
         # Storage & skills
         try:
             self.skills = otjson.loads(self.data["skills"])
@@ -202,6 +187,21 @@ class Player(Creature):
         stream.send(self.client)
         
         self.sendVipList()
+        
+        # Stamina loose
+        if self.data["stamina"]:
+            def loseStamina():
+                if self.client:
+                    self.data["stamina"] -= 60
+                    if self.data["stamina"] < 0:
+                        self.data["stamina"] = 0
+                    else:
+                        game.engine.safeCallLater(self.rates[1], loseStamina)
+                    
+                    if self.data["stamina"] < (42*3600):
+                        self.refreshStatus()
+                    
+            game.engine.safeCallLater(self.rates[1], loseStamina)
         
     def refreshStatus(self, streamX=None):
         if not streamX:

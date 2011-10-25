@@ -16,17 +16,17 @@ loginMaxConnections = 20
 gameMaxConnections = 100
 
 # SQL:
-sqlModule = "MySQLdb" #"MySQLdb" # Can be "MySQLdb" (Mysql), "pymysql" (Mysql using ctypes, slower on CPython) or "sqlite3"
+sqlModule = "MySQLdb" #"MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb), "pymysql" (Mysql using ctypes, slower on CPython) or "sqlite3"
 sqlUsername = "root"
 sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 # Fedora/CentOS/RHEL
-sqlSocket = "/var/lib/mysql/mysql.sock"
+#sqlSocket = "/var/lib/mysql/mysql.sock"
 # Ubuntu/Kubuntu/Debian
 # sqlSocket = "/var/run/mysql/mysql.sock"
 # Others:
-# sqlSocket = "/var/run/mysqld/mysqld.sock"
+sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # Versions:
 versionMin = 860
@@ -124,6 +124,9 @@ tryPsyco = False
 # This reduce both memory usage and the time it takes to start the server, but in turn, it won't use items from the DB whenever a cache file exists.
 # This also make item reloading impossible (will require restart)
 itemCache = False
+
+# Houses
+chargeRentEvery = 30 * 86400 # Every 30 days
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough

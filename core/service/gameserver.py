@@ -108,7 +108,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if self.player.data["health"] < 1:
                     self.player.onSpawn()
                 self.player.client = self
-                print self.player
                 getTile(self.player.position).placeCreature(self.player)
             except:
                 game.player.allPlayers[character[0]['name']] = game.player.Player(self, character[0])
