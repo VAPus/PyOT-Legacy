@@ -251,8 +251,21 @@ def loader(timer):
             
         # Load scripts
         game.scriptsystem.importer()
-        game.scriptsystem.get("startup").run(None)
+        game.scriptsystem.get("startup").run()
         
+        # Charge rent?
+        def _charge(house):
+            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(house))
+            
+        for house in houseData.values():
+            if not house.rent or not house.owner: continue
+            
+            if house.paid < (timer - config.chargeRentEvery):
+                game.scriptsystem.get("chargeRent").run(house)
+                _charge(house)
+            else:
+                callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)
+                
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
         

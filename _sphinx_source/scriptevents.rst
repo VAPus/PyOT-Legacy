@@ -469,3 +469,7 @@ The events are:
 .. function:: deEquip(creature, thing, slot) / undress(creature, thing, slot) / unwield(creature, thing, slot)
 
     Called when a Player dequips ``thing`` on inventory slot ``slot`` (check up against enums). (ThingScript)
+
+.. function:: chargeRent(house)
+
+    Called when it's time to charge rent for the house (Script)

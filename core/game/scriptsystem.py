@@ -28,7 +28,7 @@ class Scripts(object):
         self.scripts.remove(callback)
     
     def unregCallback(self, callback):
-        self.scripts.remove(c)
+        self.scripts.remove(callback)
                 
     def run(self, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, creature, end, **kwargs)
@@ -53,7 +53,31 @@ class Scripts(object):
             end()
         else:
             return ok
-            
+
+class NCScripts(Scripts):
+    def run(self, end=None, **kwargs):
+        scriptPool.callInThread(self._run, end, **kwargs)
+
+    def runSync(self, end=None, **kwargs):
+        return self._run(end, **kwargs)
+
+    def runDefer(self, end=None, **kwargs):
+        return threads.deferToThreadPool(reactor, scriptPool, self._run, end, **kwargs)
+    def _run(self, end=None, **kwargs):
+        ok = True
+        for func in self.scripts:
+            if func:
+                ok = func(**kwargs)
+                if not (ok if ok is not None else True):
+                    break
+            else:
+                self.scripts.remove(func)
+                
+        if end and (ok if ok is not None else True):
+            end()
+        else:
+            return ok
+                
 class TriggerScripts(object):
     __slots__ = ('scripts')
     def __init__(self):
@@ -381,9 +405,9 @@ globalScripts["close"] = ThingScripts()
 globalScripts["hit"] = CreatureScripts()
 globalScripts["death"] = CreatureScripts()
 globalScripts["respawn"] = Scripts()
-globalScripts["reload"] = Scripts()
-globalScripts["startup"] = Scripts()
-globalScripts["shutdown"] = Scripts()
+globalScripts["reload"] = NCScripts()
+globalScripts["startup"] = NCScripts()
+globalScripts["shutdown"] = NCScripts()
 globalScripts["move"] = Scripts()
 globalScripts["appear"] = CreatureScripts()
 globalScripts["disappear"] = CreatureScripts()
@@ -391,6 +415,7 @@ globalScripts["loot"] = CreatureScripts()
 globalScripts["target"] = CreatureScripts()
 globalScripts["modeChange"] = Scripts()
 globalScripts["questLog"] = Scripts()
+globalScripts["chargeRent"] = NCScripts()
 globalScripts["equip"] = globalScripts["dress"] = globalScripts["wield"] = ThingScripts()
 globalScripts["unequip"] = globalScripts["undress"] = globalScripts["unwield"] =ThingScripts()
 globalEvents = []
@@ -411,7 +436,7 @@ scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
 
 def run():
-    get('shutdown').runSync(None)
+    get('shutdown').runSync()
     
 reactor.addSystemEventTrigger('before','shutdown',run)
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
@@ -437,7 +462,7 @@ def importer():
     
 
 def reimporter():
-    process = get("reload").runSync(None)
+    process = get("reload").runSync()
     if process == False:
         return
 
