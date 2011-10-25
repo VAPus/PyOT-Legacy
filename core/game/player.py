@@ -148,8 +148,11 @@ class Player(Creature):
         return output
         
     def packet(self, *args):
-        return self.client.protocol.Packet(*args)
-        
+        try:
+            return self.client.protocol.Packet(*args)
+        except:
+            return None
+            
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.data["health"] = 1

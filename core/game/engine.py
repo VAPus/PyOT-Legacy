@@ -842,7 +842,7 @@ def saveAll(force=False):
         threads.deferToThread(player._saveQuery, force).addCallback(callback)
         
     # Global storage
-    if saveGlobalStorage:
+    if saveGlobalStorage or force:
         for field in globalStorage:
             type = ""
             if field in jsonFields:
@@ -858,7 +858,6 @@ def saveAll(force=False):
 
     # Houses
     for houseId in houseData:
-        print "House ", houseId
         # House is loaded?
         if houseId in game.map.houseTiles:
             house = houseData[houseId]
@@ -872,7 +871,7 @@ def saveAll(force=False):
                 for tileData in game.map.houseTiles[houseId]:
                     _items = []
                     for item in tileData[0].bottomItems():
-                        if item.movable:
+                        if not item.fromMap:
                             _items.append(item)
                     if _items:
                         items[tileData[1]] = _items
@@ -881,15 +880,19 @@ def saveAll(force=False):
             if items != house.data["items"]:
                 house.data["items"] = items
                 house.save = True # Force save
-            if house.save:
+            if house.save or force:
                 print "Saving house ", houseId
                 sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
                 house.save = False
             else:
                 print "Not saving house", houseId
-            
-    log.msg("Full save took: %f" % (time.time() - t))
     
+    if force:        
+        log.msg("Full (forced) save took: %f" % (time.time() - t))
+
+    else:       
+        log.msg("Full save took: %f" % (time.time() - t))
+        
 # Time stuff
 def getTibiaTime():
     """ Return the Time inside the game.
@@ -934,8 +937,12 @@ def checkLightLevel(lightValue=[None]):
     
     l = getLightLevel()
     if lightValue[0] != l:
-        for c in getSpectators((0x7FFF,0x7FFF,7), (100000, 100000)):
+        for c in game.player.allPlayersObject:
             stream = c.packet()
+            
+            # Make sure this player actually is online. TODO: Track them in a seperate list?
+            if not stream: continue
+            
             stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
             stream.send(c)
         lightValue[0] = l
@@ -992,6 +999,10 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
     """
     for player in game.player.allPlayersObject:
         stream = player.packet(0xAA)
+        
+        # Make sure this player actually is online. TODO: Track them in a seperate list?
+        if not stream: continue
+        
         stream.uint32(0)
         stream.string(senfrom)
         stream.uint16(level)
