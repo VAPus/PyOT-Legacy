@@ -1013,7 +1013,7 @@ class Creature(object):
         pass
     
     # Conditions
-    def condition(self, condition, stackbehavior=enum.CONDITION_LATER):
+    def condition(self, condition, stackbehavior=enum.CONDITION_LATER, maxLength=0):
         try:
             oldCondition = self.conditions[condition.type]
             if not oldCondition.ticks:
@@ -1024,9 +1024,9 @@ class Creature(object):
             elif stackbehavior == enum.CONDITION_LATER:
                 return engine.safeCallLater(oldCondition.ticks * oldCondition.per, self.condition, condition, stackbehavior)
             elif stackbehavior == enum.CONDITION_ADD:
-                oldCondition.ticks += forticks
+                oldCondition.ticks = min(condition.ticks + oldCondition.ticks, maxLength)
             elif stackbehavior == enum.CONDITION_MODIFY:
-                condition.ticks += oldCondition.ticks
+                condition.ticks = min(condition.ticks + oldCondition.ticks, maxLength)
                 self.conditions[condition.type] = condition
             elif stackbehavior == enum.CONDITION_REPLACE:
                 oldCondition.stop()
@@ -1061,6 +1061,14 @@ class Creature(object):
         except:
             return False
 
+    def getCondition(self, conditionType, subtype=""):
+        if subtype and isinstance(conditionType, str):
+            conditionType = "%s_%s" % (conditionType, subtype)
+        try:
+            return self.conditions[conditionType]
+        except:
+            return False
+            
     def loseCondition(self, conditionType, subtype=""):
         if subtype and isinstance(conditionType, str):
             conditionType = "%s_%s" % (conditionType, subtype)
@@ -1177,7 +1185,11 @@ class Condition(object):
                 self.effect = self.effectFire
             elif type == CONDITION_POISON:
                 self.effect = self.effectPoison
-        
+            elif type == CONDITION_REGENERATEHEALTH:
+                self.effect = self.effectRegenerateHealth
+            elif type == CONDITION_REGENERATEMANA:
+                self.effect = self.effectRegenerateMana
+                
     def start(self, creature):
         self.creature = creature
         self.init()
@@ -1208,7 +1220,23 @@ class Condition(object):
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
         self.creature.magicEffect(EFFECT_HITBYFIRE)
         self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
-        
+
+    def effectRegenerateHealth(self, gainhp=None):
+        if not gainhp:
+            gainhp = self.creature.getVocation().health
+            self.creature.modifyHealth(gainhp[0])
+            
+        else:    
+            self.creature.modifyHealth(gainhp)
+
+    def effectRegenerateMana(self, gainmana=None):
+        if not gainhp:
+            gainmana = self.creature.getVocation().mana
+            self.creature.modifyMana(gainmana[0])
+            
+        else:    
+            self.creature.modifyMana(gainmana)
+                    
     def tick(self):
         self.effect(*self.effectArgs, **self.effectKwargs)
         self.ticks -= 1

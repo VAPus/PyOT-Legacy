@@ -864,7 +864,7 @@ def saveAll(force=False):
             try:
                 items = house.data["items"][:]
             except:
-                print "House id %d have broken items!" % houseId
+                log.msg("House id %d have broken items!" % houseId)
                 items = [] # Broken items
                 
             try:
@@ -881,11 +881,11 @@ def saveAll(force=False):
                 house.data["items"] = items
                 house.save = True # Force save
             if house.save or force:
-                print "Saving house ", houseId
+                log.msg("Saving house ", houseId)
                 sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
                 house.save = False
             else:
-                print "Not saving house", houseId
+                log.msg("Not saving house", houseId)
     
     if force:        
         log.msg("Full (forced) save took: %f" % (time.time() - t))

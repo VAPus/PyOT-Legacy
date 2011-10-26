@@ -1,3 +1,6 @@
+# We meed this so we can skip ugly casting down below
+from __future__ import division # Python3 thingy
+
 global foods
 foods = {}
 foods[2328] = (84, "Gulp.")
@@ -81,29 +84,10 @@ foods[11136] = (120, "Mmmm.")
 foods[11246] = (180, "Yum.")
 foods[11370] = (36, "Urgh.")
 
-def playerEat(creature, ticker=0, lastHP=0, lastMana=0):
-    gainhp = creature.getVocation().health
-    gainmana = creature.getVocation().mana
-    
-    
-    if ticker == gainhp[1]:
-        creature.modifyHealth(gainhp[0])
-        lastHP = ticker
-    
-    if ticker == gainmana[1]:
-        creature.modifyMana(gainmana[0])
-        lastMana = ticker
-        
-    creature.regenerate -= 1
-    ticker += 1
-    if creature.regenerate >= 0:
-        callLater(1 * creature.getRegainRate(), playerEat, creature, ticker, lastHP, lastMana)
-    else:
-        creature.regenerate = 0
-    
 def onUse(creature, thing, position, stackpos, **a):
     global foods
-
+    gainhp = creature.getVocation().health
+    gainmana = creature.getVocation().mana
     duration = foods[thing.itemId][0]
     sound = foods[thing.itemId][1]
     thing.count -= 1
@@ -111,15 +95,12 @@ def onUse(creature, thing, position, stackpos, **a):
         creature.replaceItem(position, stackpos, thing)
     else:
         creature.removeItem(position, stackpos)
-        
-    if creature.regenerate:
-        if creature.regenerate + duration > 1500:
-            creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
-        else:
-            creature.regenerate += duration
-            creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
+    
+    if creature.getCondition(CONDITION_REGENERATEHEALTH).ticks * gainhp[1] >= 1500 or creature.getCondition(CONDITION_REGENERATEMANA).ticks * gainmana[1] >= 1500:
+        creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
     else:
-        creature.regenerate = duration
-        playerEat(creature)
+        creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration / gainhp[1], gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
+        creature.condition(Condition(CONDITION_REGENERATEMANA, 0, duration / gainhp[1], gainmana[1], gainmana=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
         creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
+
 reg('use', foods.keys(), onUse)
