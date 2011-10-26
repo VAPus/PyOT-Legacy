@@ -36,7 +36,7 @@ pickleFields = 'objectStorage',
 savedItems = {}
 houseData = {}
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById", "loadPlayer", "loadPlayerById"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById", "loadPlayer", "loadPlayerById", "getHouseByPos"]
 
 class House(object):
     def __init__(self, id, owner, guild, paid, name, town, size, rent, data):
@@ -1102,6 +1102,12 @@ def magicEffect(pos, type):
 def getHouseById(id):
     try:
         return houseData[id]
+    except:
+        return None
+
+def getHouseByPos(pos):
+    try:
+        return getHouseById(game.map.getHouseId(pos))
     except:
         return None
         

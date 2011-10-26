@@ -30,7 +30,7 @@ file = file.replace("local ", "").replace(" then", ":").replace(" true", " True"
 newcode = ""
 level = 0
 regLine = ""
-if file.find("onUse"):
+if "onUse" in file:
     if file.count("item2") >= 2 or file.count("topos") >= 2:
         file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
         try:
@@ -44,33 +44,33 @@ if file.find("onUse"):
         except:
             regLine = 'reg("use", %s, onUse)' % repr(tuple(list))
 
-if file.find("onEquip"):
+if "onEquip" in file:
     file = file.replace("onEquip(cid, item, slot)", "onEquip(creature, thing, slot, **k)")
     try:
-        regLine = regLine + 'reg("equip", %s, onEquip)' % tuple(list)
+        regLine = regLine + '\nreg("equip", %s, onEquip)' % tuple(list)
     except:
-        regLine = regLine + 'reg("equip", %s, onEquip' % repr(tuple(list))
+        regLine = regLine + '\nreg("equip", %s, onEquip' % repr(tuple(list))
             
-if file.find("onDeEquip"):
+if "onDeEquip" in file:
     file = file.replace("onDeEquip(cid, item, slot)", "unEquip(creature, thing, slot, **k)")
     try:
-        regLine = regLine + 'reg("unEquip", %s, unEquip)' % tuple(list)
+        regLine = regLine + '\nreg("unEquip", %s, unEquip)' % tuple(list)
     except:
-        regLine = regLine + 'reg("unEquip", %s, unEquip)' % repr(tuple(list))
+        regLine = regLine + '\nreg("unEquip", %s, unEquip)' % repr(tuple(list))
             
-if file.find("onStepIn"):
+if "onStepIn" in file:
     file = file.replace("onStepIn(cid, item, position, fromPosition)", "walkOn(creature, thing, position, fromPosition, **k)")
     try:
-        regLine = regLine + 'reg("walkOn", %s, walkOn)' % tuple(list)
+        regLine = regLine + '\nreg("walkOn", %s, walkOn)' % tuple(list)
     except:
-        regLine = regLine + 'reg("walkOn", %s, walkOn)' % repr(tuple(list))
+        regLine = regLine + '\nreg("walkOn", %s, walkOn)' % repr(tuple(list))
 
-if file.find("onStepOut"):
+if "onStepOut" in file:
     file = file.replace("onStepOut(cid, item, position, fromPosition)", "walkOff(creature, thing, position, fromPosition, **k)")
     try:
-        regLine = regLine + 'reg("walkOff", %s, walkOff)' % tuple(list)
+        regLine = regLine + '\nreg("walkOff", %s, walkOff)' % tuple(list)
     except:
-        regLine = regLine + 'reg("walkOff", %s, walkOff)' % repr(tuple(list))
+        regLine = regLine + '\nreg("walkOff", %s, walkOff)' % repr(tuple(list))
         
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
@@ -97,6 +97,18 @@ file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "
 file = file.replace("isNpc(item.uid)", "thing.isNPC()").replace("isNpc(item2.uid)", "onThing.isNPC()").replace("doPlayerSendTextMessage(cid, MESSAGE_STATUS_CONSOLE_ORANGE, ", "creature.orangeStatusMessage(")
 file = file.replace("isSummon(item.uid)", "thing.isSummon()").replace("isSummon(item2.uid)", "onThing.isSummon()").replace("doPlayerSetExperienceRate(cid, ", "creature.setExperienceRate(").replace("getPlayerTown(cid)", 'creature.data["town_id"]')
 
+# House stuff
+file = file.replace("House.getHouseByPos", "getHouseByPos")
+
+# Ugly spelling in script?
+file = file.replace(" not(", " not (") # All in all, we hope the stripper does the rest of the job here.
+
+# getPosByDir
+file = file.replace("getPosByDir", "positionInDirection")
+
+# LUA_NULL
+file = file.replace("LUA_NULL", "None")
+
 lists = re.compile(r"{(?P<params>[^={}]+)}")
 file = lists.sub("[\g<params>]", file)
 
@@ -105,31 +117,42 @@ possibleKeys = []
 badKeys = attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'itemId', 'actions')
 # This is my dict builder
 def dictBuilder(m):
-    text = m.group("params")
+    text = m.group("params").replace("\t", " ")
     # Resursive:
     text = re.sub(r"{(?P<params>.+)}", dictBuilder, text)
     parts = re.split(r"""(\w+ = \[[^]]*\])|(\w+ = \"[^"]*\")|, """, text)
     toInsert = []
-    for part in parts:
-        if part:
-            key, value = part.split(" = ")
-            try:
-                key = "%d" % int(key) # number
-            except:
-                if not key.isupper() and "[" not in key: # Don't do constants or lists
-                    if not key in possibleKeys:
-                        possibleKeys.append(key)
-                    key = '"%s"' % key # string
-                    
-            toInsert.append("%s: %s" % (key, value))
-    return "{%s}" % ', '.join(toInsert)
+    try:
+        for part in parts:
+            if part:
+                key, value = part.split(" = ")
+                try:
+                    key = "%d" % int(key) # number
+                except:
+                    if not key.isupper() and "[" not in key: # Don't do constants or lists
+                        if not key in possibleKeys:
+                            possibleKeys.append(key)
+                        key = '"%s"' % key # string
+                        
+                toInsert.append("%s: %s" % (key, value))
+        return "{%s}" % ', '.join(toInsert)
+    except:
+        # Buggy, it's a list instead
+        for part in parts:
+            if part:
+                toInsert.append(part)
+        return "[%s]" % ", ".join(toInsert)
     
 file = re.sub(r"{(?P<params>.+)}", dictBuilder, file, re.M|re.DOTALL)
 
 for key in possibleKeys[:]:
     if key in badKeys:
         possibleKeys.remove(key)
-    
+
+# Clear away "== false" first
+inArrayRe = re.compile(r"isInArray\((?P<a>.*), (?P<b>.*)\) == False", re.I)
+file = inArrayRe.sub(r"\g<b> not in \g<a>", file)
+
 inArrayRe = re.compile(r"isInArray\((?P<a>.*), (?P<b>.*)\)", re.I)
 file = inArrayRe.sub(r"\g<b> in \g<a>", file)
 
@@ -147,17 +170,11 @@ file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[\g<a>]", file)
 getItemName = re.compile(r"getItemName\((?P<arg>\w+)\)", re.I)
 file = getItemName.sub("\g<arg>.rawName()", file)
 
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,()]*)\)")
-file = transformItem.sub(r"thing.transform(\g<to>, position)", file)
+transformItem = re.compile(r"doTransformItem\((?P<item>\w+)\.uid, (?P<to>[^,()]*)\)")
+file = transformItem.sub(r"\g<item>.transform(\g<to>, position)", file)
 
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,()]*)\)")
-file = transformItem.sub(r"onThing.transform(\g<to>, onPosition)", file)
-
-transformItem = re.compile(r"doTransformItem\(item\.uid, (?P<to>[^,()]*), (?P<count>\w+)\)")
-file = transformItem.sub(r"\nthing.count = \g<count>\nthing.transform(\g<to>, position)", file)
-
-transformItem = re.compile(r"doTransformItem\(item2\.uid, (?P<to>[^,()]*), (?P<count>\w+)\)")
-file = transformItem.sub(r"\nonThing.count = \g<count>\nonThing.transform(\g<to>, onPosition)", file)
+transformItem = re.compile(r"doTransformItem\((?P<item>\w+)\.uid, (?P<to>[^,()]*), (?P<count>\w+)\)")
+file = transformItem.sub(r"\n\g<item>.count = \g<count>\n\g<item>.transform(\g<to>, position)", file)
 
 arrays = re.compile(r"\[(?P<a>\w+)\]([ \t]*)=([ \t]*)")
 file = arrays.sub("\g<a>: ", file)
@@ -269,12 +286,22 @@ file = isMoveable.sub("\g<item>.solid", file)
 isHangable = re.compile(r"isHangable\((?P<item>[^,]+).uid\)")
 file = isMoveable.sub("\g<item>.hangable", file)
 
+getThingFromPos = re.compile(r"getThingFromPos\((?P<param>(.*))\)")
+file = getThingFromPos.sub("getTile(\g<param>).getThing(<INSERT the stackpos you like here!>)", file)
+
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
 file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
 file = file.replace(" ~= nil", "").replace("nil", "None").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("cid", "creature").replace(".uid", "")
+
+# Our ugly position system isn't based on classes like lua is.
+luaPosition = re.compile(r"\[x=(?P<x>[^,]+),([ \t]*)y=(?P<y>[^,]+),([ \t]*)z=(?P<z>[^,]+),([ \t]*)stackpos=([^]]+)\]")
+file = luaPosition.sub("[\g<x>, \g<y>, \g<z>]", file)
+
+# Optimize aswell :)
+file = file.replace("[onPosition[0], onPosition[1], onPosition[2]]", "onPosition[:]").replace("[position[0], position[1], position[2]]", "position[:]")
 
 skipNext = 0
 for line in file.split("\n"):
@@ -313,13 +340,20 @@ for line in file.split("\n"):
 
 # Finalize by doing a bit of a cleanup
 doSetItemActionId = re.compile(r"(?P<item>\w+)\.actionid == (?P<type>\w+)")
-file = doSetItemActionId.sub("'\g<type>' in \g<item>.actions", file)
+newcode = doSetItemActionId.sub("'\g<type>' in \g<item>.actions", newcode)
 
 doSetItemActionId = re.compile(r"(?P<item>\w+)\.actionid != (?P<type>\w+)")
-file = doSetItemActionId.sub("'\g<type>' not in \g<item>.actions", file)
+newcode = doSetItemActionId.sub("'\g<type>' not in \g<item>.actions", newcode)
+
+ifs = re.compile(r"(?P<type>(if|elif))([ \t]*)not([ \t]*)\((?P<param>(.*?))\)([ \t]*):", re.M)
+newcode = ifs.sub(r"\g<type> not \g<param>:", newcode)
 
 ifs = re.compile(r"(?P<type>(if|elif))([ \t]*)\((?P<param>(.*?))\)([ \t]*):", re.M)
 newcode = ifs.sub(r"\g<type> \g<param>:", newcode).replace(" :\n", ":\n").replace("'0' not in ", "not ")
+
+# Crap code remover
+crapCode = re.compile("if not ([^.]+).actions:\n([ ]*)([^.]+).actions.append('([^.]+).actionid')", re.M)
+newcode = crapCode.sub("", newcode)
 
 print "# Autoconverted script for PyOT"
 print "# Untested. Please remove this message when the script is working properly!\n"
