@@ -22,9 +22,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
-        pkg.uint16(random.randint(0, 0xFFFF))
+        pkg.uint16(0xFFFF) # Used for?
         pkg.uint16(0x00)
-        pkg.uint8(random.randint(0, 0xFF))
+        pkg.uint8(0xFF) # Used for?
         pkg.send(self)
 
     def exitWithError(self, message, error = 0x14):

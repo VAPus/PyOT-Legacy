@@ -944,7 +944,7 @@ def checkLightLevel(lightValue=[None]):
             if not stream: continue
             
             stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
-            stream.send(c)
+            stream.send(c.client)
         lightValue[0] = l
         
 # Player lookup and mail

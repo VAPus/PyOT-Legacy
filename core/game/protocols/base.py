@@ -511,8 +511,11 @@ class BaseProtocol(object):
         elif packetType == 0xA1: # Attack
             self.handleAttack(player,packet)
 
-        elif packetType == 0xA2: # Attack
+        elif packetType == 0xA2: # Follow
             self.handleFollow(player,packet)
+            
+        elif packetType == 0xC9:
+            self.handleUpdateTile(player,packet)
             
         elif packetType == 0xCA:
             self.handleUpdateContainer(player,packet)
@@ -996,8 +999,18 @@ class BaseProtocol(object):
             
     def handleFollow(self, player, packet):
         cid = packet.uint32()
+        player.setFollowTarget(cid)
         
-
+    def handleUpdateTile(self, player, packet):
+        pos = packet.position()
+        tile = getTile(pos)
+        stream = player.packet(0x69)
+        stream.position(pos)
+        stream.tileDescription(tile, player)
+        stream.uint8(0x00)
+        stream.uint8(0xFF)
+        stream.send(player.client)
+        
     def handleUpdateContainer(self, player, packet):
         openId = packet.uint8()
         

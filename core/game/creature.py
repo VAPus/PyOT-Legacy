@@ -639,27 +639,6 @@ class Creature(object):
 
     def modifyHealth(self, health, spawn=False):
         return self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))
-    
-    def setMana(self, mana):
-        if self.data["health"] > 0:
-            self.data["mana"] = mana
-            self.refreshStatus()
-            return True
-        return False
-        
-    def modifyMana(self, mana):
-        return self.setMana(min(self.data["mana"] + mana, self.data["manamax"]))
-        
-        
-    def setSoul(self, soul):
-        if self.data["health"] > 0:
-            self.data["soul"] = soul
-            self.refreshStatus()
-            return True
-        return False
-        
-    def modifySoul(self, soul):
-        return self.setSoul(self.data["soul"] + soul)
         
     def teleport(self, position):
         """if not self.actionLock(self.teleport, position):

@@ -118,6 +118,7 @@ class Player(Creature):
         self.saveInventory = False
         self.saveDepot = False
         self.saveSkills = False
+        self.saveData = False
         
     def generateClientID(self):
         return 0x10000000 + uniqueId()
@@ -612,6 +613,7 @@ class Player(Creature):
         except:
             oldLevel = 0
         if oldLevel != level:
+            self.saveData = True
             self.data["level"] = level
             
             self.data["healthmax"] = vocation.maxHP(self.data["level"])
@@ -641,6 +643,8 @@ class Player(Creature):
         
         self.data["experience"] += exp
         
+        self.saveData = True
+        
         if up:
             level = 0
             self.message("You gained %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp, pos=self.position)
@@ -661,6 +665,30 @@ class Player(Creature):
                 self.setLevel(self.data["level"]-level)            
         self.refreshStatus()
 
+    # Mana & soul
+    def setMana(self, mana):
+        if self.data["health"] > 0:
+            self.saveData = True
+            self.data["mana"] = mana
+            self.refreshStatus()
+            return True
+        return False
+        
+    def modifyMana(self, mana):
+        return self.setMana(min(self.data["mana"] + mana, self.data["manamax"]))
+        
+        
+    def setSoul(self, soul):
+        if self.data["health"] > 0:
+            self.saveData = True
+            self.data["soul"] = soul
+            self.refreshStatus()
+            return True
+        return False
+        
+    def modifySoul(self, soul):
+        return self.setSoul(self.data["soul"] + soul)
+        
     # Skills
     def addSkillLevel(self, skill, levels):
         self.skills[skill] += levels
@@ -1422,7 +1450,8 @@ class Player(Creature):
             
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
-        return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
+        if self.saveData or extra: # Don't save if we 1. Change position, or 2. Just have stamina countdown
+            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
 
     def save(self, force=False):
         sql.conn.runOperation(*self._saveQuery(force))
