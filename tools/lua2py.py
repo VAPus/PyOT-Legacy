@@ -77,7 +77,7 @@ file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(", "magicEffect(").replace("getThingPos(item2.uid)", "onPosition").replace("getThingPos(item.uid)", "position")
 file = file.replace("doSendMagicEffect(getThingPos(item.uid)", "magicEffect(position").replace(".itemid", ".itemId").replace("CONST_ME", "EFFECT").replace("doRemoveItem(item2.uid)", "creature.removeItem(onPosition, onStackpos)")
 file = file.replace("doRemoveItem(item.uid)", "creature.removeItem(position, stackpos)").replace("getCreatureName(cid)", "creature.name()").replace("getCreatureName(item2.uid)", "onThing.name()").replace("getCreatureName(item.uid)", "thing.name()").replace(" ~= ", " != ").replace("doSendMagicEffect(frompos, ", "creature.magicEffect(")
-file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("TALKTYPE_MONSTER", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.message(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
+file = file.replace("TALKTYPE_ORANGE_1", "'MSG_SPEAK_MONSTER_SAY'").replace("TALKTYPE_MONSTER", "'MSG_SPEAK_MONSTER_SAY'").replace("doPlayerSay(cid, ", "creature.say(").replace("doCreatureSay(cid, ", "creature.say(").replace("doCreatureSay(item2.uid, ", "onThing.say(").replace("doPlayerSendCancel(cid, ", "creature.cancelMessage(").replace("doPlayerSendCancel(cid,", "creature.cancelMessage(").replace("doPlayerAddHealth(cid, ", "creature.modifyHealth(")
 file = file.replace("doRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -").replace("doPlayerRemoveItem(item.uid, ", "creature.modifyItem(thing, position, stackpos, -").replace("doPlayerRemoveItem(item2.uid, ", "creature.modifyItem(onThing, onPosition, onStackpos, -")
 file = file.replace("hasProperty(item2.uid, CONST_PROP_BLOCKSOLID)", "onThing.solid").replace("hasProperty(item.uid, CONST_PROP_BLOCKSOLID)", "thing.solid")
 file = file.replace("isCreature(item2.uid)", "onThing.isCreature()").replace("isPlayer(item2.uid)", "onThing.isPlayer()").replace("isMonster(item2.uid)", "onThing.isMonster()").replace("isItem(item2.uid)", "onThing.isItem()")
@@ -96,6 +96,7 @@ file = file.replace('"no",', "False,").replace('"yes",', "True,").replace("getPl
 file = file.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "creature.notPossible()").replace("getCreatureSkullType(cid)", "creature.skull")
 file = file.replace("isNpc(item.uid)", "thing.isNPC()").replace("isNpc(item2.uid)", "onThing.isNPC()").replace("doPlayerSendTextMessage(cid, MESSAGE_STATUS_CONSOLE_ORANGE, ", "creature.orangeStatusMessage(")
 file = file.replace("isSummon(item.uid)", "thing.isSummon()").replace("isSummon(item2.uid)", "onThing.isSummon()").replace("doPlayerSetExperienceRate(cid, ", "creature.setExperienceRate(").replace("getPlayerTown(cid)", 'creature.data["town_id"]')
+file = file.replace("0xFFFF", "INVENTORY_POSITION")
 
 # House stuff
 file = file.replace("House.getHouseByPos", "getHouseByPos")
@@ -160,7 +161,7 @@ inArrayRe2 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\] == nil")
 file = inArrayRe2.sub(r"\g<b> not in \g<a>", file)
 
 inArrayRe3 = re.compile(r"(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\] != nil")
-file = inArrayRe3.sub("\g<a> in \g<b>", file)
+file = inArrayRe3.sub("\g<b> in \g<a>", file)
 
 inArrayRe4 = re.compile(r"(!(=))(?P<a>\w+)\[(?P<b>[a-zA-Z0-9_().]*)\]")
 file = inArrayRe4.sub("\g<a> in \g<b> and \g<b>[\g<a>]", file)
@@ -288,6 +289,10 @@ file = isMoveable.sub("\g<item>.hangable", file)
 
 getThingFromPos = re.compile(r"getThingFromPos\((?P<param>(.*))\)")
 file = getThingFromPos.sub("getTile(\g<param>).getThing(<INSERT the stackpos you like here!>)", file)
+
+# I don't recall if it's the houseId or the house we're after.
+getTileInfo = re.compile(r"getTileInfo\((?P<param>(.*))\).house")
+file = getTileInfo.sub("getHouseByPos(\g<param>)", file)
 
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
