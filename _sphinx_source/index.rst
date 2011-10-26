@@ -17,7 +17,7 @@ PyOT is super fast, and uses diffrent methods than other projects. Some of which
 * Ability to utilize jit from pypy (currently the logger module is a bit of a slowdown, we'll work on it, or just wait until pypy 1.7 which seems to fix this)
 * Very flexible core
 * Very configurable core
-* Very fast save format (save takes 0.2ms per player, scales over several sql connections, allowing for upto 10k saves per second)
+* Very fast save format (save takes from less than 0.1ms to 0.3ms per player, scales over several sql connections, allowing for upto 10k saves per second)
 * Sector maps, dynamic load and unload for optimal memory usage (down to ~18MB on a 32bit systems and ~32MB on 64bit after login!)
 
 
