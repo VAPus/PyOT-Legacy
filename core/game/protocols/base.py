@@ -4,6 +4,7 @@ from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet import defer, reactor
 from twisted.python import log
 import game.enum
+import game.map
 enum = game.enum
 import math
 import config
@@ -11,6 +12,7 @@ import sys
 import game.scriptsystem
 from collections import deque
 import game.resource
+import game.item
 
 # Probably not a good place, but
 from game.creature import Creature
@@ -65,7 +67,6 @@ class BasePacket(TibiaPacket):
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
-        import game.item
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
 
@@ -884,6 +885,9 @@ class BaseProtocol(object):
         print position
         clientId = packet.uint16()
         stackpos = packet.uint8()
+        
+        print game.map.getHouseId(position)
+        
         if position[0] == 0xFFFF:
             thing = player.findItem(position, stackpos)
         elif stackpos == 0 and clientId == 99:

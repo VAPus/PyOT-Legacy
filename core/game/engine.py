@@ -33,7 +33,6 @@ globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
-savedItems = {}
 houseData = {}
 groups = {}
 globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById", "loadPlayer", "loadPlayerById", "getHouseByPos"]
@@ -51,12 +50,8 @@ class House(object):
         if data:
             self.data = pickle.loads(data)
         else:
-            self.data = {"items":[], "subowners": [], "guests": [], "doors":{}}
-        try:
-            for pos in self.data["items"]:
-                savedItems[pos] = self.data["items"][pos]
-        except:
-            pass
+            self.data = {"items":{}, "subowners": [], "guests": [], "doors":{}}
+
         self.save = False
 
     # Doors
@@ -255,13 +250,13 @@ def loader(timer):
         
         # Charge rent?
         def _charge(house):
-            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(house))
+            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(None, house=house))
             
         for house in houseData.values():
             if not house.rent or not house.owner: continue
             
             if house.paid < (timer - config.chargeRentEvery):
-                game.scriptsystem.get("chargeRent").run(house)
+                game.scriptsystem.get("chargeRent").run(None, house=house)
                 _charge(house)
             else:
                 callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)
@@ -862,10 +857,10 @@ def saveAll(force=False):
         if houseId in game.map.houseTiles:
             house = houseData[houseId]
             try:
-                items = house.data["items"][:]
+                items = house.data["items"].copy()
             except:
                 log.msg("House id %d have broken items!" % houseId)
-                items = [] # Broken items
+                items = {} # Broken items
                 
             try:
                 for tileData in game.map.houseTiles[houseId]:
@@ -1106,10 +1101,7 @@ def getHouseById(id):
         return None
 
 def getHouseByPos(pos):
-    try:
-        return getHouseById(game.map.getHouseId(pos))
-    except:
-        return None
+    return getHouseById(game.map.getHouseId(pos))
         
 # Protocol 0x00:
 @inlineCallbacks

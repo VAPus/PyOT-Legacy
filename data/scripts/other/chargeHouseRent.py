@@ -1,5 +1,6 @@
+@inlineCallbacks
 def payRent(house):
-    player = getPlayerById(house.owner)
+    player = yield loadPlayerById(house.owner)
     if not player:
         return
 

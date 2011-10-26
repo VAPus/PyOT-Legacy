@@ -215,7 +215,8 @@ bindconstant.bind_all(Tile) # Apply constanting to Tile
 class HouseTile(Tile):
     __slots__ = ('houseId')
         
-    
+    def __setstate__(self):
+        raise
 bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
 import data.map.info as mapInfo
@@ -309,24 +310,24 @@ def H(houseId, position, *args):
     # Find and cache doors
     for i in tile.getItems():
         if "houseDoor" in i.actions:
-            try:
+            if houseId in houseDoors:
                 houseDoors[houseId].append(position)
-            except:
+            else:
                 houseDoors[houseId] = [position]
             
     
-    try:
+    if houseId in houseTiles:
         houseTiles[houseId].append((tile, position))
-        housePositions[position] = houseId
-    except:
+    else:
         houseTiles[houseId] = [(tile, position)]
-        housePositions[position] = houseId
+        
+    housePositions[position] = houseId
     try:
-        for item in g.savedItems[position]:
+        for item in g.houseData[houseId].data["items"][position]:
             tile.placeItem(item)
-    except:
+    except KeyError:
         pass
-    
+
     return tile
     
 def C(*args):
@@ -372,7 +373,8 @@ def load(sectorX, sectorY):
     
     # Attempt to load a cached file
     m = None
-    try:
+    # Comment out. Please find a way to also store the houseTiles data aswell.
+    """try:
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
             knownMap[sectorSum] = cPickle.loads(f.read())
     except:
@@ -384,7 +386,11 @@ def load(sectorX, sectorY):
             
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[sectorSum], 2))
+            f.write(cPickle.dumps(knownMap[sectorSum], 2))"""
+            
+    with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
+        exec f.read()
+        knownMap[sectorSum] = m
     if 'l' in knownMap[sectorSum]:    
         exec knownMap[sectorSum]['l']
         
