@@ -209,15 +209,61 @@ class Tile(object):
                 
     def findCreatureStackpos(self, creature):
         return self.things.index(creature)
+
+    def __getstate__(self):
+        return (self.things, self.countNflags)
+    
+    def __setstate__(self, saved):
+        self.things = saved[0]
+        self.countNflags = saved[1]
         
-bindconstant.bind_all(Tile) # Apply constanting to Tile  
+#bindconstant.bind_all(Tile) # Apply constanting to Tile  
 
 class HouseTile(Tile):
-    __slots__ = ('houseId')
+    __slots__ = ('houseId', 'position')
+    def __getstate__(self):
         
-    def __setstate__(self):
-        raise
-bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
+        # Remove all non-loaded things for the sake of the cache. 
+        items = []
+        cf = self.getFlags()
+        for i in self.things:
+            if i.fromMap:
+                items.append(i)
+                if i.ontop:
+                    cf += 1
+        
+        return (items, cf, self.houseId, self.position)
+    
+    def __setstate__(self, saved):
+        import game.engine as g # by now, everything is globalized, removing this can greatly speed things up.
+        
+        self.things = saved[0]      
+        self.countNflags = saved[1]  
+        self.houseId = saved[2]
+        self.position = saved[3]
+        housePositions[self.position] = self.houseId
+        
+        if self.houseId in houseTiles:
+            houseTiles[self.houseId].append((self, self.position))
+        else:
+            houseTiles[self.houseId] = [(self, self.position)]
+        
+        check = True    
+        for i in self.things:
+            if "houseDoor" in i.actions:
+                if check and self.houseId in houseDoors:
+                    houseDoors[self.houseId].append(self.position)
+                    check = False
+                else:
+                    houseDoors[self.houseId] = [self.position]
+
+        try:
+            for item in g.houseData[self.houseId].data["items"][self.position]:
+                self.placeItem(item)
+        except KeyError:
+            pass
+    
+#bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
 import data.map.info as mapInfo
 dummyItems = {} 
@@ -303,15 +349,18 @@ def H(houseId, position, *args):
         
     tile = HouseTile(args, itemLen=len(args))
     tile.houseId = houseId
+    tile.position = position # Never rely on this data.
     
     # Set protected zone
     tile.setFlag(game.enum.TILEFLAGS_PROTECTIONZONE)
         
     # Find and cache doors
+    check = True
     for i in tile.getItems():
         if "houseDoor" in i.actions:
-            if houseId in houseDoors:
+            if check and houseId in houseDoors:
                 houseDoors[houseId].append(position)
+                check = True
             else:
                 houseDoors[houseId] = [position]
             
@@ -370,11 +419,12 @@ def load(sectorX, sectorY):
         V = Tile((I(100),), 1)
           
     print "Loading %d,%d,sec" % (sectorX, sectorY)
+    t = time.time()
     
     # Attempt to load a cached file
     m = None
     # Comment out. Please find a way to also store the houseTiles data aswell.
-    """try:
+    try:
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
             knownMap[sectorSum] = cPickle.loads(f.read())
     except:
@@ -386,11 +436,10 @@ def load(sectorX, sectorY):
             
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[sectorSum], 2))"""
+            f.write(cPickle.dumps(knownMap[sectorSum], 2))
             
-    with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
-        exec f.read()
-        knownMap[sectorSum] = m
+    print "Loading took: %f" % (time.time() - t)
+    
     if 'l' in knownMap[sectorSum]:    
         exec knownMap[sectorSum]['l']
         
