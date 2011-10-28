@@ -863,13 +863,13 @@ def saveAll(force=False):
                 items = {} # Broken items
                 
             try:
-                for tileData in game.map.houseTiles[houseId]:
+                for tile in game.map.houseTiles[houseId]:
                     _items = []
-                    for item in tileData[0].bottomItems():
+                    for item in tile.bottomItems():
                         if not item.fromMap:
                             _items.append(item)
                     if _items:
-                        items[tileData[1]] = _items
+                        items[tile.position] = _items
             except:
                 pass
             if items != house.data["items"]:

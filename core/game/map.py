@@ -28,7 +28,7 @@ def getTile(pos):
 
 def getHouseId(pos):
     try:
-        return housePositions[(pos[0], pos[1], pos[2])]
+        return getTile(pos).houseId
     except:
         return False
         
@@ -241,12 +241,11 @@ class HouseTile(Tile):
         self.countNflags = saved[1]  
         self.houseId = saved[2]
         self.position = saved[3]
-        housePositions[self.position] = self.houseId
         
         if self.houseId in houseTiles:
-            houseTiles[self.houseId].append((self, self.position))
+            houseTiles[self.houseId].append(self)
         else:
-            houseTiles[self.houseId] = [(self, self.position)]
+            houseTiles[self.houseId] = [self]
         
         check = True    
         for i in self.things:
@@ -271,8 +270,6 @@ dummyItems = {}
 knownMap = {}
 
 houseTiles = {}
-
-housePositions = {}
 
 houseDoors = {}
 
@@ -366,11 +363,10 @@ def H(houseId, position, *args):
             
     
     if houseId in houseTiles:
-        houseTiles[houseId].append((tile, position))
+        houseTiles[houseId].append(tile)
     else:
-        houseTiles[houseId] = [(tile, position)]
+        houseTiles[houseId] = [tile]
         
-    housePositions[position] = houseId
     try:
         for item in g.houseData[houseId].data["items"][position]:
             tile.placeItem(item)
