@@ -33,188 +33,15 @@ globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
-houseData = {}
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "getHouseById", "loadPlayer", "loadPlayerById", "getHouseByPos"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos"]
 
-class House(object):
-    def __init__(self, id, owner, guild, paid, name, town, size, rent, data):
-        self.id = id
-        self.owner = owner
-        self.guild = guild
-        self.paid = paid
-        self.name = name
-        self.town = town
-        self.rent = rent
-        self.size = size
-        if data:
-            self.data = pickle.loads(data)
-        else:
-            self.data = {"items":{}, "subowners": [], "guests": [], "doors":{}}
-
-        self.save = False
-
-    # Doors
-    def getDoorAccess(self, doorId):
-        try:
-            return self.data["doors"][doorId]
-        except:
-            self.data["doors"][doorId] = []
-            return self.data["doors"][doorId]
-            
-    def addDoorAccess(self, doorId, name):
-        self.save = True
-        
-        try:
-            self.data["doors"][doorId].append(name)
-        except:
-            self.data["doors"][doorId] = [name]
-            
-    def removeDoorAccess(self, doorId, name):
-        self.save = True
-        try:
-            self.data["doors"][doorId].remove(name)
-        except:
-            pass
-    def haveDoorAccess(self, doorId, nameOrPlayer):
-        # TODO: guild!
-        import game.player
-        
-        try:
-            if isinstance(nameOrPlayer, game.player.Player):
-                check = nameOrPlayer.name()
-                 
-            else:
-                check = nameOrPlayer
-            
-            for e in self.data["doors"][doorId]:
-                try:
-                    isnot = False
-                    if e[0] == "!":
-                        isnot = True
-                    if "@" in e:
-                        # No guild support yet
-                        continue
-                    if "#" in e:
-                        continue # Comment
-                        
-                    if re.match(e, nameOrPlayer, re.I):
-                        if isnot: continue
-                        else: return True
-                    else:
-                        if isnot: return True
-                        else: continue
-                except:
-                    continue
-        except:
-            pass
-        return False
-            
-    # Guests
-    def addGuest(self, name):
-        self.save = True
-        try:
-            self.data["guests"].append(name)
-        except:
-            self.data["guests"] = [name]
-    def removeGuest(self, name):
-        self.save = True
-        try:
-            self.data["guests"].remove(name)
-        except:
-            pass
-    def isGuest(self, nameOrPlayer):
-        # TODO: guild!
-        import game.player
-        
-        try:
-            if isinstance(nameOrPlayer, game.player.Player):
-                check = nameOrPlayer.name()
-                 
-            else:
-                check = nameOrPlayer
-            
-            for e in self.data["guests"]:
-                try:
-                    isnot = False
-                    if e[0] == "!":
-                        isnot = True
-                    if "@" in e:
-                        # No guild support yet
-                        continue
-                    if "#" in e:
-                        continue # Comment
-                        
-                    if re.match(e, nameOrPlayer, re.I):
-                        if isnot: continue
-                        else: return True
-                    else:
-                        if isnot: return True
-                        else: continue
-                except: # Malformed regex, such as name**
-                    continue
-        except:
-            pass
-        return False
-            
-    # Subowners
-    def addSubOwner(self, name):
-        self.save = True
-        try:
-            self.data["subowners"].append(name)
-        except:
-            self.data["subowners"] = [name]
-    def removeSubOwner(self, name):
-        self.save = True
-        try:
-            self.data["subowners"].remove(name)
-        except:
-            pass
-    def isSubOwner(self, nameOrPlayer):
-        # TODO: guild!
-        import game.player
-        
-        try:
-            if isinstance(nameOrPlayer, game.player.Player):
-                check = nameOrPlayer.name()
-                 
-            else:
-                check = nameOrPlayer
-            
-            for e in self.data["subowners"]:
-                try:
-                    isnot = False
-                    if e[0] == "!":
-                        isnot = True
-                    if "@" in e:
-                        # No guild support yet
-                        continue
-                    if "#" in e:
-                        continue # Comment
-                        
-                    if re.match(e, nameOrPlayer, re.I):
-                        if isnot: continue
-                        else: return True
-                    else:
-                        if isnot: return True
-                        else: continue
-                except:
-                    continue
-        except:
-            pass
-        
-        return False
-
-    def __setattr__(self, name, value):
-        object.__setattr__(self, name, value)
-        if name != "save":
-            object.__setattr__(self, "save", True)
-        
 # The loader rutines, async loading :)
 def loader(timer):
     log.msg("Begin loading...")
     import game.item
-
+    import game.house, game.guild
+    
     # Begin loading items in the background
     d = game.item.loadItems()
 
@@ -229,7 +56,7 @@ def loader(timer):
                 globalStorage[x['key']] = x['data']
 
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            houseData[x["id"]] = House(x["id"], x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
+            game.house.houseData[x["id"]] = game.house.House(x["id"], x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
             
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
             groups[x["group_id"]] = (x["group_name"], otjson.loads(x["group_flags"]))
@@ -252,7 +79,7 @@ def loader(timer):
         def _charge(house):
             callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(None, house=house))
             
-        for house in houseData.values():
+        for house in game.house.houseData.values():
             if not house.rent or not house.owner: continue
             
             if house.paid < (timer - config.chargeRentEvery):
@@ -297,9 +124,11 @@ def loader(timer):
     __builtin__.Condition = game.creature.Condition
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
+    __builtin__.getHouseById = game.house.getHouseById
+    __builtin__.getGuildById = game.guild.getGuildById
     
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -311,6 +140,8 @@ def loader(timer):
         resource = game.resource
         vocation = game.vocation
         enum = game.enum
+        house = game.house
+        guild = game.guild
             
     __builtin__.game = Globalizer
     
@@ -852,10 +683,9 @@ def saveAll(force=False):
             sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
 
     # Houses
-    for houseId in houseData:
+    for houseId, house in game.house.houseData.items():
         # House is loaded?
         if houseId in game.map.houseTiles:
-            house = houseData[houseId]
             try:
                 items = house.data["items"].copy()
             except:
@@ -1094,14 +924,8 @@ def magicEffect(pos, type):
         stream.magicEffect(pos, type)
         stream.send(spectator)
 
-def getHouseById(id):
-    try:
-        return houseData[id]
-    except:
-        return None
-
 def getHouseByPos(pos):
-    return getHouseById(game.map.getHouseId(pos))
+    return game.house.getHouseById(game.map.getHouseId(pos))
         
 # Protocol 0x00:
 @inlineCallbacks

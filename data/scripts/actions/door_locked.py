@@ -7,12 +7,12 @@ def onUseDoor(creature, thing, position, **k):
     if not thing.actions:
         # Shouldn't happend
         print "Bad door on %s. It might bug" % str(position)
-        engine.transformItem(thing, thing.itemId+2, position)
+        transformItem(thing, thing.itemId+2, position)
     else:
         if "houseDoor" in thing.actions:
             houseId = game.map.getTile(position).houseId
-            if creature.data["id"] == engine.houseData[houseId].owner or creature.data["id"] in engine.houseData[houseId].data["subowners"]:
-                engine.transformItem(thing, thing.itemId+2, position)
+            if creature.data["id"] == game.house.houseData[houseId].owner or creature.data["id"] in game.house.houseData[houseId].data["subowners"]:
+                transformItem(thing, thing.itemId+2, position)
                 return
         creature.message("It is locked.")
 
@@ -30,11 +30,11 @@ def onUseKey(creature, thing, onThing, onPosition, **k):
         return
         
     if onThing.itemId in lockedDoors:
-        engine.transformItem(onThing, onThing.itemId+2, onPosition)
+        transformItem(onThing, onThing.itemId+2, onPosition)
     elif onThing.itemId-2 in lockedDoors:
-        engine.transformItem(onThing, onThing.itemId-2, onPosition)
+        transformItem(onThing, onThing.itemId-2, onPosition)
     else:
-        engine.transformItem(onThing, onThing.itemId-1, onPosition)
+        transformItem(onThing, onThing.itemId-1, onPosition)
 
 reg('use', lockedDoors, onUseDoor)
 reg('useWith', keys, onUseKey)

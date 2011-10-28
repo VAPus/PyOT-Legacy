@@ -129,6 +129,30 @@ game Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`house` Module
+--------------------------
+
+.. automodule:: game.house
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`guild` Module
+-------------------
+
+.. automodule:: game.guild
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`party` Module
+----------------------
+
+.. automodule:: game.party
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Subpackages
 -----------
 

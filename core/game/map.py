@@ -235,8 +235,6 @@ class HouseTile(Tile):
         return (items, cf, self.houseId, self.position)
     
     def __setstate__(self, saved):
-        import game.engine as g # by now, everything is globalized, removing this can greatly speed things up.
-        
         self.things = saved[0]      
         self.countNflags = saved[1]  
         self.houseId = saved[2]
@@ -257,7 +255,7 @@ class HouseTile(Tile):
                     houseDoors[self.houseId] = [self.position]
 
         try:
-            for item in g.houseData[self.houseId].data["items"][self.position]:
+            for item in game.house.houseData[self.houseId].data["items"][self.position]:
                 self.placeItem(item)
         except KeyError:
             pass
@@ -341,9 +339,7 @@ def Tf(flags, *args):
 
 Tf = bindconstant._make_constants(Tf)
 
-def H(houseId, position, *args):
-    import game.engine as g
-        
+def H(houseId, position, *args):   
     tile = HouseTile(args, itemLen=len(args))
     tile.houseId = houseId
     tile.position = position # Never rely on this data.
@@ -368,7 +364,7 @@ def H(houseId, position, *args):
         houseTiles[houseId] = [tile]
         
     try:
-        for item in g.houseData[houseId].data["items"][position]:
+        for item in game.house.houseData[houseId].data["items"][position]:
             tile.placeItem(item)
     except KeyError:
         pass
@@ -448,7 +444,6 @@ def load(sectorX, sectorY):
 def _unloadCheck(sectorX, sectorY):
     # Calculate the x->x and y->y ranges
     # We're using a little higher values here to avoid reloading again 
-    import game.player
     
     xMin = (sectorX * mapInfo.sectorSize[0]) + 14
     xMax = (xMin + mapInfo.sectorSize[0]) + 14

@@ -292,11 +292,13 @@ class Item(object):
         if self.params:
             params = self.params.copy()
             try:
-                del params["inContainer"]
+                del params["inPlayer"]
+                del params["inContainer"] # This only exists if inPlayer exists.
             except:
                 pass
+            
             try:
-                del params["inPlayer"]
+                del self.params["opened"]
             except:
                 pass
         else:
@@ -318,12 +320,7 @@ class Item(object):
         if len(state) == 4:
             self.decay(self.decayPosition, duration=state[3])
         
-        # Bugfix
-        try:
-            del self.params["opened"]
-        except:
-            pass
-        
+
     def copy(self):
         newItem = copy.deepcopy(self)
         try:

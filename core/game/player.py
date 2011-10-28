@@ -47,12 +47,13 @@ class Player(Creature):
         self.openTrade = None
         self.windowTextId = 0
         self.windowHandlers = {}
-        
+        self.partyObj = None
         self.solid = not config.playerWalkthrough
 
         # Rates
         self.rates = [config.experienceRate, 60, config.lootDropRate, config.lootMaxRate, 1] # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate, 3 => drop rate (max items), 4 => regain rate
         self.inventoryWeight = 0
+        
         # Direction
         self.direction = self.data["direction"]
         del self.data["direction"]
@@ -61,6 +62,13 @@ class Player(Creature):
         self.inventoryCache = {}
         if self.data['inventory']:
             self.unpickleInventory(self.data['inventory'])
+            
+            # Call on equip
+            for x in xrange(0, len(self.inventory)):
+                item = self.inventory[x]
+                if item:
+                    game.scriptsystem.get("equip").run(self, item, slot = x+1)
+                
         else:
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
             for item in self.inventory:
@@ -153,7 +161,11 @@ class Player(Creature):
             return self.client.protocol.Packet(*args)
         except:
             return None
-            
+
+    def ip(self):
+        if self.client:
+            return self.client.transport.getPeer().host
+    
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.data["health"] = 1
@@ -1981,3 +1993,14 @@ class Player(Creature):
         return self.rates[4]
     def setRegainRate(self, rate):
         self.rates[4] = rate
+        
+    # Guild & party
+    def guild(self):
+        try:
+            return game.guild.guilds[self.data["guild_id"]]
+        except:
+            return None
+            
+    def party(self):
+        # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
+        return self.partyObj
