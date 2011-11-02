@@ -128,6 +128,10 @@ itemCache = False
 # Houses
 chargeRentEvery = 30 * 86400 # Every 30 days
 
+# Critical hits:
+criticalHitRate = 5 # In %
+criticalHitMultiplier = 2 # Multiplier for the damage
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

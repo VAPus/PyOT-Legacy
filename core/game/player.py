@@ -1649,19 +1649,27 @@ class Player(Creature):
                     
                 if not self.inventory[5]:
                     skillType = game.enum.SKILL_FIST
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
                     
                 else:
                     skillType = self.inventory[5].weaponType
-                    dmg = -1 * random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
                     
+                    # Critical hit
+                    if config.criticalHitRate > random.randint(1, 100):
+                        dmg = dmg * config.criticalHitMultiplier
+                        self.criticalHit()
+                        
                 if dmg != 0:
                     self.target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
                         
         if self.target:        
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
-            
+
+    def criticalHit(self):
+        self.message("You strike a critical hit!", 'MSG_STATUS_CONSOLE_RED')
+        
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
