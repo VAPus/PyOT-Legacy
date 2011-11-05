@@ -10,7 +10,7 @@ from game.creature import Creature, CreatureBase, uniqueId, allCreatures
 import time
 
 import game.resource
-
+import game.chat
 import game.pathfinder
 import sql
 import game.vocation
@@ -1247,24 +1247,32 @@ class Player(Creature):
     def openChannels(self):
         stream = self.packet(0xAB)
         channels = game.chat.getChannels(self)
+        
+        channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
+
+        if type(channels2) == dict:
+            channels = channels2
+            
         stream.uint8(len(channels))
-        for channel in channels:
-            stream.uint16(channel.id)
-            stream.string(channel.name)
+        for channelId in channels:
+            stream.uint16(channelId)
+            stream.string(channels[channelId].name)
             
         stream.send(self.client)
     
     def openChannel(self, id):
-        stream = self.packet(0xAC)
-        channel = game.chat.getChannel(id)
-        stream.uint16(id)
-        stream.string(channel.name)
         
-        # TODO: Send members for certain channels
-        stream.uint32(0)
-        
-        stream.send(self.client)
-        channel.addMember(self)
+        if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
+            stream = self.packet(0xAC)
+            channel = game.chat.getChannel(id)
+            stream.uint16(id)
+            stream.string(channel.name)
+            
+            # TODO: Send members for certain channels
+            stream.uint32(0)
+            
+            stream.send(self.client)
+            channel.addMember(self)
 
     def openPrivateChannel(self, between):
         id = 0xFFFF
@@ -1285,6 +1293,8 @@ class Player(Creature):
     def closeChannel(self, id):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
+        
+        game.scriptsystem.get("leaveChannel").run(self, None, channelId=id)
 
     def isChannelOpen(self, between):
         try:
@@ -1292,22 +1302,39 @@ class Player(Creature):
         except:
             return False
             
-    def sendChannelMessage(self, by, text, type="MSG_SPEAK_SAY", channelId=0):
-        stream = self.packet(0xAA)
-        stream.uint32(1)
-        print by.data["name"]
-        stream.string(by.data["name"])
-        if by.isPlayer():
-            stream.uint16(by.data["level"])
-        else:
-            stream.uint16(0)
-        stream.uint8(stream.enum(type))
-        if type in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
-            stream.uint16(channelId)
+    def channelMessage(self, text, type="MSG_CHANNEL", channelId=0):
+        try:
+            members = game.chat.getChannel(channelId).members
+        except:
+            members = []
+            
+        members2 = game.scriptsystem.get("getChannelMembers").runSync(channelId, self, None, channelId=channelId, text=text, type=type, members=members)
+        if not members and type(members2) != list:
+            return False
+            
+        elif type(members2) == list:
+            members = members2
+            
+        if not members:
+            return False # No members
+                    
+        for player in members:
+            stream = player.packet(0xAA)
+            stream.uint32(1)
+            stream.string(self.data["name"])
+            if self.isPlayer():
+                stream.uint16(self.data["level"])
+            else:
+                stream.uint16(0)
+            stream.uint8(stream.enum(type))
+            if type in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
+                stream.uint16(channelId)
+            
+            stream.string(text)
+            stream.send(player.client)
+            
+        return True
         
-        print text
-        stream.string(text)
-        stream.send(self.client)
     def getPrivate(self, name):
         try:
             return self.openChannels[name]
@@ -1605,16 +1632,17 @@ class Player(Creature):
             return
             
         splits = text.split(" ")
-        if splits[0] == "#y":
-            mode = game.enum.MSG_SPEAK_YELL
-            del splits[0]
-        elif splits[0] == "#w":
-            mode = game.enum.MSG_SPEAK_WHISPER
-            del splits[0]
-        else:
-            mode = channelType
+        mode = channelType
+        if channelId == 1:
+            if splits[0] == "#y":
+                mode = game.enum.MSG_SPEAK_YELL
+                del splits[0]
+            elif splits[0] == "#w":
+                mode = game.enum.MSG_SPEAK_WHISPER
+                del splits[0]
+
         def endCallback():
-            print channelType
+            
             if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
                 if mode == game.enum.MSG_SPEAK_SAY:
                     self.say(' '.join(splits[0:]))
@@ -1624,7 +1652,10 @@ class Player(Creature):
                 
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
                     self.whisper(' '.join(splits[0:]))
-                    
+            
+            elif MSG_CHANNEL == game.enum.MSG_CHANNEL:
+                self.channelMessage(text, "MSG_CHANNEL", channelId)
+                
             for creature in game.engine.getCreatures(self.position):
                 creature.playerSay(self, text, channelType, channelId or reciever)
 

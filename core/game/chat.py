@@ -3,24 +3,51 @@ import weakref
 channels = {}
 
 class Channel(object):
-    def __init__(self, name, id):
+    def __init__(self, name, id, public=False):
         self.id = id
         self.members = []
         self.messages = []
+        self.invites = []
         self.name = name
+        self.public = public
 
     def addMember(self, player):
-        self.members.append(weakref.ref(player))
+        self.members.append(weakref.proxy(player))
 
+    def addInvite(self, player):
+        self.invites.append(weakref.proxy(player))
+        
     def removeMember(self, player):
-        for member in self.members:
-            if member() == player:
-                self.members.remove(member)
+        try:
+            self.members.remove(player)
+            return True
+        except:
+            return False
 
-
-def openChannel(channelName, id = None):
+    def removeInvites(self, player):
+        try:
+            self.invites.remove(player)
+            return True
+        except:
+            return False
+            
+    def isMember(self, player):
+        if player in self.members:
+            return True
+        return False
+        
+    def canJoin(self, player):
+        # TODO: Admin/moderator features
+        if self.public:
+            return True
+        elif player in self.invites:
+            return True
+        else:
+            return False
+            
+def openChannel(channelName, id = None, public=True):
     channelId = id or len(channels)
-    channel = Channel(channelName, channelId)
+    channel = Channel(channelName, channelId, public)
     channels[channelId] = channel
     return channel
 
@@ -40,10 +67,11 @@ def getChannelsWithPlayer(player):
     return channelList
 
 def getChannels(player):
-    channelList = []
+    channelList = {}
     for channelId in channels:
-        # TODO: Accesslist
-        channelList.append(channels[channelId])
+        channel = channels[channelId]
+        if channel.canJoin(player):
+            channelList[channelId] = channel
 
     return channelList
     

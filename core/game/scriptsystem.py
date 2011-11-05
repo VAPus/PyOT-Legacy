@@ -113,6 +113,9 @@ class TriggerScripts(object):
     def run(self, trigger, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
 
+    def runSync(self, trigger, creature, end=None, **kwargs):
+        return self._run(trigger, creature, end, **kwargs)
+        
     def unregCallback(self, callback):
         remove = []
         for s in self.scripts:
@@ -130,7 +133,8 @@ class TriggerScripts(object):
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
         if not trigger in self.scripts:
-            return end()
+            return end() if end else None
+            
         for func in self.scripts[trigger][:]:
             if func:
                 ok = func(creature=creature, **kwargs)
@@ -143,6 +147,7 @@ class TriggerScripts(object):
                     pass
         if end and (ok if ok is not None else True):
             end()
+        return ok
 
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
@@ -418,6 +423,11 @@ globalScripts["questLog"] = Scripts()
 globalScripts["chargeRent"] = NCScripts()
 globalScripts["equip"] = globalScripts["dress"] = globalScripts["wield"] = ThingScripts()
 globalScripts["unequip"] = globalScripts["undress"] = globalScripts["unwield"] =ThingScripts()
+globalScripts["requestChannels"] = Scripts()
+globalScripts["joinChannel"] = Scripts()
+globalScripts["leaveChannel"] = Scripts()
+globalScripts["getChannelMembers"] = TriggerScripts()
+
 globalEvents = []
 
 # Events

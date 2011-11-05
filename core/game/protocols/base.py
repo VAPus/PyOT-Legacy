@@ -559,7 +559,8 @@ class BaseProtocol(object):
             reciever = packet.string()
 
         text = packet.string()
-
+        
+        print "ChannelId: %d, channelType: %d" % (channelId, channelType)
         player.handleSay(channelType, channelId, reciever, text)
         
     def handleAutoWalk(self, player, packet):

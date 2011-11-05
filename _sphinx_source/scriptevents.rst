@@ -473,3 +473,25 @@ The events are:
 .. function:: chargeRent(house)
 
     Called when it's time to charge rent for the house (Script)
+
+.. function:: requestChannels(creature, channels)
+
+    Called when the player (creature) request the channels list. Channels is a dict containing all the channels. This dict might be modified directly. Or returned.
+    Format is {id: Channel Object} (Script)
+
+    :returns: (Optional) dict of channels to display.
+
+.. function:: joinChannel(creature, channelId)
+
+    Called when Player (creature) attempts to join a channel. (Script)
+
+    :returns: False to prevent the player from joining this channel.
+
+.. function:: leaveChannel(creature, channelId)
+
+    Called when Player (creature) leaves the channel. Since this can't be stopped server sided (aside from rejoining the channel) this is just a notification call. (Script)
+
+    :returns: No meaning.
+
+.. function:: getChannelMembers(creature, channelId, text, type, members)
+    Called when the system want to get a list of members to send the channel list too. This works in the same way as requestChannels does, except that the members list is a list and not a dict. (TriggerScript)
