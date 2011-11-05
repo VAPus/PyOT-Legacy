@@ -414,90 +414,72 @@ def loadItems():
 
 
     for item in (yield d1):
-        subs = item["subs"]
-        del item["subs"]
-        
-        sid = item["sid"]
-        del item["sid"]
-        
-        if item["plural"] == item["name"] or not item["plural"]:
-            del item["plural"]
-            
-        if not item["article"]:
-            del item["article"]
+        sid = item[0]
+        cid = item[1]
+        attr = {'cid':cid, 'a':item[8]}
 
-        if item['type'] != 1:
-            loadItemNames[item['name']] = sid
-            
-        if not item["type"]:
-            del item["type"]
+        if item[4] and item[4] != item[2]:
+            attr['plural'] = item[4]
+
+        if item[5]:
+            attr["article"] = item[5]
+
+        if item[3] != 1:
+            loadItemNames[item[2]] = sid
+
+        if item[3]:
+            attr['type'] = item[3]
+
+        if item[2]:
+            attr['name'] = item[2]
+
+        if item[7]:
+            attr['speed'] = item[7]
+
         
-        if not item["name"]:
-            del item["name"]
-        
-        if not item["speed"]:
-            del item["speed"]
-        
-        cid = item["cid"]
         reverseLoadItems[cid] = sid
 
-        loadItems[sid] = item
-        if subs:
-            for x in xrange(1, subs+1):
-                attributes = item.copy()
+        loadItems[sid] = attr
+        if item[6]:
+            for x in xrange(1, item[6]+1):
+                attributes = attr.copy()
                 attributes["cid"] = cid+x
                 reverseLoadItems[cid+x] = sid+x
-                
+
                 loadItems[sid+x] = attributes
-            
+
     sid = 0
     attributes = None
     for data in (yield d2):
-        if sid != data["sid"]:
-            attributes = loadItems[data["sid"]]
-            sid = data["sid"]
-            
-        if data["key"] == "fluidSource":
-            attributes["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data["value"].upper())
-        elif data["key"] == "weaponType":
+        if sid != data[0]:
+            attributes = loadItems[data[0]]
+            sid = data[0]
+
+        if data[1] == "fluidSource":
+            attributes["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data[2].upper())
+        elif data[1] == "weaponType":
             try:
-                attributes["weaponType"] = getattr(game.enum, 'SKILL_%s' % data["value"].upper())
+                attributes["weaponType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
             except:
-                attributes["weaponType"] = data["value"]
-        elif data["value"]:
+                attributes["weaponType"] = data[2]
+        elif data[2]:
             try:
-                attributes[data["key"]] = int(data["value"])
+                attributes[1] = int(data[2])
             except:
-                attributes[data["key"]] = data["value"]
+                attributes[1] = data[2]
 
     log.msg("%d Items loaded" % len(loadItems))
-    
-    if config.itemCache:
-        """# Build namedtuples
-        for item in loadItems:
-            if item:
-                keys = tuple(item.keys())
-                try:
-                    item = itemAttributes[keys]._make(item.values())
-                except:
-                    itemAttributes[keys] = namedtuple("Attr", keys)
-                    item = itemAttributes[keys]._make(item.values())"""
-        cut = 0
-        for i in loadItems[::-1]:
-            if not i:
-                cut += 1
-        if cut:        
-            loadItems = loadItems[:-cut]
+
             
     # Replace the existing items
-    items = tuple(loadItems)
-    reverseItems = tuple(reverseLoadItems)
+    items = loadItems
+    reverseItems = reverseLoadItems
     itemNames = loadItemNames
     
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:
-            f.write(marshal.dumps((items, reverseItems, itemNames), 2))
+            f.write(marshal.dumps((tuple(items), tuple(reverseItems), itemNames), 2))
             
     
     

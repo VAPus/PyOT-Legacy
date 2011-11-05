@@ -16,7 +16,7 @@ loginMaxConnections = 20
 gameMaxConnections = 100
 
 # SQL:
-sqlModule = "MySQLdb" #"MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb), "pymysql" (Mysql using ctypes, slower on CPython) or "sqlite3"
+sqlModule = "MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb, tho, slower), "pymysql" (Mysql using ctypes, slower on CPython), mysql-ctypes, or "sqlite3"
 sqlUsername = "root"
 sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
@@ -121,8 +121,8 @@ sendTutorialSignalUponQuestLogUpdate = True # This is a non-cipsoft feature orig
 tryPsyco = False
 
 # Item cache
-# This reduce both memory usage and the time it takes to start the server, but in turn, it won't use items from the DB whenever a cache file exists.
-# This also make item reloading impossible (will require restart)
+# This reduce the time it takes to start the server (by about 0.1s), but in turn, it won't use items from the DB whenever a cache file exists.
+# This also make item reloading impossible (will require restart and removal of the cache file)
 itemCache = False
 
 # Houses

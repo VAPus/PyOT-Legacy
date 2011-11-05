@@ -48,18 +48,18 @@ def loader(timer):
     @inlineCallbacks
     def _sql_():
         for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
-            if x['type'] == 'json':
-                globalStorage[x['key']] = otjson.loads(x['data'])
-            elif x['type'] == 'pickle':
-                globalStorage[x['key']] = pickle.loads(x['data'])
+            if x[2] == 'json':
+                globalStorage[x[0]] = otjson.loads(x[1])
+            elif x[2] == 'pickle':
+                globalStorage[x[0]] = pickle.loads(x[1])
             else:
-                globalStorage[x['key']] = x['data']
+                globalStorage[x[0]] = x[1]
 
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            game.house.houseData[x["id"]] = game.house.House(x["id"], x["owner"],x["guild"],x["paid"],x["name"],x["town"],x["size"],x["rent"],x["data"])
+            game.house.houseData[x[0]] = game.house.House(x[0], x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8])
             
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
-            groups[x["group_id"]] = (x["group_name"], otjson.loads(x["group_flags"]))
+            groups[x[0]] = (x[1], otjson.loads(x[2]))
     _sql_()            
     def sync(d, timer):
         # Load map (if configurated to do so)
@@ -787,7 +787,7 @@ def getPlayerIDByName(name):
     except:
         d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            returnValue(d[0]['id'])
+            returnValue(d[0][0])
         else:
             returnValue(None)
 
@@ -868,7 +868,7 @@ def placeInDepot(name, depotId, items):
     else:
         result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
-            result = pickle.loads(result['depot'])
+            result = pickle.loads(result[0])
             try:
                 __inPlace(result[depotId])
             except:
@@ -889,7 +889,9 @@ def loadPlayer(playerName):
         if not character:
             returnValue(None)
             return
-        game.player.allPlayers[playerName] = game.player.Player(None, character[0])
+        cd = character[0]
+        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+        game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         
 @inlineCallbacks
@@ -905,8 +907,10 @@ def loadPlayerById(playerId):
         if not character:
             returnValue(None)
             return
-        game.player.allPlayers[character[0]['name']] = game.player.Player(None, character[0])
-        returnValue(game.player.allPlayers[character[0]['name']])
+        cd = character[0]
+        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+        game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
+        returnValue(game.player.allPlayers[cd['name']])
         
 # Helper calls
 def summonCreature(name, position, master=None):

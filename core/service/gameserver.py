@@ -15,7 +15,7 @@ import struct
 
 class GameProtocol(protocolbase.TibiaProtocol):
     __slots__ = 'player', 'protocol'
-    
+
     def onInit(self):
         self.player = None
         self.protocol = None
@@ -33,7 +33,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.string(message) # Error message
         packet.send(self)
         self.loseConnection()
-        
+
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
@@ -44,12 +44,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
             version = packet.uint16() # Version int
             self.protocol = game.protocol.getProtocol(version)
             print "Client protocol version %d" % version
-            
+
             if not self.protocol:
                 log.msg("Trying to load a invalid protocol")
                 self.transport.loseConnection()
                 return
-                
+
             if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
                 packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
                 packet.pos = 0 # Reset position
@@ -93,25 +93,29 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.exitWithError("Invalid username or password")
                 return
 
-            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s", (account[0]['id']))
+            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s", (account[0][0]))
 
             if not character:
                 self.exitWithError("Character can't be loaded")
                 return
 
-            if gamemaster and character["group"] < 3:
+            if gamemaster and character[3] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
-            
+
             try:
-                self.player = game.player.allPlayers[character[0]['name']]
+                self.player = game.player.allPlayers[character[0][2]]
                 if self.player.data["health"] < 1:
                     self.player.onSpawn()
                 self.player.client = self
                 getTile(self.player.position).placeCreature(self.player)
             except:
-                game.player.allPlayers[character[0]['name']] = game.player.Player(self, character[0])
-                self.player = game.player.allPlayers[character[0]['name']]
+                # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
+                cd = character[0]
+                cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+
+                game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
+                self.player = game.player.allPlayers[cd['name']]
                 if self.player.data["health"]:
                     try:
                         getTile(self.player.position).placeCreature(self.player)
@@ -119,9 +123,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         import data.map.info
                         self.player.position = data.map.info.towns[1][1]
                         getTile(self.player.position).placeCreature(self.player)
-                    
+
             self.player.sendFirstPacket()
-                    
+
             # Call the login script
             game.scriptsystem.get("login").run(self.player)
         elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
@@ -152,7 +156,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.pos = 0
         packet.data = packet.data[2:2+packet.uint16()]
         packet.pos = 0
-        
+
         self.protocol.handle(self.player, packet)
 
 
@@ -167,10 +171,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     stream.send(x.client)
             removeCreature(self.player, self.player.position)
             game.scriptsystem.get("logout").run(self.player)
-        
+
     def packet(self, *args):
         return self.protocol.Packet(*args)
-        
+
 class GameFactory(protocolbase.TibiaFactory):
     __slots__ = ()
     protocol = GameProtocol
