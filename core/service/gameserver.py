@@ -1,6 +1,6 @@
 import protocolbase
 import game.protocol
-
+from collections import deque
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
@@ -12,8 +12,12 @@ import sql
 import game.player
 from game.map import getTile,removeCreature
 import struct
+import time
 
+waitingListIps = deque()
+lastChecks = {}
 class GameProtocol(protocolbase.TibiaProtocol):
+    connections = 0
     __slots__ = 'player', 'protocol'
 
     def onInit(self):
@@ -27,13 +31,19 @@ class GameProtocol(protocolbase.TibiaProtocol):
         pkg.uint8(0xFF) # Used for?
         pkg.send(self)
 
-    def exitWithError(self, message, error = 0x14):
-        packet = TibiaPacket()
-        packet.uint8(error) # Error code
+    def exitWithError(self, message):
+        packet = TibiaPacket(0x14)
         packet.string(message) # Error message
         packet.send(self)
         self.loseConnection()
 
+    def exitWaitingList(self, message, slot):
+        packet = TibiaPacket(0x16)
+        packet.string(message) # Error message
+        packet.uint8(15 + (2 * slot))
+        packet.send(self)
+        self.loseConnection()
+        
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
@@ -67,6 +77,27 @@ class GameProtocol(protocolbase.TibiaProtocol):
             # Set the XTEA key
             self.xtea = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
 
+            ip = self.transport.getPeer().host
+            if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
+                if ip in waitingListIps:
+                    i = waitingListIps.index(ip) + 1
+                    lastChecks[ip] = time.time()
+                    # Note: Everyone below this threshhold might connect. So even if your #1 on the list and there is two free slots, you can be unlucky and don't get them.
+                    if i + self.connections > config.gameMaxConnections:
+                        self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % i, i) 
+                        return
+                else:
+                    waitingListIps.append(ip)
+                    lastChecks[ip] = time.time()
+                    self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % len(waitingListIps), len(waitingListIps)) 
+                    return
+            self.connections += 1
+            try:
+                waitingListIps.remove(ip)
+                del lastChecks[ip]
+            except:
+                pass
+            
             # "Gamemaster" mode?
             gamemaster = packet.uint8()
 
@@ -128,6 +159,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
             # Call the login script
             game.scriptsystem.get("login").run(self.player)
+            
+            # If we got a waiting list, now is a good time to vertify the list
+            if lastChecks:
+                checkTime = time.time()
+                for entry in lastChecks:
+                    if checkTime - lastChecks[entry] > 3600:
+                        waitingListIps.remove(entry)
+                        del lastChecks[entry]
+                        
         elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
             t = TibiaPacket()
             isAuthorized = not config.executeProtocolAuthKeys
