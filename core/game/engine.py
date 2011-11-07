@@ -391,7 +391,7 @@ def getSpectators(pos, radius=(8,6), ignore=tuple()):
     players = set()
     try:       
         for player in game.player.allPlayersObject:
-            if player.canSee(pos, radius) and player.client and player not in ignore:
+            if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
                 players.add(player.client)
     except:
         pass # No players
@@ -793,7 +793,7 @@ def getPlayerIDByName(name):
 
 def getPlayer(playerName):
     try:
-        return game.player.allPlayers[name]
+        return game.player.allPlayers[playerName]
     except:
         return None
         

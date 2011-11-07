@@ -11,6 +11,7 @@ from packet import TibiaPacket
 import sql
 import game.player
 from game.map import getTile,removeCreature
+from game.engine import updateTile
 import struct
 import time
 
@@ -18,11 +19,12 @@ waitingListIps = deque()
 lastChecks = {}
 class GameProtocol(protocolbase.TibiaProtocol):
     connections = 0
-    __slots__ = 'player', 'protocol'
+    __slots__ = 'player', 'protocol', 'ready'
 
     def onInit(self):
         self.player = None
         self.protocol = None
+        self.ready = False
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
@@ -48,7 +50,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
 
-        if packetType == 0x0A:
+        if not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
             version = packet.uint16() # Version int
@@ -124,7 +126,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.exitWithError("Invalid username or password")
                 return
 
-            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s", (account[0][0]))
+            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s AND `name` = %s", (account[0][0], characterName))
 
             if not character:
                 self.exitWithError("Character can't be loaded")
@@ -139,7 +141,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if self.player.data["health"] < 1:
                     self.player.onSpawn()
                 self.player.client = self
-                getTile(self.player.position).placeCreature(self.player)
+                tile = getTile(self.player.position)
+                tile.placeCreature(self.player)
+                # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                updateTile(self.player.position, tile)
+                
             except:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
@@ -149,13 +155,20 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.player = game.player.allPlayers[cd['name']]
                 if self.player.data["health"]:
                     try:
-                        getTile(self.player.position).placeCreature(self.player)
+                        tile = getTile(self.player.position)
+                        tile.placeCreature(self.player)
+                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                        updateTile(self.player.position, tile)
                     except AttributeError:
                         import data.map.info
                         self.player.position = data.map.info.towns[1][1]
-                        getTile(self.player.position).placeCreature(self.player)
+                        tile = getTile(self.player.position)
+                        tile.placeCreature(self.player)
+                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                        updateTile(self.player.position, tile)
 
             self.player.sendFirstPacket()
+            self.ready = True # We can now accept other packages
 
             # Call the login script
             game.scriptsystem.get("login").run(self.player)

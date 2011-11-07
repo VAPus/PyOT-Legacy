@@ -509,6 +509,9 @@ class BaseProtocol(object):
         elif packetType == 0x8C: # Look at
             self.handleLookAt(player,packet)
         
+        elif packetType == 0x9A: # Open private channel
+            player.openPrivateChannel(game.engine.getPlayer(packet.string()))
+            
         elif packetType == 0xA1: # Attack
             self.handleAttack(player,packet)
 

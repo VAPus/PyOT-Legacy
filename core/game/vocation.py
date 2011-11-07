@@ -4,7 +4,7 @@ class Vocation(object):
     def __init__(self, id, name, description, health, mana, soulticks):
         self.id = id
         self.name = name
-        self.description = description
+        self._description = description
         self.health = health
         self.mana = mana
         self.soulticks = soulticks

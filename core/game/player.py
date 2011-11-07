@@ -153,7 +153,7 @@ class Player(Creature):
         if isSelf:
             output = "You see yourself. You are %s." % self.getVocation().description()
         else:
-            output = "You see %s (Level %d). %s is %s." % (self.name, self.data["level"], self.sexPrefix(), self.getVocation().description())
+            output = "You see %s (Level %d). %s is %s." % (self.name(), self.data["level"], self.sexPrefix(), self.getVocation().description())
         return output
         
     def packet(self, *args):
@@ -1275,13 +1275,23 @@ class Player(Creature):
             channel.addMember(self)
 
     def openPrivateChannel(self, between):
-        id = 0xFFFF
-        self._openChannels[between.name()] = [id, between]
-        stream = self.packet(0xB2)
-        stream.uint16(id)
-        stream.string(between.name())
-        stream.send(self.client)
-        return id
+        # Self open
+        if not self.isChannelOpen(between):
+            self._openChannels[between.name()] = [0xFFFF, between]
+            if between.isPlayer():
+                stream = self.packet(0xAD)
+            else:    
+                stream = self.packet(0xB2)
+                stream.uint16(0xFFFF)
+                
+            stream.string(between.name())
+            stream.send(self.client)
+        
+        # Notify between if required.
+        if not between.isChannelOpen(self):
+            between.openPrivateChannel(self)
+            
+        return 0xFFFF
         
     def closePrivateChannel(self, between):
         if between.name() in self._openChannels:
@@ -1302,13 +1312,13 @@ class Player(Creature):
         except:
             return False
             
-    def channelMessage(self, text, type="MSG_CHANNEL", channelId=0):
+    def channelMessage(self, text, channelType="MSG_CHANNEL", channelId=0):
         try:
             members = game.chat.getChannel(channelId).members
         except:
             members = []
             
-        members2 = game.scriptsystem.get("getChannelMembers").runSync(channelId, self, None, channelId=channelId, text=text, type=type, members=members)
+        members2 = game.scriptsystem.get("getChannelMembers").runSync(channelId, self, None, channelId=channelId, text=text, type=channelType, members=members)
         if not members and type(members2) != list:
             return False
             
@@ -1326,16 +1336,28 @@ class Player(Creature):
                 stream.uint16(self.data["level"])
             else:
                 stream.uint16(0)
-            stream.uint8(stream.enum(type))
-            if type in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
+            stream.uint8(stream.enum(channelType))
+            if channelType in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
                 stream.uint16(channelId)
             
             stream.string(text)
             stream.send(player.client)
             
         return True
+
+    def privateChannelMessage(self, text, receiver, channelType="MSG_CHANNEL"):
+        player = game.engine.getPlayer(receiver)
+        stream = player.packet(0xAA)
+        stream.uint32(1)
+        stream.string(self.data["name"])
+        stream.uint16(self.data["level"])
+        stream.uint8(stream.enum(channelType))
+        stream.string(text)
+        stream.send(player.client)
+            
+        return True
         
-    def getPrivate(self, name):
+    def isPrivate(self, name):
         try:
             return self.openChannels[name]
         except:
@@ -1653,8 +1675,11 @@ class Player(Creature):
                 elif mode == game.enum.MSG_SPEAK_WHISPER:
                     self.whisper(' '.join(splits[0:]))
             
-            elif MSG_CHANNEL == game.enum.MSG_CHANNEL:
+            elif channelType == game.enum.MSG_CHANNEL:
                 self.channelMessage(text, "MSG_CHANNEL", channelId)
+            
+            elif channelType == game.enum.MSG_PRIVATE_TO:
+                self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
                 
             for creature in game.engine.getCreatures(self.position):
                 creature.playerSay(self, text, channelType, channelId or reciever)
@@ -1765,7 +1790,7 @@ class Player(Creature):
                 self.target = target
                     
             self.targetMode = 2
-            game.engine.autoWalkCreatureTo(player, self.target.position, -1, True)
+            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
         else:
             self.notPossible()
@@ -1899,12 +1924,12 @@ class Player(Creature):
         if result:
             stream = self.packet()
             for player in result:
-                online = bool(player['name'] in allPlayers and allPlayers[player['name']].client)
-                stream.vip(player['id'], player['name'], online)
+                online = bool(player[1] in allPlayers and allPlayers[player[1]].client)
+                stream.vip(player[0], player[1], online)
                 if online:
-                    pkg = allPlayers[player['name']].packet()
+                    pkg = allPlayers[player[1]].packet()
                     pkg.vipLogin(self.data["id"])
-                    pkg.send(allPlayers[player['name']].client)
+                    pkg.send(allPlayers[player[1]].client)
             stream.send(self.client)
             
     def addVip(self, playerId):
