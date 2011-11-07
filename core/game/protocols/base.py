@@ -473,6 +473,9 @@ class BaseProtocol(object):
         elif packetType == 0x7B: # Player sold to store
             self.handlePlayerSale(player,packet)
         
+        elif packetType == 0x7D: # Request trade
+            self.handleRequestTrade(player, packet)
+            
         elif packetType == 0x80: # Player close trade
             player.closeTrade()
             
@@ -1084,3 +1087,24 @@ class BaseProtocol(object):
         
     def handleRemoveVip(self, player, packet):
         player.removeVip(packet.uint32())
+        
+    def handleRequestTrade(self, player, packet):
+        position = packet.position()
+        itemId = packet.uint16()
+        stackpos = packet.uint8()
+        player2 = game.engine.getCreatureByCreatureId(packet.uint32())
+        
+        if position[0] == 0xFFFF:
+            thing = player.findItem(position, stackpos)
+        else:
+            print "ERROR: Unsupported trade position"
+            return
+        
+        if player.isTradingWith == player2:
+            player2.tradeItemRequest(player2, thing, True)
+            player.tradeItemRequest(player2, thing, False)
+        else:
+            player2.tradeItemRequest(player, thing, True)
+            player.tradeItemRequest(player2, thing, True)
+            player.isTradingWith = player2
+            player2.isTradingWith = player

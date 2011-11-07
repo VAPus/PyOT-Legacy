@@ -137,7 +137,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 return
 
             try:
-                self.player = game.player.allPlayers[character[0][2]]
+                player = game.player.allPlayers[character[0][2]]
+                if player.client:
+                    self.exitWithError("This character is already logged in!")
+                    return
+                    
+                self.player = player
                 if self.player.data["health"] < 1:
                     self.player.onSpawn()
                 self.player.client = self

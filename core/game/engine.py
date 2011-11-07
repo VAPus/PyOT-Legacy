@@ -796,7 +796,12 @@ def getPlayer(playerName):
         return game.player.allPlayers[playerName]
     except:
         return None
-        
+
+def getCreatureByCreatureId(cid):
+    for creature in game.creature.allCreaturesObject:
+        if creature.cid == cid:
+            return creature
+            
 def townNameToId(name):
     """ Return the townID based on town name.
     

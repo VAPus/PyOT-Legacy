@@ -44,7 +44,7 @@ class Player(Creature):
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
-        self.openTrade = None
+        self.isTradingWith = None
         self.windowTextId = 0
         self.windowHandlers = {}
         self.partyObj = None
@@ -2068,3 +2068,22 @@ class Player(Creature):
     def party(self):
         # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
         return self.partyObj
+        
+    # Trade
+    def tradeItemRequest(self, between, item, confirm=False):
+        if confirm:
+            stream = self.packet(0x7D)
+        else:
+            stream = self.packet(0x7E)
+            
+        stream.string(between.name())
+        if item.containerSize:
+            stream.uint8(item.container.size() + 1)
+            stream.item(item)
+            for item in item.container.items:
+                stream.item(item)
+        else:
+            stream.uint8(1)
+            stream.item(item)
+            
+        stream.send(self.client)
