@@ -47,6 +47,9 @@ class Player(Creature):
         self.openTrade = None
         self.isTradingWith = None
         self.tradeItems = []
+        self.startedTrade = False
+        self.tradeAccepted = False
+        
         self.windowTextId = 0
         self.windowHandlers = {}
         self.partyObj = None
@@ -978,7 +981,17 @@ class Player(Creature):
             except:
                 pass
             self.openContainer(container, parent=parent, update=True)
+        stream = self.packet()
+        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
+            if self.inventory[slot-1]:
+                stream.uint8(0x78)
+                stream.uint8(slot)
             
+                stream.item(self.inventory[slot-1])
+            else:
+                stream.uint8(0x79)
+                stream.uint8(slot)
+        stream.send(self.client)
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
             stream = self.packet(0x6E)

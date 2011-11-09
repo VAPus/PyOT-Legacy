@@ -705,6 +705,10 @@ class BaseProtocol(object):
                 if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_AMMO and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
                     player.notPossible()
                     return
+                elif oldItem[1].inTrade:
+                    player.message("Your trading this item.")
+                    return
+                    
                 elif currItem and currItem[1] and toPosition[0] == 0xFFFF and toPosition[1] >= 64 and currItem[1].containerSize:
                     container = currItem[1].inContainer
                     if container:
@@ -1117,6 +1121,9 @@ class BaseProtocol(object):
         if player2.isTradingWith and player2.isTradingWith != player:
             player.message("This player is already trading.")
             return
+        
+        thing.inTrade = True
+        
         # Modifing the current trade    
         if player.isTradingWith == player2:
             player.tradeItems.append(thing)
@@ -1124,34 +1131,56 @@ class BaseProtocol(object):
             player2.closeTrade()
             player.closeTrade()
             
-            player.tradeItemRequest(player, player.tradeItems, True)
-            player2.tradeItemRequest(player, player.tradeItems, True)
-            
-            
+            if player.startedTrade:
+                starter = player
+                trader = player2
+            else:
+                starter = player2
+                trader = player
+                
+            player2.tradeItemRequest(starter, starter.tradeItems, True)
             if player2.tradeItems:
-                player.tradeItemRequest(player2, player2.tradeItems, False)
-                player2.tradeItemRequest(player2, player2.tradeItems, False)
-            
+                player2.tradeItemRequest(trader, trader.tradeItems, False)
+                player.tradeItemRequest(trader, trader.tradeItems, True)
+                player.tradeItemRequest(starter, starter.tradeItems, False)
+            else:
+                player.tradeItemRequest(starter, starter.tradeItems, True)
+
         else:
             player2.message("%s wish to trade with you." % player.name())
             
             player.tradeItems = [thing]
+            
             player.tradeItemRequest(player, player.tradeItems, True)
             player2.tradeItemRequest(player, player.tradeItems, True)
+            
             player.isTradingWith = player2
             player2.isTradingWith = player
+            player.startedTrade = True
+            player2.startedTrade = False
             
-    def handleCloseTrade(self, player, packet):
+    def handleCloseTrade(self, player, packet, c=False):
         player.closeTrade()
         if player.isTradingWith:
-            player.isTradingWith.message("Trade cancelled.")
+            if not c:
+                player.isTradingWith.message("Trade cancelled.")
+                for item in player.isTradingWith.tradeItems:
+                    del item.inTrade
+                
             player.isTradingWith.tradeItems = []
             player.isTradingWith.isTradingWith = None
             player.isTradingWith.closeTrade()
+            player.isTradingWith.tradeAccepted = False
             
-            player.message("Trade cancelled.")
+            if not c:
+                player.message("Trade cancelled.")
+                for item in player.tradeItems:
+                    del item.inTrade
+                    
             player.tradeItems = []
+            
             player.isTradingWith = None
+            player.tradeAccepted = False
             
     def handleLookAtInTrade(self, player, packet):
         #game.engine.explainPacket(packet)
@@ -1160,7 +1189,7 @@ class BaseProtocol(object):
         thing = None
         if counter:
             try:
-                thing = player.inTradingWith.tradeItems[stackpos]
+                thing = player.isTradingWith.tradeItems[stackpos]
             except:
                 pass
         else:
@@ -1177,3 +1206,41 @@ class BaseProtocol(object):
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description() + extra, 'MSG_INFO_DESCR')
             game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=(0xFFFE, counter, 0), stackpos=stackpos)
+            
+    def handleAcceptTrade(self, player, packet):
+        if player.isTradingWith.tradeAccepted:
+            for item in player.isTradingWith.tradeItems:
+                del item.inTrade
+                if item.inPlayer and not item.inContainer:
+                   item.inPlayer.inventory[item.inPlayer.inventory.index(item)] = None
+                if item.inPlayer:
+                    player.isTradingWith.removeCache(item)
+                if item.inContainer:
+                    item.inContainer.removeItem(item)
+                    
+                
+            for item in player.tradeItems:
+                del item.inTrade
+                if item.inPlayer and not item.inContainer:
+                    item.inPlayer.inventory[item.inPlayer.inventory.index(item)] = None
+                if item.inPlayer:
+                    player.isTradingWith.removeCache(item)
+                if item.inContainer:
+                    item.inContainer.removeItem(item)
+                    
+            for item in player.tradeItems:
+                player.isTradingWith.addItem(item)
+                
+            for item in player.isTradingWith.tradeItems:
+                player.addItem(item)
+                
+            player.message("Trade completed.")
+            player.updateAllContainers()
+            player.isTradingWith.message("Trade completed.")
+            player.isTradingWith.updateAllContainers()
+            self.handleCloseTrade(player, None, True)
+            
+        else:
+            player.tradeAccepted = True
+            player.isTradingWith.message("Offer accepted. Whats your take on this?")
+            

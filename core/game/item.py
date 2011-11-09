@@ -301,6 +301,12 @@ class Item(object):
                 del self.params["opened"]
             except:
                 pass
+
+            try:
+                del self.params["inTrade"]
+            except:
+                pass
+            
         else:
             params = None
             
