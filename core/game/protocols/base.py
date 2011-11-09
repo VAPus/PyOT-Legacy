@@ -476,8 +476,14 @@ class BaseProtocol(object):
         elif packetType == 0x7D: # Request trade
             self.handleRequestTrade(player, packet)
             
+        elif packetType == 0x7E: # Request trade
+            self.handleLookAtInTrade(player, packet)
+            
+        elif packetType == 0x7F: # Request trade
+            self.handleAcceptTrade(player, packet)
+            
         elif packetType == 0x80: # Player close trade
-            player.closeTrade()
+            self.handleCloseTrade(player, packet)
             
         elif packetType == 0x82:
             self.handleUse(player,packet)
@@ -1094,17 +1100,80 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         player2 = game.engine.getCreatureByCreatureId(packet.uint32())
         
+        if not player.inRange(player2.position, 2, 2):
+            player.message("You need to move closer.")
+            return
+            
         if position[0] == 0xFFFF:
             thing = player.findItem(position, stackpos)
+            if thing in player.tradeItems:
+                player.message("Your already trading this item.")
+                return
         else:
             print "ERROR: Unsupported trade position"
             return
         
+        
+        if player2.isTradingWith and player2.isTradingWith != player:
+            player.message("This player is already trading.")
+            return
+        # Modifing the current trade    
         if player.isTradingWith == player2:
-            player2.tradeItemRequest(player2, thing, True)
-            player.tradeItemRequest(player2, thing, False)
+            player.tradeItems.append(thing)
+            # Close trade since we're refreshing it
+            player2.closeTrade()
+            player.closeTrade()
+            
+            player.tradeItemRequest(player, player.tradeItems, True)
+            player2.tradeItemRequest(player, player.tradeItems, True)
+            
+            
+            if player2.tradeItems:
+                player.tradeItemRequest(player2, player2.tradeItems, False)
+                player2.tradeItemRequest(player2, player2.tradeItems, False)
+            
         else:
-            player2.tradeItemRequest(player, thing, True)
-            player.tradeItemRequest(player2, thing, True)
+            player2.message("%s wish to trade with you." % player.name())
+            
+            player.tradeItems = [thing]
+            player.tradeItemRequest(player, player.tradeItems, True)
+            player2.tradeItemRequest(player, player.tradeItems, True)
             player.isTradingWith = player2
             player2.isTradingWith = player
+            
+    def handleCloseTrade(self, player, packet):
+        player.closeTrade()
+        if player.isTradingWith:
+            player.isTradingWith.message("Trade cancelled.")
+            player.isTradingWith.tradeItems = []
+            player.isTradingWith.isTradingWith = None
+            player.isTradingWith.closeTrade()
+            
+            player.message("Trade cancelled.")
+            player.tradeItems = []
+            player.isTradingWith = None
+            
+    def handleLookAtInTrade(self, player, packet):
+        #game.engine.explainPacket(packet)
+        counter = packet.uint8()
+        stackpos = packet.uint8()
+        thing = None
+        if counter:
+            try:
+                thing = player.inTradingWith.tradeItems[stackpos]
+            except:
+                pass
+        else:
+            try:
+                thing = player.tradeItems[stackpos]
+            except:
+                pass
+            
+        if thing:
+            def afterScript():
+                extra = ""
+                # TODO propper description handling
+                if config.debugItems:
+                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
+                player.message(thing.description() + extra, 'MSG_INFO_DESCR')
+            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=(0xFFFE, counter, 0), stackpos=stackpos)

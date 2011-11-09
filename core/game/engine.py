@@ -935,7 +935,7 @@ def magicEffect(pos, type):
 
 def getHouseByPos(pos):
     return game.house.getHouseById(game.map.getHouseId(pos))
-        
+
 # Protocol 0x00:
 @inlineCallbacks
 def _evalCode(code):

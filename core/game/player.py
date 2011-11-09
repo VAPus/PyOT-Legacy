@@ -44,7 +44,9 @@ class Player(Creature):
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
+        self.openTrade = None
         self.isTradingWith = None
+        self.tradeItems = []
         self.windowTextId = 0
         self.windowHandlers = {}
         self.partyObj = None
@@ -1539,7 +1541,9 @@ class Player(Creature):
             stream = self.packet(0x7C)
             stream.send(self.client)
             self.openTrade = None
-
+        else:
+            stream = self.packet(0x7F)
+            stream.send(self.client)            
 
     def getMoney(self):
         if not self.inventory[2]:
@@ -2070,20 +2074,29 @@ class Player(Creature):
         return self.partyObj
         
     # Trade
-    def tradeItemRequest(self, between, item, confirm=False):
+    def tradeItemRequest(self, between, items, confirm=False):
         if confirm:
             stream = self.packet(0x7D)
         else:
             stream = self.packet(0x7E)
             
         stream.string(between.name())
-        if item.containerSize:
-            stream.uint8(item.container.size() + 1)
-            stream.item(item)
-            for item in item.container.items:
-                stream.item(item)
-        else:
-            stream.uint8(1)
-            stream.item(item)
+        _items = []
+        itemCount = 0
+        for item in items:
+            _items.append(item)
+            itemCount += 1
+            if itemCount != 255 and item.containerSize:
+                for i in item.container.items:
+                    stream.item(i)
+                    itemCount += 1
+                    if itemCount == 255:
+                        break
+            elif itemCount == 255:
+                break
+                
+        stream.uint8(itemCount)
+        for i in _items:
+            stream.item(i)
             
         stream.send(self.client)
