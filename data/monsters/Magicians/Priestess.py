@@ -2,7 +2,7 @@
 priestess = game.monster.genMonster("Priestess", (58, 6081), "a priestess")
 priestess.setHealth(390)
 priestess.bloodType(color="blood")
-priestess.setDefense(armor=20, fire=0.6, earth=0.3, energy=1, ice=1, holy=1.1, death=0.9, physical=1.1, drown=1)
+priestess.setDefense(armor=19, fire=0.6, earth=0.3, energy=1, ice=1, holy=1.1, death=0.9, physical=1.1, drown=1)
 priestess.setExperience(420)
 priestess.setSpeed(220)
 priestess.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=0)

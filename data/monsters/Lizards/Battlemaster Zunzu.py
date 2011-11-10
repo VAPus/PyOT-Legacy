@@ -1,7 +1,7 @@
 Battlemaster_Zunzu = game.monster.genMonster("Battlemaster Zunzu", (343, 11278), "a battlemaster zunzu")
 Battlemaster_Zunzu.setHealth(6000, healthmax=6000)
 Battlemaster_Zunzu.bloodType(color="blood")
-Battlemaster_Zunzu.setDefense(armor=1, fire=0.75, earth=0, energy=0.8, ice=0.85, holy=1, death=0.9, physical=0.85, drown=1)
+Battlemaster_Zunzu.setDefense(armor=60, fire=0.75, earth=0, energy=0.8, ice=0.85, holy=1, death=0.9, physical=0.85, drown=1)
 Battlemaster_Zunzu.setExperience(2500)
 Battlemaster_Zunzu.setSpeed(250)
 Battlemaster_Zunzu.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

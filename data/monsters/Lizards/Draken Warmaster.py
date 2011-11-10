@@ -1,7 +1,7 @@
 draken_warmaster = game.monster.genMonster("Draken Warmaster", (334, 11107), "a draken warmaster")
 draken_warmaster.setHealth(4150)
 draken_warmaster.bloodType(color="blood")
-draken_warmaster.setDefense(armor=21, fire=0, earth=0, energy=0.95, ice=1.05, holy=0.95, death=0.5, physical=0.95, drown=1)
+draken_warmaster.setDefense(armor=52, fire=0, earth=0, energy=0.95, ice=1.05, holy=0.95, death=0.5, physical=0.95, drown=1)
 draken_warmaster.setExperience(2400)
 draken_warmaster.setSpeed(220)
 draken_warmaster.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

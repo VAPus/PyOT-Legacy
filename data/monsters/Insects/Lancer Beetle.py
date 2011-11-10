@@ -1,7 +1,7 @@
 lancer_beetle = game.monster.genMonster("Lancer Beetle", (348, 11375), "a lancer beetle")
 lancer_beetle.setHealth(400, healthmax=400)
 lancer_beetle.bloodType(color="blood")
-lancer_beetle.setDefense(armor=20, fire=1, earth=0, energy=1, ice=1, holy=1, death=0.5, physical=1, drown=1)
+lancer_beetle.setDefense(armor=39, fire=1, earth=0, energy=1, ice=1, holy=1, death=0.5, physical=1, drown=1)
 lancer_beetle.setExperience(275)
 lancer_beetle.setSpeed(220)
 lancer_beetle.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=670, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=30)

@@ -1,7 +1,7 @@
 terramite = game.monster.genMonster("Terramite", (346, 11347), "a terramite")
 terramite.setHealth(365)
 terramite.bloodType(color="slime")
-terramite.setDefense(armor=10, fire=1.1, earth=0.8, energy=1.05, ice=1, holy=1, death=1, physical=0.95, drown=1)
+terramite.setDefense(armor=19, fire=1.1, earth=0.8, energy=1.05, ice=1, holy=1, death=1, physical=0.95, drown=1)
 terramite.setExperience(160)
 terramite.setSpeed(220)
 terramite.setBehavior(summonable=505, hostile=1, illusionable=1, convinceable=505, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)

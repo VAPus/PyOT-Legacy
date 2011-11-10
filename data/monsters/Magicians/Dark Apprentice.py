@@ -3,7 +3,7 @@ dark_apprentice = game.monster.genMonster("Dark Apprentice", (133, 3058), "a dar
 dark_apprentice.setOutfit(78, 38, 95, 115) #needs addon
 dark_apprentice.setHealth(225, healthmax=225)
 dark_apprentice.bloodType(color="blood")
-dark_apprentice.setDefense(armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
+dark_apprentice.setDefense(armor=17, fire=1, earth=1, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
 dark_apprentice.setExperience(100)
 dark_apprentice.setSpeed(220)
 dark_apprentice.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=80)

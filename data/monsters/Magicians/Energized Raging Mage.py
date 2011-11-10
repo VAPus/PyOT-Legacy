@@ -2,7 +2,7 @@
 energized_raging_mage = game.monster.genMonster("Energized Raging Mage", (423, 5995), "the energized raging mage") #unknown corpse
 energized_raging_mage.setHealth(4000)
 energized_raging_mage.bloodType(color="blood")
-energized_raging_mage.setDefense(armor=20, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)
+energized_raging_mage.setDefense(armor=30, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)
 energized_raging_mage.setExperience(0)
 energized_raging_mage.setSpeed(200)
 energized_raging_mage.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=800)

@@ -1,7 +1,7 @@
 goblin_leader = game.monster.genMonster("Goblin Leader", (61, 6002), "a goblin leader")
 goblin_leader.setHealth(50)
 goblin_leader.bloodType(color="blood")
-goblin_leader.setDefense(armor=5, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
+goblin_leader.setDefense(armor=13, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 goblin_leader.setExperience(75)
 goblin_leader.setSpeed(200)
 goblin_leader.setBehavior(summonable=290, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=10)

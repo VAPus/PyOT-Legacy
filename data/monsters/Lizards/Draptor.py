@@ -2,7 +2,7 @@
 draptor = game.monster.genMonster("Draptor", (8, 5980), "a draptor")
 draptor.setHealth(3000)
 draptor.bloodType(color="blood")
-draptor.setDefense(armor=20, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)
+draptor.setDefense(armor=10, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)#
 draptor.setExperience(2400)
 draptor.setSpeed(300)
 draptor.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=1500)

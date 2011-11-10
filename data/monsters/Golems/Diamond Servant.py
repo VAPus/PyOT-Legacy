@@ -1,7 +1,7 @@
 diamond_servant = game.monster.genMonster("Diamond Servant", (397, 5980), "a diamond servant")
 diamond_servant.setHealth(1000)
 diamond_servant.bloodType(color="blood")
-diamond_servant.setDefense(armor=10, fire=0.9, earth=0.25, energy=0, ice=1, holy=1.15, death=1, physical=1, drown=1)
+diamond_servant.setDefense(armor=43, fire=0.9, earth=0.25, energy=0, ice=1, holy=1.15, death=1, physical=1, drown=1)
 diamond_servant.setExperience(700)
 diamond_servant.setSpeed(250)
 diamond_servant.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

@@ -2,7 +2,7 @@
 carniphila = game.monster.genMonster("Carniphila", (120, 6047), "a carniphila")
 carniphila.setHealth(255)
 carniphila.bloodType(color="slime")
-carniphila.setDefense(armor=20, fire=1.2, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)
+carniphila.setDefense(armor=22, fire=1.2, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)
 carniphila.setExperience(150)
 carniphila.setSpeed(240)
 carniphila.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
