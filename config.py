@@ -120,6 +120,10 @@ sendTutorialSignalUponQuestLogUpdate = True # This is a non-cipsoft feature orig
 # It's not much, and it also increase memory usage
 tryPsyco = False
 
+# Auto Cython
+# Cython makes c code and compile it out of the python code which still keeping most of the python code compatible. DO NOT STACK WELL WITH tryPsyco!
+tryCython = False
+
 # Item cache
 # This reduce the time it takes to start the server (by about 0.1s), but in turn, it won't use items from the DB whenever a cache file exists.
 # This also make item reloading impossible (will require restart and removal of the cache file)
@@ -139,7 +143,7 @@ suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This 
 sqlMinConnections = 3
 sqlMaxConnections = 5
 
-reactorStyle = "default" # Can be "select" (work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs). Leave it to "default" to allow twisted to choose
+reactorStyle = "default" #"default" # Can be "select" (work on "all" platforms), "poll" (faster then select, does not work on Mac OSX), "epoll" (Linux 2.6+ only), "kqueue" (FreeBSD only), "iocp" (Fastest on Windows, may have bugs). Leave it to "default" to allow twisted to choose
 
 RSAKeys = {"n":"109120132967399429278860960508995541528237502902798129123468757937266291492576446330739696001110603907230888610072655818825358503429057592827629436413108566029093628212635953836686562675849720620786279431090218017681061521755056710823876476444260558147179707119674283982419152118103759076030616683978566631413",
 "e":"65537",

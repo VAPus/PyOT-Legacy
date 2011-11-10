@@ -4,6 +4,23 @@ sys.path.insert(1, 'core')
 
 import config
 
+#### Use psyco? ####
+if config.tryPsyco:
+    try:
+        import psyco
+        psyco.full(0)
+    except:
+        pass # No psyco / 64-bit
+
+#### Try Cython? ####
+if config.tryCython:
+    try:
+        import pyximport
+        pyximport.install(pyimport = True)
+    except:
+        pass # No cython / old cython
+
+
 #### Setup Reactor ####
 if config.reactorStyle is "poll":
     from twisted.internet import pollreactor

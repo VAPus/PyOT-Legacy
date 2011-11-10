@@ -12,6 +12,14 @@ if config.tryPsyco:
     except:
         pass # No psyco / 64-bit
 
+#### Try Cython? ####
+if config.tryCython:
+    try:
+        import pyximport
+        pyximport.install(pyimport = True)
+    except:
+        pass # No cython / old cython
+
 #### Setup Reactor ####
 if config.reactorStyle == "poll":
     from twisted.internet import pollreactor
