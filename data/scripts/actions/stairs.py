@@ -157,7 +157,7 @@ reg("use", laddersUp, floorup)
 
 # Ladders down
 laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
-reg("use", laddersDown, floordown)
+reg("walkOn", laddersDown, floordown)
 
 # Trapdoors, holes etc
 trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
