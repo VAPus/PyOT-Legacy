@@ -214,7 +214,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'pyot', u'PyOT Documentation',
-     [u'Stian Andreassen, soul4soul, sentinello'], 1)
+     ['Stian Andreassen', u'soul4soul', u'sentinello', u'Mr. Ez'], 1)
 ]
 
 # --- Some other things
