@@ -238,64 +238,73 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocations=
 def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useCount=1):
     @game.creature.Creature.actionDecor
     def fieldrune(creature, position, thing, stackpos, onPosition, **k):
-
-        if not creature.canDoSpell(icon, group):
-            creature.exhausted()
-            return False
-            
-        if creature.data["level"] < level:
-            creature.notEnough("level")
-        elif creature.data["maglevel"] < mlevel:
-            creature.notEnough("magic level")
-            
-        else:
-            if not thing.count:
-                creature.needMagicItem()
-                creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+        if creature.isPlayer():
+            if not creature.canDoSpell(icon, group):
+                creature.exhausted()
+                return False
+                
+            if creature.data["level"] < level:
+                creature.notEnough("level")
+            elif creature.data["maglevel"] < mlevel:
+                creature.notEnough("magic level")
                 
             else:
-                creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                if not thing.count:
+                    creature.needMagicItem()
+                    creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+                    
+                else:
+                    creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                    
+                    creature.cooldownSpell(icon, group, cooldown)
+                    for a in area:
+                        pos = onPosition[:]
+                        pos[0] += a[0]
+                        pos[1] += a[1]
+                        callback(pos)
+        else:
+            for a in area:
+                pos = onPosition[:]
+                pos[0] += a[0]
+                pos[1] += a[1]
+                callback(pos)
                 
-                creature.cooldownSpell(icon, group, cooldown)
-                for a in area:
-                    pos = onPosition[:]
-                    pos[0] += a[0]
-                    pos[1] += a[1]
-                    callback(pos)
-
     fieldRunes[rune] = fieldrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, fieldrune)
 
 def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, useCount=1):
     @game.creature.Creature.actionDecor
     def targetrune(creature, thing, position, onPosition, stackpos, onStackpos, **k):
-
-        if not creature.canDoSpell(icon, group):
-            creature.exhausted()
-            return False
-            
-        if creature.data["level"] < level:
-            creature.notEnough("level")
-        elif creature.data["maglevel"] < mlevel:
-            creature.notEnough("magic level")
-            
-        else:
-            if not thing.count:
-                creature.needMagicItem()
-                creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+        if creature.isPlayer():
+            if not creature.canDoSpell(icon, group):
+                creature.exhausted()
+                return False
+                
+            if creature.data["level"] < level:
+                creature.notEnough("level")
+            elif creature.data["maglevel"] < mlevel:
+                creature.notEnough("magic level")
                 
             else:
-                creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                if not thing.count:
+                    creature.needMagicItem()
+                    creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                     
-                creature.cooldownSpell(icon, group, cooldown)
-                try:
-                    onCreature = game.map.getTile(onPosition).getThing(onStackpos)
-                    onCreature.isPlayer()
-                except:
-                    creature.onlyOnCreatures()
                 else:
-                    callback(creature, creature.position, onCreature, onPosition, effect)
-                
+                    creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                        
+                    creature.cooldownSpell(icon, group, cooldown)
+                    try:
+                        onCreature = game.map.getTile(onPosition).getThing(onStackpos)
+                        onCreature.isPlayer()
+                    except:
+                        creature.onlyOnCreatures()
+                    else:
+                        callback(creature, creature.position, onCreature, onPosition, effect, None)
+        else:
+            # Monster is doing it.
+            callback(creature, creature.position, creature.target, onPosition, effect, k["strength"])
+            
     targetRunes[rune] = targetrune # Just to prevent reset
     game.scriptsystem.get("useWith").reg(rune, targetrune)
 
