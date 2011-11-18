@@ -157,11 +157,41 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 
+def drainHealthTarget(effectivityLevel=1):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
+        creature.shoot(position, onPosition, effect)
+        if strength:
+            minHP, maxHP = strength
+        else:
+            return
+            
+        health = random.randint(round(minHP), round(maxHP))
+        onCreature.modifyHealth(health)
+        creature.modifyHealth(health * effectivityLevel)
+    return callback
+
+def drainManaTarget():
+    def callback(creature, position, onCreature, onPosition, effect, strength):
+        creature.shoot(position, onPosition, effect)
+        if strength:
+            minMana, maxMana = strength
+            
+        else:
+            return
+
+
+        onCreature.modifyMana(random.randint(round(minMana), round(maxMana)))
+    return callback
+    
 def boostTarget(type, length, formula, subtype=""):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
             mod = random.randint(strength[0], strength[1])
+            try:
+                length = strength[2]
+            except:
+                pass
         else:
             org = getattr(onCreature, type)
             mod = formula(org) - org
@@ -347,9 +377,19 @@ def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, coo
             creature.cooldownSpell(icon, group, cooldown, groupCooldown)
         callback(creature, creature.position, target, target.position, effect, strength)
             
-    spells[words] = (selftargetspell, name, level, mana)
-    game.scriptsystem.reg("talkaction", words, selftargetspell)
-        
+    spells[name] = (selftargetspell, words, level, mana)
+    if words:
+        game.scriptsystem.reg("talkaction", words, selftargetspell)
+
+def creatureSelfTargetSpell(name, effect, callback):
+    @game.creature.Creature.actionDecor
+    def targetspell(creature, strength=None, target=None, **k):
+        if not target:
+            target = creature
+                
+        callback(creature, creature.position, target, target.position, effect, strength)
+            
+    spells[name] = (targetspell)
 def areaSpell(words, name, icon, level, mana, group, effect, area, callback, cooldown=2, groupCooldown=None):
     @game.creature.Creature.actionDecor
     def areaspell(creature, strength=None, direction=None, **k):
@@ -373,8 +413,9 @@ def areaSpell(words, name, icon, level, mana, group, effect, area, callback, coo
         for pos in positions:
             callback(creature, pos, effect, strength)
             
-    spells[words] = (areaspell, name, level, mana)
-    game.scriptsystem.reg("talkaction", words, targetspell)
+    spells[name] = (areaspell, words, level, mana)
+    if words:
+        game.scriptsystem.reg("talkaction", words, targetspell)
 
 def targetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=2, groupCooldown=None):
     @game.creature.Creature.actionDecor
@@ -401,8 +442,21 @@ def targetSpell(words, name, icon, level, mana, group, effect, callback, cooldow
                 
         callback(creature, creature.position, target, target.position, effect, strength)
             
-    spells[words] = (targetspell, name, level, mana)
-    game.scriptsystem.reg("talkaction", words, targetspell)
+    spells[name] = (targetspell, words, level, mana)
+    if words:
+        game.scriptsystem.reg("talkaction", words, targetspell)
+
+def creatureTargetSpell(name, effect, callback):
+    @game.creature.Creature.actionDecor
+    def targetspell(creature, strength=None, target=None, **k):
+        if not target:
+            target = creature.target
+            if not target:
+                return
+                
+        callback(creature, creature.position, target, target.position, effect, strength)
+            
+    spells[name] = (targetspell)
     
 def clear():
     fieldRunes.clear()

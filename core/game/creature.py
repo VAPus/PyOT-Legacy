@@ -419,6 +419,8 @@ class Creature(object):
             game.scriptsystem.get('appear').run(self, creature2)
             
     def magicEffect(self, type, pos=None):
+        if not type: return
+        
         if not pos or pos[0] == 0xFFFF:
             pos = self.position
         for spectator in getSpectators(pos):
@@ -427,6 +429,8 @@ class Creature(object):
             stream.send(spectator)
         
     def shoot(self, fromPos, toPos, type):
+        if not type: return
+        
         if fromPos == toPos:
             self.magicEffect(type, fromPos)
         else:

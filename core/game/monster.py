@@ -431,11 +431,17 @@ class MonsterBase(CreatureBase):
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
         
-    def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=1):
-        self.spellAttacks.append([interval, spellName, check, range, (min, max)])
-        
-    def regSelfSpell(self, spellName, min, max, interval=2, check=chance(10)):
-        self.defenceSpells.append([interval, spellName, check, (min, max)])
+    def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=1, length=None):
+        if length:
+            self.spellAttacks.append([interval, spellName, check, range, (min, max, length)])
+        else:
+            self.spellAttacks.append([interval, spellName, check, range, (min, max)])
+            
+    def regSelfSpell(self, spellName, min, max, interval=2, check=chance(10), length=None):
+        if length:
+            self.defenceSpells.append([interval, spellName, check, (min, max, length)])
+        else:
+            self.defenceSpells.append([interval, spellName, check, (min, max)])
         
     def loot(self, *argc):
         # Convert name to Id here
