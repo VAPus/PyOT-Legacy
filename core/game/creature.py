@@ -87,7 +87,7 @@ class Creature(object):
         self.conditions = {}
         self.walkPattern = None
         
-        # We are trackable
+        # We are trackable 
         allCreatures[self.cid] = self
 
     def actionLock(self, *argc, **kwargs):
@@ -1006,12 +1006,14 @@ class Creature(object):
                 self.conditions[condition.type] = condition
             elif stackbehavior == enum.CONDITION_REPLACE:
                 oldCondition.stop()
-                self.conditions[condition.type] = condition
                 condition.start(self)
+                self.conditions[condition.type] = condition
+                
                 print "Condition"
         except:
-            self.conditions[condition.type] = condition
             condition.start(self)
+            self.conditions[condition.type] = condition
+            
    
         self.refreshConditions()
 
@@ -1220,3 +1222,35 @@ class Condition(object):
             self.tickEvent = engine.safeCallLater(self.per, self.tick)
         else:
             self.finish()
+
+class Boost(Condition):
+    def __init__(self, type, mod, length, subtype="", ticks=1, *argc, **kwargs):
+        self.ticks = ticks
+        self.per = length
+        self.creature = None
+        self.tickEvent = None
+        if subtype and isinstance(type, str):
+            self.type = "%s_%s" % (type, subtype)
+        else:
+            self.type = type
+        self.ptype = type
+        self.effectArgs = argc
+        self.effectKwargs = kwargs
+        self.mod = mod
+        
+    def tick(self): pass
+    def init(self):
+        # Hack
+        if self.ptype == "speed":
+            self.type = game.enum.CONDITION_HASTE
+            self.creature.setSpeed(getattr(self.creature, self.ptype) + self.mod)
+        else:
+            setattr(self.creature, self.ptype, getattr(self.creature, self.ptype) + self.mod)
+        self.tickEvent = engine.safeCallLater(self.per, self.finish)
+    def callback(self):
+        # Hack
+        if self.ptype == "speed":
+            self.creature.setSpeed(getattr(self.creature, self.ptype) - self.mod)
+        else:
+            setattr(self.creature, self.ptype, getattr(self.creature, self.ptype) - self.mod)
+                

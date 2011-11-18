@@ -157,6 +157,20 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 
+def boostTarget(type, length, formula, subtype=""):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
+        creature.shoot(position, onPosition, effect)
+        if strength:
+            mod = strength
+        else:
+            org = getattr(onCreature, type)
+            mod = formula(org) - org
+            
+        onCreature.condition(game.creature.Boost(type, mod, length, subtype), game.enum.CONDITION_REPLACE)
+        
+    return callback
+            
+
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
     def callback(creature, position, effect, strength):       
         creature.magicEffect(position, effect)
