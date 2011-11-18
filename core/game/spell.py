@@ -161,7 +161,7 @@ def boostTarget(type, length, formula, subtype=""):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
-            mod = strength
+            mod = random.randint(strength[0], strength[1])
         else:
             org = getattr(onCreature, type)
             mod = formula(org) - org
