@@ -170,7 +170,23 @@ def boostTarget(type, length, formula, subtype=""):
         
     return callback
             
+def conditionTarget(*argc, **kwargs):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
+        creature.shoot(position, onPosition, effect)
+        if strength:
+            import copy
+            condition = copy.deepcopy(strength)
+        else:
+            condition = game.creature.Condition(*argc)
+        onCreature.condition(condition, **kwargs)
+        
+    return callback
 
+def multi(*callbacks):
+    def callback(creature, position, onCreature, onPosition, effect, strength):
+        for call in callbacks:
+            call(creature, position, onCreature, onPosition, effect, strength)
+            
 def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
     def callback(creature, position, effect, strength):       
         creature.magicEffect(position, effect)
@@ -190,7 +206,8 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
                 onCreature.lastDamager = creature
         
     return callback
-    
+
+
 def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocations=None, use=2260, useCount=1, makeCount=1, teached=0, group=3, cooldown=2):
     @game.creature.Creature.actionDecor
     def conjure(creature, text):
