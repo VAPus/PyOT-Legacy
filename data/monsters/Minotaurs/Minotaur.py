@@ -1,0 +1,13 @@
+
+minotaur = game.monster.genMonster("Minotaur", (25, 5969), "a minotaur")
+minotaur.setHealth(100)
+minotaur.bloodType(color="blood")
+minotaur.setDefense(armor=11, fire=0.8, earth=1, energy=1, ice=1.1, holy=0.9, death=1.1, physical=1, drown=1)
+minotaur.setExperience(50)
+minotaur.setSpeed(170)
+minotaur.setBehavior(summonable=330, hostile=1, illusionable=1, convinceable=330, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+minotaur.walkAround(energy=1, fire=1, poison=1)
+minotaur.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
+minotaur.voices("Kaplar!")
+minotaur.regMelee(45)
+minotaur.loot( ("mace", 13.0), ("chain armor", 10.75), (2148, 100, 25), ("axe", 3.5), ("minotaur horn", 2.25, 2), ("brass helmet", 9.25), ("meat", 4.75), ("sword", 5.25), ("plate shield", 19.75), ("minotaur leather", 1.0, 3), ("shovel", 0.25), ("bronze amulet", 0.0025) )

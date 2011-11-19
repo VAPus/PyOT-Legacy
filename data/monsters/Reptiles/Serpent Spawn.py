@@ -1,0 +1,13 @@
+
+serpent_spawn = game.monster.genMonster("Serpent Spawn", (220, 4323), "a serpent spawn")
+serpent_spawn.setHealth(3000)
+serpent_spawn.bloodType(color="slime")
+serpent_spawn.setDefense(armor=25, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)
+serpent_spawn.setExperience(3050)
+serpent_spawn.setSpeed(240)
+serpent_spawn.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=275)
+serpent_spawn.walkAround(energy=1, fire=1, poison=0)
+serpent_spawn.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
+serpent_spawn.voices("HISSSS", "I bring your deathhh, mortalssss", "Sssssouls for the one", "Tsssse one will risssse again")
+serpent_spawn.regMelee(250)
+serpent_spawn.loot( (2148, 100, 245), ("life ring", 6.0), ("energy ring", 6.0), ("small sapphire", 12.0), ("green mushroom", 17.75), ("power bolt", 5.75), ("great mana potion", 2.0), ("snake skin", 14.75), ("crown armor", 0.5), ("warrior helmet", 0.5), ("life crystal", 0.75), ("mercenary sword", 2.0), ("golden mug", 3.0), ("strange helmet", 0.75), ("snakebite rod", 1.0), ("old parchment", 0.5), ("winged tail", 1.0), ("noble axe", 0.75), ("royal helmet", 0.0025), ("spellbook of mind control", 0.0025), (3971, 0.25), ("tower shield", 0.75), ("swamplair armor", 0.0025) )
