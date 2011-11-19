@@ -279,6 +279,18 @@ class NPCBase(CreatureBase):
         else:
             self._onSaid[what] = (open, close)
 
+    def speakTree(self, tree):
+        # Register the opening stuff.
+        greet = tree.keys()[0]
+        self.greet(greet)
+        
+        root = tree[greet]
+        for word in tree.keys():
+            def openTree(npc, player):
+                pass # TODO: Work this function.
+                
+            self.onSaid(word, openTree)
+            
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):
