@@ -14,12 +14,14 @@ You need:
 
 * setuptools / python distribute to compile the cryptomodule
 
+
 You also need to compile otcrypto:
 
 python setup.py build # You can also choose install here, but it might conflict on some systems
 cp build/*/*.so core
 
 There is a precompiled version inside the WINDOWS folder.
+
 
 Links for Windows:
 
@@ -43,9 +45,13 @@ from:
 
 http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
 
+
+
 Archlinux:
 
 pacman -S python2 mysql-python twisted python-cjson python-distribute
+
+
 
 Ubuntu(10.10+) or Debian 6 wheezy (testing)+:
 
@@ -53,6 +59,8 @@ apt-get install python-twisted python-setuptools python-cjson python-mysqldb pyt
 
 An alternative method is required on older versions of Ubuntu and Debian, since those versions only have python 2.6
 or below as standard support. 
+
+
 
 Debian 6 Squeeze:
 
@@ -71,6 +79,10 @@ apt-get update
 apt-get upgrade
 
 Then follow the Debian Wheezy installation instructions above.
+
+
+
+
 
 You can find additional documentation of PyOT here: http://vapus.net/pyot_doc/index.html
 
