@@ -1,4 +1,5 @@
-You need:
+In yourder to run PyOT you need:
+================================
 
 * Python 2.7+
 
@@ -16,6 +17,7 @@ You need:
 
 
 You also need to compile otcrypto:
+==================================
 
 python setup.py build # You can also choose install here, but it might conflict on some systems
 cp build/*/*.so core
@@ -24,6 +26,7 @@ There is a precompiled version inside the WINDOWS folder.
 
 
 Links for Windows:
+------------------
 
 http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi
 
@@ -33,27 +36,25 @@ http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
 
 http://downloads.sourceforge.net/project/pywin32/pywin32/Build216/pywin32-216.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild216%2F&ts=1310085256&use_mirror=netcologne
 
-And grab:
-
-zope.interface-3.7.0.win32-py2.7.exe
-
-and
-
-Base-11.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!)
+Grab zope.interface-3.7.0.win32-py2.7.exe and Base-11.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!)
 
 from:
 
 http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
 
 
+Installation
+============
 
 Archlinux:
+----------
 
 pacman -S python2 mysql-python twisted python-cjson python-distribute
 
 
 
 Ubuntu(10.10+) or Debian 6 wheezy (testing)+:
+---------------------------------------------
 
 apt-get install python-twisted python-setuptools python-cjson python-mysqldb python2.7
 
@@ -63,6 +64,7 @@ or below as standard support.
 
 
 Debian 6 Squeeze:
+-----------------
 
 The easy way will be to update your debian sources to get Python 2.7, like this:
 
@@ -83,6 +85,8 @@ Then follow the Debian Wheezy installation instructions above.
 
 
 
+Documentation
+=============
 
 You can find additional documentation of PyOT here: http://vapus.net/pyot_doc/index.html
 
