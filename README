@@ -1,52 +1,77 @@
 You need:
+
 * Python 2.7+
+
 * Twisted 10+
+
 * zope.interface
+
 * MySQLdb 1.2.3 (or pymysql)
+
 * cjson/usjon/simplejson
+
 * pywin32 if you intend to use IOCP (default on windows)
+
 * setuptools / python distribute to compile the cryptomodule
 
 You also need to compile otcrypto:
+
 python setup.py build # You can also choose install here, but it might conflict on some systems
 cp build/*/*.so core
 
 There is a precompiled version inside the WINDOWS folder.
 
 Links for Windows:
+
 http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi
+
 http://www.codegood.com/download/10/
+
 http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
+
 http://downloads.sourceforge.net/project/pywin32/pywin32/Build216/pywin32-216.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild216%2F&ts=1310085256&use_mirror=netcologne
+
 And grab:
+
 zope.interface-3.7.0.win32-py2.7.exe
+
 and
+
 Base-11.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!)
+
 from:
+
 http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
 
 Archlinux:
+
 pacman -S python2 mysql-python twisted python-cjson python-distribute
 
 Ubuntu(10.10+) or Debian 6 wheezy (testing)+:
+
 apt-get install python-twisted python-setuptools python-cjson python-mysqldb python2.7
 
 An alternative method is required on older versions of Ubuntu and Debian, since those versions only have python 2.6
 or below as standard support. 
 
 Debian 6 Squeeze:
+
 The easy way will be to update your debian sources to get Python 2.7, like this:
+
 nano (or vi) /etc/apt/sources.list
+
 add this line in the end of the document:
+
 deb http://ftp.no.debian.org/debian/ testing main contrib
+
 and save (nano = ctrl + O, followed up by CTRL + X to quit), (vi = ESC :w, followed up by :quit)
+
 apt-get update
+
 apt-get upgrade
 
 Then follow the Debian Wheezy installation instructions above.
 
-You can find additional documentation of PyOT on this link:
-http://vapus.net/pyot_doc/index.html
+You can find additional documentation of PyOT here: http://vapus.net/pyot_doc/index.html
 
-Useful scripting guide:
-http://vapus.net/pyot_doc/scriptevents.html
+Useful scripting guide here: http://vapus.net/pyot_doc/scriptevents.html
