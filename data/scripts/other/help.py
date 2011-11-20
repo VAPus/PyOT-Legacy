@@ -127,7 +127,7 @@ reg("talkactionFirstWord", 'i', makeitem)
 
 # Reimport tester
 def reimporter(creature, text):
-    scriptsystem.reimporter()
+    game.scriptsystem.reimporter()
     return False
 
 def saySomething(creature, text):
@@ -165,6 +165,19 @@ def creatureSpawn(creature, text):
     return False
     
 reg("talkactionFirstWord", 's', creatureSpawn)
+
+# NPC tester
+def npcSpawn(creature, text):
+    print "Spawner called"
+    pos = creature.position[:]
+    pos[1] += 2
+    try:
+        game.npc.getNPC(text).spawn(pos)
+    except:
+        creature.message("NPC named '%s' can't be spawned!" % text)
+    return False
+    
+reg("talkactionFirstWord", 'n', npcSpawn)
 
 def saveMe(creature, text):
     creature.save()

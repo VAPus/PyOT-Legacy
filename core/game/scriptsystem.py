@@ -473,6 +473,7 @@ def importer():
     
 
 def reimporter():
+    global globalEvents
     process = get("reload").runSync()
     if process == False:
         return
