@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PyOT'
-copyright = u'2011, Stian Andreassen, soul4soul, sentinello, Mr. Ez'
+copyright = u'2011, stian, soul4soul, sentinello, Mr. Ez'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -181,7 +181,7 @@ htmlhelp_basename = 'PyOTdoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'PyOT.tex', u'PyOT Documentation',
-   u'Stian Andreassen, soul4soul, sentinello', 'manual'),
+   u'stian, soul4soul, sentinello', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -214,7 +214,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'pyot', u'PyOT Documentation',
-     ['Stian Andreassen', u'soul4soul', u'sentinello', u'Mr. Ez'], 1)
+     ['stian', u'soul4soul', u'sentinello', u'Mr. Ez'], 1)
 ]
 
 # --- Some other things

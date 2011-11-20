@@ -2,7 +2,7 @@
   What's PyOT
 ****************************
 
-:Author: Stian Andreassen (:vapus:`members/1-Stian`)
+:Author: Stian (:vapus:`members/stian`)
 :Release: |release|
 :Date: |today|
 
