@@ -18,7 +18,12 @@ def saidTo(creature, creature2, said, channelType, channelId):
                 break
         if ok:
             creature2.focus.add(creature)
-            creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
+            # Allow functions to be greatings.
+            if hasattr(creature2.base.speakGreet, '__call__'):
+                creature2.base.speakGreet(npc=creature2, player=creature)
+            else:
+                creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
+                
             creature2.turnAgainst(creature.position)
             
     elif channelType == 11 and not creature in creature2.focus:
@@ -26,7 +31,12 @@ def saidTo(creature, creature2, said, channelType, channelId):
     elif channelType == 11:
         # Check for goodbyes
         if said in farwells:
-            creature2.sayTo(creature, creature2.base.speakFarewell % _sayParams)
+            # Allow farewell to be callable.
+            if hasattr(creature2.base.speakFarewell, '__call__'):
+                creature2.base.speakFarewell(npc=creature2, player=creature)
+            else:
+                creature2.sayTo(creature, creature2.base.speakFarewell % _sayParams)
+                
             creature2.focus.remove(creature)
             if creature2.activeModule:
                 creature2.activeModule.close()

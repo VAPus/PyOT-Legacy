@@ -192,6 +192,8 @@ class NPCBase(CreatureBase):
         self.brain = brain
         self._onSaid = {}
         self.speakTreeFunc = None
+        self.speakTreeGreet = None
+        self.speakTreeFarewell = None
 
     def spawn(self, position, place=True, spawnDelay=0.25, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
@@ -290,13 +292,47 @@ class NPCBase(CreatureBase):
         else:
             self._onSaid[what] = (open, close)
 
-    def speakTree(self, tree):
+    def speakTree(self, tree, farewell=None):
         # Register the opening stuff.
         greet = tree.keys()[0]
-        self.greet(greet)
+        if type(greet) == "<type 'function'>" or type(greet) == str:
+            self.greet(greet)
+        else:
+            self.speakTreeGreet = greet
+            
+            def _greet(npc, player):
+                greet = npc.base.speakTreeGreet
+                if type(greet) == tuple:
+                    if len(greet) == 2:
+                        # A callback included.
+                        greet[1](npc=npc, player=player)
+                        greet = greet[0]
+                    elif len(greet) == 3:
+                        if greet[0](npc=npc, player=player):
+                            greet = greet[1]
+                        else:
+                            greet = greet[2]
+                            
+
+                                
+                # The route ends with a string
+                if type(greet) == str:
+                    npc.sayTo(player, greet)
+                    return
+                                
+                    
+                # Function
+                elif str(type(greet)) == "<type 'function'>":
+                    greet(npc=npc, player=player)
+                        
+                # Route simply just ends
+                elif greet == None:
+                    return   
+                    
+            self.greet(_greet)
         
         root = tree[greet]
-
+        
         # The callback function
         def openTree(npc, player):
             # The "currElm" holds the current level in the talking process we're on.
@@ -311,9 +347,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm[response]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -332,6 +374,10 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
@@ -341,9 +387,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm["!"]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -362,6 +414,10 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
@@ -371,9 +427,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm["*"]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -392,12 +454,55 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
-                        
+        
+        # Override speaks
         self.speakTreeFunc = openTree
-            
+        
+        # Register farewell
+        if farewell:
+            if type(farewell) == "<type 'function'>" or type(farewell) == str:
+                self.farewell(farewell)
+            else:
+                self.speakTreeFarewell = farewell
+                
+                def _farewell(npc, player):
+                    farewell = npc.base.speakTreeFarewell
+                    if type(farewell) == tuple:
+                        if len(farewell) == 2:
+                            # A callback included.
+                            farewell[1](npc=npc, player=player)
+                            farewell = farewell[0]
+                        elif len(farewell) == 3:
+                            if farewell[0](npc=npc, player=player):
+                                farewell = farewell[1]
+                            else:
+                                farewell = farewell[2]
+                                
+
+                                    
+                    # The route ends with a string
+                    if type(farewell) == str:
+                        npc.sayTo(player, farewell)
+                        return
+                                    
+                        
+                    # Function
+                    elif str(type(farewell)) == "<type 'function'>":
+                        farewell(npc=npc, player=player)
+                            
+                    # Route simply just ends
+                    elif farewell == None:
+                        return   
+                        
+                self.farewell(_farewell)
+        
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):

@@ -300,8 +300,11 @@ def handleAutoWalking(creature, callback=None, level=0):
         def mcallback(ret):
             creature2, oldPos, newPos = ret
             if oldPos == currPos:
-                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
-    
+                try:
+                    creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
+                except IndexError:
+                    return
+                    
     d = Deferred()
     if mcallback:
         d.addCallback(mcallback)
