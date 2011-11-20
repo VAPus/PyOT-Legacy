@@ -52,27 +52,26 @@ class Tile(object):
     __slots__ = ('things', 'countNflags')
     def __init__(self, items, topItemCount=0, itemLen=0, flags=0):
         if not topItemCount:
-            self.countNflags = 1
-            
+            # Special case.
             if itemLen == 1:
                 #self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
                 self.things = [items[0]]
+                self.countNflags = 1
+                
             else:
-                workItems = deque(items)
-                self.things = [workItems.popleft()]
+                self.things = []
+                bottomItems = []
+                self.countNflags = 0
                 
-                
-                if workItems:
-                    bottomItems = []
-                    for item in workItems:
-                        if item.ontop:
-                            self.things.append(item)
-                            self.countNflags += 1
-                        else:
-                            bottomItems.append(item)
+                for item in workItems:
+                    if item.ontop:
+                        self.things.append(item)
+                        self.countNflags += 1
+                    else:
+                        bottomItems.append(item)
                             
-                    if bottomItems:
-                        self.things.extend(bottomItems)
+                if bottomItems:
+                    self.things.extend(bottomItems)
   
         else:
             self.things = items
@@ -414,7 +413,6 @@ def load(sectorX, sectorY):
     t = time.time()
     
     # Attempt to load a cached file
-    m = None
     # Comment out. Please find a way to also store the houseTiles data aswell.
     try:
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
@@ -423,9 +421,7 @@ def load(sectorX, sectorY):
         # Build cache data
         # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
         with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
-            exec f.read()
-            knownMap[sectorSum] = m
-            
+            knownMap[sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
             f.write(cPickle.dumps(knownMap[sectorSum], 2))
@@ -433,7 +429,7 @@ def load(sectorX, sectorY):
     print "Loading took: %f" % (time.time() - t)
     
     if 'l' in knownMap[sectorSum]:    
-        exec knownMap[sectorSum]['l']
+        exec(knownMap[sectorSum]['l'], {}, {"S":S})
         
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
