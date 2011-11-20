@@ -192,6 +192,8 @@ class NPCBase(CreatureBase):
         self.brain = brain
         self._onSaid = {}
         self.speakTreeFunc = None
+        self.speakTreeGreet = None
+        self.speakTreeFarewell = None
 
     def spawn(self, position, place=True, spawnDelay=0.25, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
@@ -290,13 +292,16 @@ class NPCBase(CreatureBase):
         else:
             self._onSaid[what] = (open, close)
 
-    def speakTree(self, tree):
+    def speakTree(self, tree, farewell=None):
         # Register the opening stuff.
         greet = tree.keys()[0]
         if type(greet) == "<type 'function'>" or type(greet) == str:
             self.greet(greet)
         else:
+            self.speakTreeGreet = greet
+            
             def _greet(npc, player):
+                greet = npc.base.speakTreeGreet
                 if type(greet) == tuple:
                     if len(greet) == 2:
                         # A callback included.
@@ -311,7 +316,7 @@ class NPCBase(CreatureBase):
 
                                 
                 # The route ends with a string
-                elif type(greet) == str:
+                if type(greet) == str:
                     npc.sayTo(player, greet)
                     return
                                 
@@ -327,7 +332,7 @@ class NPCBase(CreatureBase):
             self.greet(_greet)
         
         root = tree[greet]
-
+        
         # The callback function
         def openTree(npc, player):
             # The "currElm" holds the current level in the talking process we're on.
@@ -461,12 +466,14 @@ class NPCBase(CreatureBase):
         self.speakTreeFunc = openTree
         
         # Register farewell
-        if len(tree.keys()) >= 2:
-            farewell = tree.keys()[1]
+        if farewell:
             if type(farewell) == "<type 'function'>" or type(farewell) == str:
                 self.farewell(farewell)
             else:
+                self.speakTreeFarewell = farewell
+                
                 def _farewell(npc, player):
+                    farewell = npc.base.speakTreeFarewell
                     if type(farewell) == tuple:
                         if len(farewell) == 2:
                             # A callback included.
@@ -481,7 +488,7 @@ class NPCBase(CreatureBase):
 
                                     
                     # The route ends with a string
-                    elif type(farewell) == str:
+                    if type(farewell) == str:
                         npc.sayTo(player, farewell)
                         return
                                     

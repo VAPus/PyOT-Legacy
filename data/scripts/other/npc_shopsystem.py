@@ -19,9 +19,9 @@ def saidTo(creature, creature2, said, channelType, channelId):
         if ok:
             creature2.focus.add(creature)
             # Allow functions to be greatings.
-            try:
+            if hasattr(creature2.base.speakGreet, '__call__'):
                 creature2.base.speakGreet(npc=creature2, player=creature)
-            except TypeError:
+            else:
                 creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
                 
             creature2.turnAgainst(creature.position)
@@ -31,10 +31,10 @@ def saidTo(creature, creature2, said, channelType, channelId):
     elif channelType == 11:
         # Check for goodbyes
         if said in farwells:
-            # Allow farewell to be functions.
-            try:
+            # Allow farewell to be callable.
+            if hasattr(creature2.base.speakFarewell, '__call__'):
                 creature2.base.speakFarewell(npc=creature2, player=creature)
-            except TypeError:
+            else:
                 creature2.sayTo(creature, creature2.base.speakFarewell % _sayParams)
                 
             creature2.focus.remove(creature)
