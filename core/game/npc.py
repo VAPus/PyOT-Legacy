@@ -293,7 +293,38 @@ class NPCBase(CreatureBase):
     def speakTree(self, tree):
         # Register the opening stuff.
         greet = tree.keys()[0]
-        self.greet(greet)
+        if type(greet) == "<type 'function'>" or type(greet) == str:
+            self.greet(greet)
+        else:
+            def _greet(npc, player):
+                if type(greet) == tuple:
+                    if len(greet) == 2:
+                        # A callback included.
+                        greet[1](npc=npc, player=player)
+                        greet = greet[0]
+                    elif len(greet) == 3:
+                        if greet[0](npc=npc, player=player):
+                            greet = greet[1]
+                        else:
+                            greet = greet[2]
+                            
+
+                                
+                # The route ends with a string
+                elif type(greet) == str:
+                    npc.sayTo(player, greet)
+                    return
+                                
+                    
+                # Function
+                elif str(type(greet)) == "<type 'function'>":
+                    greet(npc=npc, player=player)
+                        
+                # Route simply just ends
+                elif greet == None:
+                    return   
+                    
+            self.greet(_greet)
         
         root = tree[greet]
 
@@ -425,9 +456,46 @@ class NPCBase(CreatureBase):
                     # Route simply just ends
                     elif nextElm == None:
                         return
-                        
+        
+        # Override speaks
         self.speakTreeFunc = openTree
-            
+        
+        # Register farewell
+        if len(tree.keys()) >= 2:
+            farewell = tree.keys()[1]
+            if type(farewell) == "<type 'function'>" or type(farewell) == str:
+                self.farewell(farewell)
+            else:
+                def _farewell(npc, player):
+                    if type(farewell) == tuple:
+                        if len(farewell) == 2:
+                            # A callback included.
+                            farewell[1](npc=npc, player=player)
+                            farewell = farewell[0]
+                        elif len(farewell) == 3:
+                            if farewell[0](npc=npc, player=player):
+                                farewell = farewell[1]
+                            else:
+                                farewell = farewell[2]
+                                
+
+                                    
+                    # The route ends with a string
+                    elif type(farewell) == str:
+                        npc.sayTo(player, farewell)
+                        return
+                                    
+                        
+                    # Function
+                    elif str(type(farewell)) == "<type 'function'>":
+                        farewell(npc=npc, player=player)
+                            
+                    # Route simply just ends
+                    elif farewell == None:
+                        return   
+                        
+                self.farewell(_farewell)
+        
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):
