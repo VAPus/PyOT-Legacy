@@ -53,6 +53,10 @@ class NPC(Creature):
         self.activeSaid = None
         self.respawn = True
         
+        # Replace handle say function with a speak tree parser.
+        if self.base.speakTreeFunc:
+            self.handleSpeak = self.handleSpeakTree
+        
     def description(self):
         return "You see %s" % self.base.data["description"]
     
@@ -158,6 +162,12 @@ class NPC(Creature):
         else:
             pass # Get some ideas for this
 
+    def handleSpeakTree(self, player, said):
+        self.activeModule = self.base.speakTreeFunc(self, player)
+        self.activeSaid = said
+        self.activeModule.send(None)
+        self.activeModule.send(said)
+            
     def isAttackable(self, by):
         return self.base.attackable
         
@@ -181,6 +191,7 @@ class NPCBase(CreatureBase):
         self.speakFarewell = "Good bye, %(playerName)s!" 
         self.brain = brain
         self._onSaid = {}
+        self.speakTreeFunc = None
 
     def spawn(self, position, place=True, spawnDelay=0.25, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
@@ -279,6 +290,114 @@ class NPCBase(CreatureBase):
         else:
             self._onSaid[what] = (open, close)
 
+    def speakTree(self, tree):
+        # Register the opening stuff.
+        greet = tree.keys()[0]
+        self.greet(greet)
+        
+        root = tree[greet]
+
+        # The callback function
+        def openTree(npc, player):
+            # The "currElm" holds the current level in the talking process we're on.
+            # Currently "root" have been served as the greeting.
+            currElm = root
+            prevElm = None
+            
+            # Run until we run out of levels
+            while True:
+                response = (yield)
+                if response in currElm:
+                    nextElm = currElm[response]
+
+                    if type(nextElm) == tuple:
+                        # A callback included.
+                        nextElm[1](npc=npc, player=player)
+                        nextElm = nextElm[0]
+                        
+                    # Proceed with next level.
+                    if type(nextElm) == dict:
+                        prevElm = currElm # Store this
+                        key = nextElm.keys()[0]
+                        currElm = nextElm[key]
+                        npc.sayTo(player, key)
+                            
+                    # The route ends with a string
+                    elif type(nextElm) == str:
+                        npc.sayTo(player, nextElm)
+                        return
+                                
+                    # Walk one level down.
+                    elif nextElm == -1:
+                        currElm = prevElm
+                        npc.sayTo(player, currElm.keys()[0])
+                    
+                    # Route simply just ends
+                    elif nextElm == None:
+                        return
+               
+                # The not call
+                elif "!" in currElm:
+                    nextElm = currElm["!"]
+
+                    if type(nextElm) == tuple:
+                        # A callback included.
+                        nextElm[1](npc=npc, player=player)
+                        nextElm = nextElm[0]
+                        
+                    # Proceed with next level.
+                    if type(nextElm) == dict:
+                        prevElm = currElm # Store this
+                        key = nextElm.keys()[0]
+                        currElm = nextElm[key]
+                        npc.sayTo(player, key)
+                            
+                    # The route ends with a string
+                    elif type(nextElm) == str:
+                        npc.sayTo(player, nextElm)
+                        return
+                                
+                    # Walk one level down.
+                    elif nextElm == -1:
+                        currElm = prevElm
+                        npc.sayTo(player, currElm.keys()[0])
+                    
+                    # Route simply just ends
+                    elif nextElm == None:
+                        return
+
+                # The any call. Only kicks in if this is not the end of the route tho.
+                if "*" in currElm:
+                    nextElm = currElm["*"]
+
+                    if type(nextElm) == tuple:
+                        # A callback included.
+                        nextElm[1](npc=npc, player=player)
+                        nextElm = nextElm[0]
+                        
+                    # Proceed with next level.
+                    if type(nextElm) == dict:
+                        prevElm = currElm # Store this
+                        key = nextElm.keys()[0]
+                        currElm = nextElm[key]
+                        npc.sayTo(player, key)
+                            
+                    # The route ends with a string
+                    elif type(nextElm) == str:
+                        npc.sayTo(player, nextElm)
+                        return
+                                
+                    # Walk one level down.
+                    elif nextElm == -1:
+                        currElm = prevElm
+                        npc.sayTo(player, currElm.keys()[0])
+                    
+                    # Route simply just ends
+                    elif nextElm == None:
+                        return
+                        
+        self.speakTreeFunc = openTree
+            
 def chance(procent):
     def gen(npc):
         if 10 > random.randint(0, 100):

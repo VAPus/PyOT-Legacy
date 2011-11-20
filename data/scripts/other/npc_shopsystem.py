@@ -35,11 +35,13 @@ def saidTo(creature, creature2, said, channelType, channelId):
             except:
                 pass
         
-        else:
+        elif creature2.activeModule:
             try:
                 creature2.activeModule.send(said)
-            except:
-                creature2.handleSpeak(creature, said)
+            except StopIteration:
+                creature2.activeModule = None
+        else:
+            creature2.handleSpeak(creature, said)
             
 
 
