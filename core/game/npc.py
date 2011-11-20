@@ -311,9 +311,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm[response]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -332,6 +338,10 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
@@ -341,9 +351,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm["!"]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -362,6 +378,10 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
@@ -371,9 +391,15 @@ class NPCBase(CreatureBase):
                     nextElm = currElm["*"]
 
                     if type(nextElm) == tuple:
-                        # A callback included.
-                        nextElm[1](npc=npc, player=player)
-                        nextElm = nextElm[0]
+                        if len(nextElm) == 2:
+                            # A callback included.
+                            nextElm[1](npc=npc, player=player)
+                            nextElm = nextElm[0]
+                        elif len(nextElm) == 3:
+                            if nextElm[0](npc=npc, player=player):
+                                nextElm = nextElm[1]
+                            else:
+                                nextElm = nextElm[2]
                         
                     # Proceed with next level.
                     if type(nextElm) == dict:
@@ -392,6 +418,10 @@ class NPCBase(CreatureBase):
                         currElm = prevElm
                         npc.sayTo(player, currElm.keys()[0])
                     
+                    # Function
+                    elif str(type(nextElm)) == "<type 'function'>":
+                        nextElm(npc=npc, player=player)
+                        
                     # Route simply just ends
                     elif nextElm == None:
                         return
