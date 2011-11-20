@@ -1,0 +1,95 @@
+<items>
+<item id="12385" article="a" name="slain abomination">
+              <attribute key="decayTo" value="0" />
+               <attribute key="duration" value="5" />
+        </item>  
+        
+        
+       <item fromid="11775" toid="11778" name="ground" />
+       <item fromid="11785" toid="11792" name="muddy floor" />
+       <item fromid="11793" toid="11795" article="a" name="skull pillar"/>
+        <item id="11797" article="a" name="skull pillar"/>
+       <item fromid="11827" toid="11831" name="fog" />
+       <item id="11832" article="a" name="skull" plural="skulls">
+               <attribute key="weight" value="2180" />
+       </item>
+       <item fromid="11833" toid="11855" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="11864" toid="11907" article="a" name="bridge" />
+       <item fromid="11908" toid="11909" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="11911" toid="11914" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="11915" toid="11916" article="a" name="basin"/>
+       <item fromid="11917" toid="11920" article="a" name="tapestry"/>
+       <item fromid="11921" toid="11922" name="decorative spear's"/>
+       <item fromid="11923" toid="11924" article="a" name="decorative shield"/>
+       <item fromid="11931" toid="11932" article="a" name="statue"/>
+       <item fromid="11937" toid="11946" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item id="11948" article="a" name="window"/>
+       <item fromid="11949" toid="11952" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="11959" toid="11961" article="an" name="archway"/>
+       <item id="11962" article="a" name="stone wall"/>
+       <item fromid="11963" toid="11964" article="a" name="pillar"/>
+       <item fromid="11965" toid="11969" article="a" name="chair"/>
+       <item fromid="11970" toid="11971" article="a" name="stone wall"/>
+       <item fromid="11972" toid="11982" name="leaves"/>
+       <item fromid="11983" toid="11993" name="floor"/> <!-- not sure about this name -->
+       <item fromid="11995" toid="11998" article="a" name="torch"/> <!-- light source -->
+       <item fromid="11999" toid="12002" article="a" name="dragon statue"/> <!-- light source -->
+       <item id="12003" article="a" name="pillar"/>
+       <item fromid="12004" toid="12006" article="a" name="torch"/> <!-- light source -->
+       <item fromid="12007" toid="12008" article="a" name="lamp"/> <!-- light source -->
+       <item id="12009" article="a" name="pillar"/>
+       <item fromid="12010" toid="12011" article="a" name="torch"/> <!-- light source -->
+       <item id="12012" article="a" name="table"/>
+       <item id="12013" article="a" name="pillar"/>
+       <item fromid="12014" toid="12017" article="a" name="torch"/> <!-- light source -->
+       <item fromid="12039" toid="12040" article="a" name="well"/>
+       <item fromid="12042" toid="12043" article="a" name="well"/>
+       <item fromid="12044" toid="12045" article="a" name="weapon's rack"/>
+       <item id="12046" article="a" name="decorative axe"/>
+       <item fromid="12047" toid="12048" name="decorative axe's"/>
+       <item fromid="12049" toid="12050" article="a" name="weapon's rack"/>
+       <item id="12051" article="a" name="decorative axe"/>
+       <item fromid="12052" toid="12053" name="decorative axe's"/>
+       <item fromid="12070" toid="12072" article="a" name="crystal ball"/>
+       <item fromid="12073" toid="12079" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="12092" toid="12105" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="12125" toid="12137" name="roof"/>
+       <item fromid="12138" toid="12141" article="a" name="decorative spear"/>
+       <item fromid="12142" toid="12143" article="an" name="alter"/>
+       <item fromid="12144" toid="12148" name="bones"/>
+       <item fromid="12156" toid="12157" name="throne"/>
+       <item fromid="12158" toid="12164" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item id="12165" article="a" name="stone pillar"/>
+       <item id="12166" article="a" name="dragon statue"/>
+       <item fromid="12177" toid="12187" name="roof"/>
+       <item fromid="12188" toid="12190" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="12191" toid="12192" name="torch"/> <!-- light source -->
+       <item fromid="12193" toid="12199" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="12200" toid="12201" article="a" name="torch"/> <!-- light source -->
+       <item fromid="12202" toid="12205" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item fromid="12206" toid="12207" article="a" name="mirror"/>
+       <item fromid="12208" toid="12211" article="a" name="torch"/> <!-- light source -->
+       <item fromid="12219" toid="12220" article="a" name="tapestry"/>
+       <item fromid="12221" toid="12227" article="a" name="dragon statue"/>
+       <item fromid="12228" toid="12233" article="a" name="corrupted wall"/> <!-- need to confirm name -->
+       <item id="11434" article="a" name="lamp"/>
+       <item id="11435" article="a" name="lamp"/>
+       <item fromid="11445" toid="11449" article="a" name="lamp"/>
+       <item fromid="11451" toid="11462" name="tainted soil" /> <!-- need to confirm name -->
+       <item id="11463" article="a" name="lamp"/>
+       <item fromid="11464" toid="11475" article="a" name="stone floor"/>
+       <item fromid="11476" toid="11477" article="a" name="stone wall"/>
+       <item fromid="11478" toid="11503" name="dirt floor" />
+       <item fromid="11504" toid="11533" name="ground" />
+       <item fromid="11534" toid="11543" article="a" name="stone" />
+       <item fromid="11544" toid="11547" article="a" name="stone wall"/>
+       <item fromid="11549" toid="11560" name="acid" /> <!-- need to confirm name -->
+       <item fromid="11562" toid="11570" name="dead bamboo" /> <!-- need to confirm name -->
+       <item id="11700" article="a" name="stone wall"/>
+       <item id="11702" article="a" name="stone wall"/>
+       <item fromid="11729" toid="11752" name="ground" />
+
+       <item id="11754" article="a" name="ferumbras doll">
+               <attribute key="weight" value="1700" />
+        </item>
+</items>
