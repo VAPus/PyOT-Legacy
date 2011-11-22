@@ -192,12 +192,12 @@ class BasePacket(TibiaPacket):
             self.uint32(creature.clientId())
             self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100)) # Health %
+        self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
         self.uint8(0) # Light
-        self.uint16(creature.speed) # Speed
+        self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.skull) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
@@ -343,15 +343,15 @@ class BasePacket(TibiaPacket):
             self.uint16(0xFFFF)
         else:
             self.uint16(player.data["level"]) # TODO: Virtual cap? Level
-        self.uint8(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"])) # % to next level, TODO
+        self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
         self.uint16(player.data["mana"]) # mana
         self.uint16(player.data["manamax"]) # mana max
         self.uint8(player.data["maglevel"]) # TODO: Virtual cap? Manalevel
         self.uint8(1) # TODO: Virtual cap? ManaBase
         self.uint8(0) # % to next level, TODO
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
-        self.uint16(min(42 * 60, player.data["stamina"] / 60)) # Stamina minutes
-        self.uint16(player.speed) # Speed
+        self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
+        self.uint16(int(player.speed)) # Speed
         
         self.uint16(0x00) # Condition
 
@@ -365,7 +365,7 @@ class BasePacket(TibiaPacket):
             if currHits < 1:
                 self.uint8(0)
             else:
-                self.uint8(round((currHits / goalHits) * 100)) # %
+                self.uint8(int(round((currHits / goalHits) * 100))) # %
 
     def cooldownIcon(self, icon, cooldown):
         self.uint8(0xA4)

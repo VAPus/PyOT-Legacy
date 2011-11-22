@@ -7,7 +7,7 @@ def giveIcecream(player, **k):
     player.say("Yum!")
     playersWhoGotFreeIcecream.add(player)
     
-AltSystemTest.speakTree({(lambda player, **k: player in playersWhoGotFreeIcecream, "Hello, what do you want?", "Why are you back, I already gave you icecream! Ow well, what do you want this time?"):
+AltSystemTest.speakTree({(lambda player, **k: player not in playersWhoGotFreeIcecream, "Hello, what do you want?", "Why are you back, I already gave you icecream! Ow well, what do you want this time?"):
     {"icecream":
         {"What flavour?":
             {"chocolate": ("Here you go!", giveIcecream ),

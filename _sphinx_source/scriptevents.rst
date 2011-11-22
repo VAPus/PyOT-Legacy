@@ -371,9 +371,9 @@ The events are:
            
         reg("lookAt", 1234, lookAt)
 
-.. function:: addMapItem(thing)
+.. function:: postLoadSector(sector)
     
-    Called in the map loader when ``thing`` is gonna be put on to the map. (ThingScript)
+    Called when a map sector is loaded, sector is the 3 dimensional tuple Z -> X -> Y (TriggerScript)
     
     :returns: Item to add to the map (usually just ``thing``)
     

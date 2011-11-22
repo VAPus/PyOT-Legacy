@@ -305,25 +305,16 @@ def I(itemId, **kwargs):
         try:
             return dummyItems[itemId]
         except:
-            item = Item(itemId, **kwargs)
-            
-            itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options={})
+            item = Item(itemId)
+            item.tileStacked = True
+            item.fromMap = True
+            dummyItems[itemId] = item
 
-            if not itemX:
-                item.tileStacked = True
-                item.fromMap = True
-                dummyItems[itemId] = item
-            else:
-                itemX.fromMap = True
-                return itemX
             return item
     else:
         item = Item(itemId, **kwargs)
-        itemX = scriptsystem.get('addMapItem').runSync(item, None, None, options=kwargs)
-        if itemX:
-            itemX.fromMap = True
-            return itemX
         item.fromMap = True
+        
         return item
 
 R = I # TODO
@@ -433,7 +424,9 @@ def load(sectorX, sectorY):
         
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
-        
+    
+    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[sectorSum])
+    
     return True
 
 # Map cleaner

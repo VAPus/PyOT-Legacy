@@ -27,6 +27,11 @@ try:
     import cPickle as pickle
 except:
     import pickle
+
+try:
+    import cStringIO as StringIO
+except:
+    import StringIO as StringIO
     
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -938,7 +943,7 @@ def magicEffect(pos, type):
 
 def getHouseByPos(pos):
     return game.house.getHouseById(game.map.getHouseId(pos))
-
+    
 # Protocol 0x00:
 @inlineCallbacks
 def _evalCode(code):

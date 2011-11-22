@@ -99,10 +99,10 @@ class Player(Creature):
         
         # Calculate level from experience
         vocation = self.getVocation()
-        level = config.levelFromExpFormula(self.data["experience"])
+        level = int(config.levelFromExpFormula(self.data["experience"]))
         
         # Calculate magic level from manaspent
-        self.data["maglevel"] = config.magicLevelFromManaFormula(self.data["manaspent"], vocation.mlevel)
+        self.data["maglevel"] = int(config.magicLevelFromManaFormula(self.data["manaspent"], vocation.mlevel))
         
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
