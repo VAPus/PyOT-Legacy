@@ -1,0 +1,3 @@
+spell.selfTargetSpell("utani hur", "Haste", 6, 14, 60, SUPPORT_GROUP, EFFECT_MAGIC_BLUE, spell.boostTarget("speed", 31, lambda baseSpeed: (baseSpeed * 1.3) - 24), 2) # words, icon, level, mana, group, effect, callback, cooldown=1
+
+spell.selfTargetSpell("utani gran hur", "Strong Haste", 39, 20, 100, SUPPORT_GROUP, EFFECT_MAGIC_BLUE, spell.boostTarget("speed", 22, lambda baseSpeed: (baseSpeed * 1.7) - 56), 8, 3) # words, icon, level, mana, group, effect, callback, cooldown=1
