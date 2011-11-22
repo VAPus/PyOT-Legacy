@@ -96,7 +96,7 @@ def typeToEffect(type):
     elif type == "poison":
         return (game.enum.EFFECT_HITBYPOISON, game.enum.ANIMATION_POISON)
         
-def makeField(fieldId):
+def makeField(fieldId, hiteffect=None):
     def make(position, **k):
         item = game.item.Item(fieldId)
         
@@ -121,6 +121,10 @@ def makeField(fieldId):
                 effectOverTime(creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
         
         stackpos = game.engine.placeItem(item, position)
+        
+        if hiteffect:
+            game.engine.magicEffect(hiteffect)
+            
         if item.damage:
             game.scriptsystem.reg('walkOn', item, callback)
             if item.duration:
@@ -128,7 +132,7 @@ def makeField(fieldId):
                 
     return make
 
-def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
+def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5, hiteffect=None):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
@@ -138,13 +142,19 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvl
             maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
             minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
         dmg = random.randint(round(minDmg), round(maxDmg))
+        
+        if hiteffect:
+            onCreature.magicEffect(hiteffect)
+            
+            
         onCreature.modifyHealth(dmg)
+        
         onCreature.onHit(creature, dmg, type)
         onCreature.lastDamager = creature
         
     return callback
     
-def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
+def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, hiteffect=None):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
@@ -154,10 +164,13 @@ def healTarget(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
             maxHP = (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
             minHP = (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
 
+        if hiteffect:
+            onCreature.magicEffect(hiteffect)
+            
         onCreature.modifyHealth(random.randint(round(minHP), round(maxHP)))
     return callback
 
-def drainHealthTarget(effectivityLevel=1):
+def drainHealthTarget(effectivityLevel=1, hiteffect=None):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
@@ -166,11 +179,14 @@ def drainHealthTarget(effectivityLevel=1):
             return
             
         health = random.randint(round(minHP), round(maxHP))
+        if hiteffect:
+            onCreature.magicEffect(hiteffect)
+            
         onCreature.modifyHealth(health)
         creature.modifyHealth(health * effectivityLevel)
     return callback
 
-def drainManaTarget():
+def drainManaTarget(hiteffect=None):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
@@ -179,11 +195,13 @@ def drainManaTarget():
         else:
             return
 
-
+        if hiteffect:
+            onCreature.magicEffect(hiteffect)
+            
         onCreature.modifyMana(random.randint(round(minMana), round(maxMana)))
     return callback
     
-def boostTarget(type, length, formula, subtype=""):
+def boostTarget(type, length, formula, subtype="", hiteffect=None):
     def callback(creature, position, onCreature, onPosition, effect, strength):
         creature.shoot(position, onPosition, effect)
         if strength:
@@ -195,6 +213,9 @@ def boostTarget(type, length, formula, subtype=""):
         else:
             org = getattr(onCreature, type)
             mod = formula(org) - org
+        
+        if hiteffect:
+            onCreature.magicEffect(hiteffect)
             
         onCreature.condition(game.creature.Boost(type, mod, length, subtype), game.enum.CONDITION_REPLACE)
         
@@ -207,8 +228,16 @@ def conditionTarget(*argc, **kwargs):
             import copy
             condition = copy.deepcopy(strength)
         else:
-            condition = game.creature.Condition(*argc)
-        onCreature.condition(condition, **kwargs)
+            condition = game.creature.Condition(*argc, **kwargs)
+        if "hiteffect" in kwargs:
+            onCreature.magicEffect(kwargs["hiteffect"])
+            del kwargs["hiteffect"]
+            
+        stack = CONDITION_ADD
+        if "stack" in kwargs:
+            stack = kwargs["stack"]
+            del kwargs["stack"]
+        onCreature.condition(condition, stack)
         
     return callback
 
@@ -217,7 +246,7 @@ def multi(*callbacks):
         for call in callbacks:
             call(creature, position, onCreature, onPosition, effect, strength)
             
-def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
+def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5, hiteffect=None):
     def callback(creature, position, effect, strength):       
         creature.magicEffect(position, effect)
         
@@ -232,6 +261,10 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
         if creatures:
             for onCreature in creatures:
                 dmg = round(random.randint(minDmg, maxDmg))
+                
+                if hiteffect:
+                    onCreature.magicEffect(hiteffect)
+                    
                 onCreature.onHit(creature, -1 * dmg, type)
                 onCreature.lastDamager = creature
         
@@ -417,6 +450,14 @@ def areaSpell(words, name, icon, level, mana, group, effect, area, callback, coo
     if words:
         game.scriptsystem.reg("talkaction", words, targetspell)
 
+def creatureAreaSpell(name, effect, area, callback):
+    @game.creature.Creature.actionDecor
+    def areaspell(creature, strength=None, direction=None, **k):
+        for pos in calculateAreaDirection(creature.position, creature.direction, area):
+            callback(creature, pos, effect, strength)
+            
+    spells[name] = (areaspell)
+  
 def targetSpell(words, name, icon, level, mana, group, effect, callback, cooldown=2, groupCooldown=None):
     @game.creature.Creature.actionDecor
     def targetspell(creature, strength=None, target=None, **k):
