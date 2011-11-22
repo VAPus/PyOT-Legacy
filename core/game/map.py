@@ -415,7 +415,7 @@ def load(sectorX, sectorY):
             knownMap[sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[sectorSum], 2))
+            f.write(game.engine.fastPickler(knownMap[sectorSum]))
             
     print "Loading took: %f" % (time.time() - t)
     

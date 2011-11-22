@@ -1497,10 +1497,10 @@ class Player(Creature):
         
     # Saving
     def pickleInventory(self):
-        return pickle.dumps(self.inventory, pickle.HIGHEST_PROTOCOL)
+        return game.engine.fastPickler(self.inventory)
         
     def pickleDepot(self):
-        return pickle.dumps(self.depot, pickle.HIGHEST_PROTOCOL)
+        return game.engine.fastPickler(self.depot)
         
     def _saveQuery(self, force=False):
         depot = ""

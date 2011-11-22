@@ -29,9 +29,9 @@ except:
     import pickle
 
 try:
-    import cStringIO as StringIO
+    from cStringIO import StringIO
 except:
-    import StringIO as StringIO
+    from StringIO import StringIO
     
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -683,7 +683,7 @@ def saveAll(force=False):
                 data = otjson.dumps(globalStorage[field])
                 type = "json"
             elif field in pickleFields:
-                data = pickle.dumps(globalStorage[field], pickle.HIGHEST_PROTOCOL)
+                data = fastPickler(globalStorage[field])
                 type = "pickle"
             else:
                 data = globalStorage[field]
@@ -691,34 +691,35 @@ def saveAll(force=False):
             sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
 
     # Houses
-    for houseId, house in game.house.houseData.items():
-        # House is loaded?
-        if houseId in game.map.houseTiles:
-            try:
-                items = house.data["items"].copy()
-            except:
-                log.msg("House id %d have broken items!" % houseId)
-                items = {} # Broken items
-                
-            try:
-                for tile in game.map.houseTiles[houseId]:
-                    _items = []
-                    for item in tile.bottomItems():
-                        if not item.fromMap:
-                            _items.append(item)
-                    if _items:
-                        items[tile.position] = _items
-            except:
-                pass
-            if items != house.data["items"]:
-                house.data["items"] = items
-                house.save = True # Force save
-            if house.save or force:
-                log.msg("Saving house ", houseId)
-                sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, pickle.dumps(house.data, pickle.HIGHEST_PROTOCOL), houseId))
-                house.save = False
-            else:
-                log.msg("Not saving house", houseId)
+    if game.map.houseTiles:
+        for houseId, house in game.house.houseData.items():
+            # House is loaded?
+            if houseId in game.map.houseTiles:
+                try:
+                    items = house.data["items"].copy()
+                except:
+                    log.msg("House id %d have broken items!" % houseId)
+                    items = {} # Broken items
+                    
+                try:
+                    for tile in game.map.houseTiles[houseId]:
+                        _items = []
+                        for item in tile.bottomItems():
+                            if not item.fromMap:
+                                _items.append(item)
+                        if _items:
+                            items[tile.position] = _items
+                except:
+                    pass
+                if items != house.data["items"]:
+                    house.data["items"] = items
+                    house.save = True # Force save
+                if house.save or force:
+                    log.msg("Saving house ", houseId)
+                    sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
+                    house.save = False
+                else:
+                    log.msg("Not saving house", houseId)
     
     if force:        
         log.msg("Full (forced) save took: %f" % (time.time() - t))
@@ -886,7 +887,7 @@ def placeInDepot(name, depotId, items):
                 __inPlace(result[depotId])
             except:
                 result[depotId] = items
-            result = pickle.dumps(result, pickle.HIGHEST_PROTOCOL)
+            result = fastPickler(result)
             sql.conn.runOperation("UPDATE `players` SET `depot` = %s" % result)
             returnValue(True)
         else:
@@ -943,6 +944,14 @@ def magicEffect(pos, type):
 
 def getHouseByPos(pos):
     return game.house.getHouseById(game.map.getHouseId(pos))
+
+# Speed pickler
+def fastPickler(obj):
+    file = StringIO()
+    p = pickle.Pickler(file, 2)
+    p.fast = True
+    p.dump(obj)
+    return file.getvalue()  
     
 # Protocol 0x00:
 @inlineCallbacks
