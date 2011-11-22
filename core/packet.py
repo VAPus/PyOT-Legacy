@@ -17,7 +17,7 @@ class TibiaPacketReader(object):
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return struct.unpack("<B", self.data[self.pos-1:self.pos])[0]
+        return ord(self.data[self.pos-1:self.pos])
     def int8(self):
         self.pos += 1
         return struct.unpack("<b", self.data[self.pos-1:self.pos])[0]
@@ -96,7 +96,7 @@ class TibiaPacket(object):
         
     # 8bit - 1byte, C type: char
     def uint8(self, data):
-        self.bytes.append(struct.pack("<B", data))
+        self.bytes.append(chr(data))
     def int8(self, data):
         self.bytes.append(struct.pack("<b", data))
 
