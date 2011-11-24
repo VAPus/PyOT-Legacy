@@ -95,7 +95,7 @@ def typeToEffect(type):
         return (game.enum.EFFECT_HITBYFIRE, game.enum.ANIMATION_FIRE)
     elif type == "poison":
         return (game.enum.EFFECT_HITBYPOISON, game.enum.ANIMATION_POISON)
-        
+  
 def makeField(fieldId, hiteffect=None):
     def make(position, **k):
         item = game.item.Item(fieldId)
@@ -498,8 +498,190 @@ def creatureTargetSpell(name, effect, callback):
         callback(creature, creature.position, target, target.position, effect, strength)
             
     spells[name] = (targetspell)
-    
+
 def clear():
     fieldRunes.clear()
     targetRunes.clear()
     spells.clear()
+    
+    
+    
+### The new way ###
+def regSpell2(name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+    obj = Spell(name, words, icon, target, group)
+    
+    spells[name] = (obj.doEffect, words, "<TODO>", "<TODO>", obj)
+    if words:
+        game.scriptsystem.reg("talkaction", words, obj.doEffect, False)
+        
+    return obj
+    
+class Spell(object):
+    def __init__(self, name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+        self.name = name
+        self.words = words
+        self.targetType = target
+        
+        self.vocations = None
+        
+        self.castEffect = None
+        self._targetEffect = None
+        self.shootEffect = None
+        self.areaEffect = None
+        
+        self.targetRange = 1
+        
+        self.targetArea = None
+        
+        self.effectOnCaster = []
+        self.effectOnTarget = []
+        self.conditionOnCaster = []
+        self.conditionOnTarget = []
+        
+        self.icon = icon
+        self.group = group
+        
+        self.teacher = False
+        
+        self._requireGreater = []
+        self._requireLess = []
+        self._requireCallback = []
+        
+        self.cooldown = 2
+        self.groupCooldown = 2
+    
+    def __del__(self):
+        print "ow no!"
+    def effects(self, caster=None, shoot=None, target=None, area=None):
+        self.castEffect = caster
+        self.shootEffect = shoot
+        self._targetEffect = target
+        self.areaEffect = area
+        
+    def area(self, area):
+        self.targetArea = area
+        
+    def casterEffect(self, mana=0, health=0, callback=None):
+        if mana or health:
+            def _effect(caster, target, **k):
+                if health:
+                    caster.modifyHealth(health)
+                if mana:
+                    caster.modifyMana(mana)
+                    
+            self.effectOnCaster.append(_effect)
+            
+        if callback:
+            self.effectOnCaster.append(callback)
+            
+    def targetEffect(self, mana=0, health=0, callback=None):
+        if mana or health:
+            def _effect(target, caster, **k):
+                if health:
+                    if health < 0:
+                        target.lastDamager = caster
+                    target.modifyHealth(health)
+                if mana:
+                    target.modifyMana(mana)
+                    
+            self.effectOnTarget.append(_effect)
+            
+        if callback:
+            self.effectOnTarget.append(callback)
+            
+    def casterCondition(self, *argc):
+        self.conditionOnCaster.extend(argc)
+
+    def targetCondition(self, *argc):
+        self.conditionOnCaster.extend(argc)
+   
+    def requireGreater(self, **kwargs):
+            self._requireGreater = kwargs
+   
+    def requireLess(self, **kwargs):
+            self._requireLess = kwargs
+
+    def requireCallback(self, *args):
+            self._requireCallback = args
+        
+    def teached(self):
+        self.teached = True
+
+    def cooldown(self, cooldown=0, groupCooldown=None):
+        if cooldown and groupCooldown == None:
+            groupCooldown = cooldown
+           
+        self.cooldown = cooldown
+        self.groupCooldown = groupCooldown
+       
+    def doEffect(self, creature, strength=None, **k):
+        print "Called"
+        if creature.isPlayer():
+            if not creature.canDoSpell(self.icon, self.group):
+                creature.exhausted()
+                return False
+            
+            if self._requireGreater:
+                for var in self._requireGreater:
+                    if creature.data[var] < self._requireGreater[var]:
+                        creature.notEnough(var)
+                        return False
+                        
+            if self._requireLess:
+                for var in self._requireLess:
+                    if creature.data[var] > self._requireLess[var]:
+                        creature.message("Your %s is too high!" % var)
+                        return False
+            
+            if self._requireCallback:
+                for call in self._requireCallback:
+                    call(caster=creature)
+                    
+            # Integrate mana seeker
+            try:
+                creature.modifyMana(-1 * self._requireGreater["mana"])
+            except:
+                pass
+            
+            creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
+            
+        target = creature
+        if self.targetType == TARGET_TARGET:
+            target = creature.target
+            if not target:
+                return
+                
+        if self.castEffect:
+            creature.magicEffect(self.castEffect)
+        
+        for call in self.effectOnCaster:
+            call(caster=creature, target=target)
+            
+        if self.shootEffect:
+            creature.shoot(position, onPosition, self.shootEffect)
+            
+        if not self.targetType == TARGET_AREA:
+            for call in self.effectOnTarget:
+                call(target=target, caster=creature)
+            
+            if self._targetEffect:
+                target.magicEffect(self._targetEffect)
+
+        if self.targetType == TARGET_AREA:
+            positions = calculateAreaDirection(creature.position, creature.direction, self.targetArea)
+            targets = []
+            for pos in positions:
+                if self.areaEffect:
+                    creature.magicEffect(self.areaEffect, pos)
+                    
+                creatures = game.map.getTile(pos).creatures()
+                if creatures:
+                    targets.extend(creatures)
+                    
+            
+            for targ in targets:
+                if self._targetEffect:
+                    targ.magicEffect(self._targetEffect)
+                for call in self.effectOnTarget:
+                    call(target=targ, caster=creature)
+                      

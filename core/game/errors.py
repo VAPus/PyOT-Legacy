@@ -13,3 +13,6 @@ class BaseError(Exception):
 class ImpossibleMove(BaseError): pass
 class Cheat(BaseError): pass
 class SolidTile(BaseError): pass
+
+# Spells
+class SpellDefinition(BaseError): pass
