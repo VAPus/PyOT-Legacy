@@ -1226,6 +1226,9 @@ class Condition(object):
             self.tickEvent = engine.safeCallLater(self.per, self.tick)
         else:
             self.finish()
+            
+    def copy(self):
+        return copy.deepcopy(self)
 
 class Boost(Condition):
     def __init__(self, type, mod, length, subtype="", ticks=1, *argc, **kwargs):

@@ -507,7 +507,7 @@ def clear():
     
     
 ### The new way ###
-def regSpell2(name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+def regSpell(name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
     obj = Spell(name, words, icon, target, group)
     
     spells[name] = (obj.doEffect, words, "<TODO>", "<TODO>", obj)
@@ -515,6 +515,36 @@ def regSpell2(name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=ga
         game.scriptsystem.reg("talkaction", words, obj.doEffect, False)
         
     return obj
+
+def damage(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
+    def callback(caster, target, strength=None):  
+        if strength:
+            dmg = random.randint(strength[0], strength[1])
+        else:
+            maxDmg = round(-1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round(-1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+            dmg = random.randint(minDmg, maxDmg)
+        
+
+        target.modifyHealth(dmg)
+        
+        target.onHit(caster, dmg, type)
+        target.lastDamager = creature
+        
+    return callback
+    
+def heal(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
+    def callback(caster, target, strength=None):
+        if strength:
+            minDmg, maxDmg = strength
+        else:
+            maxDmg = round((creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round((creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+        
+
+        target.modifyHealth(random.randint(minDmg, maxDmg))
+        
+    return callback
     
 class Spell(object):
     def __init__(self, name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
@@ -589,13 +619,25 @@ class Spell(object):
         if callback:
             self.effectOnTarget.append(callback)
             
-    def casterCondition(self, *argc):
-        self.conditionOnCaster.extend(argc)
+    def casterCondition(self, *argc, **kwargs):
+        try:
+            stack = kwargs['stackbehavior']
+        except:
+            stack = CONDITION_LATER
+            
+        for con in argc:
+            self.conditionOnCaster.append((con, stack))
 
-    def targetCondition(self, *argc):
-        self.conditionOnCaster.extend(argc)
+    def targetCondition(self, *argc, **kwargs):
+        try:
+            stack = kwargs['stackbehavior']
+        except:
+            stack = CONDITION_LATER
+            
+        for con in argc:
+            self.conditionOnTarget.append((con, stack))
    
-    def requireGreater(self, **kwargs):
+    def require(self, **kwargs):
             self._requireGreater = kwargs
    
     def requireLess(self, **kwargs):
@@ -615,7 +657,6 @@ class Spell(object):
         self.groupCooldown = groupCooldown
        
     def doEffect(self, creature, strength=None, **k):
-        print "Called"
         if creature.isPlayer():
             if not creature.canDoSpell(self.icon, self.group):
                 creature.exhausted()
@@ -655,17 +696,23 @@ class Spell(object):
             creature.magicEffect(self.castEffect)
         
         for call in self.effectOnCaster:
-            call(caster=creature, target=target)
+            call(caster=creature, target=target, strength=strength)
+        
+        for array in self.conditionOnCaster:
+            creature.condition(array[0].copy(), array[1])
             
-        if self.shootEffect:
-            creature.shoot(position, onPosition, self.shootEffect)
+        if self.targetType == TARGET_TARGET and target and self.shootEffect:
+            creature.shoot(creature.position, target.position, self.shootEffect)
             
         if not self.targetType == TARGET_AREA:
             for call in self.effectOnTarget:
-                call(target=target, caster=creature)
+                call(target=target, caster=creature, strength=strength)
             
             if self._targetEffect:
                 target.magicEffect(self._targetEffect)
+                
+            for array in self.conditionOnTarget:
+                target.condition(array[0].copy(), array[1])
 
         if self.targetType == TARGET_AREA:
             positions = calculateAreaDirection(creature.position, creature.direction, self.targetArea)
@@ -682,6 +729,7 @@ class Spell(object):
             for targ in targets:
                 if self._targetEffect:
                     targ.magicEffect(self._targetEffect)
+                    
                 for call in self.effectOnTarget:
-                    call(target=targ, caster=creature)
+                    call(target=targ, caster=creature, strength=strength)
                       
