@@ -54,6 +54,9 @@ noStaminaNoExp = True
 meleeAttackSpeed = 2 # 2 seconds, this affect both monsters and players. TODO: Configurable per vocation
 monsterMeleeFactor = 1 # 1x damage
 
+# Spell and rune
+runeCastDelay = 1 # Set to 0 to disable the delay.
+
 # Monster behavior
 monsterWalkBack = False # Walk or Teleport back to spawn point
 monsterWalkPer = 3 # Amount of seconds between walks without target

@@ -89,7 +89,7 @@ def testContainer(creature, thing, position, stackpos, index):
 
             if position[0] == 0xFFFF and position[1] >= 64:
                 parent = 1
-                item.parent = creature.openContainers[position[2]-64]
+                thing.parent = creature.openContainers[position[2]-64]
             creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
@@ -98,6 +98,7 @@ def testContainer(creature, thing, position, stackpos, index):
     else:
         creature.closeContainer(thing)
 _script_ = game.scriptsystem.get("farUse")
+
 for item in game.item.items:
     if item and "containerSize" in item:
         _script_.reg(game.item.reverseItems[item["cid"]], testContainer)

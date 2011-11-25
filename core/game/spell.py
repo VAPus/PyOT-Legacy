@@ -105,7 +105,7 @@ def makeField(fieldId, hiteffect=None):
                 return
                 
             ticks += 1
-            creature.modifyHealth(-1 * damage)
+            creature.modifyHealth(-damage)
             creature.magicEffect(creature.position, effect)
             
             
@@ -115,7 +115,7 @@ def makeField(fieldId, hiteffect=None):
         def callback(creature, thing, **k):
             if thing.damage:
                 creature.magicEffect(creature.position, typeToEffect(thing.field)[0])
-                creature.modifyHealth(-1 * thing.damage)
+                creature.modifyHealth(-thing.damage)
                 
             if thing.turns:
                 effectOverTime(creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
@@ -139,8 +139,8 @@ def damageTarget(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvl
             minDmg, maxDmg = strength
             
         else:    
-            maxDmg = -1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
-            minDmg = -1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
+            maxDmg = -(creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax
+            minDmg = -(creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin
         dmg = random.randint(round(minDmg), round(maxDmg))
         
         if hiteffect:
@@ -254,8 +254,8 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
             minDmg, maxDmg = strength
             
         else:
-            maxDmg = round(-1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
-            minDmg = round(-1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+            maxDmg = round(-(creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round(-(creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
             
         creatures = game.map.getTile(position).creatures()
         if creatures:
@@ -265,7 +265,7 @@ def damageArea(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMa
                 if hiteffect:
                     onCreature.magicEffect(hiteffect)
                     
-                onCreature.onHit(creature, -1 * dmg, type)
+                onCreature.onHit(creature, -dmg, type)
                 onCreature.lastDamager = creature
         
     return callback
@@ -304,9 +304,9 @@ def conjureRune(words, make, icon, mana=0, level=0, mlevel=0, soul=1, vocations=
                     creature.notEnoughRoom()
                 
                 if mana:
-                    creature.modifyMana(-1 * mana)
+                    creature.modifyMana(-mana)
                 if soul:
-                    creature.modifySoul(-1 * soul)
+                    creature.modifySoul(-soul)
                 creature.cooldownSpell(icon, group, cooldown)
                 creature.message("Made %dx%s" % (makeCount, item.rawName()))
                 creature.magicEffect(creature.position, game.enum.EFFECT_MAGIC_RED)
@@ -334,7 +334,7 @@ def fieldRune(rune, level, mlevel, icon, group, area, callback, cooldown=2, useC
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                     
                 else:
-                    creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                    creature.modifyItem(thing, position, stackpos, -useCount)
                     
                     creature.cooldownSpell(icon, group, cooldown)
                     for a in area:
@@ -371,7 +371,7 @@ def targetRune(rune, level, mlevel, icon, group, effect, callback, cooldown=2, u
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                     
                 else:
-                    creature.modifyItem(thing, position, stackpos, -1 * useCount)
+                    creature.modifyItem(thing, position, stackpos, -useCount)
                         
                     creature.cooldownSpell(icon, group, cooldown)
                     try:
@@ -406,7 +406,7 @@ def selfTargetSpell(words, name, icon, level, mana, group, effect, callback, coo
             if not target:
                 target = creature
                 
-            creature.modifyMana(-1 * mana)
+            creature.modifyMana(-mana)
             creature.cooldownSpell(icon, group, cooldown, groupCooldown)
         callback(creature, creature.position, target, target.position, effect, strength)
             
@@ -439,7 +439,7 @@ def areaSpell(words, name, icon, level, mana, group, effect, area, callback, coo
                 creature.notEnough("mana")
                 return False
             
-            creature.modifyMana(-1 * mana)
+            creature.modifyMana(-mana)
             creature.cooldownSpell(icon, group, cooldown, groupCooldown)
             
         positions = calculateAreaDirection(creature.position, creature.direction, area)
@@ -474,7 +474,7 @@ def targetSpell(words, name, icon, level, mana, group, effect, callback, cooldow
                 creature.notEnough("mana")
                 return False
             
-            creature.modifyMana(-1 * mana)
+            creature.modifyMana(-mana)
             creature.cooldownSpell(icon, group, cooldown, groupCooldown)
         if not target:
             target = creature.target
@@ -507,44 +507,49 @@ def clear():
     
     
 ### The new way ###
-def regSpell(name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
-    obj = Spell(name, words, icon, target, group)
-    
-    spells[name] = (obj.doEffect, words, "<TODO>", "<TODO>", obj)
-    if words:
-        game.scriptsystem.reg("talkaction", words, obj.doEffect, False)
-        
-    return obj
 
-def damage(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
-    def callback(caster, target, strength=None):  
+def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvlMin=5, lvlMax=5):
+    def damageCallback(caster, target, strength=None):  
         if strength:
             dmg = random.randint(strength[0], strength[1])
         else:
-            maxDmg = round(-1 * (creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
-            minDmg = round(-1 * (creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+            maxDmg = round(-(caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round(-(caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
             dmg = random.randint(minDmg, maxDmg)
         
 
         target.modifyHealth(dmg)
         
         target.onHit(caster, dmg, type)
-        target.lastDamager = creature
+        target.lastDamager = caster
         
-    return callback
+    return damageCallback
     
-def heal(mlvlMin, mlvlMax, constantMin, constantMax, type, lvlMin=5, lvlMax=5):
-    def callback(caster, target, strength=None):
+def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
+    def healCallback(caster, target, strength=None):
         if strength:
             minDmg, maxDmg = strength
         else:
-            maxDmg = round((creature.data["level"]/lvlMax)+(creature.data["maglevel"]*mlvlMax)+constantMax)
-            minDmg = round((creature.data["level"]/lvlMin)+(creature.data["maglevel"]*mlvlMin)+constantMin)
+            maxDmg = round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
         
 
         target.modifyHealth(random.randint(minDmg, maxDmg))
         
-    return callback
+    return healCallback
+
+def conjure(make, count=1, **kwargs):
+    def conjureCallback(caster, target, strength=None):
+        if target.isPlayer():
+            item = game.item.Item(make, count, **kwargs)
+
+            ret = target.itemToUse(item)
+            if not ret:
+                return target.notEnoughRoom()
+                
+            target.message("Made %dx%s" % (count, item.rawName()))
+            
+    return conjureCallback
     
 class Spell(object):
     def __init__(self, name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
@@ -579,9 +584,27 @@ class Spell(object):
         
         self.cooldown = 2
         self.groupCooldown = 2
-    
-    def __del__(self):
-        print "ow no!"
+
+        func = self.doEffect()
+        def l():
+            try:
+                mana = self._requireGreater["mana"]
+            except:
+                mana = 0
+                
+            try:
+                level = self._requireGreater["level"]
+            except:
+                level = 0
+                
+            spells[name] = (func, words, level, mana)
+        
+        # Delay the input a little.
+        game.engine.safeCallLater(0.1, l)
+        
+        if words:
+            game.scriptsystem.reg("talkaction", words, func)
+            
     def effects(self, caster=None, shoot=None, target=None, area=None):
         self.castEffect = caster
         self.shootEffect = shoot
@@ -591,28 +614,35 @@ class Spell(object):
     def area(self, area):
         self.targetArea = area
         
-    def casterEffect(self, mana=0, health=0, callback=None):
+    def casterEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
             def _effect(caster, target, **k):
+                # Target = caster
                 if health:
-                    caster.modifyHealth(health)
+                    target.modifyHealth(health)
                 if mana:
-                    caster.modifyMana(mana)
+                    target.modifyMana(mana)
+                if soul:
+                    target.modifySoul(soul)
                     
             self.effectOnCaster.append(_effect)
             
         if callback:
             self.effectOnCaster.append(callback)
             
-    def targetEffect(self, mana=0, health=0, callback=None):
+    def targetEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
             def _effect(target, caster, **k):
+                # Target = actual target
                 if health:
                     if health < 0:
                         target.lastDamager = caster
                     target.modifyHealth(health)
                 if mana:
                     target.modifyMana(mana)
+                    
+                if soul:
+                    target.modifySoul(soul)
                     
             self.effectOnTarget.append(_effect)
             
@@ -638,17 +668,30 @@ class Spell(object):
             self.conditionOnTarget.append((con, stack))
    
     def require(self, **kwargs):
-            self._requireGreater = kwargs
+        self._requireGreater = kwargs
    
     def requireLess(self, **kwargs):
-            self._requireLess = kwargs
+        self._requireLess = kwargs
 
     def requireCallback(self, *args):
-            self._requireCallback = args
+        self._requireCallback.extend(args)
         
     def teached(self):
         self.teached = True
 
+    def use(self, itemId=2260, count=1):
+        def check(caster):
+            useItem = caster.findItemById(itemId, count)
+                
+            if not useItem:
+                caster.needMagicItem()
+                caster.magicEffect(game.enum.EFFECT_POFF)
+                return False
+                
+            return True
+            
+        self._requireCallback.append(check)
+    
     def cooldown(self, cooldown=0, groupCooldown=None):
         if cooldown and groupCooldown == None:
             groupCooldown = cooldown
@@ -656,80 +699,222 @@ class Spell(object):
         self.cooldown = cooldown
         self.groupCooldown = groupCooldown
        
-    def doEffect(self, creature, strength=None, **k):
-        if creature.isPlayer():
-            if not creature.canDoSpell(self.icon, self.group):
-                creature.exhausted()
-                return False
-            
-            if self._requireGreater:
-                for var in self._requireGreater:
-                    if creature.data[var] < self._requireGreater[var]:
-                        creature.notEnough(var)
-                        return False
+    def doEffect(self, ):
+        # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
+        def spellCallback(creature, strength=None, **k):
+            if creature.isPlayer():
+                if not creature.canDoSpell(self.icon, self.group):
+                    creature.exhausted()
+                    return False
+                
+                if self._requireGreater:
+                    for var in self._requireGreater:
+                        if creature.data[var] < self._requireGreater[var]:
+                            creature.notEnough(var)
+                            return False
+                            
+                if self._requireLess:
+                    for var in self._requireLess:
+                        if creature.data[var] > self._requireLess[var]:
+                            creature.message("Your %s is too high!" % var)
+                            return False
+                
+                if self._requireCallback:
+                    for call in self._requireCallback:
+                        if not call(caster=creature): return
                         
-            if self._requireLess:
-                for var in self._requireLess:
-                    if creature.data[var] > self._requireLess[var]:
-                        creature.message("Your %s is too high!" % var)
-                        return False
-            
-            if self._requireCallback:
-                for call in self._requireCallback:
-                    call(caster=creature)
-                    
-            # Integrate mana seeker
-            try:
-                creature.modifyMana(-1 * self._requireGreater["mana"])
-            except:
-                pass
-            
-            creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
-            
-        target = creature
-        if self.targetType == TARGET_TARGET:
-            target = creature.target
-            if not target:
-                return
-                
-        if self.castEffect:
-            creature.magicEffect(self.castEffect)
-        
-        for call in self.effectOnCaster:
-            call(caster=creature, target=target, strength=strength)
-        
-        for array in self.conditionOnCaster:
-            creature.condition(array[0].copy(), array[1])
-            
-        if self.targetType == TARGET_TARGET and target and self.shootEffect:
-            creature.shoot(creature.position, target.position, self.shootEffect)
-            
-        if not self.targetType == TARGET_AREA:
-            for call in self.effectOnTarget:
-                call(target=target, caster=creature, strength=strength)
-            
-            if self._targetEffect:
-                target.magicEffect(self._targetEffect)
-                
-            for array in self.conditionOnTarget:
-                target.condition(array[0].copy(), array[1])
+                # Integrate mana seeker
+                try:
+                    creature.modifyMana(-self._requireGreater["mana"])
+                except:
+                    pass
 
-        if self.targetType == TARGET_AREA:
-            positions = calculateAreaDirection(creature.position, creature.direction, self.targetArea)
-            targets = []
-            for pos in positions:
-                if self.areaEffect:
-                    creature.magicEffect(self.areaEffect, pos)
+                # Integrate soul seeker
+                try:
+                    creature.modifyMana(-self._requireGreater["soul"])
+                except:
+                    pass
+                
+                creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
+                
+            target = creature
+            if self.targetType == TARGET_TARGET:
+                target = creature.target
+                if not target:
+                    return
                     
-                creatures = game.map.getTile(pos).creatures()
-                if creatures:
-                    targets.extend(creatures)
-                    
+            if self.castEffect:
+                creature.magicEffect(self.castEffect)
             
-            for targ in targets:
-                if self._targetEffect:
-                    targ.magicEffect(self._targetEffect)
-                    
+            for call in self.effectOnCaster:
+                call(caster=creature, target=creature, strength=strength)
+            
+            for array in self.conditionOnCaster:
+                creature.condition(array[0].copy(), array[1])
+                
+            if self.targetType == TARGET_TARGET and target and self.shootEffect:
+                creature.shoot(creature.position, target.position, self.shootEffect)
+                
+            if not self.targetType == TARGET_AREA:
                 for call in self.effectOnTarget:
-                    call(target=targ, caster=creature, strength=strength)
-                      
+                    call(target=target, caster=creature, strength=strength)
+                
+                if self._targetEffect:
+                    target.magicEffect(self._targetEffect)
+                    
+                for array in self.conditionOnTarget:
+                    target.condition(array[0].copy(), array[1])
+
+            if self.targetType == TARGET_AREA:
+                positions = calculateAreaDirection(creature.position, creature.direction, self.targetArea)
+                targets = []
+                for pos in positions:
+                    if self.areaEffect:
+                        creature.magicEffect(self.areaEffect, pos)
+                        
+                    creatures = game.map.getTile(pos).creatures()
+                    if creatures:
+                        targets.extend(creatures)
+                        
+                
+                for targ in targets:
+                    if self._targetEffect:
+                        targ.magicEffect(self._targetEffect)
+                        
+                    for call in self.effectOnTarget:
+                        call(target=targ, caster=creature, strength=strength)
+                        
+        return spellCallback
+        
+        
+class Rune(Spell):
+    def __init__(self, rune, icon=0, count=1, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+        self.rune = rune
+        self.targetType = target
+        self.count = count
+        
+        self.vocations = None
+        
+        self.castEffect = None
+        self._targetEffect = None
+        self.shootEffect = None
+        self.areaEffect = None
+        
+        self.targetRange = 1
+        
+        self.targetArea = None
+        
+        self.effectOnCaster = []
+        self.effectOnTarget = []
+        self.conditionOnCaster = []
+        self.conditionOnTarget = []
+        
+        self.icon = icon
+        self.group = group
+        
+        self.teacher = False
+        
+        self._requireGreater = []
+        self._requireLess = []
+        self._requireCallback = []
+        
+        self.cooldown = 2
+        self.groupCooldown = 2
+
+        func = self.doEffect()
+        targetRunes[rune] = func # Just to prevent reset
+        game.scriptsystem.get("useWith").reg(rune, func)
+        def _(**k):
+            print("Works")
+        game.scriptsystem.get("useWith").reg(rune, _)
+        
+    def doEffect(self):
+        # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
+        def runeCallback(thing, creature, position, stackpos, onPosition, onStackpos, onThing, strength=None, **k):
+            print "called!"
+            if creature.isPlayer():
+                if not creature.canDoSpell(self.icon, self.group):
+                    creature.exhausted()
+                    return False
+                
+                if self._requireGreater:
+                    for var in self._requireGreater:
+                        if creature.data[var] < self._requireGreater[var]:
+                            creature.notEnough(var)
+                            return False
+                            
+                if self._requireLess:
+                    for var in self._requireLess:
+                        if creature.data[var] > self._requireLess[var]:
+                            creature.message("Your %s is too high!" % var)
+                            return False
+                
+                if self._requireCallback:
+                    for call in self._requireCallback:
+                        if not call(caster=creature): return
+
+                if not thing.count:
+                    creature.needMagicItem()
+                    creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+                        
+                else:
+                    
+                            
+                    try:
+                        #onCreature = game.map.getTile(onPosition).getThing(onStackpos)
+                        onCreature = onThing
+                        onCreature.isPlayer()
+                    except:
+                        return creature.onlyOnCreatures()
+                        
+                    creature.modifyItem(thing, position, stackpos, -self.count)  
+                    
+                    # Integrate mana seeker
+                    try:
+                        creature.modifyMana(-self._requireGreater["mana"])
+                    except:
+                        pass
+
+                    # Integrate soul seeker
+                    try:
+                        creature.modifyMana(-self._requireGreater["soul"])
+                    except:
+                        pass
+                    
+                    creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
+                
+            target = creature
+            if self.targetType == TARGET_TARGET:
+                target = onCreature
+                if not target:
+                    return
+                    
+            if self.castEffect:
+                creature.magicEffect(self.castEffect)
+            
+            for call in self.effectOnCaster:
+                call(caster=creature, target=creature, strength=strength)
+            
+            for array in self.conditionOnCaster:
+                creature.condition(array[0].copy(), array[1])
+                
+            if self.targetType == TARGET_TARGET and target and self.shootEffect:
+                creature.shoot(creature.position, target.position, self.shootEffect)
+                
+            if not self.targetType == TARGET_AREA:
+                for call in self.effectOnTarget:
+                    call(target=target, caster=creature, strength=strength)
+                
+                if self._targetEffect:
+                    target.magicEffect(self._targetEffect)
+                    
+                for array in self.conditionOnTarget:
+                    target.condition(array[0].copy(), array[1])
+        
+        if config.runeCastDelay:
+            def castDelay(**k):
+                game.engine.safeCallLater(config.runeCastDelay, runeCallback, **k)
+                
+            return castDelay
+            
+        return runeCallback

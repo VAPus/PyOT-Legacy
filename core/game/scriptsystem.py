@@ -93,7 +93,6 @@ class TriggerScripts(object):
         if not trigger in self.scripts:
             self.scripts[trigger] = []
         self.scripts[trigger].append(func)
-        print "%s - %s" % (trigger, callback)
         
     def regFirst(self, trigger, callback, weakfunc=True):
         if not trigger in self.scripts:
@@ -133,7 +132,7 @@ class TriggerScripts(object):
                 
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
-        print self.scripts.keys()
+
         if not trigger in self.scripts:
             return end() if end else None
             
@@ -492,7 +491,7 @@ def reimporter():
     
     # Clear spells
     game.spell.clear()
-    
+        
     # Reload modules
     for mod in modPool:
         # Step 1 reload self

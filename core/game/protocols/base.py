@@ -994,7 +994,6 @@ class BaseProtocol(object):
             
 
     def handleUseWith(self, player, packet):
-        game.engine.explainPacket(packet)
         position = packet.position()
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
@@ -1003,7 +1002,11 @@ class BaseProtocol(object):
         onStack = packet.uint8()
         
         thing = player.findItem(position, stackpos)
-        onThing = player.findItem(onPosition, onStack)
+        if onStack != 99:
+            onThing = player.findItem(onPosition, onStack)
+        else:
+            onThing = game.map.getTile(onPosition).creatures()[0]
+        
         if thing and ((position[2] == player.position[2] and player.canSee(position)) or position[0] == 0xFFFF) and ((onPosition[2] == player.position[2] and player.canSee(onPosition)) or onPosition[0] == 0xFFFF):
             if (position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (onPosition[0] == 0xFFFF or (abs(onPosition[0] - player.position[0]) <= 1 and abs(onPosition[1] - player.position[1]) <= 1)):
                 end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)

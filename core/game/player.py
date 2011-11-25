@@ -360,9 +360,10 @@ class Player(Creature):
         if (not len(items) or foundCount < count) and self.inventory[3]:
             bags = [self.inventory[2]]
             for bag in bags:
+                index = 0
                 for item in bag.container.items:
                     if item.itemId == itemId:
-                        items.append((2, item, bag, bag.container.items.index(item)))
+                        items.append((2, item, bag, index))
                         if count:
                             foundCount += item.count
                             
@@ -371,7 +372,7 @@ class Player(Creature):
                             break
                     elif item.containerSize:
                         bags.append(item)
-        
+                    index += 1
 
         if count and foundCount < count:
             return None
@@ -1015,7 +1016,12 @@ class Player(Creature):
             stream.send(self.client)
             
     def closeContainer(self, container):
-        index = self.openContainers.index(container)
+        try:
+            index = self.openContainers.index(container)
+        except:
+            container.opened = False
+            return
+            
         def end():
             try:
                 stream = self.packet(0x6F)

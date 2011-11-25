@@ -26,7 +26,7 @@ itemNames = {}
 
 ### Container class ###
 class Container(object):
-    __slots__ = ('items')
+    __slots__ = ('items', 'maxSize')
     def __init__(self, size):
         self.items = deque(maxlen=size)
     
@@ -405,7 +405,7 @@ def loadItems():
         
     # Async SQL (it's funny isn't it?)
     d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`plural` <> '' AND `plural` != `name`, `plural`, NULL) as `plural`,IF(`article` <> '', `article`, NULL) as `article`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
-    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes ORDER BY sid") # We'll be waiting, won't we?
+    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
     
     
     # Make two new values while we are loading
@@ -454,25 +454,19 @@ def loadItems():
 
                 loadItems[sid+x] = attributes
 
-    sid = 0
-    attributes = None
     for data in (yield d2):
-        if sid != data[0]:
-            attributes = loadItems[data[0]]
-            sid = data[0]
-
         if data[1] == "fluidSource":
-            attributes["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data[2].upper())
+            loadItems[data[0]]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data[2].upper())
         elif data[1] == "weaponType":
             try:
-                attributes["weaponType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
+                loadItems[data[0]]["weaponType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
             except:
-                attributes["weaponType"] = data[2]
+                loadItems[data[0]]["weaponType"] = data[2]
         elif data[2]:
             try:
-                attributes[1] = int(data[2])
+                loadItems[data[0]][data[1]] = int(data[2])
             except:
-                attributes[1] = data[2]
+                loadItems[data[0]][data[1]] = data[2]
 
     log.msg("%d Items loaded" % len(loadItems))
 

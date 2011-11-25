@@ -208,7 +208,7 @@ DROWN = 7
 MELEE = 8
 
 # Monster attack types
-MELEE = 0
+#MELEE = 0
 TARGET_SPELL = 1
 SELF_SPELL = 2
 
