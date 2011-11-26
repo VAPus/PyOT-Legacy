@@ -61,7 +61,7 @@ class Player(Creature):
         
         # Direction
         self.direction = self.data["direction"]
-        del self.data["direction"]
+        #del self.data["direction"]
 
         # Inventory
         self.inventoryCache = {}
@@ -87,7 +87,7 @@ class Player(Creature):
                     except:
                         self.inventoryCache[item.itemId] = [item.count or 1, item]
                     
-        del self.data['inventory']
+        #del self.data['inventory']
         
         # Depot, (yes, we load it here)
         if self.data['depot']:
@@ -95,7 +95,7 @@ class Player(Creature):
         else:
             self.depot = {} # {depotId : inventoryList}
             
-        del self.data['depot']
+        #del self.data['depot']
         
         # Calculate level from experience
         vocation = self.getVocation()
@@ -117,14 +117,14 @@ class Player(Creature):
             for i in xrange(game.enum.SKILL_FIRST, (game.enum.SKILL_LAST*2)+2):
                 self.skills.append(10)
             
-        del self.data["skills"]
+        #del self.data["skills"]
         
         if self.data["storage"]:
             self.storage = otjson.loads(self.data["storage"])
         else:
             self.storage = {}
             
-        del self.data["storage"]
+        #del self.data["storage"]
         
         # Storage states
         self.saveStorage = False
@@ -132,6 +132,7 @@ class Player(Creature):
         self.saveDepot = False
         self.saveSkills = False
         self.saveData = False
+        self.doSave = True
         
     def generateClientID(self):
         return 0x10000000 + uniqueId()
@@ -1510,6 +1511,9 @@ class Player(Creature):
         return game.engine.fastPickler(self.depot)
         
     def _saveQuery(self, force=False):
+        if not self.doSave:
+            return
+            
         depot = ""
         storage = ""
         skills = ""
@@ -1537,7 +1541,8 @@ class Player(Creature):
             return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
 
     def save(self, force=False):
-        sql.conn.runOperation(*self._saveQuery(force))
+        if self.doSave:
+            sql.conn.runOperation(*self._saveQuery(force))
 
     def saveSkills(self):
         sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))

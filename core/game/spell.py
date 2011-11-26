@@ -731,7 +731,7 @@ class Spell(object):
         self.cooldown = cooldown
         self.groupCooldown = groupCooldown
        
-    def doEffect(self, ):
+    def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def spellCallback(creature, strength=None, **k):
             if creature.isPlayer():

@@ -113,7 +113,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             characterName = packet.string()
             password = packet.string()
 
-            if not username or not characterName:
+            if (not username and not config.anyAccountWillDo) or not characterName:
                 self.exitWithError("Could not get your account name, or character name")
                 return
 

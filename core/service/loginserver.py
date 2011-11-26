@@ -56,15 +56,16 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             # Our funny way of doing async SQL
             account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
-            if not account:
-                if config.anyAccountWillDo:
-                    account = ((0,0),)
-                    characters = config.anyAccountPlayerMap
-                else:
-                    self.exitWithError("Invalid username or password")
-                    return
-            else:
+            if account:
                 characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
+                
+        if not username or not account:
+            if config.anyAccountWillDo:
+                account = ((0,0),)
+                characters = config.anyAccountPlayerMap
+            else:
+                self.exitWithError("Invalid username or password")
+                return 
                 
         # Send motd
         pkg.uint8(0x14)
