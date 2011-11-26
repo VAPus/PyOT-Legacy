@@ -63,7 +63,7 @@ class Tile(object):
                 bottomItems = []
                 self.countNflags = 0
                 
-                for item in workItems:
+                for item in items[:]:
                     if item.ontop:
                         self.things.append(item)
                         self.countNflags += 1
