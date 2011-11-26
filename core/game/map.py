@@ -52,29 +52,29 @@ class Tile(object):
     __slots__ = ('things', 'countNflags')
     def __init__(self, items, topItemCount=0, itemLen=0, flags=0):
         if not topItemCount:
+            self.countNflags = 1
+            
             # Special case.
             if itemLen == 1:
                 #self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
                 self.things = [items[0]]
-                self.countNflags = 1
                 
             else:
-                self.things = []
-                bottomItems = []
-                self.countNflags = 0
-                
-                for item in items[:]:
-                    if item.ontop:
-                        self.things.append(item)
-                        self.countNflags += 1
-                    else:
-                        bottomItems.append(item)
-                            
-                if bottomItems:
-                    self.things.extend(bottomItems)
+                workItems = deque(items)
+                self.things = [workItems.popleft()]
+                if workItems:
+                    bottomItems = []
+                    for item in workItems:
+                        if item.ontop:
+                            self.things.append(item)
+                            self.countNflags += 1
+                        else:
+                            bottomItems.append(item)
+                    if bottomItems:
+                        self.things.extend(bottomItems) 
   
         else:
-            self.things = items
+            self.things = list(items)
             self.countNflags = topItemCount
 
         if flags:
