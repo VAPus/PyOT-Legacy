@@ -336,19 +336,23 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.freeCapasity()) # TODO: Free Capasity
-        self.uint32(player.data["capasity"] * 100) # TODO: Cap
-        self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
+        self.uint32(player.freeCapasity())
+        self.uint32(player.data["capasity"] * 100)
+        self.uint64(player.data["experience"])
         if player.data["level"] > 0xFFFF:
             self.uint16(0xFFFF)
         else:
-            self.uint16(player.data["level"]) # TODO: Virtual cap? Level
+            self.uint16(player.data["level"])
         self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
         self.uint16(player.data["mana"]) # mana
         self.uint16(player.data["manamax"]) # mana max
-        self.uint8(player.data["maglevel"]) # TODO: Virtual cap? Manalevel
-        self.uint8(1) # TODO: Virtual cap? ManaBase
-        self.uint8(0) # % to next level, TODO
+        if player.data["maglevel"] > 255:
+            self.uint8(255)
+            self.uint8(255)
+        else:
+            self.uint8(player.data["maglevel"])
+            self.uint8(player.data["maglevel"]) # TODO: Virtual cap? ManaBase
+        self.uint8(int(player.data["manaspent"] / int(config.magicLevelFormula(player.data["maglevel"], player.getVocation().mlevel)))) # % to next level, TODO
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
         self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
         self.uint16(int(player.speed)) # Speed

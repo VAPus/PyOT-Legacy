@@ -654,6 +654,10 @@ class Player(Creature):
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)
+    
+    def modifyMagicLevel(self, mod):
+        self.data["maglevel"] += mod
+        self.refreshStatus()
         
     def modifyExperience(self, exp):
         up = True
@@ -695,6 +699,14 @@ class Player(Creature):
         
     def modifyMana(self, mana):
         return self.setMana(min(self.data["mana"] + mana, self.data["manamax"]))
+        
+    def modifySpentMana(self, mana, refresh=False):
+        self.data["manaspent"] += mana
+        self.saveData = True
+        if self.data["manaspent"] > int(config.magicLevelFormula(self.data["maglevel"], vocation.mlevel)):
+            self.modifyMagicLevel(1)
+        elif refresh:
+            self.refreshStatus()
         
         
     def setSoul(self, soul):

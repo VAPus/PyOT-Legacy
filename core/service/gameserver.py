@@ -230,6 +230,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if self.player:
             self.player.client = None
             self.player.knownCreatures = set()
+            self.player.knownBy = set()
             for x in game.player.allPlayersObject:
                 if x.client and self.player.data["id"] in x.getVips():
                     stream = x.packet()
