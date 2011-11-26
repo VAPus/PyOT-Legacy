@@ -66,7 +66,11 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             else:
                 self.exitWithError("Invalid username or password")
                 return 
-                
+        
+        if config.letGameServerRunTheLoginServer:
+            import game.scriptsystem
+            game.scriptsystem.get("preSendLogin").runSync(None, client=self, characters=characters, account=account, username=username, password=password)
+            
         # Send motd
         pkg.uint8(0x14)
         pkg.string(config.motd)
