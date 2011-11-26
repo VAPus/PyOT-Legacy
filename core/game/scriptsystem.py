@@ -395,6 +395,8 @@ class CreatureScripts(ThingScripts):
 globalScripts["talkaction"] = TriggerScripts()
 globalScripts["talkactionFirstWord"] = TriggerScripts()
 globalScripts["login"] = Scripts()
+globalScripts["loginAccountFailed"] = NCScripts()
+globalScripts["loginCharacterFailed"] = NCScripts()
 globalScripts["logout"] = Scripts()
 globalScripts["use"] = ThingScripts()
 globalScripts["farUse"] = ThingScripts()

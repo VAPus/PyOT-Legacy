@@ -123,24 +123,32 @@ class GameProtocol(protocolbase.TibiaProtocol):
             account = yield sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
             if not account:
-                self.exitWithError("Invalid username or password")
-                return
+                account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
+                if not account or account == True:
+                    self.exitWithError("Invalid username or password")
 
             character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s AND `name` = %s", (account[0][0], characterName))
 
             if not character:
-                self.exitWithError("Character can't be loaded")
-                return
+                character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
+                if not character or character == True:
+                    self.exitWithError("Character can't be loaded")
+                    return
 
             if gamemaster and character[3] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
 
             try:
-                player = game.player.allPlayers[character[0][2]]
-                if player.client:
-                    self.exitWithError("This character is already logged in!")
-                    return
+                # If we "made" a new character in a script, character = the player.
+                if isinstance(character, game.player.Player):
+                    player = character
+                    game.player.allPlayers[player.name()] = player
+                else:
+                    player = game.player.allPlayers[character[0][2]]
+                    if player.client:
+                        self.exitWithError("This character is already logged in!")
+                        return
                     
                 self.player = player
                 if self.player.data["health"] < 1:

@@ -45,23 +45,27 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         username = packet.string()
         password = packet.string()
 
-        if not username:
+        if not username and not config.anyAccountWillDo:
             self.exitWithError("You must enter your account number")
             return
 
         # Initialize the packet to send
         pkg = TibiaPacket()
 
-        # Our funny way of doing async SQL
-        account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+        if username:
+            # Our funny way of doing async SQL
+            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
-        if not account:
-            self.exitWithError("Invalid username or password")
-            return
-
-
-        characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
-
+            if not account:
+                if config.anyAccountWillDo:
+                    account = ((0,0),)
+                    characters = config.anyAccountPlayerMap
+                else:
+                    self.exitWithError("Invalid username or password")
+                    return
+            else:
+                characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
+                
         # Send motd
         pkg.uint8(0x14)
         pkg.string(config.motd)
@@ -71,8 +75,8 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         pkg.uint8(len(characters))
         for character in characters:
             pkg.string(character[0])
-            pkg.string(config.name)
-            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character[1]])))
+            pkg.string(config.servers[character[1]][1])
+            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character[1]][0])))
             pkg.uint16(config.gamePort)
 
         # Add premium days

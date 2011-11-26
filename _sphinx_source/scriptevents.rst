@@ -495,3 +495,14 @@ The events are:
 
 .. function:: getChannelMembers(creature, channelId, text, type, members)
     Called when the system want to get a list of members to send the channel list too. This works in the same way as requestChannels does, except that the members list is a list and not a dict. (TriggerScript)
+
+.. function:: loginAccountFailed(client, username, password)
+    Called when this account fails to login (NCScript). You can use this to etc create a new player.
+
+    :returns: (Optionally) a new account id object ((ID,)). This will be used to lookup a player.
+
+.. function:: loginCharacterFailed(client, account, name):
+    Called when character lookup fails (NCSCript). You may create this account and return a player object. Or optionally a list representing all the fields from SQL.
+
+    :returns: (Optionally) player object or list.
+

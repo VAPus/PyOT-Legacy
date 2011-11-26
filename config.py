@@ -7,7 +7,7 @@ gameInterface = '' # Leave blank to accept connections on any hostname
 gamePort = 7172
 
 # Server ips, for the loginserver
-servers = {0 : '127.0.0.1'}
+servers = {0 : ('127.0.0.1', "PyOT dev server")} # WORLD_ID -> (ip, name)
 
 # IPs allowed to use the execute protocol (usually things like web servers). ONLY trusted hosts, they can remove system files from this!
 executeProtocolIps = ('127.0.0.1',)
@@ -36,9 +36,6 @@ supportProtocols = (860, 861, 862, 870, 910, 920, 931) # We support these main b
 
 # MOTD
 motd = "PyOT, it's alive!"
-
-# name
-name = "PyOT dev server"
 
 # Walking
 diagonalWalkCost = 3
@@ -138,6 +135,10 @@ chargeRentEvery = 30 * 86400 # Every 30 days
 # Critical hits:
 criticalHitRate = 5 # In %
 criticalHitMultiplier = 2 # Multiplier for the damage
+
+# Useful options for war system.
+anyAccountWillDo = False
+anyAccountPlayerMap = ("Random Test Character", 0),  # (name, world_id)...
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
