@@ -168,7 +168,7 @@ class Creature(object):
             if not ground.speed:
                 ground.speed = 100
                 
-            postValue = (config.drawingSpeed - 50) / 1000.0
+            postValue = (config.drawingSpeed - 75) / 1000.0
             return (ground.speed / self.speed) + postValue
         #return delay
 
