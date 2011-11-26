@@ -1,3 +1,13 @@
-spell.conjureRune("adito grav", make=2261, icon=23, mana=120, level=17, mlevel=0, soul=2, use=2260, makeCount=3, vocations=(1, 2, 3, 5, 6, 7), teached=0)
 
-#spell.fieldRune(rune=2261, level=17, mlevel=3, icon=30, group=3, area=AREA_ONE, callback=<TODO>, cooldown=3000, useCount=1)
+conjure = spell.Spell("Destroy Field", "adito grav", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=120, level=17, maglevel=0, soul=2, learned=0, vocations=(1, 2, 3, 5, 6, 7))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2261, 3))
+
+# Incomplete! Self target rune?
+rune = spell.Rune(2261, icon=30, count=3, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 3)
+rune.require(mana=0, level=17, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO

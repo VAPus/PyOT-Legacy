@@ -24,9 +24,14 @@ healing.use() # Default values are ok, ID: 2260, use=1
 healing.require(mana=120, level=15, soul=1) # Require level 15, use 120mana and 1 soul point
 healing.casterEffect(callback=spell.conjure(2265, 2)) # Conjure two such runes.
 
+
+
 ### Rune ###
 # Rune binds to use instead of talkaction, and it default a use call.
 rune = spell.Rune(2265, icon=3, count=1, group=HEALING_GROUP)
 rune.require(mana=120, level=15)
 rune.effects(target=EFFECT_MAGIC_BLUE)
 rune.targetEffect(callback=spell.heal(3.184, 5.59, 20, 35))
+
+# TODO:
+# spell.makeField port.

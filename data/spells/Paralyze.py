@@ -1,3 +1,13 @@
-spell.conjureRune("adana ani", make=2278, icon=23, mana=1400, level=54, mlevel=0, soul=3, use=2260, makeCount=1, vocations=(2, 6), teached=0)
 
-#spell.targetRune(rune=2278, level=54, mlevel=18, icon=54, group=1, effect=<TODO>, callback=<TODO>, cooldown=2000, useCount=1)
+conjure = spell.Spell("Paralyze", "adana ani", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=1400, level=54, maglevel=0, soul=3, learned=0, vocations=(2, 6))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2278, 1))
+
+# Incomplete! Target rune.
+rune = spell.Rune(2278, icon=54, count=1, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 2)
+rune.require(mana=1400, level=54, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO

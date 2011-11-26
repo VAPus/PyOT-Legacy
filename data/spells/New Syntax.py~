@@ -29,4 +29,4 @@ healing.casterEffect(callback=spell.conjure(2265, 2)) # Conjure two such runes.
 rune = spell.Rune(2265, icon=3, count=1, group=HEALING_GROUP)
 rune.require(mana=120, level=15)
 rune.effects(target=EFFECT_MAGIC_BLUE)
-rune.casterEffect(callback=spell.heal(3.184, 5.59, 20, 35))
+rune.targetEffect(callback=spell.heal(3.184, 5.59, 20, 35))

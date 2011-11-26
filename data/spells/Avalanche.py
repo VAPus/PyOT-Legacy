@@ -1,3 +1,13 @@
-spell.conjureRune("adori mas frigo", make=2274, icon=23, mana=530, level=30, mlevel=0, soul=3, use=2260, makeCount=3, vocations=(2, 6), teached=0)
 
-#spell.fieldRune(rune=2274, level=, mlevel=3, icon=115, group=1, area=AREA_CIRCLE2, callback=<TODO>, cooldown=2000, useCount=3)
+conjure = spell.Spell("Avalanche", "adori mas frigo", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=530, level=30, maglevel=0, soul=3, learned=0, vocations=(2, 6))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2274, 3))
+
+# Incomplete! Self target rune?
+rune = spell.Rune(2274, icon=115, count=3, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 2)
+rune.require(mana=0, level=30, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO

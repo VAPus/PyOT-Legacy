@@ -415,8 +415,8 @@ def loadItems():
         loadItems = empty((config.itemMaxServerId + 1), dict)
         reverseLoadItems = empty((config.itemMaxClientId + 1), uint16)
     else:
-        loadItems = [None] * (config.itemMaxServerId + 1)
-        reverseLoadItems = [None] * (config.itemMaxClientId + 1)
+        loadItems = [0] * (config.itemMaxServerId + 1)
+        reverseLoadItems = [0] * (config.itemMaxClientId + 1)
 
 
     for item in (yield d1):

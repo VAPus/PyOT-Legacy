@@ -993,6 +993,7 @@ class Player(Creature):
                 stream.uint8(0x79)
                 stream.uint8(slot)
         stream.send(self.client)
+        
     def openContainer(self, container, parent=False, update=False):
         if update or not container in self.openContainers:
             stream = self.packet(0x6E)
@@ -2119,3 +2120,13 @@ class Player(Creature):
             stream.item(i)
             
         stream.send(self.client)
+        
+    # Spell learning
+    def canUseSpell(self, name):
+        return self.getStorage("__ls%s" % name)
+        
+    def learnSpell(self, name):
+        return self.setStorage("__ls%s" % name, True)
+        
+    def unlearnSpell(self, name):
+        return self.setStorage("__ls%s" % name, False)

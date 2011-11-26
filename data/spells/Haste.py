@@ -1,3 +1,6 @@
-spell.selfTargetSpell("utani hur", "Haste", 6, 14, 60, SUPPORT_GROUP, EFFECT_MAGIC_BLUE, spell.boostTarget("speed", 31, lambda baseSpeed: (baseSpeed * 1.3) - 24), 2) # words, icon, level, mana, group, effect, callback, cooldown=1
 
-spell.selfTargetSpell("utani gran hur", "Strong Haste", 39, 20, 100, SUPPORT_GROUP, EFFECT_MAGIC_BLUE, spell.boostTarget("speed", 22, lambda baseSpeed: (baseSpeed * 1.7) - 56), 8, 3) # words, icon, level, mana, group, effect, callback, cooldown=1
+instant = spell.Spell("Haste", "utani hur", icon=6, group=None)
+instant.require(mana=60, level=14, maglevel=0, learned=0, vocations=(1, 2, 3, 4, 5, 6, 7, 8))
+instant.cooldowns(2, 3)
+instant.targetEffect() # TODO
+instant.effects() # TODO

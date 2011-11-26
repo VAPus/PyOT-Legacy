@@ -1,3 +1,13 @@
-spell.conjureRune("adevo res flam", make=2308, icon=23, mana=600, level=27, mlevel=0, soul=3, use=2260, makeCount=3, vocations=(1, 2, 5, 6), teached=0)
 
-#spell.targetRune(rune=2308, level=27, mlevel=7, icon=50, group=1, effect=<TODO>, callback=<TODO>, cooldown=2000, useCount=1)
+conjure = spell.Spell("Soulfire", "adevo res flam", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=600, level=27, maglevel=0, soul=3, learned=0, vocations=(1, 2, 5, 6))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2308, 3))
+
+# Incomplete! Target rune.
+rune = spell.Rune(2308, icon=50, count=3, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 2)
+rune.require(mana=0, level=27, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO

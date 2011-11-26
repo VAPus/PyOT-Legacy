@@ -1,3 +1,13 @@
-spell.conjureRune("adura vita", make=2273, icon=23, mana=400, level=24, mlevel=0, soul=3, use=2260, makeCount=1, vocations=(2, 6), teached=0)
 
-#spell.targetRune(rune=2273, level=24, mlevel=4, icon=5, group=2, effect=EFFECT_MAGIC_BLUE, callback=<TODO>, cooldown=1000, useCount=1)
+conjure = spell.Spell("Ultimate Healing Rune", "adura vita", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=400, level=24, maglevel=0, soul=3, learned=0, vocations=(2, 6))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2273, 1))
+
+# Incomplete! Target rune.
+rune = spell.Rune(2273, icon=5, count=1, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 1)
+rune.require(mana=0, level=24, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO

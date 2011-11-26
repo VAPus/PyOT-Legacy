@@ -96,7 +96,7 @@ def typeToEffect(type):
     elif type == "poison":
         return (game.enum.EFFECT_HITBYPOISON, game.enum.ANIMATION_POISON)
   
-def makeField(fieldId, hiteffect=None):
+"""def makeField(fieldId, hiteffect=None):
     def make(position, **k):
         item = game.item.Item(fieldId)
         
@@ -497,7 +497,7 @@ def creatureTargetSpell(name, effect, callback):
                 
         callback(creature, creature.position, target, target.position, effect, strength)
             
-    spells[name] = (targetspell)
+    spells[name] = (targetspell)"""
 
 def clear():
     fieldRunes.clear()
@@ -550,6 +550,39 @@ def conjure(make, count=1, **kwargs):
             target.message("Made %dx%s" % (count, item.rawName()))
             
     return conjureCallback
+
+def field(fieldId):
+    def makeFieldCallback(position, **k):
+        item = game.item.Item(fieldId)
+        
+        def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
+            if not creature.alive:
+                return
+                
+            ticks += 1
+            creature.modifyHealth(-damage)
+            creature.magicEffect(creature.position, effect)
+            
+            
+            if ticks < forTicks:
+                game.engine.safeCallLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
+                
+        def callback(creature, thing, **k):
+            if thing.damage:
+                creature.magicEffect(creature.position, typeToEffect(thing.field)[0])
+                creature.modifyHealth(-thing.damage)
+                
+            if thing.turns:
+                effectOverTime(creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
+        
+        stackpos = game.engine.placeItem(item, position)
+            
+        if item.damage:
+            game.scriptsystem.reg('walkOn', item, callback)
+            if item.duration:
+                item.decay(position, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
+                
+    return makeFieldCallback
     
 class Spell(object):
     def __init__(self, name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
@@ -576,7 +609,7 @@ class Spell(object):
         self.icon = icon
         self.group = group
         
-        self.teacher = False
+        self.learned = False
         
         self._requireGreater = []
         self._requireLess = []
@@ -667,17 +700,16 @@ class Spell(object):
         for con in argc:
             self.conditionOnTarget.append((con, stack))
    
-    def require(self, **kwargs):
+    def require(self, learned=False, vocations=None, **kwargs):
         self._requireGreater = kwargs
+        self.vocations = vocations
+        self.learned = learned
    
     def requireLess(self, **kwargs):
         self._requireLess = kwargs
 
     def requireCallback(self, *args):
         self._requireCallback.extend(args)
-        
-    def teached(self):
-        self.teached = True
 
     def use(self, itemId=2260, count=1):
         def check(caster):
@@ -692,7 +724,7 @@ class Spell(object):
             
         self._requireCallback.append(check)
     
-    def cooldown(self, cooldown=0, groupCooldown=None):
+    def cooldowns(self, cooldown=0, groupCooldown=None):
         if cooldown and groupCooldown == None:
             groupCooldown = cooldown
            
@@ -707,6 +739,12 @@ class Spell(object):
                     creature.exhausted()
                     return False
                 
+                if self.learned and not creature.canUseSpell(self.name):
+                    return creature.cancelMessage("You need to learn this spell first.")
+                    
+                if self.vocations and creature.getVocationId() not in self.vocations:
+                    return creature.cancelMessage("Your vocation cannot use this spell.")
+                    
                 if self._requireGreater:
                     for var in self._requireGreater:
                         if creature.data[var] < self._requireGreater[var]:
@@ -812,7 +850,7 @@ class Rune(Spell):
         self.icon = icon
         self.group = group
         
-        self.teacher = False
+        self.learned = False
         
         self._requireGreater = []
         self._requireLess = []
@@ -824,9 +862,6 @@ class Rune(Spell):
         func = self.doEffect()
         targetRunes[rune] = func # Just to prevent reset
         game.scriptsystem.get("useWith").reg(rune, func)
-        def _(**k):
-            print("Works")
-        game.scriptsystem.get("useWith").reg(rune, _)
         
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
@@ -836,7 +871,13 @@ class Rune(Spell):
                 if not creature.canDoSpell(self.icon, self.group):
                     creature.exhausted()
                     return False
-                
+
+                if self.learned and not creature.canUseSpell(self.name):
+                    return creature.cancelMessage("You need to learn this spell first.")
+                    
+                if self.vocations and creature.getVocationId() not in self.vocations:
+                    return creature.cancelMessage("Your vocation cannot use this spell.")
+                    
                 if self._requireGreater:
                     for var in self._requireGreater:
                         if creature.data[var] < self._requireGreater[var]:
@@ -859,13 +900,13 @@ class Rune(Spell):
                         
                 else:
                     
-                            
-                    try:
-                        #onCreature = game.map.getTile(onPosition).getThing(onStackpos)
-                        onCreature = onThing
-                        onCreature.isPlayer()
-                    except:
-                        return creature.onlyOnCreatures()
+                    if self.targetType == game.enum.TARGET_TARGET:
+                        try:
+                            #onCreature = game.map.getTile(onPosition).getThing(onStackpos)
+                            onCreature = onThing
+                            onCreature.isPlayer()
+                        except:
+                            return creature.onlyOnCreatures()
                         
                     creature.modifyItem(thing, position, stackpos, -self.count)  
                     
@@ -898,7 +939,7 @@ class Rune(Spell):
             for array in self.conditionOnCaster:
                 creature.condition(array[0].copy(), array[1])
                 
-            if self.targetType == TARGET_TARGET and target and self.shootEffect:
+            if self.targetType == TARGET_TARGET and self.shootEffect:
                 creature.shoot(creature.position, target.position, self.shootEffect)
                 
             if not self.targetType == TARGET_AREA:
@@ -911,6 +952,12 @@ class Rune(Spell):
                 for array in self.conditionOnTarget:
                     target.condition(array[0].copy(), array[1])
         
+            else:
+                for call in self.effectOnTarget:
+                    call(target=None, caster=creature, strength=strength, position=onPosition)
+                if self._targetEffect:
+                    caster.magicEffect(self._targetEffect, onPosition)
+                    
         if config.runeCastDelay:
             def castDelay(**k):
                 game.engine.safeCallLater(config.runeCastDelay, runeCallback, **k)

@@ -1,3 +1,13 @@
-spell.conjureRune("adeta sio", make=2290, icon=23, mana=200, level=16, mlevel=0, soul=3, use=2260, makeCount=1, vocations=(2, 6), teached=0)
 
-#spell.targetRune(rune=2290, level=16, mlevel=5, icon=12, group=3, effect=<TODO>, callback=<TODO>, cooldown=3000, useCount=1)
+conjure = spell.Spell("Convince Creature", "adeta sio", icon=23, group=SUPPORT_GROUP)
+conjure.require(mana=200, level=16, maglevel=0, soul=3, learned=0, vocations=(2, 6))
+conjure.use(2260)
+conjure.cooldowns(0, 3)
+conjure.targetEffect(callback=spell.conjure(2290, 1))
+
+# Incomplete! Target rune.
+rune = spell.Rune(2290, icon=12, count=1, target=TARGET_TARGET, group=None)
+rune.cooldowns(0, 3)
+rune.require(mana=0, level=16, maglevel=0)
+rune.targetEffect() # TODO
+rune.effects() # TODO
