@@ -420,7 +420,7 @@ def load(sectorX, sectorY):
     print "Loading took: %f" % (time.time() - t)
     
     if 'l' in knownMap[sectorSum]:    
-        reactor.callInThread(lambda: exec(knownMap[sectorSum]['l'], {}, {"S":S}))
+        exec(knownMap[sectorSum]['l'], {}, {"S":S})
         
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
