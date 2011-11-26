@@ -28,6 +28,9 @@ sqlHost = "localhost"
 # Others:
 sqlSocket = "/var/run/mysqld/mysqld.sock"
 
+# LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
+letGameServerRunTheLoginServer = True
+
 # Versions:
 versionMin = 860
 versionMax = 931

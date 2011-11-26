@@ -59,11 +59,26 @@ import game.engine
 
 startTime = time.time()
 
-application = service.Application("pyot-game-server")
+# Top level service demon
+topService = service.MultiService()
 
-factory = GameFactory()
-tcpService = internet.TCPServer(config.gamePort, factory, interface=config.gameInterface)
-tcpService.setServiceParent(application)
+# Application level.
+application = service.Application("pyot-game-server")
+topService.setServiceParent(application)
+
+# Game Server
+gameFactory = GameFactory()
+gameServer = internet.TCPServer(config.gamePort, gameFactory, interface=config.gameInterface)
+gameServer.setServiceParent(topService)
+
+# (optionally) buildt in login server.
+if config.letGameServerRunTheLoginServer:
+    from service.loginserver import LoginProtocol, LoginFactory
+    loginFactory = LoginFactory()
+    tcpService = internet.TCPServer(config.loginPort, loginFactory, interface=config.loginInterface)
+    tcpService.setServiceParent(topService)
+
+
 
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
