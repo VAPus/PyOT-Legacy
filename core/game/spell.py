@@ -764,12 +764,13 @@ class Spell(object):
                 # Integrate mana seeker
                 try:
                     creature.modifyMana(-self._requireGreater["mana"])
+                    creature.modifySpentMana(self._requireGreater["mana"])
                 except:
                     pass
 
                 # Integrate soul seeker
                 try:
-                    creature.modifyMana(-self._requireGreater["soul"])
+                    creature.modifySoul(-self._requireGreater["soul"])
                 except:
                     pass
                 
@@ -913,12 +914,13 @@ class Rune(Spell):
                     # Integrate mana seeker
                     try:
                         creature.modifyMana(-self._requireGreater["mana"])
+                        creature.modifySpentMana(self._requireGreater["mana"])
                     except:
                         pass
 
                     # Integrate soul seeker
                     try:
-                        creature.modifyMana(-self._requireGreater["soul"])
+                        creature.modifySoul(-self._requireGreater["soul"])
                     except:
                         pass
                     
