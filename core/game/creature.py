@@ -592,6 +592,9 @@ class Creature(object):
         if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
             game.engine.placeItem(splash, self.position)
             
+            # Start decay
+            splash.decay(self.position)
+            
             
         if by and by.isPlayer():
             by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
