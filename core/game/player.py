@@ -611,7 +611,7 @@ class Player(Creature):
         if not count: return
         
         try:
-            self.inventoryCache[itemId][0] += count
+            self.inventoryCache[item.itemId][0] += count
             weight = item.weight
             
             # Save

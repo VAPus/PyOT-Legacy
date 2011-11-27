@@ -727,7 +727,7 @@ class BaseProtocol(object):
                                     return
                                 
                 if oldItem[1].stackable and count < 100:
-                    if player.modifyCache(oldItem[1].itemId, -1 * count):
+                    if (count == oldItem[1].count and player.removeCache(oldItem[1])) or (player.modifyCache(oldItem[1], -1 * count)):
                         player.refreshStatus(stream)
                         
                     renew = True
@@ -814,7 +814,7 @@ class BaseProtocol(object):
                             if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
                                 player.inventory[toPosition[1]-1].count += count
                                 # Into inventory? Update cache
-                                if player.modifyCache(player.inventory[toPosition[1]-1].itemId, count):
+                                if player.modifyCache(player.inventory[toPosition[1]-1], count):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
