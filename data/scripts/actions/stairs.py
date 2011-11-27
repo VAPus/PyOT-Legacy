@@ -96,7 +96,7 @@ def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         creature.teleport([position[0],position[1],position[2]+1])
 
-def teleportDirection(creature, thing, position, **k):
+def teleportOrWalkDirection(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return
@@ -107,19 +107,21 @@ def teleportDirection(creature, thing, position, **k):
     
     # Change the position to match the floorchange.
     if thing.floorchange == "north":
-        pos[1] -= 1
+        creature.move(NORTH, level=-1)
+        
     elif thing.floorchange == "south":
-        pos[1] += 1
+        creature.move(SOUTH, level=-1)
         
     elif thing.floorchange == "east":
-        pos[0] += 1
+        creature.move(EAST, level=-1)
         
     elif thing.floorchange == "west":
-        pos[0] -= 1
+        creature.move(WEST, level=-1)
         
-    creature.teleport(pos)
+    else:    
+        creature.teleport(pos)
 
-def teleportDirectionDown(creature, thing, position, **k):
+def teleportOrWalkDirectionDown(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return
@@ -128,19 +130,28 @@ def teleportDirectionDown(creature, thing, position, **k):
     pos = creature.position[:]
     pos[2] += 1
     
-    # Change the position to match the floorchange.
-    if thing.floorchange == "north":
-        pos[1] += 2
-    elif thing.floorchange == "south":
-        pos[1] -= 2
-        
-    elif thing.floorchange == "east":
-        pos[0] -= 2
-        
-    elif thing.floorchange == "west":
-        pos[0] += 2
-        
-    creature.teleport(pos)
+    # Change the position to match the floorchange. Based on the bottom item if any.
+    destTile = getTile(pos)
+    try:
+        destThing = destTile.getThing(1)
+        # Note: It's the reverse direction
+        if destThing.floorchange == "north":
+            creature.move(SOUTH, level=1)
+            
+        elif destThing.floorchange == "south":
+            creature.move(NORTH, level=1)
+            
+        elif destThing.floorchange == "west":
+            creature.move(EAST, level=1)
+            
+        elif destThing.floorchange == "east":
+            creature.move(WEST, level=1)
+            
+        else:
+            creature.teleport(pos)
+    except:
+        pass
+    
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
 reg("walkOn", stairs, floorchange)
@@ -149,8 +160,9 @@ reg('useWith', stairs, itemFloorChange)
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398
 rampsDown = 459,
-reg("walkOn", ramps, teleportDirection)
-reg("walkOn", rampsDown, teleportDirectionDown)
+reg("walkOn", ramps, teleportOrWalkDirection)
+reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
+
 # Ladders up
 laddersUp = 1386, 3678, 5543, 8599
 reg("use", laddersUp, floorup)
