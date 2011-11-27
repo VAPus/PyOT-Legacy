@@ -527,11 +527,7 @@ class Creature(object):
         dmg = max(self.data["health"] * -1, dmg)
 
 
-
-        if type == game.enum.MELEE:
-            textColor, magicEffect = self.hitEffects()
-            
-        elif type == game.enum.ICE:
+        if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
             
@@ -558,7 +554,8 @@ class Creature(object):
         elif type == game.enum.DROWN:
             textColor = game.enum.COLOR_LIGHTBLUE
             magicEffect = game.enum.EFFECT_ICEATTACK
-        
+        else: ### type == game.enum.MELEE:
+            textColor, magicEffect = self.hitEffects()        
         if effect:
             magicEffect = effect
             
