@@ -295,7 +295,7 @@ class NPCBase(CreatureBase):
     def speakTree(self, tree, farewell=None):
         # Register the opening stuff.
         greet = tree.keys()[0]
-        if type(greet) == "<type 'function'>" or type(greet) == str:
+        if callable(greet) or type(greet) == str:
             self.greet(greet)
         else:
             self.speakTreeGreet = greet
@@ -322,7 +322,7 @@ class NPCBase(CreatureBase):
                                 
                     
                 # Function
-                elif str(type(greet)) == "<type 'function'>":
+                elif callable(greet):
                     greet(npc=npc, player=player)
                         
                 # Route simply just ends
@@ -375,7 +375,7 @@ class NPCBase(CreatureBase):
                         npc.sayTo(player, currElm.keys()[0])
                     
                     # Function
-                    elif str(type(nextElm)) == "<type 'function'>":
+                    elif callable(nextElm):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -415,7 +415,7 @@ class NPCBase(CreatureBase):
                         npc.sayTo(player, currElm.keys()[0])
                     
                     # Function
-                    elif str(type(nextElm)) == "<type 'function'>":
+                    elif callable(nextElm):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -455,7 +455,7 @@ class NPCBase(CreatureBase):
                         npc.sayTo(player, currElm.keys()[0])
                     
                     # Function
-                    elif str(type(nextElm)) == "<type 'function'>":
+                    elif callable(nextElm):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -467,7 +467,7 @@ class NPCBase(CreatureBase):
         
         # Register farewell
         if farewell:
-            if type(farewell) == "<type 'function'>" or type(farewell) == str:
+            if callable(farewell) or type(farewell) == str:
                 self.farewell(farewell)
             else:
                 self.speakTreeFarewell = farewell
@@ -494,7 +494,7 @@ class NPCBase(CreatureBase):
                                     
                         
                     # Function
-                    elif str(type(farewell)) == "<type 'function'>":
+                    elif callable(farewell):
                         farewell(npc=npc, player=player)
                             
                     # Route simply just ends

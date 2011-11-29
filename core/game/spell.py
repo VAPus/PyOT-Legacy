@@ -809,7 +809,8 @@ class Spell(object):
                     target.condition(array[0].copy(), array[1])
 
             if self.targetType == TARGET_AREA:
-                positions = calculateAreaDirection(creature.position, creature.direction, self.targetArea)
+                area = self.targetArea(caster=creature) if callable(self.targetArea) else self.targetArea
+                positions = calculateAreaDirection(creature.position, creature.direction, area)
                 targets = []
                 for pos in positions:
                     if self.areaEffect:
