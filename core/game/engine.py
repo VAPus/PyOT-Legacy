@@ -32,7 +32,11 @@ try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
-    
+
+# Some half important constants
+IS_ONLINE = False
+IS_RUNNING = True
+
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
@@ -133,7 +137,7 @@ def loader(timer):
     __builtin__.getGuildById = game.guild.getGuildById
     
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'engine')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -147,6 +151,7 @@ def loader(timer):
         enum = game.enum
         house = game.house
         guild = game.guild
+        engine = sys.modules["game.engine"] # For consistancy
             
     __builtin__.game = Globalizer
     
@@ -167,6 +172,9 @@ def loader(timer):
     # Light stuff
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+    
+    # Now we're online :)
+    IS_ONLINE = True
     
 # Useful for windows
 def safeTime():

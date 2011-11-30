@@ -28,7 +28,8 @@ class Scripts(object):
         self.scripts.remove(callback)
     
     def unregCallback(self, callback):
-        self.scripts.remove(callback)
+        if game.engine.IS_RUNNING:
+            self.scripts.remove(callback)
                 
     def run(self, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, creature, end, **kwargs)
@@ -114,12 +115,13 @@ class TriggerScripts(object):
         return self._run(trigger, creature, end, **kwargs)
         
     def _unregCallback(self, trigger):
-        def callback(func):
-            self.scripts[s].remove(func)
-            if not len(self.scripts[trigger]):
-                del self.scripts[trigger]
+        def trigger_cleanup_callback(func):
+            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
+                self.scripts[trigger].remove(func)
+                if not len(self.scripts[trigger]):
+                    del self.scripts[trigger]
                 
-        return callback
+        return trigger_cleanup_callback
                 
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
@@ -182,7 +184,7 @@ class ThingScripts(object):
                 
     def regFirst(self, id, callback, weakfunc=True):
         if weakfunc:
-            func = weakref.proxy(callback, self.unregCallback)
+            func = weakref.proxy(callback, self._unregCallback)
         else:
             func = callback
             
@@ -222,23 +224,25 @@ class ThingScripts(object):
             pass
      
     def _unregCallback(self, id):
-        def callback(func):
-            if type(id) in (tuple, list, set):
-                for xid in id:
-                    self.scripts[xid].remove(func)  
-                    if not self.scripts[xid]:
-                        del self.scripts[xid]
+        def thing_cleanup_callback(func):
+            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
+                if type(id) in (tuple, list, set):
+                    for xid in id:
+                        self.scripts[xid].remove(func)  
+                        if not self.scripts[xid]:
+                            del self.scripts[xid]
+                        
+                elif type(id) in (int, long, str):
+                    self.scripts[id].remove(func)
+                    if not self.scripts[id]:
+                        del self.scripts[id]
+                        
+                else:
+                    self.thingScripts[id].remove(func)
+                    if not self.thingScripts[id]:
+                        del self.scripts[id]
                     
-            elif type(id) in (int, long, str):
-                self.scripts[id].remove(func)
-                if not self.scripts[id]:
-                    del self.scripts[id]
-                    
-            else:
-                self.thingScripts[id].remove(func)
-                if not self.thingScripts[id]:
-                    del self.scripts[id]
-        return callback
+        return thing_cleanup_callback
         
     def run(self, thing, creature, end=None, **kwargs):
         scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
@@ -403,6 +407,8 @@ scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
 scriptPool.start()
 
 def run():
+    game.engine.IS_ONLINE = False
+    game.engine.IS_RUNNING = False
     get('shutdown').runSync()
     
 reactor.addSystemEventTrigger('before','shutdown',run)
