@@ -143,6 +143,9 @@ criticalHitMultiplier = 2 # Multiplier for the damage
 anyAccountWillDo = False
 anyAccountPlayerMap = ("Random Test Character", 0),  # (name, world_id)...
 
+# Hotkeys
+enableHotkey = True
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

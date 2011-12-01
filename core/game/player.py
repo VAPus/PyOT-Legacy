@@ -1300,6 +1300,11 @@ class Player(Creature):
         if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
             stream = self.packet(0xAC)
             channel = game.chat.getChannel(id)
+            
+            if not channel:
+                print id
+                return self.cancelMessage("Channel not found.")
+                
             stream.uint16(id)
             stream.string(channel.name)
             

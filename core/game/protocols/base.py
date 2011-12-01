@@ -495,6 +495,9 @@ class BaseProtocol(object):
         elif packetType == 0x83:
             self.handleUseWith(player,packet)
             
+        elif packetType == 0x84: # Hotkey usage etc
+            self.handleUseBattleWindow(player, packet)
+            
         elif packetType == 0x85: # Rotate item
             self.handleRotateItem(player,packet)
             
@@ -1250,4 +1253,48 @@ class BaseProtocol(object):
         else:
             player.tradeAccepted = True
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
+            
+    def handleUseBattleWindow(self, player, packet):
+        fromPosition = packet.position()
+        clientItemId = packet.uint16()
+        stackpos = packet.uint8()
+        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        hotkey = fromPosition[0] == 0xFFFF and not fromPosition[1]
+
+        # Is hotkeys allowed?
+        if not config.enableHotkey:
+            return player.cancelMessage("Hotkeys are disabled.")
+            
+        # Are we in distance to object?
+        if player != creature and not player.inRange(creature.position, 7, 5):
+            return player.cancelMessage("Target is too far away.")
+        
+        if not hotkey:
+            thing = player.findItem(fromPosition, stackpos)
+        else:
+            itemId = game.item.sid(clientItemId)
+            thing = player.findItemById(itemId)
+            
+            if not thing:
+                return player.cancelMessage("You don't have any left of this item.")
+                
+            # Also tell hotkey message
+            count = player.inventoryCache[itemId][0]
+            
+            if not thing.showCount:
+                player.message("Using one of %s..." % thing.rawName())
+            elif count == 1:
+                player.message("Using the last %s..." % thing.rawName())
+            else:
+                player.message("Using one of %d %s..." % (count, thing.rawName()))
+        
+        if thing:
+            if (hotkey or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (creature.position[0] == 0xFFFF or (abs(creature.position[0] - player.position[0]) <= 1 and abs(creature.position[1] - player.position[1]) <= 1)):
+                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+                
+            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+
+        
             
