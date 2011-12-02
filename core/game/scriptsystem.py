@@ -1,10 +1,12 @@
 # The script system
 from twisted.internet import reactor, threads, defer
 from twisted.python.threadpool import ThreadPool
+from twisted.python import log
 import config
 import weakref
 import sys
 import time
+import traceback
 
 modPool = []
 globalScripts = {}
@@ -415,8 +417,21 @@ reactor.addSystemEventTrigger('before','shutdown',run)
 reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
 def handleModule(name):
-    modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+    try:
+        modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+    except:
+        (exc_type, exc_value, exc_traceback) = sys.exc_info()
 
+        tb_list = traceback.extract_tb(sys.exc_info()[2])
+        tb_list = traceback.format_list(tb_list)
+        print "--------------------------"
+        print "EXCEPTION IN SCRIPT:"
+        for elt in tb_list[1:]:
+            print elt
+
+        print "%s: %s" % (exc_type.__name__, exc_value)
+        print "--------------------------"
+        
     try:
         modules.paths
     except:

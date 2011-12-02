@@ -12,3 +12,5 @@ game.chat.openChannel("Advertising")
 game.chat.openChannel("Advertising-Rookgaard")
 game.chat.openChannel("Help")
 game.chat.openChannel("Private", 0xFFFF, public=False) # Also special
+
+asdasdasd
