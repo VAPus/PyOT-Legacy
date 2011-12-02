@@ -1,6 +1,5 @@
-
-instant = spell.Spell("Salvation", "exura gran san", icon=36, group=None)
+instant = spell.Spell("Salvation", "exura gran san", icon=36, group=HEALING_GROUP)
 instant.require(mana=210, level=60, maglevel=0, learned=0, vocations=(3, 7))
 instant.cooldowns(1, 1)
-instant.targetEffect() # TODO
-instant.effects() # TODO
+instant.effects(caster=EFFECT_MAGIC_BLUE)
+instant.targetEffect(callback=spell.heal(12, 20, 75, 125))

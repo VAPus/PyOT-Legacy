@@ -1,4 +1,3 @@
-
 conjure = spell.Spell("Enchant Spear", "exeta con", icon=23, group=SUPPORT_GROUP)
 conjure.require(mana=350, level=45, maglevel=0, soul=3, learned=0, vocations=(3, 7))
 conjure.use(2389)

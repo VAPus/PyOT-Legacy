@@ -1,4 +1,3 @@
-
 conjure = spell.Spell("Convince Creature", "adeta sio", icon=23, group=SUPPORT_GROUP)
 conjure.require(mana=200, level=16, maglevel=0, soul=3, learned=0, vocations=(2, 6))
 conjure.use(2260)

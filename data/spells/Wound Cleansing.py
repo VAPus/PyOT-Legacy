@@ -1,6 +1,5 @@
-
-instant = spell.Spell("Wound Cleansing", "exura ico", icon=123, group=None)
+instant = spell.Spell("Wound Cleansing", "exura ico", icon=123, group=HEALING_GROUP)
 instant.require(mana=40, level=10, maglevel=0, learned=0, vocations=(4, 8))
 instant.cooldowns(1, 1)
-instant.targetEffect() # TODO
-instant.effects() # TODO
+instant.effects(target=EFFECT_MAGIC_BLUE)
+instant.targetEffect(callback=spell.heal(4, 8, 25, 50))
