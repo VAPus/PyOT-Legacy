@@ -505,7 +505,7 @@ AREA_SQUARE = TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
 AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)
 
 #way be incorrect
-AREA_DIAGONALWALL = TARGET_DIRECTION, (-2, -1), \ 
+AREA_DIAGONALWALL = TARGET_DIRECTION, (-2, -1), \
 (-1), \
 (-1, 0, 1), \
 (1), \
