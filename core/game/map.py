@@ -10,7 +10,36 @@ import config
 import game.enum
 import time
 import io
+
+
+##### Position class ####
+def __uid():
+    idsTaken = 1
+    while True:
+        idsTaken += 1
+        yield idsTaken
+instanceId = __uid().next
     
+class Position(object):
+    __slots__ = ('x', 'y', 'z', 'instanceId')
+    def __init__(self, x, y, z=7, instanceId=0):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.instanceId = instanceId
+        
+    def __eq__(self, other):
+        return (self.x == other.x and self.y == other.y and self.z == other.z)
+        
+    def __ne__(self, other):
+        return (self.x != other.x and self.y != other.y and self.z != other.z)
+        
+    def copy(self):
+        return Position(self.x, self.y, self.z, self.instanceId)
+    
+    def inRange(self, other, x, y, z=0):
+        return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
+        
 def getTile(pos):
     iX = int(pos[0] / 32)
     iY = int(pos[1] / 32)
