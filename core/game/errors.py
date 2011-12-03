@@ -16,3 +16,7 @@ class SolidTile(BaseError): pass
 
 # Spells
 class SpellDefinition(BaseError): pass
+
+# Position
+class PositionOutOfRange(BaseError): pass
+class PositionNegative(BaseError): pass
