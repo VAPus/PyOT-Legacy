@@ -86,22 +86,22 @@ class PositionClass(unittest.TestCase):
         
         
     def test_equality(self):    
-        self.assertEqual(pos, pos2)
-        self.assertNotEqual(pos, pos3)
+        self.assertEqual(self.pos, self.pos2)
+        self.assertNotEqual(self.pos, self.pos3)
         
     def test_outofrange(self):
-        self.assertRaises(game.errors.PositionOutOfRange, game.map.position, 0xFFFF+1, 0xFFFF, 15)
-        self.assertRaises(game.errors.PositionOutOfRange, game.map.position, 0xFFFF, 0xFFFF+1, 15)
-        self.assertRaises(game.errors.PositionOutOfRange, game.map.position, 0xFFFF, 0xFFFF, 16)
+        self.assertRaises(game.errors.PositionOutOfRange, game.map.Position, 0xFFFF+1, 0xFFFF, 15)
+        self.assertRaises(game.errors.PositionOutOfRange, game.map.Position, 0xFFFF, 0xFFFF+1, 15)
+        self.assertRaises(game.errors.PositionOutOfRange, game.map.Position, 0xFFFF, 0xFFFF, 16)
         
     def test_changeOutOfRange(self):
         with self.assertRaises(game.errors.PositionOutOfRange):
             game.map.Position(1,2,3).x += 0xFFFF
             
     def test_negative(self):
-        self.assertRaises(game.errors.PositionNegative, game.map.position, -1, 0xFFFF, 15)
-        self.assertRaises(game.errors.PositionNegative, game.map.position, 0xFFFF, -1, 15)
-        self.assertRaises(game.errors.PositionNegative, game.map.position, 0xFFFF, 0xFFFF, -1)
+        self.assertRaises(game.errors.PositionNegative, game.map.Position, -1, 0xFFFF, 15)
+        self.assertRaises(game.errors.PositionNegative, game.map.Position, 0xFFFF, -1, 15)
+        self.assertRaises(game.errors.PositionNegative, game.map.Position, 0xFFFF, 0xFFFF, -1)
         
     def test_changeNegative(self):
         with self.assertRaises(game.errors.PositionNegative):
