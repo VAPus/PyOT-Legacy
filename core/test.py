@@ -95,8 +95,11 @@ class PositionClass(unittest.TestCase):
         self.assertRaises(game.errors.PositionOutOfRange, game.map.Position, 0xFFFF, 0xFFFF, 16)
         
     def test_changeOutOfRange(self):
-        with self.assertRaises(game.errors.PositionOutOfRange):
+        def __do():
             game.map.Position(1,2,3).x += 0xFFFF
+            
+        self.assertRaises(game.errors.PositionOutOfRange, __do)
+            
             
     def test_negative(self):
         self.assertRaises(game.errors.PositionNegative, game.map.Position, -1, 0xFFFF, 15)
@@ -104,5 +107,8 @@ class PositionClass(unittest.TestCase):
         self.assertRaises(game.errors.PositionNegative, game.map.Position, 0xFFFF, 0xFFFF, -1)
         
     def test_changeNegative(self):
-        with self.assertRaises(game.errors.PositionNegative):
-            game.map.Position(1,2,3).x -= 0xFFFF        
+        def __do():
+            game.map.Position(1,2,3).x -= 0xFFFF  
+            
+        self.assertRaises(game.errors.PositionNegative, __do)
+                  

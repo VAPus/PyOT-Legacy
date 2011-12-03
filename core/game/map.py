@@ -39,7 +39,27 @@ class Position(object):
     
     def inRange(self, other, x, y, z=0):
         return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
-        
+
+    def __setattr__(self, name, val):
+        if name == 'x':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.x > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.x is negative")
+            
+        elif name == 'y':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.y > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.y is negative")
+            
+        elif name == 'z':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.z > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.z is negative")
+            
+        object.__setattr__(self, name, val)
 def getTile(pos):
     iX = int(pos[0] / 32)
     iY = int(pos[1] / 32)
