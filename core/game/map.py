@@ -21,18 +21,19 @@ def __uid():
 instanceId = __uid().next
     
 class Position(object):
-    __slots__ = ('x', 'y', 'z', 'instanceId')
-    def __init__(self, x, y, z=7, instanceId=0):
+    __slots__ = ('x', 'y', 'z', 'stackpos', 'instanceId')
+    def __init__(self, x, y, z=7, stackpos=0, instanceId=0):
         self.x = x
         self.y = y
         self.z = z
         self.instanceId = instanceId
+        self.stackpos = stackpos
         
     def __eq__(self, other):
-        return (self.x == other.x and self.y == other.y and self.z == other.z)
+        return (self.x == other.x and self.y == other.y and self.z == other.z and (not self.stackpos or self.stackpos == other.stackpos))
         
     def __ne__(self, other):
-        return (self.x != other.x and self.y != other.y and self.z != other.z)
+        return (self.x != other.x or self.y != other.y or self.z != other.z or (self.stackpos and self.stackpos != other.stackpos))
         
     def copy(self):
         return Position(self.x, self.y, self.z, self.instanceId)
@@ -60,6 +61,7 @@ class Position(object):
                 raise game.errors.PositionNegative("Position.z is negative")
             
         object.__setattr__(self, name, val)
+        
 def getTile(pos):
     iX = int(pos[0] / 32)
     iY = int(pos[1] / 32)
