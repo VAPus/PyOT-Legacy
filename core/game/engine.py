@@ -289,7 +289,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     :type callback: function.
     
     """
-    if creature.position[2] != to[2]:
+    if creature.position.z != to.z:
         creature.message("Change floor")
         return
         
@@ -346,13 +346,13 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     pattern = []
     currPos = fromPos
     # First diagonal if possible
-    if abs(fromPos[0] - to[0]) == 1 and abs(fromPos[1] - to[1]) == 1:
-        if fromPos[1] > to[1]:
+    if abs(fromPos.x - to.x) == 1 and abs(fromPos.y - to.y) == 1:
+        if fromPos.y > to.y:
             base = 6
         else:
             base = 4
             
-        if fromPos[0] < to[0]:
+        if fromPos.x < to.x:
             base += 1
         newPos = positionInDirection(currPos, base)
         
@@ -367,7 +367,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             pattern.append(base)
         
     if not pattern:
-        pattern = game.pathfinder.findPath(fromPos[2], fromPos[0], fromPos[1], to[0], to[1])
+        pattern = game.pathfinder.findPath(fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:
@@ -485,27 +485,27 @@ def positionInDirection(nposition, direction, amount=1):
     
     """
     
-    position = list(nposition[:]) # Important not to remove the : here, we don't want a reference!
+    position = nposition.copy() # Important not to remove the : here, we don't want a reference!
     if direction == 0:
-        position[1] = nposition[1] - amount
+        position.y = nposition.y - amount
     elif direction == 1:
-        position[0] = nposition[0] + amount
+        position.x = nposition.x + amount
     elif direction == 2:
-        position[1] = nposition[1] + amount
+        position.y = nposition.y + amount
     elif direction == 3:
-        position[0] = nposition[0] - amount
+        position.x = nposition.x - amount
     elif direction == 4:
-        position[1] = nposition[1] + amount
-        position[0] = nposition[0] - amount
+        position.y = nposition.y + amount
+        position.x = nposition.x - amount
     elif direction == 5:
-        position[1] = nposition[1] + amount
-        position[0] = nposition[0] + amount
+        position.y = nposition.y + amount
+        position.x = nposition.x + amount
     elif direction == 6:
-        position[1] = nposition[1] - amount
-        position[0] = nposition[0] - amount
+        position.y = nposition.y - amount
+        position.x = nposition.x - amount
     elif direction == 7:
-        position[1] = nposition[1] - amount
-        position[0] = nposition[0] + amount
+        position.y = nposition.y - amount
+        position.x = nposition.x + amount
     return position
 def updateTile(pos, tile):
     """ Send the update to a tile to all who can see the position.

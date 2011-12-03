@@ -36,7 +36,7 @@ class Position(object):
         return (self.x != other.x or self.y != other.y or self.z != other.z or (self.stackpos and self.stackpos != other.stackpos))
         
     def copy(self):
-        return Position(self.x, self.y, self.z, self.instanceId)
+        return Position(self.x, self.y, self.z, self.stackpos, self.instanceId)
     
     def inRange(self, other, x, y, z=0):
         return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
@@ -61,19 +61,45 @@ class Position(object):
                 raise game.errors.PositionNegative("Position.z is negative")
             
         object.__setattr__(self, name, val)
+
+    # Support for the old behavior of list attributes.
+    def __setitem__(self, key, value):
+        if key == 0:
+            self.x = value
+        elif key == 1:
+            self.y = value
+        elif key == 2:
+            self.z = value
+        else:
+            raise IndexError("Position doesn't support being treated like a list with the key == %s" % key)
+        
+    def __getitem__(self, key):
+        if key == 0:
+            return self.x
+        elif key == 1:
+            return self.y
+        elif key == 2:
+            return self.z
+            
+        raise IndexError("Position have no key == %s" % key)
+
+    # Simplifier
+    def getTile(self):
+        return getTile(self)
         
 def getTile(pos):
-    iX = int(pos[0] / 32)
-    iY = int(pos[1] / 32)
-    pX = pos[0] -iX * 32
-    pY = pos[1] -iY * 32
+    x,y,z = pos.x, pos.y, pos.z
+    iX = int(x / 32)
+    iY = int(y / 32)
+    pX = x -iX * 32
+    pY = y -iY * 32
     sectorSum = (iX * 32768) + iY
     try:
-        return knownMap[sectorSum][pos[2]][pX][pY]
+        return knownMap[sectorSum][z][pX][pY]
     except:
-        if loadTiles(pos[0], pos[1]):
+        if loadTiles(x, y):
             try:
-                return knownMap[sectorSum][pos[2]][pX][pY]
+                return knownMap[sectorSum][z][pX][pY]
             except:
                 return None
 
@@ -323,15 +349,17 @@ houseDoors = {}
 
 # Ops codes
 class S(object):
-    __slots__ = ('base', 'radius')
+    __slots__ = ('x', 'y', 'radius')
     
     def __init__(self, x, y, z=None, radius=5): # z isn't used.
-        self.base = (x,y) # Constant
+        self.x = x # Constant
+        self.y = y
+        
         self.radius = radius
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.monster.getMonster(name).spawn(Position(self.x+x, self.y+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
@@ -341,7 +369,7 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn(Position(self.x+x, self.y+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)

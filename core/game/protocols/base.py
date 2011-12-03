@@ -92,9 +92,9 @@ class BasePacket(TibiaPacket):
         step = -1
 
         # Lower then ground level
-        if position[2] > 7:
-            start = position[2] - 2
-            end = min(15, position[2] + 2) # Choose the smallest of 15 and z + 2
+        if position.z > 7:
+            start = position.z - 2
+            end = min(15, position.z + 2) # Choose the smallest of 15 and z + 2
             step = 1
 
         # Run the steps by appending the floor
@@ -109,7 +109,7 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, position, width, height, offset, skip, player=None):
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = sys.modules["game.map"].getTile((position[0] + x + offset, position[1] + y + offset, position[2]))
+                tile = game.map.getTile(game.map.Position(position[0] + x + offset, position[1] + y + offset, position[2]))
 
                 if tile and tile.things:
                     if skip >= 0:
