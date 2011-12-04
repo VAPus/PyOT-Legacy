@@ -669,7 +669,7 @@ class Creature(object):
             raise game.errors.ImpossibleMove()
         
         removeCreature(self, oldPosition)
-        self.position = list(position) 
+        self.position = position
         if self.creatureType == 0 and self.client:
             stream = self.packet()
             try:
@@ -678,7 +678,7 @@ class Creature(object):
                 pass # Just append
             stream.uint8(0x64)
             stream.position(position)
-            stream.mapDescription((position.x - 8, position.y - 6, position.z), 18, 14, self)
+            stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
             #stream.magicEffect(position, 0x02)
             stream.send(self.client)
         

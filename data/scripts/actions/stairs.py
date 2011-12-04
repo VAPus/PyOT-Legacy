@@ -139,21 +139,27 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
     try:
         destThing = destTile.getThing(1)
         # Note: It's the reverse direction
+        # Temp fix for the branch "refactor-position-and-introduce-instances"
         if destThing.floorchange == "north":
-            creature.move(SOUTH, level=1)
+            #creature.move(SOUTH, level=1)
+            pos.y += 1
             
         elif destThing.floorchange == "south":
-            creature.move(NORTH, level=1)
+            #creature.move(NORTH, level=1)
+            pos.y -= 1
             
         elif destThing.floorchange == "west":
-            creature.move(EAST, level=1)
+            #creature.move(EAST, level=1)
+            pos.x += 1
             
         elif destThing.floorchange == "east":
-            creature.move(WEST, level=1)
+            #creature.move(WEST, level=1)
+            pos.x -= 1
             
-        else:
-            creature.teleport(pos)
+        #else:
+        creature.teleport(pos)
     except:
+        raise
         pass
     
 # Stairs

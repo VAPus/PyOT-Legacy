@@ -263,7 +263,6 @@ def autoWalkCreature(creature, callback=None):
     try:
         creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
     except:
-        raise
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
         pos[2] += 1

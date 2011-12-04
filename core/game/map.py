@@ -93,7 +93,12 @@ class Position(object):
         
     def __setstate__(self, data):
         self.x, self.y, self.z, self.stackpos, self.instanceId = data
-        
+
+    def __str__(self):
+        if not self.instanceId:
+            return "[%d, %d, %d]" % (self.x, self.y, self.z)
+        else:
+            return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
 def getTile(pos):
     x,y,z = pos.x, pos.y, pos.z
     iX = int(x / 32)
