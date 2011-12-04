@@ -398,7 +398,7 @@ class Creature(object):
                 try:
                     self.teleport(item.teledest)
                 except:
-                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
+                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
 
         
