@@ -19,24 +19,23 @@ def __uid():
         idsTaken += 1
         yield idsTaken
 instanceId = __uid().next
-    
+
 class Position(object):
-    __slots__ = ('x', 'y', 'z', 'stackpos', 'instanceId')
-    def __init__(self, x, y, z=7, stackpos=0, instanceId=0):
+    __slots__ = ('x', 'y', 'z', 'instanceId')
+    def __init__(self, x, y, z=7, instanceId=None):
         self.x = x
         self.y = y
         self.z = z
         self.instanceId = instanceId
-        self.stackpos = stackpos
         
     def __eq__(self, other):
-        return (self.x == other.x and self.y == other.y and self.z == other.z and (not self.stackpos or self.stackpos == other.stackpos))
+        return (self.x == other.x and self.y == other.y and self.z == other.z)
         
     def __ne__(self, other):
-        return (self.x != other.x or self.y != other.y or self.z != other.z or (self.stackpos and self.stackpos != other.stackpos))
+        return (self.x != other.x or self.y != other.y or self.z != other.z)
         
     def copy(self):
-        return Position(self.x, self.y, self.z, self.stackpos, self.instanceId)
+        return Position(self.x, self.y, self.z, self.instanceId)
     
     def inRange(self, other, x, y, z=0):
         return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
@@ -89,16 +88,43 @@ class Position(object):
     
     # For savings
     def __getstate__(self):
-        return (self.x, self.y, self.z, self.stackpos, self.instanceId)
-        
+            return (self.x, self.y, self.z, self.instanceId)
+            
     def __setstate__(self, data):
-        self.x, self.y, self.z, self.stackpos, self.instanceId = data
+        self.x, self.y, self.z, self.instanceId = data
 
     def __str__(self):
         if not self.instanceId:
             return "[%d, %d, %d]" % (self.x, self.y, self.z)
         else:
             return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
+
+class StackPosition(Position):
+    __slots__ = ('stackpos',)
+    
+    def __init__(self, x, y, z=7, stackpos=None, instanceId=None):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.stackpos = stackpos
+        self.instanceId = instanceId
+
+    # For savings
+    def __getstate__(self):
+            return (self.x, self.y, self.z, self.stackpos, self.instanceId)
+            
+    def __setstate__(self, data):
+        self.x, self.y, self.z, self.stackpos, self.instanceId = data
+
+    def __str__(self):
+        if not self.instanceId:
+            return "[%d, %d, %d - stack %d]" % (self.x, self.y, self.z, self.stackpos)
+        else:
+            return "[%d, %d, %d - instance %d, stack - %d]" % (self.x, self.y, self.z, self.instanceId, self.stackpos)
+
+    def getThing(self):
+        self.getTile().getThing(self.stackpos)
+        
 def getTile(pos):
     x,y,z = pos.x, pos.y, pos.z
     iX = int(x / 32)
