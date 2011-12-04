@@ -9,7 +9,7 @@ CONSTRUCTIONS = {\
 6114: 6109, 6115: 6111, 6372: 6356, 6373: 6371, 8692: 8688, 9974: 9975
 }
 
-def onUse(creature, thing, position, stackpos, **k):
+def onUse(creature, thing, position, **k):
     if position.x == INVENTORY_POSITION:
         creature.cancelMessage("Put the construction kit on the floor first.")
     elif not getHouseByPos(position):

@@ -1,4 +1,4 @@
-def writable(creature, thing, position, stackpos, **k):
+def writable(creature, thing, position, **k):
     windowId = creature.textWindow(thing, True, thing.maxTextLen or 0xFF, thing.text if thing.text else "", thing.writtenBy if thing.writtenBy else "", thing.written if thing.written else "") 
 
     # Function for the writeback
@@ -12,7 +12,7 @@ def writable(creature, thing, position, stackpos, **k):
         transformTo = thing.writeOnceItemId
         if transformTo:
             thing.itemId = transformTo
-            creature.replaceItem(position, stackpos, thing)
+            creature.replaceItem(position, thing)
     
     creature.setWindowHandler(windowId, writeback)
     

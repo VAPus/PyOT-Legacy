@@ -62,7 +62,7 @@ reg("talkactionFirstWord", 'speed', speedsetter)
 
 
 # First use of actions :p
-def testContainer(creature, thing, position, stackpos, index):
+def testContainer(creature, thing, position, index):
     if thing.owners and creature not in thing.owners: # Prevent people to open owned things
         return
         

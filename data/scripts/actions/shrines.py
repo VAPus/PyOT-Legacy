@@ -32,9 +32,9 @@ SMALL_EMERALD: ENCHANTED_SMALL_EMERALD,
 SMALL_AMETHYST: ENCHANTED_SMALL_AMETHYST
 }
 
-def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == HOTA_WEAK and thing.itemId == SMALL_RUBY:
-        creature.modifyItem(thing, position, stackpos, -1)
+        creature.modifyItem(thing, position, -1)
         onThing.transform(HOTA_FULL, onPosition)
         magicEffect(onPosition, EFFECT_MAGIC_RED)
         return True

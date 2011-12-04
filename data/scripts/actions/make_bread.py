@@ -9,16 +9,16 @@ OVEN_ON = (1786, 1788, 1790, 1792, 6356, 6358, 6360, 6362)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if thing.itemId == ITEM_WHEAT and onThing.itemId in ITEM_MILL:
         creature.addItem(Item(ITEM_FLOUR))
-        creature.modifyItem(thing, position, stackpos, -1)
+        creature.modifyItem(thing, position, -1)
         return True
     elif thing.itemId == ITEM_FLOUR and onThing.type == TYPE_WATER:
         creature.addItem(Item(ITEM_DOUGH))
         onThing.type = TYPE_EMPTY
-        creature.modifyItem(thing, position, stackpos, -1)
+        creature.modifyItem(thing, position, -1)
         return True
     elif thing.itemId == ITEM_DOUGH and onThing.itemId in OVEN_ON:
         creature.addItem(Item(ITEM_BREAD))
-        creature.modifyItem(thing, position, stackpos, -1)
+        creature.modifyItem(thing, position, -1)
         return True
     return False
 

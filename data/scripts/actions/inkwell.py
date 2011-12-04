@@ -1,7 +1,7 @@
 # Autoconverted script for PyOT
 # Untested. Please remove this message when the script is working properly!
 
-def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     random = random.randint(1, 2)
     if onThing.itemId == 7528:
         onThing.transform(7529, onPosition)
