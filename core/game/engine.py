@@ -134,6 +134,7 @@ def loader(timer):
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
     __builtin__.Position = game.map.Position
+    __builtin__.StackPosition = game.map.StackPosition
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     

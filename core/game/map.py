@@ -99,6 +99,9 @@ class Position(object):
         else:
             return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
 
+    def setStackpos(self, x):
+        return StackPosition(self.x, self.y, self.z, x, self.instanceId)
+        
 class StackPosition(Position):
     __slots__ = ('stackpos',)
     
@@ -124,6 +127,9 @@ class StackPosition(Position):
 
     def getThing(self):
         self.getTile().getThing(self.stackpos)
+
+    def setStackpos(self, x):
+        self.stackpos = x
         
 def getTile(pos):
     x,y,z = pos.x, pos.y, pos.z

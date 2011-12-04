@@ -1,6 +1,6 @@
 from twisted.internet.defer import inlineCallbacks, Deferred
 from game.engine import getSpectators, getPlayers
-from game.map import placeCreature, removeCreature, getTile, Position
+from game.map import placeCreature, removeCreature, getTile, Position, StackPosition
 from twisted.python import log
 import threading
 import game.enum as enum

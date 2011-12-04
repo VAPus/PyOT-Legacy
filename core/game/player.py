@@ -285,11 +285,14 @@ class Player(Creature):
     def freeCapasity(self):
         return max(self.data["capasity"] - self.inventoryWeight, 0)
         
-    def findItem(self, position, stackpos=1, sid=None):
+    def findItem(self, position, sid=None):
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                return game.map.getTile(position).getThing(stackpos)
+                if isinstance(position, StackPosition):
+                    return position.getThing()
+                else:
+                    raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
             
             # Option 2, the inventory
             elif position.y < 64:
@@ -313,12 +316,16 @@ class Player(Creature):
             except:
                 return None
             
-    def findItemWithPlacement(self, position, stackpos=1, sid=None):
+    def findItemWithPlacement(self, position, sid=None):
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                return (0, game.map.getTile(position).getThing(stackpos), game.map.getTile(position)) if isinstance(game.map.getTile(position).getThing(stackpos), game.item.Item) else None
-            
+                if isinstance(position, StackPosition):
+                    thing = position.getThing()
+                    return (0, thing, position.getTile()) if isinstance(thing, game.item.Item) else None
+                else:
+                    raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
+                
             # Option 2, the inventory
             elif position.y < 64:
                 return (1, self.inventory[position.y-1]) if self.inventory[position.y-1] else None
@@ -436,12 +443,12 @@ class Player(Creature):
             stream.send(self.client)
             return newItem
 
-    def replaceItem(self, position, stackpos, item):
+    def replaceItem(self, position, item):
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                tile = game.map.getTile(position)
-                tile.things[stackpos] = item
+                tile = position.getTile()
+                tile.things[position.stackpos] = item
                 game.engine.updateTile(position, tile)
                 
             # Option 2, the inventory
@@ -501,22 +508,22 @@ class Player(Creature):
                     stream.updateContainerItem(position.y - 64, position.z, item)
                     stream.send(self.client)
                     
-    def modifyItem(self, thing, position, stackpos, mod):
+    def modifyItem(self, thing, position, mod):
         try:
             thing.count += mod
         except:
             pass
         
         if thing.count > 0:
-            self.replaceItem(position, stackpos, thing)
+            self.replaceItem(position, thing)
         else:
-            self.removeItem(position, stackpos)
+            self.removeItem(position)
                 
-    def removeItem(self, position, stackpos):
+    def removeItem(self, position):
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                tile = game.map.getTile(position)
+                tile = position.getTile()
                 del tile.things[stackpos]
                 game.engine.updateTile(position, tile)
                 
@@ -1046,7 +1053,7 @@ class Player(Creature):
             except:
                 pass
         
-        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=[0xFFFF, 0, 0], stackpos=0, index=index)
+        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
         
         game.scriptsystem.get('close').run(container, self, callOpen, index=index)
 
@@ -1726,7 +1733,7 @@ class Player(Creature):
             elif channelType == game.enum.MSG_CHANNEL:
                 self.channelMessage(text, "MSG_CHANNEL", channelId)
             
-            elif channelType == game.enum.MSG_PRIVATE_TO:
+            #elif channelType == game.enum.MSG_PRIVATE_TO:
                 self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
                 
             for creature in game.engine.getCreatures(self.position):

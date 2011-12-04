@@ -99,7 +99,7 @@ The events are:
            
         reg("talkactionFirstWord", "!repeater", onSay)
         
-.. function:: use(creature, thing, position, stackpos, index)
+.. function:: use(creature, thing, position, index)
 
     Called when a thing is used and the creature is max 1 square away from it. This is called AFTER farUse. (ThingScript)
     
@@ -126,7 +126,7 @@ The events are:
            
         reg("use", 1234, onUse)
         
-.. function:: farUse(creature, thing, position, stackpos, index)
+.. function:: farUse(creature, thing, position, index)
 
     Called when a thing is used. This is called BEFORE use. (ThingScript)
     
@@ -152,7 +152,7 @@ The events are:
            
         reg("farUse", 1234, onUse)
         
-.. function:: useWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos)
+.. function:: useWith(creature, thing, position, onThing, onPosition, onStackpos)
 
     Called when a thing is used and the thing is 1 square or less away from the creature. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. (ThingScript)
     
@@ -203,7 +203,7 @@ The events are:
 
         reg('useWith', keys, onUseKey)
         
-.. function:: farUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos)
+.. function:: farUseWith(creature, thing, position, onThing, onPosition, onStackpos)
 
     Called when a thing is used. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. And it's called BEFORE useWith. (ThingScript)
     
@@ -345,7 +345,7 @@ The events are:
             
         reg("preWalkOn", 1234, tileCheck)
         
-.. function:: lookAt(creature, thing, position, stackpos)
+.. function:: lookAt(creature, thing, position)
 
     Called when a player looks at a thing. (ThingScript)
     
@@ -446,9 +446,9 @@ The events are:
 
     Called when creature target creature2, attack=True if the creature intend to attack it, false otherwise (follow etc). (CreatureScript)
 
-.. function:: rotate(creature, thing, position, stackpos)
+.. function:: rotate(creature, thing, position)
 
-    Called when creature tries to rotate ``thing`` on ``position`` with ``stackpos``. (ThingScript)
+    Called when creature tries to rotate ``thing`` on ``position``. (ThingScript)
 
     :returns: ``False`` prevent the rotation of the thing.
 

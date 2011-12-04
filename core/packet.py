@@ -78,7 +78,7 @@ class TibiaPacketReader(object):
         return game.map.Position(self.uint16(), self.uint16(), self.uint8())
         
     def stackPosition(self):
-        return game.map.Position(self.uint16(), self.uint16(), self.uint8(), self.uint8())
+        return game.map.StackPosition(self.uint16(), self.uint16(), self.uint8(), self.uint8())
         
 class TibiaPacket(object):
     __slots__ = ('bytes')

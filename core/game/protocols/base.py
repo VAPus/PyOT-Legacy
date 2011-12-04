@@ -786,8 +786,8 @@ class BaseProtocol(object):
                     _items_ = thisTile.getItems()
                     count = len(_items_) * 2
                     for item in _items_:
-                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onStackpos=None, onThing=newItem)
-                        yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, stackpos=None, onPosition=toPosition, onStackpos=None, onThing=item)
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=newItem)
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
                     if process[0] == count:
                         if newItem.decayPosition:
                             newItem.decayPosition = toPosition
@@ -910,10 +910,10 @@ class BaseProtocol(object):
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
-        print game.map.getHouseId(position)
+        stackPosition = position.setStackpos(stackpos)
         
         if position.x == 0xFFFF:
-            thing = player.findItem(position, stackpos)
+            thing = player.findItem(stackPosition)
         elif stackpos == 0 and clientId == 99:
             try:
                 thing = game.map.getTile(position).creatures()[0]
@@ -921,7 +921,7 @@ class BaseProtocol(object):
                 player.notPossible()
                 return
         else:
-            thing = player.findItem(position, stackpos)     
+            thing = player.findItem(stackPosition)     
             if not thing or thing.cid != clientId:
                 for thing2 in game.map.getTile(position).things:
                     if thing2.cid == clientId:
@@ -942,7 +942,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
                     else:
                         player.message(thing.description(), 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=position, stackpos=stackpos)
+            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=stackPosition)
         else:
             player.notPossible()
 
@@ -964,7 +964,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 game.engine.transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').run(item, player, end, position=position, stackpos=stackpos)
+            game.scriptsystem.get('rotate').run(item, player, end, position=position.setStackpos(stackpos))
             
         
     def handleSetOutfit(self, player, packet):
@@ -991,13 +991,14 @@ class BaseProtocol(object):
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         index = packet.uint8()
-        thing = player.findItem(position, stackpos)
+        stackPosition = position.setStackpos(stackpos)
+        thing = player.findItem(stackPosition)
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             end = None
             if position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1):
-                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
-            game.scriptsystem.get('farUse').run(thing, player, end, position=position, stackpos=stackpos, index=index)
+                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+            game.scriptsystem.get('farUse').run(thing, player, end, position=stackPosition, index=index)
             
 
     def handleUseWith(self, player, packet):
@@ -1008,19 +1009,24 @@ class BaseProtocol(object):
         onPosition = packet.position()
         onStack = packet.uint8()
         
-        thing = player.findItem(position, stackpos)
+        stackPosition1 = position.setStackpos(stackpos)
+        stackPosition2 = onPosition.setStackpos(onStack)
+        
+        thing = player.findItem(stackPosition1)
         if onStack != 99:
-            onThing = player.findItem(onPosition, onStack)
+            onThing = player.findItem(stackPosition2)
         else:
             onThing = game.map.getTile(onPosition).creatures()[0]
         
+        
+        
         if thing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if (position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (onPosition.x == 0xFFFF or (abs(onPosition.x - player.position.x) <= 1 and abs(onPosition.y - player.position.y) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 
-            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):
@@ -1215,7 +1221,7 @@ class BaseProtocol(object):
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description() + extra, 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=(0xFFFE, counter, 0), stackpos=stackpos)
+            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
             
     def handleAcceptTrade(self, player, packet):
         if player.isTradingWith.tradeAccepted:
@@ -1260,7 +1266,7 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
         hotkey = fromPosition.x == 0xFFFF and not fromPosition.y
-
+        stackPosition = position.setStackpos(stackpos)
         # Is hotkeys allowed?
         if not config.enableHotkey:
             return player.cancelMessage("Hotkeys are disabled.")
@@ -1270,7 +1276,7 @@ class BaseProtocol(object):
             return player.cancelMessage("Target is too far away.")
         
         if not hotkey:
-            thing = player.findItem(fromPosition, stackpos)
+            thing = player.findItem(stackPosition)
         else:
             itemId = game.item.sid(clientItemId)
             thing = player.findItemById(itemId)
@@ -1289,12 +1295,13 @@ class BaseProtocol(object):
                 player.message("Using one of %d %s..." % (count, thing.rawName()))
         
         if thing:
+            creatureStackPosition = creature.position.setStackpos(creature.position.getTile().findCreatureStackpos(creature))
             if (hotkey or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (creature.position.x == 0xFFFF or (abs(creature.position.x - player.position.x) <= 1 and abs(creature.position.y - player.position.y) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
                 
-            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
 
         
             
