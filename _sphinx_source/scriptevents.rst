@@ -109,8 +109,6 @@ The events are:
     :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
-    :param stackpos: The position in the tile stack the thing have.
-    :type stackpos: :func:`int`
     :param index: If the item was called inside a container, this is the position in the container stack.
     :type index: :func:`int`    
     :returns: Have no meaning.
@@ -136,8 +134,6 @@ The events are:
     :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
-    :param stackpos: The position in the tile stack the thing have.
-    :type stackpos: :func:`int`
     :param index: If the item was called inside a container, this is the position in the container stack.
     :type index: :func:`int`    
     :returns: ``False`` will prevent the use events from running.
@@ -152,7 +148,7 @@ The events are:
            
         reg("farUse", 1234, onUse)
         
-.. function:: useWith(creature, thing, position, onThing, onPosition, onStackpos)
+.. function:: useWith(creature, thing, position, onThing, onPosition)
 
     Called when a thing is used and the thing is 1 square or less away from the creature. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. (ThingScript)
     
@@ -162,15 +158,11 @@ The events are:
     :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
-    :param stackpos: The position in the tile stack the thing have.
-    :type stackpos: :func:`int`
     
     :param onThing: The thing that the ``thing``` was used against.
     :type onThing: :class:`game.item.Item` or :class:`game.creature.Creature`
     :param onPosition: The positon the ``onThing`` have.
     :type onPosition: :func:`list`
-    :param onStackpos: The position in the tile stack the ``onThing`` have.
-    :type onStackpos: :func:`int`
     
     :returns: Have no meaning.
     
@@ -203,7 +195,7 @@ The events are:
 
         reg('useWith', keys, onUseKey)
         
-.. function:: farUseWith(creature, thing, position, onThing, onPosition, onStackpos)
+.. function:: farUseWith(creature, thing, position, onThing, onPosition)
 
     Called when a thing is used. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. And it's called BEFORE useWith. (ThingScript)
     
@@ -213,15 +205,11 @@ The events are:
     :type thing: usually :class:`game.item.Item`
     :param position: The positon the thing have.
     :type position: :func:`list`
-    :param stackpos: The position in the tile stack the thing have.
-    :type stackpos: :func:`int`
     
     :param onThing: The thing that the ``thing``` was used against.
     :type onThing: :class:`game.item.Item` or :class:`game.creature.Creature`
     :param onPosition: The positon the ``onThing`` have.
     :type onPosition: :func:`list`
-    :param onStackpos: The position in the tile stack the ``onThing`` have.
-    :type onStackpos: :func:`int`
     
     :returns: Have no meaning.
     
@@ -355,8 +343,6 @@ The events are:
     :type thing: :class:`game.item.Item` or :class:`game.creature.Creature`
     :param position: The positon the thing have.
     :type position: :func:`list`
-    :param stackpos: The position in the tile stack the thing have.
-    :type stackpos: :func:`int`
  
     :returns: Return False prevents the default behavior.
     
