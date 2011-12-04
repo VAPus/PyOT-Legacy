@@ -5,18 +5,18 @@ ladders = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 
 ropes = 2120, 7731
 
 def onUse(creature, position, onThing, onPosition, **k):
-    if onPosition[0] == 0xFFFF:
+    if onPosition.x == 0xFFFF:
         creature.notPossible()
         return
 
-    newPos = onPosition[:]
+    newPos = onPosition.copy()
     if onThing in ropeSpots:
-        newPos[1] += 1
-        newPos[2] -= 1
+        newPos.y += 1
+        newPos.z -= 1
         creature.teleport(newPos)
     elif onThing in openedHoles or onThing in openTraps or onThing in ladders:
-        newPos[2] += 1
-        newPos[1] += 1
+        newPos.z += 1
+        newPos.y += 1
         downThing = getTile(newPos).getThing(0)
         if downThing:
             creature.teleport(newPos)

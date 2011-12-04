@@ -37,16 +37,16 @@ def calculateAreaDirection(position, direction, area):
                         continue
 
                 if direction == 0: # North:
-                    pos = [position[0] - xp, position[1] - yp, position[2]] # Our new position
+                    pos = game.map.Position(position.x - xp, position.y - yp, position.z) # Our new position
                     
                 elif direction == 1: # East
-                    pos = [position[0] + yp, position[1] + xp, position[2]] # Our new position
+                    pos = game.map.Position(position.x + yp, position.y + xp, position.z) # Our new position
                     
                 elif direction == 2: # South
-                    pos = [position[0] + xp, position[1] + yp, position[2]] # Our new position
+                    pos = game.map.Position(position.x + xp, position.y + yp, position.z) # Our new position
                     
                 elif direction == 3: # West
-                    pos = [position[0] - yp, position[1] - xp, position[2]] # Our new position
+                    pos = game.map.Position(position.x - yp, position.y - xp, position.z) # Our new position
                     
                 if xp > maxEntry: # Determin this as our new min/max
                     maxEntry = xp
@@ -82,10 +82,10 @@ def calculateAreaDirection(position, direction, area):
                     
     elif area[0] == game.enum.TARGET_CASTER_AREA:
         for a in area[1:]:
-            x = position[0] - a[0]
-            y = position[1] - a[1]
+            x = position.x - a[0]
+            y = position.y - a[1]
            
-            positions.append([x,y, position[2]])
+            positions.append(Position(x,y, position.z))
                   
 
     return positions

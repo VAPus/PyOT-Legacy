@@ -10,7 +10,7 @@ CONSTRUCTIONS = {\
 }
 
 def onUse(creature, thing, position, stackpos, **k):
-    if position[0] == INVENTORY_POSITION:
+    if position.x == INVENTORY_POSITION:
         creature.cancelMessage("Put the construction kit on the floor first.")
     elif not getHouseByPos(position):
         creature.cancelMessage("You may construct this only inside a house.")
