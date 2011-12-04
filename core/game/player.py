@@ -1554,12 +1554,14 @@ class Player(Creature):
             
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
-        if self.saveData or extra: # Don't save if we 1. Change position, or 2. Just have stamina countdown
+        if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
             return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])
 
     def save(self, force=False):
         if self.doSave:
-            sql.conn.runOperation(*self._saveQuery(force))
+            argc = self._saveQuery(force)
+            if argc:
+                sql.conn.runOperation(*argc)
 
     def saveSkills(self):
         sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))

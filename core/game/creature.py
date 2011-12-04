@@ -1,6 +1,6 @@
 from twisted.internet.defer import inlineCallbacks, Deferred
 from game.engine import getSpectators, getPlayers
-from game.map import placeCreature, removeCreature, getTile
+from game.map import placeCreature, removeCreature, getTile, Position
 from twisted.python import log
 import threading
 import game.enum as enum
@@ -222,27 +222,27 @@ class Creature(object):
         # Recalculate position
         position = oldPosition.copy()
         if direction == 0:
-            position.y = oldPosition.y - 1
+            position.y -= 1
         elif direction == 1:
-            position.x = oldPosition.x + 1
+            position.x += 1
         elif direction == 2:
-            position.y = oldPosition.y + 1
+            position.y += 1
         elif direction == 3:
-            position.x = oldPosition.x - 1
+            position.x -= 1
         elif direction == 4:
-            position.y = oldPosition.y + 1
-            position.x = oldPosition.x - 1
+            position.y += 1
+            position.x -= 1
         elif direction == 5:
-            position.y = oldPosition.y + 1
-            position.x = oldPosition.x + 1
+            position.y += 1
+            position.x += 1
         elif direction == 6:
-            position.y = oldPosition.y - 1
-            position.x = oldPosition.x - 1
+            position.y -= 1
+            position.x -= 1
         elif direction == 7:
-            position.y = oldPosition.y - 1
-            position.x = oldPosition.x + 1
+            position.y -= 1
+            position.x += 1
 
-        position.z = oldPosition.z + level
+        position.z += level
 
         # We don't walk out of the map!
         if position.x < 1 or position.y < 1 or position.x > data.map.info.width or position.y > data.map.info.height:
@@ -646,7 +646,7 @@ class Creature(object):
             return False"""
             
         # 4 steps, remove item (creature), send new map and cords, and effects
-        oldPosition = self.position[:]
+        oldPosition = self.position.copy()
         
         newTile = getTile(position)
         oldPosCreatures = set()
@@ -826,27 +826,27 @@ class Creature(object):
         return ( abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= y )   
     
     def positionInDirection(self, direction):
-        position = self.position[:] # Important not to remove the : here, we don't want a reference!
+        position = self.position.copy()
         if direction == 0:
-            position.y = self.position.y - 1
+            position.y -= 1
         elif direction == 1:
-            position.x = self.position.x + 1
+            position.x += 1
         elif direction == 2:
-            position.y = self.position.y + 1
+            position.y += 1
         elif direction == 3:
-            position.x = self.position.x - 1
+            position.x -= 1
         elif direction == 4:
-            position.y = self.position.y + 1
-            position.x = self.position.x - 1
+            position.y += 1
+            position.x -= 1
         elif direction == 5:
-            position.y = self.position.y + 1
-            position.x = self.position.x + 1
+            position.y += 1
+            position.x += 1
         elif direction == 6:
-            position.y = self.position.y - 1
-            position.x = self.position.x - 1
+            position.y -= 1
+            position.x -= 1
         elif direction == 7:
-            position.y = self.position.y - 1
-            position.x = self.position.x + 1
+            position.y -= 1
+            position.x += 1
         return position
 
     # Personal vars

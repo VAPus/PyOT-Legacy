@@ -263,6 +263,7 @@ def autoWalkCreature(creature, callback=None):
     try:
         creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
     except:
+        raise
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
         pos[2] += 1
@@ -307,16 +308,15 @@ def handleAutoWalking(creature, callback=None, level=0):
         return
         
     direction = creature.walkPattern.popleft()
-    currPos = creature.position[:]
+
     mcallback=callback
     if creature.walkPattern:
         def mcallback(ret):
             creature2, oldPos, newPos = ret
-            if oldPos == currPos:
-                try:
-                    creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
-                except IndexError:
-                    return
+            try:
+                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
+            except IndexError:
+                return
                     
     d = Deferred()
     if mcallback:
@@ -957,7 +957,7 @@ def getHouseByPos(pos):
 def fastPickler(obj):
     file = StringIO()
     p = pickle.Pickler(file, 2)
-    p.fast = True
+    #p.fast = True
     p.dump(obj)
     return file.getvalue()  
     

@@ -245,7 +245,7 @@ class Item(object):
         
         # Store position:
         self.decayPosition = position
-        if position[0] == 0xFFFF:
+        if position.x == 0xFFFF:
             self.decayCreature = creature
         def executeDecay():
             try:
@@ -260,9 +260,9 @@ class Item(object):
                     self.decayCreature.addCache(self)
                     
                     # We can assume the bag is open. And the inventory is always visible.
-                    if position[1] < 64:
+                    if position.y < 64:
                         stream = self.decayCreature.packet()
-                        stream.addInventoryItem(position[1], self)
+                        stream.addInventoryItem(position.y, self)
                         stream.send(self.decayCreature.client)
                     else:
                         self.decayCreature.updateAllContainers()
@@ -336,7 +336,7 @@ class Item(object):
         return newItem
         
     def transform(self, toId, position, stackPos=None):
-        if position[0] != 0xFFFF:
+        if position.x != 0xFFFF:
             import game.map
             tile = game.map.getTile(position)
             if not stackPos:

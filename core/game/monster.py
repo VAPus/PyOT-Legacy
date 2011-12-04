@@ -32,7 +32,7 @@ class Monster(Creature):
         Creature.__init__(self, base.data.copy(), position, cid)
         self.base = base
         self.creatureType = 1
-        self.spawnPosition = position[:]
+        self.spawnPosition = position.copy()
         self.lastStep = 0
         self.speed = float(self.base.speed)
         self.lastMelee = 0
@@ -544,8 +544,8 @@ class MonsterBrain(object):
                 
     def walkRandomStep(self, monster, badDir=None):
         # How far are we (x,y) from our spawn point?
-        xFrom = monster.position[0]-monster.spawnPosition[0]
-        yFrom = monster.position[1]-monster.spawnPosition[1]
+        xFrom = monster.position.x-monster.spawnPosition.x
+        yFrom = monster.position.y-monster.spawnPosition.y
         
         steps = [0,1,2,3]
         if badDir == None:
@@ -559,16 +559,16 @@ class MonsterBrain(object):
                 continue
             
             # Prevent us from autowalking futher then 5 steps
-            if step == 0 and monster.radiusTo[1]-(monster.position[1]-1) > monster.radius:
+            if step == 0 and monster.radiusTo[1]-(monster.position.y-1) > monster.radius:
                 continue
                 
-            elif step == 1 and (monster.position[0]+1)-monster.radiusTo[0] > monster.radius:
+            elif step == 1 and (monster.position.x+1)-monster.radiusTo[0] > monster.radius:
                 continue
                 
-            elif step == 2 and (monster.position[1]+1)-monster.radiusTo[1] > monster.radius:
+            elif step == 2 and (monster.position.x+1)-monster.radiusTo[1] > monster.radius:
                 continue
                 
-            elif step == 3 and monster.radiusTo[0]-(monster.position[0]-1) > monster.radius:
+            elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
                 continue
             
             elif monster.target and enine.positionInDirection(monster.position, step) == monster.target.position:

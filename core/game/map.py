@@ -41,7 +41,7 @@ class Position(object):
     def inRange(self, other, x, y, z=0):
         return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
 
-    def __setattr__(self, name, val):
+    """def __setattr__(self, name, val):
         if name == 'x':
             if val > 0xFFFF:
                 raise game.errors.PositionOutOfRange("Position.x > 0xFFFF")
@@ -60,7 +60,7 @@ class Position(object):
             elif val < 0:
                 raise game.errors.PositionNegative("Position.z is negative")
             
-        object.__setattr__(self, name, val)
+        object.__setattr__(self, name, val)"""
 
     # Support for the old behavior of list attributes.
     def __setitem__(self, key, value):
@@ -86,6 +86,13 @@ class Position(object):
     # Simplifier
     def getTile(self):
         return getTile(self)
+    
+    # For savings
+    def __getstate__(self):
+        return (self.x, self.y, self.z, self.stackpos, self.instanceId)
+        
+    def __setstate__(self, data):
+        self.x, self.y, self.z, self.stackpos, self.instanceId = data
         
 def getTile(pos):
     x,y,z = pos.x, pos.y, pos.z
@@ -349,18 +356,16 @@ houseDoors = {}
 
 # Ops codes
 class S(object):
-    __slots__ = ('x', 'y', 'radius')
+    __slots__ = ('base', 'radius')
     
     def __init__(self, x, y, z=None, radius=5): # z isn't used.
-        self.x = x # Constant
-        self.y = y
+        self.base = (x, y) # Constant
         
         self.radius = radius
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn(Position(self.x+x, self.y+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-
+            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
                 
@@ -369,7 +374,7 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn(Position(self.x+x, self.y+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
@@ -467,6 +472,9 @@ def loadTiles(x,y, walk=True):
     
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]))
 
+def _l(code):
+    exec(code, {}, {"S":S})
+    
 def load(sectorX, sectorY):
     sectorSum = (sectorX * 32768) + sectorY
     
@@ -483,23 +491,22 @@ def load(sectorX, sectorY):
     t = time.time()
     
     # Attempt to load a cached file
-    # Comment out. Please find a way to also store the houseTiles data aswell.
     try:
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
             knownMap[sectorSum] = cPickle.loads(f.read())
     except:
         # Build cache data
-        # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
         with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
             knownMap[sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(game.engine.fastPickler(knownMap[sectorSum]))
+            f.write(cPickle.dumps(knownMap[sectorSum], 2))
             
     print "Loading took: %f" % (time.time() - t)
     
-    if 'l' in knownMap[sectorSum]:    
-        exec(knownMap[sectorSum]['l'], {}, {"S":S})
+    if 'l' in knownMap[sectorSum]:
+        reactor.callInThread(_l, knownMap[sectorSum]['l'])
+        
         
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
