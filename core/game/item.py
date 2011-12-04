@@ -225,8 +225,6 @@ class Item(object):
                     return None
 
     def decay(self, position, to=None, duration=None, callback=None, creature=None):
-        import game.map
-        
         if to == None:
             to = self.decayTo
         
@@ -335,12 +333,10 @@ class Item(object):
             pass
         return newItem
         
-    def transform(self, toId, position, stackPos=None):
+    def transform(self, toId, position):
         if position.x != 0xFFFF:
-            import game.map
-            tile = game.map.getTile(position)
-            if not stackPos:
-                stackPos = tile.findStackpos(self)
+            tile = position.getTile()
+            stackPos = tile.findStackpos(self)
 
             tile.removeItem(self)
             item = self
@@ -355,7 +351,7 @@ class Item(object):
                 stream = spectator.packet()
                 stream.removeTileItem(position, stackPos)
                 if toId:
-                    stream.addTileItem(position, stackPos, item)
+                    stream.addTileItem(position, newStackpos, item)
                     
                 stream.send(spectator)
         else:
@@ -363,7 +359,7 @@ class Item(object):
                 self = self.copy()
                 
             self.itemId = toId
-            self.inPlayer.replaceItem(position, None, self)
+            self.inPlayer.replaceItem(position, self)
             
 def cid(itemid):
     try:

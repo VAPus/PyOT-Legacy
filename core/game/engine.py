@@ -527,7 +527,7 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo, pos, stackPos=None):
+def transformItem(item, transformTo, pos):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
@@ -539,14 +539,12 @@ def transformItem(item, transformTo, pos, stackPos=None):
     :param pos: Position of the item.
     :type pos: List of tuple.
     
-    :param stackPos: StackPos (if it's known, otherwise it's autodetected internally).
-    :type stackPos: int.
     
     """
     
     tile = game.map.getTile(pos)
-    if not stackPos:
-        stackPos = tile.findStackpos(item)
+    if not isinstance(pos, game.map.StackPosition):
+        pos = pos.setStackpos(tile.findStackpos(item))
 
     tile.removeItem(item)
     if item.tileStacked:
@@ -558,13 +556,13 @@ def transformItem(item, transformTo, pos, stackPos=None):
 
     for spectator in getSpectators(pos):
         stream = spectator.packet()
-        stream.removeTileItem(pos, stackPos)
+        stream.removeTileItem(pos, pos.stackpos)
         if transformTo:
-            stream.addTileItem(pos, stackPos, item)
+            stream.addTileItem(pos, newStackpos, item)
             
         stream.send(spectator)
 
-def teleportItem(item, fromPos, toPos, fromStackPos=None):
+def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
     
     :param item: The item you want to transform.
@@ -576,8 +574,6 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     :param toPos: To this position
     :type toPos: :func:`tuple` or :func:`list`
     
-    :param fromStackPos: Stack`position (if it's known, otherwise it's autodetected internally).
-    :type fromStackPos: :func:`int`
     
     :rtype: :func:`int`
     :returns: New stack position
@@ -587,12 +583,13 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     if fromPos[0] != 0xFFFF:
         try:
             tile = game.map.getTile(fromPos)
-            if not fromStackPos:
-                fromStackPos = tile.findStackpos(item)
+            if not isinstance(fromPos, game.map.StackPosition):
+                fromPos = fromPos.setStackpos(tile.findStackpos(item))
+                
             tile.removeItem(item)
             for spectator in getSpectators(fromPos):
                 stream = spectator.packet()
-                stream.removeTileItem(fromPos, fromStackPos)
+                stream.removeTileItem(fromPos, fromPos.stackpos)
                 stream.send(spectator)
         except:
             pass
