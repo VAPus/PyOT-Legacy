@@ -357,7 +357,7 @@ The events are:
            
         reg("lookAt", 1234, lookAt)
 
-.. function:: postLoadSector(sector)
+.. function:: postLoadSector(sector, instanceId)
     
     Called when a map sector is loaded, sector is the 3 dimensional tuple Z -> X -> Y (TriggerScript)
     
