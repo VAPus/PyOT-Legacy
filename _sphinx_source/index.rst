@@ -28,7 +28,7 @@ The Future for PyOT
 * Better NPC framework
 * Even more configurable behavior
 * Core support for all client features
-* Support for scripted mapping (say you want to add a extra floor to houses using scripts)
+* Support for scripted mapping (say you want to add a extra floor to houses using scripts) [Done]
 * Finish a base of scripts that emulates the default behavior rather well (can also be configurable)
 * Document all features
 * Write a couple of pages on scripting
