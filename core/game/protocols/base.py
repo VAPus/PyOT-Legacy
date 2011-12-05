@@ -620,7 +620,7 @@ class BaseProtocol(object):
     @inlineCallbacks
     def handleMoveItem(self, player, packet):
         from game.item import Item, sid, items
-        fromPosition = packet.position()
+        fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
         if fromPosition.x != 0xFFFF:
@@ -629,7 +629,7 @@ class BaseProtocol(object):
         
         clientId = packet.uint16()
         fromStackPos = packet.uint8()
-        toPosition = packet.position()
+        toPosition = packet.position(player.position.instanceId)
         if toPosition.x != 0xFFFF:
             toMap = True
         
@@ -904,7 +904,7 @@ class BaseProtocol(object):
             
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         print "Look at"
         print position
         clientId = packet.uint16()
@@ -956,7 +956,7 @@ class BaseProtocol(object):
         del item
         
     def handleRotateItem(self, player, packet):
-        position = packet.position() # Yes, we don't support backpack rotations
+        position = packet.position(player.position.instanceId) # Yes, we don't support backpack rotations
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
@@ -986,7 +986,7 @@ class BaseProtocol(object):
             player.outfitWindow()
             
     def handleUse(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
 
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
@@ -1002,11 +1002,11 @@ class BaseProtocol(object):
             
 
     def handleUseWith(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         
-        onPosition = packet.position()
+        onPosition = packet.position(player.position.instanceId)
         onStack = packet.uint8()
         
         stackPosition1 = position.setStackpos(stackpos)
@@ -1039,7 +1039,7 @@ class BaseProtocol(object):
         player.setFollowTarget(cid)
         
     def handleUpdateTile(self, player, packet):
-        pos = packet.position()
+        pos = packet.position(player.position.instanceId)
         tile = getTile(pos)
         stream = player.packet(0x69)
         stream.position(pos)
@@ -1115,7 +1115,7 @@ class BaseProtocol(object):
         player.removeVip(packet.uint32())
         
     def handleRequestTrade(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         itemId = packet.uint16()
         stackpos = packet.uint8()
         player2 = game.engine.getCreatureByCreatureId(packet.uint32())
@@ -1261,7 +1261,7 @@ class BaseProtocol(object):
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
             
     def handleUseBattleWindow(self, player, packet):
-        fromPosition = packet.position()
+        fromPosition = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
         stackpos = packet.uint8()
         creature = game.engine.getCreatureByCreatureId(packet.uint32())

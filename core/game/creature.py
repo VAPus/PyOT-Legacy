@@ -800,7 +800,10 @@ class Creature(object):
         return # Is only executed on players
         
     def canSee(self, position, radius=(8,6)):
-        if self.position.z <= 7 and position.z > 7: # We are on ground level and we can't see underground
+        if self.position.instanceId != position.instanceId:
+            return False
+            
+        elif self.position.z <= 7 and position.z > 7: # We are on ground level and we can't see underground
             return False
                 
         elif self.position.z >= 8 and abs(self.position.z-position.z) > 2: # We are undergorund and we may only see 2 floors
@@ -812,6 +815,9 @@ class Creature(object):
         return False
 
     def canTarget(self, position, radius=(8,6), allowGroundChange=False):
+        if self.position.instanceId != position.instanceId:
+            return False
+            
         if allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
@@ -823,7 +829,7 @@ class Creature(object):
         return abs(self.position.x-position.x)+abs(self.position.y-position.y)
         
     def inRange(self, position, x, y, z=0):
-        return ( abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= y )   
+        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= y )   
     
     def positionInDirection(self, direction):
         position = self.position.copy()
@@ -1146,6 +1152,13 @@ class Creature(object):
         
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
+
+    # Instance
+    def setInstance(self, instanceId=None):
+        # Teleport to the same position within instance
+        newPosition = self.position.copy()
+        newPosition.instanceId = instanceId
+        self.teleport(instanceId)
         
 class Condition(object):
     def __init__(self, type, subtype="", ticks=1, per=1, *argc, **kwargs):

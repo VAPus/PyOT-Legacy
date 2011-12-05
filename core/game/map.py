@@ -29,16 +29,16 @@ class Position(object):
         self.instanceId = instanceId
         
     def __eq__(self, other):
-        return (self.x == other.x and self.y == other.y and self.z == other.z)
+        return (self.x == other.x and self.y == other.y and self.z == other.z and self.instanceId == other.instanceId)
         
     def __ne__(self, other):
-        return (self.x != other.x or self.y != other.y or self.z != other.z)
+        return (self.x != other.x or self.y != other.y or self.z != other.z or self.instanceId != other.instanceId)
         
     def copy(self):
         return Position(self.x, self.y, self.z, self.instanceId)
     
     def inRange(self, other, x, y, z=0):
-        return ( abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
+        return ( self.instanceId == other.instanceId and abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
 
     """def __setattr__(self, name, val):
         if name == 'x':
@@ -172,6 +172,14 @@ def removeCreature(creature, pos):
     except:
         return False  
 
+DEFAULT_BASE = ''
+def newInstance(base=None):
+    instance = instanceId()
+    if base:
+        instances[instance] = base + '/'
+    else:
+        instances[instance] = DEFAULT_BASE
+        
 PACK_ITEMS = 0 # top items
 PACK_CREATURES = 8
 PACK_FLAGS = 16
@@ -394,13 +402,16 @@ dummyItems = {}
 
 knownMap = {None: {}} # InstanceId -> {z: [x -> [y]]}
 
+instances = {None: ''}
+
 houseTiles = {}
 
 houseDoors = {}
 
 # Ops codes
-class S(object):
-    __slots__ = ('base', 'radius')
+class SpawnCode(object):
+    __slots__ = ('base', 'radius', 'instnce')
+    instance = None
     
     def __init__(self, x, y, z=None, radius=5): # z isn't used.
         self.base = (x, y) # Constant
@@ -409,7 +420,7 @@ class S(object):
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
                 
@@ -418,14 +429,14 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
             
         return self
         
-bindconstant.bind_all(S)
+#bindconstant.bind_all(SpawnCode)
 
 def I(itemId, **kwargs):
     # Do not stack
@@ -516,8 +527,16 @@ def loadTiles(x,y, instanceId):
     
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
 
-def _l(code):
-    exec(code, {}, {"S":S})
+def _l_instance_spawner(instanceId):
+    class S(SpawnCode):
+        instance = instanceId    
+    return S
+    
+def _l(instanceId, code):
+    if instanceId:
+        exec(code, {}, {"S":_l_instance_spawner(instanceId)})
+    else:
+        exec(code, {}, {"S":SpawnCode})
     
 def load(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
@@ -534,20 +553,20 @@ def load(sectorX, sectorY, instanceId):
     
     # Attempt to load a cached file
     try:
-        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
+        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), "rb") as f:
             knownMap[instanceId][sectorSum] = cPickle.loads(f.read())
-    except:
+    except IOError:
         # Build cache data
-        with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
+        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), 'rb') as f:
             knownMap[instanceId][sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
-        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
+        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), 'wb') as f:
             f.write(cPickle.dumps(knownMap[instanceId][sectorSum], 2))
             
     print "Loading took: %f" % (time.time() - t)
     
     if 'l' in knownMap[instanceId][sectorSum]:
-        reactor.callInThread(_l, knownMap[instanceId][sectorSum]['l'])
+        reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
         del knownMap[instanceId][sectorSum]['l']
         
         
