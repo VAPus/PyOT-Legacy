@@ -299,14 +299,14 @@ dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|
 file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
 
 file = file.replace("item.", "thing.").replace("item2", "onThing").replace("frompos", "position").replace("topos", "onPosition").replace("{\n", "{\\\n")
-file = file.replace(" ~= nil", "").replace("nil", "None").replace(".x", "[0]").replace(".y", "[1]").replace(".z", "[2]").replace("cid", "creature").replace(".uid", "")
+file = file.replace(" ~= nil", "").replace("nil", "None").replace("cid", "creature").replace(".uid", "")
 
 # Our ugly position system isn't based on classes like lua is.
 luaPosition = re.compile(r"\[x=(?P<x>[^,]+),([ \t]*)y=(?P<y>[^,]+),([ \t]*)z=(?P<z>[^,]+),([ \t]*)stackpos=([^]]+)\]")
 file = luaPosition.sub("[\g<x>, \g<y>, \g<z>]", file)
 
-# Optimize aswell :)
-file = file.replace("[onPosition[0], onPosition[1], onPosition[2]]", "onPosition[:]").replace("[position[0], position[1], position[2]]", "position[:]")
+# Fix the bugs that will araise.
+file = file.replace("[onPosition.x, onPosition.y, onPosition.z]", "onPosition.copy()").replace("[position.x, position.y, position.z]", "position.copy()")
 
 skipNext = 0
 for line in file.split("\n"):

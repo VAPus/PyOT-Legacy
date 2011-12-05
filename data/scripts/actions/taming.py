@@ -34,14 +34,14 @@ def doFailAction(creature, id, mount, pos, onThing):
         creature.say(mount.failMsg[id], 'MSG_SPEAK_MONSTER_SAY')
     elif action == "break":
         magicEffect(pos, EFFECT_BLOCKHIT)
-        creature.modifyItem(thing, position, stackpos, -1)
+        creature.modifyItem(thing, position, -1)
         creature.say(mount.failMsg[id], 'MSG_SPEAK_MONSTER_SAY')
     elif action == "nothing":
         magicEffect(pos, EFFECT_POFF)
         creature.say(mount.failMsg[id], 'MSG_SPEAK_MONSTER_SAY')
     return action
 
-def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     try:
         mount = allMounts[thing.itemId]
         if creature.canMount(mount["name"]):
@@ -63,7 +63,7 @@ def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackp
                 creature.say(mount["successMsg"], 'MSG_SPEAK_MONSTER_SAY')
                 onThing.despawn()
                 magicEffect(onPosition, EFFECT_POFF)
-                creature.modifyItem(thing, position, stackpos, -1)
+                creature.modifyItem(thing, position, -1)
                 return True
         
     # NPC Mount
@@ -77,7 +77,7 @@ def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackp
                 creature.orangeStatusMessage(mount["successMsg"])
                 creature.say(mount["successMsg"], 'MSG_SPEAK_MONSTER_SAY')
                 magicEffect(onPosition, EFFECT_MAGIC_GREEN)
-                creature.modifyItem(thing, position, stackpos, -1)
+                creature.modifyItem(thing, position, -1)
                 return True
     
     return

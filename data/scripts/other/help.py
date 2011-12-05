@@ -29,10 +29,10 @@ def tiler(creature, text):
             return False
         item = game.item.Item( id )
         last = id
-        getTile([pos[0], pos[1]-1, pos[2]]).setThing(0, item)
+        getTile([pos.x, pos.y-1, pos.z]).setThing(0, item)
 
-        game.engine.updateTile([pos[0], pos[1]-1, pos[2]], getTile([pos[0], pos[1]-1, pos[2]]))
-        creature.magicEffect(0x03, [pos[0], pos[1]-1, pos[2]])
+        game.engine.updateTile([pos.x, pos.y-1, pos.z], getTile([pos.x, pos.y-1, pos.z]))
+        creature.magicEffect(0x03, [pos.x, pos.y-1, pos.z])
 
         return False
         
@@ -62,7 +62,7 @@ reg("talkactionFirstWord", 'speed', speedsetter)
 
 
 # First use of actions :p
-def testContainer(creature, thing, position, stackpos, index):
+def testContainer(creature, thing, position, index):
     if thing.owners and creature not in thing.owners: # Prevent people to open owned things
         return
         
@@ -87,13 +87,13 @@ def testContainer(creature, thing, position, stackpos, index):
             # Open a new one
             parent = 0
 
-            if position[0] == 0xFFFF and position[1] >= 64:
+            if position.x == 0xFFFF and position.y >= 64:
                 parent = 1
-                thing.parent = creature.openContainers[position[2]-64]
+                thing.parent = creature.openContainers[position.z-64]
             creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
-        if position[0] != 0xFFFF:
+        if position.x != 0xFFFF:
             creature.scripts["onNextStep"].append(lambda who: thing.opened and creature.closeContainer(thing))
     else:
         creature.closeContainer(thing)
@@ -157,8 +157,8 @@ reg("talkactionFirstWord", 'exp', modexp)
 # Creature tester
 def creatureSpawn(creature, text):
     print "Spawner called"
-    pos = creature.position[:]
-    pos[1] += 2
+    pos = creature.position.copy()
+    pos.y += 2
     try:
         game.monster.getMonster(text).spawn(pos)
     except:
@@ -170,8 +170,8 @@ reg("talkactionFirstWord", 's', creatureSpawn)
 # NPC tester
 def npcSpawn(creature, text):
     print "Spawner called"
-    pos = creature.position[:]
-    pos[1] += 2
+    pos = creature.position.copy()
+    pos.y += 2
     try:
         game.npc.getNPC(text).spawn(pos)
     except:

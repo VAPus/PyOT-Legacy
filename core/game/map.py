@@ -10,19 +10,147 @@ import config
 import game.enum
 import time
 import io
+
+
+##### Position class ####
+def __uid():
+    idsTaken = 1
+    while True:
+        idsTaken += 1
+        yield idsTaken
+instanceId = __uid().next
+
+class Position(object):
+    __slots__ = ('x', 'y', 'z', 'instanceId')
+    def __init__(self, x, y, z=7, instanceId=None):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.instanceId = instanceId
+        
+    def __eq__(self, other):
+        return (self.x == other.x and self.y == other.y and self.z == other.z and self.instanceId == other.instanceId)
+        
+    def __ne__(self, other):
+        return (self.x != other.x or self.y != other.y or self.z != other.z or self.instanceId != other.instanceId)
+        
+    def copy(self):
+        return Position(self.x, self.y, self.z, self.instanceId)
     
+    def inRange(self, other, x, y, z=0):
+        return ( self.instanceId == other.instanceId and abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
+
+    """def __setattr__(self, name, val):
+        if name == 'x':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.x > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.x is negative")
+            
+        elif name == 'y':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.y > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.y is negative")
+            
+        elif name == 'z':
+            if val > 0xFFFF:
+                raise game.errors.PositionOutOfRange("Position.z > 0xFFFF")
+            elif val < 0:
+                raise game.errors.PositionNegative("Position.z is negative")
+            
+        object.__setattr__(self, name, val)"""
+
+    # Support for the old behavior of list attributes.
+    def __setitem__(self, key, value):
+        if key == 0:
+            self.x = value
+        elif key == 1:
+            self.y = value
+        elif key == 2:
+            self.z = value
+        else:
+            raise IndexError("Position doesn't support being treated like a list with the key == %s" % key)
+        
+    def __getitem__(self, key):
+        if key == 0:
+            return self.x
+        elif key == 1:
+            return self.y
+        elif key == 2:
+            return self.z
+            
+        raise IndexError("Position have no key == %s" % key)
+
+    # Simplifier
+    def getTile(self):
+        return getTile(self)
+    
+    # For savings
+    def __getstate__(self):
+            return (self.x, self.y, self.z, self.instanceId)
+            
+    def __setstate__(self, data):
+        self.x, self.y, self.z, self.instanceId = data
+
+    def __str__(self):
+        if not self.instanceId:
+            return "[%d, %d, %d]" % (self.x, self.y, self.z)
+        else:
+            return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
+
+    def setStackpos(self, x):
+        return StackPosition(self.x, self.y, self.z, x, self.instanceId)
+        
+class StackPosition(Position):
+    __slots__ = ('stackpos',)
+    
+    def __init__(self, x, y, z=7, stackpos=None, instanceId=None):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.stackpos = stackpos
+        self.instanceId = instanceId
+
+    # For savings
+    def __getstate__(self):
+            return (self.x, self.y, self.z, self.stackpos, self.instanceId)
+            
+    def __setstate__(self, data):
+        self.x, self.y, self.z, self.stackpos, self.instanceId = data
+
+    def __str__(self):
+        if not self.instanceId:
+            return "[%d, %d, %d - stack %d]" % (self.x, self.y, self.z, self.stackpos)
+        else:
+            return "[%d, %d, %d - instance %d, stack - %d]" % (self.x, self.y, self.z, self.instanceId, self.stackpos)
+
+    def getThing(self):
+        self.getTile().getThing(self.stackpos)
+
+    def setStackpos(self, x):
+        self.stackpos = x
+        
 def getTile(pos):
-    iX = int(pos[0] / 32)
-    iY = int(pos[1] / 32)
-    pX = pos[0] -iX * 32
-    pY = pos[1] -iY * 32
+    x,y,z = pos.x, pos.y, pos.z
+    iX = int(x / 32)
+    iY = int(y / 32)
+    pX = x -iX * 32
+    pY = y -iY * 32
+
+    try:
+        area = knownMap[pos.instanceId]
+    except:
+        knownMap[pos.instanceId] = {}
+        area = knownMap[pos.instanceId]
+        
     sectorSum = (iX * 32768) + iY
     try:
-        return knownMap[sectorSum][pos[2]][pX][pY]
+        return area[sectorSum][z][pX][pY]
     except:
-        if loadTiles(pos[0], pos[1]):
+        if loadTiles(x, y, pos.instanceId):
             try:
-                return knownMap[sectorSum][pos[2]][pX][pY]
+                return area[sectorSum][z][pX][pY]
             except:
                 return None
 
@@ -44,6 +172,14 @@ def removeCreature(creature, pos):
     except:
         return False  
 
+DEFAULT_BASE = ''
+def newInstance(base=None):
+    instance = instanceId()
+    if base:
+        instances[instance] = base + '/'
+    else:
+        instances[instance] = DEFAULT_BASE
+        
 PACK_ITEMS = 0 # top items
 PACK_CREATURES = 8
 PACK_FLAGS = 16
@@ -264,24 +400,27 @@ class HouseTile(Tile):
 import data.map.info as mapInfo
 dummyItems = {} 
 
-knownMap = {}
+knownMap = {None: {}} # InstanceId -> {z: [x -> [y]]}
+
+instances = {None: ''}
 
 houseTiles = {}
 
 houseDoors = {}
 
 # Ops codes
-class S(object):
-    __slots__ = ('base', 'radius')
+class SpawnCode(object):
+    __slots__ = ('base', 'radius', 'instnce')
+    instance = None
     
     def __init__(self, x, y, z=None, radius=5): # z isn't used.
-        self.base = (x,y) # Constant
+        self.base = (x, y) # Constant
+        
         self.radius = radius
         
     def M(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.monster.getMonster(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-
+            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
         except:
             log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
                 
@@ -290,14 +429,14 @@ class S(object):
         
     def N(self, name,x,y,z=7, spawnTime=None):
         try:
-            game.npc.getNPC(name).spawn([self.base[0]+x, self.base[1]+y, z], radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
+            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
 
         except:
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
             
         return self
         
-bindconstant.bind_all(S)
+#bindconstant.bind_all(SpawnCode)
 
 def I(itemId, **kwargs):
     # Do not stack
@@ -380,20 +519,29 @@ V = None
 if config.stackTiles:
     dummyTiles = {}
     
-def loadTiles(x,y, walk=True):
+def loadTiles(x,y, instanceId):
     if x < 0 or y < 0:
         return None
     elif x > mapInfo.height or y > mapInfo.width:
         return None
     
-    return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]))
+    return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
 
-def load(sectorX, sectorY):
+def _l_instance_spawner(instanceId):
+    class S(SpawnCode):
+        instance = instanceId    
+    return S
+    
+def _l(instanceId, code):
+    if instanceId:
+        exec(code, {}, {"S":_l_instance_spawner(instanceId)})
+    else:
+        exec(code, {}, {"S":SpawnCode})
+    
+def load(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     
-    ybase = sectorY*mapInfo.sectorSize[1]
-    xbase = sectorX*mapInfo.sectorSize[0]
-    if sectorSum in knownMap or ybase > mapInfo.height-1 or xbase > mapInfo.width-1:
+    if sectorSum in knownMap[instanceId]:
         return False
 
     global V # Should really be avioided 
@@ -404,33 +552,33 @@ def load(sectorX, sectorY):
     t = time.time()
     
     # Attempt to load a cached file
-    # Comment out. Please find a way to also store the houseTiles data aswell.
     try:
-        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
-            knownMap[sectorSum] = cPickle.loads(f.read())
-    except:
+        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), "rb") as f:
+            knownMap[instanceId][sectorSum] = cPickle.loads(f.read())
+    except IOError:
         # Build cache data
-        # Note: Cache is not rev independant, nor python independant. Don't send them instead of the .sec files
-        with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
-            knownMap[sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
+        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), 'rb') as f:
+            knownMap[instanceId][sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
-        with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(game.engine.fastPickler(knownMap[sectorSum]))
+        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), 'wb') as f:
+            f.write(cPickle.dumps(knownMap[instanceId][sectorSum], 2))
             
     print "Loading took: %f" % (time.time() - t)
     
-    if 'l' in knownMap[sectorSum]:    
-        exec(knownMap[sectorSum]['l'], {}, {"S":S})
+    if 'l' in knownMap[instanceId][sectorSum]:
+        reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
+        del knownMap[instanceId][sectorSum]['l']
+        
         
     if config.performSectorUnload:
-        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
+        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[sectorSum])
+    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
     
     return True
 
 # Map cleaner
-def _unloadCheck(sectorX, sectorY):
+def _unloadCheck(sectorX, sectorY, instanceId):
     # Calculate the x->x and y->y ranges
     # We're using a little higher values here to avoid reloading again 
     
@@ -443,22 +591,22 @@ def _unloadCheck(sectorX, sectorY):
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
         
         # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
+        if instenceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
             return False # He can see us, cancel the unloading
             
     return True
     
-def _unloadMap(sectorX, sectorY):
-    print "Checking %d.%d.sec" % (sectorX, sectorY)
+def _unloadMap(sectorX, sectorY, instanceId):
+    print "Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId)
     t = time.time()
-    if _unloadCheck(sectorX, sectorY):
+    if _unloadCheck(sectorX, sectorY, instanceId):
         print "Unloading...."
         unload(sectorX, sectorY)
         print "Unloading took: %f" % (time.time() - t)   
         
-def unload(sectorX, sectorY):
+def unload(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     try:
-        del knownMap[sectorSum]
+        del knownMap[instanceId][sectorSum]
     except:
         pass

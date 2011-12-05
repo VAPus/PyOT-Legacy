@@ -5,7 +5,7 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         if 'DISTILLERY_FULL' not in onThing.actions:
             onThing.description = 'It is full.'
             onThing.actions.append('DISTILLERY_FULL')
-            creature.modifyItem(thing, position, stackpos, -1)
+            creature.modifyItem(thing, position, -1)
         else:
             creature.message('The machine is already full with bunches of sugar cane.')
         return True

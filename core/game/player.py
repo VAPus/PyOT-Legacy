@@ -1,5 +1,5 @@
 from game import enum, engine
-from game.map import placeCreature, removeCreature, getTile
+from game.map import placeCreature, removeCreature, getTile, Position
 from twisted.python import log
 import config
 from collections import deque
@@ -30,7 +30,7 @@ allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
 class Player(Creature):
     def __init__(self, client, data):
-        Creature.__init__(self, data, [int(data['posx']),int(data['posy']),int(data['posz'])])
+        Creature.__init__(self, data, Position(int(data['posx']),int(data['posy']),int(data['posz'])))
         self.client = client
         
         self.speed = 220
@@ -186,7 +186,7 @@ class Player(Creature):
         
         stream.uint8(0x64) # Map description
         stream.position(self.position)
-        stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 18, 14, self)
+        stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)
 
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
@@ -285,24 +285,27 @@ class Player(Creature):
     def freeCapasity(self):
         return max(self.data["capasity"] - self.inventoryWeight, 0)
         
-    def findItem(self, position, stackpos=1, sid=None):
+    def findItem(self, position, sid=None):
         # Option 1, from the map:
         if position:
-            if position[0] != 0xFFFF:
-                return game.map.getTile(position).getThing(stackpos)
+            if position.x != 0xFFFF:
+                if isinstance(position, StackPosition):
+                    return position.getThing()
+                else:
+                    raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
             
             # Option 2, the inventory
-            elif position[1] < 64:
-                return self.inventory[position[1]-1]
+            elif position.y < 64:
+                return self.inventory[position.y-1]
             
             # Option 3, the bags, if there is one ofcource
             else:
                 try:
-                    bag = self.openContainers[position[1] - 64]
+                    bag = self.openContainers[position.y - 64]
                 except:
                     return
                     
-                item = bag.container.getThing(position[2])
+                item = bag.container.getThing(position.z)
                 return item
 
         # Option 4, find any item the player might posess
@@ -313,23 +316,27 @@ class Player(Creature):
             except:
                 return None
             
-    def findItemWithPlacement(self, position, stackpos=1, sid=None):
+    def findItemWithPlacement(self, position, sid=None):
         # Option 1, from the map:
         if position:
-            if position[0] != 0xFFFF:
-                return (0, game.map.getTile(position).getThing(stackpos), game.map.getTile(position)) if isinstance(game.map.getTile(position).getThing(stackpos), game.item.Item) else None
-            
+            if position.x != 0xFFFF:
+                if isinstance(position, StackPosition):
+                    thing = position.getThing()
+                    return (0, thing, position.getTile()) if isinstance(thing, game.item.Item) else None
+                else:
+                    raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
+                
             # Option 2, the inventory
-            elif position[1] < 64:
-                return (1, self.inventory[position[1]-1]) if self.inventory[position[1]-1] else None
+            elif position.y < 64:
+                return (1, self.inventory[position.y-1]) if self.inventory[position.y-1] else None
             
             # Option 3, the bags, if there is one ofcource
             else:
                 try:
-                    bag = self.openContainers[position[1] - 64]
+                    bag = self.openContainers[position.y - 64]
                 except:
                     return
-                item = bag.container.getThing(position[2])
+                item = bag.container.getThing(position.z)
                 return (2, item, bag)
 
         # Option 4, find any item the player might posess
@@ -436,18 +443,18 @@ class Player(Creature):
             stream.send(self.client)
             return newItem
 
-    def replaceItem(self, position, stackpos, item):
+    def replaceItem(self, position, item):
         # Option 1, from the map:
         if position:
-            if position[0] != 0xFFFF:
-                tile = game.map.getTile(position)
-                tile.things[stackpos] = item
+            if position.x != 0xFFFF:
+                tile = position.getTile()
+                tile.things[position.stackpos] = item
                 game.engine.updateTile(position, tile)
                 
             # Option 2, the inventory
-            elif position[1] < 64:
+            elif position.y < 64:
                 sendUpdate = False
-                currItem = self.inventory[position[1]-1]
+                currItem = self.inventory[position.y-1]
                 if currItem:
                     # Update cached data
                     if self.removeCache(currItem):
@@ -456,9 +463,9 @@ class Player(Creature):
                 ret = self.addCache(item)
                 if ret:
                     sendUpdate = True
-                    self.inventory[position[1]-1] = item
+                    self.inventory[position.y-1] = item
                 elif ret == False:
-                    self.inventory[position[1]-1] = None
+                    self.inventory[position.y-1] = None
                     tile = game.map.getTile(self.position)
                     tile.placeItem(item)
                     self.tooHeavy()
@@ -466,87 +473,87 @@ class Player(Creature):
                 if sendUpdate:
                     self.refreshStatus()
                 
-                self.updateInventory(position[1])
+                self.updateInventory(position.y)
             
             # Option 3, the bags, if there is one ofcource
             else:
                 update = False
                 try:
-                    bag = self.openContainers[position[1] - 64]
+                    bag = self.openContainers[position.y - 64]
                 except:
                     return
                 
                 try:
                     self.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container.items[position[2]]
+                    currItem = bag.container.items[position.z]
                     if currItem:
                         if self.removeCache(currItem):
                             update = True
                     
                     ret = self.addCache(item, bag)
                     if ret == False:
-                        del bag.container.items[position[2]]
+                        del bag.container.items[position.z]
                     elif ret == True:    
                         update = True
-                        bag.container.items[position[2]] = item
+                        bag.container.items[position.z] = item
                         
                     stream = self.packet()
-                    stream.updateContainerItem(position[1] - 64, position[2], item)
+                    stream.updateContainerItem(position.y - 64, position.z, item)
                     if update:
                         self.refreshStatus(stream)
                     stream.send(self.client)
                 except:  
-                    bag.container.items[position[2]] = item
+                    bag.container.items[position.z] = item
                     stream = self.packet()
-                    stream.updateContainerItem(position[1] - 64, position[2], item)
+                    stream.updateContainerItem(position.y - 64, position.z, item)
                     stream.send(self.client)
                     
-    def modifyItem(self, thing, position, stackpos, mod):
+    def modifyItem(self, thing, position, mod):
         try:
             thing.count += mod
         except:
             pass
         
         if thing.count > 0:
-            self.replaceItem(position, stackpos, thing)
+            self.replaceItem(position, thing)
         else:
-            self.removeItem(position, stackpos)
+            self.removeItem(position)
                 
-    def removeItem(self, position, stackpos):
+    def removeItem(self, position):
         # Option 1, from the map:
         if position:
-            if position[0] != 0xFFFF:
-                tile = game.map.getTile(position)
+            if position.x != 0xFFFF:
+                tile = position.getTile()
                 del tile.things[stackpos]
                 game.engine.updateTile(position, tile)
                 
             # Option 2, the inventory
-            elif position[1] < 64:
-                if self.removeCache(self.inventory[position[1]-1]):
+            elif position.y < 64:
+                if self.removeCache(self.inventory[position.y-1]):
                     self.refreshStatus()
-                self.inventory[position[1]-1] = None
-                self.updateInventory(position[1])
+                self.inventory[position.y-1] = None
+                self.updateInventory(position.y)
             
             # Option 3, the bags, if there is one ofcource
             elif self.inventory[2]:
                 update = False
                 try:
-                    bag = self.openContainers[position[1] - 64]
+                    bag = self.openContainers[position.y - 64]
                 except:
                     return
                 
                 try:
                     self.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container.items[position[2]]
+                    currItem = bag.container.items[position.z]
                     if currItem:
                         if self.removeCache(currItem):
                             update = True
                 except:
                     pass
                 
-                del bag.container.items[position[2]]
+                del bag.container.items[position.z]
                 stream = self.packet()
-                stream.removeContainerItem(position[1] - 64, position[2])
+                stream.removeContainerItem(position.y - 64, position.z)
                 if update:
                     self.refreshStatus(stream)
                 stream.send(self.client)
@@ -1046,7 +1053,7 @@ class Player(Creature):
             except:
                 pass
         
-        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=[0xFFFF, 0, 0], stackpos=0, index=index)
+        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
         
         game.scriptsystem.get('close').run(container, self, callOpen, index=index)
 
@@ -1554,12 +1561,14 @@ class Player(Creature):
             
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
-        if self.saveData or extra: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position[0], self.position[1], self.position[2], self.data["id"])
+        if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
+            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])
 
     def save(self, force=False):
         if self.doSave:
-            sql.conn.runOperation(*self._saveQuery(force))
+            argc = self._saveQuery(force)
+            if argc:
+                sql.conn.runOperation(*argc)
 
     def saveSkills(self):
         sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
@@ -1724,7 +1733,7 @@ class Player(Creature):
             elif channelType == game.enum.MSG_CHANNEL:
                 self.channelMessage(text, "MSG_CHANNEL", channelId)
             
-            elif channelType == game.enum.MSG_PRIVATE_TO:
+            #elif channelType == game.enum.MSG_PRIVATE_TO:
                 self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
                 
             for creature in game.engine.getCreatures(self.position):

@@ -19,7 +19,7 @@ PyOT is super fast, and uses diffrent methods than other projects. Some of which
 * Very configurable core
 * Very fast save format (save takes from less than 0.1ms to 0.3ms per player, scales over several sql connections, allowing for upto 10k saves per second)
 * Sector maps, dynamic load and unload for optimal memory usage (down to ~18MB on a 32bit systems and ~32MB on 64bit after login!)
-
+* Support for instances or even having multiple worlds on one server!
 
 The Future for PyOT
 =========================

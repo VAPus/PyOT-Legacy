@@ -1,6 +1,6 @@
 from twisted.internet.defer import inlineCallbacks, Deferred
 from game.engine import getSpectators, getPlayers
-from game.map import placeCreature, removeCreature, getTile
+from game.map import placeCreature, removeCreature, getTile, Position, StackPosition
 from twisted.python import log
 import threading
 import game.enum as enum
@@ -60,7 +60,7 @@ class Creature(object):
         self.data = data
         self.creatureType = 0
         self.direction = 0
-        self.position = list(position)
+        self.position = position
         self.speed = 100.0
         self.scripts = { "onNextStep":[]}
         self.cid = cid if cid else self.generateClientID()
@@ -217,35 +217,35 @@ class Creature(object):
         import data.map.info
         
         
-        oldPosition = self.position[:]
+        oldPosition = self.position.copy()
         
         # Recalculate position
-        position = oldPosition[:] # Important not to remove the : here, we don't want a reference!
+        position = oldPosition.copy()
         if direction == 0:
-            position[1] = oldPosition[1] - 1
+            position.y -= 1
         elif direction == 1:
-            position[0] = oldPosition[0] + 1
+            position.x += 1
         elif direction == 2:
-            position[1] = oldPosition[1] + 1
+            position.y += 1
         elif direction == 3:
-            position[0] = oldPosition[0] - 1
+            position.x -= 1
         elif direction == 4:
-            position[1] = oldPosition[1] + 1
-            position[0] = oldPosition[0] - 1
+            position.y += 1
+            position.x -= 1
         elif direction == 5:
-            position[1] = oldPosition[1] + 1
-            position[0] = oldPosition[0] + 1
+            position.y += 1
+            position.x += 1
         elif direction == 6:
-            position[1] = oldPosition[1] - 1
-            position[0] = oldPosition[0] - 1
+            position.y -= 1
+            position.x -= 1
         elif direction == 7:
-            position[1] = oldPosition[1] - 1
-            position[0] = oldPosition[0] + 1
+            position.y -= 1
+            position.x += 1
 
-        position[2] = oldPosition[2] + level
+        position.z += level
 
         # We don't walk out of the map!
-        if position[0] < 1 or position[1] < 1 or position[0] > data.map.info.width or position[1] > data.map.info.height:
+        if position.x < 1 or position.y < 1 or position.x > data.map.info.width or position.y > data.map.info.height:
             self.cancelWalk()
             return
                     
@@ -331,7 +331,7 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             
             if spectator == self:
-                if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
+                if oldPosition.z != 7 or position.z < 8: # Only as long as it's not 7->8 or 8->7
                     stream = spectator.packet(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -340,27 +340,27 @@ class Creature(object):
                     stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
                 # Levels
-                if oldPosition[2] > position[2]:
+                if oldPosition.z > position.z:
                     stream.moveUpPlayer(self, oldPosition)
                         
-                elif oldPosition[2] < position[2]:
+                elif oldPosition.z < position.z:
                     stream.moveDownPlayer(self, oldPosition)
 
                 # Y movements
-                if oldPosition[1] > position[1]:
+                if oldPosition.y > position.y:
                     stream.uint8(0x65)
-                    stream.mapDescription((oldPosition[0] - 8, self.position[1] - 6, self.position[2]), 18, 1, self)
-                elif oldPosition[1] < position[1]:
+                    stream.mapDescription(Position(oldPosition.x - 8, self.position.y - 6, self.position.z), 18, 1, self)
+                elif oldPosition.y < position.y:
                     stream.uint8(0x67)
-                    stream.mapDescription((oldPosition[0] - 8, self.position[1] + 7, self.position[2]), 18, 1, self)
+                    stream.mapDescription(Position(oldPosition.x - 8, self.position.y + 7, self.position.z), 18, 1, self)
                 
                 # X movements
-                if oldPosition[0] < position[0]:
+                if oldPosition.x < position.x:
                     stream.uint8(0x66)
-                    stream.mapDescription((self.position[0] + 9, self.position[1] - 6, self.position[2]), 1, 14, self)
-                elif oldPosition[0] > position[0]:
+                    stream.mapDescription(Position(self.position.x + 9, self.position.y - 6, self.position.z), 1, 14, self)
+                elif oldPosition.x > position.x:
                     stream.uint8(0x68)
-                    stream.mapDescription((self.position[0] - 8, self.position[1] - 6, self.position[2]), 1, 14, self)
+                    stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 1, 14, self)
 
                     
                     
@@ -375,7 +375,7 @@ class Creature(object):
             elif not canSeeOld and not canSeeNew:
                 continue
             else:
-                if oldPosition[2] != 7 or position[2] < 8: # Only as long as it's not 7->8 or 8->7
+                if oldPosition.z != 7 or position.z < 8: # Only as long as it's not 7->8 or 8->7
                     stream = spectator.packet(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -398,7 +398,7 @@ class Creature(object):
                 try:
                     self.teleport(item.teledest)
                 except:
-                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, str(item), str(item.teledest)))
+                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
 
         
@@ -646,7 +646,7 @@ class Creature(object):
             return False"""
             
         # 4 steps, remove item (creature), send new map and cords, and effects
-        oldPosition = self.position[:]
+        oldPosition = self.position.copy()
         
         newTile = getTile(position)
         oldPosCreatures = set()
@@ -669,7 +669,7 @@ class Creature(object):
             raise game.errors.ImpossibleMove()
         
         removeCreature(self, oldPosition)
-        self.position = list(position) 
+        self.position = position
         if self.creatureType == 0 and self.client:
             stream = self.packet()
             try:
@@ -678,7 +678,7 @@ class Creature(object):
                 pass # Just append
             stream.uint8(0x64)
             stream.position(position)
-            stream.mapDescription((position[0] - 8, position[1] - 6, position[2]), 18, 14, self)
+            stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
             #stream.magicEffect(position, 0x02)
             stream.send(self.client)
         
@@ -720,13 +720,13 @@ class Creature(object):
         
     def turnAgainst(self, position):
         # First north/south
-        if position[1] > self.position[1]:
+        if position.y > self.position.y:
             return self.turn(0)
-        elif position[1] < self.position[1]:
+        elif position.y < self.position.y:
             return self.turn(2)
-        elif position[0] > self.position[0]:
+        elif position.x > self.position.x:
             return self.turn(1)
-        elif position[0] < self.position[0]:
+        elif position.x < self.position.x:
             return self.turn(3)
             
     def say(self, message, messageType='MSG_SPEAK_SAY'):
@@ -800,53 +800,59 @@ class Creature(object):
         return # Is only executed on players
         
     def canSee(self, position, radius=(8,6)):
-        if self.position[2] <= 7 and position[2] > 7: # We are on ground level and we can't see underground
+        if self.position.instanceId != position.instanceId:
+            return False
+            
+        elif self.position.z <= 7 and position.z > 7: # We are on ground level and we can't see underground
             return False
                 
-        elif self.position[2] >= 8 and abs(self.position[2]-position[2]) > 2: # We are undergorund and we may only see 2 floors
+        elif self.position.z >= 8 and abs(self.position.z-position.z) > 2: # We are undergorund and we may only see 2 floors
             return False
         
-        offsetz = self.position[2]-position[2]
-        if (position[0] >= self.position[0] - radius[0] + offsetz) and (position[0] <= self.position[0] + radius[0]+1 + offsetz) and (position[1] >= self.position[1] - radius[1] + offsetz) and (position[1] <= self.position[1] + radius[1]+1 + offsetz):
+        offsetz = self.position.z-position.z
+        if (position.x >= self.position.x - radius[0] + offsetz) and (position.x <= self.position.x + radius[0]+1 + offsetz) and (position.y >= self.position.y - radius[1] + offsetz) and (position.y <= self.position.y + radius[1]+1 + offsetz):
             return True
         return False
 
     def canTarget(self, position, radius=(8,6), allowGroundChange=False):
-        if allowGroundChange and self.position[2] != position[2]: # We are on ground level and we can't see underground
+        if self.position.instanceId != position.instanceId:
+            return False
+            
+        if allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
-        if (position[0] >= self.position[0] - radius[0]) and (position[0] <= self.position[0] + radius[0]+1) and (position[1] >= self.position[1] - radius[1]) and (position[1] <= self.position[1] + radius[1]+1):
+        if (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]+1) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1]+1):
             return True
         return False
         
     def distanceStepsTo(self, position):
-        return abs(self.position[0]-position[0])+abs(self.position[1]-position[1])
+        return abs(self.position.x-position.x)+abs(self.position.y-position.y)
         
     def inRange(self, position, x, y, z=0):
-        return ( abs(self.position[0]-position[0]) <= x and abs(self.position[1]-position[1]) <= y and abs(self.position[2]-position[2]) <= y )   
+        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= y )   
     
     def positionInDirection(self, direction):
-        position = self.position[:] # Important not to remove the : here, we don't want a reference!
+        position = self.position.copy()
         if direction == 0:
-            position[1] = self.position[1] - 1
+            position.y -= 1
         elif direction == 1:
-            position[0] = self.position[0] + 1
+            position.x += 1
         elif direction == 2:
-            position[1] = self.position[1] + 1
+            position.y += 1
         elif direction == 3:
-            position[0] = self.position[0] - 1
+            position.x -= 1
         elif direction == 4:
-            position[1] = self.position[1] + 1
-            position[0] = self.position[0] - 1
+            position.y += 1
+            position.x -= 1
         elif direction == 5:
-            position[1] = self.position[1] + 1
-            position[0] = self.position[0] + 1
+            position.y += 1
+            position.x += 1
         elif direction == 6:
-            position[1] = self.position[1] - 1
-            position[0] = self.position[0] - 1
+            position.y -= 1
+            position.x -= 1
         elif direction == 7:
-            position[1] = self.position[1] - 1
-            position[0] = self.position[0] + 1
+            position.y -= 1
+            position.x += 1
         return position
 
     # Personal vars
@@ -1146,6 +1152,13 @@ class Creature(object):
         
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
+
+    # Instance
+    def setInstance(self, instanceId=None):
+        # Teleport to the same position within instance
+        newPosition = self.position.copy()
+        newPosition.instanceId = instanceId
+        self.teleport(instanceId)
         
 class Condition(object):
     def __init__(self, type, subtype="", ticks=1, per=1, *argc, **kwargs):

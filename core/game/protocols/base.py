@@ -47,9 +47,9 @@ class BasePacket(TibiaPacket):
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
-        self.uint16(position[0])
-        self.uint16(position[1])
-        self.uint8(position[2])
+        self.uint16(position.x)
+        self.uint16(position.y)
+        self.uint8(position.z)
 
     # Magic Effect
     def magicEffect(self, pos, type):
@@ -92,14 +92,14 @@ class BasePacket(TibiaPacket):
         step = -1
 
         # Lower then ground level
-        if position[2] > 7:
-            start = position[2] - 2
-            end = min(15, position[2] + 2) # Choose the smallest of 15 and z + 2
+        if position.z > 7:
+            start = position.z - 2
+            end = min(15, position.z + 2) # Choose the smallest of 15 and z + 2
             step = 1
 
         # Run the steps by appending the floor
         for z in xrange(start, (end+step), step):
-            skip = self.floorDescription((position[0], position[1], z), width, height, position[2] - z, skip, player)
+            skip = self.floorDescription((position.x, position.y, z), width, height, position.z - z, skip, player)
 
         if skip >= 0:
             self.uint8(skip)
@@ -109,7 +109,7 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, position, width, height, offset, skip, player=None):
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = sys.modules["game.map"].getTile((position[0] + x + offset, position[1] + y + offset, position[2]))
+                tile = game.map.getTile(game.map.Position(position[0] + x + offset, position[1] + y + offset, position[2]))
 
                 if tile and tile.things:
                     if skip >= 0:
@@ -272,54 +272,54 @@ class BasePacket(TibiaPacket):
         self.uint8(0xBE)
         
         # Underground to surface
-        if oldPos[2]-1 == 7:
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 5), 18, 14, 3, -1, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 4), 18, 14, 4, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 3), 18, 14, 5, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 2), 18, 14, 6, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 1), 18, 14, 7, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, 0), 18, 14, 8, skip, player)
+        if oldPos.z-1 == 7:
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 5), 18, 14, 3, -1, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 4), 18, 14, 4, skip, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 3), 18, 14, 5, skip, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 2), 18, 14, 6, skip, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 1), 18, 14, 7, skip, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 0), 18, 14, 8, skip, player)
 
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
-        elif oldPos[2]-1 > 7: # Still underground
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]-3), 18, 14, oldPos[2]+3, -1, player)
+        elif oldPos.z-1 > 7: # Still underground
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-3), 18, 14, oldPos.z+3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
         self.uint8(0x68) # West
-        self.mapDescription((oldPos[0] - 8, oldPos[1] + 1 - 6, oldPos[2]-1), 1, 14, player)
+        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1), 1, 14, player)
         
         self.uint8(0x65) # North
-        self.mapDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]-1), 18, 1, player)
+        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-1), 18, 1, player)
         
         
     def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
-        if oldPos[2]+1 == 8:
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+1), 18, 14, -1, -1, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+2), 18, 14, -2, skip, player)
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+3), 18, 14, -3, skip, player)
+        if oldPos.z+1 == 8:
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+1), 18, 14, -1, -1, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+2), 18, 14, -2, skip, player)
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+3), 18, 14, -3, skip, player)
 
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
-        elif oldPos[2]+1 > 8:
-            skip = self.floorDescription((oldPos[0] - 8, oldPos[1] - 6, oldPos[2]+3), 18, 14, oldPos[2]-3, -1, player)
+        elif oldPos.z+1 > 8:
+            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+3), 18, 14, oldPos.z-3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)            
         
         self.uint8(0x66) # East
-        self.mapDescription((oldPos[0] + 9, oldPos[1] - 6, oldPos[2]+1), 1, 14, player)
+        self.mapDescription(game.map.Position(oldPos.x + 9, oldPos.y - 6, oldPos.z+1), 1, 14, player)
         self.uint8(0x67) # South
-        self.mapDescription((oldPos[0] - 8, oldPos[1] + 7, oldPos[2]+1), 18, 1, player)
+        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
@@ -620,17 +620,17 @@ class BaseProtocol(object):
     @inlineCallbacks
     def handleMoveItem(self, player, packet):
         from game.item import Item, sid, items
-        fromPosition = packet.position()
+        fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
-        if fromPosition[0] != 0xFFFF:
+        if fromPosition.x != 0xFFFF:
             # From map
             fromMap = True
         
         clientId = packet.uint16()
         fromStackPos = packet.uint8()
-        toPosition = packet.position()
-        if toPosition[0] != 0xFFFF:
+        toPosition = packet.position(player.position.instanceId)
+        if toPosition.x != 0xFFFF:
             toMap = True
         
         print toPosition
@@ -665,7 +665,7 @@ class BaseProtocol(object):
                         yield sleep(0.1)
                         scount += 1
                     
-                    if toPosition[1] >= 64 and not player.getContainer(toPosition[1]-64):
+                    if toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
                         player.notPossible()
                         return
                     
@@ -673,11 +673,11 @@ class BaseProtocol(object):
                 oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
                 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y != oldItem[1].slotId():
                     player.notPossible()
                     return
                     
-                if not oldItem[1].movable or (toPosition[0] == 0xFFFF and not oldItem[1].pickable):
+                if not oldItem[1].movable or (toPosition.x == 0xFFFF and not oldItem[1].pickable):
                     player.notPickable()
                     return
                     
@@ -709,14 +709,14 @@ class BaseProtocol(object):
                 oldItem = player.findItemWithPlacement(fromPosition)
 
                 # Before we remove it, can it be placed there?
-                if toPosition[0] == 0xFFFF and toPosition[1] < 64 and toPosition[1] != game.enum.SLOT_AMMO and toPosition[1] != game.enum.SLOT_BACKPACK and toPosition[1] != oldItem[1].slotId():
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y != game.enum.SLOT_AMMO and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y != oldItem[1].slotId():
                     player.notPossible()
                     return
                 elif oldItem[1].inTrade:
                     player.message("Your trading this item.")
                     return
                     
-                elif currItem and currItem[1] and toPosition[0] == 0xFFFF and toPosition[1] >= 64 and currItem[1].containerSize:
+                elif currItem and currItem[1] and toPosition.x == 0xFFFF and toPosition.y >= 64 and currItem[1].containerSize:
                     container = currItem[1].inContainer
                     if container:
                         if container == oldItem[1]:
@@ -737,31 +737,31 @@ class BaseProtocol(object):
                     oldItem[1].count -= count
                     if oldItem[1].count:
                         if oldItem[0] == 1:
-                            stream.addInventoryItem(fromPosition[1], oldItem[1])
+                            stream.addInventoryItem(fromPosition.y, oldItem[1])
                         elif oldItem[0] == 2:
-                            stream.updateContainerItem(player.openContainers.index(oldItem[2]), fromPosition[2], oldItem[1])
+                            stream.updateContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z, oldItem[1])
                             
                     else:
                         if oldItem[0] == 1:
-                            player.inventory[fromPosition[1]-1] = None
-                            stream.removeInventoryItem(fromPosition[1])
+                            player.inventory[fromPosition.y-1] = None
+                            stream.removeInventoryItem(fromPosition.y)
                         elif oldItem[0] == 2:
                             oldItem[2].container.removeItem(oldItem[1])
-                            stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition[2])
+                            stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z)
 
                 else:
                     if player.removeCache(oldItem[1]):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
-                        game.scriptsystem.get("unequip").run(player, player.inventory[fromPosition[1]-1], slot = fromPosition[1])
-                        player.inventory[fromPosition[1]-1] = None
-                        stream.removeInventoryItem(fromPosition[1])
+                        game.scriptsystem.get("unequip").run(player, player.inventory[fromPosition.y-1], slot = fromPosition.y)
+                        player.inventory[fromPosition.y-1] = None
+                        stream.removeInventoryItem(fromPosition.y)
                     elif oldItem[0] == 2:
                         oldItem[2].container.removeItem(oldItem[1])
-                        stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition[2])
+                        stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z)
                 
-                if toPosition[1] == fromPosition[1]:
+                if toPosition.y == fromPosition.y:
                     stack = False
                     
                 stream.send(player.client)
@@ -786,8 +786,8 @@ class BaseProtocol(object):
                     _items_ = thisTile.getItems()
                     count = len(_items_) * 2
                     for item in _items_:
-                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, stackpos=None, onPosition=fromPosition, onStackpos=None, onThing=newItem)
-                        yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, stackpos=None, onPosition=toPosition, onStackpos=None, onThing=item)
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=newItem)
+                        yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
                     if process[0] == count:
                         if newItem.decayPosition:
                             newItem.decayPosition = toPosition
@@ -813,43 +813,43 @@ class BaseProtocol(object):
                         ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                     else:
                         
-                        if toPosition[1] < 64:
-                            if oldItem[1].stackable and player.inventory[toPosition[1]-1] and player.inventory[toPosition[1]-1].itemId == sid(clientId) and (player.inventory[toPosition[1]-1].count + count <= 100):
-                                player.inventory[toPosition[1]-1].count += count
+                        if toPosition.y < 64:
+                            if oldItem[1].stackable and player.inventory[toPosition.y-1] and player.inventory[toPosition.y-1].itemId == sid(clientId) and (player.inventory[toPosition.y-1].count + count <= 100):
+                                player.inventory[toPosition.y-1].count += count
                                 # Into inventory? Update cache
-                                if player.modifyCache(player.inventory[toPosition[1]-1], count):
+                                if player.modifyCache(player.inventory[toPosition.y-1], count):
                                     player.refreshStatus(stream)
                             else:       
-                                player.inventory[toPosition[1]-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                                game.scriptsystem.get("equip").run(player, player.inventory[toPosition[1]-1], slot = toPosition[1])
+                                player.inventory[toPosition.y-1] = Item(sid(clientId), count) if renew else oldItem[1]
+                                game.scriptsystem.get("equip").run(player, player.inventory[toPosition.y-1], slot = toPosition.y)
                                 
-                                if player.inventory[toPosition[1]-1].decayPosition:
-                                    player.inventory[toPosition[1]-1].decayPosition = (toPosition[0], toPosition[1])
+                                if player.inventory[toPosition.y-1].decayPosition:
+                                    player.inventory[toPosition.y-1].decayPosition = (toPosition.x, toPosition.y)
                                     
-                                if player.inventory[toPosition[1]-1].decayCreature:
-                                    player.inventory[toPosition[1]-1].decayCreature = player
+                                if player.inventory[toPosition.y-1].decayCreature:
+                                    player.inventory[toPosition.y-1].decayCreature = player
                                     
                                 # Into inventory? Update cache
-                                if player.addCache(player.inventory[toPosition[1]-1]):
+                                if player.addCache(player.inventory[toPosition.y-1]):
                                     player.refreshStatus(stream)                            
-                            stream.addInventoryItem(toPosition[1], player.inventory[toPosition[1]-1])
+                            stream.addInventoryItem(toPosition.y, player.inventory[toPosition.y-1])
                         else:
-                            container = player.getContainer(toPosition[1]-64)
-                            print "Pos",toPosition[2]
+                            container = player.getContainer(toPosition.y-64)
+                            print "Pos",toPosition.z
                             try:
-                                container.container.items[toPosition[2]] = Item(sid(clientId), count) if renew else oldItem[1]
+                                container.container.items[toPosition.z] = Item(sid(clientId), count) if renew else oldItem[1]
                                 sendUpdate = True
 
-                                if container.container.items[toPosition[2]].decayPosition:
-                                    container.container.items[toPosition[2]].decayPosition = (toPosition[0], 65)
+                                if container.container.items[toPosition.z].decayPosition:
+                                    container.container.items[toPosition.z].decayPosition = (toPosition.x, 65)
                                     
-                                if container.container.items[toPosition[2]].decayCreature:
-                                    container.container.items[toPosition[2]].decayCreature = player
+                                if container.container.items[toPosition.z].decayCreature:
+                                    container.container.items[toPosition.z].decayCreature = player
                                     
                                 try:
                                     player.inventoryCache[container.itemId].index(container)
                                     # Into inventory? Update cache
-                                    if player.addCache(container.container.items[toPosition[2]], container):
+                                    if player.addCache(container.container.items[toPosition.z], container):
                                         player.refreshStatus(stream)
                                 except:
                                     pass
@@ -858,16 +858,16 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     if renew and currItem and currItem[1]:
-                        if fromPosition[1] < 64:
-                            player.inventory[fromPosition[1]-1] = currItem[1]
+                        if fromPosition.y < 64:
+                            player.inventory[fromPosition.y-1] = currItem[1]
                             
-                            if container.container.items[toPosition[2]].decayPosition:
-                                container.container.items[toPosition[2]].decayPosition = (0xFFFF, fromPosition[1])
+                            if container.container.items[toPosition.z].decayPosition:
+                                container.container.items[toPosition.z].decayPosition = (0xFFFF, fromPosition.y)
                                 
-                            if container.container.items[toPosition[2]].decayCreature:
-                                container.container.items[toPosition[2]].decayCreature = player
+                            if container.container.items[toPosition.z].decayCreature:
+                                container.container.items[toPosition.z].decayCreature = player
                                 
-                            stream.addInventoryItem(fromPosition[1], player.inventory[fromPosition[1]-1])
+                            stream.addInventoryItem(fromPosition.y, player.inventory[fromPosition.y-1])
                             
                             if player.addCache(currItem[1]):
                                 player.refreshStatus(stream)
@@ -875,7 +875,7 @@ class BaseProtocol(object):
                             player.itemToContainer(currItem[2], currItem[1])
                     
                     if sendUpdate:
-                        stream.updateContainerItem(toPosition[1]-64, toPosition[2], container.container.items[toPosition[2]])
+                        stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
                     stream.send(player.client)
         else:
             if game.map.getTile(toPosition).creatures():
@@ -893,7 +893,7 @@ class BaseProtocol(object):
                 if i.solid:
                     player.notPossible()
                     return
-            if abs(creature.position[0]-player.position[0]) > 1 or abs(creature.position[1]-player.position[1]) > 1:
+            if abs(creature.position.x-player.position.x) > 1 or abs(creature.position.y-player.position.y) > 1:
                 walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
                 if len(walkPattern) > 1:
                     player.outOfRange()
@@ -904,16 +904,16 @@ class BaseProtocol(object):
             
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         print "Look at"
         print position
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
-        print game.map.getHouseId(position)
+        stackPosition = position.setStackpos(stackpos)
         
-        if position[0] == 0xFFFF:
-            thing = player.findItem(position, stackpos)
+        if position.x == 0xFFFF:
+            thing = player.findItem(stackPosition)
         elif stackpos == 0 and clientId == 99:
             try:
                 thing = game.map.getTile(position).creatures()[0]
@@ -921,7 +921,7 @@ class BaseProtocol(object):
                 player.notPossible()
                 return
         else:
-            thing = player.findItem(position, stackpos)     
+            thing = player.findItem(stackPosition)     
             if not thing or thing.cid != clientId:
                 for thing2 in game.map.getTile(position).things:
                     if thing2.cid == clientId:
@@ -942,7 +942,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
                     else:
                         player.message(thing.description(), 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=position, stackpos=stackpos)
+            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=stackPosition)
         else:
             player.notPossible()
 
@@ -956,7 +956,7 @@ class BaseProtocol(object):
         del item
         
     def handleRotateItem(self, player, packet):
-        position = packet.position() # Yes, we don't support backpack rotations
+        position = packet.position(player.position.instanceId) # Yes, we don't support backpack rotations
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
@@ -964,7 +964,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 game.engine.transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').run(item, player, end, position=position, stackpos=stackpos)
+            game.scriptsystem.get('rotate').run(item, player, end, position=position.setStackpos(stackpos))
             
         
     def handleSetOutfit(self, player, packet):
@@ -986,41 +986,47 @@ class BaseProtocol(object):
             player.outfitWindow()
             
     def handleUse(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
 
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         index = packet.uint8()
-        thing = player.findItem(position, stackpos)
+        stackPosition = position.setStackpos(stackpos)
+        thing = player.findItem(stackPosition)
         
-        if thing and (position[0] == 0xFFFF or (position[2] == player.position[2] and player.canSee(position))):
+        if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             end = None
-            if position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1):
-                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=position, stackpos=stackpos, index=index)
-            game.scriptsystem.get('farUse').run(thing, player, end, position=position, stackpos=stackpos, index=index)
+            if position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1):
+                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+            game.scriptsystem.get('farUse').run(thing, player, end, position=stackPosition, index=index)
             
 
     def handleUseWith(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         
-        onPosition = packet.position()
+        onPosition = packet.position(player.position.instanceId)
         onStack = packet.uint8()
         
-        thing = player.findItem(position, stackpos)
+        stackPosition1 = position.setStackpos(stackpos)
+        stackPosition2 = onPosition.setStackpos(onStack)
+        
+        thing = player.findItem(stackPosition1)
         if onStack != 99:
-            onThing = player.findItem(onPosition, onStack)
+            onThing = player.findItem(stackPosition2)
         else:
             onThing = game.map.getTile(onPosition).creatures()[0]
         
-        if thing and ((position[2] == player.position[2] and player.canSee(position)) or position[0] == 0xFFFF) and ((onPosition[2] == player.position[2] and player.canSee(onPosition)) or onPosition[0] == 0xFFFF):
-            if (position[0] == 0xFFFF or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (onPosition[0] == 0xFFFF or (abs(onPosition[0] - player.position[0]) <= 1 and abs(onPosition[1] - player.position[1]) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+        
+        
+        if thing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
+            if (position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (onPosition.x == 0xFFFF or (abs(onPosition.x - player.position.x) <= 1 and abs(onPosition.y - player.position.y) <= 1)):
+                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 
-            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=onPosition, stackpos=onStack, onPosition=position, onStackpos=stackpos, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=position, stackpos=stackpos, onPosition=onPosition, onStackpos=onStack, onThing=onThing)
+            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):
@@ -1033,7 +1039,7 @@ class BaseProtocol(object):
         player.setFollowTarget(cid)
         
     def handleUpdateTile(self, player, packet):
-        pos = packet.position()
+        pos = packet.position(player.position.instanceId)
         tile = getTile(pos)
         stream = player.packet(0x69)
         stream.position(pos)
@@ -1109,7 +1115,7 @@ class BaseProtocol(object):
         player.removeVip(packet.uint32())
         
     def handleRequestTrade(self, player, packet):
-        position = packet.position()
+        position = packet.position(player.position.instanceId)
         itemId = packet.uint16()
         stackpos = packet.uint8()
         player2 = game.engine.getCreatureByCreatureId(packet.uint32())
@@ -1118,7 +1124,7 @@ class BaseProtocol(object):
             player.message("You need to move closer.")
             return
             
-        if position[0] == 0xFFFF:
+        if position.x == 0xFFFF:
             thing = player.findItem(position, stackpos)
             if thing in player.tradeItems:
                 player.message("Your already trading this item.")
@@ -1215,7 +1221,7 @@ class BaseProtocol(object):
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description() + extra, 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=(0xFFFE, counter, 0), stackpos=stackpos)
+            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
             
     def handleAcceptTrade(self, player, packet):
         if player.isTradingWith.tradeAccepted:
@@ -1255,12 +1261,12 @@ class BaseProtocol(object):
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
             
     def handleUseBattleWindow(self, player, packet):
-        fromPosition = packet.position()
+        fromPosition = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
         stackpos = packet.uint8()
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
-        hotkey = fromPosition[0] == 0xFFFF and not fromPosition[1]
-
+        hotkey = fromPosition.x == 0xFFFF and not fromPosition.y
+        stackPosition = position.setStackpos(stackpos)
         # Is hotkeys allowed?
         if not config.enableHotkey:
             return player.cancelMessage("Hotkeys are disabled.")
@@ -1270,7 +1276,7 @@ class BaseProtocol(object):
             return player.cancelMessage("Target is too far away.")
         
         if not hotkey:
-            thing = player.findItem(fromPosition, stackpos)
+            thing = player.findItem(stackPosition)
         else:
             itemId = game.item.sid(clientItemId)
             thing = player.findItemById(itemId)
@@ -1289,12 +1295,13 @@ class BaseProtocol(object):
                 player.message("Using one of %d %s..." % (count, thing.rawName()))
         
         if thing:
-            if (hotkey or (abs(position[0] - player.position[0]) <= 1 and abs(position[1] - player.position[1]) <= 1)) and (creature.position[0] == 0xFFFF or (abs(creature.position[0] - player.position[0]) <= 1 and abs(creature.position[1] - player.position[1]) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+            creatureStackPosition = creature.position.setStackpos(creature.position.getTile().findCreatureStackpos(creature))
+            if (hotkey or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (creature.position.x == 0xFFFF or (abs(creature.position.x - player.position.x) <= 1 and abs(creature.position.y - player.position.y) <= 1)):
+                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
                 
-            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creature.position, stackpos=0, onPosition=fromPosition, onStackpos=stackpos, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=fromPosition, stackpos=stackpos, onPosition=creature.position, onStackpos=0, onThing=creature)
+            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
 
         
             

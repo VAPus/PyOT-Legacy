@@ -17,7 +17,7 @@ item = {9808: ((2464, "Chain Armor", 33), (2483, "Scale Armor", 25), (2465, "Bra
 effect_broke = 3
 effect_renew = 28
 
-def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     
     developed = None
     const = onThing.itemId
@@ -33,12 +33,12 @@ def onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackp
             magicEffect(onPosition, effect_renew)
             onThing.transform(item[const][developed][0])
             creature.message("You have renewed the %s !" % (item[const][developed][1]))
-            creature.modifyItem(thing, position, stackpos, -1)
+            creature.modifyItem(thing, position, -1)
             
         else:
             magicEffect(onPosition, effect_broke)
-            creature.modifyItem(onThing, onPosition, onStackpos, -1)
-            creature.modifyItem(thing, position, stackpos, -1)
+            creature.modifyItem(onThing, onPosition, -1)
+            creature.modifyItem(thing, position, -1)
             creature.message("Your Rusty Remover has broken.")
             return
             

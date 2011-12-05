@@ -84,7 +84,7 @@ foods[11136] = (120, "Mmmm.")
 foods[11246] = (180, "Yum.")
 foods[11370] = (36, "Urgh.")
 
-def onUse(creature, thing, position, stackpos, **a):
+def onUse(creature, thing, position, **a):
     global foods
     gainhp = creature.getVocation().health
     gainmana = creature.getVocation().mana
@@ -92,9 +92,9 @@ def onUse(creature, thing, position, stackpos, **a):
     sound = foods[thing.itemId][1]
     thing.count -= 1
     if thing.count > 0:
-        creature.replaceItem(position, stackpos, thing)
+        creature.replaceItem(position, thing)
     else:
-        creature.removeItem(position, stackpos)
+        creature.removeItem(position)
     
     if creature.getCondition(CONDITION_REGENERATEHEALTH).ticks * gainhp[1] >= 1500 or creature.getCondition(CONDITION_REGENERATEMANA).ticks * gainmana[1] >= 1500:
         creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')

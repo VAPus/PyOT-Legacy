@@ -1,7 +1,7 @@
 # Autoconverted script for PyOT
 # Untested. Please remove this message when the script is working properly!
 
-def onUse(creature, thing, position, stackpos, **k):
+def onUse(creature, thing, position, **k):
     if thing != creature.inventory[SLOT_HEAD]:
         return
     

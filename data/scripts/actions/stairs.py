@@ -32,8 +32,9 @@ def floorchange(creature, thing, position, **k):
         
     elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
-        destTile = getTile([position[0], position[1], position[2]+1])
-        destThing = destTile.getThing(1)
+        destPos = position.copy()
+        destPos.z += 1
+        destThing = destPos.getTile().getThing(1)
 
         # Note: It's the reverse direction
         if destThing.floorchange == "north":
@@ -49,40 +50,40 @@ def floorchange(creature, thing, position, **k):
             creature.move(WEST, level=1)
 
 def itemFloorChange(thing, position, onPosition, onThing, **k):
-    newPos = position[:]
+    newPos = position.copy()
     if thing.floorchange == "north":
-        newPos[1] -= 1
-        newPos[2] -= 1
+        newPos.y -= 1
+        newPos.z -= 1
         
     elif thing.floorchange == "south":
-        newPos[1] += 1
-        newPos[2] -= 1
+        newPos.y += 1
+        newPos.z -= 1
         
     elif thing.floorchange == "east":
-        newPos[0] += 1
-        newPos[2] -= 1
+        newPos.x += 1
+        newPos.z -= 1
         
     elif thing.floorchange == "west":
-        newPos[0] -= 1
-        newPos[2] -= 1
+        newPos.x -= 1
+        newPos.z -= 1
         
     elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
-        destTile = getTile([position[0], position[1], position[2]+1])
-        destThing = destTile.getThing(1)
-        newPos[2] += 1
+        newPos.z += 1
+        destThing = newPos.getTile().getThing(1)
+
         # Note: It's the reverse direction
         if destThing.floorchange == "north":
-            newPos[1] += 1
+            newPos.y += 1
             
         elif destThing.floorchange == "south":
-            newPos[1] -= 1
+            newPos.y -= 1
             
         elif destThing.floorchange == "west":
-            newPos[0] += 1
+            newPos.x += 1
             
         elif destThing.floorchange == "east":
-            newPos[1] -= 1
+            newPos.y -= 1
             
     teleportItem(onThing, onPosition, newPos)
     
@@ -90,21 +91,21 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
     
 def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
-        creature.teleport([position[0],position[1],position[2]-1])
+        newPos = position.copy()
+        newPos.z -= 1
+        creature.teleport(newPos)
     
 def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
-        creature.teleport([position[0],position[1],position[2]+1])
+        newPos = position.copy()
+        newPos.z += 1
+        creature.teleport(newPos)
 
 def teleportOrWalkDirection(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return
-        
-    # Grab the position of the player/creature    
-    pos = creature.position[:]
-    pos[2] -= 1
-    
+
     # Change the position to match the floorchange.
     if thing.floorchange == "north":
         creature.move(NORTH, level=-1)
@@ -119,6 +120,9 @@ def teleportOrWalkDirection(creature, thing, position, **k):
         creature.move(WEST, level=-1)
         
     else:    
+        # Grab the position of the player/creature and modify the floor  
+        pos = creature.position.copy()
+        pos.z -= 1
         creature.teleport(pos)
 
 def teleportOrWalkDirectionDown(creature, thing, position, **k):
@@ -127,29 +131,35 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
         return
         
     # Grab the position of the player/creature    
-    pos = creature.position[:]
-    pos[2] += 1
+    pos = creature.position.copy()
+    pos.z += 1
     
     # Change the position to match the floorchange. Based on the bottom item if any.
-    destTile = getTile(pos)
+    destTile = pos.getTile()
     try:
         destThing = destTile.getThing(1)
         # Note: It's the reverse direction
+        # Temp fix for the branch "refactor-position-and-introduce-instances"
         if destThing.floorchange == "north":
-            creature.move(SOUTH, level=1)
+            #creature.move(SOUTH, level=1)
+            pos.y += 1
             
         elif destThing.floorchange == "south":
-            creature.move(NORTH, level=1)
+            #creature.move(NORTH, level=1)
+            pos.y -= 1
             
         elif destThing.floorchange == "west":
-            creature.move(EAST, level=1)
+            #creature.move(EAST, level=1)
+            pos.x += 1
             
         elif destThing.floorchange == "east":
-            creature.move(WEST, level=1)
+            #creature.move(WEST, level=1)
+            pos.x -= 1
             
-        else:
-            creature.teleport(pos)
+        #else:
+        creature.teleport(pos)
     except:
+        raise
         pass
     
 # Stairs

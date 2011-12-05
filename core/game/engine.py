@@ -133,6 +133,8 @@ def loader(timer):
     __builtin__.Condition = game.creature.Condition
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
+    __builtin__.Position = game.map.Position
+    __builtin__.StackPosition = game.map.StackPosition
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     
@@ -289,7 +291,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     :type callback: function.
     
     """
-    if creature.position[2] != to[2]:
+    if creature.position.z != to.z:
         creature.message("Change floor")
         return
         
@@ -307,16 +309,15 @@ def handleAutoWalking(creature, callback=None, level=0):
         return
         
     direction = creature.walkPattern.popleft()
-    currPos = creature.position[:]
+
     mcallback=callback
     if creature.walkPattern:
         def mcallback(ret):
             creature2, oldPos, newPos = ret
-            if oldPos == currPos:
-                try:
-                    creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
-                except IndexError:
-                    return
+            try:
+                creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
+            except IndexError:
+                return
                     
     d = Deferred()
     if mcallback:
@@ -346,13 +347,13 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     pattern = []
     currPos = fromPos
     # First diagonal if possible
-    if abs(fromPos[0] - to[0]) == 1 and abs(fromPos[1] - to[1]) == 1:
-        if fromPos[1] > to[1]:
+    if abs(fromPos.x - to.x) == 1 and abs(fromPos.y - to.y) == 1:
+        if fromPos.y > to.y:
             base = 6
         else:
             base = 4
             
-        if fromPos[0] < to[0]:
+        if fromPos.x < to.x:
             base += 1
         newPos = positionInDirection(currPos, base)
         
@@ -367,7 +368,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             pattern.append(base)
         
     if not pattern:
-        pattern = game.pathfinder.findPath(fromPos[2], fromPos[0], fromPos[1], to[0], to[1])
+        pattern = game.pathfinder.findPath(fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:
@@ -485,27 +486,27 @@ def positionInDirection(nposition, direction, amount=1):
     
     """
     
-    position = list(nposition[:]) # Important not to remove the : here, we don't want a reference!
+    position = nposition.copy() # Important not to remove the : here, we don't want a reference!
     if direction == 0:
-        position[1] = nposition[1] - amount
+        position.y = nposition.y - amount
     elif direction == 1:
-        position[0] = nposition[0] + amount
+        position.x = nposition.x + amount
     elif direction == 2:
-        position[1] = nposition[1] + amount
+        position.y = nposition.y + amount
     elif direction == 3:
-        position[0] = nposition[0] - amount
+        position.x = nposition.x - amount
     elif direction == 4:
-        position[1] = nposition[1] + amount
-        position[0] = nposition[0] - amount
+        position.y = nposition.y + amount
+        position.x = nposition.x - amount
     elif direction == 5:
-        position[1] = nposition[1] + amount
-        position[0] = nposition[0] + amount
+        position.y = nposition.y + amount
+        position.x = nposition.x + amount
     elif direction == 6:
-        position[1] = nposition[1] - amount
-        position[0] = nposition[0] - amount
+        position.y = nposition.y - amount
+        position.x = nposition.x - amount
     elif direction == 7:
-        position[1] = nposition[1] - amount
-        position[0] = nposition[0] + amount
+        position.y = nposition.y - amount
+        position.x = nposition.x + amount
     return position
 def updateTile(pos, tile):
     """ Send the update to a tile to all who can see the position.
@@ -526,7 +527,7 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo, pos, stackPos=None):
+def transformItem(item, transformTo, pos):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
@@ -538,14 +539,12 @@ def transformItem(item, transformTo, pos, stackPos=None):
     :param pos: Position of the item.
     :type pos: List of tuple.
     
-    :param stackPos: StackPos (if it's known, otherwise it's autodetected internally).
-    :type stackPos: int.
     
     """
     
     tile = game.map.getTile(pos)
-    if not stackPos:
-        stackPos = tile.findStackpos(item)
+    if not isinstance(pos, game.map.StackPosition):
+        pos = pos.setStackpos(tile.findStackpos(item))
 
     tile.removeItem(item)
     if item.tileStacked:
@@ -557,13 +556,13 @@ def transformItem(item, transformTo, pos, stackPos=None):
 
     for spectator in getSpectators(pos):
         stream = spectator.packet()
-        stream.removeTileItem(pos, stackPos)
+        stream.removeTileItem(pos, pos.stackpos)
         if transformTo:
-            stream.addTileItem(pos, stackPos, item)
+            stream.addTileItem(pos, newStackpos, item)
             
         stream.send(spectator)
 
-def teleportItem(item, fromPos, toPos, fromStackPos=None):
+def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
     
     :param item: The item you want to transform.
@@ -575,8 +574,6 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     :param toPos: To this position
     :type toPos: :func:`tuple` or :func:`list`
     
-    :param fromStackPos: Stack`position (if it's known, otherwise it's autodetected internally).
-    :type fromStackPos: :func:`int`
     
     :rtype: :func:`int`
     :returns: New stack position
@@ -586,12 +583,13 @@ def teleportItem(item, fromPos, toPos, fromStackPos=None):
     if fromPos[0] != 0xFFFF:
         try:
             tile = game.map.getTile(fromPos)
-            if not fromStackPos:
-                fromStackPos = tile.findStackpos(item)
+            if not isinstance(fromPos, game.map.StackPosition):
+                fromPos = fromPos.setStackpos(tile.findStackpos(item))
+                
             tile.removeItem(item)
             for spectator in getSpectators(fromPos):
                 stream = spectator.packet()
-                stream.removeTileItem(fromPos, fromStackPos)
+                stream.removeTileItem(fromPos, fromPos.stackpos)
                 stream.send(spectator)
         except:
             pass
@@ -957,7 +955,7 @@ def getHouseByPos(pos):
 def fastPickler(obj):
     file = StringIO()
     p = pickle.Pickler(file, 2)
-    p.fast = True
+    #p.fast = True
     p.dump(obj)
     return file.getvalue()  
     
