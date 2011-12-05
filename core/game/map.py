@@ -137,13 +137,20 @@ def getTile(pos):
     iY = int(y / 32)
     pX = x -iX * 32
     pY = y -iY * 32
+
+    try:
+        area = knownMap[pos.instanceId]
+    except:
+        knownMap[pos.instanceId] = {}
+        area = knownMap[pos.instanceId]
+        
     sectorSum = (iX * 32768) + iY
     try:
-        return knownMap[sectorSum][z][pX][pY]
+        return area[sectorSum][z][pX][pY]
     except:
-        if loadTiles(x, y):
+        if loadTiles(x, y, pos.instanceId):
             try:
-                return knownMap[sectorSum][z][pX][pY]
+                return area[sectorSum][z][pX][pY]
             except:
                 return None
 
@@ -385,7 +392,7 @@ class HouseTile(Tile):
 import data.map.info as mapInfo
 dummyItems = {} 
 
-knownMap = {}
+knownMap = {None: {}} # InstanceId -> {z: [x -> [y]]}
 
 houseTiles = {}
 
@@ -501,23 +508,21 @@ V = None
 if config.stackTiles:
     dummyTiles = {}
     
-def loadTiles(x,y, walk=True):
+def loadTiles(x,y, instanceId):
     if x < 0 or y < 0:
         return None
     elif x > mapInfo.height or y > mapInfo.width:
         return None
     
-    return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]))
+    return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
 
 def _l(code):
     exec(code, {}, {"S":S})
     
-def load(sectorX, sectorY):
+def load(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     
-    ybase = sectorY*mapInfo.sectorSize[1]
-    xbase = sectorX*mapInfo.sectorSize[0]
-    if sectorSum in knownMap or ybase > mapInfo.height-1 or xbase > mapInfo.width-1:
+    if sectorSum in knownMap[instanceId]:
         return False
 
     global V # Should really be avioided 
@@ -530,30 +535,31 @@ def load(sectorX, sectorY):
     # Attempt to load a cached file
     try:
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), "rb") as f:
-            knownMap[sectorSum] = cPickle.loads(f.read())
+            knownMap[instanceId][sectorSum] = cPickle.loads(f.read())
     except:
         # Build cache data
         with io.open("data/map/%d.%d.sec" % (sectorX, sectorY), 'rb') as f:
-            knownMap[sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
+            knownMap[instanceId][sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
         # Write it
         with io.open("data/map/%d.%d.sec.cache" % (sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[sectorSum], 2))
+            f.write(cPickle.dumps(knownMap[instanceId][sectorSum], 2))
             
     print "Loading took: %f" % (time.time() - t)
     
-    if 'l' in knownMap[sectorSum]:
-        reactor.callInThread(_l, knownMap[sectorSum]['l'])
+    if 'l' in knownMap[instanceId][sectorSum]:
+        reactor.callInThread(_l, knownMap[instanceId][sectorSum]['l'])
+        del knownMap[instanceId][sectorSum]['l']
         
         
     if config.performSectorUnload:
-        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY)
+        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[sectorSum])
+    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
     
     return True
 
 # Map cleaner
-def _unloadCheck(sectorX, sectorY):
+def _unloadCheck(sectorX, sectorY, instanceId):
     # Calculate the x->x and y->y ranges
     # We're using a little higher values here to avoid reloading again 
     
@@ -566,22 +572,22 @@ def _unloadCheck(sectorX, sectorY):
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
         
         # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
+        if instenceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
             return False # He can see us, cancel the unloading
             
     return True
     
-def _unloadMap(sectorX, sectorY):
-    print "Checking %d.%d.sec" % (sectorX, sectorY)
+def _unloadMap(sectorX, sectorY, instanceId):
+    print "Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId)
     t = time.time()
-    if _unloadCheck(sectorX, sectorY):
+    if _unloadCheck(sectorX, sectorY, instanceId):
         print "Unloading...."
         unload(sectorX, sectorY)
         print "Unloading took: %f" % (time.time() - t)   
         
-def unload(sectorX, sectorY):
+def unload(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     try:
-        del knownMap[sectorSum]
+        del knownMap[instanceId][sectorSum]
     except:
         pass
