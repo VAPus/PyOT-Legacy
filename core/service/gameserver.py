@@ -135,7 +135,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.exitWithError("Character can't be loaded")
                     return
 
-            if gamemaster and character[3] < 3:
+            if gamemaster and character[0][3] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
 
