@@ -460,20 +460,23 @@ SPECIAL_GROUP = 4
 
 AREA_ONE = (0,0),
 
-AREA_WAVE4 = TARGET_DIRECTION, (0,), \
-            (-1, 0, 1), \
-            (-1, 0, 1), \
-            (-2, -1, 0, 1, 2)
-            
+#strike
+AREA_WAVE1 = TARGET_DIRECTION, (0,)
+
 AREA_WAVE2 = TARGET_DIRECTION, (0,), \
 (-1, 0, 1)
+
+AREA_WAVE4 = TARGET_DIRECTION, (0,), \
+(-1, 0, 1), \
+(-1, 0, 1), \
+(-2, -1, 0, 1, 2)
 
 AREA_WAVE5 = TARGET_DIRECTION, (0,), \
 (0), \
 (-1, 0, 1), \
 (-1, 0, 1), \
 (-1, 0, 1) 
-             
+
 AREA_BEAM4 = TARGET_DIRECTION,(0,), (0,), (0,), (0,)
 
 AREA_BEAM7 = TARGET_DIRECTION,(0,), (0,), (0,), (0,), (0,), (0,), (0,)
@@ -504,7 +507,7 @@ AREA_SQUARE = TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
 
 AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)
 
-#way be incorrect
+#may be incorrect
 AREA_DIAGONALWALL = TARGET_DIRECTION, (-2, -1), \
 (-1), \
 (-1, 0, 1), \
