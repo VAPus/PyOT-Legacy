@@ -1,7 +1,7 @@
 dark_torturer = game.monster.genMonster("Dark Torturer", (234, 6328), "a dark torturer")
 dark_torturer.setHealth(7350, healthmax=7350)
 dark_torturer.bloodType(color="blood")
-dark_torturer.setDefense(armor=15, fire=0, earth=0.1, energy=0.7, ice=1.1, holy=1.1, death=0.9, physical=1, drown=1)
+dark_torturer.setDefense(armor=48, fire=0, earth=0.1, energy=0.7, ice=1.1, holy=1.1, death=0.9, physical=1, drown=1)
 dark_torturer.setExperience(4650)
 dark_torturer.setSpeed(280)
 dark_torturer.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

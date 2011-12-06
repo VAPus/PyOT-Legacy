@@ -1,7 +1,7 @@
 dragon_lord = game.monster.genMonster("Dragon Lord", (39, 5984), "a dragon lord")
 dragon_lord.setHealth(1900)
 dragon_lord.bloodType(color="blood")
-dragon_lord.setDefense(armor=10, fire=0, earth=0.2, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
+dragon_lord.setDefense(armor=37, fire=0, earth=0.2, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
 dragon_lord.setExperience(2100)
 dragon_lord.setSpeed(240)
 dragon_lord.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=300)

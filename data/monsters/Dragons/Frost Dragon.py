@@ -1,7 +1,7 @@
 frost_dragon = game.monster.genMonster("Frost Dragon", (248, 7091), "a frost dragon")
 frost_dragon.setHealth(1800)
 frost_dragon.bloodType(color="undead")
-frost_dragon.setDefense(armor=10, fire=0, earth=0, energy=1, ice=0, holy=1, death=0.9, physical=0.95, drown=1)
+frost_dragon.setDefense(armor=42, fire=0, earth=0, energy=1, ice=0, holy=1, death=0.9, physical=0.95, drown=1)
 frost_dragon.setExperience(2100)
 frost_dragon.setSpeed(260)
 frost_dragon.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=250)

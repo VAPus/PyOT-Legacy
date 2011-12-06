@@ -1,7 +1,7 @@
 destroyer = game.monster.genMonster("destroyer", (236, 6320), "a Destroyer")
 destroyer.setHealth(3700, healthmax=3700)
 destroyer.bloodType(color="blood")
-destroyer.setDefense(armor=10, fire=0.7, earth=0.8, energy=0, ice=1.15, holy=1.03, death=0.8, physical=0.8, drown=1)
+destroyer.setDefense(armor=37, fire=0.7, earth=0.8, energy=0, ice=1.15, holy=1.03, death=0.8, physical=0.8, drown=1)
 destroyer.setExperience(2500)
 destroyer.setSpeed(380)
 destroyer.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

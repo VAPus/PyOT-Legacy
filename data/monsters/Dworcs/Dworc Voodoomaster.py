@@ -1,7 +1,7 @@
 dworc_voodoomaster = game.monster.genMonster("Dworc Voodoomaster", (214, 6055), "a dworc voodoomaster")
 dworc_voodoomaster.setHealth(80, healthmax=80)
 dworc_voodoomaster.bloodType(color="blood")
-dworc_voodoomaster.setDefense(armor=1, fire=1.15, earth=0, energy=1, ice=1.1, holy=0.65, death=1.1, physical=1, drown=1)
+dworc_voodoomaster.setDefense(armor=2, fire=1.15, earth=0, energy=1, ice=1.1, holy=0.65, death=1.1, physical=1, drown=1)
 dworc_voodoomaster.setExperience(55)
 dworc_voodoomaster.setSpeed(240)
 dworc_voodoomaster.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=4, runOnHealth=15)

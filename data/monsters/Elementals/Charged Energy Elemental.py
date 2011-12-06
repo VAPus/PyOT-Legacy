@@ -1,7 +1,7 @@
 charged_energy_elemental = game.monster.genMonster("Charged Energy Elemental", (293, 8966), "a charged energy elemental")
 charged_energy_elemental.setHealth(500)
 charged_energy_elemental.bloodType(color="undead")
-charged_energy_elemental.setDefense(armor=10, fire=0, earth=1.5, energy=0, ice=0, holy=0, death=0.95, physical=1, drown=1)
+charged_energy_elemental.setDefense(armor=27, fire=0, earth=1.5, energy=0, ice=0, holy=0, death=0.95, physical=1, drown=1)
 charged_energy_elemental.setExperience(450)
 charged_energy_elemental.setSpeed(270)
 charged_energy_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

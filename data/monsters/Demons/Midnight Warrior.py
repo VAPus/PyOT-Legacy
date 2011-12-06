@@ -2,7 +2,7 @@ midnight_warrior = game.monster.genMonster("Midnight Warrior", (8, 5980), "a mid
 midnight_warrior.setOutfit(95, 95, 95, 95)#
 midnight_warrior.setHealth(1000)
 midnight_warrior.bloodType(color="blood")
-midnight_warrior.setDefense(armor=1, fire=1.1, earth=0, energy=0.8, ice=0.8, holy=1, death=1, physical=0.85, drown=1)#
+midnight_warrior.setDefense(armor=24, fire=1.1, earth=0, energy=0.8, ice=0.8, holy=1, death=1, physical=0.85, drown=1)#
 midnight_warrior.setExperience(750)
 midnight_warrior.setSpeed(300)#
 midnight_warrior.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

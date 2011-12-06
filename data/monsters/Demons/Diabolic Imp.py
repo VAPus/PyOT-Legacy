@@ -1,7 +1,7 @@
 diabolic_imp = game.monster.genMonster("Diabolic Imp", (237, 6364), "a diabolic imp")
 diabolic_imp.setHealth(1950)
 diabolic_imp.bloodType(color="blood")
-diabolic_imp.setDefense(armor=10, fire=0, earth=0.5, energy=1, ice=1.1, holy=1.05, death=0.9, physical=1, drown=1)
+diabolic_imp.setDefense(armor=30, fire=0, earth=0.5, energy=1, ice=1.1, holy=1.05, death=0.9, physical=1, drown=1)
 diabolic_imp.setExperience(2900)
 diabolic_imp.setSpeed(320)
 diabolic_imp.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=400)

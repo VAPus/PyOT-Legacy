@@ -1,7 +1,7 @@
 goblin_scavenger = game.monster.genMonster("Goblin Scavenger", (297, 6002), "a goblin scavenger")
 goblin_scavenger.setHealth(60, healthmax=60)
 goblin_scavenger.bloodType(color="blood")
-goblin_scavenger.setDefense(armor=9, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.1, physical=1, drown=1)
+goblin_scavenger.setDefense(armor=7, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.1, physical=1, drown=1)
 goblin_scavenger.setExperience(37)
 goblin_scavenger.setSpeed(220)
 goblin_scavenger.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=310, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=12)

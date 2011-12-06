@@ -1,7 +1,7 @@
 dworc_venomsniper = game.monster.genMonster("Dworc Venomsniper", (216, 6059), "a dworc venomsniper")
 dworc_venomsniper.setHealth(80, healthmax=80)
 dworc_venomsniper.bloodType(color="blood")
-dworc_venomsniper.setDefense(armor=5, fire=1.13, earth=0, energy=1, ice=1.13, holy=0.85, death=1.08, physical=1, drown=1)
+dworc_venomsniper.setDefense(armor=2, fire=1.13, earth=0, energy=1, ice=1.13, holy=0.85, death=1.08, physical=1, drown=1)
 dworc_venomsniper.setExperience(35)
 dworc_venomsniper.setSpeed(240)
 dworc_venomsniper.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=4, runOnHealth=15)

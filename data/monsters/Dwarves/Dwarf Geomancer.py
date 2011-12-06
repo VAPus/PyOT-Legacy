@@ -1,7 +1,7 @@
 dwarf_geomancer = game.monster.genMonster("Dwarf Geomancer", (66, 6015), "a dwarf geomancer")
 dwarf_geomancer.setHealth(380)
 dwarf_geomancer.bloodType(color="blood")
-dwarf_geomancer.setDefense(armor=10, fire=0.4, earth=0.8, energy=0.9, ice=1.05, holy=0.9, death=1.1, physical=1, drown=1)
+dwarf_geomancer.setDefense(armor=15, fire=0.4, earth=0.8, energy=0.9, ice=1.05, holy=0.9, death=1.1, physical=1, drown=1)
 dwarf_geomancer.setExperience(265)
 dwarf_geomancer.setSpeed(200)
 dwarf_geomancer.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=4, runOnHealth=150)

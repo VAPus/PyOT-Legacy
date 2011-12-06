@@ -2,7 +2,7 @@ novice_of_the_cult = game.monster.genMonster("Novice of the Cult", (133, 6080), 
 novice_of_the_cult.setOutfit(114, 95, 114, 114)
 novice_of_the_cult.setHealth(285)
 novice_of_the_cult.bloodType(color="blood")
-novice_of_the_cult.setDefense(armor=10, fire=1.05, earth=0.9, energy=1.08, ice=0.9, holy=0.9, death=1.08, physical=1.1, drown=1)
+novice_of_the_cult.setDefense(armor=16, fire=1.05, earth=0.9, energy=1.08, ice=0.9, holy=0.9, death=1.08, physical=1.1, drown=1)
 novice_of_the_cult.setExperience(100)
 novice_of_the_cult.setSpeed(210)
 novice_of_the_cult.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=40)

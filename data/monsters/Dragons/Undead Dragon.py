@@ -1,7 +1,7 @@
 undead_dragon = game.monster.genMonster("Undead Dragon", (231, 6306), "an undead dragon")
 undead_dragon.setHealth(8350, healthmax=8350)
 undead_dragon.bloodType(color="undead")
-undead_dragon.setDefense(armor=10, fire=0, earth=0, energy=1, ice=0.5, holy=1.25, death=0, physical=0.95, drown=1)
+undead_dragon.setDefense(armor=73, fire=0, earth=0, energy=1, ice=0.5, holy=1.25, death=0, physical=0.95, drown=1)
 undead_dragon.setExperience(7200)
 undead_dragon.setSpeed(300)
 undead_dragon.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=500)

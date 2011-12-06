@@ -1,7 +1,7 @@
 fire_elemental = game.monster.genMonster("Fire Elemental", (49, 8964), "a fire elemental")
 fire_elemental.setHealth(280, healthmax=280)
 fire_elemental.bloodType(color="blood")
-fire_elemental.setDefense(armor=10, fire=0, earth=1, energy=1, ice=1.25, holy=1, death=0, physical=1, drown=1)
+fire_elemental.setDefense(armor=20, fire=0, earth=1, energy=1, ice=1.25, holy=1, death=0, physical=1, drown=1)
 fire_elemental.setExperience(220)
 fire_elemental.setSpeed(200)
 fire_elemental.setBehavior(summonable=690, hostile=1, illusionable=1, convinceable=690, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

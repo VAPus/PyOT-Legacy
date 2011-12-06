@@ -1,7 +1,7 @@
 nightmare = game.monster.genMonster("Nightmare", (245, 6340), "a nightmare")
 nightmare.setHealth(2700)
 nightmare.bloodType(color="blood")
-nightmare.setDefense(armor=25, fire=0.8, earth=0, energy=0.8, ice=0.9, holy=1.25, death=0, physical=1, drown=1)
+nightmare.setDefense(armor=27, fire=0.8, earth=0, energy=0.8, ice=0.9, holy=1.25, death=0, physical=1, drown=1)
 nightmare.setExperience(2150)
 nightmare.setSpeed(380)
 nightmare.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=300)

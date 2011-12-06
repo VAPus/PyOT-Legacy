@@ -1,7 +1,7 @@
 hellhound = game.monster.genMonster("Hellhound", (240, 6332), "a hellhound")
 hellhound.setHealth(7500, healthmax=7500)
 hellhound.bloodType(color="blood")
-hellhound.setDefense(armor=15, fire=0, earth=0.8, energy=0.9, ice=1.05, holy=1.05, death=1, physical=1, drown=1)
+hellhound.setDefense(armor=68, fire=0, earth=0.8, energy=0.9, ice=1.05, holy=1.05, death=1, physical=1, drown=1)
 hellhound.setExperience(6800)
 hellhound.setSpeed(310)
 hellhound.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

@@ -1,7 +1,7 @@
 jagged_earth_elemental = game.monster.genMonster("Jagged Earth Elemental", (285, 8933), "a jagged earth elemental")
 jagged_earth_elemental.setHealth(1500)
 jagged_earth_elemental.bloodType(color="undead")
-jagged_earth_elemental.setDefense(armor=25, fire=1.15, earth=0, energy=0.85, ice=0.8, holy=0.5, death=0.55, physical=0.65, drown=1)
+jagged_earth_elemental.setDefense(armor=83, fire=1.15, earth=0, energy=0.85, ice=0.8, holy=0.5, death=0.55, physical=0.65, drown=1)
 jagged_earth_elemental.setExperience(1300)
 jagged_earth_elemental.setSpeed(280)
 jagged_earth_elemental.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

@@ -1,7 +1,7 @@
 cyclops_drone = game.monster.genMonster("Cyclops Drone", (280, 7847), "a cyclops drone")
 cyclops_drone.setHealth(325)
 cyclops_drone.bloodType(color="blood")
-cyclops_drone.setDefense(armor=15, fire=1, earth=1.1, energy=0.9, ice=0.8, holy=0.8, death=1.05, physical=1, drown=1)
+cyclops_drone.setDefense(armor=27, fire=1, earth=1.1, energy=0.9, ice=0.8, holy=0.8, death=1.05, physical=1, drown=1)
 cyclops_drone.setExperience(200)
 cyclops_drone.setSpeed(220)
 cyclops_drone.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=525, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

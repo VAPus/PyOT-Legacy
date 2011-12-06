@@ -1,7 +1,7 @@
 efreet = game.monster.genMonster("freet", (103, 6032), "a efreet")
 efreet.setHealth(550, healthmax=550)
 efreet.bloodType(color="blood")
-efreet.setDefense(armor=20, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=1.08, death=0.8, physical=1, drown=1)
+efreet.setDefense(armor=27, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=1.08, death=0.8, physical=1, drown=1)
 efreet.setExperience(410)#325?
 efreet.setSpeed(170)
 efreet.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

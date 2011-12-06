@@ -1,7 +1,7 @@
 elf_scout = game.monster.genMonster("Elf Scout", (64, 6012), "an elf scout")
 elf_scout.setHealth(160, healthmax=160)
 elf_scout.bloodType(color="blood")
-elf_scout.setDefense(armor=15, fire=1, earth=1, energy=1, ice=1, holy=1, death=1.1, physical=1, drown=1)
+elf_scout.setDefense(armor=7, fire=1, earth=1, energy=1, ice=1, holy=1, death=1.1, physical=1, drown=1)
 elf_scout.setExperience(75)
 elf_scout.setSpeed(225)
 elf_scout.setBehavior(summonable=360, hostile=1, illusionable=1, convinceable=360, pushable=0, pushItems=1, pushCreatures=0, targetDistance=4, runOnHealth=0)

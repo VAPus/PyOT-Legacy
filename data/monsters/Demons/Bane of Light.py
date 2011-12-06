@@ -1,7 +1,7 @@
 bane_of_light = game.monster.genMonster("Bane of Light", (68, 6006), "a bane of light")
 bane_of_light.setHealth(1100, healthmax=1100)
 bane_of_light.bloodType(color="blood")
-bane_of_light.setDefense(armor=10, fire=0, earth=0.8, energy=1.2, ice=0, holy=1, death=1, physical=1, drown=1)
+bane_of_light.setDefense(armor=32, fire=0, earth=0.8, energy=1.2, ice=0, holy=1, death=1, physical=1, drown=1)
 bane_of_light.setExperience(750)
 bane_of_light.setSpeed(300)
 bane_of_light.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

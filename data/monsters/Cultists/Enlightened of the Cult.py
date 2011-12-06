@@ -1,7 +1,7 @@
 enlightened_of_the_cult = game.monster.genMonster("Enlightened of the Cult", (193, 6080), "a enlightened of the cult")
 enlightened_of_the_cult.setHealth(700)
 enlightened_of_the_cult.bloodType(color="blood")
-enlightened_of_the_cult.setDefense(armor=20, fire=1, earth=1.05, energy=1, ice=0.8, holy=0.8, death=1.06, physical=1.05, drown=1)
+enlightened_of_the_cult.setDefense(armor=47, fire=1, earth=1.05, energy=1, ice=0.8, holy=0.8, death=1.06, physical=1.05, drown=1)
 enlightened_of_the_cult.setExperience(500)
 enlightened_of_the_cult.setSpeed(220)
 enlightened_of_the_cult.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=0)#target dis 5?

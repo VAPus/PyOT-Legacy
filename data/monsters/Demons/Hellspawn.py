@@ -1,7 +1,7 @@
 hellspawn = game.monster.genMonster("Hellspawn", (322, 9923), "a hellspawn")
 hellspawn.setHealth(3500)
 hellspawn.bloodType(color="blood")
-hellspawn.setDefense(armor=15, fire=0.6, earth=0.2, energy=0.9, ice=1.1, holy=0.7, death=1.05, physical=0.9, drown=1)
+hellspawn.setDefense(armor=68, fire=0.6, earth=0.2, energy=0.9, ice=1.1, holy=0.7, death=1.05, physical=0.9, drown=1)
 hellspawn.setExperience(2550)
 hellspawn.setSpeed(300)
 hellspawn.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

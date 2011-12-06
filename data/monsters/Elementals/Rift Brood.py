@@ -2,7 +2,7 @@
 rift_brood = game.monster.genMonster("Rift Brood", (290, 8966), "a Rift Brood")
 rift_brood.setHealth(3000)
 rift_brood.bloodType(color="undead")
-rift_brood.setDefense(armor=10, fire=0, earth=1.25, energy=0, ice=0, holy=0.85, death=1.25, physical=0.6, drown=1)
+rift_brood.setDefense(armor=29, fire=0, earth=1.25, energy=0, ice=0, holy=0.85, death=1.25, physical=0.6, drown=1)
 rift_brood.setExperience(1600)
 rift_brood.setSpeed(300)
 rift_brood.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

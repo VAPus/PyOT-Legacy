@@ -1,7 +1,7 @@
 roaring_water_elemental = game.monster.genMonster("Roaring Water Elemental", (11, 8965), "a roaring water elemental")
 roaring_water_elemental.setHealth(1750, healthmax=1750)
 roaring_water_elemental.bloodType(color="undead")
-roaring_water_elemental.setDefense(armor=15, fire=0, earth=0, energy=1, ice=0, holy=0.4, death=0.5, physical=0.3, drown=1)
+roaring_water_elemental.setDefense(armor=50, fire=0, earth=0, energy=1, ice=0, holy=0.4, death=0.5, physical=0.3, drown=1)
 roaring_water_elemental.setExperience(1300)
 roaring_water_elemental.setSpeed(390)
 roaring_water_elemental.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

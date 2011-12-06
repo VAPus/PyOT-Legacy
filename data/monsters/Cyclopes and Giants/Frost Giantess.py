@@ -1,7 +1,7 @@
 frost_giantess = game.monster.genMonster("Frost Giantess", (265, 7330), "a frost giantess")
 frost_giantess.setHealth(275)
 frost_giantess.bloodType(color="blood")
-frost_giantess.setDefense(armor=15, fire=1.1, earth=1, energy=1.1, ice=0, holy=0.9, death=1.03, physical=1, drown=1)
+frost_giantess.setDefense(armor=22, fire=1.1, earth=1, energy=1.1, ice=0, holy=0.9, death=1.03, physical=1, drown=1)
 frost_giantess.setExperience(150)
 frost_giantess.setSpeed(195)
 frost_giantess.setBehavior(summonable=490, hostile=1, illusionable=1, convinceable=490, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=0)

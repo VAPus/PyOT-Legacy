@@ -1,7 +1,7 @@
 Bride_of_Night = game.monster.genMonster("Bride of Night", (58, 6081), "a bride of night")
 Bride_of_Night.setHealth(275)
 Bride_of_Night.bloodType(color="blood")
-Bride_of_Night.setDefense(armor=1, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
+Bride_of_Night.setDefense(armor=15, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
 Bride_of_Night.setExperience(450)
 Bride_of_Night.setSpeed(300)
 Bride_of_Night.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

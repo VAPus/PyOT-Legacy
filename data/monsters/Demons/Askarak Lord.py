@@ -1,7 +1,7 @@
 askarak_lord = game.monster.genMonster("Askarak Lord", (410, 5980), "an askarak lord")#corpse
 askarak_lord.setHealth(2100, healthmax=2100)
 askarak_lord.bloodType(color="blood")
-askarak_lord.setDefense(armor=20, fire=1.3, earth=1, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#
+askarak_lord.setDefense(armor=30, fire=1.3, earth=1, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#
 askarak_lord.setExperience(1200)
 askarak_lord.setSpeed(300)#
 askarak_lord.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

@@ -1,7 +1,7 @@
 shaburak_lord = game.monster.genMonster("Shaburak Lord", (409, 5980), "a shaburak lord")#corpse
 shaburak_lord.setHealth(2100, healthmax=2100)
 shaburak_lord.bloodType(color="blood")
-shaburak_lord.setDefense(armor=20, fire=1, earth=1.3, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#
+shaburak_lord.setDefense(armor=30, fire=1, earth=1.3, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#
 shaburak_lord.setExperience(1200)
 shaburak_lord.setSpeed(300)#
 shaburak_lord.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

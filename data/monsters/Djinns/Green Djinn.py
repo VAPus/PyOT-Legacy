@@ -1,7 +1,7 @@
 green_djinn = game.monster.genMonster("Green Djinn", (51, 6016), "a green djinn")
 green_djinn.setHealth(330)
 green_djinn.bloodType(color="blood")
-green_djinn.setDefense(armor=10, fire=0.8, earth=1, energy=0.5, ice=1.1, holy=1.13, death=0.8, physical=0.8, drown=1)
+green_djinn.setDefense(armor=22, fire=0.8, earth=1, energy=0.5, ice=1.1, holy=1.13, death=0.8, physical=0.8, drown=1)
 green_djinn.setExperience(215)
 green_djinn.setSpeed(220)
 green_djinn.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

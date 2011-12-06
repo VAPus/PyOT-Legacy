@@ -1,7 +1,7 @@
 dragon_hatchling = game.monster.genMonster("Dragon Hatchling", (271, 7621), "a dragon hatchling")
 dragon_hatchling.setHealth(380)
 dragon_hatchling.bloodType(color="blood")
-dragon_hatchling.setDefense(armor=1, fire=0, earth=0.25, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)
+dragon_hatchling.setDefense(armor=25, fire=0, earth=0.25, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)
 dragon_hatchling.setExperience(185)
 dragon_hatchling.setSpeed(170)
 dragon_hatchling.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=75)

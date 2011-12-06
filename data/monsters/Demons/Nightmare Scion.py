@@ -1,7 +1,7 @@
 nightmare_scion = game.monster.genMonster("Nightmare Scion", (321, 9919), "a nightmare scion")
 nightmare_scion.setHealth(1400, healthmax=1400)
 nightmare_scion.bloodType(color="blood")
-nightmare_scion.setDefense(armor=20, fire=0.8, earth=0, energy=0.8, ice=0.9, holy=1.25, death=0, physical=1, drown=1)
+nightmare_scion.setDefense(armor=27, fire=0.8, earth=0, energy=0.8, ice=0.9, holy=1.25, death=0, physical=1, drown=1)
 nightmare_scion.setExperience(1350)
 nightmare_scion.setSpeed(460)
 nightmare_scion.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=250)
