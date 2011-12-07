@@ -3,14 +3,14 @@ import game.item
 from twisted.internet import threads, reactor
 from twisted.python import log
 import bindconstant
-import cPickle
 import scriptsystem
 from collections import deque
 import config
 import game.enum
 import time
 import io
-
+import struct
+import sys
 
 ##### Position class ####
 def __uid():
@@ -537,7 +537,105 @@ def _l(instanceId, code):
         exec(code, {}, {"S":_l_instance_spawner(instanceId)})
     else:
         exec(code, {}, {"S":SpawnCode})
+
+### Start New Map Format ###
+def readAttributeValue(code, pos):
+    opCode = code[pos]
+    pos += 1
     
+    if opCode == "i":
+        pos += 4
+        return pos, struct.unpack("i", code[pos-4:pos])[0]
+    elif opCode == "s":
+        valueLength = struct.unpack("i", code[pos:pos+4])[0]
+        pos += valueLength + 4
+        return pos, code[pos-valueLength:pos]
+    elif opCode == "b":
+        pos += 1
+        return pos, bool(ord(code[pos-1]))
+    elif opCode == "l":
+        value = []
+        length = ord(code[pos])
+        pos += 1
+        for i in xrange(length):
+            pos, item = read_attribute_value(code, pos)
+            value.append(item)
+            
+        return pos, value
+    else:
+        raise AttributeError(str(opCode))
+    
+def loadSectorMap(code):
+    thisSectorMap = {}
+    pos = 0
+    codeLength = len(code)
+
+    # Avoid 1k calls to making the format :)
+    # Pypy need a special treatment to avoid this.
+    if sys.subversion[0] == 'PyPy':
+        ll_unpack = struct.unpack
+        l_unpack = lambda data: ll_unpack("HBB", data)
+    else:
+        l_unpack = struct.Struct("HBB").unpack
+    
+    # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
+    # Pypy gain nothing, but CPython does.
+    l_Item = Item
+    l_Tile = Tile
+    
+    # Also attempt to local the itemCache, pypy doesn't like this tho.
+    l_itemCache = itemCache
+    
+    while True:
+        level = ord(code[pos])
+        pos += 1
+        xlevel = []
+        l_xlevel_append = xlevel.append
+        
+        for xr in xrange(32):
+            ywork = []
+            l_ywork_append = ywork.append
+            
+            for yr in xrange(32):
+                items = []
+                l_items_append = items.append
+                
+                while True:
+                    itemId, count, attrNr = l_unpack(code[pos:pos+4])
+
+                    if attrNr:
+                        pos += 4
+                        attr = {}
+                        for n in xrange(attrNr):
+                            nameLength = ord(code[pos])
+
+                            name=code[pos+1:pos+nameLength+1]
+                            pos += nameLength + 1
+                            
+                            pos, value=read_attribute_value(code, pos)
+                            attr[name] = value
+                            
+                        pos += 1
+                        l_items_append(l_Item(itemId, count, **attr))
+                    else:
+                        pos += 5
+                        try:
+                            l_items_append(l_itemCache[itemId])
+                        except KeyError:
+                            i = l_itemCache[itemId] = l_Item(itemId, count)
+                            l_items_append(i)
+                        
+                        
+                    
+                    if code[pos-1] == ';': break
+                l_ywork_append(l_Tile(items))
+            l_xlevel_append(ywork)
+            
+        thisSectorMap[level] = xlevel
+        if pos >= codeLength:
+           return thisSectorMap 
+           
+### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     
@@ -552,19 +650,13 @@ def load(sectorX, sectorY, instanceId):
     t = time.time()
     
     # Attempt to load a cached file
-    try:
-        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            knownMap[instanceId][sectorSum] = cPickle.loads(f.read())
-    except IOError:
-        # Build cache data
-        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), 'rb') as f:
-            knownMap[instanceId][sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
-        # Write it
-        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[instanceId][sectorSum], 2))
+    raise NotImplemented("This is a work in progress branch, don't use me yet! I don't work")
+
+    with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
+        knownMap[instanceId][sectorSum] = loadSectorMap(f.read())
             
     print "Loading took: %f" % (time.time() - t)
-    
+    """
     if 'l' in knownMap[instanceId][sectorSum]:
         reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
         del knownMap[instanceId][sectorSum]['l']
@@ -574,7 +666,7 @@ def load(sectorX, sectorY, instanceId):
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
     
     scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
-    
+    """
     return True
 
 # Map cleaner
