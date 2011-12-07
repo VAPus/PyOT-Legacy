@@ -19,7 +19,7 @@ class Reader(object):
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return struct.unpack("<B", self.data[self.pos-1:self.pos])[0]
+        return ord(self.data[self.pos-1])
         
     def peekUint8(self):
         try:

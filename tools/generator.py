@@ -3,7 +3,7 @@ import sys
 sys.path.append('../')
 import config
 import MySQLdb
-
+import struct
 
 ### Load all solid and movable items
 items = set()
@@ -23,17 +23,57 @@ cursor.close()
 
 db.close()
     
-# Ops:
+# Format (Work in Progress):
 """
-    I: Item
-    C: Closed tile
-    R: "restricted"/solid Item
-    T: Tile
-    Tf: Tile with flags
-    V: Alias for a precached (reference) version of T(I(100))
-    S: Spawn point
-        M: Monster
-        N: NPC 
+    <uint8>floor_level
+        <loop>32x32
+
+        <uint16>itemId
+        <uint8>attributeCount (
+            See attribute format
+        )
+        
+        [
+        (char),
+        <uint16>itemId
+        <uint8>attributeCount (
+            See attribute format
+        )
+        ]
+        
+        {
+            ; -> go to next tile
+            | -> skip the remaining y tiles
+            ! -> skip the remaining x and y tiles
+        }
+        
+
+    Attribute format:
+    
+    {
+        <uint8>nameLength
+        <string with length nameLength>attributeName
+        
+        <char>attributeType
+        {
+            attributeType == i (
+                <int32>value
+            )
+            attributeType == s (
+                <uint16>valueLength
+                <string with length valueLength>value
+            )
+            attributeType == b (
+                <bool>value
+            )
+            attributeType == l (
+                <uint8>listItems
+                <repeat this block for listItems times> -> value
+            )
+        }
+        
+        
+    }
 """
 
 ### Behavior
@@ -247,9 +287,9 @@ class Map(object):
                 # Level 3, y compare:
                 def yComp(xCom, z, x):
                     output = []
-                    row = 0
+                    #row = 0
                     for y in xCom:
-                        pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
+                        """pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
                         if pos in self.houses:
                             output.append("H(%d,(%d,%d,%d),%s)" % (self.houses[pos],pos[0],pos[1],pos[2],','.join(y)))
                             print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
@@ -259,12 +299,18 @@ class Map(object):
                             if "R(" in y:
                                 output.append("C(%s)" % (','.join(y)))
                             else:
-                                output.append("T(%s)" % (','.join(y)))
-                        row += 1    
+                                output.append("T(%s)" % (','.join(y)))"""
+                        if y:
+                            
+                            output.append(','.join(y))
+                        else:
+                            output.append(chr(0) * 3)
+                        #row += 1    
                     if output:    
-                        return "(%s)" % (','.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
-
-                    return 'None'
+                        return ';'.join(output) + ';'
+                    else:
+                        return (chr(0) * 3) + '|'
+                    #return '|'
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
@@ -278,8 +324,8 @@ class Map(object):
                         if t == "None":
                             noRows += 1
                         row += 1    
-                    if not noRows >= areas[0]:
-                        return "(%s)" % ','.join(output)
+                    #if not noRows >= areas[0]:
+                    return ''.join(output) + '!' if row < 32 else ''
                 
                 output = []
                 for zPos in sector:
@@ -287,19 +333,20 @@ class Map(object):
                     if data:
                         if zPos in nothingness:
                             nothingness.remove(zPos)
-                        output.append("%d:%s" % (zPos, data))
-                        
-                if extras:
-                    output.append("'l':'''%s'''" % (';'.join(extras)))
+                        output.append("%s%s" % (chr(zPos), data))
+                        if output[-1][-1] not in (";", "|", "!"):
+                            raise Exception("%d doesn't end with a valid character (%s)" % (zPos, output[-1][-1]))
+                #if extras:
+                #    output.append("'l':'''%s'''" % (';'.join(extras)))
                           
                 if output:
-                    output = "m={%s}" % ','.join(output)
+                    output = ''.join(output)
                 else: # A very big load of nothing
-                    output = "m=None"
+                    output = ""
 
                 
                     
-                if output != "m=None":
+                if output:
                     with open('%d.%d.sec' % (xA, yA), 'w') as f:
                         f.write(output)
                 
@@ -428,26 +475,55 @@ class Item(object):
     
     def action(self, id):
         self.actions.append(id)
+
+    # Attribute writer function. Needs to be a function so it can call itself in case of a list.
+    def writeAttribute(self, name, value):
+        # Only toplevel attributes got a name, since we're called from a list too, we need to vertify this one.
+        if name:
+            string = chr(len(name)) + name
+        else:
+            string = ''
         
+        # Is the value a number?
+        if isinstance(value, int):
+            string += "i" + struct.pack("i", value)
+            
+        # A string?
+        elif isinstance(value, str):
+            string += "s" + struct.pack("i", len(value)) + value
+            
+        # A bool?
+        elif isinstance(value, bool):
+            string += "b" + struct.pack("B", value)
+            
+        # Or a list (actions etc)
+        elif isinstance(value, list):
+            string += "l" + struct.pack("B", len(value))
+            for attr in value:
+                string += self.writeAttribute(None, attr)
+                
+        return string
+    
     def gen(self, x,y,z,rx,ry,extras):
-        extra = ""
+        code = struct.pack("H", self.id)
+
         if self.actions:
             self.attributes["actions"] = self.actions
         
         if self.id in movable:
             print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
-            self.attributes["movable"] = 0
-            
+            self.attributes["movable"] = False
+        
+        code += chr(len(self.attributes))
         if self.attributes:
             eta = []
             for key in self.attributes:
-                eta.append("%s=%s" % (key, str(self.attributes[key]) if type(self.attributes[key]) != str else '"""%s"""' % self.attributes[key]))
+                eta.append(self.writeAttribute(key, self.attributes[key]))
             
-            extra = ',%s' % ','.join(eta)
-        if not self.id in items:
-            return ('I(%d%s)' % (self.id, extra), extras)
-        else:
-            return ('R(%d%s)' % (self.id, extra), extras) 
+            code += ''.join(eta)
+
+        return code, extras
+
 
 class RSItem(object):
     __slots__ = ('ids')

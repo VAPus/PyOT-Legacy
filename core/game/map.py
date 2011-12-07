@@ -558,12 +558,12 @@ def readAttributeValue(code, pos):
         length = ord(code[pos])
         pos += 1
         for i in xrange(length):
-            pos, item = read_attribute_value(code, pos)
+            pos, item = readAttributeValue(code, pos)
             value.append(item)
             
         return pos, value
     else:
-        raise AttributeError(str(opCode))
+        raise AttributeError(str(opCode) + " on " + str(hex(pos)))
     
 def loadSectorMap(code):
     thisSectorMap = {}
@@ -574,63 +574,88 @@ def loadSectorMap(code):
     # Pypy need a special treatment to avoid this.
     if sys.subversion[0] == 'PyPy':
         ll_unpack = struct.unpack
-        l_unpack = lambda data: ll_unpack("HBB", data)
+        l_unpack = lambda data: ll_unpack("HB", data)
     else:
-        l_unpack = struct.Struct("HBB").unpack
+        l_unpack = struct.Struct("HB").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
-    l_Item = Item
+    l_Item = game.item.Item
     l_Tile = Tile
     
     # Also attempt to local the itemCache, pypy doesn't like this tho.
-    l_itemCache = itemCache
+    l_itemCache = dummyItems
     
     while True:
         level = ord(code[pos])
         pos += 1
         xlevel = []
         l_xlevel_append = xlevel.append
+        skip_remaining = False
         
         for xr in xrange(32):
             ywork = []
+            print "Xrange %d out of 32" % (xr+1)
             l_ywork_append = ywork.append
+            skip = False
             
             for yr in xrange(32):
                 items = []
                 l_items_append = items.append
-                
+                print "Yrange %d out of 32" % (yr+1)
                 while True:
-                    itemId, count, attrNr = l_unpack(code[pos:pos+4])
+                    itemId, attrNr = l_unpack(code[pos:pos+3])
+                    print "Item %d at %d with %d attributes" % (itemId, pos, attrNr)
 
-                    if attrNr:
-                        pos += 4
-                        attr = {}
-                        for n in xrange(attrNr):
-                            nameLength = ord(code[pos])
+                    if itemId:
+                        if attrNr:
+                            pos += 3
+                            attr = {}
+                            for n in xrange(attrNr):
+                                nameLength = ord(code[pos])
 
-                            name=code[pos+1:pos+nameLength+1]
-                            pos += nameLength + 1
-                            
-                            pos, value=read_attribute_value(code, pos)
-                            attr[name] = value
-                            
-                        pos += 1
-                        l_items_append(l_Item(itemId, count, **attr))
+                                name=code[pos+1:pos+nameLength+1]
+                                pos += nameLength + 1
+                                
+                                pos, value=readAttributeValue(code, pos)
+                                attr[name] = value
+                                
+                            pos += 1
+                            l_items_append(l_Item(itemId, **attr))
+                        elif itemId:
+                            pos += 4
+                            try:
+                                l_items_append(l_itemCache[itemId])
+                            except KeyError:
+                                item = l_Item(itemId)
+                                item.tileStacked = True
+                                item.fromMap = True
+                                l_itemCache[itemId] = item
+                                l_items_append(item)
                     else:
-                        pos += 5
-                        try:
-                            l_items_append(l_itemCache[itemId])
-                        except KeyError:
-                            i = l_itemCache[itemId] = l_Item(itemId, count)
-                            l_items_append(i)
+                        pos += 4
                         
-                        
-                    
-                    if code[pos-1] == ';': break
-                l_ywork_append(l_Tile(items))
+                    v = code[pos-1]
+                    if v == ';': break
+                    elif v == '|':
+                        skip = True
+                        break
+                    elif v == '!':
+                        skip = True
+                        skip_remaining = True
+                        break
+                    elif v != ',':
+                        raise NameError("%s at %s" % (ord(v), hex(pos)))
+                
+                l_ywork_append(l_Tile(items) if items else None)
+                
+                if skip:
+                    break
+                
             l_xlevel_append(ywork)
-            
+            if skip_remaining:
+                break
+                
         thisSectorMap[level] = xlevel
         if pos >= codeLength:
            return thisSectorMap 
@@ -649,9 +674,7 @@ def load(sectorX, sectorY, instanceId):
     print "Loading %d,%d,sec" % (sectorX, sectorY)
     t = time.time()
     
-    # Attempt to load a cached file
-    raise NotImplemented("This is a work in progress branch, don't use me yet! I don't work")
-
+    # Attempt to load a sector file
     with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
         knownMap[instanceId][sectorSum] = loadSectorMap(f.read())
             
@@ -702,3 +725,5 @@ def unload(sectorX, sectorY, instanceId):
         del knownMap[instanceId][sectorSum]
     except:
         pass
+    
+reactor.callLater(3, load, 32, 31, None)
