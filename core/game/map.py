@@ -562,8 +562,6 @@ def readAttributeValue(code, pos):
             value.append(item)
             
         return pos, value
-    else:
-        raise AttributeError(str(opCode) + " on " + str(hex(pos)))
     
 def loadSectorMap(code):
     thisSectorMap = {}
@@ -595,17 +593,14 @@ def loadSectorMap(code):
         
         for xr in xrange(32):
             ywork = []
-            print "Xrange %d out of 32" % (xr+1)
             l_ywork_append = ywork.append
             skip = False
             
             for yr in xrange(32):
                 items = []
                 l_items_append = items.append
-                print "Yrange %d out of 32" % (yr+1)
                 while True:
                     itemId, attrNr = l_unpack(code[pos:pos+3])
-                    print "Item %d at %d with %d attributes" % (itemId, pos, attrNr)
 
                     if itemId:
                         if attrNr:
@@ -644,8 +639,6 @@ def loadSectorMap(code):
                         skip = True
                         skip_remaining = True
                         break
-                    elif v != ',':
-                        raise NameError("%s at %s" % (ord(v), hex(pos)))
                 
                 l_ywork_append(l_Tile(items) if items else None)
                 
@@ -726,4 +719,4 @@ def unload(sectorX, sectorY, instanceId):
     except:
         pass
     
-reactor.callLater(3, load, 32, 31, None)
+reactor.callLater(2, load, 30, 31, None)

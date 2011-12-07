@@ -305,7 +305,13 @@ class Map(object):
                             output.append(','.join(y))
                         else:
                             output.append(chr(0) * 3)
-                        #row += 1    
+                        #row += 1
+                    # Hack!    
+                    pad = 32 - len(output)
+                    for i in xrange(pad):
+                        output.append(chr(0) * 3)
+                    # End hack
+                    
                     if output:    
                         return ';'.join(output) + ';'
                     else:
@@ -323,9 +329,11 @@ class Map(object):
                             output.append(t)
                         if t == "None":
                             noRows += 1
-                        row += 1    
+                        row += 1
+                    if len(output) < 32:
+                        output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ; -> !
                     #if not noRows >= areas[0]:
-                    return ''.join(output) + '!' if row < 32 else ''
+                    return ''.join(output)
                 
                 output = []
                 for zPos in sector:
@@ -514,14 +522,16 @@ class Item(object):
             print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
             self.attributes["movable"] = False
         
-        code += chr(len(self.attributes))
+        
         if self.attributes:
             eta = []
             for key in self.attributes:
-                eta.append(self.writeAttribute(key, self.attributes[key]))
-            
+                if key:
+                    eta.append(self.writeAttribute(key, self.attributes[key]))
+            code += chr(len(eta))
             code += ''.join(eta)
-
+        else:
+            code += "\x00"
         return code, extras
 
 
