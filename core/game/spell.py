@@ -248,6 +248,7 @@ class Spell(object):
         
     def area(self, area):
         self.targetArea = area
+        self.targetType = TARGET_AREA
         
     def casterEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
