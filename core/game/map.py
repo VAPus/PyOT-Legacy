@@ -422,38 +422,6 @@ class SpawnCode(object):
             log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
             
         return self
-        
-#bindconstant.bind_all(SpawnCode)
-
-def I(itemId, **kwargs):
-    # Do not stack
-    if not kwargs and config.stackItems:
-        try:
-            return dummyItems[itemId]
-        except:
-            item = Item(itemId)
-            item.tileStacked = True
-            item.fromMap = True
-            dummyItems[itemId] = item
-
-            return item
-    else:
-        item = Item(itemId, **kwargs)
-        item.fromMap = True
-        
-        return item
-
-R = I # TODO
-
-def T(*args):
-    return Tile(args, itemLen=len(args))
-
-T = bindconstant._make_constants(T)
-
-def Tf(flags, *args):
-    return Tile(args, itemLen=len(args), flags=flags)
-
-Tf = bindconstant._make_constants(Tf)
 
 def H(houseId, position, *args):   
     tile = HouseTile(args, itemLen=len(args))
@@ -486,22 +454,6 @@ def H(houseId, position, *args):
         pass
 
     return tile
-    
-def C(*args):
-    if config.stackTiles:
-        code = 0
-        por = 0
-        for item in tile.things:
-            code += item.itemId << por
-            por += 14
-        if not code in dummyTiles:
-            dummyTiles[code] = T(*args)
-        return dummyTiles[code]
-    else:
-        return T(*args)
-        
-global V
-V = None
 
 if config.stackTiles:
     dummyTiles = {}
@@ -527,42 +479,24 @@ def _l(instanceId, code):
 
 ### Start New Map Format ###
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
-def readAttributeValue(code, pos):
-    opCode = code[pos]
-    pos += 1
-    
-    if opCode == "i":
-        pos += 4
-        return pos, struct.unpack("i", code[pos-4:pos])[0]
-    elif opCode == "s":
-        valueLength = struct.unpack("i", code[pos:pos+4])[0]
-        pos += valueLength + 4
-        return pos, code[pos-valueLength:pos]
-    elif opCode == "b":
-        pos += 1
-        return pos, bool(ord(code[pos-1]))
-    elif opCode == "l":
-        value = []
-        length = ord(code[pos])
-        pos += 1
-        for i in xrange(length):
-            pos, item = readAttributeValue(code, pos)
-            value.append(item)
-            
-        return pos, value
-    
+
 def loadSectorMap(code):
     thisSectorMap = {}
     pos = 0
     codeLength = len(code)
-
+    skip = False
+    skip_remaining = False
+    
     # Avoid 1k calls to making the format :)
     # Pypy need a special treatment to avoid this.
+    
     if sys.subversion[0] == 'PyPy':
         ll_unpack = struct.unpack
         l_unpack = lambda data: ll_unpack("HB", data)
+        long_unpack = lambda data: ll_unpack("i", data)
     else:
         l_unpack = struct.Struct("HB").unpack
+        long_unpack = struct.Struct("i").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -571,7 +505,8 @@ def loadSectorMap(code):
     
     # Also attempt to local the itemCache, pypy doesn't like this tho.
     l_itemCache = dummyItems
-        
+    l_attributes = attributeIds
+    
     while True:
         level = ord(code[pos])
         pos += 1
@@ -582,7 +517,7 @@ def loadSectorMap(code):
         for xr in xrange(32):
             ywork = []
             l_ywork_append = ywork.append
-            skip = False
+            
             c = 1
             while True:
                 items = []
@@ -594,10 +529,41 @@ def loadSectorMap(code):
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                name = attributeIds[ord(code[pos])]
-                                pos += 1
+                                name = l_attributes[ord(code[pos])]
+
+                                opCode = code[pos+1]
+                                pos += 2
                                 
-                                pos, value=readAttributeValue(code, pos)
+                                if opCode == "i":
+                                    pos += 4
+                                    value = long_unpack(code[pos-4:pos])[0]
+                                elif opCode == "s":
+                                    valueLength = long_unpack(code[pos:pos+4])[0]
+                                    pos += valueLength + 4
+                                    value = code[pos-valueLength:pos]
+                                elif opCode == "b":
+                                    pos += 1
+                                    value = bool(ord(code[pos-1]))
+                                elif opCode == "l":
+                                    value = []
+                                    length = ord(code[pos])
+
+                                    pos += 1
+                                    for i in xrange(length):
+                                        opCode = code[pos]
+                                        pos += 1
+                                        if opCode == "i":
+                                            pos += 4
+                                            item = long_unpack(code[pos-4:pos])[0]
+                                        elif opCode == "s":
+                                            valueLength = long_unpack(code[pos:pos+4])[0]
+                                            pos += valueLength + 4
+                                            item = code[pos-valueLength:pos]
+                                        elif opCode == "b":
+                                            pos += 1
+                                            item = bool(ord(code[pos-1]))
+                                        value.append(item)
+                                        
                                 attr[name] = value
                                 
                             pos += 1
@@ -631,13 +597,18 @@ def loadSectorMap(code):
                 if items:
                     l_ywork_append(l_Tile(items))
                 
-                if skip or c == 32:
+                if skip:
+                    skip = False
+                    break
+                elif c == 32:
                     break
                     
                 c += 1
                 
             l_xlevel_append(ywork)
             if skip_remaining:
+                skip_remaining = False
+                
                 break
                 
         thisSectorMap[level] = xlevel
@@ -705,4 +676,4 @@ def unload(sectorX, sectorY, instanceId):
         del knownMap[instanceId][sectorSum]
     except:
         pass
-    
+reactor.callLater(2, load, 30, 31, None)

@@ -165,7 +165,7 @@ maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
-loadEntierMap = True # Load all the sectors, useful for debug and benchmarking
+loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
 useNumpy = False # Use numpy to deal with map array and item array, preallocating itself. This is most memory effective without causing problems, but numpy itself is HUGE. It use like 20MB of memory. The entier map (on my system) takes only 11MB in this mode. Also, it doesn't work with Pypy until pypy 1.6
 # Disabled for now, breaks house support
 stackTiles = False # Sacrefice loading time for the sake of memory usage
