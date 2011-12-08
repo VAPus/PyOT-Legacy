@@ -1,7 +1,7 @@
 phantasm_summon = game.monster.genMonster("Phantasm", (241, 6344), "a phantasm")
 phantasm_summon.setHealth(65)
 phantasm_summon.bloodType(color="undead")
-phantasm_summon.setDefense(armor=25, fire=1.1, earth=0.8, energy=1.1, ice=0.8, holy=1.1, death=0, physical=0, drown=1)
+phantasm_summon.setDefense(armor=2, fire=1.1, earth=0.8, energy=1.1, ice=0.8, holy=1.1, death=0, physical=0, drown=1)
 phantasm_summon.setExperience(0)
 phantasm_summon.setSpeed(280)
 phantasm_summon.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

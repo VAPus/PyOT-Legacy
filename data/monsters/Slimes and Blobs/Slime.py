@@ -2,7 +2,7 @@
 slime = game.monster.genMonster("Slime", (35, 1496), "a slime")
 slime.setHealth(150)
 slime.bloodType(color="slime")
-slime.setDefense(armor=10, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)
+slime.setDefense(armor=2, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)
 slime.setExperience(160)
 slime.setSpeed(120)
 slime.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)

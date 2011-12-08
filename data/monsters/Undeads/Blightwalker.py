@@ -1,7 +1,7 @@
 blightwalker = game.monster.genMonster("Blightwalker", (246, 6354), "a blightwalker")
 blightwalker.setHealth(8900)
 blightwalker.bloodType(color="undead")
-blightwalker.setDefense(armor=15, fire=0.5, earth=0, energy=0.8, ice=0.5, holy=1.3, death=0, physical=1.1, drown=1)
+blightwalker.setDefense(armor=68, fire=0.5, earth=0, energy=0.8, ice=0.5, holy=1.3, death=0, physical=1.1, drown=1)
 blightwalker.setExperience(5850)
 blightwalker.setSpeed(240)
 blightwalker.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
