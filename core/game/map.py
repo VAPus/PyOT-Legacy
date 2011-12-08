@@ -486,22 +486,24 @@ def loadSectorMap(code):
     codeLength = len(code)
     skip = False
     skip_remaining = False
+    houseId = 0
     
     # Avoid 1k calls to making the format :)
     # Pypy need a special treatment to avoid this.
     
     if sys.subversion[0] == 'PyPy':
         ll_unpack = struct.unpack
-        l_unpack = lambda data: ll_unpack("HB", data)
-        long_unpack = lambda data: ll_unpack("i", data)
+        l_unpack = lambda data: ll_unpack("<HB", data)
+        long_unpack = lambda data: ll_unpack("<i", data)
     else:
-        l_unpack = struct.Struct("HB").unpack
-        long_unpack = struct.Struct("i").unpack
+        l_unpack = struct.Struct("<HB").unpack
+        long_unpack = struct.Struct("<i").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
     l_Item = game.item.Item
     l_Tile = Tile
+    l_HouseTile = HouseTile
     
     # Also attempt to local the itemCache, pypy doesn't like this tho.
     l_itemCache = dummyItems
@@ -521,11 +523,24 @@ def loadSectorMap(code):
             c = 1
             while True:
                 items = []
+                flags = 0
+                
                 l_items_append = items.append
                 while True:
                     itemId, attrNr = l_unpack(code[pos:pos+3])
+
                     if itemId:
-                        if attrNr:
+                        if itemId == 50:
+                            pos += 2
+                            flags = long_unpack(code[pos:pos+4])[0]
+                            pos += 5
+                            
+                        elif itemId == 51:
+                            pos += 2
+                            houseId = long_unpack(code[pos:pos+4])[0]
+                            pos += 5
+                            
+                        elif attrNr:
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
@@ -595,7 +610,13 @@ def loadSectorMap(code):
                         break
                         
                 if items:
-                    l_ywork_append(l_Tile(items))
+                    if houseId:
+                        tile = l_HouseTile(items, flags)
+                        tile.houseId = houseId
+                        houseId = 0
+                        l_ywork_append(tile)
+                    else:
+                        l_ywork_append(l_Tile(items, flags))
                 
                 if skip:
                     skip = False
@@ -608,7 +629,6 @@ def loadSectorMap(code):
             l_xlevel_append(ywork)
             if skip_remaining:
                 skip_remaining = False
-                
                 break
                 
         thisSectorMap[level] = xlevel

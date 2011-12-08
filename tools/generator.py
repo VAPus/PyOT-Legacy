@@ -29,17 +29,23 @@ db.close()
         <loop>32x32
 
         <uint16>itemId
-        <uint8>attributeCount (
-            See attribute format
-        )
-        
-        [
-        (char),
-        <uint16>itemId
-        <uint8>attributeCount (
-            See attribute format
-        )
-        ]
+        itemId >= 100:
+            <uint8>attributeCount (
+                See attribute format
+            )
+            
+            [
+            (char),
+            <uint16>itemId
+            <uint8>attributeCount (
+                See attribute format
+            )
+            ]
+        itemId == 50:
+            <int32> Tile flags
+            
+        itemId == 51:
+            <uint32_t> houseId
         
         {
             ; -> go to next tile
@@ -294,26 +300,26 @@ class Map(object):
                 # Level 3, y compare:
                 def yComp(xCom, z, x):
                     output = []
-                    #row = 0
+                    row = 0
                     for y in xCom:
-                        """pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
-                        if pos in self.houses:
-                            output.append("H(%d,(%d,%d,%d),%s)" % (self.houses[pos],pos[0],pos[1],pos[2],','.join(y)))
-                            print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
-                        elif pos in self.flags:
-                            output.append("Tf(%s,%s)" % (self.flags[pos], ','.join(y)))
-                        else:
-                            if "R(" in y:
-                                output.append("C(%s)" % (','.join(y)))
-                            else:
-                                output.append("T(%s)" % (','.join(y)))"""
+                        pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
                         if y:
-                            
+                            if pos in self.houses:
+                                y.append(struct.pack("<Hi", 50, self.houses[pos]))
+                                if not pos in self.flags:
+                                    self.flags[pos] = 1
+                                elif not self.flags[pos] & 1:
+                                    self.flags[pos] += 1
+                                    
+                            if pos in self.flags:
+                                y.append(struct.pack("<Hi", 51, self.flags[pos]))
+
                             output.append(','.join(y))
                         else:
                             output.append(chr(0) * 3)
-                        #row += 1
+                        
 
+                        row += 1
  
                     if output:
                         # Apply skipping if necessary
@@ -533,26 +539,26 @@ class Item(object):
         
         # Is the value a number?
         if isinstance(value, int):
-            string += "i" + struct.pack("i", value)
+            string += "i" + struct.pack("<i", value)
             
         # A string?
         elif isinstance(value, str):
-            string += "s" + struct.pack("i", len(value)) + value
+            string += "s" + struct.pack("<i", len(value)) + value
             
         # A bool?
         elif isinstance(value, bool):
-            string += "b" + struct.pack("B", value)
+            string += "b" + struct.pack("<B", value)
             
         # Or a list (actions etc)
         elif isinstance(value, list) or isinstance(value, tuple):
-            string += "l" + struct.pack("B", len(value))
+            string += "l" + struct.pack("<B", len(value))
             for attr in value:
                 string += self.writeAttribute(None, attr)
                 
         return string
     
     def gen(self, x,y,z,rx,ry,extras):
-        code = struct.pack("H", self.id)
+        code = struct.pack("<H", self.id)
 
         if self.actions:
             self.attributes[0] = self.actions
