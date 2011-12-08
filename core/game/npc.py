@@ -43,7 +43,7 @@ class NPC(Creature):
         Creature.__init__(self, base.data.copy(), position, cid)
         self.base = base
         self.creatureType = 2
-        self.spawnPosition = position[:]
+        self.spawnPosition = position.copy()
         self.noBrain = True
         self.walkPer = base.walkPer
         self.openChannels = []

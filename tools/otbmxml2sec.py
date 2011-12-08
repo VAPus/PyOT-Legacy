@@ -462,6 +462,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     for entry in spawnSectors:
         x = (entry[0]*32)+16
         y = (entry[1]*32)+16
+        _output_.append("# Spawns for sector %s" % str(entry))
         _output_.append(spawn)
         _output_.append('\n'.join(spawnData[entry]))
         _output_.append("at(%d, %d, s, %d)\n" % (x, y, baseZ))

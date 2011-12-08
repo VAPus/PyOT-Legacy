@@ -148,12 +148,13 @@ def getTile(pos):
     try:
         return area[sectorSum][z][pX][pY]
     except:
+        pass
         if loadTiles(x, y, pos.instanceId):
             try:
                 return area[sectorSum][z][pX][pY]
             except:
                 return None
-
+                
 def getHouseId(pos):
     try:
         return getTile(pos).houseId
@@ -395,34 +396,6 @@ houseTiles = {}
 
 houseDoors = {}
 
-# Ops codes
-class SpawnCode(object):
-    __slots__ = ('base', 'radius', 'instnce')
-    instance = None
-    
-    def __init__(self, x, y, z=None, radius=5): # z isn't used.
-        self.base = (x, y) # Constant
-        
-        self.radius = radius
-        
-    def M(self, name,x,y,z=7, spawnTime=None):
-        try:
-            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-        except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-                
-        return self
-        
-        
-    def N(self, name,x,y,z=7, spawnTime=None):
-        try:
-            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-
-        except:
-            log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-            
-        return self
-
 def H(houseId, position, *args):   
     tile = HouseTile(args, itemLen=len(args))
     tile.houseId = houseId
@@ -480,13 +453,16 @@ def _l(instanceId, code):
 ### Start New Map Format ###
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
 
-def loadSectorMap(code):
+def loadSectorMap(code, instanceId=None):
     thisSectorMap = {}
     pos = 0
     codeLength = len(code)
     skip = False
     skip_remaining = False
     houseId = 0
+    
+    # Push creature spawning to the last commands
+    laterCalls = []
     
     # Avoid 1k calls to making the format :)
     # Pypy need a special treatment to avoid this.
@@ -512,6 +488,10 @@ def loadSectorMap(code):
     # Also attempt to local the itemCache, pypy doesn't like this tho.
     l_itemCache = dummyItems
     l_attributes = attributeIds
+    
+    # Spawn commands
+    l_getNPC = game.npc.getNPC
+    l_getMonster = game.monster.getMonster
     
     while True:
         level = ord(code[pos])
@@ -547,19 +527,32 @@ def loadSectorMap(code):
                         elif itemId == 60:
                             pos += 3
                             centerX, centerY, centerZ, centerRadius = spawn_unpack(code[pos:pos+6])
+                            centerPoint = Position(centerX, centerY, centerZ, instanceId)
                             pos += 6
+                            
                             for numCreature in xrange(attrNr):
                                 creatureType = ord(code[pos])
                                 nameLength = ord(code[pos+1])
                                 name = code[pos+2:pos+nameLength+2]
                                 pos += 2 + nameLength
-                                creature_unpack(code[pos:pos+4])
+                                spawnX, spawnY, spawnTime = creature_unpack(code[pos:pos+4])
                                 pos += 4
+                                if creatureType == 61:
+                                    creature = l_getMonster(name)
+                                else:
+                                    creature = l_getNPC(name)
+                                    
+                                if creature:
+                                    laterCalls.append((creature.spawn, {'position':Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
+                                else:
+                                    print "Spawning of NPC '%s' failed, it doesn't exist!" % name
+                                    
                             pos += 1
                         elif attrNr:
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
+                                print hex(pos)
                                 name = l_attributes[ord(code[pos])]
 
                                 opCode = code[pos+1]
@@ -649,7 +642,7 @@ def loadSectorMap(code):
                 
         thisSectorMap[level] = xlevel
         if pos >= codeLength:
-           return thisSectorMap 
+           return thisSectorMap, laterCalls
            
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
@@ -658,14 +651,22 @@ def load(sectorX, sectorY, instanceId):
     if sectorSum in knownMap[instanceId]:
         return False
           
-    print "Loading %d,%d,sec" % (sectorX, sectorY)
+    print "Loading %d.%d.sec" % (sectorX, sectorY)
     t = time.time()
-    
+    print "Range X %d-%d, Y %d-%d" % (sectorX*32, (sectorX*32)+32, sectorY*32, (sectorY*32)+32)
     # Attempt to load a sector file
-    with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-        knownMap[instanceId][sectorSum] = loadSectorMap(f.read())
-            
-    print "Loading took: %f" % (time.time() - t)
+    try:
+        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
+            w, laterCalls = loadSectorMap(f.read(), instanceId)
+            knownMap[instanceId][sectorSum] = w
+    except IOError:
+        knownMap[instanceId][sectorSum] = None
+        return False
+    print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)
+    
+    for x in laterCalls:
+        x[0](**x[1])
+        
     """
     if 'l' in knownMap[instanceId][sectorSum]:
         reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
