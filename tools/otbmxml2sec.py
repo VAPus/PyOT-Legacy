@@ -312,7 +312,7 @@ while node:
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
                                 safe = False
-                                _tile_.append("i%d.attribute(\"teledest\",(%d,%d,%d))" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
+                                _tile_.append("i%d.attribute(\"teledest\",[%d,%d,%d])" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
                             elif attr == 15: # Item count
                                 safe = False
                                 _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))

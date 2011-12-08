@@ -526,6 +526,7 @@ def _l(instanceId, code):
         exec(code, {}, {"S":SpawnCode})
 
 ### Start New Map Format ###
+attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
 def readAttributeValue(code, pos):
     opCode = code[pos]
     pos += 1
@@ -593,10 +594,8 @@ def loadSectorMap(code):
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                nameLength = ord(code[pos])
-
-                                name=code[pos+1:pos+nameLength+1]
-                                pos += nameLength + 1
+                                name = attributeIds[ord(code[pos])]
+                                pos += 1
                                 
                                 pos, value=readAttributeValue(code, pos)
                                 attr[name] = value

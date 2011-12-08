@@ -51,9 +51,7 @@ db.close()
     Attribute format:
     
     {
-        <uint8>nameLength
-        <string with length nameLength>attributeName
-        
+        <uint8>attributeId
         <char>attributeType
         {
             attributeType == i (
@@ -508,13 +506,16 @@ class Tile(object):
 ### Things
 class Item(object):
     __slots__ = ('id', 'attributes', 'actions')
+    attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
     def __init__(self, id):
         self.id = id
         self.attributes = {}
         self.actions = []
         
     def attribute(self, key, value):
-        self.attributes[key] = value
+        attrId = self.attributeIds.index(key)
+        
+        self.attributes[attrId] = value
     
     def action(self, id):
         self.actions.append(id)
@@ -522,8 +523,8 @@ class Item(object):
     # Attribute writer function. Needs to be a function so it can call itself in case of a list.
     def writeAttribute(self, name, value):
         # Only toplevel attributes got a name, since we're called from a list too, we need to vertify this one.
-        if name:
-            string = chr(len(name)) + name
+        if name != None:
+            string = chr(name)
         else:
             string = ''
         
@@ -551,18 +552,17 @@ class Item(object):
         code = struct.pack("H", self.id)
 
         if self.actions:
-            self.attributes["actions"] = self.actions
+            self.attributes[0] = self.actions
         
         if self.id in movable:
             print ("Notice: Movable item (ID: %d) on (%d,%d,%d) have been unmovabilized" % (self.id, x,y,z))
-            self.attributes["movable"] = False
+            self.attributes[7] = False
         
         
         if self.attributes:
             eta = []
             for key in self.attributes:
-                if key:
-                    eta.append(self.writeAttribute(key, self.attributes[key]))
+                eta.append(self.writeAttribute(key, self.attributes[key]))
             code += chr(len(eta))
             code += ''.join(eta)
         else:
