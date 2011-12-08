@@ -343,7 +343,10 @@ class Map(object):
                         
 
                         row += 1
- 
+                    for x in xrange(32 - len(output)):
+                        output.append(chr(0) * 3)
+                        
+                    """
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
@@ -369,8 +372,9 @@ class Map(object):
   
                         return data
                     else:
-                        return (chr(0) * 3) + '|'
+                        return (chr(0) * 3) + '|'"""
                     #return '|'
+                    return ';'.join(output) + ";"
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
@@ -384,9 +388,11 @@ class Map(object):
                         if t == "None":
                             noRows += 1
                         row += 1
-                    if len(output) < 32:
+                    if not output:
+                        return None
+                    elif len(output) < 32:
                         # A walk in the park to remove the aditional 0 stuff here
-                        count = 0
+                        """count = 0
                         remove = chr(0) * 3 + '|'
                         for code in output[::-1]:
                             if code == remove: count += 1
@@ -396,7 +402,7 @@ class Map(object):
                             
                         if not output:
                             return ''
-                            
+                        """
                         output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ;/| -> !
                         
                     #if not noRows >= areas[0]:

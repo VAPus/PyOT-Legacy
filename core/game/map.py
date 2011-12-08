@@ -552,7 +552,6 @@ def loadSectorMap(code, instanceId=None):
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                print hex(pos)
                                 name = l_attributes[ord(code[pos])]
 
                                 opCode = code[pos+1]
