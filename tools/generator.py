@@ -343,10 +343,10 @@ class Map(object):
                         
 
                         row += 1
-                    for x in xrange(32 - len(output)):
-                        output.append(chr(0) * 3)
+                    #for x in xrange(32 - len(output)):
+                    #    output.append(chr(0) * 3)
                         
-                    """
+                    
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
@@ -355,6 +355,7 @@ class Map(object):
                         remove = chr(0) * 3
                         for code in output[::-1]:
                             if code == remove: count += 1
+                            else: break
                                 
                         if count:
                             output = output[:len(output)-count]
@@ -364,7 +365,7 @@ class Map(object):
                             
                             data = ';'.join(output) + "|"
                         else:    
-                            data = data + "|"
+                            data = data + (";" if row == 32 else '|')
                         
                         # Apply multiplication rules for blank tiles
                         for x in xrange(31, 1, -1):
@@ -372,9 +373,7 @@ class Map(object):
   
                         return data
                     else:
-                        return (chr(0) * 3) + '|'"""
-                    #return '|'
-                    return ';'.join(output) + ";"
+                        return (chr(0) * 3) + '|'
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
@@ -392,17 +391,18 @@ class Map(object):
                         return None
                     elif len(output) < 32:
                         # A walk in the park to remove the aditional 0 stuff here
-                        """count = 0
-                        remove = chr(0) * 3 + '|'
+                        count = 0
+                        remove = (chr(0) * 3 + '|', chr(0) * 3 + ';')
                         for code in output[::-1]:
-                            if code == remove: count += 1
+                            if code in remove: count += 1
+                            else: break
                                 
                         if count:
                             output = output[:len(output)-count]
                             
                         if not output:
                             return ''
-                        """
+                        
                         output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ;/| -> !
                         
                     #if not noRows >= areas[0]:

@@ -472,12 +472,12 @@ def loadSectorMap(code, instanceId=None):
         l_unpack = lambda data: ll_unpack("<HB", data)
         long_unpack = lambda data: ll_unpack("<i", data)
         spawn_unpack = lambda data: ll_unpack("<HHBB", data)
-        creature_unpack  = lambda data: ll_unpack("<BBH", data)
+        creature_unpack  = lambda data: ll_unpack("<bbH", data)
     else:
         l_unpack = struct.Struct("<HB").unpack
         long_unpack = struct.Struct("<i").unpack
         spawn_unpack = struct.Struct("<HHBB").unpack
-        creature_unpack = struct.Struct("<BBH").unpack
+        creature_unpack = struct.Struct("<bbH").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -541,7 +541,6 @@ def loadSectorMap(code, instanceId=None):
                                     creature = l_getMonster(name)
                                 else:
                                     creature = l_getNPC(name)
-                                    
                                 if creature:
                                     laterCalls.append((creature.spawn, {'position':Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
                                 else:
@@ -604,7 +603,7 @@ def loadSectorMap(code, instanceId=None):
                     else:
                         for x in xrange(attrNr if attrNr else 1):
                             l_ywork_append(None)
-                        c += attrNr
+                        c += attrNr -1
                         pos += 4
                         
                     v = code[pos-1]
