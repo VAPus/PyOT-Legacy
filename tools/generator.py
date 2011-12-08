@@ -309,20 +309,40 @@ class Map(object):
                                 output.append("C(%s)" % (','.join(y)))
                             else:
                                 output.append("T(%s)" % (','.join(y)))"""
-                        if y:
+                        if y and y != "\x00\x00\x00":
                             
                             output.append(','.join(y))
                         else:
                             output.append(chr(0) * 3)
                         #row += 1
-                   
-                    
+
+ 
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
-                        if 32 - len(output):
-                            return data + "|"
-                        return data + ';'
+                        # A walk in the park to remove the aditional 0 stuff here
+                        count = 0
+                        remove = chr(0) * 3
+                        for code in output[::-1]:
+                            if code == remove: count += 1
+                                
+                        if count:
+                            output = output[:len(output)-count]
+                                
+                            data = ';'.join(output) + "|"
+                        else:    
+                            data = data + "|"
+
+                                
+                            
+                        #else:
+                        #    data = data + ';'
+                        
+                        # Apply multiplication rules for blank tiles
+                        #for x in xrange(31, 10, -1):
+                        #    data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
+  
+                        return data
                     else:
                         return (chr(0) * 3) + '|'
                     #return '|'
@@ -340,7 +360,20 @@ class Map(object):
                             noRows += 1
                         row += 1
                     if len(output) < 32:
-                        output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ; -> !
+                        # A walk in the park to remove the aditional 0 stuff here
+                        count = 0
+                        remove = chr(0) * 3 + '|'
+                        for code in output[::-1]:
+                            if code == remove: count += 1
+                                
+                        if count:
+                            output = output[:len(output)-count]
+                            
+                        if not output:
+                            return ''
+                            
+                        output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ;/| -> !
+                        
                     #if not noRows >= areas[0]:
                     return ''.join(output)
                 

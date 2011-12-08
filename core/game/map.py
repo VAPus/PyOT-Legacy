@@ -570,7 +570,7 @@ def loadSectorMap(code):
     
     # Also attempt to local the itemCache, pypy doesn't like this tho.
     l_itemCache = dummyItems
-    
+        
     while True:
         level = ord(code[pos])
         pos += 1
@@ -582,13 +582,12 @@ def loadSectorMap(code):
             ywork = []
             l_ywork_append = ywork.append
             skip = False
-            
-            for yr in xrange(32):
+            c = 1
+            while True:
                 items = []
                 l_items_append = items.append
                 while True:
                     itemId, attrNr = l_unpack(code[pos:pos+3])
-
                     if itemId:
                         if attrNr:
                             pos += 3
@@ -604,7 +603,7 @@ def loadSectorMap(code):
                                 
                             pos += 1
                             l_items_append(l_Item(itemId, **attr))
-                        elif itemId:
+                        else:
                             pos += 4
                             try:
                                 l_items_append(l_itemCache[itemId])
@@ -615,6 +614,9 @@ def loadSectorMap(code):
                                 l_itemCache[itemId] = item
                                 l_items_append(item)
                     else:
+                        for x in xrange(attrNr if attrNr else 1):
+                            l_ywork_append(None)
+                        c += attrNr
                         pos += 4
                         
                     v = code[pos-1]
@@ -626,11 +628,14 @@ def loadSectorMap(code):
                         skip = True
                         skip_remaining = True
                         break
+                        
+                if items:
+                    l_ywork_append(l_Tile(items))
                 
-                l_ywork_append(l_Tile(items) if items else None)
-                
-                if skip:
+                if skip or c == 32:
                     break
+                    
+                c += 1
                 
             l_xlevel_append(ywork)
             if skip_remaining:
@@ -646,10 +651,6 @@ def load(sectorX, sectorY, instanceId):
     
     if sectorSum in knownMap[instanceId]:
         return False
-
-    global V # Should really be avioided 
-    if not V:
-        V = Tile((I(100),), 1)
           
     print "Loading %d,%d,sec" % (sectorX, sectorY)
     t = time.time()
