@@ -307,7 +307,7 @@ class Map(object):
                                 output.append("C(%s)" % (','.join(y)))
                             else:
                                 output.append("T(%s)" % (','.join(y)))"""
-                        if y and y != "\x00\x00\x00":
+                        if y:
                             
                             output.append(','.join(y))
                         else:
@@ -326,7 +326,10 @@ class Map(object):
                                 
                         if count:
                             output = output[:len(output)-count]
-                                
+                            
+                            if not output:
+                                return "\x00\x00\x00|"
+                            
                             data = ';'.join(output) + "|"
                         else:    
                             data = data + "|"
@@ -541,7 +544,7 @@ class Item(object):
             string += "b" + struct.pack("B", value)
             
         # Or a list (actions etc)
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(value, tuple):
             string += "l" + struct.pack("B", len(value))
             for attr in value:
                 string += self.writeAttribute(None, attr)

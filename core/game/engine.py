@@ -71,19 +71,19 @@ def loader(timer):
             groups[x[0]] = (x[1], otjson.loads(x[2]))
     _sql_()            
     def sync(d, timer):
+        # Load scripts
+        game.scriptsystem.importer()
+        game.scriptsystem.get("startup").run()
+
         # Load map (if configurated to do so)
         if config.loadEntierMap:
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
                 x, y, junk = fileSec.split('/')[-1].split('.')
-                game.map.load(int(x),int(y))
+                game.map.load(int(x),int(y), None)
             log.msg("Loaded entier map in %f" % (time.time() - begin))
             
-        # Load scripts
-        game.scriptsystem.importer()
-        game.scriptsystem.get("startup").run()
-        
         # Charge rent?
         def _charge(house):
             callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(None, house=house))

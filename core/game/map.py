@@ -706,4 +706,3 @@ def unload(sectorX, sectorY, instanceId):
     except:
         pass
     
-reactor.callLater(2, load, 30, 31, None)
