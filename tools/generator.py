@@ -332,15 +332,10 @@ class Map(object):
                             data = ';'.join(output) + "|"
                         else:    
                             data = data + "|"
-
-                                
-                            
-                        #else:
-                        #    data = data + ';'
                         
                         # Apply multiplication rules for blank tiles
-                        #for x in xrange(31, 10, -1):
-                        #    data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
+                        for x in xrange(31, 1, -1):
+                            data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
   
                         return data
                     else:
