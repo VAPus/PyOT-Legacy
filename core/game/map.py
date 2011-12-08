@@ -495,9 +495,13 @@ def loadSectorMap(code):
         ll_unpack = struct.unpack
         l_unpack = lambda data: ll_unpack("<HB", data)
         long_unpack = lambda data: ll_unpack("<i", data)
+        spawn_unpack = lambda data: ll_unpack("<HHBB", data)
+        creature_unpack  = lambda data: ll_unpack("<BBH", data)
     else:
         l_unpack = struct.Struct("<HB").unpack
         long_unpack = struct.Struct("<i").unpack
+        spawn_unpack = struct.Struct("<HHBB").unpack
+        creature_unpack = struct.Struct("<BBH").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -539,7 +543,19 @@ def loadSectorMap(code):
                             pos += 2
                             houseId = long_unpack(code[pos:pos+4])[0]
                             pos += 5
-                            
+                        
+                        elif itemId == 60:
+                            pos += 3
+                            centerX, centerY, centerZ, centerRadius = spawn_unpack(code[pos:pos+6])
+                            pos += 6
+                            for numCreature in xrange(attrNr):
+                                creatureType = ord(code[pos])
+                                nameLength = ord(code[pos+1])
+                                name = code[pos+2:pos+nameLength+2]
+                                pos += 2 + nameLength
+                                creature_unpack(code[pos:pos+4])
+                                pos += 4
+                            pos += 1
                         elif attrNr:
                             pos += 3
                             attr = {}

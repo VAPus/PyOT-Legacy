@@ -29,8 +29,10 @@ db.close()
         <loop>32x32
 
         <uint16>itemId
+        <uint8>attributeCount / other
+        
         itemId >= 100:
-            <uint8>attributeCount (
+            every attributeCount (
                 See attribute format
             )
             
@@ -45,8 +47,29 @@ db.close()
             <int32> Tile flags
             
         itemId == 51:
-            <uint32_t> houseId
+            <uint32> houseId
         
+        itemId == 60:
+            <uint16> Center X
+            <uint16> Center Y
+            <uint8> Center Z
+            <uint8> Radius from center creature might walk
+            every attributeCount (
+                <uint8> type (61 for Monster, 62 for NPC)
+                <uint8> nameLength
+                <string> Name
+                
+                <int8> X from center
+                <int8> Y from center
+                
+                <uint16> spawntime in seconds
+                       
+                }
+            )
+            
+        itemId == 0:
+            skip attributeCount fields
+            
         {
             ; -> go to next tile
             | -> skip the remaining y tiles
@@ -593,15 +616,18 @@ class Spawn(object):
         self.radius = radius
         self.cret = []
         self.center = centerPoint
-    def monster(self, name,x,y,z):
-        self.cret.append("M('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
+    def monster(self, name,x,y,z, spawntime):
+        self.cret.append(chr(61) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
         
-    def npc(self, name,x,y,z):
-        self.cret.append("N('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
+    def npc(self, name,x,y,z, spawntime):
+        self.cret.append(chr(62) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
         
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
-            extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
+            #extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
+            code = struct.pack("<HBHHBB", 60, len(self.cret), self.center[0], self.center[1], z, self.radius) # opCode + amount of creatures + X + Y + Z + radius
+            code += ''.join(self.cret)
+            return (code, extras)
         return (None, extras)
         
        

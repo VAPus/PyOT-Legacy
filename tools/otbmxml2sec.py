@@ -433,6 +433,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         monsterZ  = int(xMonster.getAttribute("z"))
         if monsterZ != baseZ:
             print("UNSUPPORTED spawns!")
+            continue
 
         monsterName = ' '.join([s[0].upper() + s[1:] for s in xMonster.getAttribute("name").split(' ')]).replace(" Of ", " of ")
 
@@ -441,7 +442,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             spawnSectors.append(sector)
             spawnData[sector] = []
         
-        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d)" % (monsterName, monsterX, monsterY, monsterZ))    
+        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d, %s)" % (monsterName, monsterX, monsterY, monsterZ, xMonster.getAttribute("spawntime")))    
 
     for xMonster in xSpawn.getElementsByTagName("npc"):
         npcX = int(xMonster.getAttribute("x"))
@@ -456,7 +457,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if not sector in spawnSectors:
             spawnSectors.append(sector)
             spawnData[sector] = []
-        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d)" % (npcName, npcX, npcY, npcZ))  
+        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d, %s)" % (npcName, npcX, npcY, npcZ, xMonster.getAttribute("spawntime")))  
         
     for entry in spawnSectors:
         x = (entry[0]*32)+16
