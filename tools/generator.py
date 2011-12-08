@@ -6,13 +6,13 @@ import MySQLdb
 import struct
 
 ### Load all solid and movable items
-items = set()
+topitems = set()
 movable = set()
 db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
 cursor = db.cursor()
-cursor.execute("SELECT sid FROM items WHERE solid = 1")
+cursor.execute("SELECT sid FROM items WHERE ontop = 1")
 for row in cursor.fetchall():
-    items.add(row[0])
+    topitems.add(row[0])
 cursor.close()
 
 cursor = db.cursor()
@@ -276,12 +276,21 @@ class Map(object):
                                     sector[level][xS].append([])
                                 else:
                                     break
-      
+                            if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
+                                # Reorder
+                                insert = 1
+                                for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS][1:]:
+                                    if isinstance(thing, Item):
+                                        if thing.id in topitems:
+                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].remove(thing)
+                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].insert(insert, thing)
+                                            insert += 1
+                                
                             for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
                                 e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
                                 if e:
                                     sector[level][xS][yS].append(e)
-                                
+
                 # Begin by rebuilding ranges of tiles in x,y,z
                        
                 # Level 3, y compare:
@@ -342,8 +351,6 @@ class Map(object):
                         if zPos in nothingness:
                             nothingness.remove(zPos)
                         output.append("%s%s" % (chr(zPos), data))
-                        if output[-1][-1] not in (";", "|", "!"):
-                            raise Exception("%d doesn't end with a valid character (%s)" % (zPos, output[-1][-1]))
                 #if extras:
                 #    output.append("'l':'''%s'''" % (';'.join(extras)))
                           
@@ -519,7 +526,7 @@ class Item(object):
             self.attributes["actions"] = self.actions
         
         if self.id in movable:
-            print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
+            print ("Notice: Movable item (ID: %d) on (%d,%d,%d) have been unmovabilized" % (self.id, x,y,z))
             self.attributes["movable"] = False
         
         
