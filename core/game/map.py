@@ -187,9 +187,10 @@ PACK_FLAGS = 16
 class Tile(object):
     __slots__ = ('things', 'countNflags')
     def __init__(self, items, flags=0, count=0):
+        self.things = items
+        
         if not count:
             self.countNflags = 1
-            self.things = items
 
             if len(items) > 1:
                 for item in self.things:
@@ -197,8 +198,7 @@ class Tile(object):
                         self.countNflags += 1
   
         else:
-            self.things = list(items)
-            self.countNflags = topItemCount
+            self.countNflags = count
 
         if flags:
             self._modpack(PACK_FLAGS, flags)

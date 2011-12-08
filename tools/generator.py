@@ -315,14 +315,14 @@ class Map(object):
                         else:
                             output.append(chr(0) * 3)
                         #row += 1
-                    # Hack!    
-                    pad = 32 - len(output)
-                    for i in xrange(pad):
-                        output.append(chr(0) * 3)
-                    # End hack
+                   
                     
-                    if output:    
-                        return ';'.join(output) + ';'
+                    if output:
+                        # Apply skipping if necessary
+                        data = ';'.join(output)
+                        if 32 - len(output):
+                            return data + "|"
+                        return data + ';'
                     else:
                         return (chr(0) * 3) + '|'
                     #return '|'
