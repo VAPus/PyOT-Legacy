@@ -256,8 +256,20 @@ class ThingScripts(object):
         return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, False, **kwargs)
         
     def runSync(self, thing, creature, end=None, **kwargs):
-        return self._run(thing, creature, end, True, **kwargs)
+        try:
+            return self._run(thing, creature, end, True, **kwargs)
+        except:
+            (exc_type, exc_value, exc_traceback) = sys.exc_info()
 
+            tb_list = traceback.extract_tb(sys.exc_info()[2])
+            tb_list = traceback.format_list(tb_list)
+            print "--------------------------"
+            print "EXCEPTION IN SCRIPT:"
+            print "\n".join(tb_list)
+
+            print "%s: %s" % (exc_type.__name__, exc_value)
+            print "--------------------------"
+            
     def makeResult(self, obj):
         def _handleResult(result):
             cache = True
