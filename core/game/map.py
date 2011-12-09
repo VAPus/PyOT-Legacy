@@ -762,8 +762,8 @@ def load(sectorX, sectorY, instanceId):
         return False
     
     
-    """for x in laterCalls:
-        x[0](**x[1])"""
+    for x in laterCalls:
+        x[0](**x[1])
         
     print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
     
