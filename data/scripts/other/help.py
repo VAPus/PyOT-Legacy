@@ -6,9 +6,8 @@ def repeater(creature, text):
     
 def teleporter(creature, text):
     x,y,z = text.split(',')
-    pos = [int(x),int(y),int(z)]
     try:
-        creature.teleport(pos)
+        creature.teleport(Position(int(x),int(y),int(z)))
     except:
         creature.message("Can't teleport to solid tiles!")
     else:
@@ -21,7 +20,7 @@ def tiler(creature, text):
             id = int(text.split(" ")[0])
         else:
             x,y,z = text.split(" ")[0].split(',')
-            pos = [int(x),int(y),int(z)]
+            pos = Position(int(x),int(y),int(z))
             id = int(text.split(" ")[1])
             
         if not id in game.item.items:
@@ -29,10 +28,11 @@ def tiler(creature, text):
             return False
         item = game.item.Item( id )
         last = id
-        getTile([pos.x, pos.y-1, pos.z]).setThing(0, item)
+        pos = Position(pos.x, pos.y-1, pos.z)
+        getTile(pos).setThing(0, item)
 
-        game.engine.updateTile([pos.x, pos.y-1, pos.z], getTile([pos.x, pos.y-1, pos.z]))
-        creature.magicEffect(0x03, [pos.x, pos.y-1, pos.z])
+        game.engine.updateTile(pos, getTile(pos))
+        creature.magicEffect(0x03, pos)
 
         return False
         
@@ -286,7 +286,7 @@ reg("talkaction", "summon tiger", testsummon)
 
 def setowner(creature,text):
     id = int(text)
-    engine.houseData[id].owner = creature.data["id"]
+    game.house.houseData[id].owner = creature.data["id"]
     return False
     
     

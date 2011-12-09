@@ -3,14 +3,14 @@ import game.item
 from twisted.internet import threads, reactor
 from twisted.python import log
 import bindconstant
-import cPickle
 import scriptsystem
 from collections import deque
 import config
 import game.enum
 import time
 import io
-
+import struct
+import sys
 
 ##### Position class ####
 def __uid():
@@ -126,7 +126,7 @@ class StackPosition(Position):
             return "[%d, %d, %d - instance %d, stack - %d]" % (self.x, self.y, self.z, self.instanceId, self.stackpos)
 
     def getThing(self):
-        self.getTile().getThing(self.stackpos)
+        return self.getTile().getThing(self.stackpos)
 
     def setStackpos(self, x):
         self.stackpos = x
@@ -153,7 +153,7 @@ def getTile(pos):
                 return area[sectorSum][z][pX][pY]
             except:
                 return None
-
+                
 def getHouseId(pos):
     try:
         return getTile(pos).houseId
@@ -180,38 +180,27 @@ def newInstance(base=None):
     else:
         instances[instance] = DEFAULT_BASE
         
+    return instance
+        
 PACK_ITEMS = 0 # top items
 PACK_CREATURES = 8
 PACK_FLAGS = 16
 
 class Tile(object):
     __slots__ = ('things', 'countNflags')
-    def __init__(self, items, topItemCount=0, itemLen=0, flags=0):
-        if not topItemCount:
+    def __init__(self, items, flags=0, count=0):
+        self.things = items
+        
+        if not count:
             self.countNflags = 1
-            
-            # Special case.
-            if itemLen == 1:
-                #self.things = (items[0],) if game.item.items[items[0].itemId]["a"] & 1 else [items[0]]
-                self.things = [items[0]]
-                
-            else:
-                workItems = deque(items)
-                self.things = [workItems.popleft()]
-                if workItems:
-                    bottomItems = []
-                    for item in workItems:
-                        if item.ontop:
-                            self.things.append(item)
-                            self.countNflags += 1
-                        else:
-                            bottomItems.append(item)
-                    if bottomItems:
-                        self.things.extend(bottomItems) 
+
+            if len(items) > 1:
+                for item in self.things:
+                    if item.ontop:
+                        self.countNflags += 1
   
         else:
-            self.things = list(items)
-            self.countNflags = topItemCount
+            self.countNflags = count
 
         if flags:
             self._modpack(PACK_FLAGS, flags)
@@ -408,114 +397,6 @@ houseTiles = {}
 
 houseDoors = {}
 
-# Ops codes
-class SpawnCode(object):
-    __slots__ = ('base', 'radius', 'instnce')
-    instance = None
-    
-    def __init__(self, x, y, z=None, radius=5): # z isn't used.
-        self.base = (x, y) # Constant
-        
-        self.radius = radius
-        
-    def M(self, name,x,y,z=7, spawnTime=None):
-        try:
-            game.monster.getMonster(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-        except:
-            log.msg("Spawning of monster '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-                
-        return self
-        
-        
-    def N(self, name,x,y,z=7, spawnTime=None):
-        try:
-            game.npc.getNPC(name).spawn(Position(self.base[0]+x, self.base[1]+y, z, self.instance), radius=self.radius, spawnTime=spawnTime, radiusTo=self.base)
-
-        except:
-            log.msg("Spawning of NPC '%s' failed, it's likely that it doesn't exist, or you try to spawn it on solid tiles" % name)
-            
-        return self
-        
-#bindconstant.bind_all(SpawnCode)
-
-def I(itemId, **kwargs):
-    # Do not stack
-    if not kwargs and config.stackItems:
-        try:
-            return dummyItems[itemId]
-        except:
-            item = Item(itemId)
-            item.tileStacked = True
-            item.fromMap = True
-            dummyItems[itemId] = item
-
-            return item
-    else:
-        item = Item(itemId, **kwargs)
-        item.fromMap = True
-        
-        return item
-
-R = I # TODO
-
-def T(*args):
-    return Tile(args, itemLen=len(args))
-
-T = bindconstant._make_constants(T)
-
-def Tf(flags, *args):
-    return Tile(args, itemLen=len(args), flags=flags)
-
-Tf = bindconstant._make_constants(Tf)
-
-def H(houseId, position, *args):   
-    tile = HouseTile(args, itemLen=len(args))
-    tile.houseId = houseId
-    tile.position = position # Never rely on this data.
-    
-    # Set protected zone
-    tile.setFlag(game.enum.TILEFLAGS_PROTECTIONZONE)
-        
-    # Find and cache doors
-    check = True
-    for i in tile.getItems():
-        if "houseDoor" in i.actions:
-            if check and houseId in houseDoors:
-                houseDoors[houseId].append(position)
-                check = True
-            else:
-                houseDoors[houseId] = [position]
-            
-    
-    if houseId in houseTiles:
-        houseTiles[houseId].append(tile)
-    else:
-        houseTiles[houseId] = [tile]
-        
-    try:
-        for item in game.house.houseData[houseId].data["items"][position]:
-            tile.placeItem(item)
-    except KeyError:
-        pass
-
-    return tile
-    
-def C(*args):
-    if config.stackTiles:
-        code = 0
-        por = 0
-        for item in tile.things:
-            code += item.itemId << por
-            por += 14
-        if not code in dummyTiles:
-            dummyTiles[code] = T(*args)
-        return dummyTiles[code]
-    else:
-        return T(*args)
-        
-global V
-V = None
-
 if config.stackTiles:
     dummyTiles = {}
     
@@ -527,49 +408,365 @@ def loadTiles(x,y, instanceId):
     
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
 
-def _l_instance_spawner(instanceId):
-    class S(SpawnCode):
-        instance = instanceId    
-    return S
+### Start New Map Format ###
+attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
+# Format (Work in Progress):
+"""
+    <uint8>floor_level
+        <loop>32x32
+
+        <uint16>itemId
+        <uint8>attributeCount / other
+        
+        itemId >= 100:
+            every attributeCount (
+                See attribute format
+            )
+            
+            [
+            (char),
+            <uint16>itemId
+            <uint8>attributeCount (
+                See attribute format
+            )
+            ]
+        itemId == 50:
+            <int32> Tile flags
+            
+        itemId == 51:
+            <uint32> houseId
+        
+        itemId == 60:
+            <uint8> Radius from center creature might walk
+            every attributeCount (
+                <uint8> type (61 for Monster, 62 for NPC)
+                <uint8> nameLength
+                <string> Name
+                
+                <int8> X from center
+                <int8> Y from center
+                
+                <uint16> spawntime in seconds
+                       
+                }
+            )
+            
+        itemId == 0:
+            skip attributeCount fields
+            
+        {
+            ; -> go to next tile
+            | -> skip the remaining y tiles
+            ! -> skip the remaining x and y tiles
+        }
+        
+
+    Attribute format:
     
-def _l(instanceId, code):
-    if instanceId:
-        exec(code, {}, {"S":_l_instance_spawner(instanceId)})
+    {
+        <uint8>attributeId
+        <char>attributeType
+        {
+            attributeType == i (
+                <int32>value
+            )
+            attributeType == s (
+                <uint16>valueLength
+                <string with length valueLength>value
+            )
+            attributeType == b (
+                <bool>value
+            )
+            attributeType == l (
+                <uint8>listItems
+                <repeat this block for listItems times> -> value
+            )
+        }
+        
+        
+    }
+"""
+
+def loadSectorMap(code, instanceId, baseX, baseY):
+    thisSectorMap = {}
+    pos = 0
+    codeLength = len(code)
+    skip = False
+    skip_remaining = False
+    houseId = 0
+    housePosition = None
+    yRowGotItem = False
+    
+    # Push creature spawning to the last commands
+    laterCalls = []
+    
+    # Avoid 1k calls to making the format :)
+    # Pypy need a special treatment to avoid this.
+    
+    if sys.subversion[0] == 'PyPy':
+        ll_unpack = struct.unpack
+        l_unpack = lambda data: ll_unpack("<HB", data)
+        long_unpack = lambda data: ll_unpack("<i", data)
+        creature_unpack  = lambda data: ll_unpack("<bbH", data)
     else:
-        exec(code, {}, {"S":SpawnCode})
+        l_unpack = struct.Struct("<HB").unpack
+        long_unpack = struct.Struct("<i").unpack
+        creature_unpack = struct.Struct("<bbH").unpack
     
+    # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
+    # Pypy gain nothing, but CPython does.
+    l_Item = game.item.Item
+    l_Tile = Tile
+    l_HouseTile = HouseTile
+    
+    # Also attempt to local the itemCache, pypy doesn't like this tho.
+    l_itemCache = dummyItems
+    l_attributes = attributeIds
+    
+    # Spawn commands
+    l_getNPC = game.npc.getNPC
+    l_getMonster = game.monster.getMonster
+    
+    # This is the Z loop (floor), we read the first byte
+    while True:
+        # First byte where we're at.
+        level = ord(code[pos])
+        pos += 1
+        
+        # An x level list for this floor
+        xlevel = []
+        
+        # Speedup call.
+        l_xlevel_append = xlevel.append
+        
+        # Loop over the 32 x rows
+        for xr in xrange(32):
+            # The real X position
+            xPosition = xr + baseX
+            
+            # An y level list
+            ywork = []
+            
+            # Speed up call
+            l_ywork_append = ywork.append
+            
+            # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
+            yr = 0
+            
+            while yr < 32:
+                # The real Y position
+                yPosition = yr + baseY
+                
+                # The items array and the flags for the Tile.
+                items = []
+                flags = 0
+                
+                # Speed up call
+                l_items_append = items.append
+                
+                # We have no limit on the amount of items that a Tile might have. Loop until we hit a end.
+                while True:
+                    # uint16 itemId / type
+                    # uint16 attrNr / count
+                    itemId, attrNr = l_unpack(code[pos:pos+3])
+
+                    # Do we have a positive id? If not its a blank tile
+                    if itemId:
+                        # Tile flags
+                        if itemId == 50:
+                            pos += 2
+                            # int32
+                            flags = long_unpack(code[pos:pos+4])[0]
+                            pos += 5
+                        
+                        # HouseId?
+                        elif itemId == 51:
+                            pos += 2
+                            # int32
+                            houseId = long_unpack(code[pos:pos+4])[0]
+                            housePosition = (xPosition, yPosition)
+                            pos += 5
+                        
+                        # Spawns
+                        elif itemId == 60:
+                            pos += 3
+                            # centerRadius = uint8
+                            centerRadius = ord(code[pos])
+                            pos += 1
+                            
+                            # Mark a position
+                            centerPoint = Position(xPosition, yPosition, level, instanceId)
+                            
+                            # Here we use attrNr as a count for 
+                            for numCreature in xrange(attrNr):
+                                creatureType = ord(code[pos])
+                                nameLength = ord(code[pos+1])
+                                name = code[pos+2:pos+nameLength+2]
+                                pos += 2 + nameLength
+                                spawnX, spawnY, spawnTime = creature_unpack(code[pos:pos+4])
+                                pos += 4
+                                if creatureType == 61:
+                                    creature = l_getMonster(name)
+                                else:
+                                    creature = l_getNPC(name)
+                                if creature:
+                                    laterCalls.append((creature.spawn, {'position':Position(xPosition+spawnX, yPosition+spawnY, level, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
+                                else:
+                                    print "Spawning of NPC '%s' failed, it doesn't exist!" % name
+                                    
+                            pos += 1
+                            
+                        elif attrNr:
+                            pos += 3
+                            attr = {}
+                            for n in xrange(attrNr):
+                                name = l_attributes[ord(code[pos])]
+                                    
+                                opCode = code[pos+1]
+                                pos += 2
+                                
+                                if opCode == "i":
+                                    pos += 4
+                                    value = long_unpack(code[pos-4:pos])[0]
+                                elif opCode == "s":
+                                    valueLength = long_unpack(code[pos:pos+4])[0]
+                                    pos += valueLength + 4
+                                    value = code[pos-valueLength:pos]
+                                elif opCode == "b":
+                                    pos += 1
+                                    value = bool(ord(code[pos-1]))
+                                elif opCode == "l":
+                                    value = []
+                                    length = ord(code[pos])
+
+                                    pos += 1
+                                    for i in xrange(length):
+                                        opCode = code[pos]
+                                        pos += 1
+                                        if opCode == "i":
+                                            pos += 4
+                                            item = long_unpack(code[pos-4:pos])[0]
+                                        elif opCode == "s":
+                                            valueLength = long_unpack(code[pos:pos+4])[0]
+                                            pos += valueLength + 4
+                                            item = code[pos-valueLength:pos]
+                                        elif opCode == "b":
+                                            pos += 1
+                                            item = bool(ord(code[pos-1]))
+                                        value.append(item)
+                                        
+                                attr[name] = value
+                                
+                            pos += 1
+                            l_items_append(l_Item(itemId, **attr))
+                        else:
+                            pos += 4
+                            try:
+                                l_items_append(l_itemCache[itemId])
+                            except KeyError:
+                                item = l_Item(itemId)
+                                item.tileStacked = True
+                                item.fromMap = True
+                                l_itemCache[itemId] = item
+                                l_items_append(item)
+
+                    else:
+                        pos += 4
+                        if attrNr:
+                            for x in xrange(attrNr):
+                                l_ywork_append(None)
+                            yr += attrNr -1
+                        else:
+                            l_ywork_append(None)
+                        yRowGotItem = True
+                        
+                    
+                        
+                    v = code[pos-1]
+                    if v == ';': break
+                    elif v == '|':
+                        skip = True
+                        break
+                    elif v == '!':
+                        skip = True
+                        skip_remaining = True
+                        break
+                    # otherwise it should be ",", we don't need to vertify this.
+                if items:
+                    if houseId:
+                        tile = l_HouseTile(items, flags)
+                        tile.houseId = houseId
+                        tile.position = housePosition
+                        
+                        # Find and cache doors
+                        for i in tile.getItems():
+                            if "houseDoor" in i.actions:
+                                try:
+                                    houseDoors[houseId].append(housePosition)
+                                    break
+                                except:
+                                    houseDoors[houseId] = [housePosition]
+                                
+                        
+                        if houseId in houseTiles:
+                            houseTiles[houseId].append(tile)
+                        else:
+                            houseTiles[houseId] = [tile]
+                            
+                        try:
+                            for item in game.house.houseData[houseId].data["items"][housePosition]:
+                                tile.placeItem(item)
+                        except KeyError:
+                            pass
+    
+                        houseId = 0
+                        housePosition = None
+                        l_ywork_append(tile)
+                    else:
+                        l_ywork_append(l_Tile(items, flags))
+                elif not yRowGotItem:
+                    l_ywork_append(None)
+                    yRowGotItem = False
+                yr += 1
+
+                if skip:
+                    skip = False
+                    break                
+            l_xlevel_append(ywork)
+            if skip_remaining:
+                skip_remaining = False
+                break
+                
+        thisSectorMap[level] = xlevel
+        if pos >= codeLength:
+           return thisSectorMap, laterCalls
+           
+### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     
     if sectorSum in knownMap[instanceId]:
         return False
-
-    global V # Should really be avioided 
-    if not V:
-        V = Tile((I(100),), 1)
           
-    print "Loading %d,%d,sec" % (sectorX, sectorY)
+    print "Loading %d.%d.sec" % (sectorX, sectorY)
     t = time.time()
     
-    # Attempt to load a cached file
+    # Attempt to load a sector file
     try:
-        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            knownMap[instanceId][sectorSum] = cPickle.loads(f.read())
+        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
+            w, laterCalls = loadSectorMap(f.read(), instanceId, sectorX * 32, sectorY * 32)
+            knownMap[instanceId][sectorSum] = w
     except IOError:
-        # Build cache data
-        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), 'rb') as f:
-            knownMap[instanceId][sectorSum] = eval(f.read(), {}, {"V":V, "C":C, "H":H, "Tf":Tf, "T":T, "I":I, "R":R})
-        # Write it
-        with io.open("data/map/%s%d.%d.sec.cache" % (instances[instanceId], sectorX, sectorY), 'wb') as f:
-            f.write(cPickle.dumps(knownMap[instanceId][sectorSum], 2))
-            
-    print "Loading took: %f" % (time.time() - t)
+        # No? Mark it as empty
+        knownMap[instanceId][sectorSum] = None
+        return False
     
-    if 'l' in knownMap[instanceId][sectorSum]:
-        reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
-        del knownMap[instanceId][sectorSum]['l']
+    
+    for x in laterCalls:
+        x[0](**x[1])
         
-        
+    print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
+    
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
     
@@ -591,7 +788,7 @@ def _unloadCheck(sectorX, sectorY, instanceId):
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
         
         # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if instenceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
+        if instanceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
             return False # He can see us, cancel the unloading
             
     return True

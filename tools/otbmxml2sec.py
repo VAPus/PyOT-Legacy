@@ -19,7 +19,7 @@ class Reader(object):
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return struct.unpack("<B", self.data[self.pos-1:self.pos])[0]
+        return ord(self.data[self.pos-1])
         
     def peekUint8(self):
         try:
@@ -312,7 +312,7 @@ while node:
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
                                 safe = False
-                                _tile_.append("i%d.attribute(\"teledest\",(%d,%d,%d))" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
+                                _tile_.append("i%d.attribute(\"teledest\",[%d,%d,%d])" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
                             elif attr == 15: # Item count
                                 safe = False
                                 _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
@@ -433,6 +433,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         monsterZ  = int(xMonster.getAttribute("z"))
         if monsterZ != baseZ:
             print("UNSUPPORTED spawns!")
+            continue
 
         monsterName = ' '.join([s[0].upper() + s[1:] for s in xMonster.getAttribute("name").split(' ')]).replace(" Of ", " of ")
 
@@ -441,7 +442,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
             spawnSectors.append(sector)
             spawnData[sector] = []
         
-        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d)" % (monsterName, monsterX, monsterY, monsterZ))    
+        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d, %s)" % (monsterName, monsterX, monsterY, monsterZ, xMonster.getAttribute("spawntime")))    
 
     for xMonster in xSpawn.getElementsByTagName("npc"):
         npcX = int(xMonster.getAttribute("x"))
@@ -456,17 +457,18 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if not sector in spawnSectors:
             spawnSectors.append(sector)
             spawnData[sector] = []
-        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d)" % (npcName, npcX, npcY, npcZ))  
+        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d, %s)" % (npcName, npcX, npcY, npcZ, xMonster.getAttribute("spawntime")))  
         
     for entry in spawnSectors:
-        x = (entry[0]*32)+16
-        y = (entry[1]*32)+16
+        #x = (entry[0]*32)+16
+        #y = (entry[1]*32)+16
+        _output_.append("# Spawns for sector %s" % str(entry))
         _output_.append(spawn)
         _output_.append('\n'.join(spawnData[entry]))
-        _output_.append("at(%d, %d, s, %d)\n" % (x, y, baseZ))
-        if x > MAX_X:
+        _output_.append("at(%d, %d, s, %d)\n" % (baseX, baseY, baseZ))
+        if (baseX + 16) > MAX_X:
             MAX_X = x
-        if y > MAX_Y:
+        if (baseY + 16) > MAX_Y:
             MAX_Y = y
         if baseZ > MAX_Z:
             MAX_Z = baseZ

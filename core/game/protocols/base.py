@@ -993,7 +993,7 @@ class BaseProtocol(object):
         index = packet.uint8()
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
-        
+
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             end = None
             if position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1):

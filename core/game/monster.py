@@ -258,7 +258,10 @@ class MonsterBase(CreatureBase):
         else:
             if place:
                 tile = map.getTile(position)
-                if tile.creatures() and config.tryToSpawnCreaturesNextToEachother:
+                if not tile:
+                    log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
+                    return
+                elif tile.creatures() and config.tryToSpawnCreaturesNextToEachother:
                     ok = False
                     for testx in (-1,0,1):
                         position[0] += testx

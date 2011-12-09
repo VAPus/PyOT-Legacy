@@ -3,16 +3,16 @@ import sys
 sys.path.append('../')
 import config
 import MySQLdb
-
-
+import struct
+import io
 ### Load all solid and movable items
-items = set()
+topitems = set()
 movable = set()
 db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
 cursor = db.cursor()
-cursor.execute("SELECT sid FROM items WHERE solid = 1")
+cursor.execute("SELECT sid FROM items WHERE ontop = 1")
 for row in cursor.fetchall():
-    items.add(row[0])
+    topitems.add(row[0])
 cursor.close()
 
 cursor = db.cursor()
@@ -23,17 +23,81 @@ cursor.close()
 
 db.close()
     
-# Ops:
+# Format (Work in Progress):
 """
-    I: Item
-    C: Closed tile
-    R: "restricted"/solid Item
-    T: Tile
-    Tf: Tile with flags
-    V: Alias for a precached (reference) version of T(I(100))
-    S: Spawn point
-        M: Monster
-        N: NPC 
+    <uint8>floor_level
+        <loop>32x32
+
+        <uint16>itemId
+        <uint8>attributeCount / other
+        
+        itemId >= 100:
+            every attributeCount (
+                See attribute format
+            )
+            
+            [
+            (char),
+            <uint16>itemId
+            <uint8>attributeCount (
+                See attribute format
+            )
+            ]
+        itemId == 50:
+            <int32> Tile flags
+            
+        itemId == 51:
+            <uint32> houseId
+        
+        itemId == 60:
+            <uint8> Radius from center creature might walk
+            every attributeCount (
+                <uint8> type (61 for Monster, 62 for NPC)
+                <uint8> nameLength
+                <string> Name
+                
+                <int8> X from center
+                <int8> Y from center
+                
+                <uint16> spawntime in seconds
+                       
+                }
+            )
+            
+        itemId == 0:
+            skip attributeCount fields
+            
+        {
+            ; -> go to next tile
+            | -> skip the remaining y tiles
+            ! -> skip the remaining x and y tiles
+        }
+        
+
+    Attribute format:
+    
+    {
+        <uint8>attributeId
+        <char>attributeType
+        {
+            attributeType == i (
+                <int32>value
+            )
+            attributeType == s (
+                <uint16>valueLength
+                <string with length valueLength>value
+            )
+            attributeType == b (
+                <bool>value
+            )
+            attributeType == l (
+                <uint8>listItems
+                <repeat this block for listItems times> -> value
+            )
+        }
+        
+        
+    }
 """
 
 ### Behavior
@@ -224,62 +288,117 @@ class Map(object):
                             
                             if not level in sector:
                                 sector[level] = []
-
-                            while True:
-                                if len(sector[level]) <= xS:
+                                for _x in xrange(areas[0]):
                                     sector[level].append([])
-                                else:
-                                    break
-                            
-                            while True:
-                                if len(sector[level][xS]) <= yS:
-                                    sector[level][xS].append([])
-                                else:
-                                    break
-      
+                                    for _y in xrange(areas[1]):
+                                        sector[level][_x].append([])
+                                        sector[level][_x][_y] = []
+
+                            if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
+                                # Reorder
+                                insert = 1
+                                for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS][1:]:
+                                    if isinstance(thing, Item):
+                                        if thing.id in topitems:
+                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].remove(thing)
+                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].insert(insert, thing)
+                                            insert += 1
+                                
                             for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
                                 e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
                                 if e:
                                     sector[level][xS][yS].append(e)
-                                
+
                 # Begin by rebuilding ranges of tiles in x,y,z
                        
                 # Level 3, y compare:
                 def yComp(xCom, z, x):
                     output = []
                     row = 0
+                    nullRows = 0
+                    
                     for y in xCom:
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
-                        if pos in self.houses:
-                            output.append("H(%d,(%d,%d,%d),%s)" % (self.houses[pos],pos[0],pos[1],pos[2],','.join(y)))
-                            print ("Debug: House tile on %s, ID:%d" % (str(pos), self.houses[pos]))
-                        elif pos in self.flags:
-                            output.append("Tf(%s,%s)" % (self.flags[pos], ','.join(y)))
-                        else:
-                            if "R(" in y:
-                                output.append("C(%s)" % (','.join(y)))
-                            else:
-                                output.append("T(%s)" % (','.join(y)))
-                        row += 1    
-                    if output:    
-                        return "(%s)" % (','.join(output).replace("T()", "None").replace("C()", "None").replace("C(R(100))", 'V')) # None is waay faster then T(), T(I(100)) is also known as V
 
-                    return 'None'
+                        if y:
+                            if nullRows:
+                                output.append(chr(0) + chr(0) + chr(nullRows))
+                                nullRows = 0
+                                
+                            if pos in self.houses:
+                                y.append(struct.pack("<Hi", 50, self.houses[pos]))
+                                if not pos in self.flags:
+                                    self.flags[pos] = 1
+                                elif not self.flags[pos] & 1:
+                                    self.flags[pos] += 1
+                                    
+                            if pos in self.flags:
+                                y.append(struct.pack("<Hi", 51, self.flags[pos]))
+
+                            output.append(','.join(y))
+                        else:
+                            nullRows += 1
+                        
+
+                        row += 1
+                    if nullRows:
+                        output.append(chr(0) + chr(0) + chr(nullRows))
+   
+                    if output:
+                        # Apply skipping if necessary
+                        data = ';'.join(output)
+                        
+                        # A walk in the park to remove the aditional 0 stuff here
+                        count = 0
+                        remove = chr(0) * 3
+                        for code in output[::-1]:
+                            if code == remove: count += 1
+                            else: break
+      
+                        if count:
+                            output = output[:len(output)-count]
+                            
+                            if not output:
+                                return "\x00\x00\x00|"
+                            
+                            data = ';'.join(output) 
+                        else:    
+                            data = data
+
+                        return data + "|"
+                    else:
+                        return "\x00\x00\x00|"
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
                     output = []
-                    noRows = 0
                     row = 0
                     for x in zCom:
                         t = yComp(x, z, row)
                         if t:
                             output.append(t)
-                        if t == "None":
-                            noRows += 1
-                        row += 1    
-                    if not noRows >= areas[0]:
-                        return "(%s)" % ','.join(output)
+
+                        row += 1
+                    if not output:
+                        return None
+                    else:
+                        # A walk in the park to remove the aditional 0 stuff here
+                        count = 0
+                        remove = chr(0) * 3 + '|'
+                        for code in output[::-1]:
+                            if code == remove: count += 1
+                            else: break
+                                
+                        if count:
+                            output = output[:len(output)-count]
+                            
+                        if not output:
+                            return None
+                            
+                        output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ;/| -> !
+                        
+                    #if not noRows >= areas[0]:
+                    return ''.join(output)
                 
                 output = []
                 for zPos in sector:
@@ -287,25 +406,24 @@ class Map(object):
                     if data:
                         if zPos in nothingness:
                             nothingness.remove(zPos)
-                        output.append("%d:%s" % (zPos, data))
-                        
-                if extras:
-                    output.append("'l':'''%s'''" % (';'.join(extras)))
+                        output.append("%s%s" % (chr(zPos), data))
+
                           
                 if output:
-                    output = "m={%s}" % ','.join(output)
+                    output = ''.join(output)
+                    with io.open('%d.%d.sec' % (xA, yA), 'wb') as f:
+                        f.write(output)
+                    print("--Wrote %d.%d.sec\n" % (xA, yA))
+                    
                 else: # A very big load of nothing
-                    output = "m=None"
+                    print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    continue
 
+                    
+                        
                 
                     
-                if output != "m=None":
-                    with open('%d.%d.sec' % (xA, yA), 'w') as f:
-                        f.write(output)
-                
-                    print("--Wrote %d.%d.sec\n" % (xA, yA))
-                else:
-                    print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    
         output = ""
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]
@@ -418,36 +536,69 @@ class Tile(object):
 ### Things
 class Item(object):
     __slots__ = ('id', 'attributes', 'actions')
+    attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
     def __init__(self, id):
         self.id = id
         self.attributes = {}
         self.actions = []
         
     def attribute(self, key, value):
-        self.attributes[key] = value
+        attrId = self.attributeIds.index(key)
+        
+        self.attributes[attrId] = value
     
     def action(self, id):
         self.actions.append(id)
+
+    # Attribute writer function. Needs to be a function so it can call itself in case of a list.
+    def writeAttribute(self, name, value):
+        # Only toplevel attributes got a name, since we're called from a list too, we need to vertify this one.
+        if name != None:
+            string = chr(name)
+        else:
+            string = ''
         
+        # Is the value a number?
+        if isinstance(value, int):
+            string += "i" + struct.pack("<i", value)
+            
+        # A string?
+        elif isinstance(value, str):
+            string += "s" + struct.pack("<i", len(value)) + value
+            
+        # A bool?
+        elif isinstance(value, bool):
+            string += "b" + struct.pack("<B", value)
+            
+        # Or a list (actions etc)
+        elif isinstance(value, list) or isinstance(value, tuple):
+            string += "l" + struct.pack("<B", len(value))
+            for attr in value:
+                string += self.writeAttribute(None, attr)
+                
+        return string
+    
     def gen(self, x,y,z,rx,ry,extras):
-        extra = ""
+        code = struct.pack("<H", self.id)
+
         if self.actions:
-            self.attributes["actions"] = self.actions
+            self.attributes[0] = self.actions
         
         if self.id in movable:
-            print ("Notice: Moveable item (ID: %d) on (%d,%d,%d) have been unmoveabilized" % (self.id, x,y,z))
-            self.attributes["movable"] = 0
-            
+            print ("Notice: Movable item (ID: %d) on (%d,%d,%d) have been unmovabilized" % (self.id, x,y,z))
+            self.attributes[7] = False
+        
+        
         if self.attributes:
             eta = []
             for key in self.attributes:
-                eta.append("%s=%s" % (key, str(self.attributes[key]) if type(self.attributes[key]) != str else '"""%s"""' % self.attributes[key]))
-            
-            extra = ',%s' % ','.join(eta)
-        if not self.id in items:
-            return ('I(%d%s)' % (self.id, extra), extras)
+                eta.append(self.writeAttribute(key, self.attributes[key]))
+            code += chr(len(eta))
+            code += ''.join(eta)
         else:
-            return ('R(%d%s)' % (self.id, extra), extras) 
+            code += "\x00"
+        return code, extras
+
 
 class RSItem(object):
     __slots__ = ('ids')
@@ -463,15 +614,18 @@ class Spawn(object):
         self.radius = radius
         self.cret = []
         self.center = centerPoint
-    def monster(self, name,x,y,z):
-        self.cret.append("M('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
+    def monster(self, name,x,y,z, spawntime):
+        self.cret.append(chr(61) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
         
-    def npc(self, name,x,y,z):
-        self.cret.append("N('%s',%d,%d%s)" % (name.replace("'", "\\'"), x, y, ',%d'%z if z != 7 else ''))
+    def npc(self, name,x,y,z, spawntime):
+        self.cret.append(chr(62) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
         
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
-            extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
+            #extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
+            code = struct.pack("<HBB", 60, len(self.cret), self.radius) # opCode + amount of creatures + radius
+            code += ''.join(self.cret)
+            return (code, extras)
         return (None, extras)
         
        

@@ -290,6 +290,7 @@ class Player(Creature):
         if position:
             if position.x != 0xFFFF:
                 if isinstance(position, StackPosition):
+                    print "findItem - stackpos"
                     return position.getThing()
                 else:
                     raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
