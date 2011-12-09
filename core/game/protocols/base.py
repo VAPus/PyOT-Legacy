@@ -109,7 +109,7 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, position, width, height, offset, skip, player=None):
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = game.map.getTile(game.map.Position(position[0] + x + offset, position[1] + y + offset, position[2]))
+                tile = game.map.getTile(game.map.Position(position[0] + x + offset, position[1] + y + offset, position[2], player.position.instanceId if player else None))
 
                 if tile and tile.things:
                     if skip >= 0:

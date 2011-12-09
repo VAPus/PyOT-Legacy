@@ -204,7 +204,7 @@ class Tile(object):
 
         if flags:
             self._modpack(PACK_FLAGS, flags)
-            
+
     def _depack(self, level):
         return (self.countNflags >> level) & 255
         
@@ -609,7 +609,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
-                            housePosition = (xPosition, yPosition)
+                            housePosition = (xPosition, yPosition, level)
                             pos += 5
                             
                         elif attrNr:
@@ -654,7 +654,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 attr[name] = value
                                 
                             pos += 1
-                            l_items_append(l_Item(itemId, **attr))
+                            item = l_Item(itemId, **attr)
+                            item.fromMap = True
+                            l_items_append(item)
                         else:
                             pos += 4
                             try:
