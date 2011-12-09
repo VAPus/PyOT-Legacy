@@ -20,7 +20,7 @@ def tiler(creature, text):
             id = int(text.split(" ")[0])
         else:
             x,y,z = text.split(" ")[0].split(',')
-            pos = [int(x),int(y),int(z)]
+            pos = Position(int(x),int(y),int(z))
             id = int(text.split(" ")[1])
             
         if not id in game.item.items:

@@ -992,14 +992,11 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         index = packet.uint8()
         stackPosition = position.setStackpos(stackpos)
-        print stackPosition
         thing = player.findItem(stackPosition)
-        print thing
+
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
-            print "p2"
             end = None
             if position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1):
-                print "p3"
                 end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
             game.scriptsystem.get('farUse').run(thing, player, end, position=stackPosition, index=index)
             

@@ -90,7 +90,6 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
     return False
     
 def floorup(creature, thing, position, **k):
-    print "called"
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
         newPos.z -= 1

@@ -97,8 +97,7 @@ class Item(object):
         try:
             if not items[itemId]:
                 raise
-        except:
-            print "Len items: %d" % len(items)
+        except KeyError:
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
             

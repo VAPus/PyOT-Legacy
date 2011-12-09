@@ -148,7 +148,6 @@ def getTile(pos):
     try:
         return area[sectorSum][z][pX][pY]
     except:
-        pass
         if loadTiles(x, y, pos.instanceId):
             try:
                 return area[sectorSum][z][pX][pY]
@@ -180,6 +179,8 @@ def newInstance(base=None):
         instances[instance] = base + '/'
     else:
         instances[instance] = DEFAULT_BASE
+        
+    return instance
         
 PACK_ITEMS = 0 # top items
 PACK_CREATURES = 8
@@ -396,38 +397,6 @@ houseTiles = {}
 
 houseDoors = {}
 
-def H(houseId, position, *args):   
-    tile = HouseTile(args, itemLen=len(args))
-    tile.houseId = houseId
-    tile.position = position # Never rely on this data.
-    
-    # Set protected zone
-    tile.setFlag(game.enum.TILEFLAGS_PROTECTIONZONE)
-        
-    # Find and cache doors
-    check = True
-    for i in tile.getItems():
-        if "houseDoor" in i.actions:
-            if check and houseId in houseDoors:
-                houseDoors[houseId].append(position)
-                check = True
-            else:
-                houseDoors[houseId] = [position]
-            
-    
-    if houseId in houseTiles:
-        houseTiles[houseId].append(tile)
-    else:
-        houseTiles[houseId] = [tile]
-        
-    try:
-        for item in game.house.houseData[houseId].data["items"][position]:
-            tile.placeItem(item)
-    except KeyError:
-        pass
-
-    return tile
-
 if config.stackTiles:
     dummyTiles = {}
     
@@ -438,17 +407,6 @@ def loadTiles(x,y, instanceId):
         return None
     
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
-
-def _l_instance_spawner(instanceId):
-    class S(SpawnCode):
-        instance = instanceId    
-    return S
-    
-def _l(instanceId, code):
-    if instanceId:
-        exec(code, {}, {"S":_l_instance_spawner(instanceId)})
-    else:
-        exec(code, {}, {"S":SpawnCode})
 
 ### Start New Map Format ###
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
@@ -593,7 +551,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
             
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
-            print_yr = 0
+            
             while yr < 32:
                 # The real Y position
                 yPosition = yr + baseY
@@ -613,11 +571,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     # uint16 attrNr / count
                     itemId, attrNr = l_unpack(code[pos:pos+3])
 
-                    if level == 6 and xPosition in (965, 969) and (yPosition / 32) == 30:
-                        if yr != print_yr:
-                            print "[New yr %d - %d]" % (yr, len(ywork))
-                            print_yr = yr
-                        print "%d - %d" % (itemId, attrNr)
                     # Do we have a positive id? If not its a blank tile
                     if itemId:
                         # Tile flags
@@ -668,14 +621,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                try:
-                                    name = l_attributes[ord(code[pos])]
-                                except:
-                                    print itemId
-                                    print yr
-                                    print xr
-                                    print hex(pos)
-                                    raise
+                                name = l_attributes[ord(code[pos])]
                                     
                                 opCode = code[pos+1]
                                 pos += 2
@@ -740,8 +686,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     
                         
                     v = code[pos-1]
-                    if level == 6 and xPosition in (965, 969) and (yPosition / 32) == 30:
-                        print v
                     if v == ';': break
                     elif v == '|':
                         skip = True

@@ -4,7 +4,7 @@ sys.path.append('../')
 import config
 import MySQLdb
 import struct
-
+import io
 ### Load all solid and movable items
 topitems = set()
 movable = set()
@@ -315,11 +315,10 @@ class Map(object):
                 def yComp(xCom, z, x):
                     output = []
                     row = 0
-                    mark = False
+
                     for y in xCom:
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
-                        if pos == (970, 985, 6):
-                            mark = True
+
                         if y:
                             if pos in self.houses:
                                 y.append(struct.pack("<Hi", 50, self.houses[pos]))
@@ -337,12 +336,11 @@ class Map(object):
                         
 
                         row += 1
-                    """for x in xrange(32 - len(output)):
-                        output.append(chr(0) * 3)"""
                         
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
+                        
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
                         remove = chr(0) * 3
@@ -358,12 +356,13 @@ class Map(object):
                             
                             data = ';'.join(output) 
                         else:    
-                            data = data #(";" if len(output) == 32 else '|')
+                            data = data
                         
+                        # COMMENTED OUT: Because some very random cases it seems to make the loader "skip" the fields
                         # Apply multiplication rules for blank tiles
-                        #for x in xrange(31, 1, -1):
-                        #    data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
-  
+                        #for x in xrange(31, 2, -1):
+                        #    data2 = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
+
                         return data + "|"
                     else:
                         return (chr(0) * 3) + '|'
@@ -406,23 +405,23 @@ class Map(object):
                         if zPos in nothingness:
                             nothingness.remove(zPos)
                         output.append("%s%s" % (chr(zPos), data))
-                #if extras:
-                #    output.append("'l':'''%s'''" % (';'.join(extras)))
+
                           
                 if output:
                     output = ''.join(output)
+                    with io.open('%d.%d.sec' % (xA, yA), 'wb') as f:
+                        f.write(output)
+                    print("--Wrote %d.%d.sec\n" % (xA, yA))
+                    
                 else: # A very big load of nothing
-                    output = ""
+                    print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    continue
 
+                    
+                        
                 
                     
-                if output:
-                    with open('%d.%d.sec' % (xA, yA), 'w') as f:
-                        f.write(output)
-                
-                    print("--Wrote %d.%d.sec\n" % (xA, yA))
-                else:
-                    print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    
         output = ""
         output += "width = %d\n" % self.size[0]
         output += "height = %d\n" % self.size[1]
