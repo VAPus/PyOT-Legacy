@@ -460,15 +460,15 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         spawnData[sector].append("s.npc(\"%s\", %d, %d, %d, %s)" % (npcName, npcX, npcY, npcZ, xMonster.getAttribute("spawntime")))  
         
     for entry in spawnSectors:
-        #x = (entry[0]*32)+16
-        #y = (entry[1]*32)+16
+        x = (entry[0]*32)+16
+        y = (entry[1]*32)+16
         _output_.append("# Spawns for sector %s" % str(entry))
         _output_.append(spawn)
         _output_.append('\n'.join(spawnData[entry]))
-        _output_.append("at(%d, %d, s, %d)\n" % (baseX, baseY, baseZ))
-        if (baseX + 16) > MAX_X:
+        _output_.append("at(%d, %d, s, %d)\n" % (x, y, baseZ))
+        if x > MAX_X:
             MAX_X = x
-        if (baseY + 16) > MAX_Y:
+        if y > MAX_Y:
             MAX_Y = y
         if baseZ > MAX_Z:
             MAX_Z = baseZ

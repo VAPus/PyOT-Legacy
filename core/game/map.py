@@ -413,6 +413,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 # Format (Work in Progress):
 """
     <uint8>floor_level
+    floorLevel < 60
         <loop>32x32
 
         <uint16>itemId
@@ -422,34 +423,12 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
             every attributeCount (
                 See attribute format
             )
-            
-            [
-            (char),
-            <uint16>itemId
-            <uint8>attributeCount (
-                See attribute format
-            )
-            ]
+
         itemId == 50:
             <int32> Tile flags
             
         itemId == 51:
             <uint32> houseId
-        
-        itemId == 60:
-            <uint8> Radius from center creature might walk
-            every attributeCount (
-                <uint8> type (61 for Monster, 62 for NPC)
-                <uint8> nameLength
-                <string> Name
-                
-                <int8> X from center
-                <int8> Y from center
-                
-                <uint16> spawntime in seconds
-                       
-                }
-            )
             
         itemId == 0:
             skip attributeCount fields
@@ -458,9 +437,26 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
             ; -> go to next tile
             | -> skip the remaining y tiles
             ! -> skip the remaining x and y tiles
+            , -> more items
         }
         
-
+    floorLevel == 60:
+        <uint16>center X
+        <uint16>center Y
+        <uint8>center Z
+        <uint8> Radius from center creature might walk
+        <uint8> count (
+            <uint8> type (61 for Monster, 62 for NPC)
+            <uint8> nameLength
+            <string> Name
+             
+            <int8> X from center
+            <int8> Y from center
+                
+            <uint16> spawntime in seconds
+                       
+            }
+        )
     Attribute format:
     
     {
@@ -497,9 +493,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     housePosition = None
     yRowGotItem = False
     
-    # Push creature spawning to the last commands
-    laterCalls = []
-    
     # Avoid 1k calls to making the format :)
     # Pypy need a special treatment to avoid this.
     
@@ -507,11 +500,13 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         ll_unpack = struct.unpack
         l_unpack = lambda data: ll_unpack("<HB", data)
         long_unpack = lambda data: ll_unpack("<i", data)
+        spawn_unpack = lambda data: ll_unpack("<HHBBB", data)
         creature_unpack  = lambda data: ll_unpack("<bbH", data)
     else:
         l_unpack = struct.Struct("<HB").unpack
         long_unpack = struct.Struct("<i").unpack
         creature_unpack = struct.Struct("<bbH").unpack
+        spawn_unpack = struct.Struct("<HHBBB").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -529,9 +524,39 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     
     # This is the Z loop (floor), we read the first byte
     while True:
+        if pos >= codeLength:
+           return thisSectorMap
+           
         # First byte where we're at.
         level = ord(code[pos])
         pos += 1
+        
+        if level == 60:
+            centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
+            
+            pos += 7
+                            
+            # Mark a position
+            centerPoint = Position(centerX, centerY, centerZ, instanceId)
+                            
+            # Here we use attrNr as a count for 
+            for numCreature in xrange(creatureCount):
+                creatureType = ord(code[pos])
+                nameLength = ord(code[pos+1])
+                name = code[pos+2:pos+nameLength+2]
+                pos += 2 + nameLength
+                spawnX, spawnY, spawnTime = creature_unpack(code[pos:pos+4])
+                pos += 4
+                if creatureType == 61:
+                    creature = l_getMonster(name)
+                else:
+                    creature = l_getNPC(name)
+                if creature:
+                    creature.spawn(Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
+                else:
+                    print "Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name)
+                                    
+            continue
         
         # An x level list for this floor
         xlevel = []
@@ -586,35 +611,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             houseId = long_unpack(code[pos:pos+4])[0]
                             housePosition = (xPosition, yPosition)
                             pos += 5
-                        
-                        # Spawns
-                        elif itemId == 60:
-                            pos += 3
-                            # centerRadius = uint8
-                            centerRadius = ord(code[pos])
-                            pos += 1
-                            
-                            # Mark a position
-                            centerPoint = Position(xPosition, yPosition, level, instanceId)
-                            
-                            # Here we use attrNr as a count for 
-                            for numCreature in xrange(attrNr):
-                                creatureType = ord(code[pos])
-                                nameLength = ord(code[pos+1])
-                                name = code[pos+2:pos+nameLength+2]
-                                pos += 2 + nameLength
-                                spawnX, spawnY, spawnTime = creature_unpack(code[pos:pos+4])
-                                pos += 4
-                                if creatureType == 61:
-                                    creature = l_getMonster(name)
-                                else:
-                                    creature = l_getNPC(name)
-                                if creature:
-                                    laterCalls.append((creature.spawn, {'position':Position(xPosition+spawnX, yPosition+spawnY, level, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
-                                else:
-                                    print "Spawning of NPC '%s' failed, it doesn't exist!" % name
-                                    
-                            pos += 1
                             
                         elif attrNr:
                             pos += 3
@@ -738,8 +734,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 break
                 
         thisSectorMap[level] = xlevel
-        if pos >= codeLength:
-           return thisSectorMap, laterCalls
            
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
@@ -754,16 +748,11 @@ def load(sectorX, sectorY, instanceId):
     # Attempt to load a sector file
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            w, laterCalls = loadSectorMap(f.read(), instanceId, sectorX * 32, sectorY * 32)
-            knownMap[instanceId][sectorSum] = w
+            knownMap[instanceId][sectorSum] = loadSectorMap(f.read(), instanceId, sectorX * 32, sectorY * 32)
     except IOError:
         # No? Mark it as empty
         knownMap[instanceId][sectorSum] = None
         return False
-    
-    
-    for x in laterCalls:
-        x[0](**x[1])
         
     print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
     

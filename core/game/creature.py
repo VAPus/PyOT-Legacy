@@ -323,7 +323,7 @@ class Creature(object):
             
         # Send to everyone   
         if not spectators:
-            spectators = getPlayers(position, (10, 8))
+            spectators = getPlayers(position, (11, 9))
             
         for spectator in spectators:
             # Make packet

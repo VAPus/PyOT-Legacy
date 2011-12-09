@@ -97,7 +97,7 @@ class Item(object):
         try:
             if not items[itemId]:
                 raise
-        except KeyError:
+        except (KeyError, IndexError):
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
             

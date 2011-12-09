@@ -26,6 +26,7 @@ db.close()
 # Format (Work in Progress):
 """
     <uint8>floor_level
+    floorLevel < 60
         <loop>32x32
 
         <uint16>itemId
@@ -35,34 +36,12 @@ db.close()
             every attributeCount (
                 See attribute format
             )
-            
-            [
-            (char),
-            <uint16>itemId
-            <uint8>attributeCount (
-                See attribute format
-            )
-            ]
+
         itemId == 50:
             <int32> Tile flags
             
         itemId == 51:
             <uint32> houseId
-        
-        itemId == 60:
-            <uint8> Radius from center creature might walk
-            every attributeCount (
-                <uint8> type (61 for Monster, 62 for NPC)
-                <uint8> nameLength
-                <string> Name
-                
-                <int8> X from center
-                <int8> Y from center
-                
-                <uint16> spawntime in seconds
-                       
-                }
-            )
             
         itemId == 0:
             skip attributeCount fields
@@ -71,9 +50,26 @@ db.close()
             ; -> go to next tile
             | -> skip the remaining y tiles
             ! -> skip the remaining x and y tiles
+            , -> more items
         }
         
-
+    floorLevel == 60:
+        <uint16>center X
+        <uint16>center Y
+        <uint8>center Z
+        <uint8> Radius from center creature might walk
+        <uint8> count (
+            <uint8> type (61 for Monster, 62 for NPC)
+            <uint8> nameLength
+            <string> Name
+             
+            <int8> X from center
+            <int8> Y from center
+                
+            <uint16> spawntime in seconds
+                       
+            }
+        )
     Attribute format:
     
     {
@@ -408,7 +404,8 @@ class Map(object):
                             nothingness.remove(zPos)
                         output.append("%s%s" % (chr(zPos), data))
 
-                          
+                if extras:
+                    output.append(''.join(extras))
                 if output:
                     output = ''.join(output)
                     with io.open('%d.%d.sec' % (xA, yA), 'wb') as f:
@@ -623,9 +620,9 @@ class Spawn(object):
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
             #extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
-            code = struct.pack("<HBB", 60, len(self.cret), self.radius) # opCode + amount of creatures + radius
-            code += ''.join(self.cret)
-            return (code, extras)
+            code = struct.pack("<BHHBBB", 60, self.center[0], self.center[1], z, self.radius, len(self.cret)) # opCode + amount of creatures + radius
+            extras.append(code + ''.join(self.cret))
+            return (None, extras)
         return (None, extras)
         
        

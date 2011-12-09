@@ -308,3 +308,15 @@ def restoreme(creature, **k):
     creature.modifyMana(10000)
     
 reg("talkaction", "restore", restoreme)
+
+def readData(creature, text):
+    msg = ""
+    pos = Position(*map(int, text.split(',')))
+    tile = pos.getTile()
+    for i in tile.things:
+        if isinstance(i, game.creature.Creature):
+            msg += "Creature '%s'\n" % i.name()
+        elif isinstance(i, game.item.Item):
+            msg += "Item '%s'\n" % i.itemId
+    creature.windowMessage(msg)        
+reg("talkactionFirstWord", "info", readData)

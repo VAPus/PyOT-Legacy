@@ -1564,7 +1564,7 @@ class Player(Creature):
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
         if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %d, `posx` = %d, `posy` = %d, `posz` = %d"+ extra +" WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])
+            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %d, `posx` = %d, `posy` = %d, `posz` = %d"+ extra +" WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, int(self.direction), int(self.position.x), int(self.position.y), int(self.position.z), int(self.data["id"]))
 
     def save(self, force=False):
         if self.doSave:
