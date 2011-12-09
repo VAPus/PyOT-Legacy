@@ -495,6 +495,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     skip_remaining = False
     houseId = 0
     housePosition = None
+    yRowGotItem = False
     
     # Push creature spawning to the last commands
     laterCalls = []
@@ -562,8 +563,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 
                 # Speed up call
                 l_items_append = items.append
-                
-                ok = False
                 
                 # We have no limit on the amount of items that a Tile might have. Loop until we hit a end.
                 while True:
@@ -660,7 +659,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 
                             pos += 1
                             l_items_append(l_Item(itemId, **attr))
-                            ok = True
                         else:
                             pos += 4
                             try:
@@ -671,7 +669,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 item.fromMap = True
                                 l_itemCache[itemId] = item
                                 l_items_append(item)
-                            ok = True
 
                     else:
                         pos += 4
@@ -681,7 +678,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             yr += attrNr -1
                         else:
                             l_ywork_append(None)
-                        ok = True
+                        yRowGotItem = True
                         
                     
                         
@@ -694,7 +691,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         skip = True
                         skip_remaining = True
                         break
-                        
+                    # otherwise it should be ",", we don't need to vertify this.
                 if items:
                     if houseId:
                         tile = l_HouseTile(items, flags)
@@ -727,8 +724,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         l_ywork_append(tile)
                     else:
                         l_ywork_append(l_Tile(items, flags))
-                if not ok:
-                    l_ywork_append(None)        
+                elif not yRowGotItem:
+                    l_ywork_append(None)
+                    yRowGotItem = False
                 yr += 1
 
                 if skip:
@@ -790,7 +788,7 @@ def _unloadCheck(sectorX, sectorY, instanceId):
         pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
         
         # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if instenceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
+        if instanceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
             return False # He can see us, cancel the unloading
             
     return True

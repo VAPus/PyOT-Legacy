@@ -315,11 +315,16 @@ class Map(object):
                 def yComp(xCom, z, x):
                     output = []
                     row = 0
-
+                    nullRows = 0
+                    
                     for y in xCom:
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
 
                         if y:
+                            if nullRows:
+                                output.append(chr(0) + chr(0) + chr(nullRows))
+                                nullRows = 0
+                                
                             if pos in self.houses:
                                 y.append(struct.pack("<Hi", 50, self.houses[pos]))
                                 if not pos in self.flags:
@@ -332,11 +337,13 @@ class Map(object):
 
                             output.append(','.join(y))
                         else:
-                            output.append(chr(0) * 3)
+                            nullRows += 1
                         
 
                         row += 1
-                        
+                    if nullRows:
+                        output.append(chr(0) + chr(0) + chr(nullRows))
+   
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
@@ -357,15 +364,10 @@ class Map(object):
                             data = ';'.join(output) 
                         else:    
                             data = data
-                        
-                        # COMMENTED OUT: Because some very random cases it seems to make the loader "skip" the fields
-                        # Apply multiplication rules for blank tiles
-                        #for x in xrange(31, 2, -1):
-                        #    data2 = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
 
                         return data + "|"
                     else:
-                        return (chr(0) * 3) + '|'
+                        return "\x00\x00\x00|"
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
