@@ -1,7 +1,7 @@
 lizard_sentinel = game.monster.genMonster("Lizard Sentinel", (114, 6040), "a lizard sentinel")
 lizard_sentinel.setHealth(265, healthmax=265)
 lizard_sentinel.bloodType(color="blood")
-lizard_sentinel.setDefense(armor=18, fire=1.1, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)
+lizard_sentinel.setDefense(armor=17, fire=1.1, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)
 lizard_sentinel.setExperience(110)
 lizard_sentinel.setSpeed(240)
 lizard_sentinel.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=240, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=10)

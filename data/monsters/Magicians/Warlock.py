@@ -3,7 +3,7 @@ warlock = game.monster.genMonster("Warlock", (130, 6080), "a warlock")
 warlock.setOutfit(19, 71, 128, 128) #needs an addon
 warlock.setHealth(3500)
 warlock.bloodType(color="blood")
-warlock.setDefense(armor=27, fire=0, earth=0.05, energy=0, ice=0, holy=1.08, death=1, physical=1.05, drown=1)
+warlock.setDefense(armor=37, fire=0, earth=0.05, energy=0, ice=0, holy=1.08, death=1, physical=1.05, drown=1)
 warlock.setExperience(4000)
 warlock.setSpeed(220)
 warlock.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=800)

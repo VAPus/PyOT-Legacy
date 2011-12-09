@@ -1,7 +1,7 @@
 damaged_worker_golem = game.monster.genMonster("Damaged Worker Golem", (304, 9801), "a damaged worker golem")
 damaged_worker_golem.setHealth(260)
 damaged_worker_golem.bloodType(color="blood")
-damaged_worker_golem.setDefense(armor=26, fire=1, earth=0.5, energy=1.05, ice=0.9, holy=0.5, death=0.9, physical=0.9, drown=1)
+damaged_worker_golem.setDefense(armor=17, fire=1, earth=0.5, energy=1.05, ice=0.9, holy=0.5, death=0.9, physical=0.9, drown=1)
 damaged_worker_golem.setExperience(95)
 damaged_worker_golem.setSpeed(270)
 damaged_worker_golem.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

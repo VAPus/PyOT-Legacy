@@ -1,7 +1,7 @@
 lizard_chosen = game.monster.genMonster("Lizard Chosen", (344, 11288), "a lizard chosen")
 lizard_chosen.setHealth(3050, healthmax=3050)
 lizard_chosen.bloodType(color="blood")
-lizard_chosen.setDefense(armor=27, fire=0.9, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)
+lizard_chosen.setDefense(armor=30, fire=0.9, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)
 lizard_chosen.setExperience(2200)
 lizard_chosen.setSpeed(240)
 lizard_chosen.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=50)

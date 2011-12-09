@@ -1,7 +1,7 @@
 gargoyle = game.monster.genMonster("Gargoyle", (95, 6027), "a gargoyle")
 gargoyle.setHealth(250, healthmax=250)
 gargoyle.bloodType(color="blood")
-gargoyle.setDefense(armor=30, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=0.6, physical=0.8, drown=1)
+gargoyle.setDefense(armor=29, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=0.6, physical=0.8, drown=1)
 gargoyle.setExperience(70)
 gargoyle.setSpeed(250)
 gargoyle.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=30)

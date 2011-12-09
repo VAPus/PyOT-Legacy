@@ -1,7 +1,7 @@
 lizard_templar = game.monster.genMonster("lizard_templar", (113, 4251), "a lizard_templar")
 lizard_templar.setHealth(410, healthmax=410)
 lizard_templar.bloodType(color="blood")
-lizard_templar.setDefense(armor=22, fire=1.1, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)
+lizard_templar.setDefense(armor=29, fire=1.1, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)
 lizard_templar.setExperience(155)
 lizard_templar.setSpeed(210)
 lizard_templar.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)

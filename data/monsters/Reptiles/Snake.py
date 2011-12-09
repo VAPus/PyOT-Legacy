@@ -2,7 +2,7 @@
 snake = game.monster.genMonster("Snake", (28, 2817), "a snake")
 snake.setHealth(15)
 snake.bloodType(color="blood")
-snake.setDefense(armor=1, fire=1.1, earth=0, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
+snake.setDefense(armor=2, fire=1.1, earth=0, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
 snake.setExperience(10)
 snake.setSpeed(120)
 snake.setBehavior(summonable=205, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)

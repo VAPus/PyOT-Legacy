@@ -2,7 +2,7 @@
 mutated_bat = game.monster.genMonster("Mutated Bat", (307, 9829), "a mutated bat")
 mutated_bat.setHealth(900)
 mutated_bat.bloodType(color="blood")
-mutated_bat.setDefense(armor=30, fire=1, earth=0, energy=1, ice=1, holy=1, death=0, physical=1, drown=0)
+mutated_bat.setDefense(armor=20, fire=1, earth=0, energy=1, ice=1, holy=1, death=0, physical=1, drown=0)
 mutated_bat.setExperience(615)
 mutated_bat.setSpeed(245)
 mutated_bat.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=300)

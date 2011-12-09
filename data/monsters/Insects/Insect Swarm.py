@@ -1,7 +1,7 @@
 Insect_Swarm = game.monster.genMonster("Insect Swarm", (349, 0), "an insect swarm") #no corpse
 Insect_Swarm.setHealth(50)
 Insect_Swarm.bloodType(color="blood")
-Insect_Swarm.setDefense(armor=8, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
+Insect_Swarm.setDefense(armor=4, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 Insect_Swarm.setExperience(40)
 Insect_Swarm.setSpeed(100)
 Insect_Swarm.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
