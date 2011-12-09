@@ -413,7 +413,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 # Format (Work in Progress):
 """
     <uint8>floor_level
-        <loop>32x32
+        <loop>
 
         <uint16>itemId
         <uint8>attributeCount / other
@@ -453,7 +453,8 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
             
         itemId == 0:
             skip attributeCount fields
-            
+        
+        <char>blockending
         {
             ; -> go to next tile
             | -> skip the remaining y tiles
@@ -464,7 +465,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
     Attribute format:
     
     {
-        <uint8>attributeId
+        <uint8>attributeId (see the tuple above)
         <char>attributeType
         {
             attributeType == i (
