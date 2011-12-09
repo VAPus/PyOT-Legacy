@@ -126,7 +126,7 @@ class StackPosition(Position):
             return "[%d, %d, %d - instance %d, stack - %d]" % (self.x, self.y, self.z, self.instanceId, self.stackpos)
 
     def getThing(self):
-        self.getTile().getThing(self.stackpos)
+        return self.getTile().getThing(self.stackpos)
 
     def setStackpos(self, x):
         self.stackpos = x
@@ -452,14 +452,91 @@ def _l(instanceId, code):
 
 ### Start New Map Format ###
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
+# Format (Work in Progress):
+"""
+    <uint8>floor_level
+        <loop>32x32
 
-def loadSectorMap(code, instanceId=None):
+        <uint16>itemId
+        <uint8>attributeCount / other
+        
+        itemId >= 100:
+            every attributeCount (
+                See attribute format
+            )
+            
+            [
+            (char),
+            <uint16>itemId
+            <uint8>attributeCount (
+                See attribute format
+            )
+            ]
+        itemId == 50:
+            <int32> Tile flags
+            
+        itemId == 51:
+            <uint32> houseId
+        
+        itemId == 60:
+            <uint8> Radius from center creature might walk
+            every attributeCount (
+                <uint8> type (61 for Monster, 62 for NPC)
+                <uint8> nameLength
+                <string> Name
+                
+                <int8> X from center
+                <int8> Y from center
+                
+                <uint16> spawntime in seconds
+                       
+                }
+            )
+            
+        itemId == 0:
+            skip attributeCount fields
+            
+        {
+            ; -> go to next tile
+            | -> skip the remaining y tiles
+            ! -> skip the remaining x and y tiles
+        }
+        
+
+    Attribute format:
+    
+    {
+        <uint8>attributeId
+        <char>attributeType
+        {
+            attributeType == i (
+                <int32>value
+            )
+            attributeType == s (
+                <uint16>valueLength
+                <string with length valueLength>value
+            )
+            attributeType == b (
+                <bool>value
+            )
+            attributeType == l (
+                <uint8>listItems
+                <repeat this block for listItems times> -> value
+            )
+        }
+        
+        
+    }
+"""
+
+def loadSectorMap(code, instanceId, baseX, baseY):
     thisSectorMap = {}
     pos = 0
     codeLength = len(code)
     skip = False
     skip_remaining = False
     houseId = 0
+    housePosition = None
     
     # Push creature spawning to the last commands
     laterCalls = []
@@ -471,12 +548,10 @@ def loadSectorMap(code, instanceId=None):
         ll_unpack = struct.unpack
         l_unpack = lambda data: ll_unpack("<HB", data)
         long_unpack = lambda data: ll_unpack("<i", data)
-        spawn_unpack = lambda data: ll_unpack("<HHBB", data)
         creature_unpack  = lambda data: ll_unpack("<bbH", data)
     else:
         l_unpack = struct.Struct("<HB").unpack
         long_unpack = struct.Struct("<i").unpack
-        spawn_unpack = struct.Struct("<HHBB").unpack
         creature_unpack = struct.Struct("<bbH").unpack
     
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
@@ -493,43 +568,84 @@ def loadSectorMap(code, instanceId=None):
     l_getNPC = game.npc.getNPC
     l_getMonster = game.monster.getMonster
     
+    # This is the Z loop (floor), we read the first byte
     while True:
+        # First byte where we're at.
         level = ord(code[pos])
         pos += 1
-        xlevel = []
-        l_xlevel_append = xlevel.append
-        skip_remaining = False
         
+        # An x level list for this floor
+        xlevel = []
+        
+        # Speedup call.
+        l_xlevel_append = xlevel.append
+        
+        # Loop over the 32 x rows
         for xr in xrange(32):
+            # The real X position
+            xPosition = xr + baseX
+            
+            # An y level list
             ywork = []
+            
+            # Speed up call
             l_ywork_append = ywork.append
             
-            c = 1
-            while True:
+            # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
+            yr = 0
+            print_yr = 0
+            while yr < 32:
+                # The real Y position
+                yPosition = yr + baseY
+                
+                # The items array and the flags for the Tile.
                 items = []
                 flags = 0
                 
+                # Speed up call
                 l_items_append = items.append
+                
+                ok = False
+                
+                # We have no limit on the amount of items that a Tile might have. Loop until we hit a end.
                 while True:
+                    # uint16 itemId / type
+                    # uint16 attrNr / count
                     itemId, attrNr = l_unpack(code[pos:pos+3])
 
+                    if level == 6 and xPosition in (965, 969) and (yPosition / 32) == 30:
+                        if yr != print_yr:
+                            print "[New yr %d - %d]" % (yr, len(ywork))
+                            print_yr = yr
+                        print "%d - %d" % (itemId, attrNr)
+                    # Do we have a positive id? If not its a blank tile
                     if itemId:
+                        # Tile flags
                         if itemId == 50:
                             pos += 2
+                            # int32
                             flags = long_unpack(code[pos:pos+4])[0]
                             pos += 5
-                            
+                        
+                        # HouseId?
                         elif itemId == 51:
                             pos += 2
+                            # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
+                            housePosition = (xPosition, yPosition)
                             pos += 5
                         
+                        # Spawns
                         elif itemId == 60:
                             pos += 3
-                            centerX, centerY, centerZ, centerRadius = spawn_unpack(code[pos:pos+6])
-                            centerPoint = Position(centerX, centerY, centerZ, instanceId)
-                            pos += 6
+                            # centerRadius = uint8
+                            centerRadius = ord(code[pos])
+                            pos += 1
                             
+                            # Mark a position
+                            centerPoint = Position(xPosition, yPosition, level, instanceId)
+                            
+                            # Here we use attrNr as a count for 
                             for numCreature in xrange(attrNr):
                                 creatureType = ord(code[pos])
                                 nameLength = ord(code[pos+1])
@@ -542,17 +658,25 @@ def loadSectorMap(code, instanceId=None):
                                 else:
                                     creature = l_getNPC(name)
                                 if creature:
-                                    laterCalls.append((creature.spawn, {'position':Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
+                                    laterCalls.append((creature.spawn, {'position':Position(xPosition+spawnX, yPosition+spawnY, level, instanceId), 'radius':centerRadius, 'spawnTime':spawnTime, 'radiusTo':centerPoint}))
                                 else:
                                     print "Spawning of NPC '%s' failed, it doesn't exist!" % name
                                     
                             pos += 1
+                            
                         elif attrNr:
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                name = l_attributes[ord(code[pos])]
-
+                                try:
+                                    name = l_attributes[ord(code[pos])]
+                                except:
+                                    print itemId
+                                    print yr
+                                    print xr
+                                    print hex(pos)
+                                    raise
+                                    
                                 opCode = code[pos+1]
                                 pos += 2
                                 
@@ -590,6 +714,7 @@ def loadSectorMap(code, instanceId=None):
                                 
                             pos += 1
                             l_items_append(l_Item(itemId, **attr))
+                            ok = True
                         else:
                             pos += 4
                             try:
@@ -600,13 +725,23 @@ def loadSectorMap(code, instanceId=None):
                                 item.fromMap = True
                                 l_itemCache[itemId] = item
                                 l_items_append(item)
+                            ok = True
+
                     else:
-                        for x in xrange(attrNr if attrNr else 1):
-                            l_ywork_append(None)
-                        c += attrNr -1
                         pos += 4
+                        if attrNr:
+                            for x in xrange(attrNr):
+                                l_ywork_append(None)
+                            yr += attrNr -1
+                        else:
+                            l_ywork_append(None)
+                        ok = True
+                        
+                    
                         
                     v = code[pos-1]
+                    if level == 6 and xPosition in (965, 969) and (yPosition / 32) == 30:
+                        print v
                     if v == ';': break
                     elif v == '|':
                         skip = True
@@ -620,19 +755,41 @@ def loadSectorMap(code, instanceId=None):
                     if houseId:
                         tile = l_HouseTile(items, flags)
                         tile.houseId = houseId
+                        tile.position = housePosition
+                        
+                        # Find and cache doors
+                        for i in tile.getItems():
+                            if "houseDoor" in i.actions:
+                                try:
+                                    houseDoors[houseId].append(housePosition)
+                                    break
+                                except:
+                                    houseDoors[houseId] = [housePosition]
+                                
+                        
+                        if houseId in houseTiles:
+                            houseTiles[houseId].append(tile)
+                        else:
+                            houseTiles[houseId] = [tile]
+                            
+                        try:
+                            for item in game.house.houseData[houseId].data["items"][housePosition]:
+                                tile.placeItem(item)
+                        except KeyError:
+                            pass
+    
                         houseId = 0
+                        housePosition = None
                         l_ywork_append(tile)
                     else:
                         l_ywork_append(l_Tile(items, flags))
-                
+                if not ok:
+                    l_ywork_append(None)        
+                yr += 1
+
                 if skip:
                     skip = False
-                    break
-                elif c == 32:
-                    break
-                    
-                c += 1
-                
+                    break                
             l_xlevel_append(ywork)
             if skip_remaining:
                 skip_remaining = False
@@ -651,31 +808,28 @@ def load(sectorX, sectorY, instanceId):
           
     print "Loading %d.%d.sec" % (sectorX, sectorY)
     t = time.time()
-    print "Range X %d-%d, Y %d-%d" % (sectorX*32, (sectorX*32)+32, sectorY*32, (sectorY*32)+32)
+    
     # Attempt to load a sector file
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            w, laterCalls = loadSectorMap(f.read(), instanceId)
+            w, laterCalls = loadSectorMap(f.read(), instanceId, sectorX * 32, sectorY * 32)
             knownMap[instanceId][sectorSum] = w
     except IOError:
+        # No? Mark it as empty
         knownMap[instanceId][sectorSum] = None
         return False
-    print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)
     
-    for x in laterCalls:
-        x[0](**x[1])
+    
+    """for x in laterCalls:
+        x[0](**x[1])"""
         
-    """
-    if 'l' in knownMap[instanceId][sectorSum]:
-        reactor.callInThread(_l, instanceId, knownMap[instanceId][sectorSum]['l'])
-        del knownMap[instanceId][sectorSum]['l']
-        
-        
+    print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
+    
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
     
     scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
-    """
+    
     return True
 
 # Map cleaner
@@ -711,4 +865,3 @@ def unload(sectorX, sectorY, instanceId):
         del knownMap[instanceId][sectorSum]
     except:
         pass
-reactor.callLater(2, load, 30, 31, None)

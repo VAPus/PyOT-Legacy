@@ -50,9 +50,6 @@ db.close()
             <uint32> houseId
         
         itemId == 60:
-            <uint16> Center X
-            <uint16> Center Y
-            <uint8> Center Z
             <uint8> Radius from center creature might walk
             every attributeCount (
                 <uint8> type (61 for Monster, 62 for NPC)
@@ -291,18 +288,12 @@ class Map(object):
                             
                             if not level in sector:
                                 sector[level] = []
-
-                            while True:
-                                if len(sector[level]) <= xS:
+                                for _x in xrange(areas[0]):
                                     sector[level].append([])
-                                else:
-                                    break
-                            
-                            while True:
-                                if len(sector[level][xS]) <= yS:
-                                    sector[level][xS].append([])
-                                else:
-                                    break
+                                    for _y in xrange(areas[1]):
+                                        sector[level][_x].append([])
+                                        sector[level][_x][_y] = []
+
                             if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
                                 # Reorder
                                 insert = 1
@@ -324,8 +315,11 @@ class Map(object):
                 def yComp(xCom, z, x):
                     output = []
                     row = 0
+                    mark = False
                     for y in xCom:
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
+                        if pos == (970, 985, 6):
+                            mark = True
                         if y:
                             if pos in self.houses:
                                 y.append(struct.pack("<Hi", 50, self.houses[pos]))
@@ -343,10 +337,9 @@ class Map(object):
                         
 
                         row += 1
-                    #for x in xrange(32 - len(output)):
-                    #    output.append(chr(0) * 3)
+                    """for x in xrange(32 - len(output)):
+                        output.append(chr(0) * 3)"""
                         
-                    
                     if output:
                         # Apply skipping if necessary
                         data = ';'.join(output)
@@ -356,53 +349,51 @@ class Map(object):
                         for code in output[::-1]:
                             if code == remove: count += 1
                             else: break
-                                
+      
                         if count:
                             output = output[:len(output)-count]
                             
                             if not output:
                                 return "\x00\x00\x00|"
                             
-                            data = ';'.join(output) + "|"
+                            data = ';'.join(output) 
                         else:    
-                            data = data + (";" if row == 32 else '|')
+                            data = data #(";" if len(output) == 32 else '|')
                         
                         # Apply multiplication rules for blank tiles
-                        for x in xrange(31, 1, -1):
-                            data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
+                        #for x in xrange(31, 1, -1):
+                        #    data = data.replace("\x00\x00\x00\x3b" * x, "\x00\x00%s\x3b" % chr(x))
   
-                        return data
+                        return data + "|"
                     else:
                         return (chr(0) * 3) + '|'
                     
                 # Level 2, X compare
                 def xComp(zCom, z):
                     output = []
-                    noRows = 0
                     row = 0
                     for x in zCom:
                         t = yComp(x, z, row)
                         if t:
                             output.append(t)
-                        if t == "None":
-                            noRows += 1
+
                         row += 1
                     if not output:
                         return None
-                    elif len(output) < 32:
+                    else:
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
-                        remove = (chr(0) * 3 + '|', chr(0) * 3 + ';')
+                        remove = chr(0) * 3 + '|'
                         for code in output[::-1]:
-                            if code in remove: count += 1
+                            if code == remove: count += 1
                             else: break
                                 
                         if count:
                             output = output[:len(output)-count]
                             
                         if not output:
-                            return ''
-                        
+                            return None
+                            
                         output[-1] = output[-1][:len(output[-1])-1] + "!" # Change ;/| -> !
                         
                     #if not noRows >= areas[0]:
@@ -631,7 +622,7 @@ class Spawn(object):
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
             #extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
-            code = struct.pack("<HBHHBB", 60, len(self.cret), self.center[0], self.center[1], z, self.radius) # opCode + amount of creatures + X + Y + Z + radius
+            code = struct.pack("<HBB", 60, len(self.cret), self.radius) # opCode + amount of creatures + radius
             code += ''.join(self.cret)
             return (code, extras)
         return (None, extras)

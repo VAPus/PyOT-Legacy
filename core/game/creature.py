@@ -317,6 +317,10 @@ class Creature(object):
         self.position = position
         self.direction = direction
         
+        # Mark for save
+        if self.isPlayer():
+            self.saveData = True
+            
         # Send to everyone   
         if not spectators:
             spectators = getPlayers(position, (10, 8))
