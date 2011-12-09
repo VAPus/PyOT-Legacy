@@ -545,7 +545,7 @@ class Creature(object):
            
         elif type == game.enum.ENERGY:
             textColor = game.enum.COLOR_PURPLE
-            magicEffect = game.enum.EFFECT_ENERGY_DAMAGE
+            magicEffect = game.enum.EFFECT_ENERGYHIT
             
         elif type == game.enum.HOLY:
             textColor = game.enum.COLOR_YELLOW

@@ -111,9 +111,9 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         if strength:
             dmg = random.randint(strength[0], strength[1])
         else:
-            maxDmg = round(-(caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
-            minDmg = round(-(caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
-            dmg = random.randint(minDmg, maxDmg)
+            maxDmg = (round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax))
+            minDmg = (round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin))
+            dmg = -random.randint(minDmg, maxDmg)
         
 
         target.modifyHealth(dmg)
@@ -380,9 +380,10 @@ class Spell(object):
                 creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
                 
             target = creature
-            if self.targetType == TARGET_TARGET:
-                target = creature.target
-                if not target:
+            if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF:
+                if creature.target:
+                    target = creature.target
+                elif not self.targetType == TARGET_TARGETSELF:
                     return
                     
             if self.castEffect:
@@ -394,7 +395,7 @@ class Spell(object):
             for array in self.conditionOnCaster:
                 creature.condition(array[0].copy(), array[1])
                 
-            if self.targetType == TARGET_TARGET and target and self.shootEffect:
+            if self.targetType in (TARGET_TARGET, TARGET_TARGETSELF) and target and target != creature and self.shootEffect:
                 creature.shoot(creature.position, target.position, self.shootEffect)
                 
             if not self.targetType == TARGET_AREA:
@@ -419,7 +420,7 @@ class Spell(object):
                     if creatures:
                         targets.extend(creatures)
                         
-                
+                print targets
                 for targ in targets:
                     if self._targetEffect:
                         targ.magicEffect(self._targetEffect)
@@ -471,7 +472,7 @@ class Rune(Spell):
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def runeCallback(thing, creature, position, onPosition, onThing, strength=None, **k):
-            print "called!"
+
             if creature.isPlayer():
                 if not creature.canDoSpell(self.icon, self.group):
                     creature.exhausted()

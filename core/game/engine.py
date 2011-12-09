@@ -670,17 +670,22 @@ def explainPacket(packet):
 
 # Save system, async :)
 def saveAll(force=False):
-    """Save all players and all global variables."""
-    def callback(result):
-        if result:
-            sql.conn.runOperation(*result)
-            
-    
+
     t = time.time()
-    # Build query   
-    for player in game.player.allPlayersObject:
-        threads.deferToThread(player._saveQuery, force).addCallback(callback)
-        
+    # Build query
+    if not force:
+        """Save all players and all global variables."""
+        def callback(result):
+            if result:
+                sql.conn.runOperation(*result)
+                
+        for player in game.player.allPlayersObject:
+            threads.deferToThread(player._saveQuery, force).addCallback(callback)
+    else:
+        for player in game.player.allPlayersObject:
+            result = player._saveQuery(force)
+            sql.conn.runOperation(*result)
+
     # Global storage
     if saveGlobalStorage or force:
         for field in globalStorage:
