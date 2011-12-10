@@ -117,9 +117,6 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
             minDmg = (round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin))
             dmg = -random.randint(minDmg, maxDmg)
         
-
-        target.modifyHealth(dmg)
-        
         target.onHit(caster, dmg, type)
         target.lastDamager = caster
         
