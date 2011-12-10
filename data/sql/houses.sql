@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `town` INT(8) UNSIGNED NOT NULL DEFAULT '0',
   `size` INT(8) UNSIGNED NOT NULL,
   `rent` INT(11) UNSIGNED NOT NULL,
-  `data` BLOB,
+  `data` MEDIUMBLOB,
   `price` INT(11) UNSIGNED NOT NULL DEFAULT '0',
   `for_sale` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)

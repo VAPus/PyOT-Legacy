@@ -13,13 +13,11 @@ class Reader:
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return struct.unpack("<B", self.data[self.pos-1:self.pos])[0]
+        return ord(self.data[self.pos-1])
         
     def peekUint8(self):
         try:
-            a = self.uint8()
-            self.pos -= 1
-            return a
+            return ord(self.data[self.pos])
         except:
             return None
     def int8(self):
@@ -238,8 +236,6 @@ for xItem in dom.getElementsByTagName("item"):
          key = attr.getAttribute("key")
          if key == 'count':
              key = 'turns'
-         elif key == "extradef":
-             key = "defence"
          elif key == "defense":
              key = "defence"
              
@@ -312,8 +308,8 @@ PRIMARY KEY ( `sid` )\n\
 ) ENGINE = MYISAM; \n\
 CREATE TABLE `item_attributes` ( \n\
 `sid` SMALLINT UNSIGNED NOT NULL ,\n\
-`key` VARCHAR( 20 ) NOT NULL ,\n\
-`value` VARCHAR( 64 ) NOT NULL ,\n\
+`key` VARCHAR( 32 ) NOT NULL ,\n\
+`value` VARCHAR( 255 ) NOT NULL ,\n\
 `custom` BOOL NOT NULL DEFAULT '0'\n\
 ) ENGINE = MYISAM ;"
 

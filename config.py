@@ -174,8 +174,8 @@ stackItems = True
 whisperRange = (1, 1)
 sayRange = (9, 7)
 yellRange = (18, 14)
-itemMaxClientId = 12844
-itemMaxServerId = 13979
+itemMaxClientId = 12905
+itemMaxServerId = 13983
 
 # JSON Library
 jsonLibrary = "cjson" # cjson, ujson, json or simplejson

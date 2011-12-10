@@ -528,7 +528,7 @@ class Creature(object):
           
         dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
 
-        dmg = max(self.data["health"] * -1, dmg)
+        dmg = max(-self.data["health"], dmg)
 
 
         if type == game.enum.ICE:
