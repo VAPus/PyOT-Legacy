@@ -1825,9 +1825,11 @@ class Player(Creature):
             else:
                 return
         else:
+            print "p1"
             return self.notPossible()
         
         if not self.target:
+            print "p2"
             return self.notPossible()
             
         

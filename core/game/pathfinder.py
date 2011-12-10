@@ -109,7 +109,7 @@ def findPath(mapZ, relX, relY, xB, yB):
 
             try:
                 if not (xdx < 0 or xdx > 29 or ydy < 0 or ydy > 29 or closed_nodes_map[ydy][xdx]):
-                    tile = game.map.getTile((mx, my, mapZ))
+                    tile = game.map.getTile(Position(mx, my, mapZ))
                     if not tile:
                         closed_nodes_map[ydy][xdx] = True
                         continue
