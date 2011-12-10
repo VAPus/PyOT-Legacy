@@ -1485,18 +1485,19 @@ class Player(Creature):
             defence += extradef
 
             # Reduce armor to fit action + set defence still
-            defRate = 10
+            defRate = 1
             if self.modes[1] == game.enum.OFFENSIVE:
-                armor = armor * 0.5
-                defRate = 5
+                defRate = 0.5
             elif self.modes[1] == game.enum.BALANCED:
-                armor = armor * 0.75
-                defRate = 7
+                defRate = 0.75
             
-            # Recalculate damage by armor rate
-            dmg = int(dmg - (dmg / 100) * random.uniform(armor*0.475, (armor*0.95)-1))
+            # Apply some shielding effects
+            dmg  = int((dmg - random.uniform(armor*0.475, (armor*0.95)-1)) - (defence * defRate) - (dmg / 100.0) * armor)
+            if dmg > 0:
+                return dmg
+            else:
+                return 0
                 
-            return dmg
         return dmg
 
     # Loading:
