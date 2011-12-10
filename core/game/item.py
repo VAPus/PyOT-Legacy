@@ -195,33 +195,34 @@ class Item(object):
     def reduceCount(self, count):
         self.count -= count
             
-    def slotId(self):
-        if not self.slotType:
-            return None
+    def slots(self):
+        slot = self.slotType
+        if not slot:
+            return ()
+        elif slot == "head":
+            return game.enum.SLOT_HEAD,
+        elif slot == "necklace":
+            return game.enum.SLOT_NECKLACE,
+        elif slot == "backpack":
+            return game.enum.SLOT_BACKPACK,
+        elif slot == "body":
+            return game.enum.SLOT_ARMOR,
+        elif slot == "two-handed":
+            return game.enum.SLOT_RIGHT,
+        elif slot == "legs":
+            return game.enum.SLOT_LEGS,
+        elif slot == "feet":
+            return game.enum.SLOT_FEET,
+        elif slot == "ring":
+            return game.enum.SLOT_RING,
+        elif slot == "ammo":
+            return game.enum.SLOT_AMMO,
+        elif self.weaponType in ('shield'):
+            return game.enum.SLOT_LEFT,
+        elif self.weaponType:
+            return game.enum.SLOT_RIGHT,
         else:
-            if self.slotType == "head":
-                return game.enum.SLOT_HEAD
-            elif self.slotType == "necklace":
-                return game.enum.SLOT_NECKLACE
-            elif self.slotType == "backpack":
-                return game.enum.SLOT_BACKPACK
-            elif self.slotType == "body":
-                return game.enum.SLOT_ARMOR
-            elif self.slotType == "two-handed":
-                return game.enum.SLOT_LEFT
-            elif self.slotType == "legs":
-                return game.enum.SLOT_LEGS
-            elif self.slotType == "feet":
-                return game.enum.SLOT_FEET
-            elif self.slotType == "ring":
-                return game.enum.SLOT_RING
-            elif self.slotType == "ammo":
-                return game.enum.SLOT_AMMO
-            else:
-                if self.weaponType:
-                    return game.enum.SLOT_LEFT if self.weaponType in ('sword', 'rod', 'ward') else game.enum.SLOT_RIGHT
-                else:
-                    return None
+            return ()
 
     def decay(self, position, to=None, duration=None, callback=None, creature=None):
         if to == None:

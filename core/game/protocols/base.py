@@ -644,8 +644,11 @@ class BaseProtocol(object):
             isCreature = True
         if not isCreature:
             # Remove item:
-            currItem = player.findItemWithPlacement(toPosition)
-
+            if toPosition.x == 0xFFFF:
+                currItem = player.findItemWithPlacement(toPosition)
+            else:
+                currItem = None
+    
             """if currItem and currItem[1] and not ((currItem[1].stackable and currItem[1].itemId == sid(clientId)) or currItem[1].containerSize):
                 currItem[1] = None
             """
@@ -670,12 +673,15 @@ class BaseProtocol(object):
                         return
                     
                 #stream = player.packet()
-                oldItem = player.findItemWithPlacement(fromPosition, fromStackPos)
-                
+                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
+                slots = oldItem[1].slots()
+                checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y != oldItem[1].slotId():
-                    player.notPossible()
-                    return
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition.y != game.enum.SLOT_BACKPACK:
+                    checkSlots = True
+                    if toPosition.y not in slots:
+                        player.notPossible()
+                        return
                     
                 if not oldItem[1].movable or (toPosition.x == 0xFFFF and not oldItem[1].pickable):
                     player.notPickable()
@@ -703,13 +709,21 @@ class BaseProtocol(object):
                     game.engine.updateTile(fromPosition, tile)                    
                 #stream.sendto(game.engine.getSpectators(fromPosition))
                 
+                # Dual handed etc
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and len(slots) > 1:
+                    for slot in slots[1:]:
+                        item = player.inventory[slot-1]
+                        player.removeItem(Position(0xFFFF, slot, 0))
+                        player.addItem(item)
+                        
+                
             else:
                 stream = player.packet()
                         
-                oldItem = player.findItemWithPlacement(fromPosition)
+                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
 
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y != game.enum.SLOT_AMMO and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y != oldItem[1].slotId():
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y != game.enum.SLOT_AMMO and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y not in oldItem[1].slots():
                     player.notPossible()
                     return
                 elif oldItem[1].inTrade:
@@ -812,7 +826,8 @@ class BaseProtocol(object):
                     elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
                         ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                     else:
-                        
+                        if currItem:
+                            player.addItem(currItem[1])
                         if toPosition.y < 64:
                             if oldItem[1].stackable and player.inventory[toPosition.y-1] and player.inventory[toPosition.y-1].itemId == sid(clientId) and (player.inventory[toPosition.y-1].count + count <= 100):
                                 player.inventory[toPosition.y-1].count += count

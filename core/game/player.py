@@ -323,7 +323,10 @@ class Player(Creature):
             if position.x != 0xFFFF:
                 if isinstance(position, StackPosition):
                     thing = position.getThing()
-                    return (0, thing, position.getTile()) if isinstance(thing, game.item.Item) else None
+                    if isinstance(thing, game.item.Item):
+                        return (0, thing, position.getTile())
+                    else:
+                        return None
                 else:
                     raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
                 
@@ -1264,10 +1267,11 @@ class Player(Creature):
     # Item To inventory slot
     def itemToInventory(self, item, slot=None, stack=True):
         if slot == None:
-            slot = item.slotId()
+            slot = item.slots()
             if not slot:
                 return False
-        
+            slot = slot[0]
+            
         if stack and item.stackable and item.itemId == self.inventory[slot-1].itemId and self.inventory[slot-1].count+item.count <= 100:
             self.inventory[slot-1].count += item.count
         else:
