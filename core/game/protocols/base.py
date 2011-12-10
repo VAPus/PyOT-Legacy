@@ -428,7 +428,7 @@ class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
         packetType = packet.uint8()
-
+        log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
         if packetType == 0x14 or player.data["health"] < 1: # Logout
             player.client.transport.loseConnection()
             

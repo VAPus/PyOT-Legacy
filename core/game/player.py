@@ -1799,6 +1799,19 @@ class Player(Creature):
 
     def criticalHit(self):
         self.message("You strike a critical hit!", 'MSG_STATUS_CONSOLE_RED')
+    
+    def cancelTarget(self):
+        if self.target:
+            self.target.scripts["onNextStep"].remove(self.followCallback)
+            try:
+                self.targetChecker.cancel()
+            except:
+                pass
+            self.walkPattern  =deque()
+        stream = self.packet(0xA3)
+            
+        stream.uint32(0)
+        stream.send(self.client)
         
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
@@ -1825,11 +1838,9 @@ class Player(Creature):
             else:
                 return
         else:
-            print "p1"
             return self.notPossible()
         
         if not self.target:
-            print "p2"
             return self.notPossible()
             
         
@@ -1850,9 +1861,11 @@ class Player(Creature):
             self.target.scripts["onNextStep"].append(self.followCallback)
             
     def setFollowTarget(self, cid):
-        if self.targetMode == 2:
-            self.targetMode = 0
+        if not cid or self.targetMode == 2:
+            self.cancelTarget()
+            self.cancelWalk()
             self.target = None
+            self.targetMode = 0
             return
             
         if cid in allCreatures:
