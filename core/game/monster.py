@@ -463,18 +463,24 @@ class MonsterBase(CreatureBase):
                 
             cache.sort(reverse=True)    
             
-            for loot in cache:
+            for loot in cache[:]:
                 if type(loot[0]) == tuple:
                     loot = list(loot)
                     loots = loot[0][:]
                     loot[0] = []
                     for ritem in loots:
-                        loot[0].append(item.itemNames[ritem])
+                        try:
+                            loot[0].append(item.itemNames[ritem])
+                        except KeyError:
+                            print "Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"])
                         
                 else:
                     loot = list(loot)
-                    loot[0] = item.itemNames[loot[0]]
-        
+                    try:
+                        loot[0] = item.itemNames[loot[0]]
+                    except KeyError:
+                        print "Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"])
+                        
                 self.lootTable.append(loot)  
             
         else:
