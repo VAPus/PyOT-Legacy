@@ -107,7 +107,9 @@ def clear():
 ### The new way ###
 
 def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvlMin=5, lvlMax=5):
-    def damageCallback(caster, target, strength=None):  
+    def damageCallback(caster, target, strength=None):
+        if not target: return
+        
         if strength:
             dmg = random.randint(strength[0], strength[1])
         else:
@@ -125,6 +127,8 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
     
 def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=True):
     def healCallback(caster, target, strength=None):
+        if not target: return
+        
         if strength:
             minDmg, maxDmg = strength
         else:
