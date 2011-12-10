@@ -1467,11 +1467,23 @@ class Player(Creature):
             # Armor and defence
             armor = 0
             defence = 0
+            extradef = 0
+            
             for item in self.inventory:
                 if item:
                     armor += item.armor or 0
-                    defence += item.defence or 0
-            
+                    extradef += item.extradef or 0
+                    block = (item.absorbPercentPhysical or 0) + (item.absorbPercentAll or 0)
+                    if block:
+                        dmg = dmg * (block / 100.0)
+                    
+            if self.inventory[game.enum.SLOT_LEFT]:
+                defence = self.inventory[game.enum.SLOT_LEFT].defence
+            elif self.inventory[game.enum.SLOT_RIGHT]:
+                defence = self.inventory[game.enum.SLOT_RIGHT].defence
+                
+            defence += extradef
+
             # Reduce armor to fit action + set defence still
             defRate = 10
             if self.modes[1] == game.enum.OFFENSIVE:
@@ -1480,11 +1492,11 @@ class Player(Creature):
             elif self.modes[1] == game.enum.BALANCED:
                 armor = armor * 0.75
                 defRate = 7
+            
+            # Recalculate damage by armor rate
+            dmg = int(dmg - (dmg / 100) * random.uniform(armor*0.475, (armor*0.95)-1))
                 
-            # Recalculate damage by defence rate
-            dmg = dmg - ((defence * defRate) / 100.0) - (dmg / 100) * armor
-                
-            return dmg - armor
+            return dmg
         return dmg
 
     # Loading:
