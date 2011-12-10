@@ -5,7 +5,7 @@ conjure.cooldowns(0, 3)
 conjure.targetEffect(callback=spell.conjure(2290, 1))
 
 # Incomplete! Target rune.
-rune = spell.Rune(2290, icon=12, count=1, target=TARGET_TARGET, group=None)
+rune = spell.Rune(2290, icon=12, count=1, target=TARGET_TARGET, group=SUPPORT_GROUP) #group wrong?
 rune.cooldowns(0, 3)
 rune.require(mana=0, level=16, maglevel=0)
 rune.targetEffect() # TODO
