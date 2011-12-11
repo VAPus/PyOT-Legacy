@@ -35,17 +35,24 @@ def defaultBrainFeaturePriority(self, monster):
                     key = "s%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
                         if spell[2](monster):
-                            game.spell.spells[spell[1]][0](monster, spell[3])
-                            monster.intervals[key] = time.time()
+                            try:
+                                game.spell.spells[spell[1]][0](monster, spell[3])
+                                monster.intervals[key] = time.time()
+                            except:
+                                print "%s tries to call a invalid spell '%s'" % (monster.name(), spell[1])
                             return True # Until next brain tick
                 
                 # Summons
                 if len(monster.activeSummons) < monster.base.maxSummon:
                     for summon in monster.base.summons:
                         if summon[1] > random.randint(0, 100):
-                            creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
-                            creature.setMaster(monster)
-                            monster.activeSummons.append(creature)
+                            try:
+                                creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
+                                creature.setMaster(monster)
+                                monster.activeSummons.append(creature)
+                            except:
+                                print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])
+                                
                             break
                 else:
                     for summon in monster.activeSummons[:]:
