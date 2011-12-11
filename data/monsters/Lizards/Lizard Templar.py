@@ -1,4 +1,4 @@
-lizard_templar = game.monster.genMonster("lizard_templar", (113, 4251), "a lizard_templar")
+lizard_templar = game.monster.genMonster("Lizard Templar", (113, 4251), "a lizard templar")
 lizard_templar.setHealth(410, healthmax=410)
 lizard_templar.bloodType(color="blood")
 lizard_templar.setDefense(armor=29, fire=1.1, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)

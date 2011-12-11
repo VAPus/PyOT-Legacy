@@ -1,4 +1,4 @@
-efreet = game.monster.genMonster("freet", (103, 6032), "a efreet")
+efreet = game.monster.genMonster("Efreet", (103, 6032), "a efreet")
 efreet.setHealth(550, healthmax=550)
 efreet.bloodType(color="blood")
 efreet.setDefense(armor=27, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=1.08, death=0.8, physical=1, drown=1)
