@@ -629,7 +629,7 @@ class Creature(object):
         for spectator in getSpectators(self.position):
             stream = spectator.packet(0x8C)
             stream.uint32(self.clientId())
-            stream.uint8(self.data["health"] * 100 / self.data["healthmax"])
+            stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
             stream.send(spectator)
          
         self.refreshStatus()

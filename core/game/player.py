@@ -1581,7 +1581,7 @@ class Player(Creature):
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
         
         if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return "UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %d, `posx` = %d, `posy` = %d, `posz` = %d"+ extra +" WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, int(self.direction), int(self.position.x), int(self.position.y), int(self.position.z), int(self.data["id"]))
+            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s"), (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, int(self.direction), int(self.position.x), int(self.position.y), int(self.position.z), int(self.data["id"]))
 
     def save(self, force=False):
         if self.doSave:
@@ -1802,12 +1802,12 @@ class Player(Creature):
     
     def cancelTarget(self):
         if self.target:
-            self.target.scripts["onNextStep"].remove(self.followCallback)
-            try:
+            self.target.scripts["onNextStep"] = filter(lambda a: a != self.followCallback, self.target.scripts["onNextStep"])
+            """try:
                 self.targetChecker.cancel()
             except:
-                pass
-            self.walkPattern  =deque()
+                pass"""
+            #self.walkPattern  =deque()
         stream = self.packet(0xA3)
             
         stream.uint32(0)
@@ -1856,16 +1856,18 @@ class Player(Creature):
         self.attackTarget()
         
     def followCallback(self, who):
-        if self.target == who:
+        if self.target == who and self.targetMode > 0:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
             
     def setFollowTarget(self, cid):
-        if not cid or self.targetMode == 2:
+        if not cid: # or self.targetMode == 2
+            #self.cancelWalk()
             self.cancelTarget()
-            self.cancelWalk()
+            
             self.target = None
             self.targetMode = 0
+            self.message("Target lost.") # Required :p
             return
             
         if cid in allCreatures:
