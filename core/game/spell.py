@@ -249,7 +249,6 @@ class Spell(object):
         
     def area(self, area):
         self.targetArea = area
-        self.targetType = TARGET_AREA
         
     def casterEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
@@ -384,7 +383,9 @@ class Spell(object):
             if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF:
                 if creature.target:
                     target = creature.target
-                elif not self.targetType == TARGET_TARGETSELF:
+                elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
+                    self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
+                elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
                     return
                     
             if self.castEffect:
