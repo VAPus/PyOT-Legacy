@@ -34,7 +34,7 @@ class Monster(Creature):
         self.creatureType = 1
         self.spawnPosition = position.copy()
         self.lastStep = 0
-        self.speed = float(self.base.speed)
+        self.speed = float(base.speed)
         self.lastMelee = 0
         self.walkPer = base.walkPer
         self.noBrain = True
@@ -44,6 +44,7 @@ class Monster(Creature):
         self.master = None
         self.respawn = True
         self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.
+        self.canWalk = base.walkable
 
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
@@ -532,7 +533,7 @@ class MonsterBrain(object):
             monster.noBrain = True
             return False
         
-        if monster.base.walkable and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+        if monster.canWalk and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
     @engine.loopInThread(2)        

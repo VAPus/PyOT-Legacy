@@ -88,6 +88,9 @@ class Creature(object):
         self.conditions = {}
         self.walkPattern = None
         
+        # Options
+        self.canMove = True
+        
         # We are trackable 
         allCreatures[self.cid] = self
 
@@ -203,16 +206,17 @@ class Creature(object):
             pass
         
     def move(self, direction, spectators=None, level=0, stopIfLock=False):
-        d = Deferred()
-        game.engine.safeCallLater(0, self._move, d, direction, spectators, level, stopIfLock)
-        return d
+        if self.canMove:
+            d = Deferred()
+            game.engine.safeCallLater(0, self._move, d, direction, spectators, level, stopIfLock)
+            return d
         
     @inlineCallbacks
     def _move(self, d, direction, spectators=None, level=0, stopIfLock=False):
         if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level):
             return
             
-        if not self.alive or not self.data["health"]:
+        if not self.data["health"] or not self.canMove:
             return
             
         import data.map.info
@@ -1079,11 +1083,15 @@ class Creature(object):
         except:
             return False
 
-    # Spells
+    ##############
+    ### Spells ###
+    ##############
     def castSpell(self, spell, strength=None, target=None):
         game.spell.spells[spell][0](self, strength, target)
     
-    # House
+    #############
+    ### House ###
+    #############
     def kickFromHouse(self):
         tile = game.map.getTile(self.position)
         try:
@@ -1149,8 +1157,11 @@ class Creature(object):
             
         except:
             return False # Not in a house
-                
-    # Compatibility
+    
+    #####################
+    ### Compatibility ###
+    #####################
+    
     def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
         pass
     
@@ -1166,12 +1177,24 @@ class Creature(object):
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
 
-    # Instance
+    ################
+    ### Instance ###
+    ################
+    
     def setInstance(self, instanceId=None):
         # Teleport to the same position within instance
         newPosition = self.position.copy()
         newPosition.instanceId = instanceId
         self.teleport(instanceId)
+        
+    ###################
+    ### Walkability ###
+    ###################
+    def walkable(self, state=True):
+        self.canWalk = state
+        
+    def toggleWalkable(self):
+        self.canWalk = not self.canWalk
         
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, *argc, **kwargs):
