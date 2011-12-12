@@ -643,32 +643,38 @@ class Player(Creature):
         except:
             oldLevel = 0
         if oldLevel != level:
-            self.saveData = True
-            self.data["level"] = level
-            
-            self.data["healthmax"] = vocation.maxHP(self.data["level"])
-            self.data["manamax"] = vocation.maxMana(self.data["level"])
-            self.data["capasity"] = vocation.maxCapasity(self.data["level"]) * 100
-            
-            if self.data["health"] > self.data["healthmax"]:
-                self.data["health"] = self.data["healthmax"]
+            def endCallback():
+                self.saveData = True
+                self.data["level"] = level
                 
-            if self.data["mana"] > self.data["manamax"]:
-                self.data["mana"] = self.data["manamax"]
-            
-            if send:
-                if level > oldLevel:
-                    self.message("You advanced from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
-                elif level < oldLevel:
-                    self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
-                self.refreshStatus()
+                self.data["healthmax"] = vocation.maxHP(self.data["level"])
+                self.data["manamax"] = vocation.maxMana(self.data["level"])
+                self.data["capasity"] = vocation.maxCapasity(self.data["level"]) * 100
+                
+                if self.data["health"] > self.data["healthmax"]:
+                    self.data["health"] = self.data["healthmax"]
+                    
+                if self.data["mana"] > self.data["manamax"]:
+                    self.data["mana"] = self.data["manamax"]
+                
+                if send:
+                    if level > oldLevel:
+                        self.message("You advanced from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
+                    elif level < oldLevel:
+                        self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
+                    self.refreshStatus()
+                    
+            game.scriptsystem.get("level").runDefer(self, endCallback, fromLevel=oldLevel, toLevel=level)
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)
     
     def modifyMagicLevel(self, mod):
-        self.data["maglevel"] += mod
-        self.refreshStatus()
+        def endCallback():
+            self.data["maglevel"] += mod
+            self.refreshStatus()
+        
+        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, from=self.data["maglevel"], to=self.data["maglevel"] + mod)
         
     def modifyExperience(self, exp):
         up = True
@@ -696,8 +702,9 @@ class Player(Creature):
                     break
                 level += 1
             if level:
-                self.setLevel(self.data["level"]-level)            
-        self.refreshStatus()
+                self.setLevel(self.data["level"]-level)
+        if not level:
+            self.refreshStatus()
 
     # Mana & soul
     def setMana(self, mana):
@@ -733,15 +740,17 @@ class Player(Creature):
         
     # Skills
     def addSkillLevel(self, skill, levels):
-        self.skills[skill] += levels
-        self.skills[skill + game.enum.SKILL_LAST + 1] += levels
-        goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
-        self.setStorage('__skill%d' % skill, 0)
-        self.setStorage('__skillGoal%d' % skill, goal)
-        
-        self.refreshSkills()
-        self.saveSkills = True
-        
+        def endCallback():
+            self.skills[skill] += levels
+            self.skills[skill + game.enum.SKILL_LAST + 1] += levels
+            goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
+            self.setStorage('__skill%d' % skill, 0)
+            self.setStorage('__skillGoal%d' % skill, goal)
+            
+            self.refreshSkills()
+            self.saveSkills = True
+       game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, from=self.skills[skill], to=self.skills[skill] + levels)
+       
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill] + levels
         self.refreshSkills()
@@ -833,7 +842,7 @@ class Player(Creature):
             self.modes[1] = chase
             self.modes[2] = secure
             print "Modes", self.modes
-        game.scriptsystem.get('modeChange').run(self, end, attack=attack, chase=chase, secure=secure)
+        game.scriptsystem.get('modeChange').runDefer(self, end, attack=attack, chase=chase, secure=secure)
         
         
             
@@ -1057,9 +1066,9 @@ class Player(Creature):
             except:
                 pass
         
-        def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
+        def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
         
-        game.scriptsystem.get('close').run(container, self, callOpen, index=index)
+        game.scriptsystem.get('close').runDefer(container, self, callOpen, index=index)
 
 
     def closeContainerId(self, openId):
@@ -1073,7 +1082,7 @@ class Player(Creature):
                 container.opened = False
                 stream.send(self.client)
             
-            game.scriptsystem.get('close').run(container, self, end, index=openId)
+            game.scriptsystem.get('close').runDefer(container, self, end, index=openId)
             return True
             
         except:
@@ -1090,7 +1099,7 @@ class Player(Creature):
             def end():
                 self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
                 
-            game.scriptsystem.get('close').run(bagFound, self, end, index=openId)
+            game.scriptsystem.get('close').runDefer(bagFound, self, end, index=openId)
             
 
     # Item to container
@@ -1356,7 +1365,7 @@ class Player(Creature):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
         
-        game.scriptsystem.get("leaveChannel").run(self, None, channelId=id)
+        game.scriptsystem.get("leaveChannel").runDefer(self, None, channelId=id)
 
     def isChannelOpen(self, between):
         try:

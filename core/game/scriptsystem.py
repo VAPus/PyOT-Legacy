@@ -387,6 +387,8 @@ globalScripts["requestChannels"] = Scripts()
 globalScripts["joinChannel"] = Scripts()
 globalScripts["leaveChannel"] = Scripts()
 globalScripts["getChannelMembers"] = TriggerScripts()
+globalScripts["level"] = Scripts()
+globalScripts["skill"] = Scripts()
 
 if config.letGameServerRunTheLoginServer:
     globalScripts["preSendLogin"] = NCScripts()

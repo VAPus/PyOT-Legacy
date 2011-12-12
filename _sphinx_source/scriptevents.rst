@@ -410,7 +410,7 @@ The events are:
         def preventWalking(creature):
             if random.randint(0, 10) == 1:
                 creature.message("Your leg hurt too much")
-                return False
+                return FalseglobalScripts["skill"] = Scripts()
 
         reg('move', preventWalking)
 
@@ -487,8 +487,18 @@ The events are:
 
     :returns: (Optionally) a new account id object ((ID,)). This will be used to lookup a player.
 
-.. function:: loginCharacterFailed(client, account, name):
+.. function:: loginCharacterFailed(client, account, name)
     Called when character lookup fails (NCSCript). You may create this account and return a player object. Or optionally a list representing all the fields from SQL.
 
     :returns: (Optionally) player object or list.
 
+.. function:: level(creature, fromLevel, toLevel)
+    Called when the level of a player gets adjusted.
+
+    :returns: (Optionally) False (prevent level adjustments)
+
+.. function:: skill(creature, skill, from, to)
+    :param skill: number from 0-7 representing the skill.
+    Called when the skill (or magic level) of a player gets adjusted
+
+    :returns: (Optionally) False (prevent level adjustments)

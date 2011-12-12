@@ -69,6 +69,9 @@ SKILL_SHIELD = 5
 SKILL_FISH = 6
 SKILL_LAST = SKILL_FISH
 
+#: For skill callback
+MAGIC_LEVEL = 7
+
 # Chat
 MSG_NONE			= 0x00
 MSG_SPEAK_SAY			= 0x01
