@@ -11,6 +11,7 @@ import game.scriptsystem
 import inspect
 import game.errors
 import math
+import collections
 
 # Unique ids, thread safe too
 def __uid():
@@ -1264,39 +1265,55 @@ class Boost(Condition):
             self.type = "%s_%s" % (type, subtype)
         else:
             self.type = type
-        self.ptype = type
+        self.ptype = list(type) if not isinstance(type, collections.Iterable) else type
         self.effectArgs = argc
         self.effectKwargs = kwargs
-        self.mod = mod
+        self.mod = list(mod) if not isinstance(mod, collections.Iterable) else mod
         self.percent = percent
+    
+    def add(self, type, mod):
+        self.type.append(type)
+        self.type.append(mod)
+        return self
         
     def tick(self): pass
     def init(self):
-        # Apply
-        pvalue = getattr(self.creature, self.ptype)
-        if self.percent:
-            pvalue *= mod
-        else:
-            pvalue += mod
+        pid = 0
+        for ptype in self.ptype:
+            # Apply
+            pvalue = getattr(self.creature, ptype)
+            if self.percent:
+                pvalue *= self.mod[pid]
+            else:
+                pvalue += self.mod[pid]
+                
+            # Hack
+            if self.ptype == "speed":
+                self.type = game.enum.CONDITION_HASTE
+                self.creature.setSpeed(pvalue)
+            else:
+                setattr(self.creature, ptype, pvalue)
+                
+            pid += 1
             
-        # Hack
-        if self.ptype == "speed":
-            self.type = game.enum.CONDITION_HASTE
-            self.creature.setSpeed(pvalue)
-        else:
-            setattr(self.creature, self.ptype, pvalue)
         self.tickEvent = engine.safeCallLater(self.length, self.finish)
-    def callback(self):
-        # Apply
-        pvalue = getattr(self.creature, self.ptype)
-        if self.percent:
-            pvalue /= mod
-        else:
-            pvalue -= mod
             
-        # Hack
-        if self.ptype == "speed":
-            self.creature.setSpeed(pvalue)
-        else:
-            setattr(self.creature, self.ptype, pvalue)
+        
+    def callback(self):
+        pid = 0
+        for ptype in self.ptype:
+            # Apply
+            pvalue = getattr(self.creature, ptype)
+            if self.percent:
+                pvalue /= self.mod[pid]
+            else:
+                pvalue -= self.mod[pid]
+                
+            # Hack
+            if self.ptype == "speed":
+                self.creature.setSpeed(pvalue)
+            else:
+                setattr(self.creature, ptype, pvalue)
+                
+            pid += 1
                 
