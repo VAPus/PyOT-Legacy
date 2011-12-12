@@ -774,14 +774,16 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     xMax = (xMin + mapInfo.sectorSize[0]) + 14
     yMin = (sectorY * mapInfo.sectorSize[1]) + 11
     yMax = (yMin + mapInfo.sectorSize[1]) + 11
-    
-    for player in game.player.allPlayersObject:
-        pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
-        
-        # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
-        if instanceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
-            return False # He can see us, cancel the unloading
+    try:
+        for player in game.player.allPlayers.viewvalues():
+            pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
             
+            # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
+            if instanceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
+                return False # He can see us, cancel the unloading
+    except:
+        return False # Players was changed.
+        
     return True
     
 def _unloadMap(sectorX, sectorY, instanceId):

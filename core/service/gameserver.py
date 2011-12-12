@@ -149,8 +149,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     if player.client:
                         self.exitWithError("This character is already logged in!")
                         return
-                    print "___"
-                    sql.conn.runOperation("UPDATE `players`, SET `lastlogin` = %d WHERE `id` = %d", time.time(), character[0][0])
+                    sql.runOperation("UPDATE `players`, SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
                     
                 self.player = player
                 if self.player.data["health"] < 1:
@@ -184,8 +183,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         updateTile(self.player.position, tile)
                         
                     # Update last login
-                    print "___"
-                    sql.conn.runOperation("UPDATE `players`, SET `lastlogin` = %d WHERE `id` = %d", (time.time(), character[0][0]))
+                    sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
 
             self.player.sendFirstPacket()
             self.ready = True # We can now accept other packages

@@ -407,7 +407,7 @@ def getSpectators(pos, radius=(8,6), ignore=tuple()):
     
     players = set()
     try:       
-        for player in game.player.allPlayersObject:
+        for player in game.player.allPlayers.values():
             if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
                 players.add(player.client)
     except:
@@ -434,7 +434,7 @@ def getCreatures(pos, radius=(8,6), ignore=tuple()):
     
     creatures = set()
                 
-    for creature in game.creature.allCreaturesObject:
+    for creature in game.creature.allCreatures.values():
         if creature.canSee(pos, radius) and creature not in ignore:
             creatures.add(creature)
     return creatures
@@ -458,7 +458,7 @@ def getPlayers(pos, radius=(8,6), ignore=tuple()):
     players = set()
     
     try:            
-        for player in game.player.allPlayersObject:
+        for player in game.player.allPlayers.values():
             if player.canSee(pos, radius) and player not in ignore:
                 players.add(player)
     except:
@@ -677,14 +677,14 @@ def saveAll(force=False):
         """Save all players and all global variables."""
         def callback(result):
             if result:
-                sql.conn.runOperation(*result)
+                sql.runOperation(*result)
                 
-        for player in game.player.allPlayersObject:
+        for player in game.player.allPlayers.values():
             threads.deferToThread(player._saveQuery, force).addCallback(callback)
     else:
-        for player in game.player.allPlayersObject:
+        for player in game.player.allPlayers.values():
             result = player._saveQuery(force)
-            sql.conn.runOperation(*result)
+            sql.runOperation(*result)
 
     # Global storage
     if saveGlobalStorage or force:
@@ -699,7 +699,7 @@ def saveAll(force=False):
             else:
                 data = globalStorage[field]
                 
-            sql.conn.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
+            sql.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
 
     # Houses
     if game.map.houseTiles:
@@ -727,7 +727,7 @@ def saveAll(force=False):
                     house.save = True # Force save
                 if house.save or force:
                     log.msg("Saving house ", houseId)
-                    sql.conn.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
+                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
                     house.save = False
                 else:
                     log.msg("Not saving house", houseId)
@@ -782,7 +782,7 @@ def checkLightLevel(lightValue=[None]):
     
     l = getLightLevel()
     if lightValue[0] != l:
-        for c in game.player.allPlayersObject:
+        for c in game.player.allPlayers.values():
             stream = c.packet()
             
             # Make sure this player actually is online. TODO: Track them in a seperate list?
@@ -818,7 +818,7 @@ def getPlayer(playerName):
         return None
 
 def getCreatureByCreatureId(cid):
-    for creature in game.creature.allCreaturesObject:
+    for creature in game.creature.allCreatures.values():
         if creature.cid == cid:
             return creature
             
@@ -847,7 +847,7 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
     """ Broadcasts a message to every player
     
     """
-    for player in game.player.allPlayersObject:
+    for player in game.player.allPlayers.values():
         stream = player.packet(0xAA)
         
         # Make sure this player actually is online. TODO: Track them in a seperate list?
@@ -923,7 +923,7 @@ def loadPlayer(playerName):
 def loadPlayerById(playerId):
     try:
         # Quick look
-        for player in game.player.allPlayersObject:
+        for player in game.player.allPlayers.values():
             if player.data["id"] == playerId:
                 returnValue(player)
                 return

@@ -26,7 +26,7 @@ except:
 global anyPlayer
 anyPlayer = CreatureBase()
 allPlayers = {}
-allPlayersObject = allPlayers.viewvalues() # Quick speedup
+#allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
 class Player(Creature):
     def __init__(self, client, data):
@@ -1596,18 +1596,18 @@ class Player(Creature):
         if self.doSave:
             argc = self._saveQuery(force)
             if argc:
-                sql.conn.runOperation(*argc)
+                sql.runOperation(*argc)
 
     def saveSkills(self):
-        sql.conn.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
     
 
     def saveExperience(self):
-        sql.conn.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"]))
     
 
     def saveStorage(self):
-        sql.conn.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"]))
 
     # Shopping
     def setTrade(self, npc):
