@@ -1256,7 +1256,7 @@ class Condition(object):
         return copy.deepcopy(self)
 
 class Boost(Condition):
-    def __init__(self, type, mod, length, subtype="", *argc, **kwargs):
+    def __init__(self, type, mod, length, subtype="", percent=False, *argc, **kwargs):
         self.length = length
         self.creature = None
         self.tickEvent = None
@@ -1268,20 +1268,35 @@ class Boost(Condition):
         self.effectArgs = argc
         self.effectKwargs = kwargs
         self.mod = mod
+        self.percent = percent
         
     def tick(self): pass
     def init(self):
+        # Apply
+        pvalue = getattr(self.creature, self.ptype)
+        if self.percent:
+            pvalue *= mod
+        else:
+            pvalue += mod
+            
         # Hack
         if self.ptype == "speed":
             self.type = game.enum.CONDITION_HASTE
-            self.creature.setSpeed(getattr(self.creature, self.ptype) + self.mod)
+            self.creature.setSpeed(pvalue)
         else:
-            setattr(self.creature, self.ptype, getattr(self.creature, self.ptype) + self.mod)
+            setattr(self.creature, self.ptype, pvalue)
         self.tickEvent = engine.safeCallLater(self.length, self.finish)
     def callback(self):
+        # Apply
+        pvalue = getattr(self.creature, self.ptype)
+        if self.percent:
+            pvalue /= mod
+        else:
+            pvalue -= mod
+            
         # Hack
         if self.ptype == "speed":
-            self.creature.setSpeed(getattr(self.creature, self.ptype) - self.mod)
+            self.creature.setSpeed(pvalue)
         else:
-            setattr(self.creature, self.ptype, getattr(self.creature, self.ptype) - self.mod)
+            setattr(self.creature, self.ptype, pvalue)
                 
