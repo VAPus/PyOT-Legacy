@@ -206,10 +206,16 @@ class Creature(object):
             pass
         
     def move(self, direction, spectators=None, level=0, stopIfLock=False):
+        # Client will shift us to this position so.
+        self.direction = direction
+        
         if self.canMove:
             d = Deferred()
             game.engine.safeCallLater(0, self._move, d, direction, spectators, level, stopIfLock)
             return d
+            
+        if self.isPlayer():
+            self.cancelWalk()
         
     @inlineCallbacks
     def _move(self, d, direction, spectators=None, level=0, stopIfLock=False):
