@@ -1,4 +1,4 @@
-instant = spell.Spell("Strong Ice Strike", "exori gran frigo", icon=152, group=ATTACK_GROUP)
+instant = spell.Spell("Strong Ice Strike", "exori gran frigo", icon=152, target=TARGET_TARGET, group=ATTACK_GROUP)
 instant.require(mana=60, level=80, maglevel=0, learned=0, vocations=(2, 6))
 instant.cooldowns(8, 2)
 instant.area(AREA_WAVE1)

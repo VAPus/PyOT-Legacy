@@ -1,4 +1,4 @@
-instant = spell.Spell("Ultimate Terra Strike", "exori max tera", icon=157, group=ATTACK_GROUP)
+instant = spell.Spell("Ultimate Terra Strike", "exori max tera", icon=157, target=TARGET_TARGET, group=ATTACK_GROUP)
 instant.require(mana=100, level=90, maglevel=0, learned=0, vocations=(2, 6))
 instant.cooldowns(30, 4)
 instant.area(AREA_WAVE1)

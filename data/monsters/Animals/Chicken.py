@@ -1,4 +1,4 @@
-chicken = game.monster.genMonster("chicken", (111, 6042), "a chicken")
+chicken = game.monster.genMonster("Chicken", (111, 6042), "a chicken")
 chicken.bloodType("blood")
 chicken.setHealth(15)
 chicken.setExperience(0)

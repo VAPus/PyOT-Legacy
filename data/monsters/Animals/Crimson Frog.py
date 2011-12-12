@@ -1,4 +1,4 @@
-crimson_frog = game.monster.genMonster("crimson frog", (226, 6079), "a crimson frog")
+crimson_frog = game.monster.genMonster("Crimson Frog", (226, 6079), "a crimson frog")
 crimson_frog.setOutfit(94, 78, 94, 78)
 crimson_frog.setTargetChance(10)
 crimson_frog.bloodType("blood")
