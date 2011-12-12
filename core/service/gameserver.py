@@ -149,6 +149,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     if player.client:
                         self.exitWithError("This character is already logged in!")
                         return
+                    print "___"
+                    sql.conn.runOperation("UPDATE `players`, SET `lastlogin` = %d WHERE `id` = %d", time.time(), character[0][0])
                     
                 self.player = player
                 if self.player.data["health"] < 1:
@@ -172,6 +174,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         tile.placeCreature(self.player)
                         # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                         updateTile(self.player.position, tile)
+                        
                     except AttributeError:
                         import data.map.info
                         self.player.position = Position(*data.map.info.towns[1][1])
@@ -179,6 +182,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         tile.placeCreature(self.player)
                         # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                         updateTile(self.player.position, tile)
+                        
+                    # Update last login
+                    print "___"
+                    sql.conn.runOperation("UPDATE `players`, SET `lastlogin` = %d WHERE `id` = %d", (time.time(), character[0][0]))
 
             self.player.sendFirstPacket()
             self.ready = True # We can now accept other packages

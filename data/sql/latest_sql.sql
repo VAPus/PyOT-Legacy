@@ -25015,6 +25015,7 @@ CREATE TABLE IF NOT EXISTS `players` (
   `marriage` int(10) unsigned NOT NULL DEFAULT '0',
   `guild` int(8) unsigned NOT NULL DEFAULT '0',
   `guild_rank` tinyint(4) unsigned NOT NULL DEFAULT '0',
+  `lastlogin` int(11) unsigned NOT NULL DEFAULT '0',
   `skills` blob,
   `conditions` blob,
   `storage` mediumblob,
