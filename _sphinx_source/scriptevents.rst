@@ -497,7 +497,7 @@ The events are:
 
     :returns: (Optionally) False (prevent level adjustments)
 
-.. function:: skill(creature, skill, from, to)
+.. function:: skill(creature, skill, fromLevel, toLevel)
     :param skill: number from 0-7 representing the skill.
     Called when the skill (or magic level) of a player gets adjusted
 

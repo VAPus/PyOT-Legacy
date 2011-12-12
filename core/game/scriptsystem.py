@@ -40,7 +40,7 @@ class Scripts(object):
         return self._run(creature, end, **kwargs)
 
     def runDefer(self, creature, end=None, **kwargs):
-        return threads.deferToThreadPool(reactor, scriptPool, self._run, creature, end, **kwargs)
+        return defer.maybeDeferred(self._run, creature, end, **kwargs)
         
     def _run(self, creature, end=None, **kwargs):
         ok = True
@@ -63,7 +63,7 @@ class NCScripts(Scripts):
         return self._run(end, **kwargs)
 
     def runDefer(self, end=None, **kwargs):
-        return threads.deferToThreadPool(reactor, scriptPool, self._run, end, **kwargs)
+        return defer.maybeDeferred(self._run, end, **kwargs)
 
     def _run(self, end=None, **kwargs):
         ok = True
@@ -250,10 +250,10 @@ class ThingScripts(object):
         scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
     
     def runDefer(self, thing, creature, end=None, **kwargs):
-        return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, True, **kwargs)
+        return defer.maybeDeferred(self._run, thing, creature, end, True, **kwargs)
 
     def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return threads.deferToThreadPool(reactor, scriptPool, self._run, thing, creature, end, False, **kwargs)
+        return defer.maybeDeferredl(self._run, thing, creature, end, False, **kwargs)
         
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)

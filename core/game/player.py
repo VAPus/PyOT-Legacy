@@ -674,7 +674,7 @@ class Player(Creature):
             self.data["maglevel"] += mod
             self.refreshStatus()
         
-        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, from=self.data["maglevel"], to=self.data["maglevel"] + mod)
+        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
         
     def modifyExperience(self, exp):
         up = True
@@ -749,7 +749,7 @@ class Player(Creature):
             
             self.refreshSkills()
             self.saveSkills = True
-       game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, from=self.skills[skill], to=self.skills[skill] + levels)
+        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
        
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill] + levels
