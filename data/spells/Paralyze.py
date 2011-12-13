@@ -9,4 +9,4 @@ rune = spell.Rune(2278, icon=54, count=1, target=TARGET_TARGET, group=SUPPORT_GR
 rune.cooldowns(0, 2)
 rune.require(mana=1400, level=54, maglevel=0)
 rune.targetEffect() # TODO
-rune.effects() # TODO
+rune.effects(target=EFFECT_MAGIC_RED)

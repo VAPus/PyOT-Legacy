@@ -9,4 +9,4 @@ rune = spell.Rune(2308, icon=50, count=3, target=TARGET_TARGET, group=ATTACK_GRO
 rune.cooldowns(0, 2)
 rune.require(mana=0, level=27, maglevel=0)
 rune.targetEffect() # TODO
-rune.effects() # TODO
+rune.effects(area=EFFECT_HITBYFIRE, shoot=ANIMATION_FIRE)
