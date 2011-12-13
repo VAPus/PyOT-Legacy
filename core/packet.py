@@ -144,30 +144,17 @@ class TibiaPacket(object):
     def send(self, stream):
         if not stream:
             return
-            
-        self.bytes = [''.join(self.bytes)]
-
-        if stream.xtea:
-            data = otcrypto.encryptXTEA(struct.pack("<H", len(self.bytes[0]))+self.bytes[0], stream.xtea)
-        else:
-            data = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
-
-        reactor.callFromThread(stream.transport.write, struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+        stream.writeQueue.append(''.join(self.bytes))
+        
     #@inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
         
         self.bytes = [''.join(self.bytes)]
-        dataL = struct.pack("<H", len(self.bytes[0]))+self.bytes[0]
-        lenCache = 0
         for client in list:
             if not client:
                 continue
-            
-            data = otcrypto.encryptXTEA(dataL, client.xtea)
-            if not lenCache:
-                lenCache = len(data)+4
              
-            reactor.callFromThread(client.transport.write, struct.pack("<HI", lenCache, adler32(data) & 0xffffffff)+data)
+            client.writeQueue.append(self.bytes[0])
     
