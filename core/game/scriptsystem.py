@@ -253,7 +253,7 @@ class ThingScripts(object):
         return defer.maybeDeferred(self._run, thing, creature, end, True, **kwargs)
 
     def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferredl(self._run, thing, creature, end, False, **kwargs)
+        return defer.maybeDeferred(self._run, thing, creature, end, False, **kwargs)
         
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)

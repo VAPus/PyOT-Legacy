@@ -296,12 +296,12 @@ class Item(object):
                 pass
             
             try:
-                del self.params["opened"]
+                del params["opened"]
             except:
                 pass
 
             try:
-                del self.params["inTrade"]
+                del params["inTrade"]
             except:
                 pass
             
@@ -449,6 +449,9 @@ def loadItems():
                 reverseLoadItems[cid+x] = sid+x
 
                 loadItems[sid+x] = attributes
+                
+        if sid in MONEY_MAP2:
+            loadItems[sid]["currency"] = MONEY_MAP2[sid]
 
     for data in (yield d2):
         if data[1] == "fluidSource":

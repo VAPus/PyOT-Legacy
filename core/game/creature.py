@@ -739,9 +739,9 @@ class Creature(object):
     def turnAgainst(self, position):
         # First north/south
         if position.y > self.position.y:
-            return self.turn(0)
-        elif position.y < self.position.y:
             return self.turn(2)
+        elif position.y < self.position.y:
+            return self.turn(0)
         elif position.x > self.position.x:
             return self.turn(1)
         elif position.x < self.position.x:

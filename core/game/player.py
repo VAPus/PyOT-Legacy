@@ -1060,11 +1060,7 @@ class Player(Creature):
             stream.send(self.client)
             
     def closeContainer(self, container):
-        try:
-            index = self.openContainers.index(container)
-        except:
-            container.opened = False
-            return
+        index = self.openContainers.index(container)
             
         def end():
             try:
@@ -1076,9 +1072,9 @@ class Player(Creature):
             except:
                 pass
         
-        def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
+        #def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
         
-        game.scriptsystem.get('close').runDefer(container, self, callOpen, index=index)
+        game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=index)
 
 
     def closeContainerId(self, openId):
@@ -1092,7 +1088,7 @@ class Player(Creature):
                 container.opened = False
                 stream.send(self.client)
             
-            game.scriptsystem.get('close').runDefer(container, self, end, index=openId)
+            game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=openId)
             return True
             
         except:
@@ -1109,7 +1105,7 @@ class Player(Creature):
             def end():
                 self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
                 
-            game.scriptsystem.get('close').runDefer(bagFound, self, end, index=openId)
+            game.scriptsystem.get('close').runDeferNoReturn(bagFound, self, end, index=openId)
             
 
     # Item to container
@@ -1582,7 +1578,7 @@ class Player(Creature):
         inventory = ""
         
         if self.saveDepot or force:
-            depot = ", `depot` = '%s'" % self.pickleDepot()
+            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'")
             self.saveDepot = False
             
         if self.saveStorage or force:
@@ -1594,7 +1590,7 @@ class Player(Creature):
             self.saveSkills = False
             
         if self.saveInventory or force:
-            inventory = ", `inventory` = '%s'" % self.pickleInventory()
+            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'")
             self.saveInventory = False
             
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)

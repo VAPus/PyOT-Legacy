@@ -121,19 +121,27 @@ class NPC(Creature):
         stream.send(to.client) 
         
     def buy(self, player, itemId, count, amount, ignoreCapasity=True, withBackpack=False):
+        
         for offer in self.base.offers:
             if offer[0] == itemId and offer[3] == count:
+                print "Offer:", offer[1]
                 # Can we afford it?
                 if player.removeMoney(offer[1] * amount):
                     count = count * amount
+                    
+                    try:
+                        stack = game.item.items[itemId]["stackable"]
+                    except:
+                        stack = False
+                        
                     container = player.inventory[2]
                     if withBackpack:
                         container = game.item.Item(1987)
                         player.itemToContainer(player.inventory[2], container)
                         
                     while count:
-                        rcount = min(100, count)
-                        player.itemToContainer(container, game.item.Item(itemId, count))
+                        rcount = min(100, count) if stack else 1
+                        player.itemToContainer(container, game.item.Item(itemId, rcount))
                         count -= rcount
                         
                     if self.forSale and player.openTrade == self: # Resend my items
@@ -170,7 +178,21 @@ class NPC(Creature):
             
     def isAttackable(self, by):
         return self.base.attackable
-        
+    
+    def farewell(self, player):
+        # Allow farewell to be callable.
+        if hasattr(self.base.speakFarewell, '__call__'):
+            self.base.speakFarewell(npc=self, player=player)
+        else:
+            self.sayTo(player, self.base.speakFarewell % {"playerName":player.name()})
+                
+        self.focus.remove(player)
+        if self.activeModule:
+            self.activeModule.close()
+        try:
+            self.base._onSaid[self.activeSaid][1](self, player)
+        except:
+            pass
 class NPCBase(CreatureBase):
     def __init__(self, brain, data):
         self.data = data

@@ -71,6 +71,7 @@ class BasePacket(TibiaPacket):
             self.uint16(item.cid)
 
             if item.stackable:
+                print item.count
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
                 self.uint8(item.fluidSource or 0)
@@ -476,6 +477,9 @@ class BaseProtocol(object):
             
         elif packetType == 0x7B: # Player sold to store
             self.handlePlayerSale(player,packet)
+            
+        elif packetType == 0x7C: # Player closed trade
+            self.handleCloseTradeNPC(player, packet)
         
         elif packetType == 0x7D: # Request trade
             self.handleRequestTrade(player, packet)
@@ -1215,6 +1219,11 @@ class BaseProtocol(object):
             
             player.isTradingWith = None
             player.tradeAccepted = False
+            
+    def handleCloseTradeNPC(self, player, packet):
+        player.openTrade.farewell(player)
+        player.closeTrade()
+
             
     def handleLookAtInTrade(self, player, packet):
         #game.engine.explainPacket(packet)
