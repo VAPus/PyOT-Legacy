@@ -50,9 +50,9 @@ static PyObject* decryptRSA(PyObject* self, PyObject* args) {
         if (!PyArg_ParseTuple(args, "s#", &stream, &length))
                 return NULL;
 
-        Py_BEGIN_ALLOW_THREADS
+
         length = RSA_private_decrypt(128, (unsigned char*)stream, (unsigned char*)stream, g_RSA, RSA_NO_PADDING);
-        Py_END_ALLOW_THREADS
+
         
         if(ERR_get_error()) {
                 printf(ERR_error_string(ERR_get_error(), NULL));

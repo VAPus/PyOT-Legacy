@@ -125,6 +125,112 @@ class Node:
             return None
             
 otbFile = open("items.otb")
+
+"""
+datFile = open("Tibia.dat")
+
+datInfo = {}
+dat = Reader(datFile.read())
+dat.pos += 4
+maxItemId = dat.uint16()
+reads = maxItemId - 100
+maxOutfitId = dat.uint16()
+effects = dat.uint16()
+distanceEffects = dat.uint16()
+
+print "Tibia.dat info:"
+print "Max Item Id: ", maxItemId
+print "Outfits: ", maxOutfitId
+print "Effects: ", effects
+print "Distance effects: ", distanceEffects
+onId = 100
+for i in xrange(reads):
+    datInfo[onId] = {}
+    
+    op = dat.uint8()
+    lastOp = 0
+    while op < 0x7F:
+        if op == 0x00: # Ground
+            datInfo[onId]["speed"] = dat.uint16()
+            datInfo[onId]["ground"] = True
+        elif op == 0x01:
+            datInfo[onId]["ontop"] = True
+        elif op == 0x02:
+            datInfo[onId]["ontop"] = True
+        elif op == 0x03:
+            datInfo[onId]["ontop"] = True
+        elif op == 0x04:
+            datInfo[onId]["useable"] = True
+            datInfo[onId]["container"] = True
+        elif op == 0x05:
+            datInfo[onId]["stackable"] = True
+        elif op == 0x06:
+            datInfo[onId]["useable"] = True
+        elif op == 0x07:
+            datInfo[onId]["useable"] = True
+        elif op == 0x0A:
+            datInfo[onId]["readable"] = True
+            dat.uint16()
+        elif op == 0x09:
+            datInfo[onId]["readable"] = True
+            datInfo[onId]["writeable"] = True
+            dat.uint16()
+        elif op == 0x0D:
+            datInfo[onId]["solid"] = True
+        elif op == 0x0E:
+            datInfo[onId]["moveable"] = False
+        elif op == 0x0F:
+            datInfo[onId]["blockprojectile"] = True
+        elif op == 0x10:
+            datInfo[onId]["blockpath"] = True
+        elif op == 0x11:
+            datInfo[onId]["pickable"] = True
+        elif op == 0x12:
+            datInfo[onId]["hangable"] = True
+        elif op == 0x13:
+            datInfo[onId]["horizontal"] = True
+        elif op == 0x14:
+            datInfo[onId]["vertical"] = True
+        elif op == 0x15:
+            datInfo[onId]["rotatable"] = True
+        elif op == 0x16:
+            dat.uint32()
+        elif op == 0x19:
+            dat.uint32()
+        elif op == 0x1A:
+            datInfo[onId]["hasheight"] = True
+            dat.uint16()
+        elif op == 0x1D:
+            dat.uint16()
+        elif op == 0x1E:
+            dat.uint16()
+        elif op == 0x1C:
+            datInfo[onId]["animation"] = True
+        elif op == 0x20:
+            datInfo[onId]["lookthrough"] = True
+        elif op in (0xc,):
+            # ignore
+            pass
+        else:
+            raise AttributeError("%s, lastOp %s at %d" % (hex(op), hex(lastOp), onId))
+        lastOp = op
+        op = dat.uint8()
+        
+    height = dat.uint8()
+    weight = dat.uint8()
+    if height or weight:
+        dat.uint8()
+        
+    f = dat.uint8()
+    x = dat.uint8()
+    y = dat.uint8()
+    z = dat.uint8()
+    a = dat.uint8()
+    skip = a * f * x * y * z * height * weight
+    for _ in xrange(skip):
+        dat.uint16()
+    onId += 1
+"""
 otb = Reader(otbFile.read())
 
 otb.pos += 5

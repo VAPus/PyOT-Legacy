@@ -217,7 +217,7 @@ class Item(object):
             return game.enum.SLOT_RING,
         elif slot == "ammo":
             return game.enum.SLOT_AMMO,
-        elif self.weaponType in ('shield'):
+        elif self.weaponType == SKILL_SHIELD:
             return game.enum.SLOT_LEFT,
         elif self.weaponType:
             return game.enum.SLOT_RIGHT,

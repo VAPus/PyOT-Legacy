@@ -21,7 +21,7 @@ if config.tryCython:
         pass # No cython / old cython
 
 #### Setup Reactor ####
-if config.reactorStyle == "poll":
+if config.reactorStyle == "poll" or sys.subversion[0] == 'PyPy':
     from twisted.internet import pollreactor
     pollreactor.install()
 

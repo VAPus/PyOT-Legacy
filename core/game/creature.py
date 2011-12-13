@@ -665,8 +665,11 @@ class Creature(object):
         
         newTile = getTile(position)
         oldPosCreatures = set()
-        if not newTile or newTile.things[0].solid:
+        if not newTile:
             raise game.errors.SolidTile()
+        for i in newTile.getItems():
+            if newTile.things[0].solid:
+                raise game.errors.SolidTile()
 
         try:
             oldStackpos = getTile(oldPosition).findCreatureStackpos(self)

@@ -636,7 +636,7 @@ class Player(Creature):
             pass
     
     def itemCount(self, item):
-        try;
+        try:
             return self.inventoryCache[item.itemId][0]
         except:
             return 0
