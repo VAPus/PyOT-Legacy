@@ -82,10 +82,13 @@ class Position(object):
             
         raise IndexError("Position have no key == %s" % key)
 
-    # Simplifier
+    # Simplifiers
     def getTile(self):
         return getTile(self)
-    
+        
+    def distanceTo(self, position):
+        return abs(self.x-position.x)+abs(self.y-position.y)
+        
     # For savings
     def __getstate__(self):
             return (self.x, self.y, self.z, self.instanceId)

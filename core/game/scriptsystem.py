@@ -488,6 +488,9 @@ def get(type):
 def reg(type, *argc, **kwargs):
     globalScripts[type].reg(*argc)
 
+def unreg(type, *argc):
+    globalScripts[type].unreg(*argc)
+    
 def regFirst(type, *argc, **kwargs):
     globalScripts[type].regFirst(*argc)
     

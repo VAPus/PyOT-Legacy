@@ -634,7 +634,13 @@ class Player(Creature):
                 
         except:
             pass
-        
+    
+    def itemCount(self, item):
+        try;
+            return self.inventoryCache[item.itemId][0]
+        except:
+            return 0
+            
     # Experience & level
     def setLevel(self, level, send=True):
         vocation = self.getVocation()
@@ -782,6 +788,10 @@ class Player(Creature):
             self.setStorage(key, skillGoal - skill)
             
         self.refreshSkills() 
+        
+    def getSkillAttempts(self, skill):
+        return self.getStorage('__skill%d' % skillType)
+        
     # Soul
     def soulGain(self):
         def doSoulGain(gainOverX):
@@ -2206,3 +2216,7 @@ class Player(Creature):
         
     def unlearnSpell(self, name):
         return self.setStorage("__ls%s" % name, False)
+        
+    # Networking
+    def getIP(self):
+        return self.client.transport.getPeer().host
