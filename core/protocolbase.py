@@ -1,15 +1,14 @@
 from twisted.internet.protocol import Protocol, Factory
-from twisted.internet import reactor
+from twisted.internet import reactor, task
 from twisted.python import log
 from packet import TibiaPacketReader, TibiaPacket
 import config
 import struct
-
-if config.checkAdler32:
-    from zlib import adler32
-    
+import otcrypto
+from zlib import adler32
+  
 class TibiaProtocol(Protocol):
-    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength' 
+    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength', 'writeQueue', 'writeEvent'
     def __init__(self):
         self.gotFirst = False
         self.xtea = None
@@ -17,6 +16,10 @@ class TibiaProtocol(Protocol):
         self.buffer = ""
         self.nextPacketLength = 0
         self.bufferLength = 0
+        self.writeQueue = []
+        
+        self.writeEvent = task.LoopingCall(self.executeWriteEvent)
+        self.writeEvent.start(config.networkWriteDelay)
         
     def connectionMade(self):
         peer = self.transport.getPeer()
@@ -36,6 +39,9 @@ class TibiaProtocol(Protocol):
         log.msg("Connection lost from {0}:{1}".format(peer.host, peer.port))
         self.factory.removeClient(self)
 
+        self.writeEvent.stop()
+        self.executeWriteEvent()
+        
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
 
@@ -103,6 +109,18 @@ class TibiaProtocol(Protocol):
             self.gotFirst = True
             self.onFirstPacket(packet)
 
+    def executeWriteEvent(self):
+        if self.writeQueue:
+            data = ''.join(self.writeQueue)
+            self.writeQueue = []
+            
+            if self.xtea:
+                data = otcrypto.encryptXTEA(struct.pack("<H", len(data))+data, self.xtea)
+            else:
+                data = struct.pack("<H", len(data))+data
+
+            self.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+        
     #### Protocol spesific, to be overwritten ####
     def onConnect(self):
         pass

@@ -45,6 +45,7 @@ class Monster(Creature):
         self.respawn = True
         self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.
         self.canWalk = base.walkable
+        self.intervals = {}
 
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
