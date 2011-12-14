@@ -60,7 +60,7 @@ class Shop(ClassAction):
         
         self.on.onSaid(offers, self.handleOffers, self.handleClose)
         
-    def offer(self, name, sellPrice=-1, buyPrice=-1, count=255):
+    def offer(self, name, sellPrice=-1, buyPrice=-1, count=1):
         if type(name) == str:
             name = game.item.itemNames[name]
             

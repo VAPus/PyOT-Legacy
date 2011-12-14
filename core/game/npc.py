@@ -81,10 +81,11 @@ class NPC(Creature):
             stream.uint16(game.item.items[item[0]]["cid"])
             stream.uint8(item[3])
             stream.string(game.item.items[item[0]]["name"])
-            stream.uint32(game.item.items[item[0]]["weight"] * 100)
+            stream.uint32(game.item.items[item[0]]["weight"])
             stream.int32(item[1])
             stream.int32(item[2])
             if item[2]:
+                print item[0], item[2]
                 forSale.add(item[0])
                 
         stream.send(to.client)
@@ -97,26 +98,14 @@ class NPC(Creature):
         stream.uint32(to.getMoney())
         
         items = {}
-        count = 0
-        for item in to.inventory[2].container.getRecursive():
-            if item.itemId in forSale:
-                if item.itemId in items and item.stackable:
-                    items[item.itemId] += item.count
-                elif item.stackable:
-                    items[item.itemId] = item.count
-                    count += 1
-                elif item.itemId in items:
-                    items[item.itemId] += 1
-                else:
-                    items[item.itemId] = 1
-                    count += 1
-                    
-                if count == 255:
-                    break       
-        stream.uint8(count)
-        for itemId in items:
+        stream.uint8(len(forSale))
+
+        for itemId in forSale:
             stream.uint16(game.item.items[itemId]["cid"])
-            stream.uint8(0) #or items[itemId]
+            try:
+                stream.uint8(to.inventoryCache[itemId][0])
+            except KeyError:
+                stream.uint8(0)
             
         stream.send(to.client) 
         
@@ -150,7 +139,7 @@ class NPC(Creature):
     def sell(self, player, itemId, count, amount, ignoreEquipped=True):
         for offer in self.base.offers:
             count = count * amount
-            if offer[0] == itemId and offer[3] == count:
+            if offer[0] == itemId:
                 # Do we really have this item?
                 item = player.findItemById(itemId, count)
                 if item.count == count:
