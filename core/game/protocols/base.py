@@ -13,6 +13,7 @@ import game.scriptsystem
 from collections import deque
 import game.resource
 import game.item
+import game.party
 
 # Probably not a good place, but
 from game.creature import Creature

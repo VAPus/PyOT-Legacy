@@ -8,7 +8,7 @@ from game.item import Item
 from twisted.internet import reactor, defer
 from game.creature import Creature, CreatureBase, uniqueId, allCreatures
 import time
-
+import game.party
 import game.resource
 import game.chat
 import game.pathfinder

@@ -102,7 +102,7 @@ def loader(timer):
         
          
     # Globalize certain things
-    import game.player, game.creature, game.npc, game.monster, game.spell
+    import game.player, game.creature, game.npc, game.monster, game.spell, game.party
     __builtin__.enum = game.enum
     for i in dir(game.enum):
         if not "__" in i:
@@ -140,7 +140,7 @@ def loader(timer):
     __builtin__.getGuildById = game.guild.getGuildById
     
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'engine')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -154,6 +154,7 @@ def loader(timer):
         enum = game.enum
         house = game.house
         guild = game.guild
+        party = game.party
         engine = sys.modules["game.engine"] # For consistancy
             
     __builtin__.game = Globalizer
