@@ -5,14 +5,27 @@ class Party(object):
         self.invites = []
 
     def addMember(self, creature):
-        self.members.append(creature)
+        
+        try:
+            self.invites.remove(creature)
+        except:
+            pass
 
+        self.broadcast("%s has joined the party." % creature.name())
+        creature.partyObj = self
+        
+        self.members.append(creature)
+        
+        creature.message("You have joined %s's party. Open the party channel to communicate with your companions")
+        
+        
     def removeMember(self, creature):
         try:
             self.members.remove(creature)
             return True
         except:
             return False
+
 
     def addInvite(self, creature):
         if creature in self.invites:
@@ -30,6 +43,10 @@ class Party(object):
         except:
             return False
 
+        self.leader.message("Invitation for %s has been revoked." % creature.name())
+        player.message("%s has revoked your invitation." % self.leader.name())
+        
+        
     def disband(self):
         for member in self.members:
             pass #TODO
@@ -39,3 +56,7 @@ class Party(object):
 
     def icons(self):
         pass # TODO
+        
+    def broadcast(self, text):
+        for member in self.members:
+            member.message(text)

@@ -539,8 +539,14 @@ class BaseProtocol(object):
         elif packetType == 0xA2: # Follow
             self.handleFollow(player,packet)
             
-        elif packetType == 0xA3:
+        elif packetType == 0xA3: # Invite to party
             self.handleInviteToParty(player, packet)
+            
+        elif packetType == 0xA4: # Join party
+            self.handleJoinParty(player, packet)
+            
+        elif packetType == 0xA5: # Revoke invite
+            self.handleRevokePartyInvite(player, packet)
             
         elif packetType == 0xC9:
             self.handleUpdateTile(player,packet)
@@ -1351,3 +1357,27 @@ class BaseProtocol(object):
             return player.message("Your not the party leader!")
         
         party.addInvite(creature)
+        
+    def handleJoinParty(self, player, packet):
+        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+
+        # Grab the party
+        party = creature.party()
+        if not party or party.leader != creature:
+            return
+        
+        party.addMember(creature)
+        
+    def handleRevokePartyInvite(self, player, packet):
+        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        
+        if creature.party():
+            player.message("%s is already in a party." % creature.name())
+            return
+            
+        # Grab the party
+        party = player.party()
+        if not party or party.leader != player:
+            return
+        
+        party.removeInvite(creature)        
