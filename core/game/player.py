@@ -154,6 +154,12 @@ class Player(Creature):
             return "He"
         else:
             return "She"
+    
+    def sexAdjective(self):
+        if self.data["sex"] == 1:
+            return "his"
+        else:
+            return "heres"
             
     def description(self, isSelf=False):
         if isSelf:
@@ -2173,6 +2179,10 @@ class Player(Creature):
             
     def party(self):
         # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
+        return self.partyObj
+    
+    def newParty(self):
+        self.partyObj = game.party.Party(self)
         return self.partyObj
         
     # Trade

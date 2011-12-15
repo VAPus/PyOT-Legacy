@@ -539,6 +539,9 @@ class BaseProtocol(object):
         elif packetType == 0xA2: # Follow
             self.handleFollow(player,packet)
             
+        elif packetType == 0xA3:
+            self.handleInviteToParty(player, packet)
+            
         elif packetType == 0xC9:
             self.handleUpdateTile(player,packet)
             
@@ -1332,4 +1335,19 @@ class BaseProtocol(object):
             game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
 
         
+    def handleInviteToParty(self, player, packet):
+        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        
+        if creature.party():
+            player.message("%s is already in a party." % creature.name())
+            return
             
+        # Grab the party
+        party = player.party()
+        if not party:
+            # Make a party
+            party = player.newParty()
+        elif party.leader != player:
+            return player.message("Your not the party leader!")
+        
+        party.addInvite(creature)

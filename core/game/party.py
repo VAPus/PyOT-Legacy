@@ -15,7 +15,13 @@ class Party(object):
             return False
 
     def addInvite(self, creature):
+        if creature in self.invites:
+            return # Already in it
+            
+        self.leader.message("%s has been invited. Open the party channel to communicate with your members." % creature.name())
         self.invites.append(creature)
+        
+        creature.message("%s has invited you to %s oarty." % (self.leader.name(), self.leader.sexAdjective()))
 
     def removeInvite(self, creature):
         try:
@@ -33,4 +39,3 @@ class Party(object):
 
     def icons(self):
         pass # TODO
-
