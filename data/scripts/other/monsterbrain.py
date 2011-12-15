@@ -29,6 +29,23 @@ def defaultBrainFeaturePriority(self, monster):
                 monster.walkPer = 0.5
                 monster.setSpeed(monster.speed * 2)
             
+            elif monster.distanceStepsTo(monster.target.position) > monster.base.targetDistance:
+                # When we reach our destination, can we target check
+                """def __walkComplete(x):
+                    if not x:
+                        # Walk not possible. Loose target
+                        monster.target = None
+                        return
+                    # Are we OK?
+                    if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
+                        monster.turnAgainst(monster.target.position)
+                    else:
+                        # Apperently not. Try walking again.
+                        engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)"""
+                            
+                # Begin autowalking
+                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance)
+                    
             elif monster.targetMode == 1:
                 # First stratigic manuver
                 for id, spell in enumerate(monster.base.defenceSpells):
