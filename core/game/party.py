@@ -22,11 +22,21 @@ class Party(object):
     def removeMember(self, creature):
         try:
             self.members.remove(creature)
-            return True
         except:
-            return False
+            return
 
-
+        creature.partyObj = None
+        creature.message("You have left the party.")
+        self.broadcast("%s has left the party.")
+        
+        if creature == self.leader:
+            # Pick a new leader or disband
+            if len(self.members) > 1:
+                self.changeLeader(self.members[0])
+            else:
+                self.disband()
+                
+        
     def addInvite(self, creature):
         if creature in self.invites:
             return # Already in it
@@ -39,9 +49,9 @@ class Party(object):
     def removeInvite(self, creature):
         try:
             self.invites.remove(creature)
-            return True
+        
         except:
-            return False
+            return
 
         self.leader.message("Invitation for %s has been revoked." % creature.name())
         player.message("%s has revoked your invitation." % self.leader.name())
@@ -49,10 +59,17 @@ class Party(object):
         
     def disband(self):
         for member in self.members:
-            pass #TODO
+            self.partyobj = None
+            self.message("Your party has been disbanded")
+            
+        del self
 
     def changeLeader(self, creature):
-        pass # TODO
+        if creature not in self.members:
+            raise Exception("Trying to make a non-member leader of the party")
+        
+        self.leader = creature
+        self.broadcast("%s is now the leader of the party.")
 
     def icons(self):
         pass # TODO

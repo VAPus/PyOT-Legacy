@@ -2184,7 +2184,10 @@ class Player(Creature):
     def newParty(self):
         self.partyObj = game.party.Party(self)
         return self.partyObj
-        
+    
+    def leaveParty(self):
+        if self.partyObj:
+            self.partyObj.removeMember(self)
     # Trade
     def tradeItemRequest(self, between, items, confirm=False):
         if confirm:
