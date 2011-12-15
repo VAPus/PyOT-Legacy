@@ -428,6 +428,7 @@ class BasePacket(TibiaPacket):
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
+        game.engine.explainPacket(packet)
         packetType = packet.uint8()
         
         if packetType == 0x14 or player.data["health"] < 1: # Logout

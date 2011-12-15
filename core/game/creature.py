@@ -421,8 +421,12 @@ class Creature(object):
             d.callback((self, oldPosition, position))
             
         # Deal with appear and disappear. Ahh the power of sets :)
-        oldPosCreatures = game.engine.getCreatures(oldPosition)
-        newPosCreatures = game.engine.getCreatures(position)
+        if self.isPlayer()
+            ignore = (self,)
+        else:
+            ignore = ()
+        oldPosCreatures = game.engine.getPlayers(oldPosition, ignore=ignore)
+        newPosCreatures = game.engine.getPlayers(position, ignore=ignore)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:

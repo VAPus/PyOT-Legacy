@@ -84,17 +84,19 @@ class NPC(Creature):
             stream.uint32(game.item.items[item[0]]["weight"])
             stream.int32(item[1])
             stream.int32(item[2])
-            if item[2]:
+            if item[2] > 0:
                 print item[0], item[2]
                 forSale.add(item[0])
-                
+        self.sendGoods(to, forSale, stream)        
         stream.send(to.client)
-        self.sendGoods(to, forSale)
+        
         self.forSale = forSale
     
-    def sendGoods(self, to, forSale=None):
-        # A bit heavy stuff:
-        stream = TibiaPacket(0x7B)
+    def sendGoods(self, to, forSale=None, stream=None):
+        if stream:
+            stream.uint8(0x7B)
+        else:
+            stream = TibiaPacket(0x7B)
         stream.uint32(to.getMoney())
         
         items = {}
