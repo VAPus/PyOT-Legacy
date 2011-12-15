@@ -421,7 +421,7 @@ class Creature(object):
             d.callback((self, oldPosition, position))
             
         # Deal with appear and disappear. Ahh the power of sets :)
-        if self.isPlayer()
+        if self.isPlayer():
             ignore = (self,)
         else:
             ignore = ()
