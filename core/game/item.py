@@ -148,16 +148,16 @@ class Item(object):
         return self.actions
             
     def __getattr__(self, name):
+        _loadItem = items[self.itemId]
         try:
-            attrVal = 1 << self.attributes.index(name)
-            return items[self.itemId]["a"] & attrVal
-        except:
+            return _loadItem["a"] & (1 << self.attributes.index(name))
+        except ValueError:
             try:
                 return self.params[name]
             except:
                 try:
-                    return items[self.itemId][name]
-                except:
+                    return _loadItem[name]
+                except KeyError:
                     if not "__" in name:
                         return None
                        

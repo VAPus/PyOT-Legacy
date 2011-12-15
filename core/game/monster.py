@@ -507,7 +507,8 @@ class MonsterBrain(object):
         if monster.base.voiceslist:
             self.handleTalk(monster)
                 
-    @engine.loopInThread(0.5)
+    #@engine.loopInThread(0.5)
+    @engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
         monster.noBrain = False
         # Are we alive?
@@ -537,7 +538,8 @@ class MonsterBrain(object):
         if monster.canWalk and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
             
-    @engine.loopInThread(2)        
+    #@engine.loopInThread(2)
+    @engine.loopDecorator(2)
     def handleTalk(self, monster):
         # Are we alive?
         if not monster.alive:
@@ -553,14 +555,12 @@ class MonsterBrain(object):
             else:
                 monster.say(text)
                 
-    def walkRandomStep(self, monster, badDir=None):
+    def walkRandomStep(self, monster, badDir=[]):
         # How far are we (x,y) from our spawn point?
         xFrom = monster.position.x-monster.spawnPosition.x
         yFrom = monster.position.y-monster.spawnPosition.y
         
         steps = [0,1,2,3]
-        if badDir == None:
-            badDir = []
         
         random.shuffle(steps)
         
@@ -583,7 +583,7 @@ class MonsterBrain(object):
                 continue
             
             elif monster.target and enine.positionInDirection(monster.position, step) == monster.target.position:
-                continue
+                break
             
             badDir.append(step)
             def success(result):

@@ -1588,11 +1588,11 @@ class Player(Creature):
             self.saveDepot = False
             
         if self.saveStorage or force:
-            storage = ", `storage` = '%s'" % otjson.dumps(self.storage)
+            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'")
             self.saveStorage = False
             
         if self.saveSkills or force:
-            skills = ", `skills` = '%s'" % otjson.dumps(self.skills)
+            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'")
             self.saveSkills = False
             
         if self.saveInventory or force:
@@ -1600,9 +1600,9 @@ class Player(Creature):
             self.saveInventory = False
             
         extra = "%s%s%s%s" % (depot, storage, skills, inventory)
-        
+
         if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s"), (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, int(self.direction), int(self.position.x), int(self.position.y), int(self.position.z), int(self.data["id"]))
+            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s"), (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])
 
     def save(self, force=False):
         if self.doSave:

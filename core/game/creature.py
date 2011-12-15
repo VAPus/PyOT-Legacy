@@ -118,8 +118,9 @@ class Creature(object):
             if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs) or not creature.extActionLock(new_f, creature, *argc, **kwargs) :
                 return
             else:
-                creature.extAction = time.time() + 0.2
-                creature.lastAction = time.time() + 0.2
+                _time = time.time()
+                creature.extAction = _time
+                creature.lastAction = _time
                 f(creature, *argc, **kwargs)
 
         return new_f
@@ -295,17 +296,17 @@ class Creature(object):
             
         else:
             self.lastStep = time.time()"""
-
-        self.lastStep = time.time()
+        _time = time.time()
+        self.lastStep = _time
         delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction += delay
-        self.extAction = time.time() + (delay/2)
+        self.extAction = _time + (delay/2)
                 
         
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            yield game.scriptsystem.get('walkOff').runDefer(item, self, None, position=oldPosition)
+            game.scriptsystem.get('walkOff').run(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():

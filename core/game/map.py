@@ -117,7 +117,7 @@ class StackPosition(Position):
 
     # For savings
     def __getstate__(self):
-            return (self.x, self.y, self.z, self.stackpos, self.instanceId)
+        return (self.x, self.y, self.z, self.stackpos, self.instanceId)
             
     def __setstate__(self, data):
         self.x, self.y, self.z, self.stackpos, self.instanceId = data
@@ -135,27 +135,29 @@ class StackPosition(Position):
         self.stackpos = x
         
 def getTile(pos):
-    x,y,z = pos.x, pos.y, pos.z
-    iX = int(x / 32)
-    iY = int(y / 32)
+    x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
+    iX = x / 32
+    iY = y / 32
     pX = x -iX * 32
     pY = y -iY * 32
 
     try:
-        area = knownMap[pos.instanceId]
-    except:
-        knownMap[pos.instanceId] = {}
-        area = knownMap[pos.instanceId]
+        area = knownMap[instanceId]
+    except KeyError:
+        knownMap[instanceId] = {}
+        area = knownMap[instanceId]
         
     sectorSum = (iX * 32768) + iY
     try:
         return area[sectorSum][z][pX][pY]
-    except:
-        if loadTiles(x, y, pos.instanceId):
+    except KeyError:
+        if loadTiles(x, y, instanceId):
             try:
                 return area[sectorSum][z][pX][pY]
             except:
                 return None
+    except:
+        return None
                 
 def getHouseId(pos):
     try:

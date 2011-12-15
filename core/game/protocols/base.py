@@ -101,17 +101,38 @@ class BasePacket(TibiaPacket):
 
         # Run the steps by appending the floor
         for z in xrange(start, (end+step), step):
-            skip = self.floorDescription((position.x, position.y, z), width, height, position.z - z, skip, player)
+            skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
             self.uint8(skip)
             self.uint8(0xFF)
-        
+
+    def _helpGetTile(self,x,y,z,area,instanceId):
+        iX = x / 32
+        iY = y / 32
+        pX = x -iX * 32
+        pY = y -iY * 32
+                
+        sectorSum = (iX * 32768) + iY
+        try:
+            return area[sectorSum][z][pX][pY]
+        except KeyError:
+            if game.map.loadTiles(x, y, instanceId):
+                try:
+                    return area[sectorSum][z][pX][pY]
+                except:
+                    return None
+        except:
+            return None
+            
     # Floor Description (the entier floor)
-    def floorDescription(self, position, width, height, offset, skip, player=None):
+    def floorDescription(self, _x, _y, _z, width, height, offset, skip, player=None):
+        instanceId = player.position.instanceId if player else None
+        area = game.map.knownMap[instanceId]
+        
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = game.map.getTile(game.map.Position(position[0] + x + offset, position[1] + y + offset, position[2], player.position.instanceId if player else None))
+                tile = self._helpGetTile(_x + x + offset, _y + y + offset, _z, area, instanceId)
 
                 if tile and tile.things:
                     if skip >= 0:
@@ -275,53 +296,53 @@ class BasePacket(TibiaPacket):
         
         # Underground to surface
         if oldPos.z-1 == 7:
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 5), 18, 14, 3, -1, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 4), 18, 14, 4, skip, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 3), 18, 14, 5, skip, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 2), 18, 14, 6, skip, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 1), 18, 14, 7, skip, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, 0), 18, 14, 8, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 5, 18, 14, 3, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 4, 18, 14, 4, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 3, 18, 14, 5, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 2, 18, 14, 6, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 1, 18, 14, 7, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, 0, 18, 14, 8, skip, player)
 
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
         elif oldPos.z-1 > 7: # Still underground
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-3), 18, 14, oldPos.z+3, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-3, 18, 14, oldPos.z+3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
         self.uint8(0x68) # West
-        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1), 1, 14, player)
+        self.mapDescription(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1, 1, 14, player)
         
         self.uint8(0x65) # North
-        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-1), 18, 1, player)
+        self.mapDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-1, 18, 1, player)
         
         
     def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
         if oldPos.z+1 == 8:
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+1), 18, 14, -1, -1, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+2), 18, 14, -2, skip, player)
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+3), 18, 14, -3, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+1, 18, 14, -1, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+2, 18, 14, -2, skip, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, -3, skip, player)
 
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)
                 
         elif oldPos.z+1 > 8:
-            skip = self.floorDescription(game.map.Position(oldPos.x - 8, oldPos.y - 6, oldPos.z+3), 18, 14, oldPos.z-3, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, oldPos.z-3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)            
         
         self.uint8(0x66) # East
-        self.mapDescription(game.map.Position(oldPos.x + 9, oldPos.y - 6, oldPos.z+1), 1, 14, player)
+        self.mapDescription(oldPos.x + 9, oldPos.y - 6, oldPos.z+1, 1, 14, player)
         self.uint8(0x67) # South
-        self.mapDescription(game.map.Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
+        self.mapDescription(oldPos.x - 8, oldPos.y + 7, oldPos.z+1, 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)

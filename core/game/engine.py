@@ -250,6 +250,26 @@ def loopInThread(time):
             
         return first
     return decor
+    
+def loopDecorator(time):
+    """Loop function decorator.
+    
+    :param time: Run the function every ``time`` seconds.
+    :type time: float (seconds).
+
+    """
+    
+    def decor(f):
+        def new_f(*args, **kwargs):
+            if f(*args, **kwargs) != False:
+                safeCallLater(time, new_f, *args, **kwargs)
+        
+        def first(*args, **kwargs):
+            safeCallLater(0, new_f, *args, **kwargs)
+            
+        return first
+    return decor
+    
 # First order of buisness, the autoWalker
 @action(True)
 def autoWalkCreature(creature, callback=None):
@@ -407,13 +427,10 @@ def getSpectators(pos, radius=(8,6), ignore=tuple()):
     
     """
     
-    players = set()
-    try:       
-        for player in game.player.allPlayers.values():
-            if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
-                players.add(player.client)
-    except:
-        pass # No players
+    players = set()   
+    for player in game.player.allPlayers.values():
+        if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
+            players.add(player.client)
         
     return players
         
@@ -458,13 +475,10 @@ def getPlayers(pos, radius=(8,6), ignore=tuple()):
     """
     
     players = set()
-    
-    try:            
-        for player in game.player.allPlayers.values():
-            if player.canSee(pos, radius) and player not in ignore:
-                players.add(player)
-    except:
-        pass # No players
+              
+    for player in game.player.allPlayers.values():
+        if player.canSee(pos, radius) and player not in ignore:
+            players.add(player)
     
     return players
         
@@ -693,10 +707,10 @@ def saveAll(force=False):
         for field in globalStorage:
             type = ""
             if field in jsonFields:
-                data = otjson.dumps(globalStorage[field])
+                data = otjson.dumps(globalStorage[field]).replace("'", "\\'")
                 type = "json"
             elif field in pickleFields:
-                data = fastPickler(globalStorage[field])
+                data = fastPickler(globalStorage[field]).replace("'", "\\'")
                 type = "pickle"
             else:
                 data = globalStorage[field]
@@ -729,7 +743,7 @@ def saveAll(force=False):
                     house.save = True # Force save
                 if house.save or force:
                     log.msg("Saving house ", houseId)
-                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
+                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data).replace("'", "\\'"), houseId))
                     house.save = False
                 else:
                     log.msg("Not saving house", houseId)
@@ -960,11 +974,7 @@ def getHouseByPos(pos):
 
 # Speed pickler
 def fastPickler(obj):
-    file = StringIO()
-    p = pickle.Pickler(file, 2)
-    #p.fast = True
-    p.dump(obj)
-    return file.getvalue()  
+    return pickle.dumps(obj, 2)
     
 # Protocol 0x00:
 @inlineCallbacks
