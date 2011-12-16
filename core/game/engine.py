@@ -707,10 +707,10 @@ def saveAll(force=False):
         for field in globalStorage:
             type = ""
             if field in jsonFields:
-                data = otjson.dumps(globalStorage[field]).replace("'", "\\'")
+                data = otjson.dumps(globalStorage[field])
                 type = "json"
             elif field in pickleFields:
-                data = fastPickler(globalStorage[field]).replace("'", "\\'")
+                data = fastPickler(globalStorage[field])
                 type = "pickle"
             else:
                 data = globalStorage[field]
@@ -743,7 +743,7 @@ def saveAll(force=False):
                     house.save = True # Force save
                 if house.save or force:
                     log.msg("Saving house ", houseId)
-                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data).replace("'", "\\'"), houseId))
+                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
                     house.save = False
                 else:
                     log.msg("Not saving house", houseId)
