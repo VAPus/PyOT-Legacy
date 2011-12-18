@@ -413,7 +413,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
 
 # Spectator list
-def getSpectators(pos, radius=(8,6), ignore=tuple()):
+def getSpectators(pos, radius=(8,6), ignore=()):
     """Gives you the spectators (:class:`service.gameserver.GameProtocol`) in the area.
     
     :param pos: Position of the center point.
@@ -436,8 +436,13 @@ def getSpectators(pos, radius=(8,6), ignore=tuple()):
         
 getSpectators = bindconstant._make_constants(getSpectators)
 
+def hasSpectators(pos, radius=(8,6), ignore=()):
+    for player in game.player.allPlayers.values():
+        if player.canSee(pos, radius) and player not in ignore: return True
+        
+    return False
     
-def getCreatures(pos, radius=(8,6), ignore=tuple()):
+def getCreatures(pos, radius=(8,6), ignore=()):
     """Gives you the creatures in the area.
     
     :param pos: Position of the center point.
@@ -460,7 +465,7 @@ def getCreatures(pos, radius=(8,6), ignore=tuple()):
         
 getCreatures = bindconstant._make_constants(getCreatures)
 
-def getPlayers(pos, radius=(8,6), ignore=tuple()):
+def getPlayers(pos, radius=(8,6), ignore=()):
     """Gives you the players in the area.
     
     :param pos: Position of the center point.

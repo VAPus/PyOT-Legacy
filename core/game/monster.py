@@ -504,18 +504,26 @@ class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
         monster.noBrain = False
         self.handleThink(monster)
-        if monster.base.voiceslist:
-            self.handleTalk(monster)
                 
     #@engine.loopInThread(0.5)
     @engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
-        monster.noBrain = False
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
             return False # Stop looper
-            
+        
+        if monster.base.voiceslist:
+            if 10 > random.randint(0, 100): # 10%
+                # Find a random text
+                text = random.choice(monster.base.voiceslist)
+                
+                # If text is uppercase, then yell it.
+                if text.isupper():
+                    monster.yell(text)
+                else:
+                    monster.say(text)
+                    
         for feature in monster.base.brainFeatures:
             if feature in brainFeatures[0]:
                 ret = brainFeatures[0][feature](self, monster)
@@ -531,30 +539,13 @@ class MonsterBrain(object):
                     return ret
                     
         # Are anyone watching?
-        if check and not engine.getSpectators(monster.position, (9, 7)):
+        if check and not engine.hasSpectators(monster.position, (9, 7)):
             monster.noBrain = True
             return False
         
         if monster.canWalk and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
             self.walkRandomStep(monster) # Walk a random step
-            
-    #@engine.loopInThread(2)
-    @engine.loopDecorator(2)
-    def handleTalk(self, monster):
-        # Are we alive?
-        if not monster.alive:
-            return False # Stop looper
-            
-        if 10 > random.randint(0, 100): # 10%
-            # Find a random text
-            text = random.choice(monster.base.voiceslist)
-            
-            # If text is uppercase, then yell it.
-            if text.isupper():
-                monster.yell(text)
-            else:
-                monster.say(text)
-                
+ 
     def walkRandomStep(self, monster, badDir=[]):
         # How far are we (x,y) from our spawn point?
         xFrom = monster.position.x-monster.spawnPosition.x
