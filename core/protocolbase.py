@@ -1,5 +1,5 @@
 from twisted.internet.protocol import Protocol, Factory
-from twisted.internet import reactor, task
+from twisted.internet import reactor
 from twisted.python import log
 from packet import TibiaPacketReader, TibiaPacket
 import config
@@ -8,7 +8,7 @@ import otcrypto
 from zlib import adler32
   
 class TibiaProtocol(Protocol):
-    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength', 'writeQueue', 'writeEvent'
+    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength', 'writeQueue', 'writeEvent', 'writer'
     def __init__(self):
         self.gotFirst = False
         self.xtea = None
@@ -17,9 +17,8 @@ class TibiaProtocol(Protocol):
         self.nextPacketLength = 0
         self.bufferLength = 0
         self.writeQueue = []
-        
-        self.writeEvent = task.LoopingCall(self.executeWriteEvent)
-        self.writeEvent.start(config.networkWriteDelay)
+        self.writer = False
+        self.writeEvent = None
         
     def connectionMade(self):
         peer = self.transport.getPeer()
@@ -39,7 +38,10 @@ class TibiaProtocol(Protocol):
         log.msg("Connection lost from {0}:{1}".format(peer.host, peer.port))
         self.factory.removeClient(self)
 
-        self.writeEvent.stop()
+        try:
+            self.writeEvent.cancel()
+        except:
+            pass
         self.executeWriteEvent()
         
         # Inform the Protocol that we lost a connection
@@ -110,6 +112,7 @@ class TibiaProtocol(Protocol):
             self.onFirstPacket(packet)
 
     def executeWriteEvent(self):
+        self.writer = False
         if self.writeQueue:
             data = ''.join(self.writeQueue)
             self.writeQueue = []

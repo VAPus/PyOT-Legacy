@@ -444,11 +444,7 @@ def loadItems():
         loadItems[sid] = attr
         if item[6]:
             for x in xrange(1, item[6]+1):
-                attributes = attr.copy()
-                attributes["cid"] = cid+x
-                reverseLoadItems[cid+x] = sid+x
-
-                loadItems[sid+x] = attributes
+                loadItems[sid+x] = attr
                 
         if sid in MONEY_MAP2:
             loadItems[sid]["currency"] = MONEY_MAP2[sid]

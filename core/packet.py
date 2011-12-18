@@ -145,7 +145,10 @@ class TibiaPacket(object):
         if not stream:
             return
         stream.writeQueue.append(''.join(self.bytes))
-        
+        if not stream.writer:
+            stream.writeEvent = reactor.callLater(config.networkWriteDelay, stream.executeWriteEvent)
+            stream.writer = True        
+            
     #@inThread
     def sendto(self, list):
         if not list:
@@ -155,6 +158,8 @@ class TibiaPacket(object):
         for client in list:
             if not client:
                 continue
-             
             client.writeQueue.append(self.bytes[0])
-    
+            
+            if not client.writer:
+                client.writeEvent = reactor.callLater(config.networkWriteDelay, client.executeWriteEvent)
+                client.writer = True
