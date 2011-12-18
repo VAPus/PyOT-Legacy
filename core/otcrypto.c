@@ -81,7 +81,7 @@ static PyObject* encryptXTEA(PyObject* self, PyObject* args) {
                 memset((void*)&mbuffer[length], 0x33, pad);
                 length += pad;
         }
-        Py_BEGIN_ALLOW_THREADS
+        //Py_BEGIN_ALLOW_THREADS
         uint32_t* buffer = (uint32_t*)mbuffer;
         int pos = 0;
         uint8_t i;
@@ -95,7 +95,7 @@ static PyObject* encryptXTEA(PyObject* self, PyObject* args) {
                 buffer[pos]=v0; buffer[pos + 1]=v1;
                 pos += 2;
         }
-        Py_END_ALLOW_THREADS
+        //Py_END_ALLOW_THREADS
         PyObject* res = PyBytes_FromStringAndSize(mbuffer, length);
         PyMem_Del(mbuffer);
         return res;
@@ -111,7 +111,7 @@ static PyObject* decryptXTEA(PyObject* self, PyObject* args) {
         if (!PyArg_ParseTuple(args, "O(kkkk)", &streamObj, &k[0], &k[1], &k[2], &k[3]))
                 return NULL;
 	PyString_AsStringAndSize(streamObj, &stream, &length);
-        Py_BEGIN_ALLOW_THREADS
+        //Py_BEGIN_ALLOW_THREADS
         uint32_t* buffer = (uint32_t*)stream;
         
         uint8_t i;
@@ -126,7 +126,7 @@ static PyObject* decryptXTEA(PyObject* self, PyObject* args) {
                 buffer[pos]=v0; buffer[pos + 1]=v1;
                 pos += 2;
         }
-        Py_END_ALLOW_THREADS
+        //Py_END_ALLOW_THREADS
         return PyBytes_FromStringAndSize(stream, length);
 }
 

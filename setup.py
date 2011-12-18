@@ -5,7 +5,7 @@ try:
     sys.getwindowsversion()
     module1 = Extension('otcrypto', sources = ['core/otcrypto.c'], libraries = ["eay32"])
 except:
-    module1 = Extension('core/otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"], extra_compile_args=["-ffast-math"])    
+    module1 = Extension('core/otcrypto', sources = ['core/otcrypto.c'], libraries = ["crypto"])    
 
 setup (name = 'PyOT',
 	   version = '1.0',

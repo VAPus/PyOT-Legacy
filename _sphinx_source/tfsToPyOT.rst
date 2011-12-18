@@ -12,6 +12,8 @@
 
 **NB! This page is work in progress!**
 
+There is 198 functions left to document.
+
 First some important class (type) names:
 
     **Creature** means it's part of any creature (:class:`game.creature.Creature`)
@@ -218,32 +220,6 @@ First some important class (type) names:
 
         Player.getDepot(depotId)
 
-
-** part of the guild system, yet to be implanted **
-.. function:: getPlayerGuildId(cid)
-
-.. function:: getPlayerGuildName(cid)
-
-.. function:: getPlayerGuildRankId(cid)
-
-.. function:: getPlayerGuildRank(cid)
-
-.. function:: getPlayerGuildNick(cid)
-
-.. function:: getPlayerGuildLevel(cid)
-
-.. function:: getPlayerGUID(cid)
-
-.. function:: getPlayerNameDescription(cid)
-
-.. function:: doPlayerSetNameDescription(cid, desc)
-
-.. function:: getPlayerSpecialDescription(cid)
-
-.. function:: doPlayerSetSpecialDescription(cid, desc)
-
-
-
 .. function:: getPlayerAccountId(cid)
 
     Equal to::
@@ -268,7 +244,9 @@ First some important class (type) names:
 
         We don't have such flags
 
-.. function:: getPlayerPromotionLevel(cid) - Figure it out from the vocation id
+.. function:: getPlayerPromotionLevel(cid)
+
+    Figure it out from the vocation id
 
 .. function:: doPlayerSetPromotionLevel(cid, level)
 
@@ -362,8 +340,6 @@ First some important class (type) names:
 
         Creature.setGlobal(key, value)
 
-.. function:: getChannelUsers(channelId)
-
 .. function:: getPlayersOnline()
 
     Something like this::
@@ -426,6 +402,8 @@ First some important class (type) names:
 
 .. function:: doPlayerFeed(cid, food)
 
+    No equal
+
 .. function:: doPlayerSendCancel(cid, text)
 
     Equal to::
@@ -435,12 +413,6 @@ First some important class (type) names:
 .. function:: doPlayerSendDefaultCancel(cid, ReturnValue)
 
     We got calls such as Player.notPossible()
-
-.. function:: getSearchString(fromPosition, toPosition[, fromIsCreature = false[, toIsCreature = false]])
-
-.. function:: getClosestFreeTile(cid, targetpos[, extended = false[, ignoreHouse = true]])
-
-.. function:: doTeleportThing(cid, newpos[, pushmove = true[, fullTeleport = true]])
 
 .. function:: doTransformItem(uid, newId[, count/subType])
 
@@ -456,6 +428,10 @@ First some important class (type) names:
 
 .. function:: doSendCreatureSquare(cid, color[, player])
 
+    Equal to::
+
+        Player.square(Creature, color)
+
 .. function:: doSendMagicEffect(pos, type[, player])
 
     Some alternatives are::
@@ -466,9 +442,7 @@ First some important class (type) names:
 
 .. function:: doSendDistanceShoot(fromPos, toPos, type[, player])
 
-.. function:: doSendAnimatedText(pos, text, color[, player])
-
-.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
+    Player.shoot(fromPos, toPos, type)
 
 .. function:: doCreatureAddHealth(cid, health[, hitEffect[, hitColor[, force]]])
 
@@ -518,15 +492,37 @@ First some important class (type) names:
 
 .. function:: doPlayerOpenChannel(cid, channelId)
 
+    Equal to::
+
+        Player.openChannel(channelId)
+
 .. function:: doPlayerAddMoney(cid, money)
 
+    Equal to::
+
+        Player.addMoney(money)
+
 .. function:: doPlayerRemoveMoney(cid, money)
+
+    Equal to::
+
+        Player.removeMoney(money)
+
+    Note that this remove as much as possible if it's not enough, you should therefore vertify the amount.
 
 .. function:: doPlayerTransferMoneyTo(cid, target, money)
 
 .. function:: doShowTextDialog(cid, itemid, text)
 
+    Equal to::
+
+        Player.textWindow(Item, text=text)
+
 .. function:: doDecayItem(uid)
+
+    Equal to::
+        
+        Item.decay(position)
 
 .. function:: doCreateItem(itemid[, type/count], pos)
 
@@ -545,26 +541,6 @@ First some important class (type) names:
     Equal to::
 
         placeItem(Item, pos)
-
-.. function:: doAddContainerItemEx(uid, virtuid)
-
-.. function:: doRelocate(pos, posTo[, creatures = true[, unmovable = true]])
-
-.. function:: doCleanTile(pos[, forceMapLoaded = false])
-
-.. function:: doCreateTeleport(itemid, topos, createpos)
-
-.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
-
-.. function:: doCreateNpc(name, pos[, displayError = true])
-
-.. function:: doSummonMonster(cid, name)
-
-.. function:: doConvinceCreature(cid, target)
-
-.. function:: getMonsterTargetList(cid)
-
-.. function:: getMonsterFriendList(cid)
 
 .. function:: doMonsterSetTarget(cid, target)
 
@@ -690,13 +666,17 @@ First some important class (type) names:
 
 .. function:: getContainerItem(uid, slot)
 
-.. function:: doAddContainerItem(uid, itemid[, count/subType = 1])
+    Equal to::
 
-.. function:: getHouseInfo(houseId[, displayError = true])
+        Item.container.getThing(slot)
 
 .. function:: getHouseAccessList(houseid, listId)
 
-.. function:: getHouseByPlayerGUID(playerGUID)
+    Equal to::
+
+        House.data["doors"][listId]
+
+
 
 .. function:: getHouseFromPos(pos)
 
@@ -706,84 +686,19 @@ First some important class (type) names:
 
 .. function:: setHouseAccessList(houseid, listid, listtext)
 
+    No equal, you got to modify House.data["doors"] directly.
+
 .. function:: setHouseOwner(houseId, owner[, clean])
 
     Equal to::
 
         House.owner = owner
 
-.. function:: getWorldType()
-
-.. function:: setWorldType(type)
-
-.. function:: getWorldTime()
-
-.. function:: getWorldLight()
-
-.. function:: getWorldCreatures(type)
-
-.. function:: getWorldUpTime()
-
-.. function:: getGuildId(guildName)
-
-.. function:: getGuildMotd(guildId)
-
-.. function:: getPlayerSex(cid[, full = false])
-
-.. function:: doPlayerSetSex(cid, newSex)
-
-
-** This also work entierly diffrently **
-    createCombatArea({area}[, {extArea}])
-    createConditionObject(type[, ticks[, buff[, subId]]])
-    setCombatArea(combat, area)
-    setCombatCondition(combat, condition)
-    setCombatParam(combat, key, value)
-    setConditionParam(condition, key, value)
-    addDamageCondition(condition, rounds, time, value)
-    addOutfitCondition(condition, outfit)
-    setCombatCallBack(combat, key, function_name)
-    setCombatFormula(combat, type, mina, minb, maxa, maxb[, minl, maxl[, minm, maxm[, minc[, maxc]]]])
-    setConditionFormula(combat, mina, minb, maxa, maxb)
-    doCombat(cid, combat, param)
-    createCombatObject()
-    doCombatAreaHealth(cid, type, pos, area, min, max, effect)
-    doTargetCombatHealth(cid, target, type, min, max, effect)
-    doCombatAreaMana(cid, pos, area, min, max, effect)
-    doTargetCombatMana(cid, target, min, max, effect)
-    doCombatAreaCondition(cid, pos, area, condition, effect)
-    doTargetCombatCondition(cid, target, condition, effect)
-    doCombatAreaDispel(cid, pos, area, type, effect)
-    doTargetCombatDispel(cid, target, type, effect)
-    doChallengeCreature(cid, target)
-
-.. function:: numberToVariant(number)
-
-.. function:: stringToVariant(string)
-
-.. function:: positionToVariant(pos)
-
-.. function:: targetPositionToVariant(pos)
-
-.. function:: variantToNumber(var)
-
-.. function:: variantToString(var)
-
-.. function:: variantToPosition(var)
-
 .. function:: doChangeSpeed(cid, delta)
 
     Equal to::
 
         Creature.setSpeed(Creature.speed + delta)
-
-.. function:: doCreatureChangeOutfit(cid, outfit)
-
-.. function:: doSetMonsterOutfit(cid, name[, time = -1])
-
-.. function:: doSetItemOutfit(cid, item[, time = -1])
-
-.. function:: doSetCreatureOutfit(cid, outfit[, time = -1])
 
 .. function:: getCreatureOutfit(cid)
 
@@ -821,8 +736,6 @@ First some important class (type) names:
 
         Creature.target
 
-.. function:: isSightClear(fromPos, toPos, floorCheck)
-
 .. function:: isInArray(array, value[, caseSensitive = false])
 
     Equal to::
@@ -841,20 +754,6 @@ First some important class (type) names:
 
         (return value of the event).stop()
 
-.. function:: getPlayersByAccountId(accId)
-
-.. function:: getAccountIdByName(name)
-
-.. function:: getAccountByName(name)
-
-.. function:: getAccountIdByAccount(accName)
-
-.. function:: getAccountByAccountId(accId)
-
-.. function:: getIpByName(name)
-
-.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
-
 .. function:: doPlayerPopupFYI(cid, message)
 
     Equal to::
@@ -867,63 +766,11 @@ First some important class (type) names:
 
         Player.tutorial(id)
 
-.. function:: doPlayerSendMailByName(name, item[, town[, actor]])
-
-.. function:: doPlayerAddMapMark(cid, pos, type[, description])
-
-.. function:: doPlayerAddPremiumDays(cid, days)
-
-.. function:: getPlayerPremiumDays(cid)
-
 .. function:: doCreatureSetLookDirection(cid, dir)
 
     Equal to::
 
         Creature.turn(dir)
-
-.. function:: getCreatureGuildEmblem(cid[, target])
-
-.. function:: doCreatureSetGuildEmblem(cid, emblem)
-
-.. function:: getCreaturePartyShield(cid[, target])
-
-.. function:: doCreatureSetPartyShield(cid, shield)
-
-.. function:: getCreatureSkullType(cid[, target])
-
-.. function:: doCreatureSetSkullType(cid, skull)
-
-.. function:: getPlayerSkullEnd(cid)
-
-.. function:: doPlayerSetSkullEnd(cid, time, type)
-
-.. function:: getPlayerBlessing(cid, blessing)
-
-.. function:: doPlayerAddBlessing(cid, blessing)
-
-.. function:: getPlayerStamina(cid)
-
-.. function:: doPlayerSetStamina(cid, minutes)
-
-.. function:: getPlayerBalance(cid)
-
-.. function:: doPlayerSetBalance(cid, balance)
-
-.. function:: getCreatureNoMove(cid)
-
-.. function:: doCreatureSetNoMove(cid, block)
-
-.. function:: getPlayerIdleTime(cid)
-
-.. function:: doPlayerSetIdleTime(cid, amount)
-
-.. function:: getPlayerLastLoad(cid)
-
-.. function:: getPlayerLastLogin(cid)
-
-.. function:: getPlayerAccountManager(cid)
-
-.. function:: getPlayerTradeState(cid)
 
 .. function:: getPlayerModes(cid)
 
@@ -931,71 +778,11 @@ First some important class (type) names:
 
         Player.modes
 
-.. function:: getPlayerRates(cid)
-
-.. function:: doPlayerSetRate(cid, type, value)
-
-.. function:: getPlayerPartner(cid)
-
-.. function:: doPlayerSetPartner(cid, guid)
-
-.. function:: doPlayerFollowCreature(cid, target)
-
-.. function:: getPlayerParty(cid)
-
-.. function:: doPlayerJoinParty(cid, lid)
-
-.. function:: doPlayerLeaveParty(cid[, forced = false])
-
-.. function:: doPlayerAddMount(cid, mountId)
-
-.. function:: doPlayerRemoveMount(cid, mountId)
-
-.. function:: getPlayerMount(cid, mountId)
-
-.. function:: doPlayerSetMount(cid, mountId)
-
-.. function:: doPlayerSetMountStatus(cid, mounted)
-
-.. function:: getMountInfo([mountId])
-
-.. function:: getPartyMembers(lid)
-
 .. function:: getCreatureMaster(cid)
 
     Equal to::
 
         Creature.master
-
-.. function:: getCreatureSummons(cid)
-
-.. function:: getTownId(townName)
-
-.. function:: getTownName(townId)
-
-.. function:: getTownTemplePosition(townId)
-
-.. function:: getTownHouses(townId)
-
-.. function:: getSpectators(centerPos, rangex, rangey[, multifloor = false])
-
-.. function:: getVocationInfo(id)
-
-.. function:: getGroupInfo(id[, premium = false])
-
-.. function:: getVocationList()
-
-.. function:: getGroupList()
-
-.. function:: getChannelList()
-
-.. function:: getTownList()
-
-.. function:: getWaypointList()
-
-.. function:: getTalkActionList()
-
-.. function:: getExperienceStageList()
 
 .. function:: getItemIdByName(name[, displayError = true])
 
@@ -1039,7 +826,9 @@ First some important class (type) names:
 
         Item.inContainer
 
-.. function:: hasItemProperty(uid, prop) Item.<prop>
+.. function:: hasItemProperty(uid, prop)
+
+    Item.<prop>
 
 .. function:: hasPlayerClient(cid)
 
@@ -1047,71 +836,19 @@ First some important class (type) names:
 
         Player.client
 
-.. function:: isIpBanished(ip[, mask])
-
-.. function:: isPlayerBanished(name/guid, type)
-
-.. function:: isAccountBanished(accountId[, playerId])
-
-.. function:: doAddIpBanishment(...)
-
-.. function:: doAddPlayerBanishment(...)
-
-.. function:: doAddAccountBanishment(...)
-
-.. function:: doAddNotation(...)
-
-.. function:: doAddStatement(...)
-
-.. function:: doRemoveIpBanishment(ip[, mask])
-
-.. function:: doRemovePlayerBanishment(name/guid, type)
-
-.. function:: doRemoveAccountBanishment(accountId[, playerId])
-
-.. function:: doRemoveNotations(accountId[, playerId])
-
-.. function:: doRemoveStatements(name/guid[, channelId])
-
-.. function:: getNotationsCount(accountId[, playerId])
-
-.. function:: getStatementsCount(name/guid[, channelId])
-
-.. function:: getBanData(value[, type[, param]])
-
-.. function:: getBanReason(id)
-
-.. function:: getBanAction(id[, ipBanishment = false])
-
-.. function:: getBanList(type[, value[, param]])
-
-.. function:: getExperienceStage(level)
-
 .. function:: getDataDir()
 
-.. function:: getLogsDir()
+    Always ./data
 
 .. function:: getConfigFile()
+
+    This function have no purpose.
 
 .. function:: getConfigValue(key)
 
     Equal to::
 
         config.<key>
-
-.. function:: getModList()
-
-.. function:: getHighscoreString(skillId)
-
-.. function:: getWaypointPosition(name)
-
-.. function:: doWaypointAddTemporial(name, pos)
-
-.. function:: getGameState()
-
-.. function:: doSetGameState(id)
-
-.. function:: doExecuteRaid(name)
 
 .. function:: doCreatureExecuteTalkAction(cid, text[, ignoreAccess = false[, channelId = CHANNEL _DEFAULT]])
 
@@ -1121,25 +858,21 @@ First some important class (type) names:
 
 .. function:: doReloadInfo(id[, cid])
 
+    Somewhat equal to::
+
+        reload()
+
+    This reloads everything tho.
+
 .. function:: doSaveServer([shallow = false])
 
     Equal to::
 
         engine.saveAll()
 
-.. function:: doCleanHouse(houseId)
-
-.. function:: doCleanMap()
-
-.. function:: doRefreshMap()
-
-.. function:: doGuildAddEnemy(guild, enemy, war, type)
-
-.. function:: doGuildRemoveEnemy(guild, enemy)
-
-.. function:: doUpdateHouseAuctions()
-
 .. function:: loadmodlib(lib)
+
+    See :func:`domodlib`
 
 .. function:: domodlib(lib)
 
@@ -1171,43 +904,15 @@ First some important class (type) names:
 
         Player.addItemToContainer(ContainerItem, Item(itemid, amount))
 
-.. function:: doPlayerTakeItem(cid, itemid, amount)
-
-.. function:: doPlayerBuyItem(cid, itemid, count, cost, charges)
-
-.. function:: doPlayerBuyItemContainer(cid, containerid, itemid, count, cost, charges)
-
-.. function:: doPlayerSellItem(cid, itemid, count, cost)
-
-.. function:: doPlayerWithdrawMoney(cid, amount)
-
-.. function:: doPlayerDepositMoney(cid, amount)
-
-.. function:: doPlayerAddStamina(cid, minutes)
-
 .. function:: isPremium(cid)
 
         Desided by player access flags
-
-.. function:: getMonthDayEnding(day)
-
-.. function:: getMonthString(m)
-
-.. function:: getArticle(str)
 
 .. function:: isNumeric(str)
 
     Equal to::
 
         type(str) == int
-
-.. function:: doPlayerAddAddons(cid, addon)
-
-.. function:: doPlayerWithdrawAllMoney(cid)
-
-.. function:: doPlayerDepositAllMoney(cid)
-
-.. function:: doPlayerTransferAllMoneyTo(cid, target)
 
 .. function:: playerExists(name)
 
@@ -1221,22 +926,6 @@ First some important class (type) names:
 
         getTibiaTime()
 
-.. function:: doWriteLogFile(file, text)
-
-.. function:: getExperienceForLevel(lv)
-
-.. function:: doMutePlayer(cid, time)
-
-.. function:: getPlayerGroupName(cid)
-
-.. function:: getPlayerVocationName(cid)
-
-.. function:: getPromotedVocation(vid)
-
-.. function:: doPlayerRemovePremiumDays(cid, days)
-
-.. function:: getPlayerMasterPos(cid)
-
 .. function:: getHouseOwner(houseId)
 
     Like this::
@@ -1248,8 +937,6 @@ First some important class (type) names:
     Like this::
 
         getHouseById(houseId).name
-
-.. function:: getHouseEntry(houseId)
 
 .. function:: getHouseRent(houseId)
 
@@ -1357,8 +1044,6 @@ First some important class (type) names:
 
         Position.getTile().getFlags()
 
-.. function:: doShutdown()
-
 .. function:: doSummonCreature(name, pos, displayError)
 
     Equal to::
@@ -1401,10 +1086,6 @@ First some important class (type) names:
 
         Creature.isNPC()
 
-.. function:: doPlayerSetExperienceRate(cid, value)
-
-.. function:: doPlayerSetMagicRate(cid, value)
-
 .. function:: doPlayerAddLevel(cid, amount, round)
 
     Equal to::
@@ -1422,20 +1103,6 @@ First some important class (type) names:
     Equal to::
 
         Player.addSkillLevel(skill, amount)
-
-.. function:: getPartyLeader(cid)
-
-.. function:: isInParty(cid)
-
-.. function:: isPrivateChannel(channelId)
-
-.. function:: doPlayerResetIdleTime(cid)
-
-.. function:: doBroadcastMessage(text, class)
-
-.. function:: doPlayerBroadcastMessage(cid, text, class, checkFlag, ghost)
-
-.. function:: getBooleanFromString(input)
 
 .. function:: doCopyItem(item, attributes)
 
@@ -1499,10 +1166,6 @@ First some important class (type) names:
 
         Item.weaponType
 
-.. function:: getItemRWInfo(uid)
-
-.. function:: getItemLevelDoor(itemid)
-
 .. function:: isContainer(uid)
 
     Equal to::
@@ -1515,10 +1178,6 @@ First some important class (type) names:
 
         Item.stackable
 
-.. function:: isItemRune(itemid)
-
-.. function:: isItemDoor(itemid)
-
 .. function:: isItemContainer(itemid)
 
     Equal to::
@@ -1527,23 +1186,15 @@ First some important class (type) names:
 
 .. function:: isItemFluidContainer(itemid)
 
+    Equal to::
+
+        Item.fluidSource
+
 .. function:: isItemMovable(itemid)
 
     Equal to::
 
         Item.movable
-
-.. function:: isCorpse(uid)
-
-.. function:: getContainerCapById(itemid) Item.containerSize
-
-.. function:: getMonsterAttackSpells(name)
-
-.. function:: getMonsterHealingSpells(name)
-
-.. function:: getMonsterLootList(name)
-
-.. function:: getMonsterSummonList(name)
 
 .. function:: choose(...)
 
@@ -1551,26 +1202,11 @@ First some important class (type) names:
 
         random.choice(Iter)
 
-
-** We don't do exhaustion like **
-    exhaustion.check(cid, storage)
-
-    exhaustion.get(cid, storage)
-
-    exhaustion.set(cid, storage, time)
-
-    exhaustion.make(cid, storage, time)
-
-
-.. function:: isInRange(position, fromPosition, toPosition)
-
 .. function:: getDistanceBetween(fromPosition, toPosition)
 
     Equal to::
 
         fromPosition.distanceTo(toPosition)
-
-.. function:: getDirectionTo(pos1, pos2)
 
 .. function:: getCreatureLookPosition(cid)
 
@@ -1608,16 +1244,6 @@ First some important class (type) names:
 
         if getTile(position): True
 
-.. function:: isSorcerer(cid)
-
-.. function:: isDruid(cid)
-
-.. function:: isPaladin(cid)
-
-.. function:: isKnight(cid)
-
-.. function:: isRookie(cid)
-
 
 ** string actions (see pythons documentation instead) **
     string.split(str)
@@ -1640,3 +1266,402 @@ First some important class (type) names:
     Equal to::
 
         str += str
+
+** part of the guild system, yet to be implanted **
+.. function:: getPlayerGuildId(cid)
+
+.. function:: getPlayerGuildName(cid)
+
+.. function:: getPlayerGuildRankId(cid)
+
+.. function:: getPlayerGuildRank(cid)
+
+.. function:: getPlayerGuildNick(cid)
+
+.. function:: getPlayerGuildLevel(cid)
+
+.. function:: getPlayerGUID(cid)
+
+.. function:: getPlayerNameDescription(cid)
+
+.. function:: doPlayerSetNameDescription(cid, desc)
+
+.. function:: getPlayerSpecialDescription(cid)
+
+.. function:: doPlayerSetSpecialDescription(cid, desc)
+
+.. function:: isSorcerer(cid)
+
+.. function:: isDruid(cid)
+
+.. function:: isPaladin(cid)
+
+.. function:: isKnight(cid)
+
+.. function:: isRookie(cid)
+
+.. function:: isCorpse(uid)
+
+.. function:: getContainerCapById(itemid) Item.containerSize
+
+.. function:: getMonsterAttackSpells(name)
+
+.. function:: getMonsterHealingSpells(name)
+
+.. function:: getMonsterLootList(name)
+
+.. function:: getMonsterSummonList(name)
+
+.. function:: getDirectionTo(pos1, pos2)
+
+.. function:: isInRange(position, fromPosition, toPosition)
+
+.. function:: isItemRune(itemid)
+
+.. function:: isItemDoor(itemid)
+
+.. function:: getItemRWInfo(uid)
+
+.. function:: getItemLevelDoor(itemid)
+
+.. function:: getPartyLeader(cid)
+
+.. function:: isInParty(cid)
+
+.. function:: isPrivateChannel(channelId)
+
+.. function:: doPlayerResetIdleTime(cid)
+
+.. function:: doBroadcastMessage(text, class)
+
+.. function:: doPlayerBroadcastMessage(cid, text, class, checkFlag, ghost)
+
+.. function:: getBooleanFromString(input)
+
+.. function:: doPlayerSetExperienceRate(cid, value)
+
+.. function:: doPlayerSetMagicRate(cid, value)
+
+.. function:: doShutdown()
+
+.. function:: getHouseEntry(houseId)
+
+.. function:: doWriteLogFile(file, text)
+
+.. function:: getExperienceForLevel(lv)
+
+.. function:: doMutePlayer(cid, time)
+
+.. function:: getPlayerGroupName(cid)
+
+.. function:: getPlayerVocationName(cid)
+
+.. function:: getPromotedVocation(vid)
+
+.. function:: doPlayerRemovePremiumDays(cid, days)
+
+.. function:: getPlayerMasterPos(cid)
+
+.. function:: doPlayerAddAddons(cid, addon)
+
+.. function:: doPlayerWithdrawAllMoney(cid)
+
+.. function:: doPlayerDepositAllMoney(cid)
+
+.. function:: doPlayerTransferAllMoneyTo(cid, target)
+
+.. function:: getMonthDayEnding(day)
+
+.. function:: getMonthString(m)
+
+.. function:: getArticle(str)
+
+.. function:: doPlayerTakeItem(cid, itemid, amount)
+
+.. function:: doPlayerBuyItem(cid, itemid, count, cost, charges)
+
+.. function:: doPlayerBuyItemContainer(cid, containerid, itemid, count, cost, charges)
+
+.. function:: doPlayerSellItem(cid, itemid, count, cost)
+
+.. function:: doPlayerWithdrawMoney(cid, amount)
+
+.. function:: doPlayerDepositMoney(cid, amount)
+
+.. function:: doPlayerAddStamina(cid, minutes)
+
+.. function:: doCleanHouse(houseId)
+
+.. function:: doCleanMap()
+
+.. function:: doRefreshMap()
+
+.. function:: doGuildAddEnemy(guild, enemy, war, type)
+
+.. function:: doGuildRemoveEnemy(guild, enemy)
+
+.. function:: doUpdateHouseAuctions()
+
+.. function:: getModList()
+
+.. function:: getHighscoreString(skillId)
+
+.. function:: getWaypointPosition(name)
+
+.. function:: doWaypointAddTemporial(name, pos)
+
+.. function:: getGameState()
+
+.. function:: doSetGameState(id)
+
+.. function:: doExecuteRaid(name)
+
+.. function:: isIpBanished(ip[, mask])
+
+.. function:: isPlayerBanished(name/guid, type)
+
+.. function:: isAccountBanished(accountId[, playerId])
+
+.. function:: doAddIpBanishment(...)
+
+.. function:: doAddPlayerBanishment(...)
+
+.. function:: doAddAccountBanishment(...)
+
+.. function:: doAddNotation(...)
+
+.. function:: doAddStatement(...)
+
+.. function:: doRemoveIpBanishment(ip[, mask])
+
+.. function:: doRemovePlayerBanishment(name/guid, type)
+
+.. function:: doRemoveAccountBanishment(accountId[, playerId])
+
+.. function:: doRemoveNotations(accountId[, playerId])
+
+.. function:: doRemoveStatements(name/guid[, channelId])
+
+.. function:: getNotationsCount(accountId[, playerId])
+
+.. function:: getStatementsCount(name/guid[, channelId])
+
+.. function:: getBanData(value[, type[, param]])
+
+.. function:: getBanReason(id)
+
+.. function:: getBanAction(id[, ipBanishment = false])
+
+.. function:: getBanList(type[, value[, param]])
+
+.. function:: getExperienceStage(level)
+
+.. function:: getLogsDir()
+
+.. function:: getCreatureSummons(cid)
+
+.. function:: getTownId(townName)
+
+.. function:: getTownName(townId)
+
+.. function:: getTownTemplePosition(townId)
+
+.. function:: getTownHouses(townId)
+
+.. function:: getSpectators(centerPos, rangex, rangey[, multifloor = false])
+
+.. function:: getVocationInfo(id)
+
+.. function:: getGroupInfo(id[, premium = false])
+
+.. function:: getVocationList()
+
+.. function:: getGroupList()
+
+.. function:: getChannelList()
+
+.. function:: getTownList()
+
+.. function:: getWaypointList()
+
+.. function:: getTalkActionList()
+
+.. function:: getExperienceStageList()
+
+.. function:: getPlayerRates(cid)
+
+.. function:: doPlayerSetRate(cid, type, value)
+
+.. function:: getPlayerPartner(cid)
+
+.. function:: doPlayerSetPartner(cid, guid)
+
+.. function:: doPlayerFollowCreature(cid, target)
+
+.. function:: getPlayerParty(cid)
+
+.. function:: doPlayerJoinParty(cid, lid)
+
+.. function:: doPlayerLeaveParty(cid[, forced = false])
+
+.. function:: doPlayerAddMount(cid, mountId)
+
+.. function:: doPlayerRemoveMount(cid, mountId)
+
+.. function:: getPlayerMount(cid, mountId)
+
+.. function:: doPlayerSetMount(cid, mountId)
+
+.. function:: doPlayerSetMountStatus(cid, mounted)
+
+.. function:: getMountInfo([mountId])
+
+.. function:: getPartyMembers(lid)
+
+.. function:: getCreatureGuildEmblem(cid[, target])
+
+.. function:: doCreatureSetGuildEmblem(cid, emblem)
+
+.. function:: getCreaturePartyShield(cid[, target])
+
+.. function:: doCreatureSetPartyShield(cid, shield)
+
+.. function:: getCreatureSkullType(cid[, target])
+
+.. function:: doCreatureSetSkullType(cid, skull)
+
+.. function:: getPlayerSkullEnd(cid)
+
+.. function:: doPlayerSetSkullEnd(cid, time, type)
+
+.. function:: getPlayerBlessing(cid, blessing)
+
+.. function:: doPlayerAddBlessing(cid, blessing)
+
+.. function:: getPlayerStamina(cid)
+
+.. function:: doPlayerSetStamina(cid, minutes)
+
+.. function:: getPlayerBalance(cid)
+
+.. function:: doPlayerSetBalance(cid, balance)
+
+.. function:: getCreatureNoMove(cid)
+
+.. function:: doCreatureSetNoMove(cid, block)
+
+.. function:: getPlayerIdleTime(cid)
+
+.. function:: doPlayerSetIdleTime(cid, amount)
+
+.. function:: getPlayerLastLoad(cid)
+
+.. function:: getPlayerLastLogin(cid)
+
+.. function:: getPlayerAccountManager(cid)
+
+.. function:: getPlayerTradeState(cid)
+
+.. function:: doPlayerSendMailByName(name, item[, town[, actor]])
+
+.. function:: doPlayerAddMapMark(cid, pos, type[, description])
+
+.. function:: doPlayerAddPremiumDays(cid, days)
+
+.. function:: getPlayerPremiumDays(cid)
+
+.. function:: getPlayersByAccountId(accId)
+
+.. function:: getAccountIdByName(name)
+
+.. function:: getAccountByName(name)
+
+.. function:: getAccountIdByAccount(accName)
+
+.. function:: getAccountByAccountId(accId)
+
+.. function:: getIpByName(name)
+
+.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
+
+.. function:: getChannelUsers(channelId)
+
+.. function:: getSearchString(fromPosition, toPosition[, fromIsCreature = false[, toIsCreature = false]])
+
+.. function:: getClosestFreeTile(cid, targetpos[, extended = false[, ignoreHouse = true]])
+
+.. function:: doTeleportThing(cid, newpos[, pushmove = true[, fullTeleport = true]])
+
+.. function:: doSendAnimatedText(pos, text, color[, player])
+
+.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
+
+.. function:: doAddContainerItemEx(uid, virtuid)
+
+.. function:: doRelocate(pos, posTo[, creatures = true[, unmovable = true]])
+
+.. function:: doCleanTile(pos[, forceMapLoaded = false])
+
+.. function:: doCreateTeleport(itemid, topos, createpos)
+
+.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
+
+.. function:: doCreateNpc(name, pos[, displayError = true])
+
+.. function:: doSummonMonster(cid, name)
+
+.. function:: doConvinceCreature(cid, target)
+
+.. function:: getMonsterTargetList(cid)
+
+.. function:: getMonsterFriendList(cid)
+
+.. function:: isSightClear(fromPos, toPos, floorCheck)
+
+.. function:: doCreatureChangeOutfit(cid, outfit)
+
+.. function:: doSetMonsterOutfit(cid, name[, time = -1])
+
+.. function:: doSetItemOutfit(cid, item[, time = -1])
+
+.. function:: doSetCreatureOutfit(cid, outfit[, time = -1])
+
+.. function:: getWorldType()
+
+.. function:: setWorldType(type)
+
+.. function:: getWorldTime()
+
+.. function:: getWorldLight()
+
+.. function:: getWorldCreatures(type)
+
+.. function:: getWorldUpTime()
+
+.. function:: getGuildId(guildName)
+
+.. function:: getGuildMotd(guildId)
+
+.. function:: getPlayerSex(cid[, full = false])
+
+.. function:: doPlayerSetSex(cid, newSex)
+
+.. function:: numberToVariant(number)
+
+.. function:: stringToVariant(string)
+
+.. function:: positionToVariant(pos)
+
+.. function:: targetPositionToVariant(pos)
+
+.. function:: variantToNumber(var)
+
+.. function:: variantToString(var)
+
+.. function:: variantToPosition(var)
+
+.. function:: doAddContainerItem(uid, itemid[, count/subType = 1])
+
+.. function:: getHouseInfo(houseId[, displayError = true])
+
+.. function:: getHouseByPlayerGUID(playerGUID)
