@@ -315,10 +315,10 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         self.uint8(0x68) # West
-        self.mapDescription(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1, 1, 14, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1), 1, 14, player)
         
         self.uint8(0x65) # North
-        self.mapDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-1, 18, 1, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-1), 18, 1, player)
         
         
     def moveDownPlayer(self, player, oldPos):
@@ -340,9 +340,9 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)            
         
         self.uint8(0x66) # East
-        self.mapDescription(oldPos.x + 9, oldPos.y - 6, oldPos.z+1, 1, 14, player)
+        self.mapDescription(Position(oldPos.x + 9, oldPos.y - 6, oldPos.z+1), 1, 14, player)
         self.uint8(0x67) # South
-        self.mapDescription(oldPos.x - 8, oldPos.y + 7, oldPos.z+1, 18, 1, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
@@ -698,8 +698,17 @@ class BaseProtocol(object):
                 currItem[1] = None
             """
             if fromMap:
-                walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
-                if len(walkPattern):
+                # This means we need to walk to the item
+                if player.distanceStepsTo(fromPosition) > 1:
+
+                    walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
+
+                    # No walk pattern means impossible move.
+                    if not walkPattern:
+                        player.notPossible()
+                        return
+
+                    # Some half sync yield -> sleep walking
                     def sleep(seconds):
                         d = Deferred()
                         reactor.callLater(seconds, d.callback, seconds)
@@ -709,10 +718,15 @@ class BaseProtocol(object):
                     scount = 0
                     player.walkPattern = deque(walkPattern)
                     game.engine.autoWalkCreature(player, lambda x: walking.pop())
-                    while walking and scount < 100:
-                        yield sleep(0.1)
+                    while walking and scount < 20:
+                        yield sleep(0.5)
                         scount += 1
-                    
+
+                    # Vertify, we might have been stopped on the run
+                    if player.distanceStepsTo(fromPosition) > 1:
+                        player.notPossible()
+                        return
+  
                     if toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
                         player.notPossible()
                         return
