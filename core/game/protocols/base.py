@@ -453,7 +453,8 @@ class BaseProtocol(object):
         game.engine.explainPacket(packet)
         packetType = packet.uint8()
         
-        if packetType == 0x14 or player.data["health"] < 1: # Logout
+        if packetType == 0x14: # Logout
+            player.prepareLogout()
             player.client.transport.loseConnection()
             
         elif packetType == 0x1E: # Keep alive

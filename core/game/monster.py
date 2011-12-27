@@ -176,11 +176,10 @@ class Monster(Creature):
         
         tile.placeItem(corpse)
         tile.placeItem(splash)
-        try:
-            tile.removeCreature(self)
-        except:
-            pass
-        engine.updateTile(self.position, tile)
+        
+        
+        # Remove me. This also refresh the tile.
+        self.remove()
 
         if self.lastDamager and self.lastDamager.isPlayer():
             if lootMsg:

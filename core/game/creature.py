@@ -495,6 +495,41 @@ class Creature(object):
         #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
+    def remove(self, entriesToo=True):
+        """ Remove this creature from the map, stop the brain and so on """
+        
+        # All remove creatures are dead. No matter if they actually are alive.
+        self.alive = False
+        
+        tile = self.position.getTile()
+        try:
+            tile.removeCreature(self)
+        except:
+            pass
+
+        if self.isPlayer():
+            ignore = (self,)
+        else:
+            ignore = ()
+            
+        for spectator in game.engine.getSpectators(self.position, ignore=ignore):
+            stream = spectator.packet(0x69)
+            stream.position(self.position)
+            stream.tileDescription(tile, spectator.player)
+            stream.uint8(0x00)
+            stream.uint8(0xFF)
+            stream.send(spectator)
+        
+        # Don't call this on a player
+        if entriesToo:
+            if self.isPlayer():
+                raise Exception("Creature.remove(True) (entriesToo = True) has been called on a player. This is (unfortunatly), not supported (yet?)")
+            
+            try:
+                del allCreatures[self.clientId()]
+            except:
+                pass
+            
     def rename(self, name):
         newSpectators = game.engine.getPlayers(self.position)
         stackpos = game.map.getTile(self.position).findCreatureStackpos(self)

@@ -49,6 +49,7 @@ class Player(Creature):
         self.tradeItems = []
         self.startedTrade = False
         self.tradeAccepted = False
+        self.removeMe = False
         
         self.windowTextId = 0
         self.windowHandlers = {}
@@ -1574,7 +1575,12 @@ class Player(Creature):
         return game.engine.fastPickler(self.depot)
         
     def _saveQuery(self, force=False):
-        print self.doSave
+        # To this little check here
+        if self.removeMe:
+            del allPlayers[self.name()]
+            del game.creature.allCreatures[self.clientId()]
+            
+            
         if not self.doSave:
             return
             
@@ -1609,6 +1615,8 @@ class Player(Creature):
             argc = self._saveQuery(force)
             if argc:
                 sql.runOperation(*argc)
+                
+        
 
     def saveSkills(self):
         sql.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
@@ -2098,6 +2106,13 @@ class Player(Creature):
         stream = self.packet()
         stream.exit(message)
         stream.send(self.client)
+    
+    def prepareLogout(self):
+        # TODO: Cases where you can't logout
+        
+        self.removeMe = True
+        
+        self.remove(False)
         
     # Cleanup the knownCreatures
     def removeKnown(self, creature):
