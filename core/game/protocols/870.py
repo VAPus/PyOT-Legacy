@@ -127,12 +127,12 @@ class Packet(base.BasePacket):
             #self.uint8(creature.creatureType)
             self.string(creature.name())
         
-        self.uint8(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100)) # Health %
+        self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
         self.uint8(0) # Light
-        self.uint16(creature.speed) # Speed
+        self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.skull) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
@@ -142,12 +142,15 @@ class Packet(base.BasePacket):
     def skills(self, player):
         self.uint8(0xA1) # Skill type
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-            self.uint8(player.skills[x]) # Value / Level
-            #self.uint8(1) # Base
-            self.uint8(0) # %
+            self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
+            currHits = player.getStorage('__skill%d'%x) or 0
+            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(10, player.getVocation().meleeSkill)
+            if currHits < 1:
+                self.uint8(0)
+            else:
+                self.uint8(int(round((currHits / goalHits) * 100))) # %
         
     def status(self, player):
-        print "860"
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
@@ -160,14 +163,14 @@ class Packet(base.BasePacket):
         else:
             self.uint16(player.data["level"]) # TODO: Virtual cap? Level
             
-        self.uint8(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"])) # % to next level, TODO
+        self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
         self.uint16(player.data["mana"]) # mana
         self.uint16(player.data["manamax"]) # mana max
         self.uint8(player.data["maglevel"]) # TODO: Virtual cap? Manalevel
         #self.uint8(1) # TODO: Virtual cap? ManaBase
-        self.uint8(0) # % to next level, TODO
+        self.uint8(int(player.data["manaspent"] / int(config.magicLevelFormula(player.data["maglevel"], player.getVocation().mlevel)))) # % to next level, TODO
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
-        self.uint16(min(42 * 60, player.data["stamina"] / 60)) # Stamina minutes
+        self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
         #self.uint16(player.speed) # Speed
         
         #self.uint16(0x00) # Condition
