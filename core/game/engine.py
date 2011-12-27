@@ -691,21 +691,14 @@ def explainPacket(packet):
 
 # Save system, async :)
 def saveAll(force=False):
-
+    commited = False
+    
     t = time.time()
-    # Build query
-    if not force:
-        """Save all players and all global variables."""
-        def callback(result):
-            if result:
-                sql.runOperation(*result)
-                
-        for player in game.player.allPlayers.values():
-            threads.deferToThread(player._saveQuery, force).addCallback(callback)
-    else:
-        for player in game.player.allPlayers.values():
-            result = player._saveQuery(force)
+    for player in game.player.allPlayers.values():
+        result = player._saveQuery(force)
+        if result:
             sql.runOperation(*result)
+            commited = True
 
     # Global storage
     if saveGlobalStorage or force:
@@ -721,7 +714,8 @@ def saveAll(force=False):
                 data = globalStorage[field]
                 
             sql.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
-
+            commited = True
+            
     # Houses
     if game.map.houseTiles:
         for houseId, house in game.house.houseData.items():
@@ -750,13 +744,14 @@ def saveAll(force=False):
                     log.msg("Saving house ", houseId)
                     sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
                     house.save = False
+                    commited = True
                 else:
                     log.msg("Not saving house", houseId)
     
     if force:        
         log.msg("Full (forced) save took: %f" % (time.time() - t))
 
-    else:       
+    elif commited:       
         log.msg("Full save took: %f" % (time.time() - t))
         
 # Time stuff
