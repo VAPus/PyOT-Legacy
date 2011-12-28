@@ -209,7 +209,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     if op == "CALL" and isAuthorized:
                         print "do this"
                         result = yield game.engine.executeCode(packet.string())
-                        t.string(result)
+                        import otjson
+                        t.string(otjson.dumps(result))
                     elif op == "AUTH":
                         print "auth"
                         result = packet.string() in config.executeProtocolAuthKeys
