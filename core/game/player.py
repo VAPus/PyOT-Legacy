@@ -182,7 +182,10 @@ class Player(Creature):
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.data["health"] = 1
-            
+        
+        # If we relogin we might be in remove mode, make sure we're not tagget for it!
+        self.removeMe = False
+    
         stream = self.packet(0x0A)
 
         stream.uint32(self.clientId()) # Cid
