@@ -806,7 +806,7 @@ class Creature(object):
             stream.uint16(self.data["level"] if "level" in self.data else 0)
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
-            stream.string(message)
+            stream.string(message.upper(message))
             stream.send(spectator)
 
     def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
