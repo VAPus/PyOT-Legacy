@@ -265,6 +265,12 @@ class Creature(object):
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
+        if not newTile:
+            raise Exception("(new)Tile not found (%s)" % position)
+        if not oldTile:
+            raise Exception("(old)Tile not found (%s)" % oldPosition)
+        
+        
         val = yield game.scriptsystem.get("move").run(self)
         if val == False:
             return
@@ -317,14 +323,13 @@ class Creature(object):
             
         newStackPos = newTile.placeCreature(self)
 
-        if not newStackPos or newStackPos > 9:
+        # This shouldn't be required anymore
+        """if not newStackPos: # or newStackPos > 9:
             self.cancelWalk()
             d.errback(game.errors.ImpossibleMove)
-            return
+            return"""
             
         oldTile.removeCreature(self)
-        
-            
         
         self.position = position
         self.direction = direction
@@ -381,10 +386,13 @@ class Creature(object):
                     
                     
             elif (not canSeeOld or not isKnown) and canSeeNew:
+                # Too high stack?
+                if newStackPos > 10: continue
+                
                 stream = spectator.packet()
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
-            elif canSeeOld and not canSeeNew:
+            elif canSeeOld and (not canSeeNew or newStackPos > 10):
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
                 
@@ -806,7 +814,7 @@ class Creature(object):
             stream.uint16(self.data["level"] if "level" in self.data else 0)
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
-            stream.string(message.upper(message))
+            stream.string(message.upper())
             stream.send(spectator)
 
     def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):

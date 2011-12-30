@@ -151,18 +151,18 @@ class BasePacket(TibiaPacket):
     def tileDescription(self, tile, player=None):
         self.uint16(0x00)
         isSolid = False
+        count = 0
         for item in tile.topItems():
             if item.solid:
                 isSolid = True
                 
             self.item(item)
+            count += 1
+            if count == 10:
+                return
         
         if not isSolid:
             for creature in tile.creatures():
-                if creature == None:
-                    del creature
-                    continue
-                
                 known = False
                 removeKnown = 0
                 if player:
@@ -181,9 +181,16 @@ class BasePacket(TibiaPacket):
                 if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
-
+                    
+                count += 1
+                if count == 10:
+                    return
+                
             for item in tile.bottomItems():
                 self.item(item)
+                count += 1
+                if count == 10:
+                    return
 
     def exit(self, message):
         self.uint8(0x14)
@@ -270,6 +277,8 @@ class BasePacket(TibiaPacket):
         self.item(item)
 
     def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
+        assert stackpos < 10
+        
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
