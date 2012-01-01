@@ -208,7 +208,7 @@ class NPCBase(CreatureBase):
         self.speakTreeGreet = None
         self.speakTreeFarewell = None
 
-    def spawn(self, position, place=True, spawnDelay=0.25, spawnTime=60, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnDelay=0.1, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
             return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:

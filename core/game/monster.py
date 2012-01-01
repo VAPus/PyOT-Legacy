@@ -253,10 +253,9 @@ class MonsterBase(CreatureBase):
         
         self.corpseAction = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None):
         if spawnDelay:
-            raise Exception("Spawning with delay have been disabled")
-            #return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
+            return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
         else:
             if place:
                 tile = map.getTile(position)
