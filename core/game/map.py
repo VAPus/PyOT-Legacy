@@ -235,8 +235,6 @@ class Tile(object):
             
     def placeCreature(self, creature):
         pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
-        if pos > 9:
-            return
 
         self.things.insert(pos, creature)
         self._modpack(PACK_CREATURES, 1)

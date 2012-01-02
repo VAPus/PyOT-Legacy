@@ -176,11 +176,10 @@ class Monster(Creature):
         
         tile.placeItem(corpse)
         tile.placeItem(splash)
-        try:
-            tile.removeCreature(self)
-        except:
-            pass
-        engine.updateTile(self.position, tile)
+        
+        
+        # Remove me. This also refresh the tile.
+        self.remove()
 
         if self.lastDamager and self.lastDamager.isPlayer():
             if lootMsg:
@@ -254,7 +253,7 @@ class MonsterBase(CreatureBase):
         
         self.corpseAction = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.10, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None):
         if spawnDelay:
             return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
         else:
@@ -276,9 +275,6 @@ class MonsterBase(CreatureBase):
                                     try:
                                         monster = Monster(self, position, None)
                                         stackpos = map.getTile(position).placeCreature(monster)
-                                        if stackpos > 9:
-                                            log.msg("Can't place creatures on a stackpos > 9")
-                                            return
                                         ok = True
                                     except:
                                         pass
@@ -288,9 +284,6 @@ class MonsterBase(CreatureBase):
                             try:
                                 monster = Monster(self, position, None)
                                 stackpos = map.getTile(position).placeCreature(monster)
-                                if stackpos > 9:
-                                    log.msg("Can't place creatures on a stackpos > 9")
-                                    return
                                 ok = True
                             except:
                                 pass
@@ -328,14 +321,14 @@ class MonsterBase(CreatureBase):
             if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
                 log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
 
-            if place:
+            if place and stackpos and stackpos < 10:
                 for player in engine.getPlayers(position):
                     if player.client and player.canSee(monster.position):
                         stream = player.packet()
                         stream.addTileCreature(position, stackpos, monster, player)
                             
                         stream.send(player.client)
-            if engine.getPlayers(position):        
+            if engine.hasSpectators(position):        
                 self.brain.beginThink(monster) # begin the heavy thought process!
             return monster
         

@@ -151,18 +151,18 @@ class BasePacket(TibiaPacket):
     def tileDescription(self, tile, player=None):
         self.uint16(0x00)
         isSolid = False
+        count = 0
         for item in tile.topItems():
             if item.solid:
                 isSolid = True
                 
             self.item(item)
+            count += 1
+            if count == 10:
+                return
         
         if not isSolid:
             for creature in tile.creatures():
-                if creature == None:
-                    del creature
-                    continue
-                
                 known = False
                 removeKnown = 0
                 if player:
@@ -181,9 +181,16 @@ class BasePacket(TibiaPacket):
                 if creature.creatureType != 0 and creature.noBrain:
                     print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
-
+                    
+                count += 1
+                if count == 10:
+                    return
+                
             for item in tile.bottomItems():
                 self.item(item)
+                count += 1
+                if count == 10:
+                    return
 
     def exit(self, message):
         self.uint8(0x14)
@@ -270,6 +277,8 @@ class BasePacket(TibiaPacket):
         self.item(item)
 
     def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
+        assert stackpos < 10
+        
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
@@ -315,10 +324,10 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         self.uint8(0x68) # West
-        self.mapDescription(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1, 1, 14, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y + 1 - 6, oldPos.z-1), 1, 14, player)
         
         self.uint8(0x65) # North
-        self.mapDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-1, 18, 1, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-1), 18, 1, player)
         
         
     def moveDownPlayer(self, player, oldPos):
@@ -340,9 +349,9 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)            
         
         self.uint8(0x66) # East
-        self.mapDescription(oldPos.x + 9, oldPos.y - 6, oldPos.z+1, 1, 14, player)
+        self.mapDescription(Position(oldPos.x + 9, oldPos.y - 6, oldPos.z+1), 1, 14, player)
         self.uint8(0x67) # South
-        self.mapDescription(oldPos.x - 8, oldPos.y + 7, oldPos.z+1, 18, 1, player)
+        self.mapDescription(Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
         self.uint8(0x6B)
@@ -453,7 +462,8 @@ class BaseProtocol(object):
         game.engine.explainPacket(packet)
         packetType = packet.uint8()
         
-        if packetType == 0x14 or player.data["health"] < 1: # Logout
+        if packetType == 0x14: # Logout
+            player.prepareLogout()
             player.client.transport.loseConnection()
             
         elif packetType == 0x1E: # Keep alive
@@ -698,8 +708,17 @@ class BaseProtocol(object):
                 currItem[1] = None
             """
             if fromMap:
-                walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
-                if len(walkPattern):
+                # This means we need to walk to the item
+                if player.distanceStepsTo(fromPosition) > 1:
+
+                    walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
+
+                    # No walk pattern means impossible move.
+                    if not walkPattern:
+                        player.notPossible()
+                        return
+
+                    # Some half sync yield -> sleep walking
                     def sleep(seconds):
                         d = Deferred()
                         reactor.callLater(seconds, d.callback, seconds)
@@ -709,10 +728,15 @@ class BaseProtocol(object):
                     scount = 0
                     player.walkPattern = deque(walkPattern)
                     game.engine.autoWalkCreature(player, lambda x: walking.pop())
-                    while walking and scount < 100:
-                        yield sleep(0.1)
+                    while walking and scount < 20:
+                        yield sleep(0.5)
                         scount += 1
-                    
+
+                    # Vertify, we might have been stopped on the run
+                    if player.distanceStepsTo(fromPosition) > 1:
+                        player.notPossible()
+                        return
+  
                     if toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
                         player.notPossible()
                         return

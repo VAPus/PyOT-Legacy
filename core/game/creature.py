@@ -265,6 +265,12 @@ class Creature(object):
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
+        if not newTile:
+            raise Exception("(new)Tile not found (%s)" % position)
+        if not oldTile:
+            raise Exception("(old)Tile not found (%s)" % oldPosition)
+        
+        
         val = yield game.scriptsystem.get("move").run(self)
         if val == False:
             return
@@ -317,14 +323,13 @@ class Creature(object):
             
         newStackPos = newTile.placeCreature(self)
 
-        if not newStackPos or newStackPos > 9:
+        # This shouldn't be required anymore
+        """if not newStackPos: # or newStackPos > 9:
             self.cancelWalk()
             d.errback(game.errors.ImpossibleMove)
-            return
+            return"""
             
         oldTile.removeCreature(self)
-        
-            
         
         self.position = position
         self.direction = direction
@@ -381,10 +386,13 @@ class Creature(object):
                     
                     
             elif (not canSeeOld or not isKnown) and canSeeNew:
+                # Too high stack?
+                if newStackPos > 10: continue
+                
                 stream = spectator.packet()
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
-            elif canSeeOld and not canSeeNew:
+            elif canSeeOld and (not canSeeNew or newStackPos > 10):
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
                 
@@ -495,6 +503,41 @@ class Creature(object):
         #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
+    def remove(self, entriesToo=True):
+        """ Remove this creature from the map, stop the brain and so on """
+        
+        # All remove creatures are dead. No matter if they actually are alive.
+        self.alive = False
+        
+        tile = self.position.getTile()
+        try:
+            tile.removeCreature(self)
+        except:
+            pass
+
+        if self.isPlayer():
+            ignore = (self,)
+        else:
+            ignore = ()
+            
+        for spectator in game.engine.getSpectators(self.position, ignore=ignore):
+            stream = spectator.packet(0x69)
+            stream.position(self.position)
+            stream.tileDescription(tile, spectator.player)
+            stream.uint8(0x00)
+            stream.uint8(0xFF)
+            stream.send(spectator)
+        
+        # Don't call this on a player
+        if entriesToo:
+            if self.isPlayer():
+                raise Exception("Creature.remove(True) (entriesToo = True) has been called on a player. This is (unfortunatly), not supported (yet?)")
+            
+            try:
+                del allCreatures[self.clientId()]
+            except:
+                pass
+            
     def rename(self, name):
         newSpectators = game.engine.getPlayers(self.position)
         stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
@@ -771,7 +814,7 @@ class Creature(object):
             stream.uint16(self.data["level"] if "level" in self.data else 0)
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
-            stream.string(message)
+            stream.string(message.upper())
             stream.send(spectator)
 
     def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
