@@ -96,7 +96,7 @@ class Monster(Creature):
         corpse = item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
             
         try:
-            maxSize = item.items[self.base.data["corpse"]].containerSize
+            maxSize = item.items[self.base.data["corpse"]]["containerSize"]
             drops = []
             for loot in self.base.lootTable:
                 if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
@@ -504,6 +504,7 @@ class MonsterBrain(object):
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
+            print "Stop"
             return False # Stop looper
         
         if monster.base.voiceslist:
@@ -522,6 +523,7 @@ class MonsterBrain(object):
                 ret = brainFeatures[0][feature](self, monster)
                 
                 if ret in (True, False):
+                    print feature, ret
                     return ret
 
         for feature in monster.base.brainFeatures:
@@ -529,6 +531,7 @@ class MonsterBrain(object):
                 ret = brainFeatures[1][feature](self, monster)
 
                 if ret in (True, False):
+                    print feature, ret
                     return ret
                     
         # Are anyone watching?

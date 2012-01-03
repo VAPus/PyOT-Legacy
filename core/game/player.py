@@ -1867,6 +1867,9 @@ class Player(Creature):
                     self.target = target
                     
                 self.targetMode = 1
+                if not target.target and isinstance(target, game.monster.Monster):
+                    target.target = self
+                    target.targetMode = 1
             else:
                 return
         else:

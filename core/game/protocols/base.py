@@ -1021,6 +1021,7 @@ class BaseProtocol(object):
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
                     player.message(thing.description() + extra, 'MSG_INFO_DESCR')
             elif isinstance(thing, Creature):
+                print thing.target
                 def afterScript():
                     if self == thing:
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
