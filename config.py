@@ -173,6 +173,7 @@ stackTiles = False # Sacrefice loading time for the sake of memory usage
 stackItems = True
 
 whisperRange = (1, 1)
+whisperNoise = "pspspsps"
 sayRange = (9, 7)
 yellRange = (18, 14)
 itemMaxClientId = 12905

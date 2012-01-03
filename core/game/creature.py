@@ -807,7 +807,7 @@ class Creature(object):
             stream.send(spectator)
 
     def yell(self, message, messageType='MSG_SPEAK_YELL'):
-        for spectator in getSpectators(self.position, config.sayRange):
+        for spectator in getSpectators(self.position, config.yellRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
@@ -818,7 +818,10 @@ class Creature(object):
             stream.send(spectator)
 
     def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
-        for spectator in getSpectators(self.position, config.sayRange):
+        group = getSpectators(self.position, config.whisperRange)
+        listeners = getSpectators(self.position, config.sayRange) - group
+        
+        for spectator in group:
             stream = spectator.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
@@ -828,6 +831,16 @@ class Creature(object):
             stream.string(message)
             stream.send(spectator)
 
+        for spectator in listeners:
+            stream = spectator.packet(0xAA)
+            stream.uint32(0)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"] if "level" in self.data else 0)
+            stream.uint8(stream.enum(messageType))
+            stream.position(self.position)
+            stream.string(config.whisperNoise)
+            stream.send(spectator)
+            
     def broadcast(self, message, messageType='MSG_GAMEMASTER_BROADCAST'):
         import game.players
         for player in game.player.allPlayers.values():
