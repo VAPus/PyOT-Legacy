@@ -977,11 +977,19 @@ def fastPickler(obj):
     return pickle.dumps(obj, 2)
     
 # Protocol 0x00:
-@inlineCallbacks
+class ReturnValueExit(BaseException): pass
+def Return(ret):
+    raise ReturnValueExit(ret)
 def _evalCode(code):
-    exec(code)
+    try:
+        exec(code)
+    except ReturnValueExit, e:
+        return e
+        
     
-@inlineCallbacks
 def executeCode(code):
-    returnValue(otjson.dumps((yield _evalCode(code))))
+    e = _evalCode(code).__str__()
+    print len(e)
+    print str(e)
+    return otjson.dumps(e)
     

@@ -208,9 +208,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     print op
                     if op == "CALL" and isAuthorized:
                         print "do this"
-                        result = yield game.engine.executeCode(packet.string())
-                        import otjson
-                        t.string(otjson.dumps(result))
+                        result = game.engine.executeCode(packet.string())
+
+                        t.string(result)
                     elif op == "AUTH":
                         print "auth"
                         result = packet.string() in config.executeProtocolAuthKeys
@@ -222,6 +222,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             except struct.error:
                 pass # End of the line
             t.send(self)
+            self.executeWriteEvent()
             self.transport.loseConnection()
     def onPacket(self, packet):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
