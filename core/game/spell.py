@@ -249,6 +249,9 @@ class Spell(object):
         
     def area(self, area):
         self.targetArea = area
+    
+    def range(self, distance):
+        self.targetRange = distance
         
     def casterEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
@@ -337,7 +340,20 @@ class Spell(object):
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def spellCallback(creature, strength=None, **k):
+            target = creature
+            if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF:
+                if creature.target:
+                    target = creature.target
+                elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
+                    self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
+                elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
+                    return
+            
             if creature.isPlayer():
+                if not target.inRange(creature.position, self.targetRange, self.targetRange):
+                    creature.cancelMessage("Target is too far away")
+                    return False
+                    
                 if not creature.canDoSpell(self.icon, self.group):
                     creature.exhausted()
                     return False
@@ -379,14 +395,6 @@ class Spell(object):
                 
                 creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
                 
-            target = creature
-            if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF:
-                if creature.target:
-                    target = creature.target
-                elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
-                    self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
-                elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
-                    return
                     
             if self.castEffect:
                 creature.magicEffect(self.castEffect)
