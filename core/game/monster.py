@@ -429,7 +429,7 @@ class MonsterBase(CreatureBase):
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
         
-    def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=1, length=None):
+    def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
         if length:
             self.spellAttacks.append([interval, spellName, check, range, (min, max, length)])
         else:
