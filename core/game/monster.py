@@ -504,7 +504,6 @@ class MonsterBrain(object):
         # Are we alive?
         if not monster.alive:
             monster.noBrain = True
-            print "Stop"
             return False # Stop looper
         
         if monster.base.voiceslist:
@@ -523,7 +522,6 @@ class MonsterBrain(object):
                 ret = brainFeatures[0][feature](self, monster)
                 
                 if ret in (True, False):
-                    print feature, ret
                     return ret
 
         for feature in monster.base.brainFeatures:
@@ -531,7 +529,6 @@ class MonsterBrain(object):
                 ret = brainFeatures[1][feature](self, monster)
 
                 if ret in (True, False):
-                    print feature, ret
                     return ret
                     
         # Are anyone watching?

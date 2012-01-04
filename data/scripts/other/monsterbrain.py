@@ -101,7 +101,6 @@ def defaultBrainFeature(self, monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
             if not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
-                print "target cehck"
                 spectators = engine.getPlayers(monster.position) # Get all creaturse in range
                 if spectators: # If we find any
                     target = None
@@ -118,7 +117,7 @@ def defaultBrainFeature(self, monster):
                                 target = player
                     if target:
                         ret = game.scriptsystem.get('target').run(monster, target, attack=True)
-                        print ret
+                        
                         if ret == False:
                             return
                         elif ret != None:
