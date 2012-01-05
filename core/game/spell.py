@@ -497,8 +497,17 @@ class Rune(Spell):
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def runeCallback(thing, creature, position, onPosition, onThing, strength=None, **k):
-
+            target = creature
+            if self.targetType == TARGET_TARGET:
+                target = onThing
+                if not target:
+                    return creature.onlyOnCreatures()
+                    
             if creature.isPlayer():
+                if not target.inRange(creature.position, self.targetRange, self.targetRange):
+                    creature.cancelMessage("Target is too far away")
+                    return False
+                    
                 if not creature.canDoSpell(self.icon, self.group):
                     creature.exhausted()
                     return False
@@ -530,14 +539,6 @@ class Rune(Spell):
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                         
                 else:
-                    
-                    if self.targetType == game.enum.TARGET_TARGET:
-                        try:
-                            onCreature = onThing
-                            onCreature.isPlayer()
-                        except:
-                            return creature.onlyOnCreatures()
-                        
                     creature.modifyItem(thing, position, -self.count)  
                     
                     # Integrate mana seeker
@@ -554,12 +555,6 @@ class Rune(Spell):
                         pass
                     
                     creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
-                
-            target = creature
-            if self.targetType == TARGET_TARGET:
-                target = onCreature
-                if not target:
-                    return
                     
             if self.castEffect:
                 creature.magicEffect(self.castEffect)
