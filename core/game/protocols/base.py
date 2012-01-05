@@ -678,6 +678,7 @@ class BaseProtocol(object):
         fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
+        print fromPosition
         if fromPosition.x != 0xFFFF:
             # From map
             fromMap = True
@@ -689,10 +690,16 @@ class BaseProtocol(object):
             toMap = True
         
         print toPosition
+        print clientId
+        print fromStackPos
         count = packet.uint8()
         oldItem = None
         renew = False
         stack = True
+        
+        thing = player.findItem(fromPosition.setStackpos(fromStackPos))
+        print thing
+        print thing.itemId
         
         isCreature = False
         if clientId < 100:
@@ -709,7 +716,7 @@ class BaseProtocol(object):
             """
             if fromMap:
                 # This means we need to walk to the item
-                if player.distanceStepsTo(fromPosition) > 1:
+                if not player.inRange(fromPosition, 1, 1):
 
                     walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
 
@@ -733,11 +740,11 @@ class BaseProtocol(object):
                         scount += 1
 
                     # Vertify, we might have been stopped on the run
-                    if player.distanceStepsTo(fromPosition) > 1:
+                    if not player.inRange(fromPosition, 1, 1):
                         player.notPossible()
                         return
   
-                    if toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
+                    if toPosition.x == 0xFFFF and toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
                         player.notPossible()
                         return
                     

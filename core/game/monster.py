@@ -89,14 +89,20 @@ class Monster(Creature):
         # What, no match?
         return dmg
         
-    def onDeath(self):            
+    def onDeath(self):
+        # Remove master summons
+        if self.master:
+            self.master.activeSummons.remove(self)
+            
+        self.noBrain = True
+        
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
-        corpse = item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
+        corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
             
         try:
-            maxSize = item.items[self.base.data["corpse"]]["containerSize"]
+            maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
             drops = []
             for loot in self.base.lootTable:
                 if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
@@ -121,7 +127,7 @@ class Monster(Creature):
                 lenLoot = len(loot)
                 ret = 0
                 if lenLoot == 2:
-                    ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
+                    ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
                     lootMsg.append(ritem.name())
                     ret = corpse.container.placeItemRecursive(ritem)
                         
@@ -130,12 +136,12 @@ class Monster(Creature):
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
                             lootMsg.append(ritem.name())
                             ret = corpse.container.placeItemRecursive(ritem)
                             count -= depCount
                     else:
-                        ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                        ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                         lootMsg.append(ritem.name())
                         ret = corpse.container.placeItemRecursive(ritem)
                             
@@ -144,13 +150,13 @@ class Monster(Creature):
                     if count > 100:
                         while count:
                             depCount = min(count, 100)
-                            ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
                             lootMsg.append(ritem.name())
                             ret = corpse.container.placeItemRecursive(ritem)
                             count -= depCount
                                 
                     else:
-                        ritem = item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                        ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                         lootMsg.append(ritem.name())
                         ret = corpse.container.placeItemRecursive(ritem)
                             
@@ -166,11 +172,12 @@ class Monster(Creature):
             return
         corpse.decay(self.position)
         # Remove bpth small and full splashes on the tile.
-        tile.removeItemWithId(enum.SMALLSPLASH)
-        tile.removeItemWithId(enum.FULLSPLASH)
+        for item in tile.getItems():
+            if item.itemId in enum.SMALLSPLASHES or item.itemId in enum.FULLSPLASHES:
+                tile.removeItem(item)
         
         # Add full splash
-        splash = item.Item(enum.FULLSPLASH)
+        splash = game.item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
         splash.decay(self.position)
         
@@ -194,12 +201,14 @@ class Monster(Creature):
                 self.lastDamager.soulGain()
         
         # Begin respawn
-        # TODO just respawn <this> class, can't possibly bind so many kb :p
         if self.respawn:
+            self.position = self.spawnPosition
+            self.target = None
+            self.targetMode = 0
             if self.spawnTime:
-                engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+                engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
             else:
-                engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+                engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
             
     def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
         return Creature.say(self, message, messageType)
@@ -253,10 +262,16 @@ class MonsterBase(CreatureBase):
         
         self.corpseAction = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None):
+        if not monster:
+            monster = Monster(self, position, None)
         if spawnDelay:
-            return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo)
+            return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster)
         else:
+            if not monster.alive:
+                monster.data = monster.base.data.copy()
+                monster.alive = True
+                
             if place:
                 tile = map.getTile(position)
                 if not tile:
@@ -273,7 +288,6 @@ class MonsterBase(CreatureBase):
                                 tile = map.getTile(position)
                                 if not tile.creatures():
                                     try:
-                                        monster = Monster(self, position, None)
                                         stackpos = map.getTile(position).placeCreature(monster)
                                         ok = True
                                     except:
@@ -282,7 +296,6 @@ class MonsterBase(CreatureBase):
                         else:
                             
                             try:
-                                monster = Monster(self, position, None)
                                 stackpos = map.getTile(position).placeCreature(monster)
                                 ok = True
                             except:
@@ -294,7 +307,6 @@ class MonsterBase(CreatureBase):
                         return
                 elif not tile.creatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
                     try:
-                        monster = Monster(self, position, None)
                         stackpos = tile.placeCreature(monster)
                     except:
                         log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
@@ -302,9 +314,6 @@ class MonsterBase(CreatureBase):
                 else:
                     log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                     return
-                        
-            else:
-                monster = Monster(self, position, None)
                 
             if spawnTime:
                 monster.spawnTime = spawnTime

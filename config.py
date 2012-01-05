@@ -190,7 +190,7 @@ drawingSpeed = 25
 # Network write delay
 # This is how often the write events per client is called, reducing this will cause a lower "ping" between client and server at the cost of higher CPU and network overhead
 # Default settings seem to somewhat mimic the real servers.
-networkWriteDelay = 0.025
+networkWriteDelay = 0.015
 
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200

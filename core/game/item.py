@@ -285,6 +285,13 @@ class Item(object):
                 
         self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
 
+    def stopDecay(self):
+        if self.executeDecay:
+            try:
+                self.executeDecay.cancel()
+            except:
+                pass
+            
     def __getstate__(self):
         
         if self.params:

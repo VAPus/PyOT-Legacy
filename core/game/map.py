@@ -281,6 +281,8 @@ class Tile(object):
         return self.things[cc:cc + self._depack(PACK_CREATURES)]
         
     def removeItem(self, item):
+        item.stopDecay()
+        
         if item.ontop:
             self._modpack(PACK_ITEMS, -1)
         return self.things.remove(item)
