@@ -46,15 +46,19 @@ def defaultBrainFeaturePriority(self, monster):
                     
             elif monster.targetMode == 1:
                 # First stratigic manuver
+                _time = time.time()
                 for id, spell in enumerate(monster.base.defenceSpells):
                     key = "s%d"%id
-                    if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] > _time:
                         if spell[2](monster):
-                            try:
+                            if type(spell[1]) == int:
+                                game.spell.targetRunes[spell[1]](None, monster, None, None, monster, strength=spell[3])
+                                    
+                            else:
                                 game.spell.spells[spell[1]][0](monster, spell[3])
-                                monster.intervals[key] = time.time()
-                            except:
-                                print "%s tries to call a invalid spell '%s'" % (monster.name(), spell[1])
+                                
+                                monster.intervals[key] = _time
+
                             return True # Until next brain tick
                 
                 # Summons
@@ -69,30 +73,35 @@ def defaultBrainFeaturePriority(self, monster):
                                 print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])
                                 
                             break
-                else:
+                """else:
                     for summon in monster.activeSummons[:]:
                         if not summon.alive:
-                            monster.activeSummons.remove(summon)
+                            monster.activeSummons.remove(summon)"""
                             
                 # Melee attacks
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                     attack = random.choice(monster.base.meleeAttacks)
-                    if monster.lastMelee + attack[0] <= time.time() and attack[1](monster):
+                    if monster.lastMelee + attack[0] <= _time and attack[1](monster):
                         if attack[3] and random.randint(1,100) < attack[4]:
                             monster.target.condition(attack[3], attack[5])
                             
                         monster.target.onHit(monster, -1 * random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
-                        monster.lastMelee = time.time()
+                        monster.lastMelee = _time
                     
                     return True # If we do have a target, we stop here
                 
                 # Attack attacks
                 for id, spell in enumerate(monster.base.defenceSpells):
                     key = "a%d"%id
-                    if not key in monster.intervals or monster.intervals[key]+spell[0] > time.time():
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] > _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
-                            game.spell.spells[spell[1]][0](monster, spell[4])
-                            monster.intervals[key] = time.time()
+                            if type(spell[1]) == int:
+                                game.spell.targetRunes[spell[1]](None, monster, None, None, monster.target, strength=spell[4])
+                                    
+                            else:
+                                game.spell.spells[spell[1]][0](monster, spell[4])
+                                
+                            monster.intervals[key] = _time
                             return True # Until next brain tick     
                             
 

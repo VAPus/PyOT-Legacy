@@ -459,7 +459,6 @@ class BasePacket(TibiaPacket):
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
-        game.engine.explainPacket(packet)
         packetType = packet.uint8()
         
         if packetType == 0x14: # Logout
@@ -1296,7 +1295,6 @@ class BaseProtocol(object):
 
             
     def handleLookAtInTrade(self, player, packet):
-        #game.engine.explainPacket(packet)
         counter = packet.uint8()
         stackpos = packet.uint8()
         thing = None
