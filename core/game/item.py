@@ -150,11 +150,11 @@ class Item(object):
     def __getattr__(self, name):
         _loadItem = items[self.itemId]
         try:
-            return _loadItem["a"] & (1 << self.attributes.index(name))
-        except ValueError:
+            return self.params[name]
+        except KeyError:
             try:
-                return self.params[name]
-            except:
+                return _loadItem["a"] & (1 << self.attributes.index(name))
+            except ValueError:
                 try:
                     return _loadItem[name]
                 except KeyError:
