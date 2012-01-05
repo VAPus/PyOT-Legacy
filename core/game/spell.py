@@ -141,6 +141,21 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=Tr
         
     return healCallback
 
+def mana(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
+    def manaCallback(caster, target, strength=None):
+        if not target: return
+        
+        if strength:
+            minDmg, maxDmg = strength
+        else:
+            maxDmg = round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
+            minDmg = round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
+        
+
+        target.modifyMana(-random.randint(minDmg, maxDmg))
+        
+    return manaCallback
+    
 def conjure(make, count=1, **kwargs):
     def conjureCallback(caster, target, strength=None):
         if target.isPlayer():
