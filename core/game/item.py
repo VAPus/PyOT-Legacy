@@ -151,7 +151,7 @@ class Item(object):
         _loadItem = items[self.itemId]
         try:
             return self.params[name]
-        except KeyError:
+        except:
             try:
                 return _loadItem["a"] & (1 << self.attributes.index(name))
             except ValueError:
