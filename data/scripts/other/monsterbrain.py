@@ -12,6 +12,7 @@ def defaultBrainFeaturePriority(self, monster):
                     return
                 else:
                     monster.target = None
+                    monster.targetMode = 0
                 
                 if monster.walkPer == 0.1:
                     monster.walkPer = config.monsterWalkPer
@@ -19,7 +20,7 @@ def defaultBrainFeaturePriority(self, monster):
                 
                 if config.monsterWalkBack:
                     engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
-                else:
+                elif not engine.hasSpectators(monster.position, (15, 15)):
                     engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
                     
                 return
@@ -35,6 +36,7 @@ def defaultBrainFeaturePriority(self, monster):
                     if not x:
                         # Walk not possible. Loose target
                         monster.target = None
+                        monster.targetMode = 0
                         return
                         
                     # Are we OK?
@@ -145,6 +147,7 @@ def defaultBrainFeature(self, monster):
                         if not x:
                             # Walk not possible. Loose target
                             monster.target = None
+                            monster.targetMode = 0
                             return
                         # Are we OK?
                         if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
@@ -174,6 +177,7 @@ def defaultBrainFeature(self, monster):
                                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                                 elif not monster.canTarget(monster.target.position, allowGroundChange=True):
                                     monster.target = None
+                                    monster.targetMode = 0
                                     
                             if monster.target:
                                 # We shall be called again later
@@ -222,6 +226,7 @@ def defaultBrainFeature(self, monster):
                                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                                 else:
                                     monster.target = None
+                                    monster.targetMode = 0
                                     
                             if monster.target:
                                 # We shall be called again later
@@ -268,6 +273,7 @@ def defaultBrainFeature(self, monster):
                                 engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                             else:
                                 monster.target = None
+                                monster.targetMode = 0
                                 
                         if monster.target:
                             # We shall be called again later

@@ -6,6 +6,9 @@
 from heapq import heappush, heappop # for priority queue
 import game.map
 
+# A cache, this can probably get pretty big, but right now it's not something I'll think about
+AStarRouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
+
 class node(object):
     __slots__ = ('xPos', 'yPos', 'distance', 'priority')
     def __init__(self, xPos, yPos, distance, priority):
@@ -40,6 +43,16 @@ def findPath(mapZ, relX, relY, xB, yB):
     _fromX = relX
     _fromY = relY
     
+    AStarCacheKey = (_fromX, _fromY, _goalX, _goalY, mapZ)
+    
+    # Check for cached routes :)
+    try:
+        return AStarRouteCache[AStarCacheKey]
+    except:
+        # Not found
+        pass
+    
+    
     """dx = [1, 1, 0, -1, -1, -1, 0, 1]
     dy = [0, 1, 1, 1, 0, -1, -1, -1]"""
     dx = [0, 1, 0, -1]
@@ -67,7 +80,8 @@ def findPath(mapZ, relX, relY, xB, yB):
     n0.updatePriority(xB, yB)
     heappush(pq[pqi], n0)
     open_nodes_map[yA][xA] = n0.priority # mark it on the open nodes map
-
+    bad = False
+    
     # A* search
     while pq[pqi]:
         # get the current node w/ the highest priority
@@ -91,11 +105,13 @@ def findPath(mapZ, relX, relY, xB, yB):
                 j = dir_map[y][x]
                 c = (j + 4 / 2) % 4
                 path.append(c)
-                if len(path) > 15:
-                    return []
                 x += dx[j]
                 y += dy[j]
             path.reverse()
+            if not bad:
+                print "Not bad!"
+            else:
+                print "bad!"
             return path
 
         # generate moves (child nodes) in all possible dirs
@@ -116,6 +132,9 @@ def findPath(mapZ, relX, relY, xB, yB):
                     
                     if not (mx == _fromX and my == _fromY) and not (mx == _goalX and my == _goalY):
                         for t in tile.things:
+                            if isinstance(t, game.creature.Creature):
+                                bad  = True
+                                
                             if t.solid:
                                 isSolid = True
                                 break

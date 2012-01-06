@@ -507,8 +507,8 @@ class MonsterBrain(object):
         monster.noBrain = False
         self.handleThink(monster)
                 
-    #@engine.loopInThread(0.5)
-    @engine.loopDecorator(2)
+    @engine.loopInThread(2)
+    #@engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
         # Are we alive?
         if not monster.alive:
@@ -531,6 +531,7 @@ class MonsterBrain(object):
                 ret = brainFeatures[0][feature](self, monster)
                 
                 if ret in (True, False):
+                    print ret
                     return ret
 
         for feature in monster.base.brainFeatures:
@@ -538,17 +539,23 @@ class MonsterBrain(object):
                 ret = brainFeatures[1][feature](self, monster)
 
                 if ret in (True, False):
+                    print ret
                     return ret
                     
         # Are anyone watching?
-        if check and not engine.hasSpectators(monster.position, (9, 7)):
-            monster.noBrain = True
-            return False
-        
-        if monster.canWalk and not monster.action and not monster.target and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
-            self.walkRandomStep(monster) # Walk a random step
+        if not monster.target: # This have already been vertified!
+            
+            if check and not engine.hasSpectators(monster.position, (9, 7)):
+                monster.noBrain = True
+                return False
+            
+            if monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+                self.walkRandomStep(monster) # Walk a random step
  
-    def walkRandomStep(self, monster, badDir=[]):
+    def walkRandomStep(self, monster, badDir=None):
+        if not badDir:
+            badDir = []
+            
         # How far are we (x,y) from our spawn point?
         xFrom = monster.position.x-monster.spawnPosition.x
         yFrom = monster.position.y-monster.spawnPosition.y
