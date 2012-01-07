@@ -222,7 +222,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
             except struct.error:
                 pass # End of the line
             t.send(self)
-            self.executeWriteEvent()
             self.transport.loseConnection()
     def onPacket(self, packet):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)

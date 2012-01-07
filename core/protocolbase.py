@@ -8,7 +8,7 @@ import otcrypto
 from zlib import adler32
   
 class TibiaProtocol(Protocol):
-    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength', 'writeQueue', 'writeEvent', 'writer'
+    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
     def __init__(self):
         self.gotFirst = False
         self.xtea = None
@@ -16,9 +16,6 @@ class TibiaProtocol(Protocol):
         self.buffer = ""
         self.nextPacketLength = 0
         self.bufferLength = 0
-        self.writeQueue = []
-        self.writer = False
-        self.writeEvent = None
         
     def connectionMade(self):
         peer = self.transport.getPeer()
@@ -37,12 +34,6 @@ class TibiaProtocol(Protocol):
         peer = self.transport.getPeer()
         log.msg("Connection lost from {0}:{1}".format(peer.host, peer.port))
         self.factory.removeClient(self)
-
-        try:
-            self.writeEvent.cancel()
-        except:
-            pass
-        self.executeWriteEvent()
         
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
@@ -110,19 +101,6 @@ class TibiaProtocol(Protocol):
         else:
             self.gotFirst = True
             self.onFirstPacket(packet)
-
-    def executeWriteEvent(self):
-        self.writer = False
-        if self.writeQueue:
-            data = ''.join(self.writeQueue)
-            self.writeQueue = []
-            
-            if self.xtea:
-                data = otcrypto.encryptXTEA(struct.pack("<H", len(data))+data, self.xtea)
-            else:
-                data = struct.pack("<H", len(data))+data
-
-            self.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
         
     #### Protocol spesific, to be overwritten ####
     def onConnect(self):

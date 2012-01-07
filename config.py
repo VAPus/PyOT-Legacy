@@ -187,11 +187,6 @@ jsonLibrary = "cjson" # cjson, ujson, json or simplejson
 # keep in mind tho that having a value below 10 might cause client out-of-syncs. Default on cipsoft/otserv is 50. We use 25 because we're abit cooler!
 drawingSpeed = 25
 
-# Network write delay
-# This is how often the write events per client is called, reducing this will cause a lower "ping" between client and server at the cost of higher CPU and network overhead
-# Default settings seem to somewhat mimic the real servers.
-networkWriteDelay = 0.015
-
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
