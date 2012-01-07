@@ -266,9 +266,11 @@ class Creature(object):
         oldTile = getTile(oldPosition)
 
         if not newTile:
-            raise Exception("(new)Tile not found (%s)" % position)
+            d.errback(game.errors.ImpossibleMove)  # Can't walk here.
+            return
+            
         if not oldTile:
-            raise Exception("(old)Tile not found (%s)" % oldPosition)
+            raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
         
         
         val = yield game.scriptsystem.get("move").run(self)
