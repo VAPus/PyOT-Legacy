@@ -211,6 +211,7 @@ HOLY = 5
 DEATH = 6
 DROWN = 7
 MELEE = 8
+#LIFEDRAIN = 9 #life drain not made
 
 # Monster attack types
 #MELEE = 0
@@ -459,6 +460,7 @@ TARGET_AREA = 0
 TARGET_SELF = 1
 TARGET_TARGET = 2
 TARGET_TARGETSELF = 3
+#TARGET_TARGETONLY = 4
 
 ATTACK_GROUP = 1
 HEALING_GROUP = 2
@@ -482,7 +484,15 @@ AREA_WAVE5 = TARGET_DIRECTION, (0,), \
 (0), \
 (-1, 0, 1), \
 (-1, 0, 1), \
-(-1, 0, 1) 
+(-1, 0, 1)
+
+#dragon wave etc...
+AREA_WAVE6 = TARGET_DIRECTION, (0,), \
+(0), \
+(-1, 0, 1), \
+(-1, 0, 1), \
+(-2, -1, 0, 1, 2),\
+(-2, -1, 0, 1, 2)
 
 AREA_BEAM4 = TARGET_DIRECTION,(0,), (0,), (0,), (0,)
 
@@ -491,11 +501,11 @@ AREA_BEAM7 = TARGET_DIRECTION,(0,), (0,), (0,), (0,), (0,), (0,), (0,)
 AREA_CIRCLE = TARGET_CASTER_AREA, (-1, 1), (0, -1), (0, 1)
 
 AREA_CIRCLE2 = TARGET_CASTER_AREA, (-1, -2), (0, -2), (1, -2), \
-               (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
-               (-2, 0), (-1, 0), (1, 0), (2, 0), \
-               (-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), \
-               (-1, 2), (0, 2), (1, 2)
-			   
+(-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), \
+(-2, 0), (-1, 0), (1, 0), (2, 0), \
+(-2, 1), (-1, 1), (0, 1), (1, 1), (2, 1), \
+(-1, 2), (0, 2), (1, 2)
+
 AREA_CIRCLE3 = TARGET_CASTER_AREA, (-1, -3), (0, -3), (1, -3), \
 (-2, -2), (-1, -2), (0, -2), (1, -2), (2, -2), \
 (-3, -1), (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), (3, -1), \
@@ -509,8 +519,8 @@ AREA_CROSS = TARGET_CASTER_AREA, (0, -1), \
 (0, 1)
 
 AREA_SQUARE = TARGET_CASTER_AREA, (-1, -1), (0, -1), (1, -1), \
-              (-1, 0), (1, 0), \
-              (-1, 1), (0, 1), (1, 1)
+(-1, 0), (1, 0), \
+(-1, 1), (0, 1), (1, 1)
 
 AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)
 
