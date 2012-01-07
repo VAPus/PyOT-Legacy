@@ -589,7 +589,8 @@ class MonsterBrain(object):
             def success(result):
                 monster.lastStep = time.time()
             
-            def errback(result):
+            def errback(failure):
+                failure.trap(errors.ImpossibleMove)
                 if config.monsterNeverSkipWalks:
                     self.walkRandomStep(monster, badDir)
             
