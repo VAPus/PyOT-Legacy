@@ -15,7 +15,7 @@ brainFeatures = ({},{})
 
 def chance(procent):
     def gen(monster):
-        if 10 > random.randint(0, 100):
+        if random.randint(0, 100) < procent:
             return True
         else:
             return False
