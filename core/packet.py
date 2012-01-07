@@ -83,83 +83,80 @@ class TibiaPacketReader(object):
 class TibiaPacket(object):
     __slots__ = ('bytes')
     def __init__(self, header=None):
-        self.bytes = []
+        self.bytes = ""
         if header:
             self.uint8(header)
 
     def clear(self):
-        self.bytes = []
-
-    def reserve(self):
-        curr = len(self.bytes)
-        self.bytes.append(None)
-        
-    def fillUint8(self, pos, data):
-        self.bytes[pos] = struct.pack("<B", data)
+        self.bytes = ""
         
     # 8bit - 1byte, C type: char
     def uint8(self, data):
-        self.bytes.append(chr(data))
+        self.bytes += chr(data)
     def int8(self, data):
-        self.bytes.append(struct.pack("<b", data))
+        self.bytes += struct.pack("<b", data)
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
-        self.bytes.append(struct.pack("<H", data))
+        self.bytes += struct.pack("<H", data)
     def int16(self, data):
-        self.bytes.append(struct.pack("<h", data))
+        self.bytes += struct.pack("<h", data)
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data):
-        self.bytes.append(struct.pack("<I", data))
+        self.bytes += struct.pack("<I", data)
     def int32(self, data):
-        self.bytes.append(struct.pack("<i", data))
+        self.bytes += struct.pack("<i", data)
 
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        self.bytes.append(struct.pack("<Q", data))
+        self.bytes += struct.pack("<Q", data)
     def int64(self, data):
-        self.bytes.append(struct.pack("<q", data))
+        self.bytes += struct.pack("<q", data)
 
     # 32bit - 4bytes, C type: float
     def float(self, data):
-        self.bytes.append(struct.pack("<f", data))
+        self.bytes += struct.pack("<f", data)
 
     # 64bit - 8bytes, C type: double
     def double(self, data):
-        self.bytes.append(struct.pack("<d", data))
+        self.bytes += struct.pack("<d", data)
 
         
     def string(self, string):
-        self.uint16(len(string))
-        self.bytes.append(struct.pack("%ds" % len(string), str(string)))
+        length = len(string)
+        self.bytes += struct.pack("<H%ds" % length, length, str(string))
 
     def put(self, string):
-        self.bytes.append(struct.pack("%ds" % len(string), str(string)))
+        self.bytes += str(string)
         
     def raw(self, data):
-        self.bytes.append(data)
+        self.bytes += data
 
     #@inThread
     def send(self, stream):
         if not stream:
             return
-        stream.writeQueue.append(''.join(self.bytes))
-        if not stream.writer:
-            stream.writeEvent = reactor.callLater(config.networkWriteDelay, stream.executeWriteEvent)
-            stream.writer = True        
+        data = ''.join(self.bytes)
+        data = struct.pack("<H", len(data))+data
+        
+        if stream.xtea:
+            data = otcrypto.encryptXTEA(data, stream.xtea)
+
+        stream.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
             
     #@inThread
     def sendto(self, list):
         if not list:
             return # Noone to send to
         
-        self.bytes = [''.join(self.bytes)]
+        data = ''.join(self.bytes)
+        data = struct.pack("<H", len(data))+data
         for client in list:
             if not client:
                 continue
-            client.writeQueue.append(self.bytes[0])
             
-            if not client.writer:
-                client.writeEvent = reactor.callLater(config.networkWriteDelay, client.executeWriteEvent)
-                client.writer = True
+            if client.xtea:
+                data = otcrypto.encryptXTEA(data, client.xtea)
+
+            client.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
