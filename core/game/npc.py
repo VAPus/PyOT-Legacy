@@ -518,7 +518,7 @@ class NPCBase(CreatureBase):
         
 def chance(procent):
     def gen(npc):
-        if 10 > random.randint(0, 100):
+        if random.randint(0, 100) < procent:
             return True
         else:
             return False
