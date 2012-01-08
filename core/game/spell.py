@@ -356,14 +356,18 @@ class Spell(object):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def spellCallback(creature, strength=None, **k):
             target = creature
-            if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF:
+            if self.targetType == TARGET_TARGET or self.targetType == TARGET_TARGETSELF or self.targetType == TARGET_TARGETONLY:
                 if creature.target:
                     target = creature.target
+                    if self.targetType == TARGET_TARGETONLY:
+                        self.targetType = TARGET_TARGET
                 elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
                     self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
                 elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
                     return
-            
+                elif self.targetType == TARGET_TARGETONLY:
+                    return creature.cancelMessage("You need a target to cast this spell.")	
+                
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
                     creature.cancelMessage("Target is too far away")
