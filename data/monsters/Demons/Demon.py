@@ -14,7 +14,7 @@ demon.loot( (2148, 100, 200), ("platinum coin", 70.25), ("fire axe", 4.0), ("fir
 
 dgfb = spell.Spell("demon geb")
 dgfb.area(AREA_BEAM7)
-dgfb.targetEffect(callback=spell.damage(3.6, 6, 22, 37, LIFEDRAIN)
+dgfb.targetEffect(callback=spell.damage(3.6, 6, 22, 37, LIFEDRAIN))
 dgfb.effects(area=EFFECT_ENERGYAREA) #wrong effect
 
 des = spell.Spell("demon estrike", target=TARGET_TARGETONLY) #target_targetonly is not yet coded
@@ -24,7 +24,7 @@ des.effects(area=EFFECT_ENERGYAREA, shoot=ANIMATION_ENERGY) #wrong effect
 
 dmd = spell.Spell("demon manadrain", target=TARGET_TARGETONLY) #target_targetonly is not yet coded
 dmd.area(AREA_WAVE1)
-dmd.targetEffect(callback=spell.mana(1.4, 2.2, 8, 14)
+dmd.targetEffect(callback=spell.mana(1.4, 2.2, 8, 14))
 
 demon.regMelee(520)
 demon.regTargetSpell("Hells Core", 150, 250, check=chance(9)) #
