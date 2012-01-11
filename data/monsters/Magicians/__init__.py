@@ -1,9 +1,2 @@
-import glob, os
-
-__all__ = []
-for mod in glob.glob("data/monsters/Magicians/*.py"):
-    modm = mod.split(os.sep)[-1].replace('.py', '')
-    if modm == "__init__":
-        continue
-
-    __all__.append(modm)
+# This file is quite important because it handles the script loading!
+__all__, paths = scriptInitPaths(__file__)

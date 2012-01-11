@@ -139,6 +139,9 @@ def loader(timer):
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     
+    # We use this in the import system
+    __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
+    
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine')
         monster = game.monster
@@ -529,6 +532,7 @@ def positionInDirection(nposition, direction, amount=1):
         position.y = nposition.y - amount
         position.x = nposition.x + amount
     return position
+    
 def updateTile(pos, tile):
     """ Send the update to a tile to all who can see the position.
     *Note that this function does NOT replace the known tile in :mod:`game.map`'s knownMap array.*

@@ -7,6 +7,9 @@ import weakref
 import sys
 import time
 import traceback
+from os import sep as os_seperator
+from os.path import split as os_path_split
+from glob import glob
 
 modPool = []
 globalScripts = {}
@@ -433,12 +436,8 @@ def handleModule(name):
 
         print "%s: %s" % (exc_type.__name__, exc_value)
         print "--------------------------"
-        
-    try:
-        modules.paths
-    except:
-        pass
-    else:
+        return
+    if modules.paths:
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))
 
@@ -450,7 +449,24 @@ def importer():
     handleModule("monsters")
     handleModule("npcs")
     
+def scriptInitPaths(base, subdir=True):
+    all = []
+    paths = []
+    
+    base = os_path_split(base)[0] # Remove the ending of the paths!
+    
+    for mod in glob("%s/*.py" % base):
+        modm = mod.split(os_seperator)[-1].replace('.py', '')
+        if modm == "__init__":
+            continue
 
+        all.append(modm)
+    
+    if subdir:
+        for mod in glob("%s/*/__init__.py" % base):
+            paths.append(mod.split(os_seperator)[-2])
+    return all, paths
+    
 def reimporter():
     global globalEvents
     process = get("reload").runSync()
