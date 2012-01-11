@@ -91,6 +91,16 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.lastMelee = _time
                     
                     return True # If we do have a target, we stop here
+					
+                # Distance attacks
+                if monster.base.distanceAttacks and monster.inRange(monster.target.position, 1, 7):
+                    distance = random.choice(monster.base.distanceAttacks)
+                    if monster.lastDistance + distance[0] <= _time and distance[1](monster) and random.randint(1,100) <= distance[4]: #distance[4] is chance
+                        monster.target.onHit(monster, -1 * random.randint(0, round(distance[2] * config.monsterMeleeFactor)), game.enum.DISTANCE)
+                        monster.shoot(monster.position, monster.target.position, distance[3]) #not sure if this will work.
+                        monster.lastDistance = _time
+                    
+                    return True # If we do have a target, we stop here
                 
                 # Attack attacks
                 for id, spell in enumerate(monster.base.defenceSpells):

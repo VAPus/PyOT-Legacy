@@ -122,7 +122,7 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         
     return damageCallback
     
-def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=True):
+def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=game.enum.CONDITION_PARALYZE):
     def healCallback(caster, target, strength=None):
         if not target: return
         
@@ -137,7 +137,7 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=Tr
         
         # Cure paralyzation if configurated to do so.
         if cure:
-            target.loseCondition(game.enum.CONDITION_PARALYZE)
+            target.loseCondition(cure)
         
     return healCallback
 

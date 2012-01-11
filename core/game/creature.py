@@ -587,9 +587,9 @@ class Creature(object):
     def onHit(self, by, dmg, type, effect=None):
         self.lastDamager = by
           
-        dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations
-
-        dmg = max(-self.data["health"], dmg)
+        if not type == game.enum.DISTANCE:
+            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
+            dmg = max(-self.data["health"], dmg) #wrap this one too?
 
 
         if type == game.enum.ICE:
@@ -619,8 +619,14 @@ class Creature(object):
         elif type == game.enum.DROWN:
             textColor = game.enum.COLOR_LIGHTBLUE
             magicEffect = game.enum.EFFECT_ICEATTACK
+			
+        elif type == game.enum.DISTANCE:
+            textColor = game.enum.COLOR_LIGHTBLUE
+            magicEffect = game.enum.EFFECT_ICEATTACK
+            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
+            dmg = max(-self.data["health"], dmg) #wrap this one too?
         else: ### type == game.enum.MELEE:
-            textColor, magicEffect = self.hitEffects()        
+            textColor, magicEffect = self.hitEffects()           
         if effect:
             magicEffect = effect
             

@@ -36,6 +36,7 @@ class Monster(Creature):
         self.lastStep = 0
         self.speed = float(base.speed)
         self.lastMelee = 0
+        self.lastDistance = 0
         self.walkPer = base.walkPer
         self.noBrain = True
         self.spawnTime = None
@@ -248,6 +249,7 @@ class MonsterBase(CreatureBase):
         self.setTargetChance()
         
         self.meleeAttacks = []
+        self.distanceAttacks = []
         self.spellAttacks = []
         self.defenceSpells = []
         
@@ -327,7 +329,7 @@ class MonsterBase(CreatureBase):
                 monster.radiusTo = (position[0], position[1])
                 
             
-            if self.targetChance and not (self.meleeAttacks or self.spellAttacks):
+            if self.targetChance and not (self.meleeAttacks or self.spellAttacks or self.distanceAttacks):
                 log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
 
             if place and stackpos and stackpos < 10:
@@ -437,6 +439,9 @@ class MonsterBase(CreatureBase):
         
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
+		
+    def regDistance(self, maxDamage, shooteffect, check=lambda x: True, interval=config.meleeAttackSpeed, chance=0):
+        self.distanceAttacks.append([interval, check, maxDamage, shooteffect, chance]) 
         
     def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
         if length:

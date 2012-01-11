@@ -211,7 +211,8 @@ HOLY = 5
 DEATH = 6
 DROWN = 7
 MELEE = 8
-#LIFEDRAIN = 9 #life drain not made
+DISTANCE = 9
+#LIFEDRAIN = 10 #life drain not made
 
 # Monster attack types
 #MELEE = 0
@@ -486,11 +487,20 @@ AREA_WAVE5 = TARGET_DIRECTION, (0,), \
 (-1, 0, 1), \
 (-1, 0, 1)
 
-#dragon wave etc...
-AREA_WAVE6 = TARGET_DIRECTION, (0,), \
+AREA_WAVE7 = TARGET_DIRECTION, (0,), \
 (0), \
 (-1, 0, 1), \
 (-1, 0, 1), \
+(-1, 0, 1), \
+(-2, -1, 0, 1, 2),\
+(-2, -1, 0, 1, 2)
+
+AREA_WAVE8 = TARGET_DIRECTION, (0,), \
+(0), \
+(-1, 0, 1), \
+(-1, 0, 1), \
+(-1, 0, 1), \
+(-2, -1, 0, 1, 2),\
 (-2, -1, 0, 1, 2),\
 (-2, -1, 0, 1, 2)
 
