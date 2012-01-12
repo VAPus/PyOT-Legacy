@@ -327,7 +327,11 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
         autoWalkCreature(creature, callback)
     elif callback:
         callback(None)
-        
+
+def _walkingErrback(res, creature):
+    res.trap(game.errors.ImpossibleMove)
+    creature.walkPattern = []
+    
 @action()
 def handleAutoWalking(creature, callback=None, level=0):
     if not creature.walkPattern:
@@ -343,12 +347,9 @@ def handleAutoWalking(creature, callback=None, level=0):
                 creature.action = safeCallLater(creature2.stepDuration(game.map.getTile(positionInDirection(newPos, creature2.walkPattern[0])).getThing(0)), handleAutoWalking, creature2, callback)
             except IndexError:
                 return
-                    
-    d = Deferred()
-    if mcallback:
-        d.addCallback(mcallback)
-    creature._move(d, direction, level=level, stopIfLock=True)
-    
+
+    d = creature.move(direction, level=level, stopIfLock=True, callback=mcallback, trap=False)
+    d.addErrback(_walkingErrback, creature)
     
 
 # Calculate walk patterns

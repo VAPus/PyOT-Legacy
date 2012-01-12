@@ -206,21 +206,25 @@ class Creature(object):
         except:
             pass
         
-    def move(self, direction, spectators=None, level=0, stopIfLock=False):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, trap=True):
         # Client will shift us to this position so.
         self.direction = direction
         
         if self.canMove:
-            d = Deferred()
-            game.engine.safeCallLater(0, self._move, d, direction, spectators, level, stopIfLock)
-            return d
             
+            d = self._move(callback, direction, spectators, level, stopIfLock)
+            if trap:
+                def _trap(res):
+                    res.trap(Exception)
+                    
+                d.addErrback(_trap)
+            return d
         if self.isPlayer():
             self.cancelWalk()
         
     @inlineCallbacks
-    def _move(self, d, direction, spectators=None, level=0, stopIfLock=False):
-        if not self.alive or not level and not self.actionLock(self._move, d, direction, spectators, level):
+    def _move(self, callback, direction, spectators=None, level=0, stopIfLock=False):
+        if not self.alive or not level and not self.actionLock(self._move, callback, direction, spectators, level):
             return
             
         if not self.data["health"] or not self.canMove:
@@ -266,8 +270,7 @@ class Creature(object):
         oldTile = getTile(oldPosition)
 
         if not newTile:
-            d.errback(game.errors.ImpossibleMove)  # Can't walk here.
-            return
+            raise game.errors.ImpossibleMove()  # Can't walk here.
             
         if not oldTile:
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
@@ -280,12 +283,6 @@ class Creature(object):
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            """self.teleport(position)
-            self.lastStep = time.time()
-            if callback:
-                callback(self, oldPosition, position)
-            
-            self.lastAction += self.stepDuration(newTile.getThing(0)) * (3 if direction > 3 else 1)"""
             self.cancelWalk()
             return
         
@@ -293,17 +290,9 @@ class Creature(object):
             if thing.solid:
                 #self.turn(direction) # Fix me?
                 self.notPossible()
-                d.errback(game.errors.ImpossibleMove)  # Prevent walking on solid tiles
+                raise game.errors.ImpossibleMove()  # Prevent walking on solid tiles
                 return
-            
-            
-        """t = time.time()
-        if not level and self.lastStep+self.stepDuration(newTile.getThing(0)) > t:
-            game.engine.safeCallLater(t-self.lastStep+self.stepDuration(newTile.getThing(0)), self.move, direction)
-            return False
-            
-        else:
-            self.lastStep = time.time()"""
+
         _time = time.time()
         self.lastStep = _time
         delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
@@ -324,12 +313,6 @@ class Creature(object):
             
             
         newStackPos = newTile.placeCreature(self)
-
-        # This shouldn't be required anymore
-        """if not newStackPos: # or newStackPos > 9:
-            self.cancelWalk()
-            d.errback(game.errors.ImpossibleMove)
-            return"""
             
         oldTile.removeCreature(self)
         
@@ -428,8 +411,8 @@ class Creature(object):
                     del item.teledest
 
         
-        if d.callback:
-            d.callback((self, oldPosition, position))
+        if callback:
+            callback((self, oldPosition, position))
             
         # Deal with appear and disappear. Ahh the power of sets :)
         if self.isPlayer():

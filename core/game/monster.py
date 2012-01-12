@@ -591,19 +591,15 @@ class MonsterBrain(object):
                 break
             
             badDir.append(step)
-            def success(result):
-                monster.lastStep = time.time()
-            
+
             def errback(failure):
                 failure.trap(errors.ImpossibleMove)
                 if config.monsterNeverSkipWalks:
                     self.walkRandomStep(monster, badDir)
             
-            d = defer.Deferred()
-            d.addCallback(success)
-            
+            d = monster.move(step, trap=False)
             d.addErrback(errback)
-            monster._move(d, step)
+            
 
             return True
         return False

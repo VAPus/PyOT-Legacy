@@ -467,7 +467,6 @@ class Spell(object):
                     if creatures:
                         targets.extend(creatures)
                         
-                print targets
                 for targ in targets:
                     if self._targetEffect:
                         targ.magicEffect(self._targetEffect)
