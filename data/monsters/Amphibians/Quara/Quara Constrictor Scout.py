@@ -1,4 +1,3 @@
-
 quara_constrictor_scout = game.monster.genMonster("Quara Constrictor Scout", (46, 6065), "a quara constrictor scout")
 quara_constrictor_scout.setHealth(450)
 quara_constrictor_scout.bloodType(color="blood")

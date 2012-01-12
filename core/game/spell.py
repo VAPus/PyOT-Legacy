@@ -140,6 +140,11 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=ga
             target.loseCondition(cure)
         
     return healCallback
+	
+def cure(condition):
+    def cureCallback(caster, target, strength=None):
+        target.loseCondition(condition)
+    return cureCallback
 
 def mana(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
     def manaCallback(caster, target, strength=None):

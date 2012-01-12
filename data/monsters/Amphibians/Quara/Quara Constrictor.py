@@ -9,5 +9,24 @@ quara_constrictor.setBehavior(summonable=0, hostile=1, illusionable=1, convincea
 quara_constrictor.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
-quara_constrictor.regMelee(150) #poisons you for 1 hp/turn
 quara_constrictor.loot( (2148, 100, 100), ("fish fin", 0.5, 3), ("brass armor", 2.25), ("small amethyst", 0.25), ("longsword", 5.0), ("shrimp", 5.5), ("quara tentacle", 9.75) )
+ 
+poison_berserk = spell.Spell("qcpoison berserk")
+poison_berserk.area(AREA_SQUARE)
+poison_berserk.targetEffect(callback=spell.damage(1, 1, 0, 80, ICE)) # Search for the icon
+poison_berserk.effects(area=EFFECT_POISONAREA)
+
+lifedrain_berserk = spell.Spell("qclifedrain berserk")
+lifedrain_berserk.area(AREA_SQUARE)
+lifedrain_berserk.targetEffect(callback=spell.damage(1, 1, 0, 80, LIFEDRAIN))
+lifedrain_berserk.effects(area=EFFECT_REDSHIMMER)
+
+iceball = spell.Spell("qciceball")
+iceball.area(AREA_CIRCLE3)
+iceball.targetEffect(callback=spell.damage(1, 1, 40, 70, ICE))
+iceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
+
+quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
+quara_constrictor.regTargetSpell("qclifedrain berserker", check=chance(25))
+quara_constrictor.regTargetSpell("qciceball", check=chance(25)) 
+quara_constrictor.regTargetSpell("qcpoison berserk", condition=condition(CONDITION_FREEZING, 0, 4, damage=8), check=chance(25)) 
