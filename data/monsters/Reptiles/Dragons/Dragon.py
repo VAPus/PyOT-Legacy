@@ -19,6 +19,6 @@ dfwave.effects(area=EFFECT_HITBYFIRE)
 dragon.regMelee(120)
 #arguements are (self, spellName, min, max, interval=2, check=chance(10), range=7, length=None)
 #im not sure if we are ever going to need length
-dragon.regTargetSpell("drag fwave", check=chance(20))
-dragon.regTargetSpell("Light Heaing", 25, 55, check=chance(18))
-dragon.regTargetSpell(2304, 60, 110, check=chance(20)) #runes go by rune id and use regTargetSpell too. range isnt needed default is 7
+dragon.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18))
+dragon.regTargetSpell(2304, 60, 110, check=game.monster.chance(20)) #runes go by rune id and use regTargetSpell too. range isnt needed default is 7

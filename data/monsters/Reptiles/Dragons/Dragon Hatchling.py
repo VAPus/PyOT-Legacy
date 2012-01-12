@@ -16,6 +16,6 @@ dfwave.targetEffect(callback=spell.damage(1, 1, 60, 90, FIRE))
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dragon_hatchling.regMelee(55)
-dragon_hatchling.regTargetSpell("drag fwave", check=chance(20))
-dragon_hatchling.regTargetSpell("Light Heaing", 25, 55, check=chance(18)) #how much?
-dragon_hatchling.regTargetSpell(2304, 30, 55, check=chance(20))
+dragon_hatchling.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon_hatchling.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18)) #how much?
+dragon_hatchling.regTargetSpell(2304, 30, 55, check=game.monster.chance(20))

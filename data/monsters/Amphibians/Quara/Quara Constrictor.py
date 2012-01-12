@@ -27,6 +27,6 @@ iceball.targetEffect(callback=spell.damage(1, 1, 40, 70, ICE))
 iceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
 
 quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
-quara_constrictor.regTargetSpell("qclifedrain berserker", check=chance(25))
-quara_constrictor.regTargetSpell("qciceball", check=chance(25)) 
-quara_constrictor.regTargetSpell("qcpoison berserk", condition=condition(CONDITION_FREEZING, 0, 4, damage=8), check=chance(25)) 
+quara_constrictor.regTargetSpell("qclifedrain berserker", check=game.monster.chance(25))
+quara_constrictor.regTargetSpell("qciceball", check=game.monster.chance(25)) 
+quara_constrictor.regTargetSpell("qcpoison berserk", condition=condition(CONDITION_FREEZING, 0, 4, damage=8), check=game.monster.chance(25)) 

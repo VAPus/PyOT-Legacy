@@ -28,13 +28,13 @@ dmd.area(AREA_WAVE1)
 dmd.targetEffect(callback=spell.mana(1, 1, 0, 120))
  
 demon.regMelee(520)
-demon.regTargetSpell("Hells Core", 150, 250, check=chance(9)) #
-demon.regTargetSpell("demon geb", check=chance(9)) #
-demon.regTargetSpell("demon estrike", check=chance(9)) #
-demon.regTargetSpell("demon manadrain", check=chance(9)) #
-demon.regSelfSpell("Light Healing", 1, 250, check=chance(9)) #
-demon.regSelfSpell(2301, check=chance(9)) #use rune id
+demon.regTargetSpell("Hells Core", 150, 250, check=game.monster.chance(9)) #
+demon.regTargetSpell("demon geb", check=game.monster.chance(9)) #
+demon.regTargetSpell("demon estrike", check=game.monster.chance(9)) #
+demon.regTargetSpell("demon manadrain", check=game.monster.chance(9)) #
+demon.regSelfSpell("Light Healing", 1, 250, check=game.monster.chance(9)) #
+demon.regSelfSpell(2301, check=game.monster.chance(9)) #use rune id
  
-#both of these are possibly incorrect
-demon.regTargetSpell("Haste", -220, -220, length=5, check=chance(9)
-demon.regSelfSpell("Haste", 360, 360, length=5, check=chance(9))
+#both of these are possibly incorrect lenght=time
+demon.regTargetSpell("Haste", -220, -220, length=5, check=game.monster.chance(9)
+demon.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(9))
