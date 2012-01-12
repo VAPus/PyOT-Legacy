@@ -587,14 +587,14 @@ class MonsterBrain(object):
             elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
                 continue
             
-            elif monster.target and enine.positionInDirection(monster.position, step) == monster.target.position:
+            elif monster.target and engine.positionInDirection(monster.position, step) == monster.target.position:
                 break
             
             badDir.append(step)
 
             def errback(failure):
                 failure.trap(errors.ImpossibleMove)
-                if config.monsterNeverSkipWalks:
+                if config.monsterNeverSkipWalks and len(badDir) < 4:
                     self.walkRandomStep(monster, badDir)
                 return False
             d = monster.move(step, trap=False)
