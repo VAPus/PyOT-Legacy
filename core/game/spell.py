@@ -121,6 +121,19 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         target.lastDamager = caster
         
     return damageCallback
+
+def element(type):
+    # This is for Creature spells ONLY!
+    def elementDamageCallback(caster, target, strength):
+        # Target required!
+        if not target: return
+ 
+        # Only rely on strength, this will raise a console error if a player attampts to cast this spell.
+        dmg = random.randint(strength[0], strength[1])
+ 
+        target.onHit(caster, dmg, type)
+        target.lastDamager = caster # Isn't this updated using onHit anyway?
+    return elementDamageCallback
     
 def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=game.enum.CONDITION_PARALYZE):
     def healCallback(caster, target, strength=None):
