@@ -13,12 +13,12 @@ dragon.loot( ("steel shield", 14.75), (12413, 9.75), ("dragon ham", 65.0, 3), ("
 #declare spell before regestering them to the creature
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE8)
-dfwave.targetEffect(callback=spell.damage(1, 1, 100, 170, FIRE))
+dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dragon.regMelee(120)
 #arguements are (self, spellName, min, max, interval=2, check=chance(10), range=7, length=None)
 #im not sure if we are ever going to need length
-dragon.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon.regTargetSpell("drag fwave", 100, 170, check=game.monster.chance(20))
 dragon.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18))
 dragon.regTargetSpell(2304, 60, 110, check=game.monster.chance(20)) #runes go by rune id and use regTargetSpell too. range isnt needed default is 7

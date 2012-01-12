@@ -14,13 +14,13 @@ demon.loot( (2148, 100, 200), ("platinum coin", 70.25), ("fire axe", 4.0), ("fir
  
 dgfb = spell.Spell("demon geb")
 dgfb.area(AREA_BEAM7)
-dgfb.targetEffect(callback=spell.damage(1, 1, 300, 460, LIFEDRAIN))
+dgfb.element(LIFEDRAIN)
 dgfb.effects(area=EFFECT_ENERGYAREA) #wrong effect
  
 des = spell.Spell("demon estrike", target=TARGET_TARGETONLY)
 des.area(AREA_WAVE1)
 des.range(1)
-des.targetEffect(callback=spell.damage(1, 1, 210, 300, ENERGY))
+des.element(ENERGY)
 des.effects(area=EFFECT_ENERGYAREA, shoot=ANIMATION_ENERGY) #wrong effect
  
 dmd = spell.Spell("demon manadrain", target=TARGET_TARGETONLY)
@@ -29,12 +29,9 @@ dmd.targetEffect(callback=spell.mana(1, 1, 0, 120))
  
 demon.regMelee(520)
 demon.regTargetSpell("Hells Core", 150, 250, check=game.monster.chance(9)) #
-demon.regTargetSpell("demon geb", check=game.monster.chance(9)) #
-demon.regTargetSpell("demon estrike", check=game.monster.chance(9)) #
-demon.regTargetSpell("demon manadrain", check=game.monster.chance(9)) #
+demon.regTargetSpell("demon geb", 300, 460, check=game.monster.chance(9)) #
+demon.regTargetSpell("demon estrike", 210, 300, check=game.monster.chance(9)) #
+demon.regTargetSpell("demon manadrain", 0, 120, check=game.monster.chance(9)) #
 demon.regSelfSpell("Light Healing", 1, 250, check=game.monster.chance(9)) #
 demon.regSelfSpell(2301, check=game.monster.chance(9)) #use rune id
- 
-#both of these are possibly incorrect lenght=time
-demon.regTargetSpell("Haste", -220, -220, length=5, check=game.monster.chance(9)
-demon.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(9))
+##need to add haste spells
