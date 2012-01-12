@@ -565,6 +565,7 @@ class Creature(object):
             return game.enum.COLOR_ORANGE, game.enum.EFFECT_DRAWBLOOD
         
     def damageToBlock(self, dmg, type):
+        # Overrided to creatures.
         return dmg
         
     def onHit(self, by, dmg, type, effect=None):
@@ -608,6 +609,10 @@ class Creature(object):
             magicEffect = game.enum.EFFECT_ICEATTACK
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
+        elif type == game.enum.LIFEDRAIN:
+            textColor = game.enum.COLOR_TEAL
+            magicEffect = game.enum.EFFECT_ICEATTACK
+            
         else: ### type == game.enum.MELEE:
             textColor, magicEffect = self.hitEffects()           
         if effect:

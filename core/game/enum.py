@@ -212,7 +212,7 @@ DEATH = 6
 DROWN = 7
 MELEE = 8
 DISTANCE = 9
-#LIFEDRAIN = 10 #life drain not made
+LIFEDRAIN = 10 #life drain not made
 
 # Monster attack types
 #MELEE = 0
