@@ -12,12 +12,12 @@ dragon_lord_hatchling.loot( (2148, 100, 169), ("dragon ham", 69.75), ("green mus
 
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE7)
-dfwave.targetEffect(callback=spell.damage(1, 1, 90, 125, FIRE))
+dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dragon_lord_hatchling.regMelee(90)
 dragon_lord_hatchling.regTargetSpell(2305, 55, 105, check=game.monster.chance(20)) #firebomb
-dragon_lord_hatchling.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon_lord_hatchling.regTargetSpell("drag fwave", 90, 125, check=game.monster.chance(20))
 dragon_lord_hatchling.regTargetSpell(2304, 100, 200, check=game.monster.chance(20)) #gfb
 dragon_lord_hatchling.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18))
 #shoot fireball too?

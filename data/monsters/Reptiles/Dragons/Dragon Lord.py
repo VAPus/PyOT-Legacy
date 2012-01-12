@@ -12,17 +12,17 @@ dragon_lord.loot( (2148, 100, 245), ("dragon ham", 77.25), ("green mushroom", 12
 
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE8)
-dfwave.targetEffect(callback=spell.damage(1, 1, 150, 250, FIRE))
+dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dlfbomb = spell.Spell("drag fbomb", target=TARGET_TARGETONLY)
 dlfbomb.area(AREA_CIRCLE3)
-dlfbomb.targetEffect(callback=spell.field(1492))
+dlfbomb.element(callback=spell.field(1492))
 dlfbomb.effects(area=EFFECT_HITBYFIRE, shoot=ANIMATION_FIRE) 
  
 dragon_lord.regMelee(220)
 dragon_lord.regTargetSpell("drag fbomb", check=game.monster.chance(20))
-dragon_lord.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon_lord.regTargetSpell("drag fwave", 150, 250, check=game.monster.chance(20))
 dragon_lord.regTargetSpell(2304, 100, 200, check=game.monster.chance(20)) #gfb
 
 dragon_lord.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18))

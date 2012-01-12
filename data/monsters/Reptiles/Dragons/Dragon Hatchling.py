@@ -12,10 +12,10 @@ dragon_hatchling.loot( (2148, 100, 55), ("dragon ham", 53.5), (12413, 3.5), ("he
  
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE8)
-dfwave.targetEffect(callback=spell.damage(1, 1, 60, 90, FIRE))
+dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dragon_hatchling.regMelee(55)
-dragon_hatchling.regTargetSpell("drag fwave", check=game.monster.chance(20))
+dragon_hatchling.regTargetSpell("drag fwave", 60, 90, check=game.monster.chance(20))
 dragon_hatchling.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18)) #how much?
 dragon_hatchling.regTargetSpell(2304, 30, 55, check=game.monster.chance(20))

@@ -13,9 +13,9 @@ Toad.loot( (2148, 100, 20), ("poisonous slime", 4.25), ("fish", 20.0), ("war ham
 
 
 envenom = spell.Spell("tenvenom", target=TARGET_TARGET)
-envenom.targetEffect(callback=spell.damage(1, 1, 8, 17, EARTH))
+envenom.element(EARTH)
 envenom.effects(area=EFFECT_POISONAREA)
 
 Toad.regMelee(30, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
 Toad.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(21))
-Toad.regTargetSpell("tenvenom", range=1, check=game.monster.chance(21))
+Toad.regTargetSpell("tenvenom", 8, 17, range=1, check=game.monster.chance(21))
