@@ -556,7 +556,8 @@ class MonsterBrain(object):
             
             if monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
- 
+
+    @defer.inlineCallbacks
     def walkRandomStep(self, monster, badDir=None):
         if not badDir:
             badDir = []
@@ -587,22 +588,13 @@ class MonsterBrain(object):
             elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
                 continue
             
-            elif monster.target and engine.positionInDirection(monster.position, step) == monster.target.position:
-                break
-            
             badDir.append(step)
-
-            def errback(failure):
-                failure.trap(errors.ImpossibleMove)
+            d = yield monster.move(step)
+            if d == False:
                 if config.monsterNeverSkipWalks and len(badDir) < 4:
                     self.walkRandomStep(monster, badDir)
-                return False
-            d = monster.move(step, trap=False)
-            d.addErrback(errback)
-            
-
-            return True
-        return False
+                
+            return
         
 brain = MonsterBrain()
 def genMonster(name, look, description=""):

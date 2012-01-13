@@ -17,11 +17,11 @@ dfwave.effects(area=EFFECT_HITBYFIRE)
  
 dlfbomb = spell.Spell("drag fbomb", target=TARGET_TARGETONLY)
 dlfbomb.area(AREA_CIRCLE3)
-dlfbomb.element(callback=spell.field(1492))
+dlfbomb.targetEffect(callback=spell.field(1492))
 dlfbomb.effects(area=EFFECT_HITBYFIRE, shoot=ANIMATION_FIRE) 
  
 dragon_lord.regMelee(220)
-dragon_lord.regTargetSpell("drag fbomb", check=game.monster.chance(20))
+dragon_lord.regTargetSpell("drag fbomb", 1,1,check=game.monster.chance(20))
 dragon_lord.regTargetSpell("drag fwave", 150, 250, check=game.monster.chance(20))
 dragon_lord.regTargetSpell(2304, 100, 200, check=game.monster.chance(20)) #gfb
 

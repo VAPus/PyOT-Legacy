@@ -1,4 +1,4 @@
-from twisted.internet.defer import inlineCallbacks, Deferred
+from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
 from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile, Position, StackPosition
 from twisted.python import log
@@ -206,26 +206,19 @@ class Creature(object):
         except:
             pass
         
-    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, trap=True):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False):
         # Client will shift us to this position so.
         self.direction = direction
         
         if self.canMove:
+            return self._move(direction, spectators, level, stopIfLock)
             
-            d = self._move(callback, direction, spectators, level, stopIfLock)
-            if trap:
-                def _trap(res):
-                    res.trap(Exception)
-                    return False
-                    
-                d.addErrback(_trap)
-            return d
         if self.isPlayer():
             self.cancelWalk()
         
     @inlineCallbacks
-    def _move(self, callback, direction, spectators=None, level=0, stopIfLock=False):
-        if not self.alive or not level and not self.actionLock(self._move, callback, direction, spectators, level):
+    def _move(self, direction, spectators=None, level=0, stopIfLock=False):
+        if not self.alive or not level and not self.actionLock(self._move, direction, spectators, level, stopIfLock):
             return
             
         if not self.data["health"] or not self.canMove:
@@ -271,9 +264,11 @@ class Creature(object):
         oldTile = getTile(oldPosition)
 
         if not newTile:
-            raise game.errors.ImpossibleMove()  # Can't walk here.
+            self.walkPattern = [] # If we got a queue of moves, we need to end it!
+            returnValue(False)
             
         if not oldTile:
+            # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
         
         
@@ -291,7 +286,8 @@ class Creature(object):
             if thing.solid:
                 #self.turn(direction) # Fix me?
                 self.notPossible()
-                raise game.errors.ImpossibleMove()  # Prevent walking on solid tiles
+                self.walkPattern = [] # If we got a queue of moves, we need to end it!
+                returnValue(False)
 
         _time = time.time()
         self.lastStep = _time
@@ -410,9 +406,6 @@ class Creature(object):
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
 
-        
-        if callback:
-            callback((self, oldPosition, position))
             
         # Deal with appear and disappear. Ahh the power of sets :)
         if self.isPlayer():
