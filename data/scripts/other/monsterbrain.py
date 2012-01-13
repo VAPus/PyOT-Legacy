@@ -103,7 +103,7 @@ def defaultBrainFeaturePriority(self, monster):
                     return True # If we do have a target, we stop here
                 
                 # Attack attacks
-                for id, spell in enumerate(monster.base.defenceSpells):
+                for id, spell in enumerate(monster.base.spellAttacks):
                     key = "a%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] > _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):

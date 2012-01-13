@@ -677,7 +677,7 @@ class BaseProtocol(object):
         fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
-        print fromPosition
+
         if fromPosition.x != 0xFFFF:
             # From map
             fromMap = True
@@ -688,17 +688,12 @@ class BaseProtocol(object):
         if toPosition.x != 0xFFFF:
             toMap = True
         
-        print toPosition
-        print clientId
-        print fromStackPos
         count = packet.uint8()
         oldItem = None
         renew = False
         stack = True
         
         thing = player.findItem(fromPosition.setStackpos(fromStackPos))
-        print thing
-        print thing.itemId
         
         isCreature = False
         if clientId < 100:

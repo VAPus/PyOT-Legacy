@@ -96,7 +96,7 @@ def onUse(creature, thing, position, **a):
     else:
         creature.removeItem(position)
     someCondition = creature.getCondition(CONDITION_REGENERATEHEALTH)
-    if someCondition.length >= 1500 or someCondition.length * gainmana[1] >= 1500:
+    if someCondition and (someCondition.length >= 1500 or someCondition.length + gainmana[1] > 1500):
         creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
     else:
         creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration, gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)

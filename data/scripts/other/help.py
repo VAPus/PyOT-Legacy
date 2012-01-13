@@ -94,10 +94,14 @@ def testContainer(creature, thing, position, index):
 
         # Opened from ground, close it on next step :)
         if position.x != 0xFFFF:
-            creature.scripts["onNextStep"].append(lambda who: thing.opened and creature.closeContainer(thing))
+            def _vertifyClose(who):
+                if thing.opened and not who.inRange(position, 1, 1):
+                    who.closeContainer(thing)
+                    
+            creature.scripts["onNextStep"].append(_vertifyClose)
     else:
         creature.closeContainer(thing)
-_script_ = game.scriptsystem.get("farUse")
+_script_ = game.scriptsystem.get("use")
 
 for item in game.item.items:
     if item and "containerSize" in item:
