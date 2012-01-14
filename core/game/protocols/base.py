@@ -878,7 +878,7 @@ class BaseProtocol(object):
                             
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                         stream.addTileItem(toPosition, toStackPos, newItem)
-                        if not renew and newItem.containerSize and newItem.opened:
+                        if not renew and newItem.containerSize and newItem.opened and not player.inRange(toPosition, 1, 1):
                             player.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
