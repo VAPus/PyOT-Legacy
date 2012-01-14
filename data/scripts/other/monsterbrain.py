@@ -51,7 +51,7 @@ def defaultBrainFeaturePriority(self, monster):
                 _time = time.time()
                 for id, spell in enumerate(monster.base.defenceSpells):
                     key = "s%d"%id
-                    if not key in monster.intervals or monster.intervals[key]+spell[0] > _time:
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if spell[2](monster):
                             if type(spell[1]) == int:
                                 game.spell.targetRunes[spell[1]](None, monster, None, None, monster, strength=spell[3])
@@ -90,7 +90,7 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.target.onHit(monster, -1 * random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
                         monster.lastMelee = _time
                     
-                    return True # If we do have a target, we stop here
+                        return True # If we do have a target, we stop here
 					
                 # Distance attacks
                 if monster.base.distanceAttacks and monster.inRange(monster.target.position, 1, 7):
@@ -100,12 +100,12 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.shoot(monster.position, monster.target.position, distance[2]) #not sure if this will work.
                         monster.lastDistance = _time
                     
-                    return True # If we do have a target, we stop here
+                        return True # If we do have a target, we stop here
                 
                 # Attack attacks
                 for id, spell in enumerate(monster.base.spellAttacks):
                     key = "a%d"%id
-                    if not key in monster.intervals or monster.intervals[key]+spell[0] > _time:
+                    if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
                             if type(spell[1]) == int:
                                 game.spell.targetRunes[spell[1]](None, monster, None, None, monster.target, strength=spell[4])
