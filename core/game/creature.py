@@ -1319,7 +1319,7 @@ class Condition(object):
             self.creature.modifyHealth(gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
-        if not gainhp:
+        if not gainmana:
             gainmana = self.creature.getVocation().mana
             self.creature.modifyMana(gainmana[0])
             
