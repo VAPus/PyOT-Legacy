@@ -106,40 +106,22 @@ def teleportOrWalkDirection(creature, thing, position, **k):
     if not config.monsterStairHops and not creature.isPlayer():
         return
 
-    # Change the position to match the floorchange.
-    pos = creature.position.copy()
-    pos.z -= 1
-    
-    # Temp fix for the branch "refactor-position-and-introduce-instances"
     if thing.floorchange == "north":
-        #creature.move(NORTH, level=-1)
-        pos.y -= 1
+        creature.move(NORTH, level=-1)
         
     elif thing.floorchange == "south":
-        #creature.move(SOUTH, level=-1)
-        pos.y += 1
+        creature.move(SOUTH, level=-1)
         
     elif thing.floorchange == "east":
-        #creature.move(EAST, level=-1)
-        pos.x -= 1
+        creature.move(EAST, level=-1)
         
     elif thing.floorchange == "west":
-        #creature.move(WEST, level=-1)
-        pos.x += 1
-    """else:    
-        # Grab the position of the player/creature and modify the floor  
-        pos = creature.position.copy()
-        pos.z -= 1"""
-    creature.teleport(pos)
+        creature.move(WEST, level=-1)
 
 def teleportOrWalkDirectionDown(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return
-        
-    # Grab the position of the player/creature    
-    pos = creature.position.copy()
-    pos.z += 1
     
     # Change the position to match the floorchange. Based on the bottom item if any.
     destTile = pos.getTile()
@@ -148,25 +130,18 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
         # Note: It's the reverse direction
         # Temp fix for the branch "refactor-position-and-introduce-instances"
         if destThing.floorchange == "north":
-            #creature.move(SOUTH, level=1)
-            pos.y += 1
+            creature.move(SOUTH, level=1)
             
         elif destThing.floorchange == "south":
-            #creature.move(NORTH, level=1)
-            pos.y -= 1
+            creature.move(NORTH, level=1)
             
         elif destThing.floorchange == "west":
-            #creature.move(EAST, level=1)
-            pos.x += 1
+            creature.move(EAST, level=1)
             
         elif destThing.floorchange == "east":
-            #creature.move(WEST, level=1)
-            pos.x -= 1
+            creature.move(WEST, level=1)
             
-        #else:
-        creature.teleport(pos)
     except:
-        raise
         pass
 
 def vertifyRampWalk(creature, **k):
