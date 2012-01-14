@@ -95,8 +95,11 @@ def testContainer(creature, thing, position, index):
         # Opened from ground, close it on next step :)
         if position.x != 0xFFFF:
             def _vertifyClose(who):
-                if thing.opened and not who.inRange(position, 1, 1):
-                    who.closeContainer(thing)
+                if thing.opened:
+                    if not who.inRange(position, 1, 1):
+                        who.closeContainer(thing)
+                    else:
+                        creature.scripts["onNextStep"].append(_vertifyClose)
                     
             creature.scripts["onNextStep"].append(_vertifyClose)
     else:
