@@ -107,23 +107,30 @@ def teleportOrWalkDirection(creature, thing, position, **k):
         return
 
     # Change the position to match the floorchange.
+    pos = creature.position.copy()
+    pos.z -= 1
+    
+    # Temp fix for the branch "refactor-position-and-introduce-instances"
     if thing.floorchange == "north":
-        creature.move(NORTH, level=-1)
+        #creature.move(NORTH, level=-1)
+        pos.y -= 1
         
     elif thing.floorchange == "south":
-        creature.move(SOUTH, level=-1)
+        #creature.move(SOUTH, level=-1)
+        pos.y += 1
         
     elif thing.floorchange == "east":
-        creature.move(EAST, level=-1)
+        #creature.move(EAST, level=-1)
+        pos.x -= 1
         
     elif thing.floorchange == "west":
-        creature.move(WEST, level=-1)
-        
-    else:    
+        #creature.move(WEST, level=-1)
+        pos.x += 1
+    """else:    
         # Grab the position of the player/creature and modify the floor  
         pos = creature.position.copy()
-        pos.z -= 1
-        creature.teleport(pos)
+        pos.z -= 1"""
+    creature.teleport(pos)
 
 def teleportOrWalkDirectionDown(creature, thing, position, **k):
     # Check if we can do this
@@ -161,7 +168,12 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
     except:
         raise
         pass
-    
+
+def vertifyRampWalk(creature, **k):
+    # Check if we can walk on ramps
+    if not config.monsterStairHops and not creature.isPlayer():
+        return False
+        
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
 reg("walkOn", stairs, floorchange)
@@ -170,6 +182,7 @@ reg('useWith', stairs, itemFloorChange)
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398
 rampsDown = 459,
+reg("preWalkOn", (1390, 1389, 1388, 1391, 1394, 1393, 1392, 1396, 1385, 1397, 1398), vertifyRampWalk)
 reg("walkOn", ramps, teleportOrWalkDirection)
 reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
 
