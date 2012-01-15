@@ -1116,6 +1116,13 @@ class Player(Creature):
                 del self.openContainers[index]
                 if index == self.lastOpenContainerId-1:
                     self.lastOpenContainerId -= 1
+                    if self.lastOpenContainerId:
+                        for i in xrange(self.lastOpenContainerId-2, -1, -1):
+                            try:
+                                self.openContainers[i]
+                                break
+                            except:
+                                self.lastOpenContainerId -= 1
                     
                 container.opened = False
                 stream.send(self.client)
@@ -1139,6 +1146,13 @@ class Player(Creature):
                 del self.openContainers[openId]
                 if openId == self.lastOpenContainerId-1:
                     self.lastOpenContainerId -= 1
+                    if self.lastOpenContainerId:
+                        for i in xrange(self.lastOpenContainerId-2, -1, -1):
+                            try:
+                                self.openContainers[i]
+                                break
+                            except:
+                                self.lastOpenContainerId -= 1
                 container.opened = False
                 stream.send(self.client)
             
