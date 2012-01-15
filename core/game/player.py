@@ -38,7 +38,8 @@ class Player(Creature):
         self.gender = 0
         self.base = anyPlayer
         self.knownCreatures = set()
-        self.openContainers = []
+        self.openContainers = {}
+        self.lastOpenContainerId = 0
         self.doingSoulGain = False
         self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
         self.targetChecker = None
@@ -1024,18 +1025,34 @@ class Player(Creature):
         
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
-            self.openContainers[self.openContainers.index(container.parent)] = container # Replace it in structure
+            # Replace it in structure
+            for i in self.openContainers.items():
+                if i[1] == container:
+                    self.openContainers[i[0]] = container 
+                    break
+
         self.openContainer(container, parent, update)
 
     def updateAllContainers(self):
-        for container in self.openContainers:
+        stream = self.packet(0x6E)
+        for i in self.openContainers.items():
             parent = False
             try:
-                parent = bool(container.parent)
+                parent = bool(i[1].parent)
             except:
                 pass
-            self.openContainer(container, parent=parent, update=True)
-        stream = self.packet()
+            stream.uint8(i[0])
+            
+            stream.uint16(i[1].cid)
+            stream.string(i[1].rawName())
+            
+            stream.uint8(i[1].containerSize)
+            stream.uint8(parent)
+            stream.uint8(len(i[1].container.items))
+            
+            for item in i[1].container.items:
+                stream.item(item)
+                
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
@@ -1048,14 +1065,25 @@ class Player(Creature):
         stream.send(self.client)
         
     def openContainer(self, container, parent=False, update=False):
-        if update or not container in self.openContainers:
+        containerId = None
+        
+        if update or not container in self.openContainers.values():
             stream = self.packet(0x6E)
             
             if not update:
+                containerId = self.lastOpenContainerId
+                self.lastOpenContainerId += 1
                 container.opened = True
-                self.openContainers.append(container)
-            
-            stream.uint8(self.openContainers.index(container))
+                self.openContainers[containerId] = container
+            else:
+                for i in self.openContainers.items():
+                    if i[1] == container:
+                        containerId = i[0]
+                        break
+                if containerId == None:
+                    return False
+                    
+            stream.uint8(containerId)
             
             stream.uint16(container.cid)
             stream.string(container.rawName())
@@ -1069,17 +1097,30 @@ class Player(Creature):
                 
             stream.send(self.client)
             
-    def closeContainer(self, container):
-        index = self.openContainers.index(container)
+            return True
             
+    def closeContainer(self, container):
+        index = None
+        for i in self.openContainers.items():
+            if i[1] == container:
+                index = i[0]
+                break
+                
+        if index == None:
+            return False
+               
         def end():
             try:
                 stream = self.packet(0x6F)
                 stream.uint8(index)
-                self.openContainers.remove(container)
+                del self.openContainers[index]
+                if index == self.lastOpenContainerId-1:
+                    self.lastOpenContainerId -= 1
+                    
                 container.opened = False
                 stream.send(self.client)
             except:
+                raise
                 pass
         
         #def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
@@ -1088,6 +1129,7 @@ class Player(Creature):
 
 
     def closeContainerId(self, openId):
+        print "ID = ", openId
         try:
             container = self.openContainers[openId]
             
@@ -1095,6 +1137,8 @@ class Player(Creature):
                 stream = self.packet(0x6F)
                 stream.uint8(openId)
                 del self.openContainers[openId]
+                if openId == self.lastOpenContainerId-1:
+                    self.lastOpenContainerId -= 1
                 container.opened = False
                 stream.send(self.client)
             
