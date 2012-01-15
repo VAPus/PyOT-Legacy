@@ -124,11 +124,13 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
         return
     
     # Change the position to match the floorchange. Based on the bottom item if any.
+    pos = position.copy()
+    pos.z += 1
     destTile = pos.getTile()
     try:
         destThing = destTile.getThing(1)
+        
         # Note: It's the reverse direction
-        # Temp fix for the branch "refactor-position-and-introduce-instances"
         if destThing.floorchange == "north":
             creature.move(SOUTH, level=1)
             
@@ -142,6 +144,7 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
             creature.move(WEST, level=1)
             
     except:
+        raise
         pass
 
 def vertifyRampWalk(creature, **k):
