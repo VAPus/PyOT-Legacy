@@ -242,9 +242,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     stream = x.packet()
                     stream.vipLogout(self.player.data["id"])
                     stream.send(x.client)
-            removeCreature(self.player, self.player.position)
+            
             game.scriptsystem.get("logout").run(self.player)
-
+            self.player.despawn()
+            
     def packet(self, *args):
         return self.protocol.Packet(*args)
 

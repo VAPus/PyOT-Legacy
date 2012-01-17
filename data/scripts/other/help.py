@@ -45,6 +45,9 @@ def tilerE(creature, text):
     
 def mypos(creature, text):
     creature.message("Your position is: "+str(creature.position))
+    print creature.position.getTile()
+    if isinstance(creature.position.getTile(), game.map.HouseTile):
+        print creature.position.getTile().houseId
     print str(creature.position) # Print to console to be sure
 reg("talkaction", "help", callback)
 reg("talkactionFirstWord", 'rep', repeater)
