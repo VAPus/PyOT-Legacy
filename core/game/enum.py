@@ -482,13 +482,13 @@ AREA_WAVE4 = TARGET_DIRECTION, (0,), \
 (-2, -1, 0, 1, 2)
 
 AREA_WAVE5 = TARGET_DIRECTION, (0,), \
-(0), \
+(0,), \
 (-1, 0, 1), \
 (-1, 0, 1), \
 (-1, 0, 1)
 
 AREA_WAVE7 = TARGET_DIRECTION, (0,), \
-(0), \
+(0,), \
 (-1, 0, 1), \
 (-1, 0, 1), \
 (-1, 0, 1), \
@@ -496,7 +496,7 @@ AREA_WAVE7 = TARGET_DIRECTION, (0,), \
 (-2, -1, 0, 1, 2)
 
 AREA_WAVE8 = TARGET_DIRECTION, (0,), \
-(0), \
+(0,), \
 (-1, 0, 1), \
 (-1, 0, 1), \
 (-1, 0, 1), \
@@ -536,9 +536,9 @@ AREA_WALL = TARGET_DIRECTION, (-2, -1, 1, 2)
 
 #may be incorrect
 AREA_DIAGONALWALL = TARGET_DIRECTION, (-2, -1), \
-(-1), \
+(-1,), \
 (-1, 0, 1), \
-(1), \
+(1,), \
 (1, 2)
 
 AREA_UE5X5 = TARGET_CASTER_AREA, (0, -5), \
