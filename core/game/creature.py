@@ -392,9 +392,10 @@ class Creature(object):
             stream.send(spectator.client) 
 
         if self.scripts["onNextStep"]:
-            for script in self.scripts["onNextStep"][:]:
+            scripts = self.scripts["onNextStep"][:]
+            self.scripts["onNextStep"] = []
+            for script in scripts:
                 script(self)
-                self.scripts["onNextStep"].remove(script)
             
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
@@ -1319,7 +1320,7 @@ class Condition(object):
             self.creature.modifyHealth(gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
-        if not gainhp:
+        if not gainmana:
             gainmana = self.creature.getVocation().mana
             self.creature.modifyMana(gainmana[0])
             

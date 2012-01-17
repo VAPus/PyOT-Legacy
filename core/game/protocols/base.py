@@ -878,7 +878,7 @@ class BaseProtocol(object):
                             
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                         stream.addTileItem(toPosition, toStackPos, newItem)
-                        if not renew and newItem.containerSize and newItem.opened:
+                        if not renew and newItem.containerSize and newItem.opened and not player.inRange(toPosition, 1, 1):
                             player.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:
@@ -1071,6 +1071,7 @@ class BaseProtocol(object):
         else:
             player.outfitWindow()
             
+    @inlineCallbacks        
     def handleUse(self, player, packet):
         position = packet.position(player.position.instanceId)
 
@@ -1079,14 +1080,35 @@ class BaseProtocol(object):
         index = packet.uint8()
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
-
+        end = None
+        
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
-            end = None
-            if position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1):
-                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
-            game.scriptsystem.get('farUse').run(thing, player, end, position=stackPosition, index=index)
-            
+            if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
+                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
 
+                # No walk pattern means impossible move.
+                if not walkPattern:
+                    player.notPossible()
+                    return
+
+                # Some half sync yield -> sleep walking
+                def sleep(seconds):
+                    d = Deferred()
+                    reactor.callLater(seconds, d.callback, seconds)
+                    return d
+                    
+                walking = [True]
+                scount = 0
+                player.walkPattern = deque(walkPattern)
+                game.engine.autoWalkCreature(player, lambda x: walking.pop())
+                while walking and scount < 20:
+                    yield sleep(0.5)
+                    scount += 1
+            
+            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+                game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+            
+    @inlineCallbacks
     def handleUseWith(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
@@ -1105,14 +1127,33 @@ class BaseProtocol(object):
             onThing = game.map.getTile(onPosition).creatures()[0]
         
         
-        
+        end2 = None
         if thing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
-            if (position.x == 0xFFFF or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (onPosition.x == 0xFFFF or (abs(onPosition.x - player.position.x) <= 1 and abs(onPosition.y - player.position.y) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
-                
-            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+            if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
+                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+
+                # No walk pattern means impossible move.
+                if not walkPattern:
+                    player.notPossible()
+                    return
+
+                # Some half sync yield -> sleep walking
+                def sleep(seconds):
+                    d = Deferred()
+                    reactor.callLater(seconds, d.callback, seconds)
+                    return d
+                    
+                walking = [True]
+                scount = 0
+                player.walkPattern = deque(walkPattern)
+                game.engine.autoWalkCreature(player, lambda x: walking.pop())
+                while walking and scount < 20:
+                    yield sleep(0.5)
+                    scount += 1
+
+            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+                end = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):
