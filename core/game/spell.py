@@ -111,7 +111,7 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         if not target: return
         
         if strength:
-            dmg = random.randint(strength[0], strength[1])
+            dmg = -random.randint(strength[0], strength[1])
         else:
             maxDmg = (round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax))
             minDmg = (round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin))
@@ -388,7 +388,7 @@ class Spell(object):
                     return
                 elif self.targetType == TARGET_TARGETONLY:
                     return creature.cancelMessage("You need a target to cast this spell.")	
-                
+ 
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
                     creature.cancelMessage("Target is too far away")
