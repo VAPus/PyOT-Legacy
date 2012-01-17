@@ -34,9 +34,9 @@ letGameServerRunTheLoginServer = True
 
 # Versions:
 versionMin = 860
-versionMax = 943
-versionError = "You must use 8.6-9.42"
-supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943) # We support these main branches + compatible protocols to them
+versionMax = 944
+versionError = "You must use 8.6-9.44"
+supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"
