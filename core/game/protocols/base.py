@@ -1105,9 +1105,8 @@ class BaseProtocol(object):
                     yield sleep(0.5)
                     scount += 1
             
-            if player.inRange(position, 1, 1):
-                end = lambda: game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
-            game.scriptsystem.get('farUse').run(thing, player, end, position=stackPosition, index=index)
+            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+                game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
             
     @inlineCallbacks
     def handleUseWith(self, player, packet):
@@ -1152,12 +1151,9 @@ class BaseProtocol(object):
                     yield sleep(0.5)
                     scount += 1
 
-            if player.inRange(position, 1, 1):
-                end3 = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
-                
-            end = lambda: game.scriptsystem.get('farUseWith').run(onThing, player, end2, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+                end = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):

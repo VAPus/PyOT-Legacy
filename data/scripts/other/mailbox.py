@@ -9,7 +9,7 @@ def parseText(text):
 
 # When we're working with IO blocking behavior such as SQL (which might be needed in case of placeInDepot) we are required to use callbacks to deal with result)
 @inlineCallbacks        
-def onSend(creature, position, thing, onId, onThing, **k):
+def onSendParcelOrLetter(creature, position, thing, onId, onThing, **k):
     # Is it a letter perhaps?
     if onId == ITEM_LETTER:
         if not onThing.text:
@@ -55,4 +55,4 @@ def onSend(creature, position, thing, onId, onThing, **k):
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
             
-reg('useWith', mailboxes, onSend)
+reg('useWith', mailboxes, onSendParcelOrLetter)

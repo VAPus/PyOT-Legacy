@@ -82,7 +82,8 @@ def testContainer(creature, thing, position, index):
             # Update the container
             creature.updateContainer(thing, parent=1)
             open = False
-        
+            ok = True
+            
         if open:
             # Open a new one
             parent = 0
@@ -90,15 +91,21 @@ def testContainer(creature, thing, position, index):
             if position.x == 0xFFFF and position.y >= 64:
                 parent = 1
                 thing.parent = creature.openContainers[position.z-64]
-            creature.openContainer(thing, parent=parent)
+            ok = creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
-        if position.x != 0xFFFF:
+        if ok and position.x != 0xFFFF:
             def _vertifyClose(who):
-                if thing.opened and not who.inRange(position, 1, 1):
-                    who.closeContainer(thing)
+                print "Opened?", thing.opened
+                print thing
+                print "===="
+                if thing.opened:
+                    if not who.inRange(position, 1, 1):
+                        who.closeContainer(thing)
+                    else:
+                        who.scripts["onNextStep"].append(_vertifyClose)
                     
-            creature.scripts["onNextStep"].append(_vertifyClose)
+            creature.scripts["onNextStep"].insert(0, _vertifyClose)
     else:
         creature.closeContainer(thing)
 _script_ = game.scriptsystem.get("use")
