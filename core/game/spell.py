@@ -610,8 +610,8 @@ class Rune(Spell):
                     caster.magicEffect(self._targetEffect, onPosition)
                     
         if config.runeCastDelay:
-            def castDelay(**k):
-                game.engine.safeCallLater(config.runeCastDelay, runeCallback, **k)
+            def castDelay(*a, **k):
+                game.engine.safeCallLater(config.runeCastDelay, runeCallback, *a, **k)
                 
             return castDelay
             

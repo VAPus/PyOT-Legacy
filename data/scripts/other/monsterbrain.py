@@ -38,7 +38,7 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.target = None
                         monster.targetMode = 0
                         return
-                        
+
                     # Are we OK?
                     if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                         monster.turnAgainst(monster.target.position)
