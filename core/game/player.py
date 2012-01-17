@@ -408,10 +408,8 @@ class Player(Creature):
 
             elif items[0][0] == 2:
                 items[0][2].container.removeItem(items[0][1])
-                try:
-                    stream.removeContainerItem(self.openContainers.index(items[0][2]), items[0][3])
-                except:
-                    pass
+                if items.openIndex != None:
+                    stream.removeContainerItem(items[0][2].openIndex, items[0][3])
             
             # Update cached data
             if self.removeCache(items[0][1]):
@@ -431,11 +429,8 @@ class Player(Creature):
                 if item[1].count:
                     if item[0] == 1:
                         stream.addInventoryItem(item[2]+1, item[1])
-                    elif item[0] == 2:
-                        try:
-                            stream.updateContainerItem(self.openContainers.index(item[2]), item[3], item[1])
-                        except:
-                            pass
+                    elif item[0] == 2 and item[2].openIndex != None:
+                        stream.updateContainerItem(item[2].openIndex, item[3], item[1])
 
                     # Update cached data
                     if self.removeCache(item[1]) and not sendUpdate:
@@ -447,7 +442,7 @@ class Player(Creature):
                         stream.removeInventoryItem(item[2]+1)
                     elif item[0] == 2:
                         item[2].container.removeItem(item[1])
-                        stream.removeContainerItem(self.openContainers.index(item[2]), item[3])
+                        stream.removeContainerItem(item[2].openIndex, item[3])
                         
                     # Update cached data
                     if self.removeCache(item[1]) and not sendUpdate:
@@ -1073,7 +1068,7 @@ class Player(Creature):
             if not update:
                 containerId = self.lastOpenContainerId
                 self.lastOpenContainerId += 1
-                container.opened = True
+                container.openIndex = containerId
                 self.openContainers[containerId] = container
             else:
                 for i in self.openContainers.items():
@@ -1100,21 +1095,15 @@ class Player(Creature):
             return True
             
     def closeContainer(self, container):
-        index = None
-        for i in self.openContainers.items():
-            if i[1] == container:
-                index = i[0]
-                break
-                
-        if index == None:
+        if container.openIndex == None:
             return False
                
         def end():
             try:
                 stream = self.packet(0x6F)
-                stream.uint8(index)
-                del self.openContainers[index]
-                if index == self.lastOpenContainerId-1:
+                stream.uint8(container.openIndex)
+                del self.openContainers[container.openIndex]
+                if container.openIndex == self.lastOpenContainerId-1:
                     self.lastOpenContainerId -= 1
                     if self.lastOpenContainerId:
                         for i in xrange(self.lastOpenContainerId-2, -1, -1):
@@ -1124,7 +1113,7 @@ class Player(Creature):
                             except:
                                 self.lastOpenContainerId -= 1
                     
-                container.opened = False
+                del container.openIndex
                 stream.send(self.client)
             except:
                 raise
@@ -1132,7 +1121,7 @@ class Player(Creature):
         
         #def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
         
-        game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=index)
+        game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=container.openIndex)
 
 
     def closeContainerId(self, openId):
@@ -1153,7 +1142,7 @@ class Player(Creature):
                                 break
                             except:
                                 self.lastOpenContainerId -= 1
-                container.opened = False
+                del container.openIndex
                 stream.send(self.client)
             
             game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=openId)
@@ -1166,8 +1155,8 @@ class Player(Creature):
         bagFound = self.openContainers[openId]
                 
         if bagFound.parent:
-            bagFound.parent.opened = True
-            bagFound.opened = False
+            bagFound.parent.openIndex = openId
+            del bagFound.openIndex
             self.openContainers[openId] = bagFound.parent
             
             def end():
@@ -1243,8 +1232,8 @@ class Player(Creature):
 
                         
                         # Is it a open container, if so, send item update
-                        if bag in self.openContainers:
-                            stream.updateContainerItem(self.openContainers.index(bag), slot, itemX)
+                        if bag.openIndex != None:
+                            stream.updateContainerItem(bag.openIndex, slot, itemX)
                         
 
                             
@@ -1281,11 +1270,11 @@ class Player(Creature):
             if info == None:
                 return False # Not possible
                 
-            if recursive and info and info.opened:
-                stream.addContainerItem(self.openContainers.index(info), item)
+            if recursive and info and info.openIndex != None:
+                stream.addContainerItem(info.openIndex, item)
                     
-            elif container.opened:
-                stream.addContainerItem(self.openContainers.index(container), item)
+            elif container.openIndex != None:
+                stream.addContainerItem(container.openIndex, item)
             
             if update:
                 self.addCache(item, container)

@@ -823,7 +823,7 @@ class BaseProtocol(object):
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition.y, oldItem[1])
                         elif oldItem[0] == 2:
-                            stream.updateContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z, oldItem[1])
+                            stream.updateContainerItem(oldItem[2].openIndex, fromPosition.z, oldItem[1])
                             
                     else:
                         if oldItem[0] == 1:
@@ -831,7 +831,7 @@ class BaseProtocol(object):
                             stream.removeInventoryItem(fromPosition.y)
                         elif oldItem[0] == 2:
                             oldItem[2].container.removeItem(oldItem[1])
-                            stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z)
+                            stream.removeContainerItem(oldItem[2].openIndex, fromPosition.z)
 
                 else:
                     if player.removeCache(oldItem[1]):
@@ -843,7 +843,7 @@ class BaseProtocol(object):
                         stream.removeInventoryItem(fromPosition.y)
                     elif oldItem[0] == 2:
                         oldItem[2].container.removeItem(oldItem[1])
-                        stream.removeContainerItem(player.openContainers.index(oldItem[2]), fromPosition.z)
+                        stream.removeContainerItem(oldItem[2].openIndex, fromPosition.z)
                 
                 if toPosition.y == fromPosition.y:
                     stack = False
@@ -878,7 +878,7 @@ class BaseProtocol(object):
                             
                         toStackPos = game.map.getTile(toPosition).placeItem(newItem)
                         stream.addTileItem(toPosition, toStackPos, newItem)
-                        if not renew and newItem.containerSize and newItem.opened and not player.inRange(toPosition, 1, 1):
+                        if not renew and newItem.containerSize and newItem.openIndex != None and not player.inRange(toPosition, 1, 1):
                             player.closeContainer(newItem)
                 stream.sendto(game.engine.getSpectators(toPosition))
             else:

@@ -73,10 +73,10 @@ def testContainer(creature, thing, position, index):
             
         if bagFound:
             # Virtual close
-            creature.openContainers[index].opened = False
+            del creature.openContainers[index].openIndex
                 
             # Virtual switch
-            thing.opened = True
+            thing.openIndex = index
             thing.parent = creature.openContainers[index]
                 
             # Update the container
@@ -96,9 +96,6 @@ def testContainer(creature, thing, position, index):
         # Opened from ground, close it on next step :)
         if ok and position.x != 0xFFFF:
             def _vertifyClose(who):
-                print "Opened?", thing.opened
-                print thing
-                print "===="
                 if thing.opened:
                     if not who.inRange(position, 1, 1):
                         who.closeContainer(thing)

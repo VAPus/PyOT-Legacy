@@ -303,7 +303,7 @@ class Item(object):
                 pass
             
             try:
-                del params["opened"]
+                del params["openIndex"]
             except:
                 pass
 
