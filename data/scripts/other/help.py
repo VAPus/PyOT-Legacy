@@ -68,8 +68,7 @@ reg("talkactionFirstWord", 'speed', speedsetter)
 def testContainer(creature, thing, position, index):
     if thing.owners and creature not in thing.owners: # Prevent people to open owned things
         return
-        
-    if not thing.opened:
+    if thing.openIndex == None:
         # Open a bag inside a bag?
         open = True
         bagFound = creature.getContainer(index)    
@@ -99,7 +98,7 @@ def testContainer(creature, thing, position, index):
         # Opened from ground, close it on next step :)
         if ok and position.x != 0xFFFF:
             def _vertifyClose(who):
-                if thing.opened:
+                if thing.openIndex != None:
                     if not who.inRange(position, 1, 1):
                         who.closeContainer(thing)
                     else:

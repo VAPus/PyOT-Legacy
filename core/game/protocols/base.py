@@ -757,6 +757,10 @@ class BaseProtocol(object):
                     player.notPickable()
                     return
                     
+                elif oldItem[1].openIndex != None and oldItem[1].openIndex == toPosition.y-64: # Moving into self
+                    player.notPossible()
+                    return 
+                    
                 if oldItem[1].stackable and count < 100:
                     renew = True
                     oldItem[1].count -= count
@@ -800,7 +804,13 @@ class BaseProtocol(object):
                     player.message("Your trading this item.")
                     return
                     
+                elif oldItem[1].openIndex != None and oldItem[1].openIndex == toPosition.y-64: # Moving into self
+                    player.notPossible()
+                    return    
+                        
                 elif currItem and currItem[1] and toPosition.x == 0xFFFF and toPosition.y >= 64 and currItem[1].containerSize:
+                    
+                        
                     container = currItem[1].inContainer
                     if container:
                         if container == oldItem[1]:
