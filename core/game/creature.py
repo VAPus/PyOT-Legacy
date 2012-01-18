@@ -1403,3 +1403,14 @@ class Boost(Condition):
                 
             pid += 1
                 
+def MultiCondition(type, subtype="", *argc):
+    conditions = []
+    for x in argc:
+        conditions.append(Condition(type, subtype, **x))
+        
+    for index in len(conditions):
+        if index != len(conditions)-1:
+            conditions[index].callback = lambda self: self.creature.condition(conditions[index+1])
+    
+    return conditions[0]
+    
