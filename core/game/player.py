@@ -134,6 +134,7 @@ class Player(Creature):
         self.saveDepot = False
         self.saveSkills = False
         self.saveData = False
+        self.saveCondition = False
         self.doSave = True
         
     def generateClientID(self):
@@ -1638,6 +1639,7 @@ class Player(Creature):
         storage = ""
         skills = ""
         inventory = ""
+        condition = ""
         
         if self.saveDepot or force:
             depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'")
@@ -1654,8 +1656,12 @@ class Player(Creature):
         if self.saveInventory or force:
             inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'")
             self.saveInventory = False
+        
+        if self.saveCondition or force:
+            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions).replace("'", "\\'")
+            self.saveCondition = False
             
-        extra = "%s%s%s%s" % (depot, storage, skills, inventory)
+        extra = "%s%s%s%s%s" % (depot, storage, skills, inventory, condition)
 
         if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
             return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s"), (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])

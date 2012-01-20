@@ -1286,6 +1286,9 @@ class Condition(object):
                 
     def start(self, creature):
         self.creature = creature
+        if self.creature.isPlayer():
+            self.saveCondition = True
+            
         self.init()
         self.tick()
         
@@ -1304,6 +1307,8 @@ class Condition(object):
     
     def finish(self):
         del self.creature.conditions[self.type]
+        if self.creature.isPlayer():
+            self.saveCondition = True
         self.creature.refreshConditions()
         self.callback()
 
