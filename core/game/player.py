@@ -128,6 +128,11 @@ class Player(Creature):
             
         #del self.data["storage"]
         
+        if self.data["conditions"]:
+            self.conditions = pickle.loads(self.data["conditions"])
+            for x in self.conditions:
+                self.conditions[x].start(self)
+            
         # Storage states
         self.saveStorage = False
         self.saveInventory = False

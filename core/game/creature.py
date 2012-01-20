@@ -1337,6 +1337,9 @@ class Condition(object):
             self.creature.modifyMana(gainmana)
                     
     def tick(self):
+        if not self.creature:
+            return
+            
         self.effect(*self.effectArgs, **self.effectKwargs)
         self.length -= self.every
         if self.length > 0:
@@ -1346,6 +1349,11 @@ class Condition(object):
             
     def copy(self):
         return copy.deepcopy(self)
+        
+    def __getattr__(self):
+        d = self.__dict__.copy()
+        d.creature = None
+        return d
 
 class Boost(Condition):
     def __init__(self, type, mod, length, subtype="", percent=False, *argc, **kwargs):
