@@ -280,11 +280,17 @@ class Spell(object):
         self._targetEffect = target
         self.areaEffect = area
         
+        return self
+        
     def area(self, area):
         self.targetArea = area
+        
+        return self
     
     def range(self, distance):
         self.targetRange = distance
+        
+        return self
         
     def casterEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
@@ -301,6 +307,8 @@ class Spell(object):
             
         if callback:
             self.effectOnCaster.append(callback)
+            
+        return self
             
     def targetEffect(self, mana=0, health=0, soul=0, callback=None):
         if mana or health:
@@ -320,7 +328,9 @@ class Spell(object):
             
         if callback:
             self.effectOnTarget.append(callback)
-            
+        
+        return self
+        
     def casterCondition(self, *argc, **kwargs):
         try:
             stack = kwargs['stackbehavior']
@@ -330,6 +340,8 @@ class Spell(object):
         for con in argc:
             self.conditionOnCaster.append((con, stack))
 
+        return self
+        
     def targetCondition(self, *argc, **kwargs):
         try:
             stack = kwargs['stackbehavior']
@@ -339,19 +351,29 @@ class Spell(object):
         for con in argc:
             self.conditionOnTarget.append((con, stack))
    
+        return self
+        
     def require(self, learned=False, vocations=None, **kwargs):
         self._requireGreater = kwargs
         self.vocations = vocations
         self.learned = learned
+        
+        return self
    
     def requireLess(self, **kwargs):
         self._requireLess = kwargs
+        
+        return self
 
     def requireCallback(self, *args):
         self._requireCallback.extend(args)
+        
+        return self
 
     def element(self, type):
         self.effectOnTarget.append(element(type))
+        
+        return self
         
     def use(self, itemId=2260, count=1):
         def check(caster):
@@ -365,6 +387,8 @@ class Spell(object):
             return True
             
         self._requireCallback.append(check)
+        
+        return self
     
     def cooldowns(self, cooldown=0, groupCooldown=None):
         if cooldown and groupCooldown == None:
@@ -372,6 +396,8 @@ class Spell(object):
            
         self.cooldown = cooldown
         self.groupCooldown = groupCooldown
+        
+        return self
        
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
