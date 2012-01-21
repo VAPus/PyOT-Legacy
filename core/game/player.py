@@ -2176,7 +2176,7 @@ class Player(Creature):
         
         self.removeMe = True
         
-        self.remove(False)
+        #self.remove(False)
         
     # Cleanup the knownCreatures
     def removeKnown(self, creature):
