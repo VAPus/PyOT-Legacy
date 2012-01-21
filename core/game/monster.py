@@ -14,8 +14,11 @@ monsters = {}
 brainFeatures = ({},{})
 
 def chance(procent):
-    def gen(monster):
-        if random.randint(0, 100) < procent:
+    if procent == 100: return (lambda creature: True)
+    elif procent == 0: return (lambda creature: False)
+    
+    def gen(creature):
+        if random.randint(0, 99) < procent:
             return True
         else:
             return False
