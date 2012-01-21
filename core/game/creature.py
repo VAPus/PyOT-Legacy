@@ -285,6 +285,9 @@ class Creature(object):
         
         for thing in newTile.things:
             if thing.solid:
+                if level and isinstance(thing, Creature):
+                    continue
+                
                 #self.turn(direction) # Fix me?
                 self.notPossible()
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
