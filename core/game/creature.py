@@ -1260,11 +1260,13 @@ class Creature(object):
         self.canWalk = not self.canWalk
         
 class Condition(object):
-    def __init__(self, type, subtype="", length=1, every=1, *argc, **kwargs):
+    def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
         self.every = every
         self.creature = None
         self.tickEvent = None
+        self.check = check
+        
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
         else:
@@ -1341,8 +1343,15 @@ class Condition(object):
             return
             
         self.effect(*self.effectArgs, **self.effectKwargs)
-        self.length -= self.every
-        if self.length > 0:
+        self.length -= self.every # This "can" become negative!
+        
+        if self.check: # This is what we do if we got a check function, independantly of the length
+            if self.check(self.creature):
+                self.tickEvent = engine.safeCallLater(self.every, self.tick)
+            else:
+                self.finish()
+                
+        elif self.length > 0:
             self.tickEvent = engine.safeCallLater(self.every, self.tick)
         else:
             self.finish()
