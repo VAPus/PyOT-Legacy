@@ -70,6 +70,7 @@ def defaultBrainFeaturePriority(self, monster):
                             try:
                                 creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
                                 creature.setMaster(monster)
+                                creature.setRespawn(False)
                                 monster.activeSummons.append(creature)
                             except:
                                 print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])
@@ -201,7 +202,7 @@ def defaultBrainFeature(self, monster):
                 monster.master = None # I've become independant
             elif monster.master.target and monster.master.targetMode == 1:
                 # Target change
-                if monster.master.target != monster.target:
+                if monster.master.target != monster.target and monster.master.target != monster:
                     monster.target = monster.master.target
                     monster.targetMode = 1
                     # Call the scripts
