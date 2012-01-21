@@ -44,7 +44,6 @@ class Monster(Creature):
         self.noBrain = True
         self.spawnTime = None
         self.radius = 5
-        self.activeSummons = []
         self.master = None
         self.respawn = True
         self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.

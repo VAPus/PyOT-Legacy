@@ -87,6 +87,7 @@ class Creature(object):
         self.knownBy = set()
         self.conditions = {}
         self.walkPattern = None
+        self.activeSummons = []
         
         # Options
         self.canMove = True
