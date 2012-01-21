@@ -208,8 +208,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     print op
                     if op == "CALL" and isAuthorized:
                         print "do this"
-                        result = game.engine.executeCode(packet.string())
-
+                        result = yield game.engine.executeCode(packet.string())
+                        
                         t.string(result)
                     elif op == "AUTH":
                         print "auth"

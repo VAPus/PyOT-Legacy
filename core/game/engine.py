@@ -990,14 +990,27 @@ class ReturnValueExit(Exception):
         
 def Return(ret):
     raise ReturnValueExit(ret)
-def _evalCode(code):
-    try:
-        exec(code)
-    except ReturnValueExit, e:
-        return e.value
-        
-    
+     
+@inlineCallbacks
 def executeCode(code):
-    e = _evalCode(code)
-    return otjson.dumps(e)
+    try:
+        if "yield " in code:
+            newcode = []
+            for p in code.split("\n"):
+                newcode.append("    " + p)
+                
+                
+            exec("""
+@inlineCallbacks
+def _():
+%s
+""" % '\n'.join(newcode))
+            returnValue(otjson.dumps((yield _())))
+        else:
+            exec(code)
+    except ReturnValueExit, e:
+        e = e.value
+    else:
+        yield defer.maybeDeferred()
+    returnValue(otjson.dumps(e))
     
