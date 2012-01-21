@@ -209,8 +209,11 @@ class Monster(Creature):
             self.position = self.spawnPosition
             self.target = None
             self.targetMode = 0
-            if self.spawnTime:
-                engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+            if self.spawnTime != 0:
+                if self.spawnTime:
+                    engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+                else:
+                    return
             else:
                 engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
             
