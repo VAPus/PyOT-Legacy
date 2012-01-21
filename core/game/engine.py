@@ -141,6 +141,9 @@ def loader(timer):
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     
+    # Used alot in monster and npcs
+    __builtin__.chance = game.monster.chance
+    
     # We use this in the import system
     __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
     
