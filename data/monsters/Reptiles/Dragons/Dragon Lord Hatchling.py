@@ -19,5 +19,5 @@ dragon_lord_hatchling.regMelee(90)
 dragon_lord_hatchling.regTargetSpell(2305, 55, 105, check=game.monster.chance(20)) #firebomb
 dragon_lord_hatchling.regTargetSpell("drag fwave", 90, 125, check=game.monster.chance(20))
 dragon_lord_hatchling.regTargetSpell(2304, 100, 200, check=game.monster.chance(20)) #gfb
-dragon_lord_hatchling.regTargetSpell("Light Heaing", 25, 55, check=game.monster.chance(18))
+dragon_lord_hatchling.regSelfSpell("Light Healing", 25, 55, check=game.monster.chance(18))
 #shoot fireball too?
