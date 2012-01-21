@@ -323,8 +323,7 @@ class MonsterBase(CreatureBase):
                     log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                     return
                 
-            if spawnTime:
-                monster.spawnTime = spawnTime
+            monster.spawnTime = spawnTime
             monster.radius = radius
             
             if radius <= 1:
