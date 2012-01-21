@@ -1384,8 +1384,8 @@ class Boost(Condition):
         self.percent = percent
     
     def add(self, type, mod):
-        self.type.append(type)
-        self.type.append(mod)
+        self.ptype.append(type)
+        self.mod.append(mod)
         return self
         
     def tick(self): pass
@@ -1400,7 +1400,7 @@ class Boost(Condition):
                 pvalue += self.mod[pid]
                 
             # Hack
-            if self.ptype == "speed":
+            if ptype == "speed":
                 self.type = game.enum.CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
             else:
@@ -1422,7 +1422,7 @@ class Boost(Condition):
                 pvalue -= self.mod[pid]
                 
             # Hack
-            if self.ptype == "speed":
+            if ptype == "speed":
                 self.creature.setSpeed(pvalue)
             else:
                 setattr(self.creature, ptype, pvalue)
