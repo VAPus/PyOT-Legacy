@@ -570,6 +570,10 @@ class Creature(object):
         return dmg
         
     def onHit(self, by, dmg, type, effect=None):
+        if not self.alive:
+            print "[DEBUG]: A dead creature seem to have been hit"
+            return
+            
         self.lastDamager = by
           
         if not type == game.enum.DISTANCE:
