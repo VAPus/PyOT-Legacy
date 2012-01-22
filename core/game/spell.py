@@ -410,7 +410,7 @@ class Spell(object):
                         self.targetType = TARGET_TARGET
                 elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
                     self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
-                elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
+                elif self.targetType == TARGET_TARGET and not self.targetArea:
                     return False
                 elif self.targetType == TARGET_TARGETONLY:
                     return creature.cancelMessage("You need a target to cast this spell.")	
@@ -418,10 +418,12 @@ class Spell(object):
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
                     creature.cancelMessage("Target is too far away")
+
                     return False
                     
                 if not creature.canDoSpell(self.icon, self.group):
                     creature.exhausted()
+
                     return False
                 
                 if self.learned and not creature.canUseSpell(self.name):
@@ -434,17 +436,21 @@ class Spell(object):
                     for var in self._requireGreater:
                         if creature.data[var] < self._requireGreater[var]:
                             creature.notEnough(var)
+
                             return False
                             
                 if self._requireLess:
                     for var in self._requireLess:
                         if creature.data[var] > self._requireLess[var]:
                             creature.message("Your %s is too high!" % var)
+
                             return False
                 
                 if self._requireCallback:
                     for call in self._requireCallback:
-                        if not call(caster=creature): return
+                        if not call(caster=creature):
+
+                            return
                         
                 # Integrate mana seeker
                 try:
@@ -464,7 +470,7 @@ class Spell(object):
                     
             if self.castEffect:
                 creature.magicEffect(self.castEffect)
-            
+
             for call in self.effectOnCaster:
                 call(caster=creature, target=creature, strength=strength)
             

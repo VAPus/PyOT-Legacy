@@ -1366,9 +1366,9 @@ class Condition(object):
     def copy(self):
         return copy.deepcopy(self)
         
-    def __getattr__(self):
+    def __getstate__(self):
         d = self.__dict__.copy()
-        d.creature = None
+        d["creature"] = None
         return d
 
 class Boost(Condition):
@@ -1402,11 +1402,14 @@ class Boost(Condition):
             except:
                 pvalue = self.creature.data[ptype]
                 inStruct = 1
-                
-            if self.percent:
-                pvalue *= self.mod[pid]
+            
+            if isinstance(self.mod[pid], int):
+                if self.percent:
+                    pvalue *= self.mod[pid]
+                else:
+                    pvalue += self.mod[pid]
             else:
-                pvalue += self.mod[pid]
+                pvalue = self.mod[pid](self.creature, ptype, True)
                 
             # Hack
             if ptype == "speed":
@@ -1432,11 +1435,14 @@ class Boost(Condition):
             except:
                 pvalue = self.creature.data[ptype]
                 inStruct = 1
-                
-            if self.percent:
-                pvalue /= self.mod[pid]
+            
+            if isinstance(self.mod[pid], int):
+                if self.percent:
+                    pvalue /= self.mod[pid]
+                else:
+                    pvalue -= self.mod[pid]
             else:
-                pvalue -= self.mod[pid]
+                pvalue = self.mod[pid](self.creature, ptype, False)
                 
             # Hack
             if ptype == "speed":
