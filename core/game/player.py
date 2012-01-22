@@ -1508,6 +1508,7 @@ class Player(Creature):
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
+                summon.magicEffect(EFFECT_POFF)
                 summon.despawn()
                 summon.noBrain = True
                 
@@ -2182,8 +2183,10 @@ class Player(Creature):
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
+                summon.magicEffect(EFFECT_POFF)
                 summon.despawn()
                 summon.noBrain = True
+                
         self.removeMe = True
         
         #self.remove(False)

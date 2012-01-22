@@ -102,6 +102,7 @@ class Monster(Creature):
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
+                summon.magicEffect(EFFECT_POFF)
                 summon.despawn()
                 summon.noBrain = True
                 
