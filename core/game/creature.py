@@ -606,7 +606,7 @@ class Creature(object):
             magicEffect = game.enum.EFFECT_ICEATTACK
 			
         elif type == game.enum.DISTANCE:
-            textColor, magicEffect = self.hitEffects()   
+            textColor, magicEffect = game.enum.COLOR_RED, None
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
         elif type == game.enum.LIFEDRAIN:
@@ -632,7 +632,9 @@ class Creature(object):
         magicEffect = magicEffect[0]
         type = type[0]
         
-        self.magicEffect(magicEffect) 
+        if magicEffect:
+            self.magicEffect(magicEffect)
+            
         if dmg:
             tile = game.map.getTile(self.position)
             for item in tile.getItems():
