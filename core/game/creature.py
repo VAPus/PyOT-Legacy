@@ -1377,10 +1377,10 @@ class Boost(Condition):
             self.type = "%s_%s" % (type, subtype)
         else:
             self.type = type
-        self.ptype = list(type) if not isinstance(type, collections.Iterable) else type
+        self.ptype = [type] if not isinstance(type, list) else type
         self.effectArgs = argc
         self.effectKwargs = kwargs
-        self.mod = list(mod) if not isinstance(mod, collections.Iterable) else mod
+        self.mod = [mod] if not isinstance(mod, list) else mod
         self.percent = percent
     
     def add(self, type, mod):

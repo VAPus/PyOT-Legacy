@@ -330,3 +330,9 @@ def readData(creature, text):
             msg += "Item '%s'\n" % i.itemId
     creature.windowMessage(msg)        
 reg("talkactionFirstWord", "info", readData)
+
+def testBoost(creature, **k):
+    # Give a +1000 for 20s
+    creature.condition(Boost("speed", 1000, 20))
+    
+reg("talkaction", "boostspeed", testBoost)
