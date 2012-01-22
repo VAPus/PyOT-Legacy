@@ -202,6 +202,9 @@ class Creature(object):
             if self.respawn:
                 if self.spawnTime:
                     game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+                elif self.spawnTime == 0:
+                    return
+                    
                 else:
                     game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:

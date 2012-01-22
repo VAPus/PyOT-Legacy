@@ -1503,9 +1503,14 @@ class Player(Creature):
         stream.send(self.client)
         
     def onDeath(self):
-        
         self.sendReloginWindow()
-            
+        
+        # Remove summons
+        if self.activeSummons:
+            for summon in self.activeSummons:
+                summon.despawn()
+                summon.noBrain = True
+                
         tile = game.map.getTile(self.position)
 
         corpse = game.item.Item(3058)
@@ -2174,6 +2179,11 @@ class Player(Creature):
     def prepareLogout(self):
         # TODO: Cases where you can't logout
         
+        # Remove summons
+        if self.activeSummons:
+            for summon in self.activeSummons:
+                summon.despawn()
+                summon.noBrain = True
         self.removeMe = True
         
         #self.remove(False)

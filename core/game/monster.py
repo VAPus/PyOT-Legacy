@@ -99,6 +99,12 @@ class Monster(Creature):
             
         self.noBrain = True
         
+        # Remove summons
+        if self.activeSummons:
+            for summon in self.activeSummons:
+                summon.despawn()
+                summon.noBrain = True
+                
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
