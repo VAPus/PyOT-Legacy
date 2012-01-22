@@ -1376,7 +1376,7 @@ class Boost(Condition):
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
         else:
-            self.type = type
+            self.type = '_'.join(type)
         self.ptype = [type] if not isinstance(type, list) else type
         self.effectArgs = argc
         self.effectKwargs = kwargs
@@ -1393,7 +1393,13 @@ class Boost(Condition):
         pid = 0
         for ptype in self.ptype:
             # Apply
-            pvalue = getattr(self.creature, ptype)
+            try:
+                pvalue = getattr(self.creature, ptype)
+                inStruct = 0
+            except:
+                pvalue = self.creature.data[ptype]
+                inStruct = 1
+                
             if self.percent:
                 pvalue *= self.mod[pid]
             else:
@@ -1404,18 +1410,26 @@ class Boost(Condition):
                 self.type = game.enum.CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
             else:
-                setattr(self.creature, ptype, pvalue)
-                
+                if inStruct == 0:
+                    setattr(self.creature, ptype, pvalue)
+                else:
+                    self.creature.data[ptype] = pvalue
             pid += 1
             
         self.tickEvent = engine.safeCallLater(self.length, self.finish)
             
-        
+        self.creature.refreshStatus()
     def callback(self):
         pid = 0
         for ptype in self.ptype:
             # Apply
-            pvalue = getattr(self.creature, ptype)
+            try:
+                pvalue = getattr(self.creature, ptype)
+                inStruct = 0
+            except:
+                pvalue = self.creature.data[ptype]
+                inStruct = 1
+                
             if self.percent:
                 pvalue /= self.mod[pid]
             else:
@@ -1425,10 +1439,14 @@ class Boost(Condition):
             if ptype == "speed":
                 self.creature.setSpeed(pvalue)
             else:
-                setattr(self.creature, ptype, pvalue)
+                if inStruct == 0:
+                    setattr(self.creature, ptype, pvalue)
+                else:
+                    self.creature.data[ptype] = pvalue
                 
             pid += 1
-                
+        self.creature.refreshStatus()
+        
 def MultiCondition(type, subtype="", *argc):
     conditions = []
     for x in argc:

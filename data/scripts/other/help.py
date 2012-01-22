@@ -335,4 +335,7 @@ def testBoost(creature, **k):
     # Give a +1000 for 20s
     creature.condition(Boost("speed", 1000, 20))
     
-reg("talkaction", "boostspeed", testBoost)
+    # Give a +1000 to health and maxhealth too for 20s
+    creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
+    
+reg("talkaction", "boostme", testBoost)
