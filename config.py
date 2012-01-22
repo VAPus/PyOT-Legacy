@@ -201,7 +201,7 @@ def levelFromExpFormula(y): # y = experience
     return floor(round((l1/l2)-(l3/l4)+2, 10)) # Use floor to get the level, and not the progress (eg 10.7 instead of 10), we only want 10 in that case.
 
 magicLevelFormula = lambda a,b: 1600*(b**a)
-totalMagicLevelFormula = lambda a,b:(1600*(b**a-1))/b-1 # a = level, b = vocation constant
+totalMagicLevelFormula = lambda a,b:(1600*((b**a)-1))/(b-1) # a = level, b = vocation constant
 magicLevelFromManaFormula = lambda n,b: floor(round((log((1.0+n+(1600.0/b)) / 1600.0) + log(b)) / (log(b)), 8)) # n = mana, b = vocation constant
 skillFormula = lambda a,b: 50*(b**(a-10))
 magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
