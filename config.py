@@ -150,7 +150,6 @@ enableHotkey = True
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
-suggestedGameServerScriptPoolSize = suggestedGameServerThreadPoolSize * 2# This is only for the scripts! 
 sqlMinConnections = 3
 sqlMaxConnections = 5
 

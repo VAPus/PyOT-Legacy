@@ -239,26 +239,6 @@ def action(forced=False, delay=0):
         return new_f
     return decor
 
-def loopInThread(time):
-    """Loop function in a thread decorator.
-    
-    :param time: Run the function every ``time`` seconds.
-    :type time: float (seconds).
-
-    """
-    
-    def decor(f):
-        def new_f(*args, **kwargs):
-            ret = f(*args, **kwargs)
-            if ret != False:
-                safeCallLater(time, reactor.callInThread, new_f, *args, **kwargs)
-        
-        def first(*args, **kwargs):
-            safeCallLater(0, reactor.callInThread, new_f, *args, **kwargs)
-            
-        return first
-    return decor
-    
 def loopDecorator(time):
     """Loop function decorator.
     
