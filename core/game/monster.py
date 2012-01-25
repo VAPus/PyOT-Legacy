@@ -547,7 +547,6 @@ class MonsterBrain(object):
                 ret = brainFeatures[0][feature](self, monster)
                 
                 if ret in (True, False):
-                    print ret
                     return ret
 
         for feature in monster.base.brainFeatures:
@@ -555,7 +554,6 @@ class MonsterBrain(object):
                 ret = brainFeatures[1][feature](self, monster)
 
                 if ret in (True, False):
-                    print ret
                     return ret
                     
         # Are anyone watching?
