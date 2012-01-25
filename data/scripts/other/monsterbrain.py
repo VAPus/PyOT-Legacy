@@ -139,7 +139,7 @@ def defaultBrainFeature(self, monster):
                                 bestDist = dist
                                 target = player
                     if target:
-                        ret = game.scriptsystem.get('target').run(monster, target, attack=True)
+                        ret = game.scriptsystem.get('target').runSync(monster, target, attack=True)
                         
                         if ret == False:
                             return
