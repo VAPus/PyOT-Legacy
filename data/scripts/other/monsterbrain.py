@@ -2,7 +2,7 @@ def defaultBrainFeaturePriority(self, monster):
         # Walking
         if monster.target: # We need a target for this code check to run
             # If target is out of sight, stop following it and begin moving back to base position
-            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1:
+            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
                 monster.base.onTargetLost(monster.target)
                 monster.intervals = {} # Zero them out
                 if monster.master:
@@ -44,9 +44,10 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.turnAgainst(monster.target.position)
                             
                 # Begin autowalking
-                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                if monster.canTarget(monster.target.position):
+                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
-            elif monster.targetMode == 1:
+            elif monster.targetMode == 1 and monster.canTarget(monster.target.position):
                 # First stratigic manuver
                 _time = time.time()
                 for id, spell in enumerate(monster.base.defenceSpells):
@@ -166,7 +167,8 @@ def defaultBrainFeature(self, monster):
                             monster.turnAgainst(monster.target.position)
                         else:
                             # Apperently not. Try walking again.
-                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            if monster.canTarget(monster.target.position):
+                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                             
                     # Begin autowalking
                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
@@ -213,9 +215,8 @@ def defaultBrainFeature(self, monster):
                         # Are we OK?
                         if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                             monster.turnAgainst(monster.target.position)
-                        else:
-                            # Apperently not. Try walking again.
-                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                        elif monster.canTarget(monster.target.position):
+                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                             
                     # Begin autowalking
                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
@@ -260,10 +261,12 @@ def defaultBrainFeature(self, monster):
                     # Are we OK?
                     if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                         monster.turnAgainst(monster.target.position)
-                    else:
-                        # Apperently not. Try walking again.
+                    elif monster.canTarget(monster.target.position):
                         engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                            
+                    else:
+                        monster.target = None
+                        monster.targetMode = 0
+                        
                 # Begin autowalking
                 engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     

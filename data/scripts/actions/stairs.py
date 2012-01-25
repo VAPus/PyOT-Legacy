@@ -160,7 +160,7 @@ reg('useWith', stairs, itemFloorChange)
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398
 rampsDown = 459,
-reg("preWalkOn", (1390, 1389, 1388, 1391, 1394, 1393, 1392, 1396, 1385, 1397, 1398), vertifyRampWalk)
+reg("preWalkOn", stairs+ramps+rampsDown, vertifyRampWalk)
 reg("walkOn", ramps, teleportOrWalkDirection)
 reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
 
