@@ -72,7 +72,6 @@ class BasePacket(TibiaPacket):
             self.uint16(item.cid)
 
             if item.stackable:
-                print item.count
                 self.uint8(item.count or 1)
             elif item.type == 11 or item.type == 12:
                 self.uint8(item.fluidSource or 0)
@@ -80,7 +79,6 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFE)
             
         else:
-            print item
             self.uint16(item)
             if count:
                 self.uint8(count)
@@ -179,7 +177,6 @@ class BasePacket(TibiaPacket):
                     
                     self.creature(creature, known, removeKnown)
                 if creature.creatureType != 0 and creature.noBrain:
-                    print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
                     
                 count += 1
@@ -630,7 +627,6 @@ class BaseProtocol(object):
 
         text = packet.string()
         
-        print "ChannelId: %d, channelType: %d" % (channelId, channelType)
         player.handleSay(channelType, channelId, reciever, text)
         
     def handleAutoWalk(self, player, packet):
@@ -765,7 +761,6 @@ class BaseProtocol(object):
                     renew = True
                     oldItem[1].count -= count
                     if oldItem[1].count > 0:
-                        print "Update item count", oldItem[1].count
                         stream = player.packet() # Hack
                         stream.updateTileItem(fromPosition, fromStackPos, oldItem[1])
                         stream.sendto(game.engine.getSpectators(fromPosition)) # Hack
@@ -930,7 +925,7 @@ class BaseProtocol(object):
                             stream.addInventoryItem(toPosition.y, player.inventory[toPosition.y-1])
                         else:
                             container = player.getContainer(toPosition.y-64)
-                            print "Pos",toPosition.z
+
                             try:
                                 container.container.items[toPosition.z] = Item(sid(clientId), count) if renew else oldItem[1]
                                 sendUpdate = True
@@ -1000,8 +995,7 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-        print "Look at"
-        print position
+
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
@@ -1032,7 +1026,6 @@ class BaseProtocol(object):
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
                     player.message(thing.description() + extra, 'MSG_INFO_DESCR')
             elif isinstance(thing, Creature):
-                print thing.target
                 def afterScript():
                     if self == thing:
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
@@ -1168,7 +1161,6 @@ class BaseProtocol(object):
 
     def handleAttack(self, player, packet):
         cid = packet.uint32()
-        print "CreatureID %d" %  cid
         player.setAttackTarget(cid)
             
     def handleFollow(self, player, packet):
@@ -1267,7 +1259,6 @@ class BaseProtocol(object):
                 player.message("Your already trading this item.")
                 return
         else:
-            print "ERROR: Unsupported trade position"
             return
         
         

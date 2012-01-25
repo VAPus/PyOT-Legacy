@@ -78,7 +78,6 @@ class Packet(base.BasePacket):
                     self.uint8(0xFE)""" # No animations in 8.6
             
         else:
-            print item
             self.uint16(item)
             if count:
                 self.uint8(count)
@@ -115,7 +114,6 @@ class Packet(base.BasePacket):
                     self.creature(creature, known, removeKnown)
                     
                 if creature.creatureType != 0 and creature.noBrain:
-                    print "Begin think 1"
                     creature.base.brain.handleThink(creature, False)
 
             for item in tile.bottomItems():

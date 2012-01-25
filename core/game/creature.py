@@ -1111,8 +1111,7 @@ class Creature(object):
                 oldCondition.stop()
                 condition.start(self)
                 self.conditions[condition.type] = condition
-                
-                print "Condition"
+
         except:
             condition.start(self)
             self.conditions[condition.type] = condition

@@ -339,3 +339,36 @@ def testBoost(creature, **k):
     creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
     
 reg("talkaction", "boostme", testBoost)
+
+@defer.inlineCallbacks
+def walkRandomStep(creature, badDir=None):
+    if not badDir:
+        badDir = []
+    steps = [0,1,2,3]
+    
+    random.shuffle(steps)
+        
+    for step in steps:
+        # Prevent checks in "bad" directions
+        if step in badDir:
+            continue
+            
+        badDir.append(step)
+        d = yield creature.move(step)
+        if d == False and len(badDir) < 4:
+            walkRandomStep(creature, badDir)
+                
+        return
+    
+def playerAI(creature, **k):
+    creature.setSpeed(1500)
+    
+    def _playerAI():
+        if creature.data["health"] < 100:
+            creature.modifyHealth(10000)
+        
+        walkRandomStep(creature)
+        
+    engine.looper(_playerAI, 0.01)
+
+reg("talkaction", "aime", playerAI)

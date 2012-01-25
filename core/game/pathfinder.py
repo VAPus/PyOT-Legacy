@@ -108,10 +108,12 @@ def findPath(mapZ, relX, relY, xB, yB):
                 x += dx[j]
                 y += dy[j]
             path.reverse()
+            """
             if not bad:
                 print "Not bad!"
             else:
                 print "bad!"
+            """
             return path
 
         # generate moves (child nodes) in all possible dirs
