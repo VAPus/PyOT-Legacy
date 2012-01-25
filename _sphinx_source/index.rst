@@ -12,7 +12,7 @@ PyOT is super fast, and uses diffrent methods than other projects. Some of which
 
 * Async SQL
 * Async core code
-* Async, multithreaded scriptsystem
+* Async scriptsystem
 * Ability to utilize epoll (Linux), iocp (Windows) and kpoll (FreeBSD)
 * Ability to utilize jit from pypy (currently the logger module is a bit of a slowdown, we'll work on it, or just wait until pypy 1.7 which seems to fix this)
 * Very flexible core
