@@ -5,6 +5,7 @@ import game.engine
 import game.map
 import random
 import game.creature
+from twisted.internet import reactor
 
 spells = {}
 fieldRunes = {}
@@ -201,7 +202,7 @@ def field(fieldId):
             
             
             if ticks < forTicks:
-                game.engine.safeCallLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
+                reactor.callLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
                 
         def callback(creature, thing, **k):
             if thing.damage:
@@ -269,7 +270,7 @@ class Spell(object):
             spells[name] = (func, words, level, mana)
         
         # Delay the input a little.
-        game.engine.safeCallLater(0.1, l)
+        reactor.callLater(0.1, l)
         
         if words:
             game.scriptsystem.reg("talkaction", words, func)
@@ -643,7 +644,7 @@ class Rune(Spell):
                     
         if config.runeCastDelay:
             def castDelay(*a, **k):
-                game.engine.safeCallLater(config.runeCastDelay, runeCallback, *a, **k)
+                reactor.callLater(config.runeCastDelay, runeCallback, *a, **k)
                 
             return castDelay
             

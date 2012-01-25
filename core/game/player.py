@@ -235,12 +235,12 @@ class Player(Creature):
                     if self.data["stamina"] < 0:
                         self.data["stamina"] = 0
                     else:
-                        game.engine.safeCallLater(self.rates[1], loseStamina)
+                        reactor.callLater(self.rates[1], loseStamina)
                     
                     if self.data["stamina"] < (42*3600):
                         self.refreshStatus()
                     
-            game.engine.safeCallLater(self.rates[1], loseStamina)
+            reactor.callLater(self.rates[1], loseStamina)
         
     def refreshStatus(self, streamX=None):
         if not streamX:
@@ -809,7 +809,7 @@ class Player(Creature):
         def doSoulGain(gainOverX):
             self.modifySoul(1)
             if self.doingSoulGain - gainOverX >= time.time():
-                game.engine.safeCallLater(gainOverX, doSoulGain, gainOverX)
+                reactor.callLater(gainOverX, doSoulGain, gainOverX)
             else:
                 self.doingSoulGain = False
                 
@@ -818,7 +818,7 @@ class Player(Creature):
         else:
             self.doingSoulGain = time.time() + (config.soulGain)
             gainTime = self.getVocation().soulticks * self.getRegainRate()
-            game.engine.safeCallLater(gainTime, doSoulGain, gainTime)
+            reactor.callLater(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
         if groupCooldown == None: groupCooldown = cooldown

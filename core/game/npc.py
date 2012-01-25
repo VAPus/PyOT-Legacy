@@ -210,7 +210,7 @@ class NPCBase(CreatureBase):
 
     def spawn(self, position, place=True, spawnDelay=0.1, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
-            return game.engine.safeCallLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
+            return reactor.callLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:
             npc = NPC(self, position, None)
             npc.radius = radius

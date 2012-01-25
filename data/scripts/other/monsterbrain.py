@@ -21,7 +21,7 @@ def defaultBrainFeaturePriority(self, monster):
                 if config.monsterWalkBack:
                     engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
                 elif not engine.hasSpectators(monster.position, (15, 15)):
-                    engine.safeCallLater(2, monster.teleport, monster.spawnPosition)
+                    callLater(2, monster.teleport, monster.spawnPosition)
                     
                 return
             

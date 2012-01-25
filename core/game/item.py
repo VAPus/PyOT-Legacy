@@ -1,4 +1,5 @@
 from twisted.internet.defer import inlineCallbacks
+from twisted.internet import reactor
 import sql
 from twisted.python import log
 from collections import deque, namedtuple
@@ -283,7 +284,7 @@ class Item(object):
             except:
                 pass # I don't exist here anymore.
                 
-        self.executeDecay = game.engine.safeCallLater(duration, executeDecay)
+        self.executeDecay = reactor.callLater(duration, executeDecay)
 
     def stopDecay(self):
         if self.executeDecay:

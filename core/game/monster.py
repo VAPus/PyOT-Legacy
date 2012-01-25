@@ -217,11 +217,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
                 else:
                     return
             else:
-                engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
             
     def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
         return Creature.say(self, message, messageType)
@@ -280,7 +280,7 @@ class MonsterBase(CreatureBase):
         if not monster:
             monster = Monster(self, position, None)
         if spawnDelay:
-            return engine.safeCallLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster)
+            return reactor.callLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster)
         else:
             if not monster.alive:
                 monster.data = monster.base.data.copy()

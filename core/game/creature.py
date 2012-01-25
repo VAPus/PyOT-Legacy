@@ -1,4 +1,5 @@
 from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
+from twisted.internet import reactor
 from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile, Position, StackPosition
 from twisted.python import log
@@ -99,7 +100,7 @@ class Creature(object):
         if self.lastAction >= time.time():
             if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
                 return False
-            game.engine.safeCallLater(0.1, *argc, **kwargs)
+            reactor.callLater(0.1, *argc, **kwargs)
             return False
         else:
             self.lastAction = time.time()
@@ -107,7 +108,7 @@ class Creature(object):
 
     def extActionLock(self, *argc, **kwargs):
         if self.extAction >= time.time():
-            game.engine.safeCallLater(0.1, *argc, **kwargs)
+            reactor.callLater(0.1, *argc, **kwargs)
             return False
         else:
             return True
@@ -201,12 +202,12 @@ class Creature(object):
         try:
             if self.respawn:
                 if self.spawnTime:
-                    game.engine.safeCallLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition)
                 elif self.spawnTime == 0:
                     return
                     
                 else:
-                    game.engine.safeCallLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+                    reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:
             pass
         
@@ -1093,7 +1094,7 @@ class Creature(object):
             if stackbehavior == enum.CONDITION_IGNORE:
                 return False
             elif stackbehavior == enum.CONDITION_LATER:
-                return engine.safeCallLater(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
+                return reactor.callLater(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
             elif stackbehavior == enum.CONDITION_ADD:
                 if maxLength:
                     oldCondition.length = min(condition.length + oldCondition.length, maxLength)
@@ -1359,12 +1360,12 @@ class Condition(object):
         
         if self.check: # This is what we do if we got a check function, independantly of the length
             if self.check(self.creature):
-                self.tickEvent = engine.safeCallLater(self.every, self.tick)
+                self.tickEvent = reactor.callLater(self.every, self.tick)
             else:
                 self.finish()
                 
         elif self.length > 0:
-            self.tickEvent = engine.safeCallLater(self.every, self.tick)
+            self.tickEvent = reactor.callLater(self.every, self.tick)
         else:
             self.finish()
             
@@ -1427,7 +1428,7 @@ class Boost(Condition):
                     self.creature.data[ptype] = pvalue
             pid += 1
             
-        self.tickEvent = engine.safeCallLater(self.length, self.finish)
+        self.tickEvent = reactor.callLater(self.length, self.finish)
             
         self.creature.refreshStatus()
     def callback(self):

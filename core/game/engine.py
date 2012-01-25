@@ -127,7 +127,7 @@ def loader(timer):
     __builtin__.time = time
     __builtin__.re = re
     __builtin__.spell = game.spell # Simplefy spell making
-    __builtin__.callLater = safeCallLater
+    __builtin__.callLater = reactor.callLater
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getTile = game.map.getTile
@@ -188,31 +188,13 @@ def loader(timer):
     # Now we're online :)
     IS_ONLINE = True
     
-# Useful for windows
-def safeTime():
-    """Gives the time rounded so it can be divided by 60. This gives the same time on both unix systems and Windows.
-    
-    :rtype: float time.
-    :returns: Time rounded so it can be divided by 60.
-    
-    """
-    return math.ceil(time.time() * 60) / 60
-
-def safeCallLater(sec, *argc, **kwargs):
-    """This is a thread safe and time safe call for reactor.callLater. Passes args to callLater.
-    
-    :param sec: The number of seconds to delay the calls.
-    :type sec: float.
-    
-    """
-    reactor.callFromThread(reactor.callLater, math.ceil(sec * 60) / 60, *argc, **kwargs) # Closest step to the accurecy of windows clock
-
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""
     
     function()
     reactor.callLater(time, looper, function, time)
+    
 # The action decorator :)
 def action(forced=False, delay=0):
     """Action decorator.
@@ -227,12 +209,15 @@ def action(forced=False, delay=0):
     def decor(f):
         def new_f(creature, *args, **argw):
             if creature.action and forced:
-                creature.action.cancel()
+                try:
+                    creature.action.cancel()
+                except:
+                    pass
                 f(creature, *args, **argw)
             elif not forced and creature.action and creature.action.active():
-                safeCallLater(0.05, new_f, creature, *args, **argw)
+                reactor.callLater(0.05, new_f, creature, *args, **argw)
             elif delay and creature.action:
-                safeCallLater(delay, f, creature, *args, **argw)
+                reactor.callLater(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
 
@@ -250,10 +235,10 @@ def loopDecorator(time):
     def decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
-                safeCallLater(time, new_f, *args, **kwargs)
+                reactor.callLater(time, new_f, *args, **kwargs)
         
         def first(*args, **kwargs):
-            safeCallLater(0, new_f, *args, **kwargs)
+            reactor.callLater(0, new_f, *args, **kwargs)
             
         return first
     return decor
@@ -273,7 +258,7 @@ def autoWalkCreature(creature, callback=None):
     """
     
     try:
-        creature.action = safeCallLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
+        creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
@@ -325,7 +310,7 @@ def handleAutoWalking(creature, callback=None, level=0):
     if creature.walkPattern:
         def mcallback(ret):
             try:
-                creature.action = safeCallLater(creature.stepDuration(game.map.getTile(positionInDirection(creature.position, creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
+                creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(positionInDirection(creature.position, creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
             except IndexError:
                 return
 
