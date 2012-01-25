@@ -848,7 +848,7 @@ class BaseProtocol(object):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
-                        game.scriptsystem.get("unequip").run(player, player.inventory[fromPosition.y-1], slot = fromPosition.y)
+                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = fromPosition.y)
                         player.inventory[fromPosition.y-1] = None
                         stream.removeInventoryItem(fromPosition.y)
                     elif oldItem[0] == 2:
@@ -916,7 +916,7 @@ class BaseProtocol(object):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition.y-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                                game.scriptsystem.get("equip").run(player, player.inventory[toPosition.y-1], slot = toPosition.y)
+                                game.scriptsystem.get("equip").runSync(player, player.inventory[toPosition.y-1], slot = toPosition.y)
                                 
                                 if player.inventory[toPosition.y-1].decayPosition:
                                     player.inventory[toPosition.y-1].decayPosition = (toPosition.x, toPosition.y)
@@ -1038,7 +1038,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
                     else:
                         player.message(thing.description(), 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=stackPosition)
+            game.scriptsystem.get('lookAt').runSync(thing, player, afterScript, position=stackPosition)
         else:
             player.notPossible()
 
@@ -1060,7 +1060,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 game.engine.transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').run(item, player, end, position=position.setStackpos(stackpos))
+            game.scriptsystem.get('rotate').runSync(item, player, end, position=position.setStackpos(stackpos))
             
         
     def handleSetOutfit(self, player, packet):
@@ -1116,7 +1116,7 @@ class BaseProtocol(object):
                     scount += 1
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+                game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
             
     @inlineCallbacks
     def handleUseWith(self, player, packet):
@@ -1162,8 +1162,8 @@ class BaseProtocol(object):
                     scount += 1
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                end = lambda: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                end = lambda: game.scriptsystem.get('useWith').runSync(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').runSync(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):
@@ -1362,7 +1362,7 @@ class BaseProtocol(object):
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description() + extra, 'MSG_INFO_DESCR')
-            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
+            game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
             
     def handleAcceptTrade(self, player, packet):
         if player.isTradingWith.tradeAccepted:
@@ -1438,11 +1438,11 @@ class BaseProtocol(object):
         if thing:
             creatureStackPosition = creature.position.setStackpos(creature.position.getTile().findCreatureStackpos(creature))
             if (hotkey or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (creature.position.x == 0xFFFF or (abs(creature.position.x - player.position.x) <= 1 and abs(creature.position.y - player.position.y) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').run(creature, player, None, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').run(thing, player, end3, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
+                end3 = lambda: game.scriptsystem.get('useWith').runSync(creature, player, None, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+                end2 = lambda: game.scriptsystem.get('useWith').runSync(thing, player, end3, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
                 
-            end = lambda: game.scriptsystem.get('farUseWith').run(creature, player, end2, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
-            game.scriptsystem.get('farUseWith').run(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
+            end = lambda: game.scriptsystem.get('farUseWith').runSync(creature, player, end2, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
+            game.scriptsystem.get('farUseWith').runSync(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
 
         
     def handleInviteToParty(self, player, packet):
