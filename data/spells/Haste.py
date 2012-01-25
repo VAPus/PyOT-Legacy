@@ -9,6 +9,6 @@ def newspeed(creature, attribute, make):
     else:
         return baseSpeed
         
-instant.casterCondition(Boost("speed", newspeed, 20))
+instant.casterCondition(Boost("speed", newspeed, 31)) #31 or 33?
 
 instant.effects(caster=EFFECT_MAGIC_GREEN)
