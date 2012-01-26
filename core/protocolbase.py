@@ -4,7 +4,6 @@ from twisted.python import log
 from packet import TibiaPacketReader, TibiaPacket
 import config
 import struct
-import otcrypto
 from zlib import adler32
   
 class TibiaProtocol(Protocol):

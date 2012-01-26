@@ -21,13 +21,16 @@ if config.tryCython:
         pass # No cython / old cython
 
 #### Setup Reactor ####
-if config.reactorStyle == "poll" or sys.subversion[0] == 'PyPy':
+if config.reactorStyle == "poll":
     from twisted.internet import pollreactor
     pollreactor.install()
 
 elif config.reactorStyle == "epoll" or (sys.platform == "linux2" and config.reactorStyle == "default"):
-    from twisted.internet import epollreactor
-    epollreactor.install()
+    try:
+        from twisted.internet import epollreactor
+        epollreactor.install()
+    except:
+        print "EPoll reactor not found"
 
 elif config.reactorStyle == "kqueue" or ('freebsd' in sys.platform and config.reactorStyle == "default"):
     from twisted.internet import kqreactor
@@ -48,8 +51,11 @@ from twisted.internet import reactor
 reactor.suggestThreadPoolSize(config.suggestedGameServerThreadPoolSize)
 
 #### Initialize OTCrypto module ####
-import otcrypto
-otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
+try:
+    import otcrypto
+    otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
+except:
+    pass
 
 #### Import the LoginServer ####
 from twisted.application import internet, service

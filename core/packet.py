@@ -1,5 +1,12 @@
 import struct
-import otcrypto
+import sys
+if sys.subversion[0] != 'PyPy':
+    try:
+        import otcrypto
+    except:
+        import otcrypto_python as otcrypto
+else:
+    import otcrypto_python as otcrypto
 from twisted.internet import reactor
 from zlib import adler32
 

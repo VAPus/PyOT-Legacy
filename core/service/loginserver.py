@@ -1,10 +1,16 @@
 import protocolbase
-
+import sys
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 from packet import TibiaPacket
 import sql
-import otcrypto
+if sys.subversion[0] != 'PyPy':
+    try:
+        import otcrypto
+    except:
+        import otcrypto_python as otcrypto
+else:
+    import otcrypto_python as otcrypto
 import config
 import hashlib
 import socket
@@ -58,7 +64,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
             if account:
                 characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
-                
+     
         if not username or not account:
             if config.anyAccountWillDo:
                 account = ((0,0),)
@@ -70,7 +76,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         if config.letGameServerRunTheLoginServer:
             import game.scriptsystem
             game.scriptsystem.get("preSendLogin").runSync(None, client=self, characters=characters, account=account, username=username, password=password)
-            
+
         # Send motd
         pkg.uint8(0x14)
         pkg.string(config.motd)

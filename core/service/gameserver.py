@@ -1,3 +1,4 @@
+import sys
 import protocolbase
 import game.protocol
 from collections import deque
@@ -5,7 +6,13 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
 import hashlib
-import otcrypto
+if sys.subversion[0] != 'PyPy':
+    try:
+        import otcrypto
+    except:
+        import otcrypto_python as otcrypto
+else:
+    import otcrypto_python as otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
 import sql
