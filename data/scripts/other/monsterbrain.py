@@ -44,10 +44,9 @@ def defaultBrainFeaturePriority(self, monster):
                         monster.turnAgainst(monster.target.position)
                             
                 # Begin autowalking
-                if monster.canTarget(monster.target.position):
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
-            elif monster.targetMode == 1 and monster.canTarget(monster.target.position):
+            elif monster.targetMode == 1:
                 # First stratigic manuver
                 _time = time.time()
                 for id, spell in enumerate(monster.base.defenceSpells):
@@ -67,7 +66,7 @@ def defaultBrainFeaturePriority(self, monster):
                 # Summons
                 if len(monster.activeSummons) < monster.base.maxSummon:
                     for summon in monster.base.summons:
-                        if summon[1] > random.randint(0, 100):
+                        if random.randint(0, 99) < summon[1]:
                             try:
                                 creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
                                 creature.setMaster(monster)
@@ -101,7 +100,7 @@ def defaultBrainFeaturePriority(self, monster):
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
                     attack = random.choice(monster.base.meleeAttacks)
                     if monster.lastMelee + attack[0] <= _time and attack[1](monster):
-                        if attack[3] and random.randint(1,100) < attack[4]:
+                        if attack[3] and random.randint(0,99) < attack[4]:
                             monster.target.condition(attack[3], attack[5])
                             
                         check = monster.target.onHit(monster, -random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
@@ -124,7 +123,7 @@ def defaultBrainFeaturePriority(self, monster):
 def defaultBrainFeature(self, monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
-            if not monster.target and monster.base.hostile and monster.base.targetChance > random.randint(0, 100) and monster.data["health"] > monster.base.runOnHealth:
+            if not monster.target and monster.base.hostile and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth:
                 spectators = engine.getPlayers(monster.position) # Get all creaturse in range
                 if spectators: # If we find any
                     target = None
@@ -216,7 +215,7 @@ def defaultBrainFeature(self, monster):
                         if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                             monster.turnAgainst(monster.target.position)
                         elif monster.canTarget(monster.target.position):
-                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                             
                     # Begin autowalking
                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)

@@ -532,7 +532,7 @@ class MonsterBrain(object):
             return False # Stop looper
         
         if monster.base.voiceslist:
-            if 10 > random.randint(0, 100): # 10%
+            if random.randint(0, 99) < 10: # 10%
                 # Find a random text
                 text = random.choice(monster.base.voiceslist)
                 
@@ -543,18 +543,16 @@ class MonsterBrain(object):
                     monster.say(text)
                     
         for feature in monster.base.brainFeatures:
-            if feature in brainFeatures[0]:
-                ret = brainFeatures[0][feature](self, monster)
+            ret = brainFeatures[0][feature](self, monster)
                 
-                if ret in (True, False):
-                    return ret
+            if ret in (True, False):
+                return ret
 
         for feature in monster.base.brainFeatures:
-            if feature in brainFeatures[1]:
-                ret = brainFeatures[1][feature](self, monster)
+            ret = brainFeatures[1][feature](self, monster)
 
-                if ret in (True, False):
-                    return ret
+            if ret in (True, False):
+                return ret
                     
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
