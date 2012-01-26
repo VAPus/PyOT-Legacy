@@ -321,7 +321,7 @@ class Creature(object):
         oldTile.removeCreature(self)
         
         self.position = position
-        self.direction = direction
+        self.direction = direction % 4
         
         # Mark for save
         if self.isPlayer():
