@@ -340,11 +340,10 @@ def testBoost(creature, **k):
     
 reg("talkaction", "boostme", testBoost)
 
-@defer.inlineCallbacks
-def walkRandomStep(creature, badDir=None):
-    if not badDir:
-        badDir = []
-    steps = [0,1,2,3]
+@inlineCallbacks
+def walkRandomStep(creature):
+    badDir = []
+    steps = [0,1,2,3,4,5,6,7]
     
     random.shuffle(steps)
         
@@ -355,9 +354,9 @@ def walkRandomStep(creature, badDir=None):
             
         badDir.append(step)
         d = yield creature.move(step)
-        if d == False and len(badDir) < 4:
-            walkRandomStep(creature, badDir)
-                
+        if d == False and len(badDir) < 8:
+            continue
+        
         return
     
 def playerAI(creature, **k):
@@ -367,6 +366,22 @@ def playerAI(creature, **k):
         if creature.data["health"] < 100:
             creature.modifyHealth(10000)
         
+        if random.randint(0, 99) < 10:
+            # Try targeting
+            for pos in creature.position.roundPoint(1):
+                tile = pos.getTile()
+                if not tile:
+                    continue
+                
+                for thing in tile.things:
+                    if isinstance(thing, Monster):
+                        creature.setTarget(thing)
+                        creature.targetMode = 1
+                        return
+                    elif isinstance(thing, Item) and thing.itemId in (1386, 3678, 5543, 8599):
+                        creature.use(pos.setStackpos(tile.findStackpos(thing)), thing)
+                        return
+            
         walkRandomStep(creature)
         
     engine.looper(_playerAI, 0.01)

@@ -868,10 +868,12 @@ class Player(Creature):
         
         
             
-    def setTarget(self, targetId=0):
+    def setTarget(self, target):
         stream = self.packet(0xA3)
-        stream.uint32(targetId)
+        stream.uint32(target.cid)
         stream.send(self.client)
+        if not self.target:
+            self.target = target
         
     def cancelWalk(self, direction=None):
         stream = self.packet(0xB5)

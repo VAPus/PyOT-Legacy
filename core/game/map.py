@@ -88,6 +88,14 @@ class Position(object):
         
     def distanceTo(self, position):
         return abs(self.x-position.x)+abs(self.y-position.y)
+    
+    def roundPoint(self, steps):
+        positions = []
+        for x in xrange(-steps, steps+1):
+            for y in xrange(-steps, steps+1):
+                positions.append((x,y,self.z))
+                
+        return MultiPosition(self.instanceId, *positions)
         
     # For savings
     def __getstate__(self):
@@ -104,6 +112,33 @@ class Position(object):
 
     def setStackpos(self, x):
         return StackPosition(self.x, self.y, self.z, x, self.instanceId)
+
+class MultiPosition(Position):
+    def __init__(self, instanceId=None, *argc):
+        self.positions = argc
+        self.index = 0
+        self.instanceId = instanceId
+    
+    @property
+    def x(self):
+        return self.positions[self.index][0]
+        
+    @property
+    def y(self):
+        return self.positions[self.index][0]
+        
+    @property
+    def z(self):
+        return self.positions[self.index][0]
+        
+    def __iter__(self):
+        return self
+        
+    def next(self):
+        self.index += 1
+        if self.index >= len(self.positions):
+            raise StopIteration
+        return self
         
 class StackPosition(Position):
     __slots__ = ('stackpos',)

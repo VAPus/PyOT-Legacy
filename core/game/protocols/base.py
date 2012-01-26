@@ -268,6 +268,7 @@ class BasePacket(TibiaPacket):
         self.uint8(slot)
         
     def addTileItem(self, pos, stackpos, item):
+        assert stackpos < 10
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
@@ -351,12 +352,14 @@ class BasePacket(TibiaPacket):
         self.mapDescription(Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
         
     def updateTileItem(self, pos, stackpos, item):
+        assert stackpos < 10
         self.uint8(0x6B)
         self.position(pos)
         self.uint8(stackpos)
         self.item(item)
         
     def removeTileItem(self, pos, stackpos):
+        assert stackpos < 10
         self.uint8(0x6C)
         self.position(pos)
         self.uint8(stackpos)

@@ -384,6 +384,8 @@ class Creature(object):
             elif canSeeOld and (not canSeeNew or newStackPos > 10):
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
+                if isKnown:
+                    spectator.knownCreatures.remove(self)
                 
             elif not canSeeOld and not canSeeNew:
                 continue
@@ -1271,6 +1273,12 @@ class Creature(object):
         
     def toggleWalkable(self):
         self.canWalk = not self.canWalk
+    
+    ####################
+    ### Internal Use ###
+    ####################
+    def use(self, position, thing):
+        game.scriptsystem.get('use').runSync(thing, self, None, position=position, index=0)
         
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
