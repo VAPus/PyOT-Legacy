@@ -366,7 +366,7 @@ def playerAI(creature, **k):
         if creature.data["health"] < 100:
             creature.modifyHealth(10000)
         
-        if True:
+        if random.randint(0, 3) == 1:
             # Try targeting
             for pos in creature.position.roundPoint(1):
                 tile = pos.getTile()
