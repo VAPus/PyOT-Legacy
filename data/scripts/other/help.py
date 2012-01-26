@@ -341,7 +341,7 @@ def testBoost(creature, **k):
 reg("talkaction", "boostme", testBoost)
 
 @inlineCallbacks
-def walkRandomStep(creature):
+def walkRandomStep(creature, callback):
     badDir = []
     steps = [0,1,2,3,4,5,6,7]
     
@@ -357,8 +357,9 @@ def walkRandomStep(creature):
         if d == False and len(badDir) < 8:
             continue
         
+        callback()
         return
-    
+    callback()
 def playerAI(creature, **k):
     creature.setSpeed(1500)
     
@@ -375,7 +376,7 @@ def playerAI(creature, **k):
                 
                 for thing in tile.things:
                     if isinstance(thing, game.monster.Monster):
-                        creature.setTarget(thing)
+                        creature.target = thing
                         creature.targetMode = 1
                         creature.attackTarget()
                         return
@@ -383,8 +384,8 @@ def playerAI(creature, **k):
                         creature.use(pos.setStackpos(tile.findStackpos(thing)), thing)
                         return
             
-        walkRandomStep(creature)
+        walkRandomStep(creature, _playerAI)
         
-    engine.looper(_playerAI, 0.01)
+    _playerAI()
 
 reg("talkaction", "aime", playerAI)
