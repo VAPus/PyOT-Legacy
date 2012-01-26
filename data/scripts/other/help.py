@@ -366,7 +366,7 @@ def playerAI(creature, **k):
         if creature.data["health"] < 100:
             creature.modifyHealth(10000)
         
-        if random.randint(0, 99) < 10:
+        if True:
             # Try targeting
             for pos in creature.position.roundPoint(1):
                 tile = pos.getTile()
@@ -374,9 +374,10 @@ def playerAI(creature, **k):
                     continue
                 
                 for thing in tile.things:
-                    if isinstance(thing, Monster):
+                    if isinstance(thing, game.monster.Monster):
                         creature.setTarget(thing)
                         creature.targetMode = 1
+                        creature.attackTarget()
                         return
                     elif isinstance(thing, Item) and thing.itemId in (1386, 3678, 5543, 8599):
                         creature.use(pos.setStackpos(tile.findStackpos(thing)), thing)

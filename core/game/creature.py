@@ -213,7 +213,7 @@ class Creature(object):
         
     def move(self, direction, spectators=None, level=0, stopIfLock=False):
         # Client will shift us to this position so.
-        self.direction = direction
+        self.direction = direction % 4
         
         if self.canMove:
             return self._move(direction, spectators, level, stopIfLock)
@@ -777,6 +777,7 @@ class Creature(object):
             stream.send(spectator)
                 
     def turn(self, direction):
+        assert direction < 4
         if self.direction == direction:
             return
             

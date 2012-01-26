@@ -93,7 +93,7 @@ class Position(object):
         positions = []
         for x in xrange(-steps, steps+1):
             for y in xrange(-steps, steps+1):
-                positions.append((x,y,self.z))
+                positions.append((x+self.x,y+self.y,self.z))
                 
         return MultiPosition(self.instanceId, *positions)
         
@@ -125,11 +125,11 @@ class MultiPosition(Position):
         
     @property
     def y(self):
-        return self.positions[self.index][0]
+        return self.positions[self.index][1]
         
     @property
     def z(self):
-        return self.positions[self.index][0]
+        return self.positions[self.index][2]
         
     def __iter__(self):
         return self

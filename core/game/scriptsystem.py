@@ -316,7 +316,9 @@ class ThingScripts(object):
                     break
                 except:
                     time.sleep(0.001)
-            
+            if end:
+                end()
+                
             return ok.value if type(ok.value) != bool else None
         elif end:
             d = defer.DeferredList(deferList)
