@@ -93,14 +93,20 @@ def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
         newPos.z -= 1
-        creature.teleport(newPos)
-    
+        try:
+            creature.teleport(newPos)
+        except:
+            creature.notPossible()
+            
 def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
         newPos.z += 1
-        creature.teleport(newPos)
-
+        try:
+            creature.teleport(newPos)
+        except:
+            creature.notPossible()
+            
 def teleportOrWalkDirection(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():

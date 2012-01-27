@@ -342,29 +342,29 @@ reg("talkaction", "boostme", testBoost)
 
 @inlineCallbacks
 def walkRandomStep(creature, callback):
-    badDir = []
     steps = [0,1,2,3,4,5,6,7]
     
     random.shuffle(steps)
         
     for step in steps:
-        # Prevent checks in "bad" directions
-        if step in badDir:
-            continue
-            
-        badDir.append(step)
-        d = yield creature.move(step)
-        if d == False and len(badDir) < 8:
-            continue
-        
-        callback()
-        return
+        d = yield creature.move(step, stopIfLock=True)
+        if d == True:
+            break
+        if d == None:
+            later = creature.lastAction - time.time()
+            if later:
+                callLater(later + 0.1, callback)
+                return
+            else:
+                callLater(0.1, callback)
+                return
     callback()
+    
 def playerAI(creature, **k):
     creature.setSpeed(1500)
     
     def _playerAI():
-        if creature.data["health"] < 100:
+        if creature.data["health"] < 300:
             creature.modifyHealth(10000)
         
         if random.randint(0, 3) == 1:
@@ -379,10 +379,10 @@ def playerAI(creature, **k):
                         creature.target = thing
                         creature.targetMode = 1
                         creature.attackTarget()
-                        return
+                        break
                     elif isinstance(thing, Item) and thing.itemId in (1386, 3678, 5543, 8599):
                         creature.use(pos.setStackpos(tile.findStackpos(thing)), thing)
-                        return
+                        break
             
         walkRandomStep(creature, _playerAI)
         

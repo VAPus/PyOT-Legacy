@@ -396,7 +396,7 @@ class BasePacket(TibiaPacket):
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
             self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
             self.uint8(player.skills[x]) # Base
-            currHits = player.getStorage('__skill%d'%x) or 0
+            currHits = player.getStorage('__skill%d'%x, 0)
             goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(10, player.getVocation().meleeSkill)
             if currHits < 1:
                 self.uint8(0)
