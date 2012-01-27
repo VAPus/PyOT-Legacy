@@ -185,6 +185,7 @@ def loader(timer):
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
     
+    reactor.callLater(60, looper, game.pathfinder.clear, 60)
     # Now we're online :)
     IS_ONLINE = True
     
@@ -361,7 +362,10 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             pattern.append(base)
         
     if not pattern:
+        # Try a straight line
         pattern = game.pathfinder.findPath(fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
+        if not pattern:
+            return None
                 
     # Fix for diagonal things like items
     if len(pattern) > 2 and diagonal == True:
@@ -378,7 +382,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
             elif last == 3: # last = west, last2 must be 
                 last = 0 + (6 if last2 == 0 else 4)
             pattern.append(last)
-    if pattern and skipFields != 0:
+    if skipFields != 0:
         pattern = pattern[:skipFields]
         
     return pattern

@@ -108,12 +108,11 @@ def findPath(mapZ, relX, relY, xB, yB):
                 x += dx[j]
                 y += dy[j]
             path.reverse()
-            """
+
             if not bad:
-                print "Not bad!"
-            else:
-                print "bad!"
-            """
+                # Cache the route
+                AStarRouteCache[AStarCacheKey] = path
+
             return path
 
         # generate moves (child nodes) in all possible dirs
@@ -177,4 +176,8 @@ def findPath(mapZ, relX, relY, xB, yB):
                         heappush(pq[pqi], m0) # add the better node instead
             except:
                 pass # Out of map position
+    AStarRouteCache[AStarCacheKey] = None
     return [] # if no route found 
+    
+def clear():
+    AStarRouteCache = {}

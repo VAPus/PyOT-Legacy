@@ -142,7 +142,7 @@ class TibiaPacket(object):
 
     #@inThread
     def send(self, stream):
-        if not stream:
+        if not stream or not self.bytes:
             return
         data = ''.join(self.bytes)
         data = struct.pack("<H", len(data))+data
@@ -154,7 +154,7 @@ class TibiaPacket(object):
             
     #@inThread
     def sendto(self, list):
-        if not list:
+        if not list or not self.bytes:
             return # Noone to send to
         
         data = ''.join(self.bytes)

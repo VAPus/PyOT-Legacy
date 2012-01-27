@@ -348,7 +348,7 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             
             if spectator == self:
-                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+                if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
                     stream = spectator.packet(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -356,6 +356,7 @@ class Creature(object):
                 else:
                     stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
+                    
                 # Levels
                 if oldPosition.z > position.z:
                     stream.moveUpPlayer(self, oldPosition)
@@ -381,13 +382,12 @@ class Creature(object):
 
                     
                     
-            elif (not canSeeOld or not isKnown) and canSeeNew:
+            elif not canSeeOld and canSeeNew:
                 stream = spectator.packet()
                 # Too high stack?
-                if newStackPos < 10:
-                    stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
+                stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
-            elif canSeeOld and (not canSeeNew or newStackPos >= 10):
+            elif canSeeOld and not canSeeNew:
                 if isKnown:
                     stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
@@ -395,11 +395,8 @@ class Creature(object):
                 
             elif not canSeeOld and not canSeeNew:
                 continue
-            elif oldStackpos < 10:
-                if not isKnown:
-                    raise("Shouldn't happend!")
-                    
-                if oldPosition.z != 7 or position.z < 8 and newStackPos < 10: # Only as long as it's not 7->8 or 8->7
+            else:
+                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     stream = spectator.packet(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -408,9 +405,8 @@ class Creature(object):
                 else:
                     stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
+                    stream.addTileCreature(position, newStackPos, self, spectator)
                     
-            else:
-                raise Exception("Shouldn't happend!")
             stream.send(spectator.client) 
 
         if self.scripts["onNextStep"]:
