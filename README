@@ -36,11 +36,13 @@ http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
 
 http://downloads.sourceforge.net/project/pywin32/pywin32/Build216/pywin32-216.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild216%2F&ts=1310085256&use_mirror=netcologne
 
-Grab zope.interface-3.7.0.win32-py2.7.exe and Base-11.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!)
+Grab zope.interface-3.8.0.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
 
-from:
+and last
 
-http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
+Base-12.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
+
+note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
 
 
 Installation
