@@ -916,7 +916,7 @@ class Creature(object):
         if self.position.instanceId != position.instanceId:
             return False
             
-        if allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
+        if not allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
         if (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]+1) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1]+1):

@@ -217,11 +217,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self, check=True)
                 else:
                     return
             else:
-                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self)
+                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self, check=True)
             
     def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
         return Creature.say(self, message, messageType)
@@ -350,17 +350,23 @@ class MonsterBase(CreatureBase):
         
         self.corpseAction = []
         
-    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None):
+    def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
         if not monster:
             monster = Monster(self, position, None)
         if spawnDelay:
-            return reactor.callLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster)
+            return reactor.callLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
         else:
             if not monster.alive:
                 monster.data = monster.base.data.copy()
                 monster.alive = True
                 
             if place:
+                # Vertify that there are no spectators if check = True
+                if check and engine.hasSpectators(position): 
+                    # If so, try again in 10s
+                    reactor.callLater(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
+                    return
+                    
                 tile = map.getTile(position)
                 if not tile:
                     log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
@@ -423,9 +429,10 @@ class MonsterBase(CreatureBase):
                         stream = player.packet()
                         stream.addTileCreature(position, stackpos, monster, player)
                             
-                        stream.send(player.client)
-            if engine.hasSpectators(position):        
-                self.brain.beginThink(monster) # begin the heavy thought process!
+                        stream.send(player.client) 
+                        
+            self.brain.beginThink(monster) # begin the heavy thought process!
+            
             return monster
         
     def setHealth(self, health, healthmax=None):
