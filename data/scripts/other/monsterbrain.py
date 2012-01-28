@@ -1,4 +1,4 @@
-def defaultBrainFeaturePriority(self, monster):
+def defaultBrainFeaturePriority(monster):
         # Walking
         if monster.target: # We need a target for this code check to run
             # Chance of retargeting?
@@ -124,7 +124,7 @@ def defaultBrainFeaturePriority(self, monster):
                             
 
 
-def defaultBrainFeature(self, monster):
+def defaultBrainFeature(monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
             if not monster.target and monster.base.hostile and monster.data["health"] > monster.base.runOnHealth:

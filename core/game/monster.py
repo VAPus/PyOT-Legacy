@@ -605,25 +605,24 @@ class MonsterBrain(object):
             monster.noBrain = True
             return False # Stop looper
         
-        if monster.base.voiceslist:
-            if random.randint(0, 99) < 10: # 10%
-                # Find a random text
-                text = random.choice(monster.base.voiceslist)
+        if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
+            # Find a random text
+            text = random.choice(monster.base.voiceslist)
                 
-                # If text is uppercase, then yell it.
-                if text.isupper():
-                    monster.yell(text)
-                else:
-                    monster.say(text)
+            # If text is uppercase, then yell it.
+            if text.isupper():
+                monster.yell(text)
+            else:
+                monster.say(text)
                     
         for feature in monster.base.brainFeatures:
-            ret = brainFeatures[0][feature](self, monster)
+            ret = brainFeatures[0][feature](monster)
                 
             if ret in (True, False):
                 return ret
 
         for feature in monster.base.brainFeatures:
-            ret = brainFeatures[1][feature](self, monster)
+            ret = brainFeatures[1][feature](monster)
 
             if ret in (True, False):
                 return ret
