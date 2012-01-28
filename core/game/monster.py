@@ -237,6 +237,80 @@ class Monster(Creature):
 
     def isAttackable(self, by):
         return self.base.attackable
+
+    def targetCheck(self, targets=None):
+        if not targets:
+            targets = engine.getPlayers(self.position) # Get all creaturse in range
+            if not targets:
+                return
+                
+        target = None
+
+        bestDist = 127
+        for player in targets:
+            # Can we target him, same floor
+            if self.canTarget(player.position):
+                # Calc x+y distance, diagonal is honored too.
+                dist = self.distanceStepsTo(player.position) 
+                if dist < bestDist:
+                    # If it's smaller then the previous value
+                    bestDist = dist
+                    target = player
+        if target:
+            ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+            
+            if ret == False:
+                return
+            elif ret != None:
+                self.target = ret
+            else:
+                self.target = target
+            self.targetMode = 1
+        else:
+            return
+                        
+        # Call the scripts
+        self.base.onFollow(self.target)
+                    
+        # When we reach our destination, can we target check
+        def __walkComplete(x):
+            if not x:
+                # Walk not possible. Loose target
+                self.target = None
+                self.targetMode = 0
+                return
+            # Are we OK?
+            if self.distanceStepsTo(self.target.position) <= self.base.targetDistance:
+                self.turnAgainst(self.target.position)
+            else:
+                # Apperently not. Try walking again.
+                if self.canTarget(self.target.position):
+                    engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                            
+        # Begin autowalking
+        engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    
+        # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
+        def __followCallback(who):
+            if self.target == who:                       
+                # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
+                try:
+                    # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
+                    if who.direction != self.walkPattern[-1]:
+                        self.walkPattern.pop()
+                except:
+                    if self.canTarget(self.target.position):
+                        engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    elif not self.canTarget(self.target.position, allowGroundChange=True):
+                        self.target = None
+                        self.targetMode = 0
+                                    
+                if self.target:
+                    # We shall be called again later
+                    self.target.scripts["onNextStep"].append(__followCallback)
+                            
+        self.target.scripts["onNextStep"].append(__followCallback)
+        return True
         
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain):

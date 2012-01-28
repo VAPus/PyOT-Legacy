@@ -1,8 +1,12 @@
 def defaultBrainFeaturePriority(self, monster):
         # Walking
         if monster.target: # We need a target for this code check to run
+            # Chance of retargeting?
+            if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance:
+                monster.targetCheck()
+                
             # If target is out of sight, stop following it and begin moving back to base position
-            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
+            elif not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
                 monster.base.onTargetLost(monster.target)
                 monster.intervals = {} # Zero them out
                 if monster.master:
@@ -26,7 +30,7 @@ def defaultBrainFeaturePriority(self, monster):
                 return
             
                 
-            elif monster.data["health"] <= monster.base.runOnHealth and monster.walkPer == config.monsterWalkPer:
+            if monster.data["health"] <= monster.base.runOnHealth and monster.walkPer == config.monsterWalkPer:
                 monster.walkPer = 0.5
                 monster.setSpeed(monster.speed * 2)
             
@@ -123,80 +127,9 @@ def defaultBrainFeaturePriority(self, monster):
 def defaultBrainFeature(self, monster):
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
-            if not monster.target and monster.base.hostile and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth:
-                spectators = engine.getPlayers(monster.position) # Get all creaturse in range
-                if spectators: # If we find any
-                    target = None
-
-                    bestDist = 127
-                    for player in spectators:
-                        # Can we target him, same floor
-                        if monster.canTarget(player.position):
-                            # Calc x+y distance, diagonal is honored too.
-                            dist = monster.distanceStepsTo(player.position) 
-                            if dist < bestDist:
-                                # If it's smaller then the previous value
-                                bestDist = dist
-                                target = player
-                    if target:
-                        ret = game.scriptsystem.get('target').runSync(monster, target, attack=True)
-                        
-                        if ret == False:
-                            return
-                        elif ret != None:
-                            monster.target = ret
-                        else:
-                            monster.target = target
-                        monster.targetMode = 1
-                    else:
-                        return
-                        
-                    # Call the scripts
-                    monster.base.onFollow(monster.target)
-                    
-                    # When we reach our destination, can we target check
-                    def __walkComplete(x):
-                        if not x:
-                            # Walk not possible. Loose target
-                            monster.target = None
-                            monster.targetMode = 0
-                            return
-                        # Are we OK?
-                        if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
-                            monster.turnAgainst(monster.target.position)
-                        else:
-                            # Apperently not. Try walking again.
-                            if monster.canTarget(monster.target.position):
-                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                            
-                    # Begin autowalking
-                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                    
-                    # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-                    def __followCallback(who):
-                        if monster.target == who:
-                            # Steps below is the old way of doing it, slow and ugly!
-                            """monster.stopAction()
-                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
-                            """
-                            
-                            # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
-                            try:
-                                # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
-                                if who.direction != monster.walkPattern[-1]:
-                                    monster.walkPattern.pop()
-                            except:
-                                if monster.canTarget(monster.target.position):
-                                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                                elif not monster.canTarget(monster.target.position, allowGroundChange=True):
-                                    monster.target = None
-                                    monster.targetMode = 0
-                                    
-                            if monster.target:
-                                # We shall be called again later
-                                monster.target.scripts["onNextStep"].append(__followCallback)
-                            
-                    monster.target.scripts["onNextStep"].append(__followCallback)
+            if not monster.target and monster.base.hostile and monster.data["health"] > monster.base.runOnHealth:
+                monster.targetCheck()
+                if monster.target:
                     return True # Prevent random walking
         else:
             if not monster.master.alive:
