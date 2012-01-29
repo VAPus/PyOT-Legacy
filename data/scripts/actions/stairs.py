@@ -167,7 +167,7 @@ reg('useWith', stairs, itemFloorChange)
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398
 rampsDown = 459,
-reg("preWalkOn", stairs+ramps+rampsDown, vertifyRampWalk)
+
 reg("walkOn", ramps, teleportOrWalkDirection)
 reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
 
@@ -182,3 +182,7 @@ reg("walkOn", laddersDown, floordown)
 # Trapdoors, holes etc
 trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
 reg("walkOn", trapsAndHoles, floordown)
+
+
+if not config.monsterStairHops:
+    reg("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp, vertifyRampWalk)
