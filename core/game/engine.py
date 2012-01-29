@@ -55,7 +55,7 @@ def loader(timer):
     d = game.item.loadItems()
 
     @inlineCallbacks
-    def _sql_():
+    def _sql_(*a):
         for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
             if x[2] == 'json':
                 globalStorage[x[0]] = otjson.loads(x[1])
@@ -63,13 +63,19 @@ def loader(timer):
                 globalStorage[x[0]] = pickle.loads(x[1])
             else:
                 globalStorage[x[0]] = x[1]
-
-        for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            game.house.houseData[x[0]] = game.house.House(x[0], x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8])
-            
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
             groups[x[0]] = (x[1], otjson.loads(x[2]))
-    _sql_()            
+            
+    _sql_()        
+    
+    @inlineCallbacks
+    def _sql2_(*a):
+        for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
+            game.house.houseData[x[0]] = game.house.House(x[0], x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8])
+    
+    
+    d.addCallback(_sql2_) # Houses goes after items
+    
     def sync(d, timer):
         # Load scripts
         game.scriptsystem.importer()
