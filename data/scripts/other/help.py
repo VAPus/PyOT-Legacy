@@ -352,7 +352,7 @@ def walkRandomStep(creature, callback):
             break
         if d == None:
             later = creature.lastAction - time.time()
-            if later:
+            if later > 0:
                 callLater(later + 0.1, callback)
                 return
             else:
