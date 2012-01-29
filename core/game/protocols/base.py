@@ -341,17 +341,17 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         elif oldPos.z+1 > 8:
-            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, oldPos.z-3, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, oldPos.z-3, -3, player)
             
             if skip >= 0:
                 self.uint8(skip)
                 self.uint8(0xFF)            
         
         self.uint8(0x66) # East
-        self.mapDescription(Position(oldPos.x + 9, oldPos.y - 6, oldPos.z+1), 1, 14, player)
+        self.mapDescription(Position(oldPos.x + 9, oldPos.y - 7, oldPos.z+1), 1, 14, player)
         self.uint8(0x67) # South
         self.mapDescription(Position(oldPos.x - 8, oldPos.y + 7, oldPos.z+1), 18, 1, player)
-        
+
     def updateTileItem(self, pos, stackpos, item):
         if stackpos > 9: return
         self.uint8(0x6B)
