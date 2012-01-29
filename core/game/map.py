@@ -274,6 +274,7 @@ class Tile(object):
         self.things.insert(pos, creature)
         self._modpack(PACK_CREATURES, 1)
         if pos > 9:
+            print self.things
             raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos
         
@@ -289,6 +290,7 @@ class Tile(object):
             pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
         self.things.insert(pos, item)
         if pos > 9:
+            print self.things
             raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos
     

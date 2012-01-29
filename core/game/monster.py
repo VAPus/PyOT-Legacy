@@ -292,7 +292,7 @@ class Monster(Creature):
                 self.turnAgainst(self.target.position)
             else:
                 # Apperently not. Try walking again.
-                if self.canTarget(self.target.position):
+                if self.canTarget(self.target.position) and not self.walkPattern:
                     engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                             
         # Begin autowalking
@@ -307,7 +307,7 @@ class Monster(Creature):
                     if who.direction != self.walkPattern[-1]:
                         self.walkPattern.pop()
                 except:
-                    if self.canTarget(self.target.position):
+                    if self.canTarget(self.target.position) and not self.walkPattern:
                         engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                     elif not self.canTarget(self.target.position, allowGroundChange=True):
                         self.target = None
@@ -612,7 +612,7 @@ class MonsterBrain(object):
         
     def handleThink(self, monster, check=True):
         # Are we alive?
-        if not monster.alive or not monster.brainEvent:
+        if not monster.alive:
             monster.turnOffBrain()
             return False # Stop looper
         

@@ -334,9 +334,6 @@ class Creature(object):
             
         oldTile.removeCreature(self)
         
-        self.position = position
-        self.direction = direction % 4
-        
         # Mark for save
         if self.isPlayer():
             self.saveData = True
@@ -346,6 +343,9 @@ class Creature(object):
             spectators = getPlayers(position, (11, 9))"""
         if self.isPlayer():
             ignore = (self,)
+            self.position = position
+            print position
+            self.direction = direction % 4
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
                 #stream = spectator.packet(0x6D)
@@ -405,7 +405,6 @@ class Creature(object):
                 if isKnown:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     spectator.knownCreatures.remove(self)
-                    print "[block -11]"
             
             else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
@@ -448,6 +447,9 @@ class Creature(object):
         for creature2 in appearTo:
             game.scriptsystem.get('appear').runSync(creature2, self)
             game.scriptsystem.get('appear').runSync(self, creature2)
+        if not self.isPlayer():
+            self.position = position
+            self.direction = direction % 4
         
         returnValue(True)
         
@@ -915,7 +917,8 @@ class Creature(object):
             return False
         
         offsetz = self.position.z-position.z
-        if (position.x >= self.position.x - radius[0] + offsetz) and (position.x <= self.position.x + radius[0]+1 + offsetz) and (position.y >= self.position.y - radius[1] + offsetz) and (position.y <= self.position.y + radius[1]+1 + offsetz):
+
+        if position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz):
             return True
         return False
 

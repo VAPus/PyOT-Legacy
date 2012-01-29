@@ -144,8 +144,8 @@ class TibiaPacket(object):
     def send(self, stream):
         if not stream or not self.bytes:
             return
-        data = ''.join(self.bytes)
-        data = struct.pack("<H", len(data))+data
+
+        data = struct.pack("<H", len(self.bytes))+self.bytes
         
         if stream.xtea:
             data = otcrypto.encryptXTEA(data, stream.xtea)
@@ -157,8 +157,7 @@ class TibiaPacket(object):
         if not list or not self.bytes:
             return # Noone to send to
         
-        data = ''.join(self.bytes)
-        data = struct.pack("<H", len(data))+data
+        data = struct.pack("<H", len(self.bytes))+self.bytes
         for client in list:
             if not client:
                 continue

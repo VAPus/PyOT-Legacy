@@ -316,7 +316,7 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         elif oldPos.z-1 > 7: # Still underground
-            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-3, 18, 14, oldPos.z+3, -1, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-3, 18, 14, oldPos.z+3, 3, player)
             
             if skip >= 0:
                 self.uint8(skip)
@@ -327,8 +327,7 @@ class BasePacket(TibiaPacket):
         
         self.uint8(0x65) # North
         self.mapDescription(Position(oldPos.x - 8, oldPos.y - 6, oldPos.z-1), 18, 1, player)
-        
-        
+         
     def moveDownPlayer(self, player, oldPos):
         self.uint8(0xBF)
         if oldPos.z+1 == 8:

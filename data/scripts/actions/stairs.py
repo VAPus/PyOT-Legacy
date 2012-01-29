@@ -13,6 +13,7 @@ scriptsystem.get("walkOn").reg(stairwest, walker(3))
 scriptsystem.get("walkOn").reg(staireast, walker(1))"""
 
 def floorchange(creature, thing, position, **k):
+    print "Called"
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return
