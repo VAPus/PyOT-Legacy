@@ -612,12 +612,10 @@ class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
         if not monster.brainEvent:
             monster.brainEvent = reactor.callLater(0, self.handleThink, monster)
-        else:
-            raise Exception("Attempting to start a brain of a active monster!")
         
     def handleThink(self, monster, check=True):
         # Are we alive?
-        if not monster.alive or not monster.brainEvent:
+        if not monster.alive:
             monster.turnOffBrain()
             return False # Stop looper
         
