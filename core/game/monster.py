@@ -649,7 +649,7 @@ class MonsterBrain(object):
                 monster.noBrain = True
                 return False
             
-            if monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = reactor.callLater(2, self.handleThink, monster)

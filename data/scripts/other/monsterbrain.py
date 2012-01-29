@@ -18,7 +18,7 @@ def defaultBrainFeaturePriority(monster):
                     monster.target = None
                     monster.targetMode = 0
                 
-                if monster.walkPer == 0.1:
+                if monster.walkPer == 0.5:
                     monster.walkPer = config.monsterWalkPer
                     monster.setSpeed(monster.speed / 2)
                 

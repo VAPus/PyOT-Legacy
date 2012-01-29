@@ -60,7 +60,7 @@ runeCastDelay = 1 # Set to 0 to disable the delay.
 
 # Monster behavior
 monsterWalkBack = False # Walk or Teleport back to spawn point
-monsterWalkPer = 3 # Amount of seconds between walks without target
+monsterWalkPer = 2 # Amount of seconds between walks without target.
 monsterNeverSkipWalks = True # This makes monsters always calculate a new rute if it runs into solid tiles etc. Walking will be smooth
 monsterStairHops = False # Allow monsters to walk up and down stairs
 
