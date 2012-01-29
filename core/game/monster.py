@@ -418,10 +418,6 @@ class MonsterBase(CreatureBase):
                 monster.radiusTo = radiusTo
             else:
                 monster.radiusTo = (position[0], position[1])
-                
-            
-            if self.targetChance and not (self.meleeAttacks or self.spellAttacks or self.distanceAttacks):
-                log.msg("Warning: '%s' have targetChance, but no attacks!" % self.data["name"])
 
             if place and stackpos and stackpos < 10:
                 for player in engine.getPlayers(position):
