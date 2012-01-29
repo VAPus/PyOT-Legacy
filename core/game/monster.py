@@ -247,6 +247,7 @@ class Monster(Creature):
         return self.base.attackable
 
     def targetCheck(self, targets=None):
+        _target = self.target
         if not targets:
             targets = engine.getPlayers(self.position) # Get all creaturse in range
             if not targets:
@@ -264,7 +265,10 @@ class Monster(Creature):
                     # If it's smaller then the previous value
                     bestDist = dist
                     target = player
-        if target:
+                    
+        if _target == target:
+            return # We already have this target
+        elif target:
             ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
             
             if ret == False:
