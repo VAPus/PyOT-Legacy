@@ -405,7 +405,6 @@ class Creature(object):
                 if isKnown:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     spectator.knownCreatures.remove(self)
-                    print "[block -11]"
             
             else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7

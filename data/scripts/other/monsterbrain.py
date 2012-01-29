@@ -6,7 +6,7 @@ def defaultBrainFeaturePriority(monster):
                 monster.targetCheck()
                 
             # If target is out of sight, stop following it and begin moving back to base position
-            elif not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
+            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
                 monster.base.onTargetLost(monster.target)
                 monster.intervals = {} # Zero them out
                 if monster.master:
