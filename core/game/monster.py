@@ -41,7 +41,6 @@ class Monster(Creature):
         self.lastMelee = 0
         self.lastDistance = 0
         self.walkPer = base.walkPer
-        self.noBrain = True
         self.brainEvent = None
         self.spawnTime = None
         self.radius = 5
@@ -92,20 +91,28 @@ class Monster(Creature):
         
         # What, no match?
         return dmg
+    
+    def turnOffBrain(self):
+        try:
+            self.brainEvent.cancel()
+        except:
+            pass
+        
+        self.brainEvent = None
         
     def onDeath(self):
         # Remove master summons
         if self.master:
             self.master.activeSummons.remove(self)
             
-        self.noBrain = True
+        self.turnOffBrain()
         
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
                 summon.magicEffect(EFFECT_POFF)
                 summon.despawn()
-                summon.noBrain = True
+                summon.turnOffBrain()
                 
         # Transform
         tile = map.getTile(self.position)
@@ -598,20 +605,15 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
-        if monster.noBrain:
-            monster.noBrain = False
-            self.handleThink(monster)
+        if not monster.brainEvent:
+            monster.brainEvent = reactor.callLater(0, self.handleThink, monster)
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
     def handleThink(self, monster, check=True):
         # Are we alive?
-        if not monster.alive or monster.noBrain:
-            monster.noBrain = True
-            try:
-                monster.brainEvent.cancel()
-            except:
-                pass
+        if not monster.alive or not monster.brainEvent:
+            monster.turnOffBrain()
             return False # Stop looper
         
         if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
@@ -628,6 +630,7 @@ class MonsterBrain(object):
             ret = brainFeatures[0][feature](monster)
                 
             if ret == False:
+                monster.turnOffBrain()
                 return False
             elif ret == True:
                 monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
@@ -637,6 +640,7 @@ class MonsterBrain(object):
             ret = brainFeatures[1][feature](monster)
 
             if ret == False:
+                monster.turnOffBrain()
                 return False
             elif ret == True:
                 monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
@@ -646,7 +650,7 @@ class MonsterBrain(object):
         if not monster.target: # This have already been vertified!
             
             if check and not engine.hasSpectators(monster.position, (9, 7)):
-                monster.noBrain = True
+                monster.turnOffBrain()
                 return False
             
             if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
