@@ -397,8 +397,6 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             stream = spectator.packet()
             
-            print canSeeNew, canSeeOld, isKnown     
-            
             if not canSeeOld and canSeeNew:
                 # Too high stack?
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so

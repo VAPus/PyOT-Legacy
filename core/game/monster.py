@@ -42,6 +42,7 @@ class Monster(Creature):
         self.lastDistance = 0
         self.walkPer = base.walkPer
         self.noBrain = True
+        self.brainEvent = None
         self.spawnTime = None
         self.radius = 5
         self.master = None
@@ -603,12 +604,14 @@ class MonsterBrain(object):
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
-    #@engine.loopInThread(2)
-    @engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
         # Are we alive?
-        if not monster.alive:
+        if not monster.alive or monster.noBrain:
             monster.noBrain = True
+            try:
+                monster.brainEvent.cancel()
+            except:
+                pass
             return False # Stop looper
         
         if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
@@ -624,14 +627,20 @@ class MonsterBrain(object):
         for feature in monster.base.brainFeatures:
             ret = brainFeatures[0][feature](monster)
                 
-            if ret in (True, False):
-                return ret
+            if ret == False:
+                return False
+            elif ret == True:
+                monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
+                return True
 
         for feature in monster.base.brainFeatures:
             ret = brainFeatures[1][feature](monster)
 
-            if ret in (True, False):
-                return ret
+            if ret == False:
+                return False
+            elif ret == True:
+                monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
+                return True
                     
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
@@ -643,6 +652,8 @@ class MonsterBrain(object):
             if monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
+        monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
+        
     @defer.inlineCallbacks
     def walkRandomStep(self, monster, badDir=None):
         if not badDir:
