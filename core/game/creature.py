@@ -402,11 +402,11 @@ class Creature(object):
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
-                if isKnown and spectator.canSee(oldPosition): # temp code
+                if isKnown:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     spectator.knownCreatures.remove(self)
             
-            elif spectator.canSee(oldPosition):
+            else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
@@ -591,9 +591,6 @@ class Creature(object):
         if not self.alive:
             print "[DEBUG]: A dead creature seem to have been hit"
             return
-            
-        if self.isMonster() and not self.brainEvent:
-            self.base.brain.handleThink(self)
             
         self.lastDamager = by
           
