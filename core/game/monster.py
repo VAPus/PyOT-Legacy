@@ -247,7 +247,6 @@ class Monster(Creature):
         return self.base.attackable
 
     def targetCheck(self, targets=None):
-        _target = self.target
         if not targets:
             targets = engine.getPlayers(self.position) # Get all creaturse in range
             if not targets:
@@ -265,11 +264,7 @@ class Monster(Creature):
                     # If it's smaller then the previous value
                     bestDist = dist
                     target = player
-                    
-        if target == _target and self.walkPattern:
-                return # We already have this target
-            
-        elif target:
+        if target:
             ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
             
             if ret == False:
@@ -297,7 +292,7 @@ class Monster(Creature):
                 self.turnAgainst(self.target.position)
             else:
                 # Apperently not. Try walking again.
-                if self.canTarget(self.target.position) and not self.walkPattern:
+                if self.canTarget(self.target.position):
                     engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                             
         # Begin autowalking
@@ -312,7 +307,7 @@ class Monster(Creature):
                     if who.direction != self.walkPattern[-1]:
                         self.walkPattern.pop()
                 except:
-                    if self.canTarget(self.target.position) and not self.walkPattern:
+                    if self.canTarget(self.target.position):
                         engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                     elif not self.canTarget(self.target.position, allowGroundChange=True):
                         self.target = None
@@ -654,7 +649,7 @@ class MonsterBrain(object):
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
             
-            if check and not engine.hasSpectators(monster.position, (11, 9)):
+            if check and not engine.hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
                 return False
             
