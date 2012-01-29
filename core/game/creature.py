@@ -937,7 +937,7 @@ class Creature(object):
         return abs(self.position.x-position.x)+abs(self.position.y-position.y)
         
     def inRange(self, position, x, y, z=0):
-        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= y )   
+        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )   
     
     def positionInDirection(self, direction):
         position = self.position.copy()
