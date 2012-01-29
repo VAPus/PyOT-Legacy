@@ -274,6 +274,7 @@ class Creature(object):
         oldTile = getTile(oldPosition)
 
         if not newTile:
+            self.cancelWalk()
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             returnValue(False)
             
@@ -284,6 +285,7 @@ class Creature(object):
         
         val = yield game.scriptsystem.get("move").runDefer(self)
         if val == False:
+            self.cancelWalk()
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             returnValue(False)
             return
@@ -292,6 +294,9 @@ class Creature(object):
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
             self.cancelWalk()
+            self.walkPattern = [] # If we got a queue of moves, we need to end it!
+            returnValue(False)
+            
             return
 
         # Deal with walkOff
@@ -302,6 +307,7 @@ class Creature(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
+                self.cancelWalk()
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
                 returnValue(False)
                 return
@@ -312,6 +318,7 @@ class Creature(object):
                     continue
                 
                 #self.turn(direction) # Fix me?
+                self.cancelWalk()
                 self.notPossible()
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
                 returnValue(False)
@@ -335,76 +342,83 @@ class Creature(object):
             self.saveData = True
             
         # Send to everyone   
-        if not spectators:
-            spectators = getPlayers(position, (11, 9))
+        """if not spectators:
+            spectators = getPlayers(position, (11, 9))"""
+        if self.isPlayer():
+            ignore = (self,)
+            stream = self.packet()
+            if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
+                #stream = spectator.packet(0x6D)
+                stream.uint8(0x6D)
+                stream.position(oldPosition)
+                stream.uint8(oldStackpos)
+                stream.position(position)   
+            else:
+                stream.removeTileItem(oldPosition, oldStackpos)
+                    
+            # Levels
+            if oldPosition.z > position.z:
+                stream.moveUpPlayer(self, oldPosition)
+                        
+            elif oldPosition.z < position.z:
+                stream.moveDownPlayer(self, oldPosition)
+
+            # Y movements
+            if oldPosition.y > position.y:
+                stream.uint8(0x65)
+                stream.mapDescription(Position(oldPosition.x - 8, position.y - 6, position.z), 18, 1, self)
+            elif oldPosition.y < position.y:
+                stream.uint8(0x67)
+                stream.mapDescription(Position(oldPosition.x - 8, position.y + 7, position.z), 18, 1, self)
+                
+            # X movements
+            if oldPosition.x < position.x:
+                stream.uint8(0x66)
+                stream.mapDescription(Position(position.x + 9, position.y - 6, position.z), 1, 14, self)
+            elif oldPosition.x > position.x:
+                stream.uint8(0x68)
+                stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
+                
+            stream.send(self.client) 
             
-        for spectator in spectators:
+        else:
+            ignore = ()
+        oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
+        newPosCreatures = getPlayers(position, ignore=ignore)   
+        
+        for spectator in (oldPosCreatures|newPosCreatures):
+            
             # Make packet
             if not spectator.client:
                 continue
 
-            canSeeNew = spectator.canSee(position)
-            canSeeOld = spectator.canSee(oldPosition)
+            canSeeNew = spectator in newPosCreatures
+            canSeeOld = spectator in oldPosCreatures
             isKnown = self in spectator.knownCreatures
+            stream = spectator.packet()
             
-            if spectator == self:
-                if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
-                    stream = spectator.packet(0x6D)
-                    stream.position(oldPosition)
-                    stream.uint8(oldStackpos)
-                    stream.position(position)   
-                else:
-                    stream = spectator.packet()
-                    stream.removeTileItem(oldPosition, oldStackpos)
-                    
-                # Levels
-                if oldPosition.z > position.z:
-                    stream.moveUpPlayer(self, oldPosition)
-                        
-                elif oldPosition.z < position.z:
-                    stream.moveDownPlayer(self, oldPosition)
-
-                # Y movements
-                if oldPosition.y > position.y:
-                    stream.uint8(0x65)
-                    stream.mapDescription(Position(oldPosition.x - 8, self.position.y - 6, self.position.z), 18, 1, self)
-                elif oldPosition.y < position.y:
-                    stream.uint8(0x67)
-                    stream.mapDescription(Position(oldPosition.x - 8, self.position.y + 7, self.position.z), 18, 1, self)
-                
-                # X movements
-                if oldPosition.x < position.x:
-                    stream.uint8(0x66)
-                    stream.mapDescription(Position(self.position.x + 9, self.position.y - 6, self.position.z), 1, 14, self)
-                elif oldPosition.x > position.x:
-                    stream.uint8(0x68)
-                    stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 1, 14, self)
-
-                    
-                    
-            elif not canSeeOld and canSeeNew:
-                stream = spectator.packet()
+            print canSeeNew, canSeeOld, isKnown     
+            
+            if not canSeeOld and canSeeNew:
                 # Too high stack?
                 stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
                 if isKnown:
-                    stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
                     spectator.knownCreatures.remove(self)
-                
-            elif not canSeeOld and not canSeeNew:
-                continue
+                    print "[block -11]"
+            
             else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
-                    stream = spectator.packet(0x6D)
+                    stream.uint8(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
-                    stream.position(position)  
+                    stream.position(position)
                     
                 else:
-                    stream = spectator.packet()
                     stream.removeTileItem(oldPosition, oldStackpos)
+                    spectator.knownCreatures.remove(self)
                     stream.addTileCreature(position, newStackPos, self, spectator)
                     
             stream.send(spectator.client) 
@@ -427,12 +441,6 @@ class Creature(object):
 
             
         # Deal with appear and disappear. Ahh the power of sets :)
-        if self.isPlayer():
-            ignore = (self,)
-        else:
-            ignore = ()
-        oldPosCreatures = game.engine.getPlayers(oldPosition, ignore=ignore)
-        newPosCreatures = game.engine.getPlayers(position, ignore=ignore)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
@@ -444,6 +452,7 @@ class Creature(object):
             game.scriptsystem.get('appear').runSync(self, creature2)
         
         returnValue(True)
+        
     def magicEffect(self, type, pos=None):
         if not type: return
         

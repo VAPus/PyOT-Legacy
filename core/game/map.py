@@ -61,6 +61,8 @@ class Position(object):
             
         object.__setattr__(self, name, val)"""
 
+    def __setattr__(self, name, val):
+        object.__setattr__(self, name, val)
     # Support for the old behavior of list attributes.
     def __setitem__(self, key, value):
         if key == 0:

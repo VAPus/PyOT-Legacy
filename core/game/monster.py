@@ -601,9 +601,12 @@ class MonsterBase(CreatureBase):
         
 class MonsterBrain(object):
     def beginThink(self, monster, isOk=False):
-        monster.noBrain = False
-        self.handleThink(monster)
-                
+        if monster.noBrain:
+            monster.noBrain = False
+            self.handleThink(monster)
+        else:
+            raise Exception("Attempting to start a brain of a active monster!")
+        
     #@engine.loopInThread(2)
     @engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
