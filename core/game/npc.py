@@ -44,7 +44,7 @@ class NPC(Creature):
         self.base = base
         self.creatureType = 2
         self.spawnPosition = position.copy()
-        self.noBrain = True
+        self.brainEvent = None
         self.walkPer = base.walkPer
         self.openChannels = []
         self.focus = set()
@@ -169,7 +169,15 @@ class NPC(Creature):
             
     def isAttackable(self, by):
         return self.base.attackable
-    
+
+    def turnOffBrain(self):
+        try:
+            self.brainEvent.cancel()
+        except:
+            pass
+        
+        self.brainEvent = None
+        
     def farewell(self, player):
         # Allow farewell to be callable.
         if hasattr(self.base.speakFarewell, '__call__'):
@@ -197,7 +205,7 @@ class NPCBase(CreatureBase):
         self.attackable = False
         self.walkPer = config.monsterWalkPer
    
-        self.brainFeatures = ["default"]
+        self.brainFeatures = [] #["default"]
         self.classActions = []
         self.actions = ['creature', 'npc', self.data["name"]]
         self.speakGreet ="Welcome, %(playerName)s! I have been expecting you."
@@ -525,37 +533,42 @@ def chance(procent):
     return gen
 
 class NPCBrain(MonsterBrain):
-    #@game.engine.loopInThread(2)
-    game.engine.loopDecorator(2)
     def handleThink(self, npc, check=True):
-        npc.noBrain = False
+        
         # Are we alive?
         if not npc.alive:
-            npc.noBrain = True
+            npc.turnOffBrain()
             return False # Stop looper 
 
         for feature in npc.base.brainFeatures:
-            if feature in brainFeatures[0]:
-                ret = brainFeatures[0][feature](self, npc)
+            ret = brainFeatures[0][feature](npc)
                 
-                if ret in (True, False):
-                    return ret
+            if ret == False:
+                npc.turnOffBrain()
+                return False
+            elif ret == True:
+                npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
+                return True
 
         for feature in npc.base.brainFeatures:
-            if feature in brainFeatures[1]:
-                ret = brainFeatures[1][feature](self, npc)
+            ret = brainFeatures[1][feature](npc)
 
-                if ret in (True, False):
-                    return ret
+            if ret == False:
+                npc.turnOffBrain()
+                return False
+            elif ret == True:
+                npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
+                return True
                     
         # Are anyone watching?
-        if check and not game.engine.getSpectators(npc.position, (11, 9), cache=False):
-            monster.noBrain = True
+        if check and not game.engine.getSpectators(npc.position, (11, 9)):
+            npc.turnOffBrain()
             return False
             
         if npc.base.walkable and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
-            self.walkRandomStep(monster) # Walk a random step
+            self.walkRandomStep(npc) # Walk a random step
 
+        npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
 brain = NPCBrain()
 def genNPC(name, look, description=""):
     # First build the common creature data
