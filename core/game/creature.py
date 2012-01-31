@@ -332,7 +332,6 @@ class Creature(object):
         self.extAction = _time + (delay/2)
                 
         newStackPos = newTile.placeCreature(self)
-            
         oldTile.removeCreature(self)
         
         # Mark for save
@@ -345,7 +344,6 @@ class Creature(object):
         if self.isPlayer():
             ignore = (self,)
             self.position = position
-            print position
             self.direction = direction % 4
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
@@ -388,12 +386,9 @@ class Creature(object):
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
         for spectator in (spectators):
-            
             # Make packet
             if not spectator.client:
                 continue
-            if spectator == self:
-                continue # Shouldn't happend
                 
             canSeeNew = spectator in newPosCreatures
             canSeeOld = spectator in oldPosCreatures
@@ -402,18 +397,20 @@ class Creature(object):
             
             if not canSeeOld and canSeeNew:
                 # Too high stack?
-                
-                stream.addTileCreature(position, newStackPos, self, spectator, isKnown) # This automaticly deals with known list so
-                    
+                stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
             elif canSeeOld and not canSeeNew:
                 stream.removeTileItem(oldPosition, oldStackpos)
-                spectator.knownCreatures.remove(self)
-                self.knownBy.remove(spectator)
-            
             else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
-                    if not isKnown:
-                        stream.addTileCreature(oldPosition, oldStackpos, self, spectator)
+                    """ Cheat!!! """
+                    stream .uint8(0x69)
+                    stream.position(oldPosition)
+                    oldTile.placeCreature(self)
+                    stream.tileDescription(oldTile, spectator)
+                    oldTile.removeCreature(self)
+                    stream.uint8(0x00)
+                    stream.uint8(0xFF)
+                    """ / Cheat """
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -421,12 +418,13 @@ class Creature(object):
                     
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
-                    spectator.knownCreatures.remove(self)
-                    self.knownBy.remove(spectator)
                     stream.addTileCreature(position, newStackPos, self, spectator)
                     
             stream.send(spectator.client) 
-
+            
+        
+        
+        
         if self.scripts["onNextStep"]:
             scripts = self.scripts["onNextStep"][:]
             self.scripts["onNextStep"] = []
@@ -584,7 +582,7 @@ class Creature(object):
         if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
             return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD
         elif self.base.blood == game.enum.FLUID_SLIME:
-            return game.enum.COLOR_LIGHTGREEN, game.enum.EFFECT_POISON
+            return game.enum.COLOR_LIGHTGREEN, game.enum.EFFECT_HITBYPOISON
         elif self.base.blood == game.enum.FLUID_ENERGY:
             return game.enum.COLOR_PURPLE, game.enum.EFFECT_PURPLEENERGY
         elif self.base.blood == game.enum.FLUID_UNDEAD:
@@ -924,7 +922,7 @@ class Creature(object):
         
         offsetz = self.position.z-position.z
 
-        return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz)
+        return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0]+1 + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1]+1 + offsetz)
 
         
     def canTarget(self, position, radius=(7,5), allowGroundChange=False):

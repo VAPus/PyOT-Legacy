@@ -158,7 +158,7 @@ class Item(object):
             except:
                 try:
                     return _loadItem[name]
-                except KeyError:
+                except:
                     if not "__" in name:
                         return None
                        

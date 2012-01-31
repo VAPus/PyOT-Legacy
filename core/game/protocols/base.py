@@ -71,7 +71,7 @@ class BasePacket(TibiaPacket):
     def item(self, item, count=None):
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
-
+                
             if item.stackable:
                 self.uint8(item.count or 1)
             elif item.type in (11,12):
@@ -274,6 +274,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
+        print "===", item, item.itemId
         self.item(item)
 
     def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
@@ -999,8 +1000,7 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-        print player.canSee(Position(position.x+1, position.y, position.z)), player.canSee(Position(position.x, position.y+1, position.z))
-        print player.canSee(Position(position.x-1, position.y, position.z)), player.canSee(Position(position.x, position.y-1, position.z))
+        print player.canSee(position)
         clientId = packet.uint16()
         stackpos = packet.uint8()
         

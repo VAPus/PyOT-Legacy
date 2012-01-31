@@ -406,7 +406,8 @@ class HouseTile(Tile):
 
         try:
             for item in game.house.houseData[self.houseId].data["items"][self.position]:
-                self.placeItem(item)
+                if item and item.itemId:
+                    self.placeItem(item)
         except KeyError:
             pass
     

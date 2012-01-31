@@ -160,13 +160,7 @@ def defaultBrainFeature(monster):
                             """monster.stopAction()
                             engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                             """
-                            
-                            # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
-                            try:
-                                # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
-                                if who.direction != monster.walkPattern[-1]:
-                                    monster.walkPattern.pop()
-                            except:
+                            if not monster.walkPattern or who.direction != monster.walkPattern[0]:
                                 if monster.canTarget(monster.target.position):
                                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                                 else:
@@ -209,13 +203,7 @@ def defaultBrainFeature(monster):
                         """monster.stopAction()
                         engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         """
-                            
-                        # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
-                        try:
-                            # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
-                            if who.direction != monster.walkPattern[-1]:
-                                monster.walkPattern.pop()
-                        except:
+                        if not monster.walkPattern or who.direction != monster.walkPattern[0]:
                             if monster.canTarget(monster.target.position):
                                 engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                             else:

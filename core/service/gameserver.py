@@ -241,6 +241,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onConnectionLost(self):
         if self.player:
+            print "Lost connection on, ", self.player.position
             self.player.client = None
             self.player.knownCreatures = set()
             self.player.knownBy = set()

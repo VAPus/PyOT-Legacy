@@ -305,15 +305,10 @@ class Monster(Creature):
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
             if self.target == who:                       
-                # Remove the last entry. This will force us to do ONE more pathcalculation 50% of the times. It also might fail if there is no more
-                try:
-                    # If the step are in the same direction as the player moved, then obiosly this is wasted since we'll just end up doing A* where we already know this is the ideal one.
-                    if who.direction != self.walkPattern[-1]:
-                        self.walkPattern.pop()
-                except:
-                    if self.canTarget(self.target.position) and not self.walkPattern:
+                if not self.walkPattern or who.direction != self.walkPattern[0]:
+                    if self.canTarget(self.target.position):
                         engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
-                    elif not self.canTarget(self.target.position, allowGroundChange=True):
+                    else:
                         self.target = None
                         self.targetMode = 0
                                     
