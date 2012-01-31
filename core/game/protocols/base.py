@@ -637,7 +637,10 @@ class BaseProtocol(object):
     def handleAutoWalk(self, player, packet):
         if player.target:
             player.target = None
-        player.stopAction()    
+        player.stopAction()  
+        player.walkPattern = deque()
+        player.cancelWalk() # Always
+        
         steps = packet.uint8()
 
         walkPattern = deque()
