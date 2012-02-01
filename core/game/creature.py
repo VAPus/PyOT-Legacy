@@ -408,7 +408,7 @@ class Creature(object):
                 stream.uint8(0x00)
                 stream.uint8(0xFF)
                 """ / Cheat """
-            else:
+            elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
                     stream .uint8(0x69)

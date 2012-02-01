@@ -20,7 +20,10 @@ def decryptXTEA(stream, k):
     buffer = ""
     pos = 0
     while pos < (len(stream)):
-        v0,v1 = struct.unpack("<2L", stream[pos:pos+8])
+        try:
+            v0,v1 = struct.unpack("<2L", stream[pos:pos+8])
+        except:
+            print "[DEBUG] XTEA got a too small packet", len(stream), pos
         sum = (0x9E3779B9 * 32) & 0xffffffff
         for i in xrange(32):
             v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (sum + k[sum>>11 & 3]))) & 0xffffffff

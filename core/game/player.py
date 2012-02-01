@@ -12,6 +12,7 @@ import game.party
 import game.resource
 import game.chat
 import game.pathfinder
+import game.protocol
 import sql
 import game.vocation
 import random
@@ -180,7 +181,7 @@ class Player(Creature):
         try:
             return self.client.protocol.Packet(*args)
         except:
-            return None
+            return game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet(*args)
 
     def ip(self):
         if self.client:
