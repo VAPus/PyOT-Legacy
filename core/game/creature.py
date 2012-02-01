@@ -395,11 +395,17 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             stream = spectator.packet()
             
-            """if not canSeeOld and canSeeNew:
+            if not canSeeOld and canSeeNew:
                 # Too high stack?
-                stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
-            el"""
-            if canSeeOld and not canSeeNew:
+                """ Cheat!!! """
+                stream .uint8(0x69)
+                stream.position(position)
+                stream.tileDescription(newTile, spectator)
+                stream.uint8(0x00)
+                stream.uint8(0xFF)
+                """ / Cheat """
+            
+            elif canSeeOld and not canSeeNew:
                 """stream.removeTileItem(oldPosition, oldStackpos)"""
                 """ Cheat!!! """
                 stream .uint8(0x69)
