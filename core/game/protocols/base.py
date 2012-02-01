@@ -639,7 +639,6 @@ class BaseProtocol(object):
             player.target = None
         player.stopAction()  
         player.walkPattern = deque()
-        player.cancelWalk() # Always
         
         steps = packet.uint8()
 
