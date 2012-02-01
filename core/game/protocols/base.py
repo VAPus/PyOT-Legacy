@@ -831,7 +831,7 @@ class BaseProtocol(object):
                         
                     renew = True
                     oldItem[1].count -= count
-                    if oldItem[1].count:
+                    if oldItem[1].count > 0:
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition.y, oldItem[1])
                         elif oldItem[0] == 2:
@@ -954,22 +954,24 @@ class BaseProtocol(object):
                             except:
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
+                    
+                    
                     if renew and currItem and currItem[1]:
                         if fromPosition.y < 64:
-                            player.inventory[fromPosition.y-1] = currItem[1]
+                            player.inventory[fromPosition.y-1] = oldItem[1].copy()
                             
-                            if container.container.items[toPosition.z].decayPosition:
+                            """if container.container.items[toPosition.z].decayPosition:
                                 container.container.items[toPosition.z].decayPosition = (0xFFFF, fromPosition.y)
                                 
                             if container.container.items[toPosition.z].decayCreature:
-                                container.container.items[toPosition.z].decayCreature = player
+                                container.container.items[toPosition.z].decayCreature = player"""
                                 
                             stream.addInventoryItem(fromPosition.y, player.inventory[fromPosition.y-1])
                             
-                            if player.addCache(currItem[1]):
+                            if player.addCache(oldItem[1]):
                                 player.refreshStatus(stream)
                         else:
-                            player.itemToContainer(currItem[2], currItem[1])
+                            player.itemToContainer(player.getContainer(fromPosition.y-64), oldItem[1], streamX=stream)
                     
                     if sendUpdate:
                         stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
