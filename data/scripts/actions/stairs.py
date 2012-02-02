@@ -161,13 +161,13 @@ def vertifyRampWalk(creature, **k):
         return False
         
 # Stairs
-stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138
+stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 6920, 5260, 5259, 9573, 9574, 3688, 5258, 459
 reg("walkOn", stairs, floorchange)
 reg('useWith', stairs, itemFloorChange)
 
 # Ramps
-ramps = 1390, 1388, 1394, 1392, 1398
-rampsDown = 459,
+ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
+rampsDown = 8561,
 
 reg("walkOn", ramps, teleportOrWalkDirection)
 reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
@@ -177,7 +177,7 @@ laddersUp = 1386, 3678, 5543, 8599
 reg("use", laddersUp, floorup)
 
 # Ladders down
-laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
+laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606
 reg("walkOn", laddersDown, floordown)
 
 # Trapdoors, holes etc

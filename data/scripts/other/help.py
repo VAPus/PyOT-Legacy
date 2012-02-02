@@ -12,7 +12,22 @@ def teleporter(creature, text):
         creature.message("Can't teleport to solid tiles!")
     else:
         creature.message("Welcome to %s" % text)
-    
+
+def up(creature, text):
+    up = creature.position.copy()
+    up.z -= 1
+    try:
+            creature.teleport(up)
+    except:
+            creature.notPossible()
+def down(creature, text):
+    up = creature.position.copy()
+    up.z += 1
+    try:
+            creature.teleport(up)
+    except:
+            creature.notPossible()
+            
 def tiler(creature, text):
         global last
         if len(text.split(" ")) < 2:
@@ -55,6 +70,8 @@ reg("talkactionFirstWord", 'teleport', teleporter)
 reg("talkactionFirstWord", 'set', tiler)
 reg("talkaction", 't', tilerE)
 reg("talkaction", 'mypos', mypos)
+reg("talkaction", '/up', up)
+reg("talkaction", '/down', down)
 def speedsetter(creature, text):
     try:
         creature.setSpeed(int(text))
