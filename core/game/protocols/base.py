@@ -906,11 +906,11 @@ class BaseProtocol(object):
                     if currItem and currItem[1] and currItem[1].containerSize:
                         ret = player.itemToContainer(currItem[1], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
 
-                    elif currItem and (currItem[0] == 2) and not currItem[1] and currItem[2]:
+                    elif currItem and (currItem[0] == 2) and currItem[2]:
                         ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
                     else:
-                        if currItem:
-                            player.addItem(currItem[1])
+                        """if currItem:
+                            player.addItem(currItem[1])"""
                         if toPosition.y < 64:
                             if oldItem[1].stackable and player.inventory[toPosition.y-1] and player.inventory[toPosition.y-1].itemId == sid(clientId) and (player.inventory[toPosition.y-1].count + count <= 100):
                                 player.inventory[toPosition.y-1].count += count
@@ -957,7 +957,7 @@ class BaseProtocol(object):
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
                     
-                    if renew and currItem and currItem[1] and oldItem[1].count:
+                    if currItem and currItem[1] and oldItem[1].count:
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = oldItem[1].copy()
                             
@@ -972,6 +972,7 @@ class BaseProtocol(object):
                             if player.addCache(oldItem[1]):
                                 player.refreshStatus(stream)
                         else:
+                            
                             player.itemToContainer(player.getContainer(fromPosition.y-64), oldItem[1], streamX=stream)
                     
                     if sendUpdate:
