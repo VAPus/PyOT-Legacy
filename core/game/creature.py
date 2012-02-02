@@ -328,8 +328,8 @@ class Creature(object):
         _time = time.time()
         self.lastStep = _time
         delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
-        self.lastAction += delay
-        self.extAction = _time + (delay/2)
+        self.lastAction = _time + delay
+        self.extAction = _time + delay
                 
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
@@ -385,6 +385,9 @@ class Creature(object):
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
+        if self in oldTile.things:
+            print "Serious issue!"
+            raise Exception("Serious issue")
         for spectator in (spectators):
             # Make packet
             if not spectator.client:
@@ -395,35 +398,46 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             stream = spectator.packet()
             
-            if not canSeeOld and canSeeNew:
+            if (not canSeeOld or not isKnown) and canSeeNew:
+                stream.addTileCreature(position, newStackPos, self, spectator)
                 # Too high stack?
                 """ Cheat!!! """
-                stream .uint8(0x69)
-                stream.position(position)
-                stream.tileDescription(newTile, spectator)
-                stream.uint8(0x00)
-                stream.uint8(0xFF)
+                """if isKnown:
+                    for pos in position.roundPoint(1):
+                        stream.uint8(0x69)
+                        stream.position(pos)
+                        stream.tileDescription(pos.getTile(), spectator)
+                        stream.uint8(0x00)
+                        stream.uint8(0xFF)"""
                 """ / Cheat """
             
             elif canSeeOld and not canSeeNew:
-                """stream.removeTileItem(oldPosition, oldStackpos)"""
+                stream.removeTileItem(oldPosition, oldStackpos)
                 """ Cheat!!! """
-                stream .uint8(0x69)
-                stream.position(oldPosition)
-                stream.tileDescription(oldTile, spectator)
-                stream.uint8(0x00)
-                stream.uint8(0xFF)
+                """if isKnown:
+                    #oldTile.placeCreature(self)
+                    for pos in oldPosition.roundPoint(1):
+                        stream.uint8(0x69)
+                        stream.position(pos)
+                        stream.tileDescription(pos.getTile(), spectator)
+                        stream.uint8(0x00)
+                        stream.uint8(0xFF)"""
+                    #oldTile.removeCreature(self)
+                    
                 """ / Cheat """
+                
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
-                    stream .uint8(0x69)
-                    stream.position(oldPosition)
-                    oldTile.placeCreature(self)
-                    stream.tileDescription(oldTile, spectator)
-                    oldTile.removeCreature(self)
-                    stream.uint8(0x00)
-                    stream.uint8(0xFF)
+                    """if not isKnown:
+                        oldTile.placeCreature(self)
+                        for pos in oldPosition.roundPoint(1):
+                            stream.uint8(0x69)
+                            stream.position(pos)
+                            stream.tileDescription(pos.getTile(), spectator)
+                            stream.uint8(0x00)
+                            stream.uint8(0xFF)
+                        oldTile.removeCreature(self)"""
                     """ / Cheat """
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
@@ -436,9 +450,6 @@ class Creature(object):
                     
             stream.send(spectator.client) 
             
-        
-        
-        
         if self.scripts["onNextStep"]:
             scripts = self.scripts["onNextStep"][:]
             self.scripts["onNextStep"] = []

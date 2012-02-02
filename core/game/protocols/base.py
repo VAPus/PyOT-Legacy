@@ -86,7 +86,7 @@ class BasePacket(TibiaPacket):
 
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
-    def mapDescription(self, position, width, height, player=None):
+    def mapDescription(self, position, width, height, player):
         skip = -1
         start = 7
         end = 0
@@ -125,8 +125,8 @@ class BasePacket(TibiaPacket):
             return None
             
     # Floor Description (the entier floor)
-    def floorDescription(self, _x, _y, _z, width, height, offset, skip, player=None):
-        instanceId = player.position.instanceId if player else None
+    def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
+        instanceId = player.position.instanceId
         area = game.map.knownMap[instanceId]
         
         for x in xrange(0, width):
@@ -147,48 +147,43 @@ class BasePacket(TibiaPacket):
                         skip = -1
         return skip
 
-    def tileDescription(self, tile, player=None):
+    def tileDescription(self, tile, player):
         self.uint16(0x00)
-        isSolid = False
         count = 0
-        for item in tile.topItems():
-            if item.solid:
-                isSolid = True
-                
+        for item in tile.topItems():  
             self.item(item)
             count += 1
             if count == 10:
                 return
         
-        if not isSolid:
-            for creature in tile.creatures():
-                known = False
-                removeKnown = 0
-                if player:
-                    known = creature in player.knownCreatures
+        for creature in tile.creatures():
+            known = False
+            removeKnown = 0
+            if player:
+                known = creature in player.knownCreatures
                     
-                    if not known:
-                        if len(player.knownCreatures) > self.maxKnownCreatures:
-                            removeKnown = player.checkRemoveKnown()
-                            if not removeKnown:
-                                player.exit("Too many creatures in known list. Please relogin")
-                                return
-                        player.knownCreatures.add(creature)
-                        creature.knownBy.add(player)
+                if not known:
+                    if len(player.knownCreatures) > self.maxKnownCreatures:
+                        removeKnown = player.checkRemoveKnown()
+                        if not removeKnown:
+                            player.exit("Too many creatures in known list. Please relogin")
+                            return
+                    player.knownCreatures.add(creature)
+                    creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
-                if creature.creatureType != 0 and not creature.brainEvent:
-                    creature.base.brain.handleThink(creature, False)
+                self.creature(creature, known, removeKnown)
+            if creature.creatureType != 0 and not creature.brainEvent:
+                creature.base.brain.handleThink(creature, False)
                     
-                count += 1
-                if count == 10:
-                    return
+            count += 1
+            if count == 10:
+                return
                 
-            for item in tile.bottomItems():
-                self.item(item)
-                count += 1
-                if count == 10:
-                    return
+        for item in tile.bottomItems():
+            self.item(item)
+            count += 1
+            if count == 10:
+                return
 
     def exit(self, message):
         self.uint8(0x14)
