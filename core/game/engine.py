@@ -315,15 +315,13 @@ def handleAutoWalking(creature, callback=None, level=0):
 
     mcallback=callback
     if creature.walkPattern:
-        def mcallback(ret):
+        def mcallback():
             try:
                 creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(positionInDirection(creature.position, creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
             except IndexError:
                 return
 
-    d = creature.move(direction, level=level, stopIfLock=True)
-    if mcallback:
-        d.addCallback(mcallback)
+    creature.move(direction, level=level, stopIfLock=True, callback=mcallback)
     
 
 # Calculate walk patterns
@@ -394,7 +392,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
 
 # Spectator list
-def getSpectators(pos, radius=(7,5), ignore=()):
+def getSpectators(pos, radius=(8,6), ignore=()):
     """Gives you the spectators (:class:`service.gameserver.GameProtocol`) in the area.
     
     :param pos: Position of the center point.
@@ -417,13 +415,13 @@ def getSpectators(pos, radius=(7,5), ignore=()):
         
 getSpectators = bindconstant._make_constants(getSpectators)
 
-def hasSpectators(pos, radius=(7,5), ignore=()):
+def hasSpectators(pos, radius=(8,6), ignore=()):
     for player in game.player.allPlayers.values():
         if player.canSee(pos, radius) and player not in ignore: return True
         
     return False
     
-def getCreatures(pos, radius=(7,5), ignore=()):
+def getCreatures(pos, radius=(8,6), ignore=()):
     """Gives you the creatures in the area.
     
     :param pos: Position of the center point.
@@ -446,7 +444,7 @@ def getCreatures(pos, radius=(7,5), ignore=()):
         
 getCreatures = bindconstant._make_constants(getCreatures)
 
-def getPlayers(pos, radius=(7,5), ignore=()):
+def getPlayers(pos, radius=(8,6), ignore=()):
     """Gives you the players in the area.
     
     :param pos: Position of the center point.

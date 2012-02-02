@@ -43,8 +43,9 @@ class CreatureBase(object):
         self.scripts["onFollow"].remove(function)
         
     def onFollow(self, target):
-        for func in self.scripts["onFollow"]:
-            game.scriptsystem.scriptPool.callInThread(func, self, target)
+        pass
+        #for func in self.scripts["onFollow"]:
+        #    game.scriptsystem.scriptPool.callInThread(func, self, target)
 
     def regOnTargetLost(self, function):
         self.scripts["onTargetLost"].append(function)
@@ -53,8 +54,9 @@ class CreatureBase(object):
         self.scripts["onTargetLost"].remove(function)
         
     def onTargetLost(self, target):
-        for func in self.scripts["onTargetLost"]:
-            game.scriptsystem.scriptPool.callInThread(func, self, target)
+        pass
+        #for func in self.scripts["onTargetLost"]:
+        #    game.scriptsystem.scriptPool.callInThread(func, self, target)
             
 class Creature(object):
     
@@ -216,23 +218,13 @@ class Creature(object):
         except:
             pass
         
-    def move(self, direction, spectators=None, level=0, stopIfLock=False):
-        # Client will shift us to this position so.
-        self.direction = direction % 4
-        
-        if self.canMove:
-            return self._move(direction, spectators, level, stopIfLock)
-            
-        if self.isPlayer():
-            self.cancelWalk()
-        
-    @inlineCallbacks
-    def _move(self, direction, spectators=None, level=0, stopIfLock=False):
-        if not self.alive or not level and not self.actionLock(self._move, direction, spectators, level, stopIfLock):
+
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
+        if not self.alive or not level and not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
             
         if not self.data["health"] or not self.canMove:
-            return
+            return False
 
             
         import data.map.info
@@ -275,30 +267,33 @@ class Creature(object):
         oldTile = getTile(oldPosition)
 
         if not newTile:
-            self.cancelWalk()
+            
+            self.cancelWalk(direction)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            returnValue(False)
+            if failback: reactor.callLater(0, failback)
+            return False
             
         if not oldTile:
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
         
         
-        val = yield game.scriptsystem.get("move").runDefer(self)
+        val = game.scriptsystem.get("move").runSync(self)
         if val == False:
-            self.cancelWalk()
+            if self.isPlayer(): print "Nooo, 4"
+            self.cancelWalk(direction % 4)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            returnValue(False)
-            return
+            if failback: reactor.callLater(0, failback)
+            return False
             
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            self.cancelWalk()
+            if self.isPlayer(): print "Nooo, 3"
+            self.cancelWalk(direction % 4)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            returnValue(False)
-            
-            return
+            if failback: reactor.callLater(0, failback)
+            return False
 
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -308,10 +303,11 @@ class Creature(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                self.cancelWalk()
+                if self.isPlayer(): print "Nooo, 2"
+                self.cancelWalk(direction % 4)
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                returnValue(False)
-                return
+                if failback: failback()
+                return False
                 
         for thing in newTile.things:
             if thing.solid:
@@ -319,11 +315,12 @@ class Creature(object):
                     continue
                 
                 #self.turn(direction) # Fix me?
-                self.cancelWalk()
+                if self.isPlayer(): print "Nooo, 1"
+                self.cancelWalk(direction % 4)
                 self.notPossible()
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                returnValue(False)
-                return
+                if failback: reactor.callLater(0, failback)
+                return False
 
         _time = time.time()
         self.lastStep = _time
@@ -337,14 +334,13 @@ class Creature(object):
         # Mark for save
         if self.isPlayer():
             self.saveData = True
-            
+        else:
+            print "Creature move"
         # Send to everyone   
         """if not spectators:
             spectators = getPlayers(position, (11, 9))"""
         if self.isPlayer():
             ignore = (self,)
-            self.position = position
-            self.direction = direction % 4
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
                 #stream = spectator.packet(0x6D)
@@ -378,17 +374,23 @@ class Creature(object):
                 stream.uint8(0x68)
                 stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
                 
-            stream.send(self.client) 
+            print "()", self.position, position
+            
+            if self.position == position:
+                raise Exception("WTF????")
+            
+            stream.send(self.client)
+            self.position = position
+            self.direction = direction % 4
             
         else:
             ignore = ()
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
-        if self in oldTile.things:
-            print "Serious issue!"
-            raise Exception("Serious issue")
+        print spectators
         for spectator in (spectators):
+            print spectator.position
             # Make packet
             if not spectator.client:
                 continue
@@ -398,7 +400,7 @@ class Creature(object):
             isKnown = self in spectator.knownCreatures
             stream = spectator.packet()
             
-            if (not canSeeOld or not isKnown) and canSeeNew:
+            if not canSeeOld and canSeeNew:
                 stream.addTileCreature(position, newStackPos, self, spectator)
                 # Too high stack?
                 """ Cheat!!! """
@@ -412,7 +414,8 @@ class Creature(object):
                 """ / Cheat """
             
             elif canSeeOld and not canSeeNew:
-                stream.removeTileItem(oldPosition, oldStackpos)
+                if isKnown:
+                    stream.removeTileItem(oldPosition, oldStackpos)
                 """ Cheat!!! """
                 """if isKnown:
                     #oldTile.placeCreature(self)
@@ -427,7 +430,7 @@ class Creature(object):
                 """ / Cheat """
                 
             elif canSeeOld and canSeeNew:
-                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+                if spectator.canSee2(oldPosition) and spectator.canSee2(position) and (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
                     """if not isKnown:
                         oldTile.placeCreature(self)
@@ -444,9 +447,9 @@ class Creature(object):
                     stream.uint8(oldStackpos)
                     stream.position(position)
                     
-                """else:
+                else:
                     stream.removeTileItem(oldPosition, oldStackpos)
-                    stream.addTileCreature(position, newStackPos, self, spectator)"""
+                    stream.addTileCreature(position, newStackPos, self, spectator)
                     
             stream.send(spectator.client) 
             
@@ -480,7 +483,8 @@ class Creature(object):
             self.position = position
             self.direction = direction % 4
         
-        returnValue(True)
+        if callback: reactor.callLater(0, callback)
+        return True
         
     def magicEffect(self, type, pos=None):
         if not type: return
@@ -594,15 +598,11 @@ class Creature(object):
             stream.removeTileItem(self.position, stackpos)
             originalName = self.data["name"]
             
-            def doRename():
-                self.data["name"] = name
-                stream.addTileCreature(self.position, stackpos, self, player, True)
-                self.data["name"] = originalName
-                stream.send(player.client)     
+            self.data["name"] = name
+            stream.addTileCreature(self.position, stackpos, self, player, True)
+            self.data["name"] = originalName
+            stream.send(player.client)     
                 
-            reactor.callFromThread(doRename) # For thread safety
-
-            
     def hitEffects(self):
         if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
             return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD
@@ -938,7 +938,18 @@ class Creature(object):
     def cancelWalk(self, d=None):
         return # Is only executed on players
         
-    def canSee(self, position, radius=(7,5)):
+    def canSee(self, position, radius=(8,6)):
+        # We are on ground level and we can't see underground
+        # We're on a diffrent instanceLevel
+        # Or We are undergorund and we may only see 2 floors
+        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2): 
+            return False
+        
+        offsetz = self.position.z-position.z
+
+        return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz + 1) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz + 1)
+
+    def canSee2(self, position, radius=(7,5)):
         # We are on ground level and we can't see underground
         # We're on a diffrent instanceLevel
         # Or We are undergorund and we may only see 2 floors
@@ -949,8 +960,8 @@ class Creature(object):
 
         return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz)
 
-        
-    def canTarget(self, position, radius=(7,5), allowGroundChange=False):
+                
+    def canTarget(self, position, radius=(8,6), allowGroundChange=False):
         if self.position.instanceId != position.instanceId:
             return False
             

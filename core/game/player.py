@@ -187,6 +187,17 @@ class Player(Creature):
         if self.client:
             return self.client.transport.getPeer().host
     
+    def refreshViewWindow(self, stream=None):
+        if stream:
+            stream.uint8(0x64)
+            stream.position(self.position)
+            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)          
+        else:
+            stream = self.packet(0x64) # Map description
+            stream.position(self.position)
+            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)
+            stream.send(self.client)
+        
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.data["health"] = 1

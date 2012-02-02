@@ -657,7 +657,6 @@ class MonsterBrain(object):
 
         monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
         
-    @defer.inlineCallbacks
     def walkRandomStep(self, monster, badDir=None):
         if not badDir:
             badDir = []
@@ -689,10 +688,13 @@ class MonsterBrain(object):
                 continue
             
             badDir.append(step)
-            d = yield monster.move(step)
-            if d == False:
-                if config.monsterNeverSkipWalks and len(badDir) < 4:
-                    self.walkRandomStep(monster, badDir)
+            if config.monsterNeverSkipWalks:
+                def _():
+                    if len(badDir) < 4:
+                        self.walkRandomStep(monster, badDir)
+                monster.move(step, callback=_)
+            else:
+                monster.move(step)
                 
             return
         

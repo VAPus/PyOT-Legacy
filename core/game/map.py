@@ -788,7 +788,7 @@ def load(sectorX, sectorY, instanceId):
     print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
     
     if config.performSectorUnload:
-        reactor.callLater(config.performSectorUnloadEvery, reactor.callInThread, _unloadMap, sectorX, sectorY, instanceId)
+        reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
     scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
     
@@ -822,7 +822,8 @@ def _unloadMap(sectorX, sectorY, instanceId):
         print "Unloading...."
         unload(sectorX, sectorY)
         print "Unloading took: %f" % (time.time() - t)   
-        
+    reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+    
 def unload(sectorX, sectorY, instanceId):
     sectorSum = (sectorX * 32768) + sectorY
     try:

@@ -340,25 +340,16 @@ def testBoost(creature, **k):
     
 reg("talkaction", "boostme", testBoost)
 
-@inlineCallbacks
 def walkRandomStep(creature, callback):
     steps = [0,1,2,3,4,5,6,7]
     
     random.shuffle(steps)
-        
-    for step in steps:
-        d = yield creature.move(step, stopIfLock=True)
-        if d == True:
-            break
-        if d == None:
-            later = creature.lastAction - time.time()
-            if later > 0:
-                callLater(later + 0.1, callback)
-                return
-            else:
-                callLater(0.1, callback)
-                return
-    callback()
+    def _callback():
+        try:
+            creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
+        except:
+            callback()
+    creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
     
 def playerAI(creature, **k):
     creature.setSpeed(1500)
@@ -389,3 +380,13 @@ def playerAI(creature, **k):
     _playerAI()
 
 reg("talkaction", "aime", playerAI)
+
+def testPlaceDebug(creature, **k):
+    stream = creature.packet()
+    pos = creature.position.copy()
+    pos.x -= 0
+    pos.y -= 7
+    stream.addTileItem(pos, 1, Item(5555))
+    stream.send(creature.client)
+    return False
+reg("talkaction", "db", testPlaceDebug)
