@@ -159,15 +159,24 @@ def vertifyRampWalk(creature, **k):
     # Check if we can walk on ramps
     if not config.monsterStairHops and not creature.isPlayer():
         return False
-        
+
+def sewer(creature, thing, position, **k):
+    if creature.inRange(position, 1, 1, 0):
+        newPos = position.copy()
+        newPos.z += 1
+        try:
+            creature.teleport(newPos)
+        except:
+            creature.notPossible()
+            
 # Stairs
-stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 6920, 5260, 5259, 9573, 9574, 3688, 5258, 459
+stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433
 reg("walkOn", stairs, floorchange)
 reg('useWith', stairs, itemFloorChange)
 
 # Ramps
 ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
-rampsDown = 8561,
+rampsDown = 8561, 6920, 6924, 8565, 6128, 479, 6921, 8563, 6917, 8559, 6127, 8566, 6923, 6919, 8562, 8377, 8560, 475, 8564, 6922, 480, 6918, 476
 
 reg("walkOn", ramps, teleportOrWalkDirection)
 reg("walkOn", rampsDown, teleportOrWalkDirectionDown)
@@ -177,13 +186,16 @@ laddersUp = 1386, 3678, 5543, 8599
 reg("use", laddersUp, floorup)
 
 # Ladders down
-laddersDown = 369, 370, 408, 409, 427, 428, 430, 433, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606
+laddersDown = 369, 370, 408, 409, 427, 428, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606, 8281, 410, 429
 reg("walkOn", laddersDown, floordown)
 
 # Trapdoors, holes etc
-trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972
+trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972, 3137, 5731, 6173, 6174,
 reg("walkOn", trapsAndHoles, floordown)
 
+# Sewer Gates
+sewers=430
+reg("use", sewers, sewer)
 
 if not config.monsterStairHops:
     reg("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp, vertifyRampWalk)
