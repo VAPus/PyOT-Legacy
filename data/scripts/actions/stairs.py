@@ -94,6 +94,7 @@ def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
         newPos.z -= 1
+        newPos.y += 1
         try:
             creature.teleport(newPos)
         except:
