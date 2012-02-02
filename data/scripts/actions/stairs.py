@@ -161,7 +161,7 @@ def vertifyRampWalk(creature, **k):
         return False
         
 # Stairs
-stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 3687, 3219, 3138
+stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138
 reg("walkOn", stairs, floorchange)
 reg('useWith', stairs, itemFloorChange)
 
