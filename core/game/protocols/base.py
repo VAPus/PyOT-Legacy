@@ -269,7 +269,6 @@ class BasePacket(TibiaPacket):
         self.uint8(0x6A)
         self.position(pos)
         self.uint8(stackpos)
-        print "===", item, item.itemId
         self.item(item)
 
     def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
@@ -821,24 +820,18 @@ class BaseProtocol(object):
                                     return
                                 
                 if oldItem[1].stackable and count < 100:
-                    print "A"
                     if (count == oldItem[1].count and player.removeCache(oldItem[1])) or (player.modifyCache(oldItem[1], -1 * count)):
                         player.refreshStatus(stream)
                         
                     renew = True
                     oldItem[1].count -= count
-                    print count, oldItem[1].count
                     if oldItem[1].count > 0:
-                        print "B"
                         if oldItem[0] == 1:
                             stream.addInventoryItem(fromPosition.y, oldItem[1])
                         elif oldItem[0] == 2:
                             stream.updateContainerItem(oldItem[2].openIndex, fromPosition.z, oldItem[1])
                             
                     else:
-                        print "C"
-                        print oldItem[0]
-                        print fromPosition.y
                         if oldItem[0] == 1:
                             player.inventory[fromPosition.y-1] = None
                             stream.removeInventoryItem(fromPosition.y)
@@ -1006,7 +999,6 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-        print player.canSee(position)
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
