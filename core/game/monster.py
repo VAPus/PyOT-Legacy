@@ -688,13 +688,13 @@ class MonsterBrain(object):
                 continue
             
             badDir.append(step)
-            if config.monsterNeverSkipWalks:
+            """if config.monsterNeverSkipWalks:
                 def _():
                     if len(badDir) < 4:
                         self.walkRandomStep(monster, badDir)
                 monster.move(step, callback=_)
             else:
-                monster.move(step)
+                monster.move(step)"""
                 
             return
         
