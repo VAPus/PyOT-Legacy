@@ -303,14 +303,13 @@ class Monster(Creature):
         engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                     
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-        def __followCallback(who):
+        def __followCallback(who, direction):
             if self.target == who:                       
-                if not self.walkPattern or who.direction != self.walkPattern[0]:
-                    if self.canTarget(self.target.position):
-                        engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
-                    else:
-                        self.target = None
-                        self.targetMode = 0
+                if self.canTarget(self.target.position):
+                    engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                else:
+                    self.target = None
+                    self.targetMode = 0
                                     
                 if self.target:
                     # We shall be called again later

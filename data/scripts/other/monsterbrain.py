@@ -154,18 +154,17 @@ def defaultBrainFeature(monster):
                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-                    def __followCallback(who):
+                    def __followCallback(who, direction):
                         if monster.target == who:
                             # Steps below is the old way of doing it, slow and ugly!
                             """monster.stopAction()
                             engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                             """
-                            if not monster.walkPattern or who.direction != monster.walkPattern[0]:
-                                if monster.canTarget(monster.target.position):
-                                    engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                                else:
-                                    monster.target = None
-                                    monster.targetMode = 0
+                            if monster.canTarget(monster.target.position):
+                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            else:
+                                monster.target = None
+                                monster.targetMode = 0
                                     
                             if monster.target:
                                 # We shall be called again later
@@ -197,19 +196,18 @@ def defaultBrainFeature(monster):
                 engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-                def __followCallback(who):
+                def __followCallback(who, direction):
                     if monster.target == who:
                         # Steps below is the old way of doing it, slow and ugly!
                         """monster.stopAction()
                         engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         """
-                        if not monster.walkPattern or who.direction != monster.walkPattern[0]:
-                            if monster.canTarget(monster.target.position):
-                                engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
-                            else:
-                                monster.target = None
-                                monster.targetMode = 0
-                                
+                        if monster.canTarget(monster.target.position):
+                            engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                        else:
+                            monster.target = None
+                            monster.targetMode = 0
+                             
                         if monster.target:
                             # We shall be called again later
                             monster.target.scripts["onNextStep"].append(__followCallback)
