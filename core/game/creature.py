@@ -280,7 +280,6 @@ class Creature(object):
         
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:
-            if self.isPlayer(): print "Nooo, 4"
             self.cancelWalk(direction % 4)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             if failback: reactor.callLater(0, failback)
@@ -289,7 +288,6 @@ class Creature(object):
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            if self.isPlayer(): print "Nooo, 3"
             self.cancelWalk(direction % 4)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             if failback: reactor.callLater(0, failback)
@@ -303,7 +301,6 @@ class Creature(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                if self.isPlayer(): print "Nooo, 2"
                 self.cancelWalk(direction % 4)
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
                 if failback: failback()
@@ -315,7 +312,6 @@ class Creature(object):
                     continue
                 
                 #self.turn(direction) # Fix me?
-                if self.isPlayer(): print "Nooo, 1"
                 self.cancelWalk(direction % 4)
                 self.notPossible()
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
@@ -334,8 +330,7 @@ class Creature(object):
         # Mark for save
         if self.isPlayer():
             self.saveData = True
-        else:
-            print "Creature move"
+            
         # Send to everyone   
         """if not spectators:
             spectators = getPlayers(position, (11, 9))"""
@@ -373,11 +368,6 @@ class Creature(object):
             elif oldPosition.x > position.x:
                 stream.uint8(0x68)
                 stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
-                
-            print "()", self.position, position
-            
-            if self.position == position:
-                raise Exception("WTF????")
             
             stream.send(self.client)
             self.position = position
@@ -388,9 +378,8 @@ class Creature(object):
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
-        print spectators
+
         for spectator in (spectators):
-            print spectator.position
             # Make packet
             if not spectator.client:
                 continue
