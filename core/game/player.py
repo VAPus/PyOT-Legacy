@@ -1516,6 +1516,9 @@ class Player(Creature):
         stream.uint8(percent)
         stream.send(self.client)
         
+        # And kill the connection
+        self.client = None
+        
     def onDeath(self):
         self.sendReloginWindow()
         

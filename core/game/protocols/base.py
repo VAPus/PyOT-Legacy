@@ -458,8 +458,11 @@ class BaseProtocol(object):
         packetType = packet.uint8()
         
         if packetType == 0x14: # Logout
-            player.prepareLogout()
-            player.client.transport.loseConnection()
+            try:
+                player.prepareLogout()
+                player.client.transport.loseConnection()
+            except:
+                pass # Sometimes the connection is already dead
             
         elif packetType == 0x1E: # Keep alive
             player.pong()
