@@ -312,7 +312,7 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         elif oldPos.z-1 > 7: # Still underground
-            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-3, 18, 14, oldPos.z+3, 3, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z-3, 18, 14, 3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
@@ -336,7 +336,7 @@ class BasePacket(TibiaPacket):
                 self.uint8(0xFF)
                 
         elif oldPos.z+1 > 8:
-            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, oldPos.z-3, -3, player)
+            skip = self.floorDescription(oldPos.x - 8, oldPos.y - 6, oldPos.z+3, 18, 14, -3, -1, player)
             
             if skip >= 0:
                 self.uint8(skip)
@@ -728,7 +728,7 @@ class BaseProtocol(object):
                     walking = [True]
                     scount = 0
                     player.walkPattern = deque(walkPattern)
-                    game.engine.autoWalkCreature(player, lambda x: walking.pop())
+                    game.engine.autoWalkCreature(player, lambda: walking.pop())
                     while walking and scount < 20:
                         yield sleep(0.5)
                         scount += 1
@@ -1000,7 +1000,7 @@ class BaseProtocol(object):
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
-                    game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda x: game.engine.autoWalkCreature(creature, deque(walkPattern)))
+                    game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda: game.engine.autoWalkCreature(creature, deque(walkPattern)))
             else:
                 game.engine.autoWalkCreatureTo(creature, toPosition)
             
@@ -1114,7 +1114,7 @@ class BaseProtocol(object):
                 walking = [True]
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player, lambda x: walking.pop())
+                game.engine.autoWalkCreature(player, lambda: walking.pop())
                 while walking and scount < 20:
                     yield sleep(0.5)
                     scount += 1
@@ -1160,7 +1160,7 @@ class BaseProtocol(object):
                 walking = [True]
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player, lambda x: walking.pop())
+                game.engine.autoWalkCreature(player, lambda: walking.pop())
                 while walking and scount < 20:
                     yield sleep(0.5)
                     scount += 1
