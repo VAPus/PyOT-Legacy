@@ -446,7 +446,7 @@ class Creature(object):
             scripts = self.scripts["onNextStep"][:]
             self.scripts["onNextStep"] = []
             for script in scripts:
-                script(self, direction)
+                script(self)
             
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
@@ -1047,7 +1047,7 @@ class Creature(object):
         except:
             pass
         
-    def __followCallback(self, who, direction):
+    def __followCallback(self, who):
         if self.target == who:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
