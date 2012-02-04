@@ -756,10 +756,15 @@ class BaseProtocol(object):
                     
                 elif oldItem[1].openIndex != None and oldItem[1].openIndex == toPosition.y-64: # Moving into self
                     player.notPossible()
-                    return 
+                    return
                     
-                if oldItem[1].stackable and count < 100:
+                if count > oldItem[1].count:
+                    player.notPossible()
+                    return
+                    
+                if oldItem[1].stackable and count <= 100:
                     renew = True
+
                     oldItem[1].count -= count
                     if oldItem[1].count > 0:
                         stream = player.packet() # Hack
@@ -819,7 +824,7 @@ class BaseProtocol(object):
                                     player.notPossible()
                                     return
                                 
-                if oldItem[1].stackable and count < 100:
+                if oldItem[1].stackable and count <= 100:
                     if (count == oldItem[1].count and player.removeCache(oldItem[1])) or (player.modifyCache(oldItem[1], -1 * count)):
                         player.refreshStatus(stream)
                         
@@ -864,7 +869,7 @@ class BaseProtocol(object):
                     newItem = oldItem[1]
                 thisTile = game.map.getTile(toPosition)
                 findItem = thisTile.findClientItem(clientId, True) # Find item for stacking
-                if findItem and newItem.stackable and count < 100 and findItem[1].count + count <= 100:
+                if findItem and newItem.stackable and count <= 100 and findItem[1].count + count <= 100:
                     newItem.count += findItem[1].count
                     stream.removeTileItem(toPosition, findItem[0])
                     game.map.getTile(toPosition).removeItem(findItem[1])
@@ -950,7 +955,7 @@ class BaseProtocol(object):
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
                     
-                    if currItem and currItem[1] and oldItem[1].count:
+                    if currItem and currItem[1] and oldItem[1].count > 0:
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = oldItem[1].copy()
                             
