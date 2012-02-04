@@ -1516,8 +1516,8 @@ class Player(Creature):
         stream.uint8(percent)
         stream.send(self.client)
         
-        # And kill the connection
-        self.client = None
+        # And kill the readyness
+        self.client.ready = False
         
     def onDeath(self):
         self.sendReloginWindow()
@@ -1531,6 +1531,12 @@ class Player(Creature):
                 
         tile = game.map.getTile(self.position)
 
+        # Set position
+        import data.map.info
+        self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
+        self.data["health"] = self.data["healthmax"]
+        self.data["mana"] = self.data["manamax"]
+        
         corpse = game.item.Item(3058)
         game.scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if not self.alive and self.data["health"] < 1:

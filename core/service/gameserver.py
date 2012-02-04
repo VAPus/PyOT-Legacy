@@ -141,23 +141,22 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if not character or character == True:
                     self.exitWithError("Character can't be loaded")
                     return
-
             if gamemaster and character[0][3] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
 
-            try:
-                # If we "made" a new character in a script, character = the player.
-                if isinstance(character, game.player.Player):
-                    player = character
-                    game.player.allPlayers[player.name()] = player
-                else:
-                    player = game.player.allPlayers[character[0][2]]
-                    if player.client:
-                        self.exitWithError("This character is already logged in!")
-                        return
-                    sql.runOperation("UPDATE `players`, SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
-                    
+            # If we "made" a new character in a script, character = the player.
+            player = None
+            if isinstance(character, game.player.Player):
+                player = character
+                game.player.allPlayers[player.name()] = player
+            elif character[0][1] in game.player.allPlayers:
+                player = game.player.allPlayers[character[0][1]]
+                if player.client:
+                    self.exitWithError("This character is already logged in!")
+                    return
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
+            if player:    
                 self.player = player
                 if self.player.data["health"] < 1:
                     self.player.onSpawn()
@@ -167,7 +166,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                 updateTile(self.player.position, tile)
                 
-            except:
+            else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
                 cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30]}

@@ -820,7 +820,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
     t = time.time()
     if _unloadCheck(sectorX, sectorY, instanceId):
         print "Unloading...."
-        unload(sectorX, sectorY)
+        unload(sectorX, sectorY, instanceId)
         print "Unloading took: %f" % (time.time() - t)   
     reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
