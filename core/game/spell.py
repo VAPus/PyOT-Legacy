@@ -255,7 +255,7 @@ class Spell(object):
         self.cooldown = 2
         self.groupCooldown = 2
 
-        func = self.doEffect()
+        self.func = self.doEffect()
         def l():
             try:
                 mana = self._requireGreater["mana"]
@@ -267,13 +267,13 @@ class Spell(object):
             except:
                 level = 0
                 
-            spells[name] = (func, words, level, mana)
+            spells[name] = (self.func, words, level, mana)
         
         # Delay the input a little.
         reactor.callLater(0.1, l)
-        
+        spells[name] = (self.func,)
         if words:
-            game.scriptsystem.reg("talkaction", words, func)
+            game.scriptsystem.reg("talkaction", words, self.func)
             
     def effects(self, caster=None, shoot=None, target=None, area=None):
         self.castEffect = caster
@@ -547,9 +547,9 @@ class Rune(Spell):
         self.cooldown = 2
         self.groupCooldown = 2
 
-        func = self.doEffect()
-        targetRunes[rune] = func # Just to prevent reset
-        game.scriptsystem.get("useWith").reg(rune, func)
+        self.func = self.doEffect()
+        targetRunes[rune] = self.func # Just to prevent reset
+        game.scriptsystem.get("useWith").reg(rune, self.func)
         
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
