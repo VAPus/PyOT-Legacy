@@ -57,13 +57,13 @@ def defaultBrainFeaturePriority(monster):
                     key = "s%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if spell[2](monster):
-                            if type(spell[1]) == int:
-                                game.spell.targetRunes[spell[1]](None, monster, None, None, monster, strength=spell[3])
+                            try:
+                                spell[1](None, monster, None, None, monster, strength=spell[3])
                                     
-                            else:
-                                game.spell.spells[spell[1]][0](monster, spell[3])
+                            except:
+                                spell[1](monster, spell[3])
                                 
-                                monster.intervals[key] = _time
+                            monster.intervals[key] = _time
 
                             return True # Until next brain tick
                 
@@ -90,11 +90,11 @@ def defaultBrainFeaturePriority(monster):
                     key = "a%d"%id
                     if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
-                            if type(spell[1]) == int:
-                                check = game.spell.targetRunes[spell[1]](None, monster, None, None, monster.target, strength=spell[4])
+                            try:
+                                check = spell[1](None, monster, None, None, monster.target, strength=spell[4])
                                     
-                            else:
-                                check = game.spell.spells[spell[1]][0](monster, spell[4])
+                            except:
+                                check = spell[1](monster, spell[4])
                                 
                             monster.intervals[key] = _time
                             if check:

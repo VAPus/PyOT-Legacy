@@ -538,16 +538,30 @@ class MonsterBase(CreatureBase):
         self.distanceAttacks.append([interval, maxDamage, shooteffect, check]) 
         
     def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
+        if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
+            obj = spellName
+        elif isinstance(spellName, str):
+            obj = spell.spells[spellName][0]
+        elif isinstance(spellName, int):
+            obj = spell.targetRunes[spellName]
+            
         if length:
-            self.spellAttacks.append([interval, spellName, check, range, (min, max, length)])
+            self.spellAttacks.append([interval, obj, check, range, (min, max, length)])
         else:
-            self.spellAttacks.append([interval, spellName, check, range, (min, max)])
+            self.spellAttacks.append([interval, obj, check, range, (min, max)])
             
     def regSelfSpell(self, spellName, min, max, interval=2, check=chance(10), length=None):
+        if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
+            obj = spellName.func
+        elif isinstance(spellName, str):
+            obj = spell.spells[spellName][0]
+        elif isinstance(spellName, int):
+            obj = spell.targetRunes[spellName]
+            
         if length:
-            self.defenceSpells.append([interval, spellName, check, (min, max, length)])
+            self.defenceSpells.append([interval, obj, check, (min, max, length)])
         else:
-            self.defenceSpells.append([interval, spellName, check, (min, max)])
+            self.defenceSpells.append([interval, obj, check, (min, max)])
         
     def loot(self, *argc):
         # Convert name to Id here
