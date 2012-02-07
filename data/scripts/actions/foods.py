@@ -90,17 +90,17 @@ def onUse(creature, thing, position, **a):
     gainmana = creature.getVocation().mana
     duration = foods[thing.itemId][0]
     sound = foods[thing.itemId][1]
-    thing.count -= 1
-    if thing.count > 0:
+    someCondition = creature.getCondition(CONDITION_REGENERATEHEALTH)    
+
+    if thing.count > 0 and (someCondition.length < 1500 or someCondition.length + gainmana[1] <= 1500):
+        thing.count -= 1
         creature.replaceItem(position, thing)
-    else:
-        creature.removeItem(position)
-    someCondition = creature.getCondition(CONDITION_REGENERATEHEALTH)
-    if someCondition and (someCondition.length >= 1500 or someCondition.length + gainmana[1] > 1500):
-        creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
-    else:
         creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration, gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
         creature.condition(Condition(CONDITION_REGENERATEMANA, 0, duration, gainmana[1], gainmana=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
-        creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
+        creature.say(sound, 'MSG_SPEAK_MONSTER_SAY')
+    elif someCondition and (someCondition.length >= 1500 or someCondition.length + gainmana[1] > 1500):
+        creature.cancelMessage("You are full.")
+    if thing.count == 0:
+        creature.removeItem(position)        
 
 reg('use', foods.keys(), onUse)

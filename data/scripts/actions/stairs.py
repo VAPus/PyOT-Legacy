@@ -194,7 +194,7 @@ trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 79
 reg("walkOn", trapsAndHoles, floordown)
 
 # Sewer Gates
-sewers=430
+sewers=430, 8580
 reg("use", sewers, sewer)
 
 if not config.monsterStairHops:
