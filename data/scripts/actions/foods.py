@@ -92,7 +92,7 @@ def onUse(creature, thing, position, **a):
     sound = foods[thing.itemId][1]
     someCondition = creature.getCondition(CONDITION_REGENERATEHEALTH)    
 
-    if thing.count > 0 and (someCondition.length < 1500 or someCondition.length + gainmana[1] <= 1500):
+    if thing.count > 0 and (not someCondition or someCondition.length + gainmana[1] <= 1500):
         thing.count -= 1
         creature.replaceItem(position, thing)
         creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration, gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
