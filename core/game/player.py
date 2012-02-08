@@ -1043,6 +1043,7 @@ class Player(Creature):
             # Replace it in structure
             for i in self.openContainers.items():
                 if i[1] == container:
+                    print "found"
                     self.openContainers[i[0]] = container 
                     break
 
@@ -1096,6 +1097,7 @@ class Player(Creature):
                         containerId = i[0]
                         break
                 if containerId == None:
+                    print "problem!"
                     return False
                     
             stream.uint8(containerId)
