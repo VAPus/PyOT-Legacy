@@ -8,5 +8,5 @@ killer_caiman.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 killer_caiman.walkAround(energy=1, fire=1, poison=1)
 killer_caiman.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=0)
 killer_caiman.regMelee(180)
-killer_caiman.regSelfSpell("Haste", 360, 360, length=8, check=game.monster.chance(9)) #strength
+killer_caiman.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength
 killer_caiman.loot( ("piece of crocodile leather", 9.75), (2148, 100, 177), ("ham", 39.25), (7632, 0.5), ("bunch of ripe rice", 7.5, 2), ("small emerald", 1.0), ("crocodile boots", 0.0025) )

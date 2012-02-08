@@ -12,5 +12,5 @@ Poacher.voices("You will not live to tell anyone!", "You are my game today!", "L
 Poacher.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Poacher.setDefense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Poacher.regMelee(35)
-Poacher.regDistance(35, ANIMATION_ARROW, game.monster.chance(21))
+Poacher.regDistance(35, ANIMATION_ARROW, chance(21))
 Poacher.loot( ("bow", 14.75), ("leather legs", 25.75), ("leather helmet", 30.0), ("arrow", 100, 17), ("poison arrow", 4.0, 3), ("roll", 12.25, 2), ("torch", 3.5), ("closed trap", 1.0) )

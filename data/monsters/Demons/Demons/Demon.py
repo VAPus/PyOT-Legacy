@@ -28,10 +28,10 @@ dmd.area(AREA_WAVE1)
 dmd.targetEffect(callback=spell.mana(1, 1, 0, 120))
  
 demon.regMelee(520)
-demon.regTargetSpell("Hells Core", 150, 250, check=game.monster.chance(9)) #
-demon.regTargetSpell("demon geb", 300, 460, check=game.monster.chance(9)) #
-demon.regTargetSpell("demon estrike", 210, 300, check=game.monster.chance(9)) #
-demon.regTargetSpell("demon manadrain", 0, 120, check=game.monster.chance(9)) #
-demon.regSelfSpell("Light Healing", 1, 250, check=game.monster.chance(9)) #
-demon.regSelfSpell(2301, 1, 1, check=game.monster.chance(9)) #use rune id
+demon.regTargetSpell("Hells Core", 150, 250, check=chance(9)) #
+demon.regTargetSpell("demon geb", 300, 460, check=chance(9)) #
+demon.regTargetSpell("demon estrike", 210, 300, check=chance(9)) #
+demon.regTargetSpell("demon manadrain", 0, 120, check=chance(9)) #
+demon.regSelfSpell("Light Healing", 1, 250, check=chance(9)) #
+demon.regSelfSpell(2301, 1, 1, check=chance(9)) #use rune id
 ##need to add haste spells

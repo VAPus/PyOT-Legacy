@@ -13,5 +13,5 @@ Toad.loot( (2148, 100, 20), ("poisonous slime", 4.25), ("fish", 20.0), ("war ham
 
 
 Toad.regMelee(30, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
-Toad.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(21)) #?
-Toad.regTargetSpell(2292, 8, 17, check=game.monster.chance(21)) #is the range 1?
+Toad.regSelfSpell("Haste", 360, 360, length=5, check=chance(21)) #?
+Toad.regTargetSpell(2292, 8, 17, check=chance(21)) #is the range 1?

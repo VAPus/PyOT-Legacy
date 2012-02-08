@@ -22,7 +22,7 @@ hwwave.element(ICE)
 hwwave.effects(area=EFFECT_WATERSPLASH) 
 
 hydra.regMelee(270)
-hydra.regTargetSpell("hydra ewave", 65, 320, check=game.monster.chance(20))
-hydra.regTargetSpell("hydra wwave", 100, 250, check=game.monster.chance(20))
-hydra.regTargetSpell("Ice Strike", 70, 155, check=game.monster.chance(20)) #range? havent seen it past 4
-hydra.regSelfSpell("Light Healing", 260, 410, check=game.monster.chance(20)) 
+hydra.regTargetSpell("hydra ewave", 65, 320, check=chance(20))
+hydra.regTargetSpell("hydra wwave", 100, 250, check=chance(20))
+hydra.regTargetSpell("Ice Strike", 70, 155, check=chance(20)) #range? havent seen it past 4
+hydra.regSelfSpell("Light Healing", 260, 410, check=chance(20)) 

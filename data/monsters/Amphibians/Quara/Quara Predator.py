@@ -11,5 +11,5 @@ quara_predator.voices("Gnarrr!", "Tcharrr!", "Rrrah!", "Rraaar!")
 quara_predator.loot( ("assassin star", 0.5), (2148, 100, 148), ("double axe", 3.0), ("royal spear", 37.5, 7), ("relic sword", 0.5), ("quara bone", 10.25), ("great health potion", 1.0), ("fish fin", 2.0, 3), ("shrimp", 4.75), ("skull helmet", 0.5), ("small diamond", 7.0, 2), ("glacier robe", 0.5), ("giant shrimp", 0.0025) )
 
 quara_predator.regMelee(470)
-quara_predator.regSelfSpell("Light Healing", 25, 75, check=game.monster.chance(20))
-quara_predator.regSelfSpell("Haste", 360, 360, length=8, check=game.monster.chance(9)) #strength time?
+quara_predator.regSelfSpell("Light Healing", 25, 75, check=chance(20))
+quara_predator.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength time?

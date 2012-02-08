@@ -32,8 +32,8 @@ qhib.element(ICE) #life drain
 qhib.effects(area=EFFECT_BUBBLES)
 
 quara_hydromancer.regMelee(80) #poisons you for up to 5 hp/turn
-quara_hydromancer.regSelfSpell("Light Healing", 25, 55, check=game.monster.chance(20)) #strength?
-quara_hydromancer.regTargetSpell("qh ld beam", 170, 240, check=game.monster.chance(20))
-quara_hydromancer.regTargetSpell("qh ice beam", 100, 180, check=game.monster.chance(20))
-quara_hydromancer.regTargetSpell("qh lifedrain", 1, 170, check=game.monster.chance(20))
-quara_hydromancer.regTargetSpell("qhbubble berserk", 90, 150, check=game.monster.chance(20))
+quara_hydromancer.regSelfSpell("Light Healing", 25, 55, check=chance(20)) #strength?
+quara_hydromancer.regTargetSpell("qh ld beam", 170, 240, check=chance(20))
+quara_hydromancer.regTargetSpell("qh ice beam", 100, 180, check=chance(20))
+quara_hydromancer.regTargetSpell("qh lifedrain", 1, 170, check=chance(20))
+quara_hydromancer.regTargetSpell("qhbubble berserk", 90, 150, check=chance(20))

@@ -16,7 +16,7 @@ fdhwave.element(ICE)
 fdhwave.effects(area=EFFECT_ICEATTACK)
 
 frost_dragon_hatchling.regMelee(160)
-frost_dragon_hatchling.regSelfSpell("Light Healing", 40, 60, check=game.monster.chance(18))
-frost_dragon_hatchling.regTargetSpell("fdh iwave", 60, 110, check=game.monster.chance(20))
-frost_dragon_hatchling.regTargetSpell(2274, 60, 110, check=game.monster.chance(20)) #avalache
+frost_dragon_hatchling.regSelfSpell("Light Healing", 40, 60, check=chance(18))
+frost_dragon_hatchling.regTargetSpell("fdh iwave", 60, 110, check=chance(20))
+frost_dragon_hatchling.regTargetSpell(2274, 60, 110, check=chance(20)) #avalache
 #Distance Paralyze missing

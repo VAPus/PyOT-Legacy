@@ -10,6 +10,6 @@ Filth_Toad.voices("Ribbit!", "Ribbit! Ribbit!")
 Filth_Toad.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Filth_Toad.setDefense(7, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 
-Filth_Toad.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(21)) #?
-Filth_Toad.regTargetSpell(2292, 8, 34, check=game.monster.chance(21)) #is the range 1?
+Filth_Toad.regSelfSpell("Haste", 360, 360, length=5, check=chance(21)) #?
+Filth_Toad.regTargetSpell(2292, 8, 34, check=chance(21)) #is the range 1?
 Filth_Toad.regMelee(4) #poisons you 1 hp for 5 turns

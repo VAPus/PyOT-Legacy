@@ -29,9 +29,9 @@ ws = spell.Spell("wyrm sound", target=TARGET_SELF) #no other effect
 ws.effects(caster=EFFECT_SOUND_YELLOW)
 
 wyrm.regMelee(235)
-wyrm.regSelfSpell("Light Healing", 100, 150, check=game.monster.chance(18)) #not 
-wyrm.regTargetSpell("wyrm ewave", 130, 200, check=game.monster.chance(5))
-wyrm.regTargetSpell("wyrm eberserk", 100, 220, check=game.monster.chance(20))
-wyrm.regTargetSpell(2311, 100, 125, check=game.monster.chance(10)) #hmm
-wyrm.regTargetSpell("wyrm somkebeam", 98, 145, check=game.monster.chance(20))
-wyrm.regSelfSpell("wyrm sound", 1, 1, check=game.monster.chance(10)) #not suppose to heal
+wyrm.regSelfSpell("Light Healing", 100, 150, check=chance(18)) #not 
+wyrm.regTargetSpell("wyrm ewave", 130, 200, check=chance(5))
+wyrm.regTargetSpell("wyrm eberserk", 100, 220, check=chance(20))
+wyrm.regTargetSpell(2311, 100, 125, check=chance(10)) #hmm
+wyrm.regTargetSpell("wyrm somkebeam", 98, 145, check=chance(20))
+wyrm.regSelfSpell("wyrm sound", 1, 1, check=chance(10)) #not suppose to heal

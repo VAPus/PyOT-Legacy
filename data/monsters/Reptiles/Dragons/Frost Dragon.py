@@ -12,5 +12,5 @@ frost_dragon.loot( (2148, 100, 245), ("dragon ham", 77.5, 5), ("power bolt", 21.
 
 #Smoke Strike (0-200; does Physical Damage), Smoke Wave (0-380; does Life Drain), Ice Wave (very strong Paralyze), Avalanche (strong Paralyze), Ice Berserk (0-120), Smoke Berserk (strong Paralyze), Haste.
 frost_dragon.regMelee(220)
-frost_dragon.regSelfSpell("Light Healing", 180, 220, check=game.monster.chance(18))
-frost_dragon.regTargetSpell(2274, 0, 240, check=game.monster.chance(20)) #avalache
+frost_dragon.regSelfSpell("Light Healing", 180, 220, check=chance(18))
+frost_dragon.regTargetSpell(2274, 0, 240, check=chance(20)) #avalache

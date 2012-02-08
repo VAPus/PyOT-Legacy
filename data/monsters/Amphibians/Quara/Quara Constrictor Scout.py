@@ -16,4 +16,4 @@ qcslifedrain_berserk.element(LIFEDRAIN)
 qcslifedrain_berserk.effects(area=EFFECT_MAGIC_RED) #?
 
 quara_constrictor_scout.regMelee(130) #or more
-quara_constrictor_scout.regTargetSpell("qcslifedrain berserk", 1, 80, check=game.monster.chance(25))
+quara_constrictor_scout.regTargetSpell("qcslifedrain berserk", 1, 80, check=chance(25))

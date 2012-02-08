@@ -9,5 +9,5 @@ Deepling_Warrior.walkAround(energy=1, fire=0, poison=1)
 Deepling_Warrior.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Deepling_Warrior.voices("Jou wjil ajll djie!")
 Deepling_Warrior.regMelee(300)
-Deepling_Warrior.regSelfSpell("Light Healing", 50, 150, check=game.monster.chance(20)) #strength?
-Deepling_Warrior.regTargetSpell("Whirlwind Throw", 1, 290, check=game.monster.chance(21)) #goes by weapon, will it work?
+Deepling_Warrior.regSelfSpell("Light Healing", 50, 150, check=chance(20)) #strength?
+Deepling_Warrior.regTargetSpell("Whirlwind Throw", 1, 290, check=chance(21)) #goes by weapon, will it work?

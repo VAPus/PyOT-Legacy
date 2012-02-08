@@ -26,6 +26,6 @@ gdld.element(PHYSICAL) #life drain
 gdld.effects(area=EFFECT_MAGIC_RED)
 
 ghastly_dragon.regMelee(650)
-ghastly_dragon.regTargetSpell("ghastly wwave", 50, 250, check=game.monster.chance(20))
-ghastly_dragon.regTargetSpell("ghastly dball", 1, 180, check=game.monster.chance(20))
-ghastly_dragon.regTargetSpell("ghastly lifedrain", 80, 228, check=game.monster.chance(20))
+ghastly_dragon.regTargetSpell("ghastly wwave", 50, 250, check=chance(20))
+ghastly_dragon.regTargetSpell("ghastly dball", 1, 180, check=chance(20))
+ghastly_dragon.regTargetSpell("ghastly lifedrain", 80, 228, check=chance(20))

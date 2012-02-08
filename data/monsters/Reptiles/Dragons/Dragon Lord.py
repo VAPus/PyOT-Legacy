@@ -21,7 +21,7 @@ dlfbomb.targetEffect(callback=spell.field(1492))
 dlfbomb.effects(area=EFFECT_HITBYFIRE, shoot=ANIMATION_FIRE) 
  
 dragon_lord.regMelee(220)
-dragon_lord.regTargetSpell("drag fbomb", 1, 1, check=game.monster.chance(20))
-dragon_lord.regTargetSpell("drag fwave", 150, 250, check=game.monster.chance(20))
-dragon_lord.regTargetSpell(2304, 100, 200, check=game.monster.chance(20)) #gfb
-dragon_lord.regSelfSpell("Light Healing", 25, 55, check=game.monster.chance(18))
+dragon_lord.regTargetSpell("drag fbomb", 1, 1, check=chance(20))
+dragon_lord.regTargetSpell("drag fwave", 150, 250, check=chance(20))
+dragon_lord.regTargetSpell(2304, 100, 200, check=chance(20)) #gfb
+dragon_lord.regSelfSpell("Light Healing", 25, 55, check=chance(18))

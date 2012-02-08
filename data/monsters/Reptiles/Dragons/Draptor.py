@@ -25,6 +25,6 @@ deb.effects(target=EFFECT_PURPLEENERGY, area=EFFECT_YELLOWENERGY)
 #energy hit. is it only does from close like a demon?
 
 draptor.regMelee(150)
-draptor.regSelfSpell("Light Healing", 100, 150, check=game.monster.chance(18)) #unknown healing
-draptor.regTargetSpell("drap fwave", 130, 200, check=game.monster.chance(5)) #unknown damage
-draptor.regTargetSpell("drap eberserk", 130, 200, check=game.monster.chance(5)) #unknown damage
+draptor.regSelfSpell("Light Healing", 100, 150, check=chance(18)) #unknown healing
+draptor.regTargetSpell("drap fwave", 130, 200, check=chance(5)) #unknown damage
+draptor.regTargetSpell("drap eberserk", 130, 200, check=chance(5)) #unknown damage

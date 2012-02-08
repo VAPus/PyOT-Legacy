@@ -23,7 +23,7 @@ sspwave.element(EARTH)
 sspwave.effects(area=EFFECT_POISONAREA) 
 
 serpent_spawn.regMelee(250)
-serpent_spawn.regSelfSpell("Light Healing", 250, 400, check=game.monster.chance(20))
-serpent_spawn.regSelfSpell("Haste", 360, 360, length=8, check=game.monster.chance(9)) #strength
-serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=game.monster.chance(20))
-serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=game.monster.chance(20))
+serpent_spawn.regSelfSpell("Light Healing", 250, 400, check=chance(20))
+serpent_spawn.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength
+serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=chance(20))
+serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=chance(20))

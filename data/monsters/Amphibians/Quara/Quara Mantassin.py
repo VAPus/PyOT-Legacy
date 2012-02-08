@@ -12,5 +12,5 @@ quara_mantassin.loot( ("halberd", 4.0), (2148, 100, 129), ("blue robe", 0.25), (
 
 
 quara_mantassin.regMelee(140)
-quara_mantassin.regSelfSpell("Haste", 360, 360, length=8, check=game.monster.chance(9)) #strength time?
-#quara_mantassin.regSelfSpell("Invisible", 360, 360, length=8, check=game.monster.chance(9))
+quara_mantassin.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength time?
+#quara_mantassin.regSelfSpell("Invisible", 360, 360, length=8, check=chance(9))

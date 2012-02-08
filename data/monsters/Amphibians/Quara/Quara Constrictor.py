@@ -30,7 +30,7 @@ iceball.element(ICE)
 iceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
 
 quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 15, 1, damage=1), conditionChance=100) #
-quara_constrictor.regTargetSpell("qclifedrain berserk", 1, 80, check=game.monster.chance(25))
-quara_constrictor.regTargetSpell("qciceball", 40, 70, check=game.monster.chance(25)) 
-quara_constrictor.regTargetSpell("qcpoison berserk", 1, 80, check=game.monster.chance(25))
-quara_constrictor.regTargetSpell("close electrify", 1, 1, check=game.monster.chance(10)) #not suppose to damage
+quara_constrictor.regTargetSpell("qclifedrain berserk", 1, 80, check=chance(25))
+quara_constrictor.regTargetSpell("qciceball", 40, 70, check=chance(25)) 
+quara_constrictor.regTargetSpell("qcpoison berserk", 1, 80, check=chance(25))
+quara_constrictor.regTargetSpell("close electrify", 1, 1, check=chance(10)) #not suppose to damage

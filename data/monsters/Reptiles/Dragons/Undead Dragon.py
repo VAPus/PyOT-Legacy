@@ -31,8 +31,8 @@ udcwave.area(AREA_WAVE8)
 udcwave.effects(area=EFFECT_SMOKE) #?
 
 undead_dragon.regMelee(480)
-undead_dragon.regSelfSpell("Light Healing", 200, 250, check=game.monster.chance(18))
-undead_dragon.regTargetSpell("ud bbomb", 300, 400, check=game.monster.chance(20))
-undead_dragon.regTargetSpell("ud pbomb", 100, 390, check=game.monster.chance(20))
-undead_dragon.regTargetSpell("ud ldwave", 300, 700, check=game.monster.chance(20))
-undead_dragon.regTargetSpell(2268, 25, 600, check=game.monster.chance(20)) #sd
+undead_dragon.regSelfSpell("Light Healing", 200, 250, check=chance(18))
+undead_dragon.regTargetSpell("ud bbomb", 300, 400, check=chance(20))
+undead_dragon.regTargetSpell("ud pbomb", 100, 390, check=chance(20))
+undead_dragon.regTargetSpell("ud ldwave", 300, 700, check=chance(20))
+undead_dragon.regTargetSpell(2268, 25, 600, check=chance(20)) #sd
