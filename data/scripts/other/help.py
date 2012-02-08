@@ -90,7 +90,12 @@ def makeitem(creature, text):
             while count:
                 rcount = min(100, count)
                 newitem = game.item.Item(text, rcount)
-                creature.addItem(newitem)
+                if newitem.pickable:
+                    creature.addItem(newitem)
+                else:
+                    tile = creature.position.getTile()
+                    tile.placeItem(newitem)
+                    updateTile(creature.position, tile)
                 count -= rcount
         else:
             raise
