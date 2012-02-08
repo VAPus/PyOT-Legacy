@@ -16,6 +16,11 @@ class SolidTile(BaseError): pass
 
 # Spells
 class SpellDefinition(BaseError): pass
+class SpellDoesNotExist(BaseError):
+    def __str__(self):
+        return "'%s' is not registered!" % self.value
+        
+class RuneDoesNotExist(SpellDoesNotExist): pass
 
 # Position
 class PositionOutOfRange(BaseError): pass

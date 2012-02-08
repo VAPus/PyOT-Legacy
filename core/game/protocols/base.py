@@ -1142,7 +1142,7 @@ class BaseProtocol(object):
         
         
         end2 = None
-        if thing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
+        if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
 

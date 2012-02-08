@@ -18,6 +18,7 @@ import random
 import game.vocation
 import game.resource
 import game.scriptsystem
+import game.errors
 import glob
 import game.protocol
 import __builtin__
@@ -154,7 +155,7 @@ def loader(timer):
     __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
     
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -169,6 +170,7 @@ def loader(timer):
         house = game.house
         guild = game.guild
         party = game.party
+        errors = game.errors
         engine = sys.modules["game.engine"] # For consistancy
             
     __builtin__.game = Globalizer

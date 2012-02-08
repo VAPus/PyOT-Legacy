@@ -9,6 +9,7 @@ import enum
 import errors
 import item
 import config
+import game.errors
 
 monsters = {}
 brainFeatures = ({},{})
@@ -541,9 +542,16 @@ class MonsterBase(CreatureBase):
         if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
             obj = spellName
         elif isinstance(spellName, str):
-            obj = spell.spells[spellName][0]
+            try:
+                obj = spell.spells[spellName][0]
+            except:
+                raise game.errors.SpellDoesNotExist(spellName)
+            
         elif isinstance(spellName, int):
-            obj = spell.targetRunes[spellName]
+            try:
+                obj = spell.targetRunes[spellName]
+            except:
+                raise game.errors.RuneDoesNotExist(spellName)
             
         if length:
             self.spellAttacks.append([interval, obj, check, range, (min, max, length)])
