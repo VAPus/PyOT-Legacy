@@ -192,7 +192,7 @@ class BasePacket(TibiaPacket):
     def outfit(self, look, addon=0, mount=0x00):
         
         self.uint16(look[0])
-        if look[0] != 0:
+        if look[0]:
             self.uint8(look[1])
             self.uint8(look[2])
             self.uint8(look[3])
@@ -271,7 +271,7 @@ class BasePacket(TibiaPacket):
         self.uint8(stackpos)
         self.item(item)
 
-    def addTileCreature(self, pos, stackpos, creature, player=None, resend=False):
+    def addTileCreature(self, pos, stackpos, creature, player, resend=False):
         if stackpos > 9: return
         
         self.uint8(0x6A)
@@ -279,21 +279,20 @@ class BasePacket(TibiaPacket):
         self.uint8(stackpos)
         known = False
         removeKnown = 0
-        if player:
-            known = creature in player.knownCreatures
+        known = creature in player.knownCreatures
                     
-            if not known:
-                if len(player.knownCreatures) > self.maxKnownCreatures:
-                    removeKnown = player.checkRemoveKnown()
-                    if not removeKnown:
-                        player.exit("Too many creatures in known list. Please relogin")
-                        return
-                player.knownCreatures.add(creature)
-                creature.knownBy.add(player)
-            elif resend:
-                removeKnown = creature.clientId()
-                known = False
-            self.creature(creature, known, removeKnown)
+        if not known:
+            if len(player.knownCreatures) > self.maxKnownCreatures:
+                removeKnown = player.checkRemoveKnown()
+                if not removeKnown:
+                    player.exit("Too many creatures in known list. Please relogin")
+                    return
+            player.knownCreatures.add(creature)
+            creature.knownBy.add(player)
+        elif resend:
+            removeKnown = creature.clientId()
+            known = False
+        self.creature(creature, known, removeKnown)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
