@@ -27,7 +27,7 @@ itemNames = {}
 
 ### Container class ###
 class Container(object):
-    __slots__ = ('items', 'maxSize')
+    __slots__ = ('items')
     def __init__(self, size):
         self.items = deque(maxlen=size)
     
@@ -186,7 +186,22 @@ class Item(object):
                 return items[self.itemId]["name"]
     
     def description(self):
-        return "You see %s. %s" % (self.name(), items[self.itemId]["description"] if "description" in items[self.itemId] else "")
+        description = "You see %s" % self.name()
+        if self.showDuration:
+            description += "that will expire in %d seconds" % self.duration # TODO: days, minutes, hours
+        if self.containerSize:
+            description += "(Vol: %d)" % self.containerSize
+            
+            
+        # Special description, not always defined
+        if "description" in self.params:
+            extra = self.params["description"]
+        elif "description" in items[self.itemId]:
+            extra = items[self.itemId]["description"]
+        else:
+            extra = ""
+            
+        return "%s. %s" % (description, extra)
 
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
