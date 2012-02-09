@@ -74,10 +74,15 @@ class NPC(Creature):
 
     def sendTradeOffers(self, to):
         forSale = set()
-        stream = TibiaPacket(0x7A)
+        stream = to.packet(0x7A)
         stream.string(self.data["name"])
-        stream.uint8(min(len(self.base.offers), 255))
-        for item in self.base.offers:
+        if to.client.version >= 942:
+            count = min(len(self.base.offers), 0xFFFF)
+            stream.uint16(count)
+        else:
+            count = min(len(self.base.offers), 0xFF)
+            stream.uint8(count)
+        for item in self.base.offers[:count]:
             stream.uint16(game.item.items[item[0]]["cid"])
             stream.uint8(item[3])
             stream.string(game.item.items[item[0]]["name"])

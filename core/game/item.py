@@ -64,7 +64,7 @@ class Container(object):
             return None
     
     def getRecursive(self, items = None):
-        if not items:
+        if items == None:
             items = self.items
             
         for item in items:

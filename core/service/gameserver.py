@@ -32,6 +32,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         self.player = None
         self.protocol = None
         self.ready = False
+        self.version = 0
+        
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
@@ -62,6 +64,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             #packet.uint16() 
             version = packet.uint16() # Version int
             self.protocol = game.protocol.getProtocol(version)
+            self.version = version
             print "Client protocol version %d" % version
 
             if not self.protocol:
