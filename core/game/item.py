@@ -194,10 +194,13 @@ class Item(object):
             
             
         # Special description, not always defined
-        if "description" in self.params:
-            extra = self.params["description"]
-        elif "description" in items[self.itemId]:
-            extra = items[self.itemId]["description"]
+        if self.params:
+            if "description" in self.params:
+                extra = self.params["description"]
+            elif "description" in items[self.itemId]:
+                extra = items[self.itemId]["description"]
+            else:
+                extra = ""
         else:
             extra = ""
             

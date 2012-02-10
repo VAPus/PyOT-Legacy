@@ -320,7 +320,10 @@ class Player(Creature):
             if position.x != 0xFFFF:
                 if isinstance(position, StackPosition):
                     print "findItem - stackpos"
-                    return position.getThing()
+                    thing = position.getThing()
+                    if sid and thing and thing.itemId != sid:
+                        raise Exception("Got request for a item at %s, but spritId mismatches (should be: %d, is: %s)" % (position, sid, thing.itemId))
+                    return thing
                 else:
                     raise AttributeError("Position is not a subclass of StackPosition, but points to a map position.")
             

@@ -1129,13 +1129,21 @@ class BaseProtocol(object):
         stackpos = packet.uint8()
         
         onPosition = packet.position(player.position.instanceId)
+        onClientId = packet.uint16()
         onStack = packet.uint8()
         
         stackPosition1 = position.setStackpos(stackpos)
         stackPosition2 = onPosition.setStackpos(onStack)
         
-        thing = player.findItem(stackPosition1)
-        if onStack != 99:
+        print stackPosition1
+        print stackPosition2
+        
+        if clientId != 99:
+            thing = player.findItem(stackPosition1)
+        else:
+            thing = position.getTile().creatures()[0]
+            
+        if onClientId != 99:
             onThing = player.findItem(stackPosition2)
         else:
             onThing = game.map.getTile(onPosition).creatures()[0]
