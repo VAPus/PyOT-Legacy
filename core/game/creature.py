@@ -390,8 +390,7 @@ class Creature(object):
             stream = spectator.packet()
             
             if not canSeeOld and canSeeNew:
-                #print oldPosition, position
-                #stream.addTileCreature(position, newStackPos, self, spectator, True)
+                stream.addTileCreature(position, newStackPos, self, spectator)
                 # Too high stack?
                 """ Cheat!!! """
                 """if isKnown:
@@ -402,10 +401,10 @@ class Creature(object):
                         stream.uint8(0x00)
                         stream.uint8(0xFF)"""
                 """ / Cheat """
-                pass
             
             elif canSeeOld and not canSeeNew:
-                stream.removeTileItem(oldPosition, oldStackpos)
+                if isKnown:
+                    stream.removeTileItem(oldPosition, oldStackpos)
                 """ Cheat!!! """
                 """if isKnown:
                     #oldTile.placeCreature(self)
@@ -420,16 +419,17 @@ class Creature(object):
                 """ / Cheat """
                 
             elif canSeeOld and canSeeNew:
-                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+                if spectator.canSee2(oldPosition) and spectator.canSee2(position) and (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
-                    if not self in oldTile.things:
+                    """if not isKnown:
                         oldTile.placeCreature(self)
-                    stream.uint8(0x69)
-                    stream.position(oldPosition)
-                    stream.tileDescription(oldTile, spectator)
-                    stream.uint8(0x00)
-                    stream.uint8(0xFF)
-                    oldTile.removeCreature(self)
+                        for pos in oldPosition.roundPoint(1):
+                            stream.uint8(0x69)
+                            stream.position(pos)
+                            stream.tileDescription(pos.getTile(), spectator)
+                            stream.uint8(0x00)
+                            stream.uint8(0xFF)
+                        oldTile.removeCreature(self)"""
                     """ / Cheat """
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
@@ -438,6 +438,7 @@ class Creature(object):
                     
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
+                    stream.addTileCreature(position, newStackPos, self, spectator)
                     
             stream.send(spectator.client) 
             

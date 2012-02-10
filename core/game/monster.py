@@ -673,15 +673,12 @@ class MonsterBrain(object):
                 monster.turnOffBrain()
                 return False
             
-            if not monster.walkPattern and monster.canWalk and not monster.action: # If no other action is available
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = reactor.callLater(2, self.handleThink, monster)
         
     def walkRandomStep(self, monster, badDir=None):
-        if time.time() - monster.lastStep < monster.walkPer:
-            return
-            
         if not badDir:
             badDir = []
             
@@ -712,13 +709,13 @@ class MonsterBrain(object):
                 continue
             
             badDir.append(step)
-            if config.monsterNeverSkipWalks:
+            """if config.monsterNeverSkipWalks:
                 def _():
                     if len(badDir) < 4:
                         self.walkRandomStep(monster, badDir)
-                monster.move(step, failback=_)
+                monster.move(step, callback=_)
             else:
-                monster.move(step)
+                monster.move(step)"""
                 
             return
         
