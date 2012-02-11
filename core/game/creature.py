@@ -16,7 +16,7 @@ import collections
 
 # Unique ids, thread safe too
 def __uid():
-    idsTaken = 1000
+    idsTaken = 1
     while True:
         idsTaken += 1
         yield idsTaken

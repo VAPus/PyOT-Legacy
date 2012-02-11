@@ -185,7 +185,7 @@ class Item(object):
             except:
                 return items[self.itemId]["name"]
     
-    def description(self):
+    def description(self, player=None, position=None):
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         description = "You see %s" % self.name()
         if self.showDuration:
@@ -200,43 +200,44 @@ class Item(object):
                 description += "Atk:%d" % self.attack
             moreatk = ""
             for elem in elems:
-                if self.__getattr__(elem):
-				    pre = elem[len("element"):]
-				    moreatk += " +%d %s" % (self.__getattr__(elem), pre.lower())
+                value = self.__getattr__(elem)
+                if value:
+                    pre = elem[len("element"):]
+                    moreatk += " +%d %s" % (value, pre.lower())
             if moreatk:
                 description += " physical %s" % moreatk
             if self.extraatk:
                 description += " +%d" % self.extraatk
             if self.defence:
                 if self.attack:
-				    description += ", "
+                    description += ", "
                 description += "Def:%d" % self.defence
             if self.extradef:
-                description += " %+d" % self.extradef
+                description += " +%d" % self.extradef
             description += ")" #shows up as a ? for some reason
 
-        description	+= "."
+        descriptio += "."
 
-		###########################only show weight and special description if distance <2. TODO: use extra below here
-        if self.weight:
-            if self.count:
-                description	+= "It weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
-            else:
-                description	+= "It weighs %.2f oz." % (float(self.weight) / 100)
+        ###########################only show weight and special description if distance <2. TODO: use extra below here
+        extra = ""
+        if player and position and player.inRange(position, 2, 2):
+            if self.weight:
+                if self.count:
+                    description	+= "It weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
+                else:
+                    description	+= "It weighs %.2f oz." % (float(self.weight) / 100)
 
-        # Special description, not always defined
-        if self.params:
-            if "description" in self.params:
-                extra = self.params["description"]
-            elif "description" in items[self.itemId]:
-                extra = items[self.itemId]["description"]
-            else:
-                extra = ""
-        else:
-            extra = ""
+            # Special description, not always defined
+            if self.params:
+                if "description" in self.params:
+                    extra = self.params["description"]
+                elif "description" in items[self.itemId]:
+                    extra = items[self.itemId]["description"]
+
         ########################
-        #if self.text: #and distance < 4
-        #    extra = self.text
+        if self.text and (player and position and player.inRange(position, 4, 4)):
+            extra += self.text
+            
         return "%s\n%s" % (description, extra)
 
     def rawName(self):

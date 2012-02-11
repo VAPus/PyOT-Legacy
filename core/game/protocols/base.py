@@ -1035,7 +1035,7 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    player.message(thing.description() + extra, 'MSG_INFO_DESCR')
+                    player.message(thing.description(player, position) + extra, 'MSG_INFO_DESCR')
             elif isinstance(thing, Creature):
                 def afterScript():
                     if self == thing:
@@ -1052,7 +1052,7 @@ class BaseProtocol(object):
         count = packet.uint8()
         
         item = game.item.Item(sid(clientId), count)
-        player.message(item.description(), 'MSG_INFO_DESCR')
+        player.message(item.description(player), 'MSG_INFO_DESCR')
         del item
         
     def handleRotateItem(self, player, packet):
@@ -1371,7 +1371,7 @@ class BaseProtocol(object):
                 # TODO propper description handling
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
-                player.message(thing.description() + extra, 'MSG_INFO_DESCR')
+                player.message(thing.description(player) + extra, 'MSG_INFO_DESCR')
             game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
             
     def handleAcceptTrade(self, player, packet):
