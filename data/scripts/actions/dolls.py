@@ -52,7 +52,7 @@ DOLLS = {\
 def onUse(creature, thing, position, **k):
     if not thing.itemId in DOLLS: return
 
-    rand = random.randint(0, len(DOLLS[thing.itemId]-1))
+    rand = random.randint(0, len(DOLLS[thing.itemId])-1)
     sound = DOLLS[thing.itemId][rand]
 
     if thing.itemId == STUFFED_DRAGON:
@@ -71,7 +71,7 @@ def onUse(creature, thing, position, **k):
 
 
     creature.say(sound, 'MSG_SPEAK_MONSTER_SAY')
-    thing.transform(USED_DOLLS[thing.itemId])
+    thing.transform(usedDolls[thing.itemId], position)
 
     thing.decay(position)
     
