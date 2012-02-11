@@ -194,31 +194,36 @@ class Item(object):
             description += " (Vol:%d)" % self.containerSize
         if self.armor: #magiclevelpoints absorbPercentDeath etc...
             description += " (Arm:%d)" % self.armor
-        if self.attack and self.defence: ##melee? weapons
-            description += " (Atk:%d" % self.attack
+        if self.attack or self.defence: ##melee? weapons and shields
+            description += " ("
+            if self.attack:
+                description += "Atk:%d" % self.attack
             moreatk = ""
-            for elem in elems: ##check for elements
-                if self.elem: #doesnt work
+            for elem in elems:
+                if self.__getattr__(elem):
 				    pre = elem[len("element"):]
-				    moreatk += " +%d %d" % (self.elem, pre) #need to convert pre to lowercase
-            if moreatk: ##does an empty script return true?
-                description = " physical %d" % moreatk
-            if self.extraatk: ##check for extraattack
+				    moreatk += " +%d %s" % (self.__getattr__(elem), pre.lower())
+            if moreatk:
+                description += " physical %s" % moreatk
+            if self.extraatk:
                 description += " +%d" % self.extraatk
-            description += ", Def:%d" % self.defence
-            if self.extradef: #check for extradefense
+            if self.defence:
+                if self.attack:
+				    description += ", "
+                description += "Def:%d" % self.defence
+            if self.extradef:
                 description += " %+d" % self.extradef
-            description += ")"
-        elif self.attack: ##not sure if this ever happens might not be needed
-            description += " (Atk:%d)" % self.attack
-        elif self.defence: ##shields #shields dont have any extras?
-            description += " (Def:%d)" % self.defence
-        description	+= ".\n" #needs to be outside to close environment items
-		###########################only show weight and special description if distance <2
+            description += ")" #shows up as a ? for some reason
+
+        description	+= "."
+
+		###########################only show weight and special description if distance <2. TODO: use extra below here
         if self.weight:
-            description	+= "It weighs %.2f oz." % (items[self.itemId]["weight"]/100) #self.weight instead? need to add support for stacks
-            
-            
+            if self.count:
+                description	+= "It weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
+            else:
+                description	+= "It weighs %.2f oz." % (float(self.weight) / 100)
+
         # Special description, not always defined
         if self.params:
             if "description" in self.params:
@@ -229,7 +234,9 @@ class Item(object):
                 extra = ""
         else:
             extra = ""
-        ########################            
+        ########################
+        #if self.text: #and distance < 4
+        #    extra = self.text
         return "%s\n%s" % (description, extra)
 
     def rawName(self):
