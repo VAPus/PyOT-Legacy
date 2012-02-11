@@ -817,7 +817,7 @@ class Creature(object):
         if self.direction == direction:
             return
             
-        if not self.alive or not self.actionLock(self.turn, direction):
+        if not self.alive: #or not self.actionLock(self.turn, direction):
             return
 
         self.direction = direction
@@ -835,15 +835,22 @@ class Creature(object):
         
     def turnAgainst(self, position):
         # First north/south
+        margin = 0
         if position.y > self.position.y:
-            return self.turn(2)
+            direction = 2
+            margin = position.y - self.position.y
         elif position.y < self.position.y:
-            return self.turn(0)
-        elif position.x > self.position.x:
-            return self.turn(1)
-        elif position.x < self.position.x:
-            return self.turn(3)
+            direction = 0
+            margin = self.position.y - position.y
             
+        if position.x > self.position.x and (position.x - self.position.x > margin):
+            direction = 1
+
+        elif position.x < self.position.x and (self.position.x - position.x > margin):
+            direction = 3
+            
+        return self.turn(direction)
+        
     def say(self, message, messageType='MSG_SPEAK_SAY'):
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)

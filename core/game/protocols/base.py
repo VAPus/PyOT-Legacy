@@ -1346,8 +1346,9 @@ class BaseProtocol(object):
             player.tradeAccepted = False
             
     def handleCloseTradeNPC(self, player, packet):
-        player.openTrade.farewell(player)
-        player.closeTrade()
+        if player.openTrade:
+            player.openTrade.farewell(player)
+            player.closeTrade()
 
             
     def handleLookAtInTrade(self, player, packet):

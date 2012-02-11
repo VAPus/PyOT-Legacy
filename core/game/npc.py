@@ -94,7 +94,7 @@ class NPC(Creature):
                 forSale.add(item[0])
         self.sendGoods(to, forSale, stream)        
         stream.send(to.client)
-        
+        to.openTrade = self
         self.forSale = forSale
     
     def sendGoods(self, to, forSale=None, stream=None):
