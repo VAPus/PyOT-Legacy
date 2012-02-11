@@ -132,7 +132,7 @@ class TibiaPacket(object):
         
     def string(self, string):
         length = len(string)
-        self.data += struct.pack("<H%ds" % length, length, str(string))
+        self.data += struct.pack("<H", length) + string
 
     def put(self, string):
         self.data += str(string)

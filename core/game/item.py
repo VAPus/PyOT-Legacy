@@ -214,9 +214,10 @@ class Item(object):
                 description += "Def:%d" % self.defence
             if self.extradef:
                 description += " +%d" % self.extradef
-            description += ")" #shows up as a ? for some reason
+            
+            description += ")"
 
-        description += "."
+        description += ". "
 
         ###########################only show weight and special description if distance <2. TODO: use extra below here
         extra = ""
@@ -237,7 +238,6 @@ class Item(object):
         ########################
         if self.text and (player and (not position or player.inRange(position, 4, 4))):
             extra += self.text
-            
         return "%s\n%s" % (description, extra)
 
     def rawName(self):
