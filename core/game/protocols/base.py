@@ -761,7 +761,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
                     
-                if count > oldItem[1].count:
+                if oldItem[1].stackable and count > oldItem[1].count:
                     player.notPossible()
                     return
                     

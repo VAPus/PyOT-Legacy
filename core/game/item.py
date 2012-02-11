@@ -250,6 +250,7 @@ class Item(object):
             
     def slots(self):
         slot = self.slotType
+
         if not slot:
             return ()
         elif slot == "head":
