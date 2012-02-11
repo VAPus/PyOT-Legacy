@@ -186,11 +186,37 @@ class Item(object):
                 return items[self.itemId]["name"]
     
     def description(self):
+        elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         description = "You see %s" % self.name()
         if self.showDuration:
             description += "that will expire in %d seconds" % self.duration # TODO: days, minutes, hours
         if self.containerSize:
-            description += "(Vol: %d)" % self.containerSize
+            description += " (Vol:%d)" % self.containerSize
+        if self.armor: #magiclevelpoints absorbPercentDeath etc...
+            description += " (Arm:%d)" % self.armor
+        if self.attack and self.defence: ##melee? weapons
+            description += " (Atk:%d" % self.attack
+            moreatk = ""
+            for elem in elems: ##check for elements
+                if self.elem: #doesnt work
+				    pre = elem[len("element"):]
+				    moreatk += " +%d %d" % (self.elem, pre) #need to convert pre to lowercase
+            if moreatk: ##does an empty script return true?
+                description = " physical %d" % moreatk
+            if self.extraatk: ##check for extraattack
+                description += " +%d" % self.extraatk
+            description += ", Def:%d" % self.defence
+            if self.extradef: #check for extradefense
+                description += " %+d" % self.extradef
+            description += ")"
+        elif self.attack: ##not sure if this ever happens might not be needed
+            description += " (Atk:%d)" % self.attack
+        elif self.defence: ##shields #shields dont have any extras?
+            description += " (Def:%d)" % self.defence
+        description	+= ".\n" #needs to be outside to close environment items
+		###########################only show weight and special description if distance <2
+        if self.weight:
+            description	+= "It weighs %.2f oz." % (items[self.itemId]["weight"]/100) #self.weight instead? need to add support for stacks
             
             
         # Special description, not always defined
@@ -203,8 +229,8 @@ class Item(object):
                 extra = ""
         else:
             extra = ""
-            
-        return "%s. %s" % (description, extra)
+        ########################            
+        return "%s\n%s" % (description, extra)
 
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
