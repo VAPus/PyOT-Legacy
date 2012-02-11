@@ -220,7 +220,7 @@ class Item(object):
 
         ###########################only show weight and special description if distance <2. TODO: use extra below here
         extra = ""
-        if player and position and player.inRange(position, 2, 2):
+        if player and (not position or player.inRange(position, 2, 2)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.weight:
                 if self.count:
                     description	+= "It weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
@@ -235,7 +235,7 @@ class Item(object):
                     extra = items[self.itemId]["description"]
 
         ########################
-        if self.text and (player and position and player.inRange(position, 4, 4)):
+        if self.text and (player and (not position or player.inRange(position, 4, 4))):
             extra += self.text
             
         return "%s\n%s" % (description, extra)
