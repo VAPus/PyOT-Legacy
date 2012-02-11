@@ -216,7 +216,7 @@ class Item(object):
                 description += " +%d" % self.extradef
             description += ")" #shows up as a ? for some reason
 
-        descriptio += "."
+        description += "."
 
         ###########################only show weight and special description if distance <2. TODO: use extra below here
         extra = ""
