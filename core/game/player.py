@@ -2253,7 +2253,7 @@ class Player(Creature):
         self.removeStorage('__outfit%s' % game.resource.reverseOutfits[name])
     
     def getAddonsForOutfit(self, name):
-        return self.getStorage('__outfitAddons%s' % game.resource.reverseOutfits[name])
+        return self.getStorage('__outfitAddons%s' % game.resource.reverseOutfits[name]) or 0
         
     def addOutfitAddon(self, name, addon):
         addons = self.getAddonsForOutfit(name)
