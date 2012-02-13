@@ -76,11 +76,11 @@ class Shop(ClassAction):
         
         self.on.onSaid(offers, self.handleOffers, self.handleClose)
         
-    def offer(self, name, sellPrice=-1, buyPrice=-1, count=1):
+    def offer(self, name, sellPrice=0, buyPrice=0, subtype=0):
         if type(name) == str:
             name = game.item.itemNames[name]
             
-        self.on.offers.append( (name, sellPrice, buyPrice, count) )
+        self.on.offers.append( (name, sellPrice, buyPrice, subtype) )
 
     def offerContainer(self, name, contains, count, buyPrice=0):
         pass # TODO

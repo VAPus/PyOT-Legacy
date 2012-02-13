@@ -97,33 +97,33 @@ class NPC(Creature):
         to.openTrade = self
         self.forSale = forSale
     
-    def sendGoods(self, to, forSale=None, stream=None):
-        if stream:
+    def sendGoods(self, to, forSale=None, streamX=None):
+        if streamX:
+            stream = streamX
             stream.uint8(0x7B)
         else:
             stream = TibiaPacket(0x7B)
         stream.uint32(to.getMoney())
-        
-        items = {}
-        stream.uint8(len(forSale))
 
+        stream.uint8(len(forSale))
+        print forSale
         for itemId in forSale:
             stream.uint16(game.item.items[itemId]["cid"])
             try:
                 stream.uint8(to.inventoryCache[itemId][0])
             except KeyError:
                 stream.uint8(0)
-            
-        stream.send(to.client) 
+        if not streamX:    
+            stream.send(to.client) 
         
-    def buy(self, player, itemId, count, amount, ignoreCapasity=True, withBackpack=False):
+    def buy(self, player, itemId, subtype, amount, ignoreCapasity=True, withBackpack=False):
         
         for offer in self.base.offers:
-            if offer[0] == itemId and offer[3] == count:
+            if offer[0] == itemId and offer[3] == subtype:
                 print "Offer:", offer[1]
                 # Can we afford it?
                 if player.removeMoney(offer[1] * amount):
-                    count = count * amount
+                    count = amount
                     
                     try:
                         stack = game.item.items[itemId]["stackable"]
@@ -143,17 +143,25 @@ class NPC(Creature):
                     if self.forSale and player.openTrade == self: # Resend my items
                         self.sendGoods(player, self.forSale)
                         
-    def sell(self, player, itemId, count, amount, ignoreEquipped=True):
+    def sell(self, player, itemId, subtype, amount, ignoreEquipped=True):
         for offer in self.base.offers:
-            count = count * amount
+            count = amount
             if offer[0] == itemId:
-                # Do we really have this item?
-                item = player.findItemById(itemId, count)
-                if item.count == count:
-                    player.addMoney(offer[2] * amount)
+                if Item(itemId).stackable:
+                    # Do we really have this item?
+                    item = player.findItemById(itemId, count)
+                    if item.count == count:
+                        player.addMoney(offer[2] * amount)
+                        if self.forSale and player.openTrade == self: # Resend my items
+                            self.sendGoods(player, self.forSale)
+                else:
+                    print count
+                    while count:
+                        item = player.findItemById(itemId)
+                        player.addMoney(offer[2])
+                        count -= 1
                     if self.forSale and player.openTrade == self: # Resend my items
                         self.sendGoods(player, self.forSale)
-
     def handleSpeak(self, player, said):
         if said in self.base._onSaid:
             self.activeModule = self.base._onSaid[said][0](self, player)

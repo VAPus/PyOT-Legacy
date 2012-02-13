@@ -429,7 +429,7 @@ class Player(Creature):
 
             elif items[0][0] == 2:
                 items[0][2].container.removeItem(items[0][1])
-                if items.openIndex != None:
+                if items[0][2].openIndex != None:
                     stream.removeContainerItem(items[0][2].openIndex, items[0][3])
             
             # Update cached data
