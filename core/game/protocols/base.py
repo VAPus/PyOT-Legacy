@@ -957,10 +957,9 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    
-                    if currItem and currItem[1] and (not oldItem[1].stackable or oldItem[1].count > 0):
+                    if currItem and currItem[1] and not oldItem[1].stackable:
                         if fromPosition.y < 64:
-                            player.inventory[fromPosition.y-1] = oldItem[1].copy()
+                            player.inventory[fromPosition.y-1] = currItem[1].copy()
                             
                             """if container.container.items[toPosition.z].decayPosition:
                                 container.container.items[toPosition.z].decayPosition = (0xFFFF, fromPosition.y)
@@ -973,9 +972,11 @@ class BaseProtocol(object):
                             if player.addCache(oldItem[1]):
                                 player.refreshStatus(stream)
                         else:
-                            
-                            player.itemToContainer(player.getContainer(fromPosition.y-64), oldItem[1], streamX=stream)
-                    
+                            try:
+                                player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
+                            except:
+                                pass
+                        
                     if sendUpdate:
                         stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
                     stream.send(player.client)
