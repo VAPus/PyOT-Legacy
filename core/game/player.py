@@ -454,7 +454,7 @@ class Player(Creature):
                         stream.updateContainerItem(item[2].openIndex, item[3], item[1])
 
                     # Update cached data
-                    if self.removeCache(item[1]) and not sendUpdate:
+                    if self.modifyCache(item[1], -count if count > 0 else -1) and not sendUpdate:
                         sendUpdate = True
                     
                 else:
@@ -466,7 +466,7 @@ class Player(Creature):
                         stream.removeContainerItem(item[2].openIndex, item[3])
                         
                     # Update cached data
-                    if self.removeCache(item[1]) and not sendUpdate:
+                    if self.modifyCache(item[1], -count if count > 0 else -1) and not sendUpdate:
                         sendUpdate = True
             
             if sendUpdate:

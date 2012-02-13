@@ -106,10 +106,11 @@ class NPC(Creature):
         stream.uint32(to.getMoney())
 
         stream.uint8(len(forSale))
-        print forSale
+        print to.inventoryCache
         for itemId in forSale:
             stream.uint16(game.item.items[itemId]["cid"])
             try:
+                print to.inventoryCache[itemId][0]
                 stream.uint8(to.inventoryCache[itemId][0])
             except KeyError:
                 stream.uint8(0)
@@ -124,19 +125,18 @@ class NPC(Creature):
                 # Can we afford it?
                 if player.removeMoney(offer[1] * amount):
                     count = amount
-                    
-                    try:
-                        stack = game.item.items[itemId]["stackable"]
-                    except:
-                        stack = False
+                   
+                    stack = Item(itemId).stackable
                         
                     container = player.inventory[2]
                     if withBackpack:
                         container = game.item.Item(1987)
                         player.itemToContainer(player.inventory[2], container)
                         
-                    while count:
+                    while count > 0:
+                        print count
                         rcount = min(100, count) if stack else 1
+                        print "---", rcount
                         player.itemToContainer(container, game.item.Item(itemId, rcount))
                         count -= rcount
                         
