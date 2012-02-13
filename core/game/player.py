@@ -429,7 +429,7 @@ class Player(Creature):
 
             elif items[0][0] == 2:
                 items[0][2].container.removeItem(items[0][1])
-                if items.openIndex != None:
+                if items[0][2].openIndex != None:
                     stream.removeContainerItem(items[0][2].openIndex, items[0][3])
             
             # Update cached data
@@ -454,7 +454,7 @@ class Player(Creature):
                         stream.updateContainerItem(item[2].openIndex, item[3], item[1])
 
                     # Update cached data
-                    if self.removeCache(item[1]) and not sendUpdate:
+                    if self.modifyCache(item[1], -count if count > 0 else -1) and not sendUpdate:
                         sendUpdate = True
                     
                 else:
@@ -466,7 +466,7 @@ class Player(Creature):
                         stream.removeContainerItem(item[2].openIndex, item[3])
                         
                     # Update cached data
-                    if self.removeCache(item[1]) and not sendUpdate:
+                    if self.modifyCache(item[1], -count if count > 0 else -1) and not sendUpdate:
                         sendUpdate = True
             
             if sendUpdate:
@@ -1681,23 +1681,23 @@ class Player(Creature):
         condition = ""
         
         if self.saveDepot or force:
-            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'")
+            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'").replace("%", "%%")
             self.saveDepot = False
             
         if self.saveStorage or force:
-            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'")
+            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'").replace("%", "%%")
             self.saveStorage = False
             
         if self.saveSkills or force:
-            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'")
+            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'").replace("%", "%%")
             self.saveSkills = False
             
         if self.saveInventory or force:
-            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'")
+            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'").replace("%", "%%")
             self.saveInventory = False
         
         if self.saveCondition or force:
-            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions).replace("'", "\\'")
+            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions)
             self.saveCondition = False
             
         extra = "%s%s%s%s%s" % (depot, storage, skills, inventory, condition)
@@ -2253,7 +2253,7 @@ class Player(Creature):
         self.removeStorage('__outfit%s' % game.resource.reverseOutfits[name])
     
     def getAddonsForOutfit(self, name):
-        return self.getStorage('__outfitAddons%s' % game.resource.reverseOutfits[name])
+        return self.getStorage('__outfitAddons%s' % game.resource.reverseOutfits[name]) or 0
         
     def addOutfitAddon(self, name, addon):
         addons = self.getAddonsForOutfit(name)

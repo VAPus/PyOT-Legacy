@@ -141,7 +141,7 @@ def creatureSpawn(creature, text):
     pos = creature.position.copy()
     pos.y += 2
     try:
-        game.monster.getMonster(text).spawn(pos)
+        game.monster.getMonster(text.title()).spawn(pos)
     except:
         creature.message("Monster named '%s' can't be spawned!" % text)
     return False
@@ -154,7 +154,7 @@ def npcSpawn(creature, text):
     pos = creature.position.copy()
     pos.y += 2
     try:
-        game.npc.getNPC(text).spawn(pos)
+        game.npc.getNPC(text.title()).spawn(pos)
     except:
         creature.message("NPC named '%s' can't be spawned!" % text)
     return False
@@ -234,7 +234,7 @@ reg('talkaction', '!mount', mountPlayer)
 
 def addMount(creature, text):
     try:
-        creature.addMount(text)
+        creature.addMount(text.title())
         creature.message("You can now use %s" % text)
     except:
         creature.message("Invalid mount.")
@@ -244,7 +244,7 @@ reg('talkactionFirstWord', 'mount', addMount)
 
 def addOutfit(creature, text):
     try:
-        creature.addOutfit(text)
+        creature.addOutfit(text.title())
         creature.message("You can now use %s" % text)
     except:
         creature.message("Invalid outfit.")

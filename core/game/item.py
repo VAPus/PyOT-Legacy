@@ -239,7 +239,7 @@ class Item(object):
         description += "."
 
         extra = ""
-        if player and (not position or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
+        if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.weight:
                 if self.count:
                     extra += "\nIt weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
@@ -253,11 +253,10 @@ class Item(object):
                 elif "description" in items[self.itemId]:
                     extra = "\n%s" % items[self.itemId]["description"]
 
-        if self.text and (player and (not position or player.inRange(position, 3, 3))):
+        if self.text and (player and (not position or position.x == 0xFFFF or player.inRange(position, 4, 4))):
             extra += "\nYou Read: %s" % self.text
-            
-        return "%s%s" % (description, extra)
 
+        return "%s%s" % (description, extra)
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
             return items[self.itemId]["plural"].title()
@@ -268,6 +267,7 @@ class Item(object):
             
     def slots(self):
         slot = self.slotType
+
         if not slot:
             return ()
         elif slot == "head":

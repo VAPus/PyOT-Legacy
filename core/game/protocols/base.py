@@ -761,7 +761,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
                     
-                if count > oldItem[1].count:
+                if oldItem[1].stackable and count > oldItem[1].count:
                     player.notPossible()
                     return
                     
@@ -958,7 +958,7 @@ class BaseProtocol(object):
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
                     
-                    if currItem and currItem[1] and oldItem[1].count > 0:
+                    if currItem and currItem[1] and (not oldItem[1].stackable or oldItem[1].count > 0):
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = oldItem[1].copy()
                             
@@ -1346,8 +1346,9 @@ class BaseProtocol(object):
             player.tradeAccepted = False
             
     def handleCloseTradeNPC(self, player, packet):
-        player.openTrade.farewell(player)
-        player.closeTrade()
+        if player.openTrade:
+            player.openTrade.farewell(player)
+            player.closeTrade()
 
             
     def handleLookAtInTrade(self, player, packet):

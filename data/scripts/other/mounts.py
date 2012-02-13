@@ -2,7 +2,7 @@
 # name, cid, speed change
 game.resource.genMount("Black Sheep", 371, 10)
 game.resource.genMount("Blazerbringer", 376, 10)
-game.resource.genMount("Crystal Wolf ", 390, 10)
+game.resource.genMount("Crystal Wolf", 390, 10)
 game.resource.genMount("Draptor", 373, 10)
 game.resource.genMount("Dromedary", 405, 10)
 game.resource.genMount("King Scorpion", 406, 10)

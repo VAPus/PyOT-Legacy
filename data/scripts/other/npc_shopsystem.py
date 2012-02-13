@@ -28,9 +28,25 @@ def saidTo(creature, creature2, said, channelType, channelId):
             return
     elif channelType == 11 and not creature in creature2.focus:
         creature2.focus.add(creature)
-        if len(creature2.focus) == 1:
-            ok = False
+        ok = False
+        if len(creature2.focus) != 1:
+            
             creature2.sayTo(creature, "One moment...")
+        else:
+            for greeting in greetings:
+                if (greeting+creature2.data["name"]).lower() == said:
+                    ok = True
+                    break
+            if ok:
+                creature2.focus.add(creature)
+                # Allow functions to be greatings.
+                if hasattr(creature2.base.speakGreet, '__call__'):
+                    creature2.base.speakGreet(npc=creature2, player=creature)
+                else:
+                    creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
+                    
+                creature2.turnAgainst(creature.position)
+                return
     if ok:
         # Check for goodbyes
         if said in farwells:
@@ -60,11 +76,11 @@ class Shop(ClassAction):
         
         self.on.onSaid(offers, self.handleOffers, self.handleClose)
         
-    def offer(self, name, sellPrice=-1, buyPrice=-1, count=1):
+    def offer(self, name, sellPrice=0, buyPrice=0, subtype=0):
         if type(name) == str:
             name = game.item.itemNames[name]
             
-        self.on.offers.append( (name, sellPrice, buyPrice, count) )
+        self.on.offers.append( (name, sellPrice, buyPrice, subtype) )
 
     def offerContainer(self, name, contains, count, buyPrice=0):
         pass # TODO
@@ -142,6 +158,120 @@ class RuneShop(Shop):
         self.offer('antidote potion', 50, -1, 1)
         
 regClassAction('runeshop', RuneShop)
+
+# Furniture
+class Furniture(Shop):
+    def action(self):
+        Shop.action(self)
+        # Include shop actions
+        self.on.actions.append('shop')
+        self.offer(7906, 80)
+        self.offer(7905, 80)
+        self.offer(7904, 80)
+        self.offer(7907, 80)
+        self.offer(3903, 40)
+        self.offer(3904, 40)
+        self.offer(3901, 15)
+        self.offer(3928, 25)
+        self.offer(3902, 55)
+        self.offer(6115, 50)
+        self.offer(3916, 12)
+        self.offer(3938, 70)
+        self.offer(5086, 10)
+        self.offer(3925, 10)
+        self.offer(3930, 10)
+        self.offer(3921, 18)
+        self.offer(3932, 25)
+        self.offer(3934, 30)
+        self.offer(3935, 7)
+        self.offer(3918, 50)
+        self.offer(8692, 200)
+        self.offer(3908, 25)
+        self.offer(3927, 50)
+        self.offer(7700, 50)
+        self.offer(3937, 35)
+        self.offer(7962, 70)
+        self.offer(2099, 40)
+        self.offer(2102, 6)
+        self.offer(2100, 5)
+        self.offer(2103, 5)
+        self.offer(3929, 8)
+        self.offer(2104, 5)
+        self.offer(3917, 50)
+        self.offer(3926, 200)
+        self.offer(1681, 25)
+        self.offer(1679, 25)
+        self.offer(1685, 30)
+        self.offer(1680, 25)
+        self.offer(1686, 25)
+        self.offer(1692, 25)
+        self.offer(1687, 25)
+        self.offer(1693, 25)
+        self.offer(1684, 20)
+        self.offer(1688, 25)
+        self.offer(1689, 25)
+        self.offer(3916, 12)
+        self.offer(1690, 25)
+        self.offer(1691, 25)
+        self.offer(1692, 25)
+        self.offer(1683, 20)
+        self.offer(1872, 25)
+        self.offer(1860, 25)
+        self.offer(1866, 25)
+        self.offer(1857, 25)
+        self.offer(1869, 25)
+        self.offer(1880, 25)
+        self.offer(1863, 25)
+        self.offer(3909, 30)
+        self.offer(3911, 25)
+        self.offer(3912, 20)
+        self.offer(3910, 25)
+        self.offer(7936, 50)
+        self.offer(1851, 40)
+        self.offer(1848, 40)
+        self.offer(1845, 40)
+        self.offer(1852, 50)
+        self.offer(1854, 50)
+        self.offer(1853, 50)
+        
+regClassAction('furniture', Furniture)
+
+# Equipment
+class Equipment(Shop):
+    def action(self):
+        Shop.action(self)
+        # Include shop actions
+        self.offer('blessed wooden stake', 10000) 
+        self.offer('obsidian knife', 10000)
+        self.offer('shovel', 50)
+        self.offer('backpack', 20)
+        self.offer(6538, 30)
+        self.offer('plate', 6)
+        self.offer('present', 10)
+        self.offer('watch', 20)
+        self.offer('worm', 1)
+        self.offer('rust remover', 100)
+        self.offer('crowbar', 1000)
+        self.offer(10516, 10000)
+        self.offer(10511, 10000)
+        self.offer(10513, 10000)
+        self.offer(1955, 15)
+        self.offer(1950, 15)
+        self.offer(1958, 15)
+        self.offer('fishing rod', 150)
+        self.offer('machete', 40)
+        self.offer('bag', 5)
+        self.offer('orange backpack', 20)
+        self.offer('orange bag', 5)
+        self.offer('pick', 50)
+        self.offer('scythe', 50)
+        self.offer('document', 12)
+        self.offer('parchment', 8)
+        self.offer('scroll', 5)
+        self.offer('bottle', 3)
+        self.offer(2120, 50)
+        self.offer(2050, 2)
+regClassAction('equipment', Equipment)
 
 # Have to apply on all prestores
 reg("playerSayTo", 'npc', saidTo)

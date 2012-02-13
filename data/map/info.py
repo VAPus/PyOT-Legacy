@@ -1,7 +1,7 @@
 width = 1309
 height = 1285
 author = 'OTBMXML2sec generator'
-description = """Saved with Remere's Map Editor 2.1
+description = """Saved with Remere's Map Editor 3.0 BETA
 ezo - pyOT map
 """
 sectorSize = (32, 32)
