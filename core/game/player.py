@@ -1682,31 +1682,38 @@ class Player(Creature):
         skills = ""
         inventory = ""
         condition = ""
+        extras = []
         
         if self.saveDepot or force:
-            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'").replace("%", "%%")
+            extras.append(self.pickleDepot())
+            depot = ", `depot` = %s"
             self.saveDepot = False
             
         if self.saveStorage or force:
-            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'").replace("%", "%%")
+            extras.append(otjson.dumps(self.storage))
+            storage = ", `storage` = %s"
             self.saveStorage = False
             
         if self.saveSkills or force:
-            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'").replace("%", "%%")
+            extras.append(otjson.dumps(self.skills))
+            skills = ", `skills` = %s"
             self.saveSkills = False
             
         if self.saveInventory or force:
-            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'").replace("%", "%%")
+            extras.append(self.pickleInventory())
+            inventory = ", `inventory` = %s"
             self.saveInventory = False
         
         if self.saveCondition or force:
-            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions)
+            extras.append(game.engine.fastPickler(self.conditions))
+            condition = ", `conditions` = %s"
             self.saveCondition = False
             
-        extra = "%s%s%s%s%s" % (depot, storage, skills, inventory, condition)
-
-        if self.saveData or extra or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+ extra +" WHERE `id` = %s"), (self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.data["id"])
+        # XXX hack
+        extras.append(self.data["id"])
+        
+        if self.saveData or depot or storage or skills or inventory or condition or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
+            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+depot+storage+skills+inventory+condition+" WHERE `id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z]+extras
 
     def save(self, force=False):
         if self.doSave:

@@ -764,7 +764,9 @@ class BaseProtocol(object):
                 if oldItem[1].stackable and count > oldItem[1].count:
                     player.notPossible()
                     return
-                    
+                
+                if currItem and currItem[1] and currItem[1].itemId == oldItem[1].itemId:
+                    count = min(100-currItem[1].count, count)
                 if oldItem[1].stackable and count <= 100:
                     renew = True
 

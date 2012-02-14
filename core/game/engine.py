@@ -72,7 +72,7 @@ def loader(timer):
     @inlineCallbacks
     def _sql2_(*a):
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            game.house.houseData[x[0]] = game.house.House(x[0], x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8])
+            game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
     
     
     d.addCallback(_sql2_) # Houses goes after items
@@ -913,7 +913,7 @@ def loadPlayer(playerName):
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30]}
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30]}
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         
@@ -931,7 +931,7 @@ def loadPlayerById(playerId):
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
         game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[cd['name']])
         
