@@ -351,13 +351,3 @@ def playerAI(creature, **k):
     _playerAI()
 
 reg("talkaction", "aime", playerAI)
-
-def testPlaceDebug(creature, **k):
-    stream = creature.packet()
-    pos = creature.position.copy()
-    pos.x -= 0
-    pos.y -= 7
-    stream.addTileItem(pos, 1, Item(5555))
-    stream.send(creature.client)
-    return False
-reg("talkaction", "db", testPlaceDebug)

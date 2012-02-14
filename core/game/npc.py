@@ -72,6 +72,10 @@ class NPC(Creature):
     def sayTo(self, to, text, messageType=game.enum.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)
 
+    def _onBuyerWalks(self, who):
+        who.closeTrade()
+        self.farewell(who)
+        
     def sendTradeOffers(self, to):
         forSale = set()
         stream = to.packet(0x7A)
@@ -90,12 +94,13 @@ class NPC(Creature):
             stream.int32(item[1])
             stream.int32(item[2])
             if item[2] > 0:
-                print item[0], item[2]
                 forSale.add(item[0])
         self.sendGoods(to, forSale, stream)        
         stream.send(to.client)
         to.openTrade = self
         self.forSale = forSale
+        if not self._onBuyerWalks in to.scripts["onNextStep"]:
+            to.scripts["onNextStep"].insert(0, self._onBuyerWalks)
     
     def sendGoods(self, to, forSale=None, streamX=None):
         if streamX:
@@ -106,11 +111,9 @@ class NPC(Creature):
         stream.uint32(to.getMoney())
 
         stream.uint8(len(forSale))
-        print to.inventoryCache
         for itemId in forSale:
             stream.uint16(game.item.items[itemId]["cid"])
             try:
-                print to.inventoryCache[itemId][0]
                 stream.uint8(to.inventoryCache[itemId][0])
             except KeyError:
                 stream.uint8(0)
@@ -121,7 +124,6 @@ class NPC(Creature):
         
         for offer in self.base.offers:
             if offer[0] == itemId and offer[3] == subtype:
-                print "Offer:", offer[1]
                 # Can we afford it?
                 if player.removeMoney(offer[1] * amount):
                     count = amount
@@ -134,9 +136,7 @@ class NPC(Creature):
                         player.itemToContainer(player.inventory[2], container)
                         
                     while count > 0:
-                        print count
                         rcount = min(100, count) if stack else 1
-                        print "---", rcount
                         player.itemToContainer(container, game.item.Item(itemId, rcount))
                         count -= rcount
                         
@@ -155,7 +155,6 @@ class NPC(Creature):
                         if self.forSale and player.openTrade == self: # Resend my items
                             self.sendGoods(player, self.forSale)
                 else:
-                    print count
                     while count:
                         item = player.findItemById(itemId)
                         player.addMoney(offer[2])
