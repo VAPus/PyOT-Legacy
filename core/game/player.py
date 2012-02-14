@@ -1053,25 +1053,28 @@ class Player(Creature):
         self.openContainer(container, parent, update)
 
     def updateAllContainers(self):
-        stream = self.packet(0x6E)
-        for i in self.openContainers.items():
-            parent = False
-            try:
-                parent = bool(i[1].parent)
-            except:
-                pass
-            stream.uint8(i[0])
-            
-            stream.uint16(i[1].cid)
-            stream.string(i[1].rawName())
-            
-            stream.uint8(i[1].containerSize)
-            stream.uint8(parent)
-            stream.uint8(len(i[1].container.items))
-            
-            for item in i[1].container.items:
-                stream.item(item)
+        if self.openContainers:
+            stream = self.packet(0x6E)
+            for i in self.openContainers.items():
+                parent = False
+                try:
+                    parent = bool(i[1].parent)
+                except:
+                    pass
+                stream.uint8(i[0])
                 
+                stream.uint16(i[1].cid)
+                stream.string(i[1].rawName())
+                
+                stream.uint8(i[1].containerSize)
+                stream.uint8(parent)
+                stream.uint8(len(i[1].container.items))
+                
+                for item in i[1].container.items:
+                    stream.item(item)
+        else:
+            stream = self.packet()
+            
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
