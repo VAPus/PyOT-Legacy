@@ -959,7 +959,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not (fromPosition.y < 64 and toPosition.y < 64):
+                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y < 64 and toPosition.y < 64) and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y == toPosition.y):
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = currItem[1].copy()
                             
