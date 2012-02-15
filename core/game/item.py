@@ -186,14 +186,15 @@ class Item(object):
                 return items[self.itemId]["name"]
     
     def description(self, player=None, position=None):
-        bonus = ['speed', 'magiclevelpoints', 'absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain', 'absorbPercentAll'] #charges, showcharges, showattributes
+        bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
+        #TODO: charges, showcharges, showattributes
         description = "You see %s" % self.name()
         if self.showDuration:
-            description += "that will expire in %d seconds" % self.duration # TODO: days, minutes, hours
+            description += "that will expire in %d seconds." % self.duration # TODO: days? , minutes, hours
         if self.containerSize:
-            description += " (Vol:%d)" % self.containerSize
-        if self.armor or self.speed or self.attack or self.defence: #armors, amulets, rings, melee? weapons, and shields ##self.speed makes its include for tiles it shouldnt. ##I dont think arrows or bolt should work either.
+            description += " (Vol:%d)." % self.containerSize
+        if (self.armor or (self.speed and self.pickable) or self.attack or self.defence or self.showcharges) and (not self.ammoType): #need to include crossbows.
             description += " ("
             if self.armor:
                 description += "Arm:%d" % self.armor
@@ -216,31 +217,25 @@ class Item(object):
             if self.extradef:
                 description += " %+d" % self.extradef
             morearm = ""
-            for bns in bonus: ##TODO: sort from highest to lowest excluding speed and magic level
+            if self.speed:
+                morearm += ", %+d speed" % self.speed
+            if self.__getattr__('magiclevelpoints'):
+                morearm += ", %+d magic level" % self.__getattr__('magiclevelpoints')
+            if self.__getattr__('absorbPercentAll'):
+                morearm = ', %+d%% Physical, %+d%% Death, %+d%% Fire, %+d%% Ice, %+d%% Earth, %+d%% Energy, %+d%% Holy, %+d%% Drown, %+d%% Poison, %+d%% ManaDrain, %+d%% Lifedrain' % self.__getattr__('absorbPercentAll') #doesnt work
+            for bns in bonus: ##TODO: sort from highest to lowest
                 if self.__getattr__(bns):
-				    if bns == 'absorbPercentAll': #TODO: should say the +% in front of each one.
-				        pre = ', Physical, Death, Fire, Ice, Earth, Energy, Holy, Drown, Poison, ManaDrain, Lifedrain'
-				    elif bns == 'speed':
-				        pre = 'speed'
-				    elif bns == 'magiclevelpoints':
-				        pre = 'magic level'
-				    else:
-				        pre = bns[len("absorbPercent"):]
-				    if bns == 'speed' or bns == 'magiclevelpoints':
-				        morearm += ", %+d %s" % (self.__getattr__(bns), pre.lower())
-				    else:
-				        morearm += ", %+d%%%s" % (self.__getattr__(bns), pre.lower())
+                    pre = bns[len("absorbPercent"):]
+                    morearm += ", %+d%% %s" % (self.__getattr__(bns), pre.lower())
             if morearm:
                 if not self.armor and not self.defence:
 				    morearm = morearm[2:]
                 description += "%s" % morearm
-            description += ")" #shows up as a ? for some reason
-
-        description += "."
+            description += ")."
 
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
-            if self.weight:
+            if self.weight: #TODO: get weight of a bag with items inside of it
                 if self.count:
                     extra += "\nIt weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
                 else:
@@ -256,7 +251,8 @@ class Item(object):
         if self.text and (player and (not position or position.x == 0xFFFF or player.inRange(position, 4, 4))):
             extra += "\nYou Read: %s" % self.text
 
-        return "%s%s" % (description, extra)
+        return "%s%s\n" % (description, extra)
+        
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
             return items[self.itemId]["plural"].title()
