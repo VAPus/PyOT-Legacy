@@ -175,6 +175,15 @@ def sewer(creature, thing, position, **k):
             creature.teleport(newPos)
         except:
             creature.notPossible()
+        if newPos.x > crePos.x:
+            creature.turn(1)
+        elif newPos.x < crePos.x:
+            creature.turn(3)
+        elif newPos.x == crePos.x and newPos.y > crePos.y:
+            creature.turn(2)
+        elif newPos.x == crePos.x and newPos.y < crePos.y:
+            creature.turn(0)
+        ##dont turn if on the grate
             
 # Stairs
 stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433

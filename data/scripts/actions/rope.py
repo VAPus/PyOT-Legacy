@@ -14,6 +14,12 @@ def onUse(creature, position, onThing, onPosition, **k):
         newPos.y += 1
         newPos.z -= 1
         creature.teleport(newPos)
+        if newPos.x > crePos.x:
+            creature.turn(1)
+        elif newPos.x < crePos.x:
+            creature.turn(3)
+        else:
+            creature.turn(2)
     elif onThing in openedHoles or onThing in openTraps or onThing in ladders:
         newPos.z += 1
         newPos.y += 1
