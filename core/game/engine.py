@@ -713,7 +713,8 @@ def saveAll(force=False):
                     for tile in game.map.houseTiles[houseId]:
                         _items = []
                         for item in tile.bottomItems():
-                            if not item.fromMap:
+                            ic = item.count
+                            if not item.fromMap and (ic == None or ic > 0):
                                 _items.append(item)
                         if _items:
                             items[tile.position] = _items

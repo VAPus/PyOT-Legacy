@@ -100,10 +100,9 @@ bindconstant.bind_all(Container)
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
-    #__slots__ = ('itemId', 'actions', 'teledest', 'description', 'count', 'container', 'text')
-    __slots__ = ('itemId', 'actions', 'params')
+    defaultActions = "item",
     
-    def __init__(self, itemId, count=1, actions=[], **kwargs):
+    def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
             if not items[itemId]:
                 raise
@@ -112,13 +111,13 @@ class Item(object):
             itemId = 100
             
         self.itemId = itemId
-        self.actions = actions
+        self.actions = actions or []
         self.actions.append('item')
+
         
         if kwargs:
-            self.params = kwargs
-        else:
-            self.params = None
+            for k in kwargs:
+                self.__setattr__(k, kwargs[k])
 
         if items[itemId]["a"] & 64:
             self.count = count
@@ -158,32 +157,20 @@ class Item(object):
         return self.actions
             
     def __getattr__(self, name):
+        #try:
+        #    return object.__getattr__(self, name)
+        #except:
         _loadItem = items[self.itemId]
         try:
-            return self.params[name]
+            return _loadItem["a"] & (1 << self.attributes.index(name))
         except:
             try:
-                return _loadItem["a"] & (1 << self.attributes.index(name))
+                return _loadItem[name]
             except:
-                try:
-                    return _loadItem[name]
-                except:
-                    if not "__" in name:
-                        return None
+                if not "__" in name:
+                    return None
                        
         raise AttributeError, name
-
-    def __setattr__(self, name, value):
-        if name in self.__slots__:
-            return object.__setattr__(self, name, value)
-            
-        if self.params:
-            self.params[name] = value
-        else:
-            self.params = {name: value}
-
-    def __delattr__(self, name):
-        del self.params[name]
         
     def name(self):
         if self.count > 1 and "plural" in items[self.itemId]:
@@ -260,12 +247,11 @@ class Item(object):
                 else:
                     extra += "\nIt weighs %.2f oz." % (float(self.weight) / 100)
 
-            # Special description, not always defined
-            if self.params:
-                if "description" in self.params:
-                    extra = "\n%s" % self.params["description"]
-                elif "description" in items[self.itemId]:
-                    extra = "\n%s" % items[self.itemId]["description"]
+            # Special description, hacky.
+            if "description" in self.__dict__:
+                extra = "\n%s" % self.__dict__["description"]
+            elif "description" in items[self.itemId]:
+                extra = "\n%s" % items[self.itemId]["description"]
 
         if self.text and (player and (not position or position.x == 0xFFFF or player.inRange(position, 4, 4))):
             extra += "\nYou Read: %s" % self.text
@@ -379,54 +365,46 @@ class Item(object):
                 pass
             
     def __getstate__(self):
-        
-        if self.params:
-            params = self.params.copy()
-            try:
-                del params["inPlayer"]
-                del params["inContainer"] # This only exists if inPlayer exists.
-            except:
-                pass
+        params = self.__dict__.copy()
+        try:
+            del params["inPlayer"]
+            del params["inContainer"] # This only exists if inPlayer exists.
+        except:
+            pass
             
-            try:
-                del params["openIndex"]
-            except:
-                pass
+        try:
+            del params["openIndex"]
+        except:
+            pass
 
-            try:
-                del params["inTrade"]
-            except:
-                pass
+        try:
+            del params["inTrade"]
+        except:
+            pass
             
-            try:
-                del params["executeDecay"]
-            except:
-                pass
-            
-        else:
-            params = None
+        try:
+            del params["executeDecay"]
+        except:
+            pass
             
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
             if delay > 0:
-                return (self.itemId, self.actions, params, delay)
+                return (params, delay)
             
-        return (self.itemId, self.actions, params)
+        return params
     
     def __setstate__(self, state):
-        self.itemId = state[0]
-        self.actions = state[1]
-                
-        self.params = state[2]
-
-        if len(state) == 4:
-            self.decay(self.decayPosition, duration=state[3])
-        
+        if len(state) == 2:
+            self.__dict__ = state[0]
+            self.decay(self.decayPosition, duration=state[1])
+        else:
+            self.__dict__ = state
 
     def copy(self):
         newItem = copy.deepcopy(self)
         try:
-            del newItem.params["tileStacked"]
+            del newItem.tileStacked
         except:
             pass
         return newItem
@@ -458,7 +436,7 @@ class Item(object):
                 
             self.itemId = toId
             self.inPlayer.replaceItem(position, self)
-            
+    
 def cid(itemid):
     try:
         return items[itemid]["cid"]
