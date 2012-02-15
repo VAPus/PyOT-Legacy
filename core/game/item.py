@@ -53,6 +53,15 @@ class Container(object):
 
     def size(self):
         return len(self.items)
+    
+    def weight(self):
+        weight = 0
+        for item in self.getRecursive():
+            iweight = item.weight
+            if iweight:
+                weight += iweight * (item.count or 1)
+                
+        return weight
         
     def removeItem(self, item):
         return self.items.remove(item)
@@ -222,11 +231,18 @@ class Item(object):
             if self.__getattr__('magiclevelpoints'):
                 morearm += ", %+d magic level" % self.__getattr__('magiclevelpoints')
             if self.__getattr__('absorbPercentAll'):
-                morearm = ', %+d%% Physical, %+d%% Death, %+d%% Fire, %+d%% Ice, %+d%% Earth, %+d%% Energy, %+d%% Holy, %+d%% Drown, %+d%% Poison, %+d%% ManaDrain, %+d%% Lifedrain' % self.__getattr__('absorbPercentAll') #doesnt work
-            for bns in bonus: ##TODO: sort from highest to lowest
-                if self.__getattr__(bns):
-                    pre = bns[len("absorbPercent"):]
-                    morearm += ", %+d%% %s" % (self.__getattr__(bns), pre.lower())
+                morearm = ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain' % {"all":self.__getattr__('absorbPercentAll')} # untested
+            # Step one, names to dict with value
+            bonuses = {}
+            for bns in bonus:
+                data = self.__getattr__(bns)
+                if data:
+                    bonuses[bns] = data
+            
+            # Step two, sorting the dict
+            for w in sorted(bonuses, key=bonuses.get, reverse=True):
+                pre = w[len("absorbPercent"):]
+                morearm += ", %+d%% %s" % (bonuses[w], pre.lower())
             if morearm:
                 if not self.armor and not self.defence:
 				    morearm = morearm[2:]
@@ -235,7 +251,10 @@ class Item(object):
 
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
-            if self.weight: #TODO: get weight of a bag with items inside of it
+            if self.containerSize:
+                extra += "\nIt weighs %.2f oz." % (float(self.weight + self.container.weight()) / 100)
+                
+            elif self.weight:
                 if self.count:
                     extra += "\nIt weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
                 else:
