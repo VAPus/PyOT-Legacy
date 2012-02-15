@@ -959,7 +959,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and not oldItem[1].stackable:
+                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not (fromPosition.y < 64 and toPosition.y < 64):
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = currItem[1].copy()
                             
@@ -974,10 +974,7 @@ class BaseProtocol(object):
                             if player.addCache(oldItem[1]):
                                 player.refreshStatus(stream)
                         else:
-                            try:
-                                player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
-                            except:
-                                pass
+                            player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
                         
                     if sendUpdate:
                         stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
