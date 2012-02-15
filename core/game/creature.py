@@ -815,7 +815,12 @@ class Creature(object):
             stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
-                
+        
+        if self.target and not self.canSee(self.target.position):
+            self.cancelTarget()
+            self.target = None
+            self.targetMode = 0
+            
     def turn(self, direction):
         assert direction < 4
         if self.direction == direction:
