@@ -1854,7 +1854,21 @@ class Player(Creature):
     def setDepot(self, depotId, storage):
         self.depot[depotId] = storage
         self.saveDepot = True
+    
+    def _getDepotItemCount(self, items):
+        count = 0
+        for x in items:
+            count += 1
+            if x.containerSize:
+                count += self._getDepotItemCount(x.container.items)
+        return count
         
+    def getDepotItemCount(self, depotId):
+        depot = self.getDepot(depotId)
+        if depot:
+            return self._getDepotItemCount(depot)
+        else:
+            return 0
     # Stuff from protocol:
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
@@ -2359,3 +2373,29 @@ class Player(Creature):
     # Networking
     def getIP(self):
         return self.client.transport.getPeer().host
+        
+    # Market
+    def openMarket():
+        if self.client.version < 944:
+            return
+            
+        stream = self.packet(0xF6)
+
+        stream.uint32(self.getMoney())
+        stream.uint8(self.getVocation().clientId)
+        stream.uint8(0) # Active offers, TODO
+        count = self.getDepotItemCount(0) # Should be the unique count
+        stream.uint16(count)
+        if count > 0:
+            def _(i):
+                for x in i:
+                    yield x
+                    if x.containerSize:
+                        for y in _(x):
+                            yield y
+                            
+            for item in _(self.getDepot(0)):
+                stream.uint16(item.cid)
+                stream.uint16(1) # Should be the total count
+                
+    

@@ -1,8 +1,9 @@
 vocations = {}
 vocationsId = {}
 class Vocation(object):
-    def __init__(self, id, name, description, health, mana, soulticks):
+    def __init__(self, id, cid, name, description, health, mana, soulticks):
         self.id = id
+        self.clientId = cid
         self.name = name
         self._description = description
         self.health = health

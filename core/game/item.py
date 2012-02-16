@@ -269,9 +269,9 @@ class Item(object):
     def slots(self):
         slot = self.slotType
 
-        if not slot:
-            return ()
-        elif slot == "head":
+        #if not slot:
+        #    return ()
+        if slot == "head":
             return game.enum.SLOT_HEAD,
         elif slot == "necklace":
             return game.enum.SLOT_NECKLACE,
@@ -395,7 +395,7 @@ class Item(object):
         return params
     
     def __setstate__(self, state):
-        if len(state) == 2:
+        if isinstance(state, tuple):
             self.__dict__ = state[0]
             self.decay(self.decayPosition, duration=state[1])
         else:
