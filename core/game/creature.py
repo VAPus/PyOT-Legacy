@@ -423,7 +423,7 @@ class Creature(object):
                 """ / Cheat """
                 
             elif canSeeOld and canSeeNew:
-                if spectator.canSee2(oldPosition) and spectator.canSee2(position) and (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
                     """if not isKnown:
                         oldTile.placeCreature(self)
@@ -435,6 +435,7 @@ class Creature(object):
                             stream.uint8(0xFF)
                         oldTile.removeCreature(self)"""
                     """ / Cheat """
+                    
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)

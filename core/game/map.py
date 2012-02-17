@@ -232,14 +232,11 @@ class Tile(object):
         self.things = items
         
         if not count:
+            self.countNflags = 1
             if len(items) > 1:
-                self.countNflags = 0
-                
                 for item in self.things:
                     if item.ontop:
                         self.countNflags += 1
-            else:
-                self.countNflags = 1
   
         else:
             self.countNflags = count
