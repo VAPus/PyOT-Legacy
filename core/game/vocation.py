@@ -47,8 +47,8 @@ class Vocation(object):
     def description(self):
         return "a %s" % self.name
         
-def regVocation(id, name, description, health, mana, soulticks):
-    vocation = Vocation(id, name, description, health, mana, soulticks)
+def regVocation(id, cid, name, description, health, mana, soulticks):
+    vocation = Vocation(id, cid, name, description, health, mana, soulticks)
     vocations[name] = vocation
     vocationsId[id] = vocations[name]
     return vocation
