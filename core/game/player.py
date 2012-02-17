@@ -2375,7 +2375,7 @@ class Player(Creature):
         return self.client.transport.getPeer().host
         
     # Market
-    def openMarket():
+    def openMarket(self):
         if self.client.version < 944:
             return
             
@@ -2398,4 +2398,4 @@ class Player(Creature):
                 stream.uint16(item.cid)
                 stream.uint16(1) # Should be the total count
                 
-    
+        stream.send(self.client)

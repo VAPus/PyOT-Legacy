@@ -351,3 +351,7 @@ def playerAI(creature, **k):
     _playerAI()
 
 reg("talkaction", "aime", playerAI)
+
+def openMarket(creature, **k):
+    creature.openMarket()
+reg("talkaction", "market", openMarket)
