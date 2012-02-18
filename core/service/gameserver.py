@@ -210,35 +210,86 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         
         elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
             t = TibiaPacket()
-            isAuthorized = not config.executeProtocolAuthKeys
+            if not config.executeProtocolAuthKeys:
+                self.ready = 2
+                    
             try:
                 while True:
                     op = packet.string()
                     print op
-                    if op == "CALL" and isAuthorized:
-                        print "do this"
+                    if op == "CALL" and self.ready:
                         result = yield game.engine.executeCode(packet.string())
-                        
+                            
                         t.string(result)
                     elif op == "AUTH":
                         print "auth"
-                        result = packet.string() in config.executeProtocolAuthKeys
-                        if result:
+                        if packet.string() in config.executeProtocolAuthKeys:
                             t.string("True")
-                            isAuthorized = True
+                            self.ready = 2
                         else:
                             t.string("False")
             except struct.error:
                 pass # End of the line
-            t.send(self)
-            self.transport.loseConnection()
-    def onPacket(self, packet):
-        packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
-        packet.pos = 0
-        packet.data = packet.data[2:2+packet.uint16()]
-        packet.pos = 0
+            t.send(self)    
 
-        self.protocol.handle(self.player, packet)
+    def _executeProtocol(self, packet):
+        t = TibiaPacket()
+        if not config.executeProtocolAuthKeys:
+            self.ready = 2
+                
+        try:
+            while True:
+                op = packet.string()
+                print op
+                if op == "CALL" and self.ready:
+                    result = yield game.engine.executeCode(packet.string())
+                        
+                    t.string(result)
+                elif op == "AUTH":
+                    print "auth"
+                    if packet.string() in config.executeProtocolAuthKeys:
+                        t.string("True")
+                        self.ready = 2
+                    else:
+                        t.string("False")
+        except struct.error:
+            pass # End of the line
+        t.send(self)    
+        
+    def onPacket(self, packet):
+        print "?", self.ready
+        if self.ready == 2:
+            a = packet.uint8()
+            print "=", a
+            t = TibiaPacket()
+            if not config.executeProtocolAuthKeys:
+                self.ready = 2
+                    
+            try:
+                while True:
+                    op = packet.string()
+                    print op
+                    if op == "CALL" and self.ready:
+                        result = yield game.engine.executeCode(packet.string())
+                            
+                        t.string(result)
+                    elif op == "AUTH":
+                        print "auth"
+                        if packet.string() in config.executeProtocolAuthKeys:
+                            t.string("True")
+                            self.ready = 2
+                        else:
+                            t.string("False")
+            except struct.error:
+                pass # End of the line
+            t.send(self)  
+        else:    
+            packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
+            packet.pos = 0
+            packet.data = packet.data[2:2+packet.uint16()]
+            packet.pos = 0
+
+            self.protocol.handle(self.player, packet)
 
 
     def onConnectionLost(self):
