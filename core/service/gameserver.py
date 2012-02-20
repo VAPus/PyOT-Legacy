@@ -209,13 +209,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         del lastChecks[entry]
                         
         elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
+            self.gotFirst = False
             t = TibiaPacket()
-            isAuthorized = not config.executeProtocolAuthKeys
+            if not config.executeProtocolAuthKeys:
+                self.ready = 2
             try:
                 while True:
                     op = packet.string()
                     print op
-                    if op == "CALL" and isAuthorized:
+                    if op == "CALL" and self.ready == 2:
                         print "do this"
                         result = yield game.engine.executeCode(packet.string())
                         
@@ -225,13 +227,13 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         result = packet.string() in config.executeProtocolAuthKeys
                         if result:
                             t.string("True")
-                            isAuthorized = True
+                            self.ready = 2
                         else:
                             t.string("False")
             except struct.error:
                 pass # End of the line
             t.send(self)
-            self.transport.loseConnection()
+
     def onPacket(self, packet):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 0
