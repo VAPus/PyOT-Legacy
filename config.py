@@ -152,7 +152,7 @@ enableMarket = True # It works for 9.44+ only. Lower versions might not access i
 
 # Pathfinder
 # MIGHT BE BUGGY, NOT WELL TESTED!
-findDiagonalPaths = True # Disable this will make the pathfinder somewhat 10-15%
+findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15%
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
