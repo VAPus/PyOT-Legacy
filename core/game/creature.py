@@ -725,7 +725,18 @@ class Creature(object):
             return True
         else:
             return False
-            
+    
+    def onHeal(self, by, amount):
+        if by and by.isPlayer():
+            by.message("%s gain %d hitpoint%s." % (self.name().capitalize(), amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+
+        if self.isPlayer():
+            if by:
+                self.message("You gain %d hitpoint%s due to healing by %s." % (amount, 's' if amount < 1 else '', by.name().capitalize()), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+            else:
+                self.message("You gain %d hitpoint%s." % (amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+        target.modifyHealth(amount)
+        
     def onSpawn(self):
         pass # To be overrided
         
@@ -1406,10 +1417,10 @@ class Condition(object):
     def effectRegenerateHealth(self, gainhp=None):
         if not gainhp:
             gainhp = self.creature.getVocation().health
-            self.creature.modifyHealth(gainhp[0])
+            self.creature.onHeal(None, gainhp[0])
             
         else:    
-            self.creature.modifyHealth(gainhp)
+            self.creature.onHeal(None, gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
         if not gainmana:

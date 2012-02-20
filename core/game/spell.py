@@ -145,9 +145,8 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=ga
         else:
             maxDmg = round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
             minDmg = round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
-        
 
-        target.modifyHealth(random.randint(minDmg, maxDmg))
+        target.onHeal(caster, random.randint(minDmg, maxDmg))
         
         # Cure paralyzation if configurated to do so.
         if cure:
