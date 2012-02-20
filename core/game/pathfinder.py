@@ -16,7 +16,7 @@ class Node(object):
         self.state = True
         self.tileTried = False
         
-    def vertify(self, z, instanceId, allowCreatures=True):
+    def vertify(self, z, instanceId, allowCreatures=False):
         if self.tileTried:
             return self.state
         else:
@@ -25,17 +25,14 @@ class Node(object):
             if tile:
                 for thing in tile.things:
                     if allowCreatures and isinstance(thing, game.creature.Creature):
-                        continue
+                        break
                     elif thing.solid or thing.blockpath:
                         self.state = False
+                        break
             else:
                 self.state = False
                 
             return self.state
-            
-    def __eq__(self, b):
-        if self.x == b.x and self.y == b.y: return True
-        else: return False
             
     
 class AStar(object):
@@ -89,14 +86,33 @@ class AStar(object):
         n = currentNode
         prev = self.startNode
         _result = []
-        if n.y > prev.y:
-            _result.append(SOUTH)
-        elif n.y < prev.y:
-            _result.append(NORTH)
-        elif n.x > prev.x:
-            _result.append(EAST)
+        if config.findDiagonalPaths:
+            if n.y > prev.y and n.x > prev.x:
+                _result.append(SOUTHEAST)
+            elif n.y < prev.y and n.x > prev.x:
+                _result.append(NORTHEAST)
+            elif n.y > prev.y and n.x < prev.x:
+                _result.append(SOUTHWEST)
+            elif n.y < prev.y and n.x < prev.x:
+                _result.append(NORTHWEST)
+            elif n.y > prev.y:
+                _result.append(SOUTH)
+            elif n.y < prev.y:
+                _result.append(NORTH)
+            elif n.x > prev.x:
+                _result.append(EAST)
+            else:
+                _result.append(WEST)
+                
         else:
-            _result.append(WEST)
+            if n.y > prev.y:
+                _result.append(SOUTH)
+            elif n.y < prev.y:
+                _result.append(NORTH)
+            elif n.x > prev.x:
+                _result.append(EAST)
+            else:
+                _result.append(WEST)
 
         prev = n
         n = n.parent
@@ -105,14 +121,32 @@ class AStar(object):
             return
             
         while n.parent != None:
-            if n.y > prev.y:
-                _result.append(NORTH)
-            elif n.y < prev.y:
-                _result.append(SOUTH)
-            elif n.x > prev.x:
-                _result.append(WEST)
+            if config.findDiagonalPaths:
+                if n.y > prev.y and n.x > prev.x:
+                    _result.append(SOUTHEAST)
+                elif n.y < prev.y and n.x > prev.x:
+                    _result.append(NORTHEAST)
+                elif n.y > prev.y and n.x < prev.x:
+                    _result.append(SOUTHWEST)
+                elif n.y < prev.y and n.x < prev.x:
+                    _result.append(NORTHWEST)
+                elif n.y > prev.y:
+                    _result.append(NORTH)
+                elif n.y < prev.y:
+                    _result.append(SOUTH)
+                elif n.x > prev.x:
+                    _result.append(WEST)
+                else:
+                    _result.append(EAST)
             else:
-                _result.append(EAST)
+                if n.y > prev.y:
+                    _result.append(NORTH)
+                elif n.y < prev.y:
+                    _result.append(SOUTH)
+                elif n.x > prev.x:
+                    _result.append(WEST)
+                else:
+                    _result.append(EAST)
 
             prev = n
             n = n.parent
@@ -182,6 +216,35 @@ class AStar(object):
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             _openNodes.add(n)
+            
+        if config.findDiagonalPaths:
+            n = _getNode(x - 1, y - 1)
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+                n.parent = node
+                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                _openNodes.add(n)   
+
+            n = _getNode(x - 1, y + 1)
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+                n.parent = node
+                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                _openNodes.add(n)   
+
+            n = _getNode(x + 1, y - 1)
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+                n.parent = node
+                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                _openNodes.add(n)  
+                
+            n = _getNode(x + 1, y + 1)
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+                n.parent = node
+                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                _openNodes.add(n)            
             
 def findPath(zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
     return AStar(zStart, xStart, yStart, xGoal, yGoal, instanceId).result

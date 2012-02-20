@@ -147,6 +147,13 @@ anyAccountPlayerMap = ("Random Test Character", 0),  # (name, world_id)...
 # Hotkeys
 enableHotkey = True
 
+# Marketplace
+enableMarket = True # It works for 9.44+ only. Lower versions might not access it.
+
+# Pathfinder
+# MIGHT BE BUGGY, NOT WELL TESTED!
+findDiagonalPaths = True # Disable this will make the pathfinder somewhat 10-15%
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
@@ -189,9 +196,6 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
-
-# Marketplace
-enableMarket = True # It works for 9.44+ only. Lower versions might not access it.
 
 # This formula is too complex to put into a lambda
 from math import log,floor
