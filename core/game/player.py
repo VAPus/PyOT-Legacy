@@ -2376,7 +2376,7 @@ class Player(Creature):
         
     # Market
     def openMarket(self):
-        if not config.enableMarket or self.client.version < 944:
+        if self.client.version < 944:
             return
             
         stream = self.packet(0xF6)
@@ -2384,7 +2384,7 @@ class Player(Creature):
         stream.uint32(self.getMoney())
         stream.uint8(self.getVocation().clientId)
         stream.uint8(0) # Active offers, TODO
-        """count = self.getDepotItemCount(0) # Should be the unique count
+        count = self.getDepotItemCount(0) # Should be the unique count
         stream.uint16(count)
         if count > 0:
             def _(i):
@@ -2396,71 +2396,6 @@ class Player(Creature):
                             
             for item in _(self.getDepot(0)):
                 stream.uint16(item.cid)
-                stream.uint16(1) # Should be the total count"""
-        stream.uint16(4)
-        # Test data
-        stream.uint16(3271)
-        stream.uint16(10000)
-        stream.uint16(3283)
-        stream.uint16(10000)
-        stream.uint16(7449)
-        stream.uint16(10000)
-        stream.uint16(2853)
-        stream.uint16(1)                
-        stream.send(self.client)
-        self.marketDetails()
-        self.marketOffers()
-    def marketDetails(self):
-        if not config.enableMarket or self.client.version < 944:
-            return
-            
-        stream = self.packet()
-        # Test data
-        for itemId in (2383, 2395, 7449): #  
-            stream.uint8(0xF8)
-            # Lazy reasons:
-            item = Item(itemId)
-            stream.uint16(item.cid)
-            stream.string(str(item.armor or "")) # Just use str casting, some values are ints or None.
-            stream.string("%s +%s" % (item.attack, item.extraAttack))
-            stream.string(str(item.containerSize or ""))
-            stream.string("%s +%s" % (item.defence, item.extraDefence))
-            stream.string(item.__getattr__("description") or "")
-            stream.string("a very long time, just testing") # expire time
-            stream.string("some absorb here") # Absorb
-            stream.string("no required") # Min required level
-            stream.string("no required") # Min required magic level
-            stream.string("Professions here, etc knight") 
-            stream.string("spell name here") # Rune spell name
-            stream.string("boosts")
-            stream.string("charges")
-            stream.string(item.weaponType or "")
-            stream.string(str(item.weight))
-
-            stream.uint8(1) # Buy offers
-            # for offer:
-            stream.uint32(100) # Transaction ID
-            stream.uint32(100) # Buyout price
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max
-            stream.uint8(1) # sales offers
-            # for offer:
-            stream.uint32(100) # Transaction ID
-            stream.uint32(100) # Buyout price
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max           
-        stream.send(self.client)
-    def marketOffers(self):
-        stream = self.packet()
-        for itemId in (2383, 2395, 7449):
-            stream.uint8(0xF9)
-            # Lazy reasons
-            item = Item(itemId)
-            stream.uint16(item.cid)
-            stream.uint16(1)
-            stream.uint32(int(time.time()))
-            stream.uint16(1000)
-            stream.uint16(1)
-            stream.uint32(int(time.time()))
-            stream.uint16(1000)
+                stream.uint16(1) # Should be the total count
+                
         stream.send(self.client)

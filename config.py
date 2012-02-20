@@ -147,10 +147,6 @@ anyAccountPlayerMap = ("Random Test Character", 0),  # (name, world_id)...
 # Hotkeys
 enableHotkey = True
 
-# Marketplace
-enableMarket = True # It works for 9.44+ only. Lower versions might not access it.
-
-
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough
