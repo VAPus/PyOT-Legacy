@@ -908,7 +908,7 @@ def loadPlayer(playerName):
     try:
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
-    except:
+    except KeyError:
         character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot`, `conditions` FROM `players` WHERE name = %s", (playerName))
         if not character:
             returnValue(None)
