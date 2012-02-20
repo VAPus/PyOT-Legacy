@@ -16,7 +16,7 @@ class Node(object):
         self.state = True
         self.tileTried = False
         
-    def vertify(self, z, instanceId):
+    def vertify(self, z, instanceId, allowCreatures=True):
         if self.tileTried:
             return self.state
         else:
@@ -24,7 +24,9 @@ class Node(object):
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
                 for thing in tile.things:
-                    if thing.solid:
+                    if allowCreatures and isinstance(thing, game.creature.Creature):
+                        continue
+                    elif thing.solid or thing.blockpath:
                         self.state = False
             else:
                 self.state = False
@@ -50,7 +52,7 @@ class AStar(object):
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
         
-        if not self.final.vertify(zStart, instanceId):
+        if not self.final.vertify(zStart, instanceId, True):
             self.result = []
             return
         
@@ -98,6 +100,10 @@ class AStar(object):
 
         prev = n
         n = n.parent
+        if not n:
+            self.result = []
+            return
+            
         while n.parent != None:
             if n.y > prev.y:
                 _result.append(NORTH)
@@ -110,6 +116,8 @@ class AStar(object):
 
             prev = n
             n = n.parent
+            if not n:
+                break
         self.result = _result
     
     def getNode(self, x, y):

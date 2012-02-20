@@ -174,14 +174,11 @@ class Creature(object):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
         
     def stepDuration(self, ground, delay=1.5):
-        #if time.time() - self.lastStep < delay:
-        if True:
-            if not ground.speed:
-                ground.speed = 100
+        if not ground.speed:
+            ground.speed = 100
                 
-            postValue = (config.drawingSpeed - 50) / 1000.0
-            return (ground.speed / self.speed) + postValue
-        #return delay
+        postValue = (config.drawingSpeed - 50) / 1000.0
+        return (ground.speed / self.speed) + postValue
 
     def notPossible(self):
         # Needs to be overrided in player

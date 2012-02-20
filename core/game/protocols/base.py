@@ -1008,19 +1008,15 @@ class BaseProtocol(object):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
         import game.pathfinder
+
         t = time.time()
-        b = game.pathfinder.findPath(player.position.z, player.position.x, player.position.y, position.x, position.y)
-        print "Took: ", (time.time() - t)
-        
-        t = time.time()
-        m = game.pathfinder.findPath2(player.position.z, player.position.x, player.position.y, position.x, position.y)
+        m = game.pathfinder.findPath(player.position.z, player.position.x, player.position.y, position.x, position.y)
         print "Took: ", (time.time() - t)
         
         print "========"
-        print b
-        print "--------"
         print m
         print "--------"
+        
         clientId = packet.uint16()
         stackpos = packet.uint8()
         
