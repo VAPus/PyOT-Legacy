@@ -193,7 +193,31 @@ def getTile(pos):
                 return None
     except:
         return None
-                
+
+def getTileConst(x,y,z,instanceId):
+    iX = x / 32
+    iY = y / 32
+    pX = x -iX * 32
+    pY = y -iY * 32
+
+    try:
+        area = knownMap[instanceId]
+    except KeyError:
+        knownMap[instanceId] = {}
+        area = knownMap[instanceId]
+        
+    sectorSum = (iX * 32768) + iY
+    try:
+        return area[sectorSum][z][pX][pY]
+    except KeyError:
+        if loadTiles(x, y, instanceId):
+            try:
+                return area[sectorSum][z][pX][pY]
+            except:
+                return None
+    except:
+        return None
+        
 def getHouseId(pos):
     try:
         return getTile(pos).houseId
