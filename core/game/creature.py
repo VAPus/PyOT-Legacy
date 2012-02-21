@@ -732,7 +732,7 @@ class Creature(object):
 
         if self.isPlayer():
             if by:
-                self.message("You gain %d hitpoint%s due to healing by %s." % (amount, 's' if amount < 1 else '', by.name().capitalize()), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                self.message("You gain %d hitpoint%s due to healing by %s." % (amount, 's' if amount > 1 else '', by.name().capitalize()), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
             else:
                 self.message("You gain %d hitpoint%s." % (amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
         self.modifyHealth(amount)
