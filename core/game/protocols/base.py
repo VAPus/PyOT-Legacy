@@ -911,6 +911,7 @@ class BaseProtocol(object):
 
                     elif currItem and (currItem[0] == 2) and currItem[2]:
                         ret = player.itemToContainer(currItem[2], Item(sid(clientId), count) if renew else oldItem[1], count=count, stack=stack)
+                    
                     else:
                         """if currItem:
                             player.addItem(currItem[1])"""
@@ -959,7 +960,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not oldItem[1].containerSize and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y == toPosition.y):
+                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not oldItem[1].containerSize and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y == toPosition.y) and not (fromPosition.x == 0xFFFF and fromPosition.y < 64):
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = currItem[1].copy()
                             
