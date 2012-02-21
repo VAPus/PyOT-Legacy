@@ -1021,6 +1021,7 @@ class Player(Creature):
         self.cancelMessage("You cannot take this object.")
         
     def tooHeavy(self):
+        raise Exception()
         self.cancelMessage("This object is too heavy for you to carry.")
         
     def outOfRange(self):
@@ -1280,7 +1281,7 @@ class Player(Creature):
   
         if count:
             # Add item
-            if self.inventoryWeight - ((item.weight or 0) * (item.count or 1)) < 0:
+            if self.freeCapasity() - ((item.weight or 0) * (item.count or 1)) < 0:
                 self.tooHeavy()
                 return False
                 
