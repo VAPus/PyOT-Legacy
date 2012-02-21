@@ -31,7 +31,10 @@ allPlayers = {}
 
 class Player(Creature):
     def __init__(self, client, data):
-        Creature.__init__(self, data, Position(int(data['posx']),int(data['posy']),int(data['posz'])))
+        Creature.__init__(self, data, Position(int(data['posx']),
+                                               int(data['posy']),
+                                               int(data['posz'])
+                         ))
         self.client = client
         
         self.speed = 220
@@ -42,7 +45,10 @@ class Player(Creature):
         self.openContainers = {}
         self.lastOpenContainerId = 0
         self.doingSoulGain = False
-        self.data["stamina"] = self.data["stamina"] / 1000 # OT milisec to pyot seconds
+        
+        # OT milisec to pyot seconds
+        self.data["stamina"] = self.data["stamina"] / 1000 
+        
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
@@ -59,7 +65,10 @@ class Player(Creature):
         self.solid = not config.playerWalkthrough
 
         # Rates
-        self.rates = [config.experienceRate, 60, config.lootDropRate, config.lootMaxRate, 1] # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate, 3 => drop rate (max items), 4 => regain rate
+        # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
+        # 3 => drop rate (max items), 4 => regain rate
+        self.rates = [config.experienceRate, 60, config.lootDropRate,
+                      config.lootMaxRate, 1] 
         self.inventoryWeight = 0
         
         # Direction
@@ -75,20 +84,26 @@ class Player(Creature):
             for x in xrange(0, len(self.inventory)):
                 item = self.inventory[x]
                 if item:
-                    game.scriptsystem.get("equip").runSync(self, item, slot = x+1)
+                    game.scriptsystem.get("equip").runSync(self, item, 
+                                                           slot = x+1)
                 
         else:
-            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463),
+                              None, Item(7449), None, None, None,
+                              Item(2546,20), None]
+                              
             for item in self.inventory:
-                if item:
-                    weight = item.weight
-                    if weight:
-                        self.inventoryWeight += weight * (item.count or 1)
-                    try:
-                        self.inventoryCache[item.itemId].append(item)
-                        self.inventoryCache[item.itemId][0] += item.count or 1
-                    except:
-                        self.inventoryCache[item.itemId] = [item.count or 1, item]
+                if not item:
+                    continue
+                
+                weight = item.weight
+                if weight:
+                    self.inventoryWeight += weight * (item.count or 1)
+                try:
+                    self.inventoryCache[item.itemId].append(item)
+                    self.inventoryCache[item.itemId][0] += item.count or 1
+                except:
+                    self.inventoryCache[item.itemId] = [item.count or 1, item]
                     
         #del self.data['inventory']
         
@@ -105,21 +120,24 @@ class Player(Creature):
         level = int(config.levelFromExpFormula(self.data["experience"]))
         
         # Calculate magic level from manaspent
-        self.data["maglevel"] = int(config.magicLevelFromManaFormula(self.data["manaspent"], vocation.mlevel))
+        self.data["maglevel"] = int(config.magicLevelFromManaFormula(self.data["manaspent"],
+                                                                     vocation.mlevel))
         
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
 
         # Skills = active skills!
         self.skills = self.data["skills"].copy()
-        print self.skills
+        
         # Skill goals
         self.skillGoals = {}
         for x in self.skills:
-            self.skillGoals[x] = config.skillFormula(self.skills[x], self.getVocation().meleeSkill)
+            self.skillGoals[x] = config.skillFormula(self.skills[x],
+                                                     self.getVocation().meleeSkill)
         
         if self.data["storage"]:
             self.storage = otjson.loads(self.data["storage"])
+            
         else:
             self.storage = {}
             
@@ -168,16 +186,21 @@ class Player(Creature):
             
     def description(self, isSelf=False):
         if isSelf:
-            output = "You see yourself. You are %s." % self.getVocation().description()
+            output = "You see yourself. You are %s." % (
+                                                self.getVocation().description())
         else:
-            output = "You see %s (Level %d). %s is %s." % (self.name(), self.data["level"], self.sexPrefix(), self.getVocation().description())
+            output = "You see %s (Level %d). %s is %s." % (self.name(),
+                                                self.data["level"],
+                                                self.sexPrefix(),
+                                                self.getVocation().description())
         return output
         
     def packet(self, *args):
         try:
             return self.client.protocol.Packet(*args)
         except:
-            return game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet(*args)
+            p = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1])
+            return p.Packet(*args)
 
     def ip(self):
         if self.client:
@@ -187,18 +210,23 @@ class Player(Creature):
         if stream:
             stream.uint8(0x64)
             stream.position(self.position)
-            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)          
+            stream.mapDescription(Position(self.position.x - 8,
+                                           self.position.y - 6, self.position.z),
+                                  18, 14, self)          
         else:
             stream = self.packet(0x64) # Map description
             stream.position(self.position)
-            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)
+            stream.mapDescription(Position(self.position.x - 8,
+                                           self.position.y - 6, self.position.z),
+                                  18, 14, self)
             stream.send(self.client)
         
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.data["health"] = 1
         
-        # If we relogin we might be in remove mode, make sure we're not tagget for it!
+        # If we relogin we might be in remove mode,
+        # make sure we're not tagget for it!
         self.removeMe = False
     
         stream = self.packet(0x0A)
@@ -211,7 +239,9 @@ class Player(Creature):
         
         stream.uint8(0x64) # Map description
         stream.position(self.position)
-        stream.mapDescription(Position(self.position.x - 8, self.position.y - 6, self.position.z), 18, 14, self)
+        stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
+                                       self.position.z),
+                              18, 14, self)
 
         for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
             if self.inventory[slot-1]:
