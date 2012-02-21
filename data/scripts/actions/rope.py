@@ -29,5 +29,5 @@ def onUse(creature, position, onThing, onPosition, **k):
         else:
             creature.notPossible()
 
-reg("useWith", ropes, onUse)
+register("useWith", ropes, onUse)
     

@@ -16,5 +16,5 @@ def stepOut(creature, position, **k):
         creature.setVar("IN_WATER") # Without a value, the var is deleted
         creature.setVar("OUTFIT")
 
-game.scriptsystem.get("walkOn").reg(range(4620, 4625+1), stepIn)
-game.scriptsystem.get("walkOff").reg(range(4620, 4625+1), stepOut)
+game.scriptsystem.get("walkOn").register(range(4620, 4625+1), stepIn)
+game.scriptsystem.get("walkOff").register(range(4620, 4625+1), stepOut)

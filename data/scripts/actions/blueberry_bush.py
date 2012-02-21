@@ -3,4 +3,4 @@ def onUse(thing, position, **k):
     placeItem(Item(2677, 3), position)
     thing.decay(position)
 
-reg("use", 2785, onUse)
+register("use", 2785, onUse)

@@ -24,4 +24,4 @@ def onUse(creature, thing, position, **k):
     return True
 
 
-reg("use", (6570, 6571), onUse)
+register("use", (6570, 6571), onUse)

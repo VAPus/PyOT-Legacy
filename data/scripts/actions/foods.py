@@ -103,4 +103,4 @@ def onUse(creature, thing, position, **a):
     if thing.count == 0:
         creature.removeItem(position)        
 
-reg('use', foods.keys(), onUse)
+register('use', foods.keys(), onUse)

@@ -151,9 +151,9 @@ def kickFromHouse(creature, text, **k):
         except:
             return
     
-regFirst("use", "houseDoor", houseDoorUseCheck)
-regFirst("preWalkOn", "houseDoor", guestListCheck)
-reg("talkaction", "aleta sio", guestList)
-reg("talkaction", "aleta som", subownerList)
-reg("talkaction", "aleta grav", doorAccess)
-reg("talkactionFirstWord", "alana sio", kickFromHouse)
+registerFirst("use", "houseDoor", houseDoorUseCheck)
+registerFirst("preWalkOn", "houseDoor", guestListCheck)
+register("talkaction", "aleta sio", guestList)
+register("talkaction", "aleta som", subownerList)
+register("talkaction", "aleta grav", doorAccess)
+register("talkactionFirstWord", "alana sio", kickFromHouse)

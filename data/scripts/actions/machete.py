@@ -13,4 +13,4 @@ def onUseWith(onThing, onPosition):
         onThing.transform(onThing.itemId + 6, onPosition)
         onThing.decay(onPosition)
         
-reg("useWith", (2420, 2442), onUseWith)
+register("useWith", (2420, 2442), onUseWith)

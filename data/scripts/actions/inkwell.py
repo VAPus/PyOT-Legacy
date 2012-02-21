@@ -23,4 +23,4 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     
     return True
 
-reg("useWith", 2600, onUseWith)
+register("useWith", 2600, onUseWith)

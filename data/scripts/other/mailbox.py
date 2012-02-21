@@ -55,4 +55,4 @@ def onSendParcelOrLetter(creature, position, thing, onId, onThing, **k):
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
             
-reg('useWith', mailboxes, onSendParcelOrLetter)
+register('useWith', mailboxes, onSendParcelOrLetter)

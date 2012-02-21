@@ -75,5 +75,5 @@ def onUse(creature, thing, position, **k):
 
     thing.decay(position)
     
-reg("use", DOLLS.keys(), onUse)
+register("use", DOLLS.keys(), onUse)
 

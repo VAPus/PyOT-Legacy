@@ -13,4 +13,4 @@ def onUse(creature, position, onId, onThing, onPosition, **k):
     else:
         return False
 
-reg('useWith', thingId, onUse)
+register('useWith', thingId, onUse)

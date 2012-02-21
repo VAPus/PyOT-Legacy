@@ -22,14 +22,14 @@ class Scripts(object):
     def __init__(self):
         self.scripts = []
         
-    def reg(self, callback, weakfunc=True):
+    def register(self, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
             func = callback
         self.scripts.append(func)
         
-    def unreg(self, callback):
+    def unregister(self, callback):
         self.scripts.remove(callback)
     
     def unregCallback(self, callback):
@@ -88,7 +88,7 @@ class TriggerScripts(object):
     def __init__(self):
         self.scripts = {}
         
-    def reg(self, trigger, callback, weakfunc=True):
+    def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(trigger))
         else:
@@ -99,9 +99,9 @@ class TriggerScripts(object):
         else:
             self.scripts[trigger].append(func)
         
-    def regFirst(self, trigger, callback, weakfunc=True):
+    def registerFirst(self, trigger, callback, weakfunc=True):
         if not trigger in self.scripts:
-            self.reg(trigger, callback, weakfunc)
+            self.register(trigger, callback, weakfunc)
         else:
             if weakfunc:
                 func = weakref.proxy(callback, self._unregCallback(trigger))
@@ -109,7 +109,7 @@ class TriggerScripts(object):
                 func = callback
             self.scripts[trigger].insert(0, func)
             
-    def unreg(self, trigger, callback):
+    def unregister(self, trigger, callback):
         self.scripts[trigger].remove(callback)
 
         if not len(self.scripts[trigger]):
@@ -165,7 +165,7 @@ class ThingScripts(object):
         else:
             return False
             
-    def reg(self, id, callback, weakfunc=True):
+    def register(self, id, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(id))
         else:
@@ -190,7 +190,7 @@ class ThingScripts(object):
             else:
                 self.thingScripts[id].append(func)
                 
-    def regFirst(self, id, callback, weakfunc=True):
+    def registerFirst(self, id, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback)
         else:
@@ -215,7 +215,7 @@ class ThingScripts(object):
             else:
                 self.thingScripts[id].insert(0, func) 
                 
-    def unreg(self, id, callback):
+    def unregister(self, id, callback):
         try:
             self.scripts[id].remove(callback)
 
@@ -505,14 +505,14 @@ def reimporter():
 def get(type):
     return globalScripts[type]
     
-def reg(type, *argc, **kwargs):
-    globalScripts[type].reg(*argc)
+def register(type, *argc, **kwargs):
+    globalScripts[type].register(*argc)
 
-def unreg(type, *argc):
-    globalScripts[type].unreg(*argc)
+def unregister(type, *argc):
+    globalScripts[type].unregister(*argc)
     
-def regFirst(type, *argc, **kwargs):
-    globalScripts[type].regFirst(*argc)
+def registerFirst(type, *argc, **kwargs):
+    globalScripts[type].registerFirst(*argc)
     
 def regEvent(timeleap, callback):
     globalEvents.append(reactor.callLater(timeleap, callEvent, timeleap, callback))

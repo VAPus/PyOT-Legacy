@@ -4,4 +4,4 @@ def useWatch(creature, **k):
     time = engine.getTibiaTime()
     creature.message("The time is %02d:%02d." % (time[0], time[1]), 'MSG_INFO_DESCR')
 
-reg('use', watches, useWatch)
+register('use', watches, useWatch)

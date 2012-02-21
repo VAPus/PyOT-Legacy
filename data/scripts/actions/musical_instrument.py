@@ -37,4 +37,4 @@ def onUse(creature, thing, positon, **k):
             creature.magicEffect(EFFECT_SOUND_PURPLE)
             summonCreature("Wolf", creature.positionInDirection(NORTH))
             
-reg("use", extras|instruments, onUse)
+register("use", extras|instruments, onUse)

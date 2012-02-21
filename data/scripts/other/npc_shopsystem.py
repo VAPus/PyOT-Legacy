@@ -274,4 +274,4 @@ class Equipment(Shop):
 regClassAction('equipment', Equipment)
 
 # Have to apply on all prestores
-reg("playerSayTo", 'npc', saidTo)
+register("playerSayTo", 'npc', saidTo)

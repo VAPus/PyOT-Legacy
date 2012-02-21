@@ -14,4 +14,4 @@ def onUse(creature, thing, position, **k):
     else:
         thing.transform(thing.itemId+1, position)
 
-reg('use', increase, onUse)
+register('use', increase, onUse)

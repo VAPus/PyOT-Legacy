@@ -214,9 +214,9 @@ def field(fieldId):
         game.engine.placeItem(item, position)
             
         if item.damage:
-            game.scriptsystem.reg('walkOn', item, callback)
+            game.scriptsystem.register('walkOn', item, callback)
             if item.duration:
-                item.decay(position, callback=lambda i: game.scriptsystem.reg('walkOn', i, callback))
+                item.decay(position, callback=lambda i: game.scriptsystem.register('walkOn', i, callback))
                 
     return makeFieldCallback
     
@@ -272,7 +272,7 @@ class Spell(object):
         reactor.callLater(0.1, l)
         spells[name] = (self.func,)
         if words:
-            game.scriptsystem.reg("talkaction", words, self.func)
+            game.scriptsystem.register("talkaction", words, self.func)
             
     def effects(self, caster=None, shoot=None, target=None, area=None):
         self.castEffect = caster
@@ -548,7 +548,7 @@ class Rune(Spell):
 
         self.func = self.doEffect()
         targetRunes[rune] = self.func # Just to prevent reset
-        game.scriptsystem.get("useWith").reg(rune, self.func)
+        game.scriptsystem.get("useWith").register(rune, self.func)
         
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!

@@ -16,5 +16,5 @@ def closeDepot(creature, thing, **k):
         thing.container.items = []
         thing.owners = []
 
-regFirst('use', depots, openDepot) # We got to register it first so we call it before container open
-reg('close', depots, closeDepot)
+registerFirst('use', depots, openDepot) # We got to register it first so we call it before container open
+register('close', depots, closeDepot)

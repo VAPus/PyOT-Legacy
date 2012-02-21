@@ -22,5 +22,5 @@ def openVerticalDoor(creature, thing, position, **k):
     thing.transform(thing.itemId-1, position)
     relocate(position, newPos)
 
-reg('use', openHorizontal, openHorizontalDoor)
-reg('use', openVertical, openVerticalDoor)
+register('use', openHorizontal, openHorizontalDoor)
+register('use', openVertical, openVerticalDoor)

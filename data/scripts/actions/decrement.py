@@ -9,4 +9,4 @@ def onUse(creature, thing, position, **k):
     else:
         engine.transformItem(thing, thing.itemId-1, position)
 
-reg('use', decrease, onUse)
+register('use', decrease, onUse)

@@ -144,6 +144,12 @@ class Item(object):
     def thingId(self):
         return self.itemId # Used for scripts
 
+    def register(self, event, func, **kwargs):
+        game.scriptsystem.register(event, self, func, **kwargs)
+        
+    def registerAll(self, event, func, **kwargs):
+        game.scriptsystem.register(event, self.itemId, func, **kwargs)
+        
     def getsub(self):
         try:
             return self.count

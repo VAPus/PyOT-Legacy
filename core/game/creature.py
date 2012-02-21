@@ -131,6 +131,12 @@ class Creature(object):
 
         return new_f
 
+    def register(self, event, func, **kwargs):
+        game.scriptsystem.register(event, self, func, **kwargs)
+
+    def registerAll(self, event, func, **kwargs):
+        game.scriptsystem.register(event, self.thingId(), func, **kwargs)
+        
     def isPlayer(self):
         return False
 

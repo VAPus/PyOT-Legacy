@@ -64,20 +64,20 @@ def mypos(creature, text):
     if isinstance(creature.position.getTile(), game.map.HouseTile):
         print creature.position.getTile().houseId
     print str(creature.position) # Print to console to be sure
-reg("talkaction", "help", callback)
-reg("talkactionFirstWord", 'rep', repeater)
-reg("talkactionFirstWord", 'teleport', teleporter)
-reg("talkactionFirstWord", 'set', tiler)
-reg("talkaction", 't', tilerE)
-reg("talkaction", 'mypos', mypos)
-reg("talkaction", '/up', up)
-reg("talkaction", '/down', down)
+register("talkaction", "help", callback)
+register("talkactionFirstWord", 'rep', repeater)
+register("talkactionFirstWord", 'teleport', teleporter)
+register("talkactionFirstWord", 'set', tiler)
+register("talkaction", 't', tilerE)
+register("talkaction", 'mypos', mypos)
+register("talkaction", '/up', up)
+register("talkaction", '/down', down)
 def speedsetter(creature, text):
     try:
         creature.setSpeed(int(text))
     except:
         creature.message("Invalid speed!")
-reg("talkactionFirstWord", 'speed', speedsetter)
+register("talkactionFirstWord", 'speed', speedsetter)
 
 def makeitem(creature, text):
     #try:
@@ -104,7 +104,7 @@ def makeitem(creature, text):
          
     return False
 
-reg("talkactionFirstWord", 'i', makeitem)
+register("talkactionFirstWord", 'i', makeitem)
 
 
 # Reimport tester
@@ -116,8 +116,8 @@ def saySomething(creature, text):
     creature.say("Test 1")
     return False
     
-reg("talkaction", 'reload', reimporter)
-reg("talkaction", 'reloadtest', saySomething)
+register("talkaction", 'reload', reimporter)
+register("talkaction", 'reloadtest', saySomething)
 
 # Tester of container functions
 def popItems(creature, text):
@@ -125,7 +125,7 @@ def popItems(creature, text):
     item = creature.findItemById(i,c)
     return False
     
-reg("talkactionFirstWord", 'pop', popItems)
+register("talkactionFirstWord", 'pop', popItems)
 
 # Experience tester
 def modexp(creature, text):
@@ -133,7 +133,7 @@ def modexp(creature, text):
     creature.modifyExperience(exp)
     return False
     
-reg("talkactionFirstWord", 'exp', modexp)
+register("talkactionFirstWord", 'exp', modexp)
 
 # Creature tester
 def creatureSpawn(creature, text):
@@ -146,7 +146,7 @@ def creatureSpawn(creature, text):
         creature.message("Monster named '%s' can't be spawned!" % text)
     return False
     
-reg("talkactionFirstWord", 's', creatureSpawn)
+register("talkactionFirstWord", 's', creatureSpawn)
 
 # NPC tester
 def npcSpawn(creature, text):
@@ -159,19 +159,19 @@ def npcSpawn(creature, text):
         creature.message("NPC named '%s' can't be spawned!" % text)
     return False
     
-reg("talkactionFirstWord", 'n', npcSpawn)
+register("talkactionFirstWord", 'n', npcSpawn)
 
 def saveMe(creature, text):
     creature.save()
     return False
     
-reg("talkaction", 'saveme', saveMe)
+register("talkaction", 'saveme', saveMe)
 
 def saveAll(creature, text):
     engine.saveAll()
     return False
     
-reg("talkaction", 'saveall', saveAll)
+register("talkaction", 'saveall', saveAll)
 
 def spawnDepot(creature, text):
     depotId = int(text)
@@ -181,7 +181,7 @@ def spawnDepot(creature, text):
     tile.placeItem(box)
     game.engine.updateTile(position, tile)
     
-reg('talkactionFirstWord', 'depot', spawnDepot)
+register('talkactionFirstWord', 'depot', spawnDepot)
 
 def trackScripts(creature, text):
     import inspect
@@ -204,7 +204,7 @@ def trackScripts(creature, text):
     else:
         creature.message("No scripts what so ever on %s" % text)
 
-reg('talkactionFirstWord', 'track', trackScripts)
+register('talkactionFirstWord', 'track', trackScripts)
 
 def mountPlayer(creature, text):
     if not config.allowMounts:
@@ -229,8 +229,8 @@ def mountPlayer(creature, text):
             creature.message("You're now unmouned.")
         
     return False
-reg('talkactionFirstWord', '!mount', mountPlayer)
-reg('talkaction', '!mount', mountPlayer)
+register('talkactionFirstWord', '!mount', mountPlayer)
+register('talkaction', '!mount', mountPlayer)
 
 def addMount(creature, text):
     try:
@@ -240,7 +240,7 @@ def addMount(creature, text):
         creature.message("Invalid mount.")
     return False
 
-reg('talkactionFirstWord', 'mount', addMount)
+register('talkactionFirstWord', 'mount', addMount)
 
 def addOutfit(creature, text):
     try:
@@ -250,20 +250,20 @@ def addOutfit(creature, text):
         creature.message("Invalid outfit.")
     return False
 
-reg('talkactionFirstWord', 'outfit', addOutfit)
+register('talkactionFirstWord', 'outfit', addOutfit)
 
 def testrename(creature, thing, **k):
     thing.privRename(creature, "[Seen] Wolf")
     return False
     
-reg("lookAt", "Wolf", testrename)
+register("lookAt", "Wolf", testrename)
 
 def testsummon(creature,**k):
     tiger = game.monster.getMonster("Tiger").spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
     tiger.setMaster(creature)
     return False
     
-reg("talkaction", "summon tiger", testsummon)
+register("talkaction", "summon tiger", testsummon)
 
 def setowner(creature,text):
     id = int(text)
@@ -271,24 +271,24 @@ def setowner(creature,text):
     return False
     
     
-reg("talkactionFirstWord", "setowner", setowner)
+register("talkactionFirstWord", "setowner", setowner)
 
 def poisonme(creature, **k):
     creature.condition(Condition(CONDITION_POISON, 0, 10, damage=10))
     print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
     
-reg("talkaction", "poisonme", poisonme)
+register("talkaction", "poisonme", poisonme)
 
 def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
     
-reg("talkaction", "conditionme", conditionme)
+register("talkaction", "conditionme", conditionme)
 
 def restoreme(creature, **k):
     creature.modifyHealth(10000)
     creature.modifyMana(10000)
     
-reg("talkaction", "restore", restoreme)
+register("talkaction", "restore", restoreme)
 
 def readData(creature, text):
     msg = ""
@@ -300,7 +300,7 @@ def readData(creature, text):
         elif isinstance(i, game.item.Item):
             msg += "Item '%s'\n" % i.itemId
     creature.windowMessage(msg)        
-reg("talkactionFirstWord", "info", readData)
+register("talkactionFirstWord", "info", readData)
 
 def testBoost(creature, **k):
     # Give a +1000 for 20s
@@ -309,7 +309,7 @@ def testBoost(creature, **k):
     # Give a +1000 to health and maxhealth too for 20s
     creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
     
-reg("talkaction", "boostme", testBoost)
+register("talkaction", "boostme", testBoost)
 
 def walkRandomStep(creature, callback):
     steps = [0,1,2,3,4,5,6,7]
@@ -350,8 +350,8 @@ def playerAI(creature, **k):
         
     _playerAI()
 
-reg("talkaction", "aime", playerAI)
+register("talkaction", "aime", playerAI)
 
 def openMarket(creature, **k):
     creature.openMarket()
-reg("talkaction", "market", openMarket)
+register("talkaction", "market", openMarket)

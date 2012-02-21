@@ -23,4 +23,4 @@ def openDoor(creature, thing, position, **k):
     
     thing.transform(thing.itemId+1, position)
 
-reg('use', doors, openDoor)
+register('use', doors, openDoor)

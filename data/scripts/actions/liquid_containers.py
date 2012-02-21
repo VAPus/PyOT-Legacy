@@ -8,4 +8,4 @@ def onUse(creature, thing, position, onThing, **k):
     creature.removeItem(position)
     creature.addItem(thing)
     
-reg('useWith', containers, onUse)
+register('useWith', containers, onUse)

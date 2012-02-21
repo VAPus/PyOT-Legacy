@@ -20,4 +20,4 @@ def spellBook(creature, thing, **k):
         text += "\n"
     creature.textWindow(thing, text=text)
     
-reg('use', spellBooks, spellBook)
+register('use', spellBooks, spellBook)

@@ -19,4 +19,4 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
 
 
 
-reg("useWith", 2550, onUseWith)
+register("useWith", 2550, onUseWith)

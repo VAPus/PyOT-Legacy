@@ -14,8 +14,8 @@ def endQuest(creature, **k):
     if creature.isPlayer() and creature.questStarted("The hello world") and not creature.questCompleted("The hello world"):
         creature.finishQuest("The hello world")
     
-reg("talkaction", "begin quest", startQuest)
-reg("talkaction", "hello world", endQuest)
+register("talkaction", "begin quest", startQuest)
+register("talkaction", "hello world", endQuest)
 
 
 

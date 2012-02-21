@@ -19,4 +19,4 @@ def useWith(creature, thing, onThing, onPosition, **k):
 
     onThing.transform(onThing.itemId + 1, onPosition)
 
-reg("useWith", 5942, useWith)
+register("useWith", 5942, useWith)

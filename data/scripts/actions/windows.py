@@ -10,5 +10,5 @@ def openWindow(creature, thing, position, **k):
 def closeWindow(creature, thing, position, **k):
     thing.transform(thing.itemId-2, position)
 
-reg('use', openWindows, openWindow)
-reg('use', closeWindows, closeWindow)
+register('use', openWindows, openWindow)
+register('use', closeWindows, closeWindow)

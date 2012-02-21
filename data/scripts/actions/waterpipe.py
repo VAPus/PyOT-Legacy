@@ -7,4 +7,4 @@ def onUse(creature, thing, position, **k):
     
 
 
-reg("use", 2093, onUse)
+register("use", 2093, onUse)

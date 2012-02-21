@@ -34,43 +34,43 @@ if "onUse" in file:
     if file.count("item2") >= 2 or file.count("topos") >= 2:
         file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
         try:
-            regLine = 'reg("useWith", %s, onUseWith)' % tuple(list)
+            regLine = 'register("useWith", %s, onUseWith)' % tuple(list)
         except:
-            regLine = 'reg("useWith", %s, onUseWith)' % repr(tuple(list))
+            regLine = 'register("useWith", %s, onUseWith)' % repr(tuple(list))
     else:
         file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
         try:
-            regLine = 'reg("use", %s, onUse)' % tuple(list)
+            regLine = 'register("use", %s, onUse)' % tuple(list)
         except:
-            regLine = 'reg("use", %s, onUse)' % repr(tuple(list))
+            regLine = 'register("use", %s, onUse)' % repr(tuple(list))
 
 if "onEquip" in file:
     file = file.replace("onEquip(cid, item, slot)", "onEquip(creature, thing, slot, **k)")
     try:
-        regLine = regLine + '\nreg("equip", %s, onEquip)' % tuple(list)
+        regLine = regLine + '\nregister("equip", %s, onEquip)' % tuple(list)
     except:
-        regLine = regLine + '\nreg("equip", %s, onEquip' % repr(tuple(list))
+        regLine = regLine + '\nregister("equip", %s, onEquip' % repr(tuple(list))
             
 if "onDeEquip" in file:
     file = file.replace("onDeEquip(cid, item, slot)", "unEquip(creature, thing, slot, **k)")
     try:
-        regLine = regLine + '\nreg("unEquip", %s, unEquip)' % tuple(list)
+        regLine = regLine + '\nregister("unEquip", %s, unEquip)' % tuple(list)
     except:
-        regLine = regLine + '\nreg("unEquip", %s, unEquip)' % repr(tuple(list))
+        regLine = regLine + '\nregister("unEquip", %s, unEquip)' % repr(tuple(list))
             
 if "onStepIn" in file:
     file = file.replace("onStepIn(cid, item, position, fromPosition)", "walkOn(creature, thing, position, fromPosition, **k)")
     try:
-        regLine = regLine + '\nreg("walkOn", %s, walkOn)' % tuple(list)
+        regLine = regLine + '\nregister("walkOn", %s, walkOn)' % tuple(list)
     except:
-        regLine = regLine + '\nreg("walkOn", %s, walkOn)' % repr(tuple(list))
+        regLine = regLine + '\nregister("walkOn", %s, walkOn)' % repr(tuple(list))
 
 if "onStepOut" in file:
     file = file.replace("onStepOut(cid, item, position, fromPosition)", "walkOff(creature, thing, position, fromPosition, **k)")
     try:
-        regLine = regLine + '\nreg("walkOff", %s, walkOff)' % tuple(list)
+        regLine = regLine + '\nregister("walkOff", %s, walkOff)' % tuple(list)
     except:
-        regLine = regLine + '\nreg("walkOff", %s, walkOff)' % repr(tuple(list))
+        regLine = regLine + '\nregister("walkOff", %s, walkOff)' % repr(tuple(list))
         
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")

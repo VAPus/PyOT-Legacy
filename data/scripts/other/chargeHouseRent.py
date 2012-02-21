@@ -11,4 +11,4 @@ def payRent(house):
 
     print "TODO: Player couldn't pay the rent. Need to add it for sale or something!!!"
 
-reg("chargeRent", payRent)
+register("chargeRent", payRent)

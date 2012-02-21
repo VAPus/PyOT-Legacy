@@ -50,4 +50,4 @@ _script_ = game.scriptsystem.get("use")
 
 for item in game.item.items:
     if item and "containerSize" in item:
-        _script_.reg(game.item.reverseItems[item["cid"]], container)
+        _script_.register(game.item.reverseItems[item["cid"]], container)

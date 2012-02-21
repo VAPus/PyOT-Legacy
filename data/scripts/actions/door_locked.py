@@ -36,5 +36,5 @@ def onUseKey(creature, thing, onThing, onPosition, **k):
     else:
         transformItem(onThing, onThing.itemId-1, onPosition)
 
-reg('use', lockedDoors, onUseDoor)
-reg('useWith', keys, onUseKey)
+register('use', lockedDoors, onUseDoor)
+register('useWith', keys, onUseKey)

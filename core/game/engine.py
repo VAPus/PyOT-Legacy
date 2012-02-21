@@ -119,8 +119,8 @@ def loader(timer):
         
     __builtin__.sql = sql.conn
     __builtin__.config = config
-    __builtin__.reg = game.scriptsystem.reg
-    __builtin__.regFirst = game.scriptsystem.regFirst
+    __builtin__.register = game.scriptsystem.register
+    __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.defer = defer
     __builtin__.reactor = reactor
     __builtin__.engine = sys.modules["game.engine"]
@@ -187,7 +187,7 @@ def loader(timer):
     
     # Do we save on shutdowns?
     if config.saveOnShutdown:
-        game.scriptsystem.reg("shutdown", lambda **k: saveAll(True), False)
+        game.scriptsystem.register("shutdown", lambda **k: saveAll(True), False)
         
     # Light stuff
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
