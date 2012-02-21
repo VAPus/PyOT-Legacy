@@ -110,17 +110,13 @@ class Player(Creature):
         self.setLevel(level, False)
         self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
 
-        # Storage & skills
-        try:
-            self.skills = otjson.loads(self.data["skills"])
-            if len(self.skills) != (game.enum.SKILL_LAST*2)+1:
-                raise
-        except:
-            self.skills = []
-            for i in xrange(game.enum.SKILL_FIRST, (game.enum.SKILL_LAST*2)+2):
-                self.skills.append(10)
-            
-        #del self.data["skills"]
+        # Skills = active skills!
+        self.skills = self.data["skills"].copy()
+        print self.skills
+        # Skill goals
+        self.skillGoals = {}
+        for x in self.skills:
+            self.skillGoals[x] = config.skillFormula(self.skills[x], self.getVocation().meleeSkill)
         
         if self.data["storage"]:
             self.storage = otjson.loads(self.data["storage"])
@@ -774,50 +770,57 @@ class Player(Creature):
     # Skills
     def addSkillLevel(self, skill, levels):
         def endCallback():
+            # Saved data
+            self.data["skills"][skill] += levels
+            
+            # Active data
             self.skills[skill] += levels
-            self.skills[skill + game.enum.SKILL_LAST + 1] += levels
+            
+            # Update goals
             goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
             self.setStorage('__skill%d' % skill, 0)
-            self.setStorage('__skillGoal%d' % skill, goal)
+            self.data["skill_tries"][skill] = 0
+            self.skillGoals[skill] = goal
             
             self.refreshSkills()
             self.saveSkills = True
+            
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
        
     def tempAddSkillLevel(self, skill, level):
-        self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill] + levels
+        self.skills[skill] = self.skills[skill] + levels
         self.refreshSkills()
         self.saveSkills = True
         
     def tempRemoveSkillLevel(self, skill):
-        self.skills[skill + game.enum.SKILL_LAST + 1] = self.skills[skill]
+        self.skills[skill] = self.skills[skill]
         self.refreshSkills()
         self.saveSkills = True
         
     def getActiveSkill(self, skill):
-        return self.skills[skill + game.enum.SKILL_LAST + 1]
+        return self.skills[skill]
 
-    def skillAttempt(self, skillType):
-        key = '__skill%d' % skillType
-        goalKey = '__skillGoal%s' % skillType
-        
+    def skillAttempt(self, skillType, amount = 1):
         try:
-            self.modifyStorage(key, 1)
+            self.data["skill_tries"][skillType] += amount
             
         except:
             # Happends on new members using new weapons
-            self.setStorage(key, 1)
+            self.data["skill_tries"][skillType] = amount
         
-        skill = self.getStorage(key, 0)
-        skillGoal = self.getStorage(goalKey, 0)
+        skill = self.data["skill_tries"][skillType]
+        skillGoal = self.skillGoals[skill]
         if skill >= skillGoal:
             self.addSkillLevel(skillType, 1)
-            self.setStorage(key, skillGoal - skill)
+            attempts = skillGoal - skill
+            if attempts:
+                self.skillAttempt(skillType, attempts)
+                return # No refresh yet
             
         self.refreshSkills() 
         
     def getSkillAttempts(self, skill):
-        return self.getStorage('__skill%d' % skillType)
+        return self.data["skill_tries"][skillType]
         
     # Soul
     def soulGain(self):
@@ -1685,36 +1688,38 @@ class Player(Creature):
         condition = ""
         extras = []
         
+        tables = "`players` AS `p`"
         if self.saveDepot or force:
             extras.append(self.pickleDepot())
-            depot = ", `depot` = %s"
+            depot = ", p.`depot` = %s"
             self.saveDepot = False
             
         if self.saveStorage or force:
             extras.append(otjson.dumps(self.storage))
-            storage = ", `storage` = %s"
+            storage = ", p.`storage` = %s"
             self.saveStorage = False
             
         if self.saveSkills or force:
-            extras.append(otjson.dumps(self.skills))
-            skills = ", `skills` = %s"
+            tables += ", `player_skills` as `s`"
+            # TODO: Custom skills.
+            skills = ", s.`fist` = %d, s.`fist_tries` = %d, s.`sword` = %d, s.`sword_tries` = %d, s.`club` = %d, s.`club_tries` = %d, s.`axe` = %d, s.`axe_tries` = %d, s.`distance` = %d, s.`distance_tries` = %d, s.`shield` = %d, s.`shield_tries` = %d, s.`fishing` = %d, s.`fishing_tries` = %d" % (self.data["skills"][SKILL_FIST], self.data["skill_tries"][SKILL_FIST], self.data["skills"][SKILL_SWORD], self.data["skill_tries"][SKILL_SWORD], self.data["skills"][SKILL_CLUB], self.data["skill_tries"][SKILL_CLUB], self.data["skills"][SKILL_AXE], self.data["skill_tries"][SKILL_AXE], self.data["skills"][SKILL_DISTANCE], self.data["skill_tries"][SKILL_DISTANCE], self.data["skills"][SKILL_SHIELD], self.data["skill_tries"][SKILL_SHIELD], self.data["skills"][SKILL_FISH], self.data["skill_tries"][SKILL_FISH])
             self.saveSkills = False
             
         if self.saveInventory or force:
             extras.append(self.pickleInventory())
-            inventory = ", `inventory` = %s"
+            inventory = ", p.`inventory` = %s"
             self.saveInventory = False
         
         if self.saveCondition or force:
             extras.append(game.engine.fastPickler(self.conditions))
-            condition = ", `conditions` = %s"
+            condition = ", p.`conditions` = %s"
             self.saveCondition = False
             
         # XXX hack
         extras.append(self.data["id"])
         
         if self.saveData or depot or storage or skills or inventory or condition or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE `players` SET `experience` = %s, `manaspent` = %s, `mana`= %s, `health` = %s, `soul` = %s, `stamina` = %s, `direction` = %s, `posx` = %s, `posy` = %s, `posz` = %s"+depot+storage+skills+inventory+condition+" WHERE `id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z]+extras
+            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`direction` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s"+depot+storage+skills+inventory+condition+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z]+extras
 
     def save(self, force=False):
         if self.doSave:

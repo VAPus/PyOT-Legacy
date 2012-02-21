@@ -1,25 +1,13 @@
--- phpMyAdmin SQL Dump
--- version 3.2.2
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Sep 17, 2011 at 03:25 AM
--- Server version: 5.5.15
--- PHP Version: 5.3.8
-
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
---
--- Database: `dev`
---
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `accounts`
---
-
-CREATE TABLE IF NOT EXISTS `accounts` (
+CREATE TABLE `accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL DEFAULT '',
   `password` varchar(255) NOT NULL,
@@ -31,38 +19,74 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
---
--- Dumping data for table `accounts`
---
-
 INSERT INTO `accounts` (`id`, `name`, `password`, `salt`, `premdays`, `blocked`, `group_id`) VALUES
 (1, '111', '6216f8a75fd5bb3d5f22b6f9958cdede3fc086c2', '', 65535, 0, 1);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `globals`
---
-
-CREATE TABLE IF NOT EXISTS `globals` (
+CREATE TABLE `globals` (
   `key` varchar(16) NOT NULL,
   `data` mediumblob NOT NULL,
   `type` varchar(16) NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `globals`
---
+CREATE TABLE `groups` (
+  `group_id` int(11) unsigned NOT NULL,
+  `group_name` varchar(48) NOT NULL,
+  `group_flags` text NOT NULL,
+  PRIMARY KEY (`group_id`),
+  KEY `group_name` (`group_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `groups` (`group_id`, `group_name`, `group_flags`) VALUES
+(1, 'Player', '["SAVESELF", "HOUSE", "PREMIUM", "SPELLS", "SPEAK", "MOVE_ITEMS", "LOOT", "ATTACK"]');
 
--- --------------------------------------------------------
+CREATE TABLE `houses` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` int(11) unsigned NOT NULL DEFAULT '0',
+  `guild` int(8) unsigned NOT NULL DEFAULT '0',
+  `paid` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(64) NOT NULL,
+  `town` int(8) unsigned NOT NULL DEFAULT '0',
+  `size` int(8) unsigned NOT NULL,
+  `rent` int(11) unsigned NOT NULL,
+  `data` mediumblob,
+  `price` int(11) unsigned NOT NULL DEFAULT '0',
+  `for_sale` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=30 ;
 
---
--- Table structure for table `items`
---
+INSERT INTO `houses` (`id`, `owner`, `guild`, `paid`, `name`, `town`, `size`, `rent`, `data`, `price`, `for_sale`) VALUES
+(1, 0, 0, 0, 'The W House', 1, 126, 1000, NULL, 0, 0),
+(2, 0, 0, 0, 'The Bear', 1, 193, 100000, NULL, 0, 0),
+(3, 0, 0, 0, 'The School and Church', 1, 109, 100000000, NULL, 0, 0),
+(4, 0, 0, 0, 'Island', 1, 18, 10000000, NULL, 0, 0),
+(5, 0, 0, 0, 'Mini Flat I', 1, 50, 10000, NULL, 0, 0),
+(6, 0, 0, 0, 'Mini Flat II', 1, 50, 10000, NULL, 0, 0),
+(7, 0, 0, 0, 'Mini Flat III', 1, 50, 10000, NULL, 0, 0),
+(8, 0, 0, 0, 'Mini Flat IV', 1, 50, 10000, NULL, 0, 0),
+(9, 0, 0, 0, 'Stone Entrance I', 1, 40, 10000, NULL, 0, 0),
+(10, 0, 0, 0, 'Stone Entrance II', 1, 28, 10000, NULL, 0, 0),
+(11, 0, 0, 0, 'Stone Entrance III', 1, 28, 10000, NULL, 0, 0),
+(12, 0, 0, 0, 'Yellow Flower I', 1, 18, 10000, NULL, 0, 0),
+(13, 0, 0, 0, 'Yellow Flower II', 1, 18, 10000, NULL, 0, 0),
+(14, 0, 0, 0, 'Yellow Flower III', 1, 18, 10000, NULL, 0, 0),
+(15, 0, 0, 0, 'Temple House I', 1, 20, 10000, NULL, 0, 0),
+(16, 0, 0, 0, 'Temple House II', 1, 20, 10000, NULL, 0, 0),
+(17, 0, 0, 0, 'Temple House III', 1, 20, 10000, NULL, 0, 0),
+(18, 0, 0, 0, 'City Side I', 1, 18, 10000, NULL, 0, 0),
+(19, 0, 0, 0, 'City Side II', 1, 18, 10000, NULL, 0, 0),
+(20, 0, 0, 0, 'City Side III', 1, 25, 10000, NULL, 0, 0),
+(21, 0, 0, 0, 'City Side IV', 1, 20, 10000, NULL, 0, 0),
+(22, 0, 0, 0, 'Sandland', 1, 132, 100000, NULL, 0, 0),
+(23, 0, 0, 0, 'Desert Ground', 1, 15, 10000, NULL, 0, 0),
+(24, 0, 0, 0, 'Desert Ground II', 1, 15, 10000, NULL, 0, 0),
+(25, 0, 0, 0, 'Ezo TownHouse I', 1, 48, 100000, NULL, 0, 0),
+(26, 0, 0, 0, 'Ezo TownHouse II', 1, 9, 100000, NULL, 0, 0),
+(27, 0, 0, 0, 'Ezo TownHouse III', 1, 9, 100000, NULL, 0, 0),
+(28, 0, 0, 0, 'Ezo TownHouse IV', 1, 40, 100000, NULL, 0, 0),
+(29, 0, 0, 0, 'Ezo TownHouse V', 1, 40, 100000, NULL, 0, 0);
 
-CREATE TABLE IF NOT EXISTS `items` (
+CREATE TABLE `items` (
   `sid` smallint(5) unsigned NOT NULL,
   `cid` smallint(5) unsigned NOT NULL,
   `type` tinyint(3) unsigned NOT NULL,
@@ -93,10 +117,6 @@ CREATE TABLE IF NOT EXISTS `items` (
   `custom` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`sid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dataark for tabell `items`
---
 
 INSERT INTO `items` (`sid`, `cid`, `type`, `subs`, `name`, `article`, `plural`, `speed`, `order`, `solid`, `blockprojectile`, `blockpath`, `hasheight`, `usable`, `pickable`, `movable`, `stackable`, `ontop`, `vertical`, `horizontal`, `hangable`, `distanceread`, `rotatable`, `readable`, `charges`, `animation`, `lookthrough`, `custom`) VALUES
 (100, 100, 1, 0, 'void', '', '', 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -11767,22 +11787,12 @@ INSERT INTO `items` (`sid`, `cid`, `type`, `subs`, `name`, `article`, `plural`, 
 (13979, 12844, 2, 0, 'dead sacred spider', 'a', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (13983, 12571, 0, 0, 'queen eloise fandolls', '', '', 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
--- --------------------------------------------------------
-
---
--- Tabellstruktur for tabell `item_attributes`
---
-
-CREATE TABLE IF NOT EXISTS `item_attributes` (
+CREATE TABLE `item_attributes` (
   `sid` smallint(5) unsigned NOT NULL,
   `key` varchar(32) NOT NULL,
   `value` varchar(255) NOT NULL,
   `custom` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Dataark for tabell `item_attributes`
---
 
 INSERT INTO `item_attributes` (`sid`, `key`, `value`, `custom`) VALUES
 (294, 'duration', '300', 0),
@@ -24977,15 +24987,7 @@ INSERT INTO `item_attributes` (`sid`, `key`, `value`, `custom`) VALUES
 (13979, 'decayTo', '13976', 0),
 (13983, 'weight', '1560', 0);
 
-
-
--- --------------------------------------------------------
-
---
--- Table structure for table `players`
---
-
-CREATE TABLE IF NOT EXISTS `players` (
+CREATE TABLE `players` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `world_id` tinyint(8) unsigned NOT NULL DEFAULT '0',
@@ -25016,7 +25018,6 @@ CREATE TABLE IF NOT EXISTS `players` (
   `guild` int(8) unsigned NOT NULL DEFAULT '0',
   `guild_rank` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `lastlogin` int(11) unsigned NOT NULL DEFAULT '0',
-  `skills` blob,
   `conditions` blob,
   `storage` mediumblob,
   `depot` mediumblob,
@@ -25027,19 +25028,29 @@ CREATE TABLE IF NOT EXISTS `players` (
   KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
---
--- Dumping data for table `players`
---
+INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `direction`, `marriage`, `guild`, `guild_rank`, `lastlogin`, `conditions`, `storage`, `depot`, `inventory`) VALUES
+(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, 0, NULL, NULL, '', '');
 
-INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `direction`, `marriage`, `guild`, `guild_rank`, `skills`, `conditions`, `storage`, `depot`, `inventory`) VALUES
-(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, NULL, NULL, NULL, "", "");
+CREATE TABLE `player_skills` (
+  `player_id` int(11) unsigned NOT NULL,
+  `fist` int(11) unsigned NOT NULL DEFAULT '10',
+  `fist_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `sword` int(11) unsigned NOT NULL DEFAULT '10',
+  `sword_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `axe` int(11) unsigned NOT NULL DEFAULT '10',
+  `axe_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `distance` int(11) unsigned NOT NULL DEFAULT '10',
+  `distance_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `shield` int(11) unsigned NOT NULL DEFAULT '10',
+  `shield_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `fishing` int(11) unsigned NOT NULL DEFAULT '0',
+  `fishing_tries` int(11) unsigned NOT NULL DEFAULT '0',
+  `custom` tinytext COMMENT 'Might be NULL, JSON dict ID -> skilltries',
+  PRIMARY KEY (`player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `groups` (
-`group_id` INT( 11 ) UNSIGNED NOT NULL ,
-`group_name` VARCHAR( 48 ) NOT NULL ,
-`group_flags` TEXT NOT NULL ,
-PRIMARY KEY ( `group_id` ) ,
-INDEX ( `group_name` )
-) ENGINE = InnoDB;
+INSERT INTO `player_skills` (`player_id`, `fist`, `fist_tries`, `sword`, `sword_tries`, `axe`, `axe_tries`, `distance`, `distance_tries`, `shield`, `shield_tries`, `fishing`, `fishing_tries`, `custom`) VALUES
+(2, 10, 0, 10, 0, 10, 0, 10, 0, 10, 0, 0, 0, NULL);
 
-INSERT INTO `groups` VALUES(1, 'Player', '["SAVESELF", "HOUSE", "PREMIUM", "SPELLS", "SPEAK", "MOVE_ITEMS", "LOOT", "ATTACK"]')
+ALTER TABLE `player_skills` ADD `club` INT( 11 ) UNSIGNED NOT NULL DEFAULT '10' AFTER `sword_tries` ,
+ADD `club_tries` INT( 11 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `club` ;
