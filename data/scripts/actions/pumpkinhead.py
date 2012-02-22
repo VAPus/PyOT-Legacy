@@ -15,6 +15,4 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     
     return True
 
-
-
 register("useWith", (2566, 2096), onUseWith)

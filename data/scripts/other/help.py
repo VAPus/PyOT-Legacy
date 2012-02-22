@@ -265,6 +265,22 @@ def testsummon(creature,**k):
     
 register("talkaction", "summon tiger", testsummon)
 
+def summon(creature, text):
+    try:
+        mon = game.monster.getMonster(text)
+    except:
+        creature.message("Invalid creature.")
+    if mon.summonable:
+        if creature.data["mana"] > mon.summonable:
+            creature.modifyMana(-1*mon.summonable)
+            mon = game.monster.getMonster(text).spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
+            mon.setMaster(creature)
+        else:
+            creature.message("You do not have enough mana.")
+    return False
+    
+register("talkactionFirstWord", "res", summon)
+
 def setowner(creature,text):
     id = int(text)
     game.house.houseData[id].owner = creature.data["id"]

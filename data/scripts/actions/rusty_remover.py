@@ -1,4 +1,5 @@
-item = {9808: ((2464, "Chain Armor", 33), (2483, "Scale Armor", 25), (2465, "Brass Armor", 10), (2463, "Plate Armor", 2)),
+item = {
+9808: ((2464, "Chain Armor", 33), (2483, "Scale Armor", 25), (2465, "Brass Armor", 10), (2463, "Plate Armor", 2)),
 
 9809: ((2464, "Chain Armor", 16), (2465, "Brass Armor", 14), (2483, "Scale Armor", 13), (2463, "Plate Armor", 10),
 (2476, "Knight Armor", 6), (8891, "Paladin Armor", 3), (2487, "Crown Armor", 1)),
@@ -45,6 +46,5 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     else:
         creature.message("Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
         return
-    
-
+ 
 register("useWith", 9930, onUseWith)
