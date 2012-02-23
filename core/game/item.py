@@ -100,9 +100,10 @@ bindconstant.bind_all(Container)
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
-    defaultActions = "item",
     
     def __init__(self, itemId, count=1, actions=None, **kwargs):
+        if not count or count < 0:
+            count = 1
         try:
             if not items[itemId]:
                 raise
@@ -158,7 +159,22 @@ class Item(object):
                 return self.fluidSource
             except:
                 return None
-                
+    
+    def position(self):
+        return Position(*self._position)
+    
+    def setPosition(self, pos):
+        self._position = pos.x, pos.y, pos.z, pos.instanceId
+        
+    def placement(self):
+        if self._position[0] == 0xFFFF:
+            if self._position[1] < 64:
+                return 0 # Inventory
+            else:
+                return 1 # Bag
+        
+        return 2 # Ground
+        
     def actionIds(self):
         return self.actions
             

@@ -875,9 +875,10 @@ class BaseProtocol(object):
                 thisTile = game.map.getTile(toPosition)
                 findItem = thisTile.findClientItem(clientId, True) # Find item for stacking
                 if findItem and newItem.stackable and count <= 100 and findItem[1].count + count <= 100:
-                    newItem.count += findItem[1].count
-                    stream.removeTileItem(toPosition, findItem[0])
-                    game.map.getTile(toPosition).removeItem(findItem[1])
+                    findItem[1].count += count
+                    #stream.removeTileItem(toPosition, findItem[0])
+                    #game.map.getTile(toPosition).removeItem(findItem[1])
+                    stream.updateTileItem(toPosition, thisTile.findStackpos(findItem[1]), findItem[1])
                 else:
                     toStackPos = None
 
@@ -960,7 +961,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not oldItem[1].containerSize and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y == toPosition.y) and not (fromPosition.x == 0xFFFF and fromPosition.y < 64):
+                    if currItem and currItem[1] and not (fromMap and currItem[1].stackable) and not oldItem[1].containerSize and not (fromPosition.x == 0xFFFF and toPosition.x == 0xFFFF and fromPosition.y == toPosition.y) and not (fromPosition.x == 0xFFFF and fromPosition.y < 64) and not (fromPosition.x != 0xFFFF and toPosition.x == 0xFFFF):
                         if fromPosition.y < 64:
                             player.inventory[fromPosition.y-1] = currItem[1].copy()
                             
@@ -1424,11 +1425,11 @@ class BaseProtocol(object):
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
             
     def handleUseBattleWindow(self, player, packet):
-        fromPosition = packet.position(player.position.instanceId)
+        position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
         stackpos = packet.uint8()
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
-        hotkey = fromPosition.x == 0xFFFF and not fromPosition.y
+        hotkey = position.x == 0xFFFF and not position.y
         stackPosition = position.setStackpos(stackpos)
         # Is hotkeys allowed?
         if not config.enableHotkey:

@@ -566,6 +566,13 @@ class Player(Creature):
                     stream.send(self.client)
                     
     def modifyItem(self, thing, position, mod):
+        if thing.count <= 0:
+            
+            thing.count = 1
+            
+            # Silently ignore for now.
+            #raise Exception("BUG: Item have a count below 0, %s" % thing.count)
+        
         try:
             thing.count += mod
         except:
@@ -574,14 +581,20 @@ class Player(Creature):
         if thing.count > 0:
             self.replaceItem(position, thing)
         else:
-            self.removeItem(position)
+            self.removeItem(position, thing)
                 
-    def removeItem(self, position):
+    def removeItem(self, position, thing=None):
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
                 tile = position.getTile()
-                del tile.things[position.stackpos]
+                if type(position) != StackPosition:
+                    if thing:
+                        tile.removeItem(thing)
+                    else:
+                        raise Exception("Require a StackPosition, or thing option set.")
+                else:
+                    del tile.things[position.stackpos]
                 game.engine.updateTile(position, tile)
                 
             # Option 2, the inventory
@@ -839,7 +852,7 @@ class Player(Creature):
             self.data["skill_tries"][skillType] = amount
         
         skill = self.data["skill_tries"][skillType]
-        skillGoal = self.skillGoals[skill]
+        skillGoal = self.skillGoals[skillType]
         if skill >= skillGoal:
             self.addSkillLevel(skillType, 1)
             attempts = skillGoal - skill

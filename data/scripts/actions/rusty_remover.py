@@ -32,8 +32,8 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         
         if developed:
             magicEffect(onPosition, effect_renew)
-            onThing.transform(item[const][developed][0])
-            creature.message("You have renewed the %s !" % (item[const][developed][1]))
+            onThing.transform(developed[0], onPosition)
+            creature.message("You have renewed the %s !" % (developed[1]))
             creature.modifyItem(thing, position, -1)
             
         else:
