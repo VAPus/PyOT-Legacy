@@ -5,7 +5,7 @@ decrease = 1480, 1635, 1637, 1639, 1641, 1787, 1789, 1791, 1793, 1874, 1876, 194
 def onUse(creature, thing, position, **k):
     if position[0] == 0xFFFF:
         thing.itemId -= 1
-        creature.replaceItem(position, thing)
+        thing.refresh(position)
     else:
         engine.transformItem(thing, thing.itemId-1, position)
 

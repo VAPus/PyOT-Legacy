@@ -1391,9 +1391,9 @@ class BaseProtocol(object):
         if player.isTradingWith.tradeAccepted:
             for item in player.isTradingWith.tradeItems:
                 del item.inTrade
-                if item.inPlayer and not item.inContainer:
-                   item.inPlayer.inventory[item.inPlayer.inventory.index(item)] = None
-                if item.inPlayer:
+                if item.decayCreature and not item.inContainer:
+                   item.decayCreature.inventory[item.decayCreature.inventory.index(item)] = None
+                if item.decayCreature:
                     player.isTradingWith.removeCache(item)
                 if item.inContainer:
                     item.inContainer.removeItem(item)
@@ -1401,9 +1401,9 @@ class BaseProtocol(object):
                 
             for item in player.tradeItems:
                 del item.inTrade
-                if item.inPlayer and not item.inContainer:
-                    item.inPlayer.inventory[item.inPlayer.inventory.index(item)] = None
-                if item.inPlayer:
+                if item.decayCreature and not item.inContainer:
+                    item.decayCreature.inventory[item.decayCreature.inventory.index(item)] = None
+                if item.decayCreature:
                     player.isTradingWith.removeCache(item)
                 if item.inContainer:
                     item.inContainer.removeItem(item)

@@ -10,7 +10,7 @@ increase = 1210, 1213, 1219, 1221, 1232, 1235, 1237, 1239, 1250, 1253, 1539, 154
 def onUse(creature, thing, position, **k):
     if position[0] == 0xFFFF:
         thing.itemId += 1
-        creature.replaceItem(position, thing)
+        thing.refresh(position)
     else:
         thing.transform(thing.itemId+1, position)
 

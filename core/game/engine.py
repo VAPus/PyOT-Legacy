@@ -544,7 +544,10 @@ def transformItem(item, transformTo, pos):
     
     
     """
-    
+    pos = item.vertifyPosition(None, pos)
+    if not pos2:
+        raise Exception("BUG: Can't vertify position")
+
     tile = game.map.getTile(pos)
     if not isinstance(pos, game.map.StackPosition):
         pos = pos.setStackpos(tile.findStackpos(item))

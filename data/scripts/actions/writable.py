@@ -12,7 +12,7 @@ def writable(creature, thing, position, **k):
         transformTo = thing.writeOnceItemId
         if transformTo:
             thing.itemId = transformTo
-            creature.replaceItem(position, thing)
+            thing.refresh(position)
     
     creature.setWindowHandler(windowId, writeback)
     

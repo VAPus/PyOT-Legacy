@@ -94,7 +94,7 @@ def onUse(creature, thing, position, **a):
 
     if thing.count > 0 and (not someCondition or someCondition.length + gainmana[1] <= 1200):
         thing.count -= 1
-        creature.replaceItem(position, thing)
+        thing.refresh(position)
         creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration, gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1200)
         creature.condition(Condition(CONDITION_REGENERATEMANA, 0, duration, gainmana[1], gainmana=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1200)
         creature.say(sound, 'MSG_SPEAK_MONSTER_SAY')

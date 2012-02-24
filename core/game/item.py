@@ -159,21 +159,47 @@ class Item(object):
                 return self.fluidSource
             except:
                 return None
-    
-    def position(self):
-        return Position(*self._position)
-    
-    def setPosition(self, pos):
-        self._position = pos.x, pos.y, pos.z, pos.instanceId
-        
-    def placement(self):
-        if self._position[0] == 0xFFFF:
-            if self._position[1] < 64:
-                return 0 # Inventory
+
+    def vertifyPosition(self, creature, pos):
+        if pos.x == 0xFFFF:
+            if not creature:
+                raise Exception("Cannot vertify Position inside inventory when creature == None!")
+            
+            if pos.y < 64:
+                if creature.inventory[pos.y] == self:
+                    return pos
+                else:
+                    return False # We cant assume that inventory items move
+                    
             else:
-                return 1 # Bag
+                container = creature.getContainer(pos.y-64)
+                if not container:
+                    print creature.openContainers
+                    print pos.y - 64
+                    return False
+                    
+                if container.container.items[pos.z] == self:
+                    return pos
+                else:
+                    for z in xrange(len(container.container.items)):
+                        if container.container.items[z] == self:
+                            return Position(pos.x, pos.y, z, pos.instanceId)
+                    return False # Not found
         
-        return 2 # Ground
+        tile = pos.getTile()
+        
+        if tile.things[pos.stackpos] == self:
+            return pos
+            
+        elif not self in tile.things:
+            return False # Not on this tile
+            
+        else:
+            for z in xrange(len(tile.things)):
+                if tile.things[z] == self:
+                    return Position(pos.x, pos.y, z, pos.instanceId)
+                    
+        return False
         
     def actionIds(self):
         return self.actions
@@ -335,10 +361,17 @@ class Item(object):
         except:
             pass
         
+        position = self.vertifyPosition(creature, position)
+        if not position:
+            raise Exception("BUG: Item position cannot be vertified!") 
+        
         # Store position:
         self.decayPosition = position
         if position.x == 0xFFFF:
             self.decayCreature = creature
+            
+
+        
         def executeDecay():
             try:
                 if self.decayCreature:
@@ -367,10 +400,6 @@ class Item(object):
                     self.decay(self.decayPosition, callback=callback, creature=creature)
                 else:
                     del self.decayPosition
-                    try:
-                        del self.decayCreature
-                    except:
-                        pass
                     
                 if self.itemId and callback:
                     callback(self)
@@ -432,6 +461,10 @@ class Item(object):
         return newItem
         
     def transform(self, toId, position):
+        position = self.vertifyPosition(self.decayCreature, position)
+        if not position:
+            raise Exception("BUG: Item position cannot be vertified!")
+        
         if position.x != 0xFFFF:
             tile = position.getTile()
             stackPos = tile.findStackpos(self)
@@ -457,8 +490,83 @@ class Item(object):
                 self = self.copy()
                 
             self.itemId = toId
-            self.inPlayer.replaceItem(position, self)
-    
+            self.refresh(position)
+
+    def refresh(self, position):
+        position = self.vertifyPosition(self.decayCreature, position)
+        creature = self.decayCreature
+        if not position:
+            raise Exception("BUG: Item position cannot be vertified!")
+        
+        if position.x != 0xFFFF:
+            tile = position.getTile()
+            stackPos = tile.findStackpos(self)
+            
+            for spectator in game.engine.getSpectators(position):
+                stream = spectator.packet()
+                stream.removeTileItem(position, stackPos)
+                if toId:
+                    stream.updateTileItem(position, stackPos, self)
+                    
+                stream.send(spectator)
+        else:
+            # Option 2, the inventory
+            if position.y < 64:
+                sendUpdate = False
+                currItem = creature.inventory[position.y-1]
+                if currItem:
+                    # Update cached data
+                    if creature.removeCache(currItem):
+                        sendUpdate = True
+                        
+                ret = creaturef.addCache(self)
+                if ret:
+                    sendUpdate = True
+                    creature.inventory[position.y-1] = self
+                elif ret == False:
+                    creature.inventory[position.y-1] = None
+                    tile = game.map.getTile(creature.position)
+                    tile.placeItem(self)
+                    creature.tooHeavy()
+                    
+                if sendUpdate:
+                    creature.refreshStatus()
+                
+                creature.updateInventory(position.y)
+            
+            # Option 3, the bags, if there is one ofcource
+            else:
+                update = False
+                try:
+                    bag = creature.openContainers[position.y - 64]
+                except:
+                    return
+                
+                try:
+                    creature.inventoryCache[bag.itemId].index(bag)
+                    currItem = bag.container.items[position.z]
+                    if currItem:
+                        if creature.removeCache(currItem):
+                            update = True
+                    
+                    ret = creature.addCache(self, bag)
+                    if ret == False:
+                        del bag.container.items[position.z]
+                    elif ret == True:    
+                        update = True
+                        bag.container.items[position.z] = self
+                        
+                    stream = creature.packet()
+                    stream.updateContainerItem(position.y - 64, position.z, self)
+                    if update:
+                        creature.refreshStatus(stream)
+                    stream.send(creature.client)
+                except:  
+                    bag.container.items[position.z] = self
+                    stream = creature.packet()
+                    stream.updateContainerItem(position.y - 64, position.z, self)
+                    stream.send(creature.client)
+            
 def cid(itemid):
     try:
         return items[itemid]["cid"]

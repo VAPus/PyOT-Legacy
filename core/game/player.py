@@ -499,71 +499,6 @@ class Player(Creature):
                 self.refreshStatus(stream)
             stream.send(self.client)
             return newItem
-
-    def replaceItem(self, position, item):
-        # Option 1, from the map:
-        if position:
-            if position.x != 0xFFFF:
-                tile = position.getTile()
-                tile.things[position.stackpos] = item
-                game.engine.updateTile(position, tile)
-                
-            # Option 2, the inventory
-            elif position.y < 64:
-                sendUpdate = False
-                currItem = self.inventory[position.y-1]
-                if currItem:
-                    # Update cached data
-                    if self.removeCache(currItem):
-                        sendUpdate = True
-                        
-                ret = self.addCache(item)
-                if ret:
-                    sendUpdate = True
-                    self.inventory[position.y-1] = item
-                elif ret == False:
-                    self.inventory[position.y-1] = None
-                    tile = game.map.getTile(self.position)
-                    tile.placeItem(item)
-                    self.tooHeavy()
-                    
-                if sendUpdate:
-                    self.refreshStatus()
-                
-                self.updateInventory(position.y)
-            
-            # Option 3, the bags, if there is one ofcource
-            else:
-                update = False
-                try:
-                    bag = self.openContainers[position.y - 64]
-                except:
-                    return
-                
-                try:
-                    self.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container.items[position.z]
-                    if currItem:
-                        if self.removeCache(currItem):
-                            update = True
-                    
-                    ret = self.addCache(item, bag)
-                    if ret == False:
-                        del bag.container.items[position.z]
-                    elif ret == True:    
-                        update = True
-                        bag.container.items[position.z] = item
-                        
-                    stream = self.packet()
-                    stream.updateContainerItem(position.y - 64, position.z, item)
-                    if update:
-                        self.refreshStatus(stream)
-                    stream.send(self.client)
-                except:  
-                    bag.container.items[position.z] = item
-                    stream = self.packet()
-                    stream.updateContainerItem(position.y - 64, position.z, item)
-                    stream.send(self.client)
                     
     def modifyItem(self, thing, position, mod):
         if thing.count <= 0:
@@ -577,56 +512,59 @@ class Player(Creature):
             thing.count += mod
         except:
             pass
-        
+            
         if thing.count > 0:
-            self.replaceItem(position, thing)
+            thing.refresh(position)
         else:
             self.removeItem(position, thing)
                 
     def removeItem(self, position, thing=None):
+        position = thing.vertifyPosition(self, position)
+        if not position:
+            raise Exception("BUG: Item position cannot be vertified!")
+        
         # Option 1, from the map:
-        if position:
-            if position.x != 0xFFFF:
-                tile = position.getTile()
-                if type(position) != StackPosition:
-                    if thing:
-                        tile.removeItem(thing)
-                    else:
-                        raise Exception("Require a StackPosition, or thing option set.")
+        if position.x != 0xFFFF:
+            tile = position.getTile()
+            if type(position) != StackPosition:
+                if thing:
+                    tile.removeItem(thing)
                 else:
-                    del tile.things[position.stackpos]
-                game.engine.updateTile(position, tile)
+                    raise Exception("Require a StackPosition, or thing option set.")
+            else:
+                del tile.things[position.stackpos]
+            game.engine.updateTile(position, tile)
                 
-            # Option 2, the inventory
-            elif position.y < 64:
-                if self.removeCache(self.inventory[position.y-1]):
-                    self.refreshStatus()
-                self.inventory[position.y-1] = None
-                self.updateInventory(position.y)
+        # Option 2, the inventory
+        elif position.y < 64:
+            if self.removeCache(self.inventory[position.y-1]):
+                self.refreshStatus()
+            self.inventory[position.y-1] = None
+            self.updateInventory(position.y)
             
-            # Option 3, the bags, if there is one ofcource
-            elif self.inventory[2]:
-                update = False
-                try:
-                    bag = self.openContainers[position.y - 64]
-                except:
-                    return
+        # Option 3, the bags, if there is one ofcource
+        elif self.inventory[2]:
+            update = False
+            try:
+                bag = self.openContainers[position.y - 64]
+            except:
+                return
                 
-                try:
-                    self.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container.items[position.z]
-                    if currItem:
-                        if self.removeCache(currItem):
-                            update = True
-                except:
-                    pass
-                
-                del bag.container.items[position.z]
-                stream = self.packet()
-                stream.removeContainerItem(position.y - 64, position.z)
-                if update:
-                    self.refreshStatus(stream)
-                stream.send(self.client)
+            try:
+                self.inventoryCache[bag.itemId].index(bag)
+                currItem = bag.container.items[position.z]
+                if currItem:
+                    if self.removeCache(currItem):
+                        update = True
+            except:
+                pass
+              
+            del bag.container.items[position.z]
+            stream = self.packet()
+            stream.removeContainerItem(position.y - 64, position.z)
+            if update:
+                self.refreshStatus(stream)
+            stream.send(self.client)
                 
     def getContainer(self, openId):
         print openId
@@ -643,7 +581,7 @@ class Player(Creature):
             print "Remove from cache ", item
             try:
                 del item.inContainer
-                del item.inPlayer
+                del item.decayCreature
             except:
                 pass
             
@@ -676,7 +614,7 @@ class Player(Creature):
         
         if container:
             item.inContainer = container
-        item.inPlayer = self
+        item.decayCreature = self
         
         # Save
         self.saveInventory = True
@@ -1276,7 +1214,7 @@ class Player(Creature):
             stream = self.packet()
         
         if not count:
-            count = 1 if item.count == None else item.count
+            count = 1 if item.count == None or item.count <= 0 else item.count
         
         try:
             self.inventoryCache[container.itemId].index(container)
@@ -1336,8 +1274,7 @@ class Player(Creature):
             else:
                 info = container.container.placeItem(item)
             
-            if item.decayCreature:
-                item.decayCreature = self
+            item.decayCreature = self
                 
             if item.decayPosition:
                 item.decayPosition = (0xFFFF, 65)
@@ -1351,8 +1288,8 @@ class Player(Creature):
             elif container.openIndex != None:
                 stream.addContainerItem(container.openIndex, item)
             
-            if update:
-                self.addCache(item, container)
+            self.addCache(item, container)
+            print "Adding to cache ay!"
                 
         if not streamX:
             if update:
@@ -1668,10 +1605,8 @@ class Player(Creature):
             weight = item.weight
             
             item.inContainer = container # Funny call to simplefy lookups
-            item.inPlayer = self
+            item.decayCreature = self
             
-            if item.decayCreature:
-                item.decayCreature = self
             if weight:
                 self.inventoryWeight += weight * (item.count or 1)
             try:
@@ -1694,8 +1629,7 @@ class Player(Creature):
         for item in self.inventory:
             if isinstance(item, game.item.Item):
                 weight = item.weight
-                if item.decayCreature:
-                    item.decayCreature = self
+                item.decayCreature = self
                 if weight:
                     self.inventoryWeight += weight * (item.count or 1)
                 try:

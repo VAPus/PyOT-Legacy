@@ -112,9 +112,6 @@ class Position(object):
 
     def setStackpos(self, x):
         return StackPosition(self.x, self.y, self.z, x, self.instanceId)
-        
-import sys
-raise Exception(sys.getsizeof(Position(1,1,1)))
 
 class MultiPosition(Position):
     def __init__(self, instanceId=None, *argc):
