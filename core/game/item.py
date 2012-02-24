@@ -183,7 +183,8 @@ class Item(object):
                 else:
                     for z in xrange(len(container.container.items)):
                         if container.container.items[z] == self:
-                            return Position(pos.x, pos.y, z, pos.instanceId)
+                            pos.z = z
+                            return pos
                     return False # Not found
         
         tile = pos.getTile()
@@ -197,7 +198,8 @@ class Item(object):
         else:
             for z in xrange(len(tile.things)):
                 if tile.things[z] == self:
-                    return Position(pos.x, pos.y, z, pos.instanceId)
+                    pos.stackpos = z
+                    return pos
                     
         return False
         
