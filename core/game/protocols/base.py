@@ -1424,6 +1424,7 @@ class BaseProtocol(object):
             player.tradeAccepted = True
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
             
+    @inlineCallbacks        
     def handleUseBattleWindow(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
@@ -1433,11 +1434,13 @@ class BaseProtocol(object):
         stackPosition = position.setStackpos(stackpos)
         # Is hotkeys allowed?
         if not config.enableHotkey:
-            return player.cancelMessage("Hotkeys are disabled.")
+            player.cancelMessage("Hotkeys are disabled.")
+            return
             
         # Are we in distance to object?
         if player != creature and not player.inRange(creature.position, 7, 5):
-            return player.cancelMessage("Target is too far away.")
+            player.cancelMessage("Target is too far away.")
+            return 
         
         if not hotkey:
             thing = player.findItem(stackPosition)
@@ -1446,7 +1449,9 @@ class BaseProtocol(object):
             thing = player.findItemById(itemId)
             
             if not thing:
-                return player.cancelMessage("You don't have any left of this item.")
+                player.cancelMessage("You don't have any left of this item.")
+                
+                return
                 
             # Also tell hotkey message
             count = player.inventoryCache[itemId][0]
@@ -1458,14 +1463,31 @@ class BaseProtocol(object):
             else:
                 player.message("Using one of %d %s..." % (count, thing.rawName()))
         
-        if thing:
-            creatureStackPosition = creature.position.setStackpos(creature.position.getTile().findCreatureStackpos(creature))
-            if (hotkey or (abs(position.x - player.position.x) <= 1 and abs(position.y - player.position.y) <= 1)) and (creature.position.x == 0xFFFF or (abs(creature.position.x - player.position.x) <= 1 and abs(creature.position.y - player.position.y) <= 1)):
-                end3 = lambda: game.scriptsystem.get('useWith').runSync(creature, player, None, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
-                end2 = lambda: game.scriptsystem.get('useWith').runSync(thing, player, end3, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
-                
-            end = lambda: game.scriptsystem.get('farUseWith').runSync(creature, player, end2, position=creatureStackPosition, onPosition=stackPosition, onThing=thing)
-            game.scriptsystem.get('farUseWith').runSync(thing, player, end, position=stackPosition, onPosition=creatureStackPosition, onThing=creature)
+        if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
+            if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
+                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+
+                # No walk pattern means impossible move.
+                if not walkPattern:
+                    player.notPossible()
+                    return
+
+                # Some half sync yield -> sleep walking
+                def sleep(seconds):
+                    d = Deferred()
+                    reactor.callLater(seconds, d.callback, seconds)
+                    return d
+                    
+                walking = [True]
+                scount = 0
+                player.walkPattern = deque(walkPattern)
+                game.engine.autoWalkCreature(player, lambda: walking.pop())
+                while walking and scount < 20:
+                    yield sleep(0.5)
+                    scount += 1
+            
+            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+                game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition)
 
         
     def handleInviteToParty(self, player, packet):
