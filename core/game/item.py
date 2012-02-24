@@ -189,19 +189,19 @@ class Item(object):
         
         tile = pos.getTile()
         
-        if tile.things[pos.stackpos] == self:
+        if isinstance(pos, StackPosition) and tile.things[pos.stackpos] == self:
             return pos
             
         elif not self in tile.things:
             return False # Not on this tile
             
-        else:
+        elif isinstance(pos, StackPosition):
             for z in xrange(len(tile.things)):
                 if tile.things[z] == self:
                     pos.stackpos = z
                     return pos
-                    
-        return False
+        
+        return pos            
         
     def actionIds(self):
         return self.actions
@@ -362,7 +362,7 @@ class Item(object):
             self.executeDecay.cancel()
         except:
             pass
-        
+
         position = self.vertifyPosition(creature, position)
         if not position:
             raise Exception("BUG: Item position cannot be vertified!") 
@@ -420,7 +420,7 @@ class Item(object):
     def __getstate__(self):
         params = self.__dict__.copy()
         try:
-            del params["inPlayer"]
+            del params["decayCreature"]
             del params["inContainer"] # This only exists if inPlayer exists.
         except:
             pass
@@ -444,7 +444,7 @@ class Item(object):
             delay = round(self.executeDecay.getTime() - time.time(), 1)
             if delay > 0:
                 return (params, delay)
-            
+                
         return params
     
     def __setstate__(self, state):

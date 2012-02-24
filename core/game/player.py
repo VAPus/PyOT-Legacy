@@ -2391,8 +2391,8 @@ class Player(Creature):
         stream.uint16(2853)
         stream.uint16(1)                
         stream.send(self.client)
-        self.marketDetails()
-        #self.marketOffers() # Doesn't work
+        #self.marketDetails()
+        self.marketOffers() # Doesn't work
         
     def marketDetails(self):
         if not config.enableMarket or self.client.version < 944:
@@ -2437,15 +2437,23 @@ class Player(Creature):
         
     def marketOffers(self):
         stream = self.packet()
-        for itemId in (2383, 2395, 7449):
+        for itemId in (2383,): #2395, 7449):
             stream.uint8(0xF9)
             # Lazy reasons
             item = Item(itemId)
             stream.uint16(item.cid)
+            stream.uint32(1)
             stream.uint16(1)
-            stream.uint32(int(time.time()))
-            stream.uint16(1000)
             stream.uint16(1)
-            stream.uint32(int(time.time()))
-            stream.uint16(1000)
+            stream.uint32(1)
+            stream.uint16(1)
+            stream.uint32(1)
+
+            stream.uint32(1)
+            stream.uint16(1)
+            stream.uint16(1)
+            stream.uint32(1)
+            stream.uint16(1)
+            stream.uint32(1)
+            
         stream.send(self.client)

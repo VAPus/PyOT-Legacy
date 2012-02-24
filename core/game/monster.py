@@ -189,7 +189,7 @@ class Monster(Creature):
         scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if self.alive or self.data["health"] > 0:
             return
-        corpse.decay(self.position)
+        
         # Remove bpth small and full splashes on the tile.
         for item in tile.getItems():
             if item.itemId in enum.SMALLSPLASHES or item.itemId in enum.FULLSPLASHES:
@@ -198,11 +198,14 @@ class Monster(Creature):
         # Add full splash
         splash = game.item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
-        splash.decay(self.position)
+        
         
         tile.placeItem(corpse)
         tile.placeItem(splash)
         
+        # Start decay
+        corpse.decay(self.position)
+        splash.decay(self.position)
         
         # Remove me. This also refresh the tile.
         self.remove()
