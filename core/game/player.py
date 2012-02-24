@@ -1532,13 +1532,16 @@ class Player(Creature):
         corpse = game.item.Item(3058)
         game.scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if not self.alive and self.data["health"] < 1:
-            corpse.decay(self.position)
+            
             splash = game.item.Item(game.enum.FULLSPLASH)
             splash.fluidSource = game.enum.FLUID_BLOOD
-            splash.decay(self.position)
+            
             
             tile.placeItem(corpse)
             tile.placeItem(splash)
+            
+            splash.decay(self.position)
+            corpse.decay(self.position)
             
             try:
                 tile.removeCreature(self)
