@@ -25054,3 +25054,7 @@ INSERT INTO `player_skills` (`player_id`, `fist`, `fist_tries`, `sword`, `sword_
 
 ALTER TABLE `player_skills` ADD `club` INT( 11 ) UNSIGNED NOT NULL DEFAULT '10' AFTER `sword_tries` ,
 ADD `club_tries` INT( 11 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `club` ;
+
+ALTER TABLE `players` ADD `online` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `lastlogin` ;
+
+ALTER TABLE `players` ADD `instanceId` MEDIUMINT( 5 ) NULL DEFAULT NULL AFTER `posz` ;

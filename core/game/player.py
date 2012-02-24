@@ -33,7 +33,8 @@ class Player(Creature):
     def __init__(self, client, data):
         Creature.__init__(self, data, Position(int(data['posx']),
                                                int(data['posy']),
-                                               int(data['posz'])
+                                               int(data['posz']),
+                                               data['instanceId']
                          ))
         self.client = client
         
@@ -1652,54 +1653,55 @@ class Player(Creature):
         return game.engine.fastPickler(self.depot)
         
     def _saveQuery(self, force=False):
+        extraQuery = ""
+        extras = []
+        
         # To this little check here
         if self.removeMe:
             del allPlayers[self.name()]
             del game.creature.allCreatures[self.clientId()]
             
+            # Reset online status
+            extraQuery = ", p.`online` = 0"
+            
             
         if not self.doSave:
             return
             
-        depot = ""
-        storage = ""
-        skills = ""
-        inventory = ""
-        condition = ""
-        extras = []
+        
         
         tables = "`players` AS `p`"
         if self.saveDepot or force:
             extras.append(self.pickleDepot())
-            depot = ", p.`depot` = %s"
+            extraQuery += ", p.`depot` = %s"
             self.saveDepot = False
             
         if self.saveStorage or force:
             extras.append(otjson.dumps(self.storage))
-            storage = ", p.`storage` = %s"
+            extraQuery += ", p.`storage` = %s"
             self.saveStorage = False
             
         if self.saveSkills or force:
             tables += ", `player_skills` as `s`"
             # TODO: Custom skills.
-            skills = ", s.`fist` = %d, s.`fist_tries` = %d, s.`sword` = %d, s.`sword_tries` = %d, s.`club` = %d, s.`club_tries` = %d, s.`axe` = %d, s.`axe_tries` = %d, s.`distance` = %d, s.`distance_tries` = %d, s.`shield` = %d, s.`shield_tries` = %d, s.`fishing` = %d, s.`fishing_tries` = %d" % (self.data["skills"][SKILL_FIST], self.data["skill_tries"][SKILL_FIST], self.data["skills"][SKILL_SWORD], self.data["skill_tries"][SKILL_SWORD], self.data["skills"][SKILL_CLUB], self.data["skill_tries"][SKILL_CLUB], self.data["skills"][SKILL_AXE], self.data["skill_tries"][SKILL_AXE], self.data["skills"][SKILL_DISTANCE], self.data["skill_tries"][SKILL_DISTANCE], self.data["skills"][SKILL_SHIELD], self.data["skill_tries"][SKILL_SHIELD], self.data["skills"][SKILL_FISH], self.data["skill_tries"][SKILL_FISH])
+            extraQuery += ", s.`fist` = %d, s.`fist_tries` = %d, s.`sword` = %d, s.`sword_tries` = %d, s.`club` = %d, s.`club_tries` = %d, s.`axe` = %d, s.`axe_tries` = %d, s.`distance` = %d, s.`distance_tries` = %d, s.`shield` = %d, s.`shield_tries` = %d, s.`fishing` = %d, s.`fishing_tries` = %d" % (self.data["skills"][SKILL_FIST], self.data["skill_tries"][SKILL_FIST], self.data["skills"][SKILL_SWORD], self.data["skill_tries"][SKILL_SWORD], self.data["skills"][SKILL_CLUB], self.data["skill_tries"][SKILL_CLUB], self.data["skills"][SKILL_AXE], self.data["skill_tries"][SKILL_AXE], self.data["skills"][SKILL_DISTANCE], self.data["skill_tries"][SKILL_DISTANCE], self.data["skills"][SKILL_SHIELD], self.data["skill_tries"][SKILL_SHIELD], self.data["skills"][SKILL_FISH], self.data["skill_tries"][SKILL_FISH])
             self.saveSkills = False
             
         if self.saveInventory or force:
             extras.append(self.pickleInventory())
-            inventory = ", p.`inventory` = %s"
+            extraQuery += ", p.`inventory` = %s"
             self.saveInventory = False
         
         if self.saveCondition or force:
             extras.append(game.engine.fastPickler(self.conditions))
-            condition = ", p.`conditions` = %s"
+            extraQuery += ", p.`conditions` = %s"
             self.saveCondition = False
             
         # XXX hack
         extras.append(self.data["id"])
         
-        if self.saveData or depot or storage or skills or inventory or condition or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`direction` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s"+depot+storage+skills+inventory+condition+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z]+extras
+        if self.saveData or extraQuery or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
+            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`direction` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.position.instanceId]+extras
 
     def save(self, force=False):
         if self.doSave:
