@@ -747,9 +747,9 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition.y != game.enum.SLOT_BACKPACK:
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
                     checkSlots = True
-                    if toPosition.y not in slots:
+                    if (toPosition.y-1) not in slots:
                         player.notPossible()
                         return
                     
@@ -803,7 +803,7 @@ class BaseProtocol(object):
                 oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
 
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y != game.enum.SLOT_AMMO and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y not in oldItem[1].slots():
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
                     player.notPossible()
                     return
                 elif oldItem[1].inTrade:
@@ -854,7 +854,7 @@ class BaseProtocol(object):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
-                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = fromPosition.y)
+                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (toPosition.y-1))
                         player.inventory[fromPosition.y-1] = None
                         stream.removeInventoryItem(fromPosition.y)
                     elif oldItem[0] == 2:
@@ -924,7 +924,7 @@ class BaseProtocol(object):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition.y-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                                game.scriptsystem.get("equip").runSync(player, player.inventory[toPosition.y-1], slot = toPosition.y)
+                                game.scriptsystem.get("equip").runSync(player, player.inventory[toPosition.y-1], slot = (toPosition.y-1))
                                 
                                 if player.inventory[toPosition.y-1].decayPosition:
                                     player.inventory[toPosition.y-1].decayPosition = (toPosition.x, toPosition.y)
@@ -961,7 +961,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and toPosition.y < 64 and not currItem[1].containerSize:
+                    if currItem and currItem[1] and toPosition.y < 64 and not currItem[1].containerSize and not currItem[1].stackable:
                         player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
                         
                     """
