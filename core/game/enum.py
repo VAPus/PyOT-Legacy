@@ -25,26 +25,26 @@ LIGHTCOLOR_WHITE = 215
 SLOT_WHEREEVER = 0
 SLOT_FIRST = 1
 #: Inventory slot for the head.
-SLOT_HEAD = SLOT_FIRST
+SLOT_HEAD = SLOT_WHEREEVER
 #: Inventory slot for the necklace.
-SLOT_NECKLACE = 2
+SLOT_NECKLACE = SLOT_FIRST
 #: Inventory slot for the backpack.
-SLOT_BACKPACK = 3
+SLOT_BACKPACK = 2
 #: Inventory slot for the armor.
-SLOT_ARMOR = 4
+SLOT_ARMOR = 3
 #: Inventory slot for the right hand.
-SLOT_RIGHT = 6
+SLOT_RIGHT = 4
 #: Inventory slot for the left hand.
-SLOT_LEFT = 5
+SLOT_LEFT = 5 
 #: Inventory slot for legs.
-SLOT_LEGS = 7
+SLOT_LEGS = 6
 #: Inventory slot for feets.
-SLOT_FEET = 8
+SLOT_FEET = 7
 #: Inventory slot for the rings.
-SLOT_RING = 9
+SLOT_RING = 8
 #: Inventory slot for the ammonition.
-SLOT_AMMO = 10
-
+SLOT_AMMO = 9
+#what is 10? are 10-12 correct?
 SLOT_DEPOT = 11
 
 SLOT_LAST = SLOT_DEPOT
