@@ -244,7 +244,7 @@ class Player(Creature):
                                        self.position.z),
                               18, 14, self)
 
-        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
+        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
@@ -1061,7 +1061,7 @@ class Player(Creature):
         else:
             stream = self.packet()
             
-        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
+        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
