@@ -22,12 +22,17 @@ sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 sqlDebug = False # Send debug messages to the console
+
+# Use socket from libmysqlclient, works ONLY if sqlHost == localhost
+sqlSocket = None
+
+# Alternative:
 # Fedora/CentOS/RHEL
 #sqlSocket = "/var/lib/mysql/mysql.sock"
 # Ubuntu/Kubuntu/Debian
 # sqlSocket = "/var/run/mysql/mysql.sock"
 # Others:
-sqlSocket = "/var/run/mysqld/mysqld.sock"
+#sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
 letGameServerRunTheLoginServer = True
