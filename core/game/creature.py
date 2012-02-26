@@ -222,6 +222,10 @@ class Creature(object):
             pass
         
 
+    def vertifyMove(self, tile):
+        """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
+        return True
+        
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
         if not self.alive or not level and not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
@@ -988,6 +992,10 @@ class Creature(object):
         if not allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
+        # Can't target protected zone
+        if position.getTile().getFlags() % TILEFLAGS_PROTECTIONZONE:
+            return False
+            
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
         
     def distanceStepsTo(self, position):

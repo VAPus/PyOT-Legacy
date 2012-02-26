@@ -322,6 +322,29 @@ class Monster(Creature):
         self.target.scripts["onNextStep"].append(__followCallback)
         return True
         
+        
+    def vertifyMove(self, tile):
+        """ This function vertify if the tile is walkable in a regular state (pathfinder etc)
+            This function handle things like PZ.
+        """
+        
+        # Protected zone?
+        if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            return False
+            
+        for item in tile.things:
+            if isinstance(item, Item):
+                if self.base.ignoreFire and item.itemId in FIRE_FIELDS:
+                    continue
+                elif self.base.ignorePoison and item.itemId in POISON_FIELDS:
+                    continue
+                elif self.base.ignoreEnergy and item.itemId in ENERGY_FIELDS:
+                    continue
+                elif item.blockpath:
+                    return False
+                
+        return True
+        
 class MonsterBase(CreatureBase):
     def __init__(self, data, brain):
         self.data = data

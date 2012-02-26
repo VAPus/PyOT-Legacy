@@ -712,7 +712,7 @@ class BaseProtocol(object):
                 # This means we need to walk to the item
                 if not player.inRange(fromPosition, 1, 1):
 
-                    walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
+                    walkPattern = game.engine.calculateWalkPattern(player, player.position, fromPosition, -1)
 
                     # No walk pattern means impossible move.
                     if not walkPattern:
@@ -1002,7 +1002,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
             if abs(creature.position.x-player.position.x) > 1 or abs(creature.position.y-player.position.y) > 1:
-                walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
+                walkPattern = game.engine.calculateWalkPattern(player, creature.position, toPosition)
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
@@ -1013,15 +1013,6 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-        import game.pathfinder
-
-        t = time.time()
-        m = game.pathfinder.findPath(player.position.z, player.position.x, player.position.y, position.x, position.y)
-        print "Took: ", (time.time() - t)
-        
-        print "========"
-        print m
-        print "--------"
         
         clientId = packet.uint16()
         stackpos = packet.uint8()
@@ -1114,7 +1105,7 @@ class BaseProtocol(object):
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1168,7 +1159,7 @@ class BaseProtocol(object):
         end2 = None
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1469,7 +1460,7 @@ class BaseProtocol(object):
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
