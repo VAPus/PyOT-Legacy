@@ -91,6 +91,7 @@ class Creature(object):
         self.conditions = {}
         self.walkPattern = None
         self.activeSummons = []
+        self.doHideHealth = False
         
         # Options
         self.canMove = True
@@ -196,6 +197,15 @@ class Creature(object):
     def refreshSkills(self, streamX=None): pass
     def refreshConditions(self, streamX=None): pass
     
+    def refresh(self):
+        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+        for player in self.knownBy:
+            stream = player.packet()
+            stream.removeTileItem(self.position, stackpos)
+            stream.addTileCreature(self.position, stackpos, self, player, True)
+
+            stream.send(player.client)
+            
     def despawn(self):
         self.alive = False
         try:
@@ -580,17 +590,9 @@ class Creature(object):
                 pass
             
     def rename(self, name):
-        newSpectators = game.engine.getPlayers(self.position)
-        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
-        
         self.data["name"] = name
-        for player in self.knownBy:
-            stream = player.packet()
-            stream.removeTileItem(self.position, stackpos)
-            if player in newSpectators:
-                stream.addTileCreature(self.position, stackpos, self, player, True)
-
-            stream.send(player.client)
+        
+        self.refresh()
 
     def privRename(self, player, name):
         if player in self.knownBy:
@@ -756,11 +758,12 @@ class Creature(object):
             
         self.data["health"] = max(0, health)
         
-        for spectator in getSpectators(self.position):
-            stream = spectator.packet(0x8C)
-            stream.uint32(self.clientId())
-            stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
-            stream.send(spectator)
+        if not self.getHideHealth():
+            for spectator in getSpectators(self.position):
+                stream = spectator.packet(0x8C)
+                stream.uint32(self.clientId())
+                stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
+                stream.send(spectator)
          
         self.refreshStatus()
         
@@ -1364,6 +1367,18 @@ class Creature(object):
     ####################
     def use(self, position, thing):
         game.scriptsystem.get('use').runSync(thing, self, None, position=position, index=0)
+        
+    #####################
+    ### Hidden health ###
+    #####################
+    def hideHealth(self, do = True):
+        self.doHideHealth = do
+        
+    def getHideHealth(self):
+        return self.doHideHealth
+        
+    def toggleHideHealth(self):
+        self.doHideHealth = not self.doHideHealth
         
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):

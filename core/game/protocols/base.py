@@ -215,7 +215,12 @@ class BasePacket(TibiaPacket):
             self.uint32(creature.clientId())
             self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
+            
+        if not creature.getHideHealth():
+            self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
+        else:
+            self.uint8(0)
+            
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light

@@ -17,26 +17,26 @@ The registration function:
 
 **For Scripts()**:
 
-    .. function:: reg(type, callback [, weakfunc=True])
+    .. function:: register(type, callback [, weakfunc=True])
     
     Register a ``callback`` (function) to the ``type`` script event. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded! 
     
 **For TriggerScripts()**:
 
-    .. function:: reg(type, trigger, callback [, weakfunc=True])
+    .. function:: register(type, trigger, callback [, weakfunc=True])
     
     Register a ``callback`` (function) to the ``type`` script event. Which is called when the ``trigger`` matches. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
 
 **For ThingScripts() and CreatureScripts()**:
 
-    .. function:: reg(type, id, callback [, weakfunc=True])
+    .. function:: register(type, id, callback [, weakfunc=True])
     
     Register a ``callback`` (function) to the ``type`` script event. ``id`` is the identifier in which things are identified for this callback to be called.
 
-    * It can be a number and it will be checked up against the things thingId(). Example: reg("use", 1234, onUse)
-    * It can also a list of number to register bind to, or a range. Example: reg("useWith", (1142, 1234), onUse)
-    * The third option is to use a string, a script will match against the things actions. Actionids is strings aswell. reg("use", "item", onUseAnyItem) or reg("lookAt", "Wolf", onLookAtWolf)
-    * The fourth option is to bind it directly to a thing, this is usually only good if you intend to make one item chain the next, for instance if you use two pieces of wood together, then the next time you use the wood you want it to burst into flames. Example (inside a callback): reg("use", thing, someCallback)
+    * It can be a number and it will be checked up against the things thingId(). Example: register("use", 1234, onUse)
+    * It can also a list of number to register bind to, or a range. Example: register("useWith", (1142, 1234), onUse)
+    * The third option is to use a string, a script will match against the things actions. Actionids is strings aswell. register("use", "item", onUseAnyItem) or register("lookAt", "Wolf", onLookAtWolf)
+    * The fourth option is to bind it directly to a thing, this is usually only good if you intend to make one item chain the next, for instance if you use two pieces of wood together, then the next time you use the wood you want it to burst into flames. Example (inside a callback): register("use", thing, someCallback)
 
     ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
 
@@ -76,7 +76,7 @@ The events are:
             creature.message("Apperently you tried to say 'Hello', but was intercepted by this function")
             return False
            
-        reg("talkaction", "Hello", onSay)
+        register("talkaction", "Hello", onSay)
 
 
 .. function:: talkactionFirstWord(creature, text)
@@ -97,7 +97,7 @@ The events are:
             creature.message("I was asked to repeat %s" % text)
             return False
            
-        reg("talkactionFirstWord", "!repeater", onSay)
+        register("talkactionFirstWord", "!repeater", onSay)
         
 .. function:: use(creature, thing, position, index)
 
@@ -122,31 +122,7 @@ The events are:
                 creature.message("I seem to have used a '%s' on position %s" % (thing.name(), str(position)))
 
            
-        reg("use", 1234, onUse)
-        
-.. function:: farUse(creature, thing, position, index)
-
-    Called when a thing is used. This is called BEFORE use. (ThingScript)
-    
-    :param creature: The creature that tries to use something.
-    :type creature: usually :class:`game.player.Player`
-    :param thing: The thing that was used.
-    :type thing: usually :class:`game.item.Item`
-    :param position: The positon the thing have.
-    :type position: :func:`list`
-    :param index: If the item was called inside a container, this is the position in the container stack.
-    :type index: :func:`int`    
-    :returns: ``False`` will prevent the use events from running.
-    
-    :example:
-    
-    .. code-block:: python
-           
-        def onUse(creature, position, **k):
-            creature.message("I seem to be %d steps away from this thing" % creature.distanceStepsTo(position))
-
-           
-        reg("farUse", 1234, onUse)
+        register("use", 1234, onUse)
         
 .. function:: useWith(creature, thing, position, onThing, onPosition)
 
@@ -193,38 +169,8 @@ The events are:
             else:
                 transformItem(onThing, onThing.itemId-1, onPosition)
 
-        reg('useWith', keys, onUseKey)
+        register('useWith', keys, onUseKey)
         
-.. function:: farUseWith(creature, thing, position, onThing, onPosition)
-
-    Called when a thing is used. Note, this is called with twice with item in both directions, so you should not need to bind it to all possible things. And it's called BEFORE useWith. (ThingScript)
-    
-    :param creature: The creature that tries to use something.
-    :type creature: usually :class:`game.player.Player`
-    :param thing: The thing that matched the register functions parameters.
-    :type thing: usually :class:`game.item.Item`
-    :param position: The positon the thing have.
-    :type position: :func:`list`
-    
-    :param onThing: The thing that the ``thing``` was used against.
-    :type onThing: :class:`game.item.Item` or :class:`game.creature.Creature`
-    :param onPosition: The positon the ``onThing`` have.
-    :type onPosition: :func:`list`
-    
-    :returns: Have no meaning.
-    
-    :example:
-    
-    .. code-block:: python
-    
-        lockedDoors = 1209, 1212, 1231, 1234, 1249, 1252, 3535, 3544, 4913, 4616, 5098, 5107, 5116, 5125, 5134, 5137, 5140, 5143, 5278, 5281, 5732, 5735,\
-                    6192, 6195, 6249, 6252, 6891, 6900, 7033, 7042, 8541, 8544, 9165, 9168, 9267, 9270, 10268, 10271, 10468, 10477 
-        keys = range(2086, 2092+1)
-        def onUseKey(creature, onThing, **k):
-            if onThing.itemId in lockedDoors:
-                creature.message("Can't reach the lock of the %s" % onThing.rawName())
-
-        reg('farUseWith', keys, onUseKey)
         
 .. function:: login(creature)
 
@@ -242,7 +188,7 @@ The events are:
         def onLogin(creature):
             creature.message("Welcome back %s" % creature.name())
            
-        reg("login", onLogin)
+        register("login", onLogin)
             
 .. function:: logout(creature)
 
@@ -260,7 +206,7 @@ The events are:
         def onLogout(creature):
             creature.save()
                 
-        reg("logout", onLogout)
+        register("logout", onLogout)
         
 .. function:: walkOn(creature, thing, position, fromPosition)
     
@@ -283,7 +229,7 @@ The events are:
             creature.message("You can't stand here!")
             creature.move(NORTH)
             
-        reg("walkOn", 1234, walkOn)
+        register("walkOn", 1234, walkOn)
         
 .. function:: walkOff(creature, thing, position)
     
@@ -306,7 +252,7 @@ The events are:
             creature.message("You left this holy place!")
             creature.modifyHealth(-30)
             
-        reg("walkOff", 1234, walkOff)
+        register("walkOff", 1234, walkOff)
         
 .. function:: preWalkOn(creature, thing, position, oldTile, newTile)
     
@@ -331,7 +277,7 @@ The events are:
             creature.message("We won't allow you to touch this holy ground!")
             return False
             
-        reg("preWalkOn", 1234, tileCheck)
+        register("preWalkOn", 1234, tileCheck)
         
 .. function:: lookAt(creature, thing, position)
 
@@ -355,7 +301,7 @@ The events are:
             return False
 
            
-        reg("lookAt", 1234, lookAt)
+        register("lookAt", 1234, lookAt)
 
 .. function:: postLoadSector(sector, instanceId)
     
@@ -412,7 +358,7 @@ The events are:
                 creature.message("Your leg hurt too much")
                 return FalseglobalScripts["skill"] = Scripts()
 
-        reg('move', preventWalking)
+        register('move', preventWalking)
 
 .. function:: appear(creature, creature2)
     

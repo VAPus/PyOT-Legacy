@@ -56,25 +56,25 @@ First some important class (type) names:
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.getHideHealth()
 
 .. function:: doCreatureSetHideHealth(cid, hide)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.hideHealth(hide)
 
 .. function:: getCreatureSpeakType(cid)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        No Equal
 
 .. function:: doCreatureSetSpeakType(cid, type)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        No Equal
 
 .. function:: getCreatureLookDirection(cid)
 
