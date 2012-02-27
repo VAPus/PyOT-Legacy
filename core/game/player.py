@@ -2366,12 +2366,11 @@ class Player(Creature):
     def openMarket(self):
         if not config.enableMarket or self.client.version < 944:
             return
-            
         stream = self.packet(0xF6)
 
         stream.uint32(self.getMoney())
         stream.uint8(self.getVocation().clientId)
-        stream.uint8(0) # Active offers, TODO
+        stream.uint8(1) # Active offers, TODO  
         """count = self.getDepotItemCount(0) # Should be the unique count
         stream.uint16(count)
         if count > 0:
@@ -2385,19 +2384,13 @@ class Player(Creature):
             for item in _(self.getDepot(0)):
                 stream.uint16(item.cid)
                 stream.uint16(1) # Should be the total count"""
-        stream.uint16(4)
+        stream.uint16(1)
         # Test data
-        stream.uint16(3271)
-        stream.uint16(10000)
-        stream.uint16(3283)
-        stream.uint16(10000)
-        stream.uint16(7449)
-        stream.uint16(10000)
-        stream.uint16(2853)
-        stream.uint16(1)                
+        stream.uint16(0x0bd2)
+        stream.uint16(0x0002)              
         stream.send(self.client)
         #self.marketDetails()
-        self.marketOffers() # Doesn't work
+        #self.marketOffers() # Doesn't work
         
     def marketDetails(self):
         if not config.enableMarket or self.client.version < 944:

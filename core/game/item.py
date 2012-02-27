@@ -431,6 +431,11 @@ class Item(object):
             pass
 
         try:
+            del params["parent"]
+        except:
+            pass
+        
+        try:
             del params["inTrade"]
         except:
             pass

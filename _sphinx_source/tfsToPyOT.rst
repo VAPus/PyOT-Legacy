@@ -162,9 +162,9 @@ First some important class (type) names:
 
 .. function:: getPlayerRequiredSkillTries(cid, skillId, skillLevel)
 
-    Equal to::
+    Somewhat equal to::
 
-        I'll get back on this one
+        config.skillFormula(skillLevel, Player.getVocation().meleeSkill)
 
 .. function:: getPlayerItemCount(cid, itemid[, subType = -1])
 

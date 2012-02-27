@@ -1,5 +1,7 @@
 # First use of actions :p
 def container(creature, thing, position, index):
+    print position
+    print index
     if thing.owners and creature not in thing.owners: # Prevent people to open owned things
         return
     if thing.openIndex == None:
@@ -28,9 +30,10 @@ def container(creature, thing, position, index):
             # Open a new one
             parent = 0
 
-            if position.x == 0xFFFF and position.y >= 64:
+            #if position.x == 0xFFFF and position.y >= 64:
+            if bagFound:
                 parent = 1
-                thing.parent = creature.openContainers[position.z-64]
+                #thing.parent = creature.openContainers[position.y-64]
             ok = creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step :)
