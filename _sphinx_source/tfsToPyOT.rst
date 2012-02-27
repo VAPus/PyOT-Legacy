@@ -382,7 +382,12 @@ First some important class (type) names:
 
 .. function:: getTileItemByType(pos, type)
 
-    No equal
+    Something like this::
+
+        items = []
+        for thing in pos.getTile().things:
+            if isinstance(thing, Item) and thing.type == type:
+                items.append(thing)
 
 .. function:: getTileThingByPos(pos)
 
@@ -476,15 +481,38 @@ First some important class (type) names:
 
 .. function:: doPlayerAddSpentMana(cid, amount[, useMultiplier = true])
 
+    Equal to::
+        
+        Player.modifySpentMana(amount)
+
 .. function:: doPlayerAddSoul(cid, amount)
+
+    Equal to::
+
+        Player.modifySoul(amount)
 
 .. function:: doPlayerAddItem(cid, itemid[, count/subtype = 1[, canDropOnMap = true[, slot = 0]]])
 
+    Equal to::
+
+        Player.addItem(Item(itemId[, count])[, placeOnGround = True])
+
 .. function:: doPlayerAddItem(cid, itemid[, count = 1[, canDropOnMap = true[, subtype = 1[, slot = 0]]]])
+
+
+    Equal to::
+
+        Player.addItem(Item(itemId[, count])[, placeOnGround = True])
 
 .. function:: doPlayerAddItemEx(cid, uid[, canDropOnMap = false[, slot = 0]])
 
+    Not neseccary since we got no uid stuff, but Player.itemToUse(ItemObject) is possible.
+
 .. function:: doPlayerSendTextMessage(cid, MessageClasses, message)
+
+    Equal to::
+
+        Player.message(message[, MessageClass])
 
 .. function:: doPlayerSendChannelMessage(cid, author, message, SpeakClasses, channel)
 
@@ -511,6 +539,11 @@ First some important class (type) names:
     Note that this remove as much as possible if it's not enough, you should therefore vertify the amount.
 
 .. function:: doPlayerTransferMoneyTo(cid, target, money)
+
+    Equal to::
+
+        Player.removeMoney(money)
+        Player2.addMoney(money)
 
 .. function:: doShowTextDialog(cid, itemid, text)
 
@@ -570,9 +603,19 @@ First some important class (type) names:
 
 .. function:: doRemoveConditions(cid[, onlyPersistent])
 
+    NOT IMPLANTED YET
+
 .. function:: doRemoveCreature(cid[, forceLogout = true])
 
+    Equal to::
+
+        Creature.remove()
+
 .. function:: doMoveCreature(cid, direction[, flag = FLAG _NOLIMIT])
+
+    Equal to::
+
+        Creature.move(direction)
 
 .. function:: doSteerCreature(cid, position)
 
@@ -585,6 +628,10 @@ First some important class (type) names:
 .. function:: doPlayerRemoveItem(cid, itemid[, count[, subType = -1]])
 
 .. function:: doPlayerAddExperience(cid, amount)
+
+    Equal to::
+
+        Player.modifyExperience(amount)
 
 .. function:: doPlayerSetGuildId(cid, id)
 
@@ -606,6 +653,10 @@ First some important class (type) names:
 
 .. function:: getCreatureCondition(cid, condition[, subId = 0])
 
+    Equal to::
+
+        Player.getCondition(condition[, subId])
+
 .. function:: doCreatureSetDropLoot(cid, doDrop)
 
 .. function:: getPlayerLossPercent(cid, lossType)
@@ -618,39 +669,75 @@ First some important class (type) names:
 
 .. function:: doPlayerSwitchSaving(cid)
 
+    Equal to::
+
+        Player.doSave = not Player.doSave
+
 .. function:: doPlayerSave(cid[, shallow = false])
+
+    Equal to::
+
+        Player.save()
 
 .. function:: isPlayerPzLocked(cid)
 
 .. function:: isPlayerSaving(cid)
 
+    Equal to::
+
+        Player.doSave
+
 .. function:: isCreature(cid)
+
+    Equal to::
+
+        Thing.isCreature()
+
 
 .. function:: isMovable(uid)
 
+    Equal to::
+
+        Thing.movable
+
 .. function:: getCreatureByName(name)
+
+    Somewhat equal to::
+
+        getMonster(name)
+        getNPC(name)
 
 .. function:: getPlayerByGUID(guid)
 
+    No equal
+
 .. function:: getPlayerByNameWildcard(name~[, ret = false])
+
+    NOT IMPLANTED YET
 
 .. function:: getPlayerGUIDByName(name[, multiworld = false])
 
+    No equal
+
 .. function:: getPlayerNameByGUID(guid[, multiworld = false[, displayError = true]])
 
+    No equal
+
 .. function:: doPlayerChangeName(guid, oldName, newName)
+
+    Player.rename(newName)
 
 .. function:: registerCreatureEvent(uid, eventName)
 
     Equal to::
 
-        reg(eventName, Creature, function)
+        register(eventName, Creature, function)
 
 .. function:: unregisterCreatureEvent(uid, eventName)
 
     Equal to::
 
-        unreg(eventName, Creature, function)
+        unregister(eventName, Creature, function)
 
 .. function:: getContainerSize(uid)
 
