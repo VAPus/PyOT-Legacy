@@ -68,13 +68,13 @@ First some important class (type) names:
 
     Equal to::
 
-        No Equal
+        Creature.defaultSpeakType
 
 .. function:: doCreatureSetSpeakType(cid, type)
 
     Equal to::
 
-        No Equal
+        Creature.defaultSpeakType = type
 
 .. function:: getCreatureLookDirection(cid)
 
@@ -194,7 +194,7 @@ First some important class (type) names:
 
     Equal to::
 
-        INVIDIDUAL PLAYER LIGHT NOT IMPLANTED
+        INVIDIDUAL PLAYER LIGHT NOT IMPLANTED (yet)
 
 .. function:: getPlayerSlotItem(cid, slot)
 
@@ -258,13 +258,13 @@ First some important class (type) names:
 
     Equal to::
 
-        Again, no groups, just access flags
+        Player.data["group_id"]
 
 .. function:: doPlayerSetGroupId(cid, newGroupId)
 
     Equal to::
 
-        no groups, just access flags
+        Player.data["group_id"] = newGroupId # Currently not saved!!!
 
 .. function:: doPlayerSendOutfitWindow(cid)
 
@@ -403,7 +403,11 @@ First some important class (type) names:
 
 .. function:: doRemoveItem(uid[, count = -1])
 
-    Not possible to equal this, it depends on the items position
+    Not possible to equal this, it depends on the items position, but:
+
+    You may do something like this::
+
+        Player.modifyItem(Item, Position, count)
 
 .. function:: doPlayerFeed(cid, food)
 
@@ -589,6 +593,12 @@ First some important class (type) names:
 
 .. function:: getMonsterInfo(name)
 
+    Somewhat equal to::
+
+        getMonster(name)
+
+    It give you the base class that every monster with that name is based on. Hench it's easy to grab information.
+
 .. function:: doAddCondition(cid, condition)
 
     Equal to::
@@ -603,7 +613,9 @@ First some important class (type) names:
 
 .. function:: doRemoveConditions(cid[, onlyPersistent])
 
-    NOT IMPLANTED YET
+    Equal to(?)::
+        
+        Creature.loseAllConditions()
 
 .. function:: doRemoveCreature(cid[, forceLogout = true])
 
@@ -619,6 +631,10 @@ First some important class (type) names:
 
 .. function:: doSteerCreature(cid, position)
 
+    Equal to::
+
+        autoWalkCreatureTo(Creature, position)
+
 .. function:: doPlayerSetPzLocked(cid, locked)
 
 .. function:: doPlayerSetTown(cid, townid)
@@ -626,6 +642,10 @@ First some important class (type) names:
 .. function:: doPlayerSetVocation(cid,voc)
 
 .. function:: doPlayerRemoveItem(cid, itemid[, count[, subType = -1]])
+
+    Equal to::
+
+        Player.modifyItem(Item, Position, count)
 
 .. function:: doPlayerAddExperience(cid, amount)
 
@@ -641,15 +661,45 @@ First some important class (type) names:
 
 .. function:: doPlayerAddOutfit(cid, looktype, addon)
 
+    Equal to::
+
+        Player.addOutfit(outfitName)
+
+        # or
+
+        Player.addOutfitAddon(outfitName, addon)
+
 .. function:: doPlayerRemoveOutfit(cid, looktype[, addon = 0])
+
+    Equal to::
+
+        Player.removeOutfit(outfitName)
+
+        # or:
+        
+        Player.removeOutfitAddon(outfitName, addon)
 
 .. function:: doPlayerAddOutfitId(cid, outfitId, addon)
 
+    See doPlayerAddOutfit
+
 .. function:: doPlayerRemoveOutfitId(cid, outfitId[, addon = 0])
+
+    See doPlayerRemoveOutfit
 
 .. function:: canPlayerWearOutfit(cid, looktype[, addon = 0])
 
+    Equal to::
+
+        Player.canWearOutfit(outfitName)
+
+        # for addon check:
+
+        addon in Player.getAddonsForOutfit(outfitName)
+
 .. function:: canPlayerWearOutfitId(cid, outfitId[, addon = 0])
+
+    See canPlayerWearOutfit
 
 .. function:: getCreatureCondition(cid, condition[, subId = 0])
 

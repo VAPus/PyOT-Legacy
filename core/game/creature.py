@@ -98,6 +98,10 @@ class Creature(object):
         
         # We are trackable 
         allCreatures[self.cid] = self
+        
+        # Speaktypes
+        self.defaultSpeakType = 'MSG_SPEAK_SAY'
+        self.defaultYellType = 'MSG_SPEAK_YELL'
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -882,7 +886,10 @@ class Creature(object):
             
         return self.turn(direction)
         
-    def say(self, message, messageType='MSG_SPEAK_SAY'):
+    def say(self, message, messageType=None):
+        if not messageType:
+            messageType = self.defaultSpeakType
+            
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -893,7 +900,10 @@ class Creature(object):
             stream.string(message)
             stream.send(spectator)
 
-    def yell(self, message, messageType='MSG_SPEAK_YELL'):
+    def yell(self, message, messageType=None):
+        if not messageType:
+            messageType = self.defaultYellType
+            
         for spectator in getSpectators(self.position, config.yellRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -1249,6 +1259,14 @@ class Creature(object):
         except:
             return False
 
+    def loseAllConditions(self):
+        if not self.conditions:
+            return False
+            
+        for condition in self.conditions.copy():
+            condition.stop()
+            
+        return True
     ##############
     ### Spells ###
     ##############
