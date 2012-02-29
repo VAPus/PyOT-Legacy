@@ -129,10 +129,10 @@ class NPC(Creature):
                     count = amount
                    
                     stack = Item(itemId).stackable
-                        
+                    player.message("Bought %sx %s for %s gold." % (amount ,game.item.items[itemId]["name"] ,offer[1] * amount), 'MSG_INFO_DESCR')
                     container = player.inventory[2]
                     if withBackpack:
-                        container = game.item.Item(1987)
+                        container = game.item.Item(1988)
                         player.itemToContainer(player.inventory[2], container)
                         
                     while count > 0:
@@ -152,6 +152,7 @@ class NPC(Creature):
                     item = player.findItemById(itemId, count)
                     if item.count == count:
                         player.addMoney(offer[2] * amount)
+                        player.message("Sold %sx %s for %s gold." % (count ,game.item.items[itemId]["name"] ,offer[2] * amount), 'MSG_INFO_DESCR')
                         if self.forSale and player.openTrade == self: # Resend my items
                             self.sendGoods(player, self.forSale)
                 else:
