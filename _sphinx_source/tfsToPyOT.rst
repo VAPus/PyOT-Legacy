@@ -12,7 +12,7 @@
 
 **NB! This page is work in progress!**
 
-There is 198 functions left to document.
+There is 175 functions left to document.
 
 First some important class (type) names:
 
@@ -1381,6 +1381,118 @@ First some important class (type) names:
 
         if getTile(position): True
 
+.. function:: doCreateTeleport(itemid, topos, createpos)
+
+    Equal to::
+
+        Item.teledest = [X, Y, Z] # Yes, it's a list and NOT a Position object, there are a couple of reasons for this, but well.
+
+.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
+
+    Equal to::
+
+        getMonster(name).spawn(pos)
+
+.. function:: doCreateNpc(name, pos[, displayError = true])
+
+    Equal to::
+
+        getNPC(name).spawn(pos)
+
+.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
+
+    Equal to::
+
+        Player.skillAttempt(skillid[, n=1])
+
+.. function:: doSummonMonster(cid, name)
+
+    Equal to::
+
+        monster = getMonster(name).spawn(Player.getPositionInDirection(Player.direction))
+        monster.setMaster(Player)
+
+.. function:: doPlayerAddMount(cid, mountId)
+
+    Equal::
+
+        Player.addMount(name)
+
+.. function:: doPlayerRemoveMount(cid, mountId)
+
+    Equal to::
+
+        Player.removeMount(name)
+
+.. function:: getPlayerMount(cid, mountId)
+
+    Equal to::
+
+        Player.canUseMount(name)
+
+.. function:: doPlayerSetMount(cid, mountId)
+
+    Equal to::
+
+        Player.mount = mountid or mountname # both work in teory i suppose
+
+.. function:: doPlayerSetMountStatus(cid, mounted)
+
+    Equal to::
+
+        Player.mounted = mounted
+
+.. function:: getMountInfo([mountId])
+
+    Equal to::
+
+        mount = game.resource.getMount(mountname)
+
+.. function:: doPlayerAddMapMark(cid, pos, type[, description])
+
+    Equal to::
+
+        Player.mapMarker(Position, Type[, description])
+
+.. function:: doPlayerAddPremiumDays(cid, days)
+
+    No equal
+
+.. function:: getPlayerPremiumDays(cid)
+
+    No equal
+
+.. function:: getPlayerAccountManager(cid)
+
+    No equal
+
+.. function:: getPlayersByAccountId(accId)
+
+    No equal
+
+.. function:: getAccountIdByName(name)
+
+    No equal
+
+.. function:: getAccountByName(name)
+    
+    No equal
+
+.. function:: getAccountIdByAccount(accName)
+
+    No equal
+
+.. function:: getAccountByAccountId(accId)
+
+    No equal
+
+.. function:: getIpByName(name)
+
+    No equal
+
+.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
+
+    No equal
 
 ** string actions (see pythons documentation instead) **
     string.split(str)
@@ -1641,18 +1753,6 @@ First some important class (type) names:
 
 .. function:: doPlayerLeaveParty(cid[, forced = false])
 
-.. function:: doPlayerAddMount(cid, mountId)
-
-.. function:: doPlayerRemoveMount(cid, mountId)
-
-.. function:: getPlayerMount(cid, mountId)
-
-.. function:: doPlayerSetMount(cid, mountId)
-
-.. function:: doPlayerSetMountStatus(cid, mounted)
-
-.. function:: getMountInfo([mountId])
-
 .. function:: getPartyMembers(lid)
 
 .. function:: getCreatureGuildEmblem(cid[, target])
@@ -1695,31 +1795,9 @@ First some important class (type) names:
 
 .. function:: getPlayerLastLogin(cid)
 
-.. function:: getPlayerAccountManager(cid)
-
 .. function:: getPlayerTradeState(cid)
 
 .. function:: doPlayerSendMailByName(name, item[, town[, actor]])
-
-.. function:: doPlayerAddMapMark(cid, pos, type[, description])
-
-.. function:: doPlayerAddPremiumDays(cid, days)
-
-.. function:: getPlayerPremiumDays(cid)
-
-.. function:: getPlayersByAccountId(accId)
-
-.. function:: getAccountIdByName(name)
-
-.. function:: getAccountByName(name)
-
-.. function:: getAccountIdByAccount(accName)
-
-.. function:: getAccountByAccountId(accId)
-
-.. function:: getIpByName(name)
-
-.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
 
 .. function:: getChannelUsers(channelId)
 
@@ -1731,21 +1809,11 @@ First some important class (type) names:
 
 .. function:: doSendAnimatedText(pos, text, color[, player])
 
-.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
-
 .. function:: doAddContainerItemEx(uid, virtuid)
 
 .. function:: doRelocate(pos, posTo[, creatures = true[, unmovable = true]])
 
 .. function:: doCleanTile(pos[, forceMapLoaded = false])
-
-.. function:: doCreateTeleport(itemid, topos, createpos)
-
-.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
-
-.. function:: doCreateNpc(name, pos[, displayError = true])
-
-.. function:: doSummonMonster(cid, name)
 
 .. function:: doConvinceCreature(cid, target)
 

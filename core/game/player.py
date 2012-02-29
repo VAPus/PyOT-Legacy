@@ -2282,6 +2282,7 @@ class Player(Creature):
             self.setStorage('__outfitAddons%s' % game.resource.reverseOutfits[name], addons)  
         else:
             return
+            
     def canUseMount(self, name):
         return self.getStorage('__mount%s' % game.resource.reverseMounts[name])
     
