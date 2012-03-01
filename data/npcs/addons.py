@@ -14,7 +14,9 @@ class Addon(game.npc.ClassAction):
         word = yield
         word =word.title()
         if word in outfits:
-            player.addOutfit(word)            
+            player.addOutfit(word)
+            player.addOutfitAddon(word, 1)
+            player.addOutfitAddon(word, 2)
             npc.sayTo(player, "Now you can wear %s outfit"  % word)
             npc.sayTo(player, "You may say {addon} or {mount} to get another one or {bye}.")            
     def mount(self, npc, player):
