@@ -10,9 +10,13 @@ import traceback
 from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
+import inspect
 
 modPool = []
 globalScripts = {}
+
+class InvalidScriptFunctionArgument(Exception):
+    pass
 
 class Value(object):
     pass
@@ -21,8 +25,14 @@ class Scripts(object):
     __slots__ = ('scripts')
     def __init__(self):
         self.scripts = []
-        
+    
+    def validate(self, func):
+        if inspect.getargspec(func)[2] is None:
+            raise InvalidScriptFunctionArgument("%s lakes a '**k' argument!" % func)
+
     def register(self, callback, weakfunc=True):
+        self.validate(callback)
+        
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
@@ -87,7 +97,7 @@ class TriggerScripts(object):
     __slots__ = ('scripts')
     def __init__(self):
         self.scripts = {}
-        
+
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(trigger))
@@ -154,6 +164,10 @@ class ThingScripts(object):
         self.scripts = {}
         self.thingScripts = {}
 
+    def validate(self, func):
+        if inspect.getargspec(func)[2] is None:
+            raise InvalidScriptFunctionArgument("%s lakes a '**k' argument!" % func)
+        
     def haveScripts(self, id):
         if type(id) in (list, tuple, set):
             for i in id:
@@ -166,6 +180,8 @@ class ThingScripts(object):
             return False
             
     def register(self, id, callback, weakfunc=True):
+        self.validate(callback)
+        
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(id))
         else:
@@ -191,6 +207,8 @@ class ThingScripts(object):
                 self.thingScripts[id].append(func)
                 
     def registerFirst(self, id, callback, weakfunc=True):
+        self.validate(callback)
+        
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback)
         else:

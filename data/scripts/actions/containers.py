@@ -1,5 +1,5 @@
 # First use of actions :p
-def container(creature, thing, position, index):
+def container(creature, thing, position, index, **k):
     print position
     print index
     if thing.owners and creature not in thing.owners: # Prevent people to open owned things
