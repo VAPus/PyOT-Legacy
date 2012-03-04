@@ -65,6 +65,9 @@ class Player(Creature):
         self.partyObj = None
         self.solid = not config.playerWalkthrough
 
+        # Extra icons
+        self.extraIcons = 0
+        
         # Rates
         # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
         # 3 => drop rate (max items), 4 => regain rate
@@ -304,18 +307,26 @@ class Player(Creature):
         else:
             stream = streamX
         
-        send = 0
+        send = self.extraIcons
         for conId in self.conditions:
             try:
                 conId = int(conId)
                 send += conId
             except:
                 pass
-            
+
         stream.icons(send)
 
         if not streamX:
             stream.send(self.client)
+    
+    def setIcon(self, icon):
+        if not self.extraIcons & icon:
+            self.extraIcons += icon
+            
+    def removeIcon(self, icon):
+        if self.extraIcons % icon:
+            self.extraIcons -= icon
             
     def refreshSkills(self, streamX=None):
         if not streamX:

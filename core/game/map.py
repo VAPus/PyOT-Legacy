@@ -744,9 +744,14 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     # otherwise it should be ",", we don't need to vertify this.
                 if items:
                     if houseId:
+                        # Fix flags if necessary, TODO: Move this to map maker!
+                        if not flags & TILEFLAGS_PROTECTIONZONE:
+                            flags += TILEFLAGS_PROTECTIONZONE
+                            
                         tile = l_HouseTile(items, flags)
                         tile.houseId = houseId
                         tile.position = housePosition
+                        
                         
                         # Find and cache doors
                         for i in tile.getItems():

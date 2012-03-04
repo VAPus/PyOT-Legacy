@@ -354,12 +354,12 @@ class Creature(object):
             self.target = None
             self.targetMode = 0
             
-        # Mark for save
+        
+        # Send to Player
         if self.isPlayer():
+            # Mark for save
             self.saveData = True
             
-        # Send to everyone   
-        if self.isPlayer():
             ignore = (self,)
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
@@ -394,12 +394,24 @@ class Creature(object):
                 stream.uint8(0x68)
                 stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
             
+            # If we're entering protected zone, fix icons
+            pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
+            pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
+            if pzStatus and not pzIcon:
+                self.setIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+            elif not pzStatus and pzIcon:
+                self.removeIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+                
+                
             stream.send(self.client)
             self.position = position
             self.direction = direction % 4
             
         else:
             ignore = ()
+            
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
@@ -823,7 +835,19 @@ class Creature(object):
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
+            
+            # If we're entering protected zone, fix icons
+            pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
+            pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
+            if pzStatus and not pzIcon:
+                self.setIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+            elif not pzStatus and pzIcon:
+                self.removeIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+                
             #stream.magicEffect(position, 0x02)
+            
             stream.send(self.client)
         
         newPosCreatures = game.engine.getCreatures(position)
@@ -1006,7 +1030,7 @@ class Creature(object):
             return False
         
         # Can't target protected zone
-        if position.getTile().getFlags() % TILEFLAGS_PROTECTIONZONE:
+        if position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
             
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
