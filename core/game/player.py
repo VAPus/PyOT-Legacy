@@ -325,7 +325,7 @@ class Player(Creature):
             self.extraIcons += icon
             
     def removeIcon(self, icon):
-        if self.extraIcons % icon:
+        if self.extraIcons & icon:
             self.extraIcons -= icon
             
     def refreshSkills(self, streamX=None):
