@@ -50,6 +50,8 @@ class Monster(Creature):
         self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.
         self.canWalk = base.walkable
         self.intervals = {}
+        self.defaultSpeakType = 'MSG_SPEAK_MONSTER_SAY'
+        self.defaultYellType = 'MSG_SPEAK_MONSTER_YELL'
 
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
@@ -234,12 +236,6 @@ class Monster(Creature):
                     return
             else:
                 reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self, check=True)
-            
-    def say(self, message, messageType='MSG_SPEAK_MONSTER_SAY'):
-        return Creature.say(self, message, messageType)
-        
-    def yell(self, message, messageType='MSG_SPEAK_MONSTER_YELL'):
-        return Creature.yell(self, message, messageType)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
@@ -320,6 +316,29 @@ class Monster(Creature):
                     self.target.scripts["onNextStep"].append(__followCallback)
                             
         self.target.scripts["onNextStep"].append(__followCallback)
+        return True
+        
+        
+    def vertifyMove(self, tile):
+        """ This function vertify if the tile is walkable in a regular state (pathfinder etc)
+            This function handle things like PZ.
+        """
+        
+        # Protected zone?
+        if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            return False
+            
+        for item in tile.things:
+            if isinstance(item, Item):
+                if self.base.ignoreFire and item.itemId in FIRE_FIELDS:
+                    continue
+                elif self.base.ignorePoison and item.itemId in POISON_FIELDS:
+                    continue
+                elif self.base.ignoreEnergy and item.itemId in ENERGY_FIELDS:
+                    continue
+                elif item.blockpath:
+                    return False
+                
         return True
         
 class MonsterBase(CreatureBase):

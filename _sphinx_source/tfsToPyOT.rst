@@ -12,7 +12,7 @@
 
 **NB! This page is work in progress!**
 
-There is 198 functions left to document.
+There is 175 functions left to document.
 
 First some important class (type) names:
 
@@ -56,25 +56,25 @@ First some important class (type) names:
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.getHideHealth()
 
 .. function:: doCreatureSetHideHealth(cid, hide)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.hideHealth(hide)
 
 .. function:: getCreatureSpeakType(cid)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.defaultSpeakType
 
 .. function:: doCreatureSetSpeakType(cid, type)
 
     Equal to::
 
-        NOT IMPLANTED YET
+        Creature.defaultSpeakType = type
 
 .. function:: getCreatureLookDirection(cid)
 
@@ -162,9 +162,9 @@ First some important class (type) names:
 
 .. function:: getPlayerRequiredSkillTries(cid, skillId, skillLevel)
 
-    Equal to::
+    Somewhat equal to::
 
-        I'll get back on this one
+        config.skillFormula(skillLevel, Player.getVocation().meleeSkill)
 
 .. function:: getPlayerItemCount(cid, itemid[, subType = -1])
 
@@ -194,7 +194,7 @@ First some important class (type) names:
 
     Equal to::
 
-        INVIDIDUAL PLAYER LIGHT NOT IMPLANTED
+        INVIDIDUAL PLAYER LIGHT NOT IMPLANTED (yet)
 
 .. function:: getPlayerSlotItem(cid, slot)
 
@@ -258,13 +258,13 @@ First some important class (type) names:
 
     Equal to::
 
-        Again, no groups, just access flags
+        Player.data["group_id"]
 
 .. function:: doPlayerSetGroupId(cid, newGroupId)
 
     Equal to::
 
-        no groups, just access flags
+        Player.data["group_id"] = newGroupId # Currently not saved!!!
 
 .. function:: doPlayerSendOutfitWindow(cid)
 
@@ -382,7 +382,12 @@ First some important class (type) names:
 
 .. function:: getTileItemByType(pos, type)
 
-    No equal
+    Something like this::
+
+        items = []
+        for thing in pos.getTile().things:
+            if isinstance(thing, Item) and thing.type == type:
+                items.append(thing)
 
 .. function:: getTileThingByPos(pos)
 
@@ -398,7 +403,11 @@ First some important class (type) names:
 
 .. function:: doRemoveItem(uid[, count = -1])
 
-    Not possible to equal this, it depends on the items position
+    Not possible to equal this, it depends on the items position, but:
+
+    You may do something like this::
+
+        Player.modifyItem(Item, Position, count)
 
 .. function:: doPlayerFeed(cid, food)
 
@@ -476,15 +485,38 @@ First some important class (type) names:
 
 .. function:: doPlayerAddSpentMana(cid, amount[, useMultiplier = true])
 
+    Equal to::
+        
+        Player.modifySpentMana(amount)
+
 .. function:: doPlayerAddSoul(cid, amount)
+
+    Equal to::
+
+        Player.modifySoul(amount)
 
 .. function:: doPlayerAddItem(cid, itemid[, count/subtype = 1[, canDropOnMap = true[, slot = 0]]])
 
+    Equal to::
+
+        Player.addItem(Item(itemId[, count])[, placeOnGround = True])
+
 .. function:: doPlayerAddItem(cid, itemid[, count = 1[, canDropOnMap = true[, subtype = 1[, slot = 0]]]])
+
+
+    Equal to::
+
+        Player.addItem(Item(itemId[, count])[, placeOnGround = True])
 
 .. function:: doPlayerAddItemEx(cid, uid[, canDropOnMap = false[, slot = 0]])
 
+    Not neseccary since we got no uid stuff, but Player.itemToUse(ItemObject) is possible.
+
 .. function:: doPlayerSendTextMessage(cid, MessageClasses, message)
+
+    Equal to::
+
+        Player.message(message[, MessageClass])
 
 .. function:: doPlayerSendChannelMessage(cid, author, message, SpeakClasses, channel)
 
@@ -511,6 +543,11 @@ First some important class (type) names:
     Note that this remove as much as possible if it's not enough, you should therefore vertify the amount.
 
 .. function:: doPlayerTransferMoneyTo(cid, target, money)
+
+    Equal to::
+
+        Player.removeMoney(money)
+        Player2.addMoney(money)
 
 .. function:: doShowTextDialog(cid, itemid, text)
 
@@ -556,6 +593,12 @@ First some important class (type) names:
 
 .. function:: getMonsterInfo(name)
 
+    Somewhat equal to::
+
+        getMonster(name)
+
+    It give you the base class that every monster with that name is based on. Hench it's easy to grab information.
+
 .. function:: doAddCondition(cid, condition)
 
     Equal to::
@@ -570,11 +613,27 @@ First some important class (type) names:
 
 .. function:: doRemoveConditions(cid[, onlyPersistent])
 
+    Equal to(?)::
+        
+        Creature.loseAllConditions()
+
 .. function:: doRemoveCreature(cid[, forceLogout = true])
+
+    Equal to::
+
+        Creature.remove()
 
 .. function:: doMoveCreature(cid, direction[, flag = FLAG _NOLIMIT])
 
+    Equal to::
+
+        Creature.move(direction)
+
 .. function:: doSteerCreature(cid, position)
+
+    Equal to::
+
+        autoWalkCreatureTo(Creature, position)
 
 .. function:: doPlayerSetPzLocked(cid, locked)
 
@@ -584,7 +643,15 @@ First some important class (type) names:
 
 .. function:: doPlayerRemoveItem(cid, itemid[, count[, subType = -1]])
 
+    Equal to::
+
+        Player.modifyItem(Item, Position, count)
+
 .. function:: doPlayerAddExperience(cid, amount)
+
+    Equal to::
+
+        Player.modifyExperience(amount)
 
 .. function:: doPlayerSetGuildId(cid, id)
 
@@ -594,17 +661,51 @@ First some important class (type) names:
 
 .. function:: doPlayerAddOutfit(cid, looktype, addon)
 
+    Equal to::
+
+        Player.addOutfit(outfitName)
+
+        # or
+
+        Player.addOutfitAddon(outfitName, addon)
+
 .. function:: doPlayerRemoveOutfit(cid, looktype[, addon = 0])
+
+    Equal to::
+
+        Player.removeOutfit(outfitName)
+
+        # or:
+        
+        Player.removeOutfitAddon(outfitName, addon)
 
 .. function:: doPlayerAddOutfitId(cid, outfitId, addon)
 
+    See doPlayerAddOutfit
+
 .. function:: doPlayerRemoveOutfitId(cid, outfitId[, addon = 0])
+
+    See doPlayerRemoveOutfit
 
 .. function:: canPlayerWearOutfit(cid, looktype[, addon = 0])
 
+    Equal to::
+
+        Player.canWearOutfit(outfitName)
+
+        # for addon check:
+
+        addon in Player.getAddonsForOutfit(outfitName)
+
 .. function:: canPlayerWearOutfitId(cid, outfitId[, addon = 0])
 
+    See canPlayerWearOutfit
+
 .. function:: getCreatureCondition(cid, condition[, subId = 0])
+
+    Equal to::
+
+        Player.getCondition(condition[, subId])
 
 .. function:: doCreatureSetDropLoot(cid, doDrop)
 
@@ -618,39 +719,75 @@ First some important class (type) names:
 
 .. function:: doPlayerSwitchSaving(cid)
 
+    Equal to::
+
+        Player.doSave = not Player.doSave
+
 .. function:: doPlayerSave(cid[, shallow = false])
+
+    Equal to::
+
+        Player.save()
 
 .. function:: isPlayerPzLocked(cid)
 
 .. function:: isPlayerSaving(cid)
 
+    Equal to::
+
+        Player.doSave
+
 .. function:: isCreature(cid)
+
+    Equal to::
+
+        Thing.isCreature()
+
 
 .. function:: isMovable(uid)
 
+    Equal to::
+
+        Thing.movable
+
 .. function:: getCreatureByName(name)
+
+    Somewhat equal to::
+
+        getMonster(name)
+        getNPC(name)
 
 .. function:: getPlayerByGUID(guid)
 
+    No equal
+
 .. function:: getPlayerByNameWildcard(name~[, ret = false])
+
+    NOT IMPLANTED YET
 
 .. function:: getPlayerGUIDByName(name[, multiworld = false])
 
+    No equal
+
 .. function:: getPlayerNameByGUID(guid[, multiworld = false[, displayError = true]])
 
+    No equal
+
 .. function:: doPlayerChangeName(guid, oldName, newName)
+
+    Player.rename(newName)
 
 .. function:: registerCreatureEvent(uid, eventName)
 
     Equal to::
 
-        reg(eventName, Creature, function)
+        register(eventName, Creature, function)
 
 .. function:: unregisterCreatureEvent(uid, eventName)
 
     Equal to::
 
-        unreg(eventName, Creature, function)
+        unregister(eventName, Creature, function)
 
 .. function:: getContainerSize(uid)
 
@@ -1244,6 +1381,118 @@ First some important class (type) names:
 
         if getTile(position): True
 
+.. function:: doCreateTeleport(itemid, topos, createpos)
+
+    Equal to::
+
+        Item.teledest = [X, Y, Z] # Yes, it's a list and NOT a Position object, there are a couple of reasons for this, but well.
+
+.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
+
+    Equal to::
+
+        getMonster(name).spawn(pos)
+
+.. function:: doCreateNpc(name, pos[, displayError = true])
+
+    Equal to::
+
+        getNPC(name).spawn(pos)
+
+.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
+
+    Equal to::
+
+        Player.skillAttempt(skillid[, n=1])
+
+.. function:: doSummonMonster(cid, name)
+
+    Equal to::
+
+        monster = getMonster(name).spawn(Player.getPositionInDirection(Player.direction))
+        monster.setMaster(Player)
+
+.. function:: doPlayerAddMount(cid, mountId)
+
+    Equal::
+
+        Player.addMount(name)
+
+.. function:: doPlayerRemoveMount(cid, mountId)
+
+    Equal to::
+
+        Player.removeMount(name)
+
+.. function:: getPlayerMount(cid, mountId)
+
+    Equal to::
+
+        Player.canUseMount(name)
+
+.. function:: doPlayerSetMount(cid, mountId)
+
+    Equal to::
+
+        Player.mount = mountid or mountname # both work in teory i suppose
+
+.. function:: doPlayerSetMountStatus(cid, mounted)
+
+    Equal to::
+
+        Player.mounted = mounted
+
+.. function:: getMountInfo([mountId])
+
+    Equal to::
+
+        mount = game.resource.getMount(mountname)
+
+.. function:: doPlayerAddMapMark(cid, pos, type[, description])
+
+    Equal to::
+
+        Player.mapMarker(Position, Type[, description])
+
+.. function:: doPlayerAddPremiumDays(cid, days)
+
+    No equal
+
+.. function:: getPlayerPremiumDays(cid)
+
+    No equal
+
+.. function:: getPlayerAccountManager(cid)
+
+    No equal
+
+.. function:: getPlayersByAccountId(accId)
+
+    No equal
+
+.. function:: getAccountIdByName(name)
+
+    No equal
+
+.. function:: getAccountByName(name)
+    
+    No equal
+
+.. function:: getAccountIdByAccount(accName)
+
+    No equal
+
+.. function:: getAccountByAccountId(accId)
+
+    No equal
+
+.. function:: getIpByName(name)
+
+    No equal
+
+.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
+
+    No equal
 
 ** string actions (see pythons documentation instead) **
     string.split(str)
@@ -1504,18 +1753,6 @@ First some important class (type) names:
 
 .. function:: doPlayerLeaveParty(cid[, forced = false])
 
-.. function:: doPlayerAddMount(cid, mountId)
-
-.. function:: doPlayerRemoveMount(cid, mountId)
-
-.. function:: getPlayerMount(cid, mountId)
-
-.. function:: doPlayerSetMount(cid, mountId)
-
-.. function:: doPlayerSetMountStatus(cid, mounted)
-
-.. function:: getMountInfo([mountId])
-
 .. function:: getPartyMembers(lid)
 
 .. function:: getCreatureGuildEmblem(cid[, target])
@@ -1558,31 +1795,9 @@ First some important class (type) names:
 
 .. function:: getPlayerLastLogin(cid)
 
-.. function:: getPlayerAccountManager(cid)
-
 .. function:: getPlayerTradeState(cid)
 
 .. function:: doPlayerSendMailByName(name, item[, town[, actor]])
-
-.. function:: doPlayerAddMapMark(cid, pos, type[, description])
-
-.. function:: doPlayerAddPremiumDays(cid, days)
-
-.. function:: getPlayerPremiumDays(cid)
-
-.. function:: getPlayersByAccountId(accId)
-
-.. function:: getAccountIdByName(name)
-
-.. function:: getAccountByName(name)
-
-.. function:: getAccountIdByAccount(accName)
-
-.. function:: getAccountByAccountId(accId)
-
-.. function:: getIpByName(name)
-
-.. function:: getPlayersByIp(ip[, mask = 0xFFFFFFFF])
 
 .. function:: getChannelUsers(channelId)
 
@@ -1594,21 +1809,11 @@ First some important class (type) names:
 
 .. function:: doSendAnimatedText(pos, text, color[, player])
 
-.. function:: doPlayerAddSkillTry(cid, skillid, n[, useMultiplier = true])
-
 .. function:: doAddContainerItemEx(uid, virtuid)
 
 .. function:: doRelocate(pos, posTo[, creatures = true[, unmovable = true]])
 
 .. function:: doCleanTile(pos[, forceMapLoaded = false])
-
-.. function:: doCreateTeleport(itemid, topos, createpos)
-
-.. function:: doCreateMonster(name, pos[, extend = false[, force = false[, displayError = true]]])
-
-.. function:: doCreateNpc(name, pos[, displayError = true])
-
-.. function:: doSummonMonster(cid, name)
 
 .. function:: doConvinceCreature(cid, target)
 

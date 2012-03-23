@@ -16,19 +16,22 @@ class Node(object):
         self.state = True
         self.tileTried = False
         
-    def vertify(self, z, instanceId, allowCreatures=False):
+    def vertify(self, z, instanceId, checkCreature, allowCreatures=False):
         if self.tileTried:
             return self.state
         else:
             self.tileTried = True
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                for thing in tile.things:
-                    if allowCreatures and isinstance(thing, game.creature.Creature):
-                        break
-                    elif thing.solid or thing.blockpath:
-                        self.state = False
-                        break
+                if checkCreature and not checkCreature.vertifyMove(tile):
+                    self.state = False
+                else:
+                    for thing in tile.things:
+                        if allowCreatures and isinstance(thing, game.creature.Creature):
+                            break
+                        elif thing.solid:
+                            self.state = False
+                            break
             else:
                 self.state = False
                 
@@ -36,12 +39,12 @@ class Node(object):
             
     
 class AStar(object):
-    def __init__(self, zStart, xStart, yStart, xGoal, yGoal, instanceId):
+    def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId):
         self.nodes = {}
         self.openNodes = set()
         self.closedNodes = set() 
         self.final = self.getNode(xGoal, yGoal)
-        
+        self.checkCreature = checkCreature
         self.found = True
         self.z = zStart
         self.instanceId = instanceId
@@ -49,7 +52,7 @@ class AStar(object):
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
         
-        if not self.final.vertify(zStart, instanceId, True):
+        if not self.final.vertify(zStart, instanceId, checkCreature, True):
             self.result = []
             return
         
@@ -190,28 +193,28 @@ class AStar(object):
         # Inlined test for all the steps we might take.
         
         n = _getNode(x, y - 1)
-        if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+        if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             _openNodes.add(n)   
 
         n = _getNode(x - 1, y)
-        if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+        if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             _openNodes.add(n)   
 
         n = _getNode(x + 1, y)
-        if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+        if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             _openNodes.add(n)  
             
         n = _getNode(x, y + 1)
-        if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+        if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -219,33 +222,33 @@ class AStar(object):
             
         if config.findDiagonalPaths:
             n = _getNode(x - 1, y - 1)
-            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
                 n.cost = cost + (10 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 _openNodes.add(n)   
 
             n = _getNode(x - 1, y + 1)
-            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
                 n.cost = cost + (10 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 _openNodes.add(n)   
 
             n = _getNode(x + 1, y - 1)
-            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
                 n.cost = cost + (10 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 _openNodes.add(n)  
                 
             n = _getNode(x + 1, y + 1)
-            if n not in _closedNodes and n.vertify(self.z, self.instanceId) and (n not in _openNodes or n.cost < cost):
+            if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
                 n.cost = cost + (10 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 _openNodes.add(n)            
             
-def findPath(zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
-    return AStar(zStart, xStart, yStart, xGoal, yGoal, instanceId).result
+def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
+    return AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId).result
     

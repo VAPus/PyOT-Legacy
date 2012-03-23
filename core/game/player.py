@@ -65,6 +65,9 @@ class Player(Creature):
         self.partyObj = None
         self.solid = not config.playerWalkthrough
 
+        # Extra icons
+        self.extraIcons = 0
+        
         # Rates
         # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
         # 3 => drop rate (max items), 4 => regain rate
@@ -244,7 +247,7 @@ class Player(Creature):
                                        self.position.z),
                               18, 14, self)
 
-        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
+        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
@@ -304,18 +307,26 @@ class Player(Creature):
         else:
             stream = streamX
         
-        send = 0
+        send = self.extraIcons
         for conId in self.conditions:
             try:
                 conId = int(conId)
                 send += conId
             except:
                 pass
-            
+
         stream.icons(send)
 
         if not streamX:
             stream.send(self.client)
+    
+    def setIcon(self, icon):
+        if not self.extraIcons & icon:
+            self.extraIcons += icon
+            
+    def removeIcon(self, icon):
+        if self.extraIcons & icon:
+            self.extraIcons -= icon
             
     def refreshSkills(self, streamX=None):
         if not streamX:
@@ -488,7 +499,7 @@ class Player(Creature):
                     if item[0] == 1:
                         self.inventory[item[2]+1-1] = None
                         stream.removeInventoryItem(item[2]+1)
-                    elif item[0] == 2:
+                    elif item[0] == 2 and item[2].openIndex != None:
                         item[2].container.removeItem(item[1])
                         stream.removeContainerItem(item[2].openIndex, item[3])
                         
@@ -1061,7 +1072,7 @@ class Player(Creature):
         else:
             stream = self.packet()
             
-        for slot in xrange(enum.SLOT_FIRST,enum.SLOT_LAST):
+        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
@@ -2282,6 +2293,7 @@ class Player(Creature):
             self.setStorage('__outfitAddons%s' % game.resource.reverseOutfits[name], addons)  
         else:
             return
+            
     def canUseMount(self, name):
         return self.getStorage('__mount%s' % game.resource.reverseMounts[name])
     
@@ -2366,12 +2378,11 @@ class Player(Creature):
     def openMarket(self):
         if not config.enableMarket or self.client.version < 944:
             return
-            
         stream = self.packet(0xF6)
 
         stream.uint32(self.getMoney())
         stream.uint8(self.getVocation().clientId)
-        stream.uint8(0) # Active offers, TODO
+        stream.uint8(1) # Active offers, TODO  
         """count = self.getDepotItemCount(0) # Should be the unique count
         stream.uint16(count)
         if count > 0:
@@ -2385,19 +2396,13 @@ class Player(Creature):
             for item in _(self.getDepot(0)):
                 stream.uint16(item.cid)
                 stream.uint16(1) # Should be the total count"""
-        stream.uint16(4)
+        stream.uint16(1)
         # Test data
-        stream.uint16(3271)
-        stream.uint16(10000)
-        stream.uint16(3283)
-        stream.uint16(10000)
-        stream.uint16(7449)
-        stream.uint16(10000)
-        stream.uint16(2853)
-        stream.uint16(1)                
+        stream.uint16(0x0bd2)
+        stream.uint16(0x0002)              
         stream.send(self.client)
         #self.marketDetails()
-        self.marketOffers() # Doesn't work
+        #self.marketOffers() # Doesn't work
         
     def marketDetails(self):
         if not config.enableMarket or self.client.version < 944:

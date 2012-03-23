@@ -91,12 +91,17 @@ class Creature(object):
         self.conditions = {}
         self.walkPattern = None
         self.activeSummons = []
+        self.doHideHealth = False
         
         # Options
         self.canMove = True
         
         # We are trackable 
         allCreatures[self.cid] = self
+        
+        # Speaktypes
+        self.defaultSpeakType = 'MSG_SPEAK_SAY'
+        self.defaultYellType = 'MSG_SPEAK_YELL'
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -196,6 +201,15 @@ class Creature(object):
     def refreshSkills(self, streamX=None): pass
     def refreshConditions(self, streamX=None): pass
     
+    def refresh(self):
+        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+        for player in self.knownBy:
+            stream = player.packet()
+            stream.removeTileItem(self.position, stackpos)
+            stream.addTileCreature(self.position, stackpos, self, player, True)
+
+            stream.send(player.client)
+            
     def despawn(self):
         self.alive = False
         try:
@@ -222,6 +236,10 @@ class Creature(object):
             pass
         
 
+    def vertifyMove(self, tile):
+        """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
+        return True
+        
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
         if not self.alive or not level and not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
@@ -336,12 +354,12 @@ class Creature(object):
             self.target = None
             self.targetMode = 0
             
-        # Mark for save
+        
+        # Send to Player
         if self.isPlayer():
+            # Mark for save
             self.saveData = True
             
-        # Send to everyone   
-        if self.isPlayer():
             ignore = (self,)
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
@@ -376,12 +394,24 @@ class Creature(object):
                 stream.uint8(0x68)
                 stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
             
+            # If we're entering protected zone, fix icons
+            pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
+            pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
+            if pzStatus and not pzIcon:
+                self.setIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+            elif not pzStatus and pzIcon:
+                self.removeIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+                
+                
             stream.send(self.client)
             self.position = position
             self.direction = direction % 4
             
         else:
             ignore = ()
+            
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
         spectators = oldPosCreatures|newPosCreatures
@@ -576,17 +606,9 @@ class Creature(object):
                 pass
             
     def rename(self, name):
-        newSpectators = game.engine.getPlayers(self.position)
-        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
-        
         self.data["name"] = name
-        for player in self.knownBy:
-            stream = player.packet()
-            stream.removeTileItem(self.position, stackpos)
-            if player in newSpectators:
-                stream.addTileCreature(self.position, stackpos, self, player, True)
-
-            stream.send(player.client)
+        
+        self.refresh()
 
     def privRename(self, player, name):
         if player in self.knownBy:
@@ -707,13 +729,13 @@ class Creature(object):
             updateTile(self.position, tile)
         
         if by and by.isPlayer():
-            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
+            by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg > -1 else ''), 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
 
         if self.isPlayer():
             if by:
-                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg < -1 else '', by.name().capitalize()), 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
+                self.message("You lose %d hitpoint%s due to an attack by %s." % (-1 * dmg, 's' if dmg > -1 else '', by.name().capitalize()), 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
             else:
-                self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
+                self.message("You lose %d hitpoint%s." % (-1 * dmg, 's' if dmg > -1 else ''), 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
 
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
@@ -734,13 +756,13 @@ class Creature(object):
     
     def onHeal(self, by, amount):
         if by and by.isPlayer():
-            by.message("%s gain %d hitpoint%s." % (self.name().capitalize(), amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+            by.message("%s gain %d hitpoint%s." % (self.name().capitalize(), amount, 's' if amount > 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
 
         if self.isPlayer():
             if by:
                 self.message("You gain %d hitpoint%s due to healing by %s." % (amount, 's' if amount > 1 else '', by.name().capitalize()), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
             else:
-                self.message("You gain %d hitpoint%s." % (amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                self.message("You gain %d hitpoint%s." % (amount, 's' if amount > 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
         self.modifyHealth(amount)
         
     def onSpawn(self):
@@ -752,11 +774,12 @@ class Creature(object):
             
         self.data["health"] = max(0, health)
         
-        for spectator in getSpectators(self.position):
-            stream = spectator.packet(0x8C)
-            stream.uint32(self.clientId())
-            stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
-            stream.send(spectator)
+        if not self.getHideHealth():
+            for spectator in getSpectators(self.position):
+                stream = spectator.packet(0x8C)
+                stream.uint32(self.clientId())
+                stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
+                stream.send(spectator)
          
         self.refreshStatus()
         
@@ -812,7 +835,19 @@ class Creature(object):
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
+            
+            # If we're entering protected zone, fix icons
+            pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
+            pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
+            if pzStatus and not pzIcon:
+                self.setIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+            elif not pzStatus and pzIcon:
+                self.removeIcon(CONDITION_PROTECTIONZONE)
+                self.refreshConditions(stream)
+                
             #stream.magicEffect(position, 0x02)
+            
             stream.send(self.client)
         
         newPosCreatures = game.engine.getCreatures(position)
@@ -875,7 +910,10 @@ class Creature(object):
             
         return self.turn(direction)
         
-    def say(self, message, messageType='MSG_SPEAK_SAY'):
+    def say(self, message, messageType=None):
+        if not messageType:
+            messageType = self.defaultSpeakType
+            
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -886,7 +924,10 @@ class Creature(object):
             stream.string(message)
             stream.send(spectator)
 
-    def yell(self, message, messageType='MSG_SPEAK_YELL'):
+    def yell(self, message, messageType=None):
+        if not messageType:
+            messageType = self.defaultYellType
+            
         for spectator in getSpectators(self.position, config.yellRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -988,6 +1029,10 @@ class Creature(object):
         if not allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
+        # Can't target protected zone
+        if position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+            return False
+            
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
         
     def distanceStepsTo(self, position):
@@ -1238,6 +1283,14 @@ class Creature(object):
         except:
             return False
 
+    def loseAllConditions(self):
+        if not self.conditions:
+            return False
+            
+        for condition in self.conditions.copy():
+            condition.stop()
+            
+        return True
     ##############
     ### Spells ###
     ##############
@@ -1356,6 +1409,18 @@ class Creature(object):
     ####################
     def use(self, position, thing):
         game.scriptsystem.get('use').runSync(thing, self, None, position=position, index=0)
+        
+    #####################
+    ### Hidden health ###
+    #####################
+    def hideHealth(self, do = True):
+        self.doHideHealth = do
+        
+    def getHideHealth(self):
+        return self.doHideHealth
+        
+    def toggleHideHealth(self):
+        self.doHideHealth = not self.doHideHealth
         
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):

@@ -51,9 +51,10 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         creature.notEnough('level')
         return True
     
-    if creature.isPremium() == False:
+    # TODO: Some flag check here.
+    """if creature.isPremium() == False:
         creature.needPremium()
-        return True
+        return True"""
     
     if creature.data["mana"] < manaCost:
         creature.notEnough('mana')

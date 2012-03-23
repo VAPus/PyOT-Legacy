@@ -304,7 +304,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
         creature.message("Change floor")
         return
         
-    pattern = calculateWalkPattern(creature.position, to, skipFields, diagonal)
+    pattern = calculateWalkPattern(creature, creature.position, to, skipFields, diagonal)
     
     if pattern:
         creature.walkPattern = deque(pattern)
@@ -332,7 +332,7 @@ def handleAutoWalking(creature, callback=None, level=0):
     
 
 # Calculate walk patterns
-def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
+def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     """Calculate the route from ``fromPos`` to ``to``.
     
     :param fromPos: Start position.
@@ -374,7 +374,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
         
     if not pattern:
         # Try a straight line
-        pattern = game.pathfinder.findPath(fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
+        pattern = game.pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
         if not pattern:
             return None
                 

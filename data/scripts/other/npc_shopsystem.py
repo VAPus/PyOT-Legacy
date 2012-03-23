@@ -3,7 +3,7 @@ greetings = ('hi ', 'hey ', 'hello ', 'hail ')
 farwells = ('bye', 'farewell', 'cya')
 offers = ('offer', 'trade')
 
-def saidTo(creature, creature2, said, channelType, channelId):
+def saidTo(creature, creature2, said, channelType, channelId, **k):
     if not creature2.isNPC():
         return # We got nothing todo
         

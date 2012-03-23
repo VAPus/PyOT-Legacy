@@ -252,11 +252,17 @@ def addOutfit(creature, text):
 
 register('talkactionFirstWord', 'outfit', addOutfit)
 
-def testrename(creature, thing, **k):
+"""def testrename(creature, thing, **k):
     thing.privRename(creature, "[Seen] Wolf")
     return False
     
-register("lookAt", "Wolf", testrename)
+register("lookAt", "Wolf", testrename)"""
+
+def testhide(creature, thing, **k):
+    thing.hideHealth(True)
+    thing.refresh()
+    
+register("lookAt", "Wolf", testhide)
 
 def testsummon(creature,**k):
     tiger = game.monster.getMonster("Tiger").spawn(creature.positionInDirection(creature.direction), spawnDelay=0)

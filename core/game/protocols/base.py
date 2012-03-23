@@ -215,7 +215,12 @@ class BasePacket(TibiaPacket):
             self.uint32(creature.clientId())
             self.uint8(creature.creatureType)
             self.string(creature.name())
-        self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
+            
+        if not creature.getHideHealth():
+            self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
+        else:
+            self.uint8(0)
+            
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(0) # Light
@@ -712,7 +717,7 @@ class BaseProtocol(object):
                 # This means we need to walk to the item
                 if not player.inRange(fromPosition, 1, 1):
 
-                    walkPattern = game.engine.calculateWalkPattern(player.position, fromPosition, -1)
+                    walkPattern = game.engine.calculateWalkPattern(player, player.position, fromPosition, -1)
 
                     # No walk pattern means impossible move.
                     if not walkPattern:
@@ -747,9 +752,9 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and toPosition.y != game.enum.SLOT_BACKPACK:
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
                     checkSlots = True
-                    if toPosition.y not in slots:
+                    if (toPosition.y-1) not in slots:
                         player.notPossible()
                         return
                     
@@ -803,7 +808,7 @@ class BaseProtocol(object):
                 oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
 
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and toPosition.y != game.enum.SLOT_AMMO and toPosition.y != game.enum.SLOT_BACKPACK and toPosition.y not in oldItem[1].slots():
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
                     player.notPossible()
                     return
                 elif oldItem[1].inTrade:
@@ -854,7 +859,7 @@ class BaseProtocol(object):
                         player.refreshStatus(stream)
                         
                     if oldItem[0] == 1:
-                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = fromPosition.y)
+                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (toPosition.y-1))
                         player.inventory[fromPosition.y-1] = None
                         stream.removeInventoryItem(fromPosition.y)
                     elif oldItem[0] == 2:
@@ -924,7 +929,7 @@ class BaseProtocol(object):
                                     player.refreshStatus(stream)
                             else:       
                                 player.inventory[toPosition.y-1] = Item(sid(clientId), count) if renew else oldItem[1]
-                                game.scriptsystem.get("equip").runSync(player, player.inventory[toPosition.y-1], slot = toPosition.y)
+                                game.scriptsystem.get("equip").runSync(player, player.inventory[toPosition.y-1], slot = (toPosition.y-1))
                                 
                                 if player.inventory[toPosition.y-1].decayPosition:
                                     player.inventory[toPosition.y-1].decayPosition = (toPosition.x, toPosition.y)
@@ -961,7 +966,7 @@ class BaseProtocol(object):
                                 pass
                                 #player.itemToContainer(container, Item(sid(clientId), count) if renew else oldItem[1], stack=stack, streamX=stream)                  
                     
-                    if currItem and currItem[1] and toPosition.y < 64 and not currItem[1].containerSize:
+                    if currItem and currItem[1] and toPosition.y < 64 and not currItem[1].containerSize and not currItem[1].stackable:
                         player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
                         
                     """
@@ -1002,7 +1007,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
             if abs(creature.position.x-player.position.x) > 1 or abs(creature.position.y-player.position.y) > 1:
-                walkPattern = game.engine.calculateWalkPattern(creature.position, toPosition)
+                walkPattern = game.engine.calculateWalkPattern(player, creature.position, toPosition)
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
@@ -1013,15 +1018,6 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-        import game.pathfinder
-
-        t = time.time()
-        m = game.pathfinder.findPath(player.position.z, player.position.x, player.position.y, position.x, position.y)
-        print "Took: ", (time.time() - t)
-        
-        print "========"
-        print m
-        print "--------"
         
         clientId = packet.uint16()
         stackpos = packet.uint8()
@@ -1114,7 +1110,7 @@ class BaseProtocol(object):
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1168,7 +1164,7 @@ class BaseProtocol(object):
         end2 = None
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1469,7 +1465,7 @@ class BaseProtocol(object):
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player.position, position, -1)
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:

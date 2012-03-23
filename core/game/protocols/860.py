@@ -181,6 +181,18 @@ class Packet(base.BasePacket):
             else:
                 self.uint8(int(round((currHits / goalHits) * 100))) # %
 
+    def skills(self, player):
+        self.uint8(0xA1) # Skill type
+        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+            self.uint8(player.skills[x]) # Value / Level
+            #self.uint8(player.data["skills"][x]) # Base
+            currHits = player.data["skill_tries"][x]
+            goalHits = player.skillGoals[x]
+            if currHits < 1:
+                self.uint8(0)
+            else:
+                self.uint8(int(round((currHits / goalHits) * 100))) # %
+                
     def outfit(self, look, addon=0, mount=0x00):
         
         self.uint16(look[0])
