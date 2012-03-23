@@ -173,17 +173,6 @@ class Packet(base.BasePacket):
     def skills(self, player):
         self.uint8(0xA1) # Skill type
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-            self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
-            currHits = player.getStorage('__skill%d'%x) or 0
-            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(10, player.getVocation().meleeSkill)
-            if currHits < 1:
-                self.uint8(0)
-            else:
-                self.uint8(int(round((currHits / goalHits) * 100))) # %
-
-    def skills(self, player):
-        self.uint8(0xA1) # Skill type
-        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             #self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]
