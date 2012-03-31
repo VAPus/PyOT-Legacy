@@ -400,6 +400,8 @@ class Creature(object):
             if pzStatus and not pzIcon:
                 self.setIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
+                self.cancelTarget()
+                self.target = None
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
@@ -842,6 +844,8 @@ class Creature(object):
             if pzStatus and not pzIcon:
                 self.setIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
+                self.cancelTarget()
+                self.target = None
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
