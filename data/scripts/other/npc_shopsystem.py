@@ -1,5 +1,6 @@
+"to be fixed onbuyerwalks and turnagainst"
 from game.npc import ClassAction, regClassAction
-greetings = ('hi ', 'hey ', 'hello ', 'hail ')
+greetings = ('hi', 'hey', 'hello', 'hail')
 farwells = ('bye', 'farewell', 'cya')
 offers = ('offer', 'trade')
 
@@ -13,7 +14,7 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     if channelType == 1 and not creature in creature2.focus:
         ok = False
         for greeting in greetings:
-            if (greeting+creature2.data["name"]).lower() == said:
+            if greeting == said and creature.position.z == creature2.position.z:
                 ok = True
                 break
         if ok:
@@ -26,30 +27,26 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
                 
             creature2.turnAgainst(creature.position)
             return
+        
     elif channelType == 11 and not creature in creature2.focus:
-        creature2.focus.add(creature)
         ok = False
-        if len(creature2.focus) != 1:
-            
-            creature2.sayTo(creature, "One moment...")
-        else:
-            for greeting in greetings:
-                if (greeting+creature2.data["name"]).lower() == said:
-                    ok = True
-                    break
-            if ok:
-                creature2.focus.add(creature)
-                # Allow functions to be greatings.
-                if hasattr(creature2.base.speakGreet, '__call__'):
-                    creature2.base.speakGreet(npc=creature2, player=creature)
-                else:
-                    creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
+        for greeting in greetings:
+            if greeting == said and creature.position.z == creature2.position.z:
+               ok = True
+               break
+        if ok:
+            creature2.focus.add(creature)
+            # Allow functions to be greatings.
+            if hasattr(creature2.base.speakGreet, '__call__'):
+                creature2.base.speakGreet(npc=creature2, player=creature)
+            else:
+                creature2.sayTo(creature, creature2.base.speakGreet % _sayParams)
                     
-                creature2.turnAgainst(creature.position)
-                return
+            creature2.turnAgainst(creature.position)
+            return
     if ok:
         # Check for goodbyes
-        if said in farwells:
+        if channelType == 11 and said in farwells and creature.position.z == creature2.position.z:
             creature2.farewell(creature)
         
         elif creature2.activeModule:
@@ -88,10 +85,12 @@ class Shop(ClassAction):
     def handleOffers(self, npc, player):
         _sayParams = {"playerName":player.name()}
         
-        if self.on.offers:
+        if self.on.offers and player.position.z == npc.position.z and player in npc.focus:
             npc.sayTo(player, self.on.shopTrade % _sayParams)
             npc.sendTradeOffers(player)
             player.setTrade(npc)
+        elif player.position.z != npc.position.z and not player in npc.focus:
+            pass
         else:
             npc.sayTo(player, self.on.shopEmpty % _sayParams)
 

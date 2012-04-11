@@ -449,16 +449,20 @@ def handleModule(name):
     except:
         (exc_type, exc_value, exc_traceback) = sys.exc_info()
 
-        tb_list = traceback.extract_tb(sys.exc_info()[2])
+        tb_list = traceback.extract_tb(exc_traceback)
         tb_list = traceback.format_list(tb_list)
+        
         print "--------------------------"
         print "EXCEPTION IN SCRIPT:"
+        
         for elt in tb_list[1:]:
             print elt
 
         print "%s: %s" % (exc_type.__name__, exc_value)
         print "--------------------------"
+        
         return
+        
     if modules.paths:
         for subModule in modules.paths:
             handleModule("%s.%s" % (name, subModule))

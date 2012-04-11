@@ -1191,8 +1191,14 @@ class BaseProtocol(object):
 
 
     def handleAttack(self, player, packet):
-        cid = packet.uint32()
-        player.setAttackTarget(cid)
+        # HACK?
+        # If we're in protected zone
+        if player.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+            player.notPossible()
+            player.cancelTarget()
+        else:
+            cid = packet.uint32()
+            player.setAttackTarget(cid)
             
     def handleFollow(self, player, packet):
         cid = packet.uint32()
