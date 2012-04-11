@@ -20,7 +20,8 @@ def onUse(creature, thing, position, **k):
         creature.addItem(Item(PRESENT_RED[randomChance], count))
     
     magicEffect(position, EFFECT_GIFT_WRAPS)
-    creature.modifyItem(thing, Position, 1)
+    creature.removeItem(position)
     return True
+
 
 register("use", (6570, 6571), onUse)
