@@ -1,7 +1,7 @@
 # This is a shadow of the main branch, 9.51
 import base
 
-provide = []
+provide = [950]
 
 def vertify(): return True
 
