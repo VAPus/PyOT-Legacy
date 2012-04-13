@@ -602,7 +602,9 @@ def loadItems():
     global reverseItems
     global itemNames
     #global itemAttributes
+    
     log.msg("Loading items...")
+    
     if config.itemCache:
         try:
             with _open("data/cache/items.cache", "rb") as f:
@@ -617,15 +619,10 @@ def loadItems():
     d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
     
     
-    # Make two new values while we are loading
+    # Make three new values while we are loading
     loadItemNames = {}
-    if config.useNumpy:
-        from numpy import empty, uint16
-        loadItems = empty((config.itemMaxServerId + 1), dict)
-        reverseLoadItems = empty((config.itemMaxClientId + 1), uint16)
-    else:
-        loadItems = [0] * (config.itemMaxServerId + 1)
-        reverseLoadItems = [0] * (config.itemMaxClientId + 1)
+    loadItems = [0] * (config.itemMaxServerId + 1)
+    reverseLoadItems = [0] * (config.itemMaxClientId + 1)
 
 
     for item in (yield d1):
