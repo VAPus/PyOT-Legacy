@@ -1013,10 +1013,10 @@ def executeCode(code):
                 
             exec("""
 @inlineCallbacks
-def _():
+def _N():
 %s
 """ % '\n'.join(newcode))
-            returnValue(otjson.dumps((yield _())))
+            returnValue(otjson.dumps((yield _N())))
         else:
             exec(code)
     except ReturnValueExit, e:

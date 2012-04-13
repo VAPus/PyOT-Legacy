@@ -46,3 +46,4 @@ else:
     
 __builtin__._l = _l
 __builtin__._lp = _lp
+__builtin__._ = lambda m: m
