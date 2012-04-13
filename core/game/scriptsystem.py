@@ -275,10 +275,10 @@ class ThingScripts(object):
         raise Exception("Threaded script is not allowed in this branch!")
     
     def runDefer(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, thing, creature, end, True, **kwargs)
+        return defer.maybeDeferred(self._runDefer, thing, creature, end, True, True, **kwargs)
 
     def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, thing, creature, end, False, **kwargs)
+        return defer.maybeDeferred(self._run, thing, creature, end, False, True, **kwargs)
         
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)
@@ -286,7 +286,7 @@ class ThingScripts(object):
     def makeResult(self, obj):
         def _handleResult(result):
             cache = True
-            for (success, value) in result:
+            for value in result:
                 if value is False:
                     cache = False
                     break
@@ -297,7 +297,7 @@ class ThingScripts(object):
 
     def handleCallback(self, callback):
         def _handleResult(result):
-            for (success, value) in result:
+            for value in result:
                 if value is False:
                     return
 
@@ -305,8 +305,6 @@ class ThingScripts(object):
         return _handleResult
         
     def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = Value()
-
         deferList = []
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
@@ -326,7 +324,8 @@ class ThingScripts(object):
             
         if returnVal:
             # This is actually blocking code, but is rarely used.
-            d = defer.DeferredList(deferList)
+            ok = Value()
+            d = defer.gatherResults(deferList)
             d.addCallback(self.makeResult(ok))
             while True:
                 try:
@@ -339,8 +338,39 @@ class ThingScripts(object):
                 
             return ok.value if type(ok.value) != bool else None
         elif end:
-            d = defer.DeferredList(deferList)
+            d = defer.gatherResults(deferList)
             d.addCallback(self.handleCallback(end))
+        else:
+            defer.DeferredList(deferList)
+    @defer.inlineCallbacks
+    def _runDefer(self, thing, creature, end, returnVal, **kwargs):
+        deferList = []
+        if thing in self.thingScripts:
+            for func in self.thingScripts[thing]:
+                if func:
+                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+        
+        if thing.thingId() in self.scripts:
+            for func in self.scripts[thing.thingId()]:
+                if func:
+                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
+        
+        for aid in thing.actionIds():
+            if aid in self.scripts:
+                for func in self.scripts[aid]:
+                    if func:
+                        deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+            
+        if returnVal:
+            # This is actually blocking code, but is rarely used.
+            ok = Value()
+            d = defer.gatherResults(deferList)
+            yield d
+        elif end:
+            d = defer.gatherResults(deferList)
+            d.addCallback(self.handleCallback(end))
+        else:
+            defer.DeferredList(deferList)
             
 class CreatureScripts(ThingScripts):
     def _run(self, thing, creature, end, returnVal, **kwargs):
