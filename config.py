@@ -159,6 +159,10 @@ enableMarket = True # It works for 9.44+ only. Lower versions might not access i
 # MIGHT BE BUGGY, NOT WELL TESTED!
 findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15%
 
+# Language
+# Default (fallback) language.
+defaultLanguage = "en_EN" # ISO-4 code
+
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
 suggestedGameServerThreadPoolSize = 6 # sqlMaxConnections + 1 is often good enough

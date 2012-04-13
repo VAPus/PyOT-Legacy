@@ -120,17 +120,29 @@ def loader(timer):
         
         print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")
         
-         
+    
+    # Loading languages
+    print "> > Loading languages... ",
+    import language
+    if language.LANGUAGES:
+        print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
+    else:
+        print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
+        
     # Globalize certain things
     print "> > Globalize data...",
     import game.player, game.creature, game.npc, game.monster, game.spell, game.party
     __builtin__.enum = game.enum
+    
     for i in dir(game.enum):
         if not "__" in i:
             setattr(__builtin__, i, getattr(game.enum, i))
+            
     for i in globalize:
         setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
+        
     print "%65s\n" % _txtColor("\t[DONE]", "blue")    
+    
     __builtin__.sql = sql.conn
     __builtin__.config = config
     __builtin__.register = game.scriptsystem.register
