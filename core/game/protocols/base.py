@@ -1160,8 +1160,6 @@ class BaseProtocol(object):
         else:
             onThing = game.map.getTile(onPosition).creatures()[0]
         
-        
-        end2 = None
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
@@ -1186,8 +1184,8 @@ class BaseProtocol(object):
                     scount += 1
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                end = lambda: game.scriptsystem.get('useWith').runSync(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').runSync(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
 
 
     def handleAttack(self, player, packet):

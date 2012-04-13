@@ -29,6 +29,7 @@ def onSendParcelOrLetter(creature, position, thing, onId, onThing, **k):
             return
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
+            
     elif onId == ITEM_PARCEL:
         found = None
         for item in onThing.container.items:
