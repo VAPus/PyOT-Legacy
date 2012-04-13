@@ -369,8 +369,9 @@ class ThingScripts(object):
         elif end:
             d = defer.gatherResults(deferList)
             d.addCallback(self.handleCallback(end))
+            yield d
         else:
-            defer.DeferredList(deferList)
+            yield defer.DeferredList(deferList)
             
 class CreatureScripts(ThingScripts):
     def _run(self, thing, creature, end, returnVal, **kwargs):
