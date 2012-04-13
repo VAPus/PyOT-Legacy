@@ -235,17 +235,17 @@ class Item(object):
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
-        description = "You see %s" % self.name()
+        description = _l(player, "You see %s") % self.name()
         if self.showDuration:
-            description += "that will expire in %d seconds." % self.duration # TODO: days? , minutes, hours
+            description += _lp(player, "that will expire in %d second.", "that will expire in %d seconds.", self.duration) % self.duration # TODO: days? , minutes, hours
         if self.containerSize:
-            description += " (Vol:%d)." % self.containerSize
+            description += _l(player, " (Vol:%d).") % self.containerSize
         if (self.armor or (self.speed and self.pickable) or self.attack or self.defence or self.showcharges) and (not self.ammoType): #need to include crossbows.
             description += " ("
             if self.armor:
-                description += "Arm:%d" % self.armor
+                description += _l(player, "Arm:%d") % self.armor
             if self.attack:
-                description += "Atk:%d" % self.attack
+                description += _l(player, "Atk:%d") % self.attack
             moreatk = ""
             for elem in elems:
                 value = self.__getattr__(elem)
@@ -253,22 +253,22 @@ class Item(object):
                     pre = elem[len("element"):]
                     moreatk += " %+d %s" % (value, pre.lower())
             if moreatk:
-                description += " physical %s" % moreatk
+                description += _l(player, " physical %s") % moreatk
             if self.extraatk:
-                description += " %+d" % self.extraatk
+                description += _l(player, " %+d") % self.extraatk
             if self.defence:
                 if self.attack:
                     description += ", "
-                description += "Def:%d" % self.defence
+                description += _l(player, "Def:%d") % self.defence
             if self.extradef:
-                description += " %+d" % self.extradef
+                description += _l(player, " %+d") % self.extradef
             morearm = ""
             if self.speed:
-                morearm += ", %+d speed" % self.speed
+                morearm += _l(player, ", %+d speed") % self.speed
             if self.__getattr__('magiclevelpoints'):
-                morearm += ", %+d magic level" % self.__getattr__('magiclevelpoints')
+                morearm += _l(player, ", %+d magic level") % self.__getattr__('magiclevelpoints')
             if self.__getattr__('absorbPercentAll'):
-                morearm = ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain' % {"all":self.__getattr__('absorbPercentAll')}
+                morearm = _l(player, ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain') % {"all":self.__getattr__('absorbPercentAll')}
             # Step one, names to dict with value
             bonuses = {}
             for bns in bonus:
@@ -289,13 +289,13 @@ class Item(object):
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:
-                extra += "\nIt weighs %.2f oz." % (float(self.weight + self.container.weight()) / 100)
+                extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight + self.container.weight()) / 100)
                 
             elif self.weight:
                 if self.count:
-                    extra += "\nIt weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
+                    extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.count) * float(self.weight) / 100)
                 else:
-                    extra += "\nIt weighs %.2f oz." % (float(self.weight) / 100)
+                    extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight) / 100)
 
             # Special description, hacky.
             if "description" in self.__dict__:
@@ -304,7 +304,7 @@ class Item(object):
                 extra = "\n%s" % items[self.itemId]["description"]
 
         if self.text and (player and (not position or position.x == 0xFFFF or player.inRange(position, 4, 4))):
-            extra += "\nYou Read: %s" % self.text
+            extra += _l(player, "\nYou Read: %s") % self.text
 
         return "%s%s\n" % (description, extra)
         

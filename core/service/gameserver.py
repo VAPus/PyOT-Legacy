@@ -130,13 +130,16 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
 
             if not account:
                 account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
                 if not account or account == True:
                     self.exitWithError("Invalid username or password")
 
+            if not len(account) >= 2 or not account[1]:
+                account[1] = config.defaultLanguage
+                
             character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`direction`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.account_id = %s AND p.`name` = %s", (account[0][0], characterName))
 
             if not character:
@@ -172,7 +175,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
-                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "direction": cd[15], "sex": cd[15], "looktype": cd[17], "lookhead": cd[18], "lookbody": cd[19], "looklegs": cd[20], "lookfeet": cd[21], "lookaddons": cd[22], "lookmount": cd[23], "town_id": cd[24], "skull": cd[25], "stamina": cd[26], "storage": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30], "skills": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "skill_tries": {SKILL_FIST: cd[32], SKILL_SWORD: cd[34], SKILL_CLUB: cd[36], SKILL_AXE: cd[38], SKILL_DISTANCE: cd[40], SKILL_SHIELD: cd[42], SKILL_FISH: cd[44]}}
+                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "direction": cd[15], "sex": cd[15], "looktype": cd[17], "lookhead": cd[18], "lookbody": cd[19], "looklegs": cd[20], "lookfeet": cd[21], "lookaddons": cd[22], "lookmount": cd[23], "town_id": cd[24], "skull": cd[25], "stamina": cd[26], "storage": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30], "skills": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "skill_tries": {SKILL_FIST: cd[32], SKILL_SWORD: cd[34], SKILL_CLUB: cd[36], SKILL_AXE: cd[38], SKILL_DISTANCE: cd[40], SKILL_SHIELD: cd[42], SKILL_FISH: cd[44]}, "language":account[1]}
 
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]

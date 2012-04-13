@@ -25058,3 +25058,5 @@ ADD `club_tries` INT( 11 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `club` ;
 ALTER TABLE `players` ADD `online` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `lastlogin` ;
 
 ALTER TABLE `players` ADD `instanceId` MEDIUMINT( 5 ) NULL DEFAULT NULL AFTER `posz` ;
+
+ALTER TABLE `accounts` ADD `language` CHAR( 5 ) NOT NULL DEFAULT 'en_EN' AFTER `premdays` 

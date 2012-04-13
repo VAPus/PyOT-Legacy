@@ -413,11 +413,11 @@ class Spell(object):
                 elif self.targetType == TARGET_TARGET and not self.targetArea:
                     return False
                 elif self.targetType == TARGET_TARGETONLY:
-                    return creature.cancelMessage("You need a target to cast this spell.")	
+                    return creature.cancelMessage(_l(creature, "You need a target to cast this spell."))
  
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
-                    creature.cancelMessage("Target is too far away")
+                    creature.cancelMessage(_l(creature, "Target is too far away"))
 
                     return False
                     
@@ -427,10 +427,10 @@ class Spell(object):
                     return False
                 
                 if self.learned and not creature.canUseSpell(self.name):
-                    return creature.cancelMessage("You need to learn this spell first.")
+                    return creature.cancelMessage(_l(creature, "You need to learn this spell first."))
                     
                 if self.vocations and creature.getVocationId() not in self.vocations:
-                    return creature.cancelMessage("Your vocation cannot use this spell.")
+                    return creature.cancelMessage(_l(creature, "Your vocation cannot use this spell."))
                     
                 if self._requireGreater:
                     for var in self._requireGreater:
@@ -442,7 +442,7 @@ class Spell(object):
                 if self._requireLess:
                     for var in self._requireLess:
                         if creature.data[var] > self._requireLess[var]:
-                            creature.message("Your %s is too high!" % var)
+                            creature.message(_l(creature, "Your %s is too high!") % var)
 
                             return False
                 
@@ -562,7 +562,7 @@ class Rune(Spell):
                     
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
-                    creature.cancelMessage("Target is too far away")
+                    creature.cancelMessage(_l(creature, "Target is too far away"))
                     return False
                     
                 if not creature.canDoSpell(self.icon, self.group):
@@ -570,10 +570,10 @@ class Rune(Spell):
                     return False
 
                 if self.learned and not creature.canUseSpell(self.name):
-                    return creature.cancelMessage("You need to learn this spell first.")
+                    return creature.cancelMessage(_l(creature, "You need to learn this spell first."))
                     
                 if self.vocations and creature.getVocationId() not in self.vocations:
-                    return creature.cancelMessage("Your vocation cannot use this spell.")
+                    return creature.cancelMessage(_l(creature, "Your vocation cannot use this spell."))
                     
                 if self._requireGreater:
                     for var in self._requireGreater:
@@ -584,7 +584,7 @@ class Rune(Spell):
                 if self._requireLess:
                     for var in self._requireLess:
                         if creature.data[var] > self._requireLess[var]:
-                            creature.message("Your %s is too high!" % var)
+                            creature.message(_l(creature, "Your %s is too high!") % var)
                             return False
                 
                 if self._requireCallback:

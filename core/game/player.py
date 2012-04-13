@@ -178,25 +178,24 @@ class Player(Creature):
         
     def sexPrefix(self):
         if self.data["sex"] == 1:
-            return "He"
+            return _("He")
         else:
-            return "She"
+            return _("She")
     
     def sexAdjective(self):
         if self.data["sex"] == 1:
-            return "his"
+            return _("his")
         else:
-            return "heres"
+            return _("heres")
             
     def description(self, isSelf=False):
         if isSelf:
-            output = "You see yourself. You are %s." % (
-                                                self.getVocation().description())
+            output = _l(self, "You see yourself. You are %s.") % _l(self, self.getVocation().description())
         else:
-            output = "You see %s (Level %d). %s is %s." % (self.name(),
-                                                self.data["level"],
-                                                self.sexPrefix(),
-                                                self.getVocation().description())
+            output = _l(self, "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
+                                                "level": self.data["level"],
+                                                "prefix": _l(self, self.sexPrefix()),
+                                                "description": _l(self, self.getVocation().description())}
         return output
         
     def packet(self, *args):
@@ -709,7 +708,7 @@ class Player(Creature):
         
         if up:
             level = 0
-            self.message("You gained %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp, pos=self.position)
+            self.message(_lp(self, "You gained %d experience point.", "You gained %d experience points.". exp) % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp, pos=self.position)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break
@@ -718,7 +717,7 @@ class Player(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message("You lost %d experience points." % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
+            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -1011,32 +1010,32 @@ class Player(Creature):
         self.message(message, 'MSG_STATUS_SMALL')
         
     def notPossible(self):
-        self.cancelMessage("Sorry, not possible.")
+        self.cancelMessage(_l(self, "Sorry, not possible."))
 
     def notPickupable(self):
-        self.cancelMessage("You cannot take this object.")
+        self.cancelMessage(_l(self, "You cannot take this object."))
         
     def tooHeavy(self):
         raise Exception()
-        self.cancelMessage("This object is too heavy for you to carry.")
+        self.cancelMessage(_l(self, "This object is too heavy for you to carry."))
         
     def outOfRange(self):
-        self.cancelMessage("Destination is out of range.")
+        self.cancelMessage(_l(self, "Destination is out of range."))
 
     def notEnoughRoom(self):
-        self.cancelMessage("There is not enough room.")
+        self.cancelMessage(_l(self, "There is not enough room."))
         
     def exhausted(self):
-        self.cancelMessage("You are exhausted.")
+        self.cancelMessage(_l(self, "You are exhausted."))
 
     def needMagicItem(self):
-        self.cancelMessage("You need a magic item to cast this spell.")
+        self.cancelMessage(_l(self, "You need a magic item to cast this spell."))
     
     def notEnough(self, word):
-        self.cancelMessage("You do not have enough %s." % word)
+        self.cancelMessage(_l(self, "You do not have enough %s." % _l(self, word)))
 
     def onlyOnCreatures(self):
-        self.cancelMessage("You can only use it on creatures.")
+        self.cancelMessage(_l(self, "You can only use it on creatures."))
         
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
@@ -1411,7 +1410,7 @@ class Player(Creature):
             
             if not channel:
                 print id
-                return self.cancelMessage("Channel not found.")
+                return self.cancelMessage(_l(self, "Channel not found."))
                 
             stream.uint16(id)
             stream.string(channel.name)
@@ -1871,7 +1870,7 @@ class Player(Creature):
     # Stuff from protocol:
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
-            self.message("Message too long")
+            self.message(_l(self, "Message too long"))
             return
             
         splits = text.split(" ")
@@ -1945,7 +1944,7 @@ class Player(Creature):
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
 
     def criticalHit(self):
-        self.message("You strike a critical hit!", 'MSG_STATUS_CONSOLE_RED')
+        self.message(_l(self, "You strike a critical hit!"), 'MSG_STATUS_CONSOLE_RED')
     
     def cancelTarget(self):
         if self.target:
@@ -2017,7 +2016,7 @@ class Player(Creature):
             
             self.target = None
             self.targetMode = 0
-            self.message("Target lost.") # Required :p
+            self.message(_l(self, "Target lost.")) # Required :p
             return
             
         if cid in allCreatures:
