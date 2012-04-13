@@ -44,7 +44,7 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "_txtColor"]
 
 # The loader rutines, async loading :)
 def loader(timer):
@@ -54,9 +54,15 @@ def loader(timer):
     
     # Begin loading items in the background
     d = game.item.loadItems()
-
+    
+    # Reset online status
+    print "> > Reseting players online status...",
+    sql.conn.runQuery("UPDATE players SET online = 0")
+    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    
     @inlineCallbacks
-    def _sql_(*a):
+    def sync(d, timer):
+        print "> > Loading global data...",
         for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
             if x[2] == 'json':
                 globalStorage[x[0]] = otjson.loads(x[1])
@@ -64,35 +70,33 @@ def loader(timer):
                 globalStorage[x[0]] = pickle.loads(x[1])
             else:
                 globalStorage[x[0]] = x[1]
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
+        print "> > Loading groups...",
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
             groups[x[0]] = (x[1], otjson.loads(x[2]))
-            
-    _sql_()        
-    
-    @inlineCallbacks
-    def _sql2_(*a):
+        print "%70s\n" % _txtColor("\t[DONE]", "blue")
+        
+        print "> > Loading house data...",
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
             game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
-    
-    
-    d.addCallback(_sql2_) # Houses goes after items
-    
-    # Reset online status
-    sql.conn.runQuery("UPDATE players SET online = 0")
-    
-    def sync(d, timer):
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
         # Load scripts
+        print "> > Loading scripts...",
         game.scriptsystem.importer()
         game.scriptsystem.get("startup").runSync()
-
+        print "%65s\n" % _txtColor("\t[DONE]", "blue")
+        
         # Load map (if configurated to do so)
         if config.loadEntierMap:
+            print "> > Loading the entier map...",
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
                 x, y, junk = fileSec.split('/')[-1].split('.')
                 game.map.load(int(x),int(y), None)
-            log.msg("Loaded entier map in %f" % (time.time() - begin))
+            print "%60s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
             
         # Charge rent?
         def _charge(house):
@@ -106,12 +110,19 @@ def loader(timer):
                 _charge(house)
             else:
                 callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)
-                
+        
+        
+        # Now we're online :)
+        print _txtColor("Message of the Day: %s" % config.motd, "red")
         log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
         
+        IS_ONLINE = True
+        
+        print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")
         
          
     # Globalize certain things
+    print "> > Globalize data...",
     import game.player, game.creature, game.npc, game.monster, game.spell, game.party
     __builtin__.enum = game.enum
     for i in dir(game.enum):
@@ -119,7 +130,7 @@ def loader(timer):
             setattr(__builtin__, i, getattr(game.enum, i))
     for i in globalize:
         setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
-        
+    print "%65s\n" % _txtColor("\t[DONE]", "blue")    
     __builtin__.sql = sql.conn
     __builtin__.config = config
     __builtin__.register = game.scriptsystem.register
@@ -181,13 +192,17 @@ def loader(timer):
     d.addCallback(sync, timer)
     
     # Load protocols
+    print "> > Loading game protocols...",
     for version in config.supportProtocols:
         game.protocol.loadProtocol(version)
-
+    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    
     # Do we issue saves?
     if config.doSaveAll:
+        print "> > Schedule global save...",
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-    
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
     # Do we save on shutdowns?
     if config.saveOnShutdown:
         game.scriptsystem.register("shutdown", lambda **k: saveAll(True), False)
@@ -195,12 +210,12 @@ def loader(timer):
     # Reset online status on shutdown
     game.scriptsystem.register("shutdown", lambda **k: sql.conn.runQuery("UPDATE players SET online = 0"), False)
     # Light stuff
+    print "> > Turn world time and light on...",
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+    print "%50s" % _txtColor("\t[DONE]", "blue")
     
     reactor.callLater(60, looper, game.pathfinder.clear, 60)
-    # Now we're online :)
-    IS_ONLINE = True
     
 # Just a inner funny call
 def looper(function, time):
@@ -997,4 +1012,26 @@ def _():
     else:
         yield defer.maybeDeferred()
     returnValue(otjson.dumps(e))
+    
+    
+# COLORS
+import platform
+if platform.system() == "Windows":
+    # No colorss? :(
+    _txtColor = lambda x: x
+else:
+    def _txtColor(text, color):
+        
+        if color == "blue":
+            color = 34
+        elif color == "red":
+            color = 31
+        elif color == "green":
+            color = 32
+        elif color == "yellow":
+            color = 33
+        RESET_SEQ = "\033[0m"
+        COLOR_SEQ = "\033[1;%dm"
+
+        return "%s%s%s" % (COLOR_SEQ % color, text, RESET_SEQ)
     

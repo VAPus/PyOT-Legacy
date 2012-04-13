@@ -603,7 +603,7 @@ def loadItems():
     global itemNames
     #global itemAttributes
     
-    log.msg("Loading items...")
+    print "> > Loading items...\n"
     
     if config.itemCache:
         try:
@@ -672,8 +672,8 @@ def loadItems():
             except:
                 loadItems[data[0]][data[1]] = data[2]
 
-    log.msg("%d Items loaded" % len(loadItems))
-
+    print "\n> > Items (%s) loaded..." % len(loadItems),
+    print "%60s\n" % _txtColor("\t[DONE]", "blue")
             
     # Replace the existing items
     items = loadItems
