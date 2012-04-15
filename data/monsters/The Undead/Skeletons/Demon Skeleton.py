@@ -1,4 +1,4 @@
-demon_skeleton = game.monster.genMonster(_("Demon Skeleton"), (37, 5963), _("a demon skeleton"))
+demon_skeleton = game.monster.genMonster("Demon Skeleton", (37, 5963), "a demon skeleton")
 demon_skeleton.setHealth(400)
 demon_skeleton.bloodType(color="undead")
 demon_skeleton.setDefense(armor=26, fire=0, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)

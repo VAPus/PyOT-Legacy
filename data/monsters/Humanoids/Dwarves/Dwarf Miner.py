@@ -1,5 +1,5 @@
 #some unknown information
-dwarf_miner = game.monster.genMonster(_("Dwarf Miner"), (160, 5980), _("a dwarf miner"))#corpse
+dwarf_miner = game.monster.genMonster("Dwarf Miner", (160, 5980), "a dwarf miner")#corpse
 dwarf_miner.setOutfit(95, 95, 95, 95)#
 dwarf_miner.setHealth(120)
 dwarf_miner.bloodType(color="blood")

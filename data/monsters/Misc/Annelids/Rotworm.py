@@ -1,4 +1,4 @@
-Rotworm = game.monster.genMonster(_("Rotworm"), (26, 5967), _("a Rotworm"))
+Rotworm = game.monster.genMonster("Rotworm", (26, 5967), "a Rotworm")
 Rotworm.setTargetChance(0)
 Rotworm.bloodType("blood")
 Rotworm.setHealth(65)

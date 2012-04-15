@@ -1,4 +1,4 @@
-hellspawn = game.monster.genMonster(_("Hellspawn"), (322, 9923), _("a hellspawn"))
+hellspawn = game.monster.genMonster("Hellspawn", (322, 9923), "a hellspawn")
 hellspawn.setHealth(3500)
 hellspawn.bloodType(color="blood")
 hellspawn.setDefense(armor=68, fire=0.6, earth=0.2, energy=0.9, ice=1.1, holy=0.7, death=1.05, physical=0.9, drown=1)

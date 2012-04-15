@@ -1,4 +1,4 @@
-Gazer = game.monster.genMonster(_("Gazer"), (226, 6079), _("a Gazer"))
+Gazer = game.monster.genMonster("Gazer", (226, 6079), "a Gazer")
 Gazer.setTargetChance(10)
 Gazer.bloodType("blood")
 Gazer.setHealth(120)

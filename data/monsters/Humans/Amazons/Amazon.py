@@ -1,4 +1,4 @@
-Amazon = game.monster.genMonster(_("Amazon"), (137, 6081), _("a Amazon"))
+Amazon = game.monster.genMonster("Amazon", (137, 6081), "a Amazon")
 Amazon.setOutfit(113, 120, 114, 132)
 Amazon.setTargetChance(10)
 Amazon.bloodType("blood")

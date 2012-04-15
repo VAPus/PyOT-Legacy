@@ -1,4 +1,4 @@
-Deer = game.monster.genMonster(_("Deer"), (31, 5970), _("a deer"))
+Deer = game.monster.genMonster("Deer", (31, 5970), "a deer")
 Deer.setTargetChance(10)
 Deer.bloodType("blood")
 Deer.setHealth(25)

@@ -1,4 +1,4 @@
-Stampor = game.monster.genMonster(_("Stampor"), (381, 13246), _("a stampor"))
+Stampor = game.monster.genMonster("Stampor", (381, 13246), "a stampor")
 Stampor.setTargetChance(10)
 Stampor.bloodType("blood")
 Stampor.setHealth(1200)

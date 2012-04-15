@@ -1,5 +1,5 @@
 
-witch = game.monster.genMonster(_("Witch"), (54, 6081), _("a witch"))
+witch = game.monster.genMonster("Witch", (54, 6081), "a witch")
 witch.setHealth(300)
 witch.bloodType(color="blood")
 witch.setDefense(armor=8, fire=1, earth=0.8, energy=0, ice=1, holy=1, death=1.05, physical=1.05, drown=1)

@@ -1,4 +1,4 @@
-Mammoth = game.monster.genMonster(_("Mammoth"), (199, 6074), _("a mammoth"))
+Mammoth = game.monster.genMonster("Mammoth", (199, 6074), "a mammoth")
 Mammoth.setTargetChance(10)
 Mammoth.bloodType("blood")
 Mammoth.setHealth(320)

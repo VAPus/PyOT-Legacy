@@ -1,5 +1,5 @@
 
-snake = game.monster.genMonster(_("Snake"), (28, 2817), _("a snake"))
+snake = game.monster.genMonster("Snake", (28, 2817), "a snake")
 snake.setHealth(15)
 snake.bloodType(color="blood")
 snake.setDefense(armor=2, fire=1.1, earth=0, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)

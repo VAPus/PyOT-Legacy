@@ -1,4 +1,4 @@
-Hunter = game.monster.genMonster(_("Hunter"), (129, 6080), _("a Hunter"))
+Hunter = game.monster.genMonster("Hunter", (129, 6080), "a Hunter")
 Hunter.setOutfit(95, 116, 121, 115)
 Hunter.setTargetChance(10)
 Hunter.bloodType("blood")

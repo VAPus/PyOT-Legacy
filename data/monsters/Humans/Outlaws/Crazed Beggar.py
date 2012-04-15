@@ -1,4 +1,4 @@
-Crazed_Beggar = game.monster.genMonster(_("Crazed Beggar"), (153, 6080), _("a Crazed Beggar"))
+Crazed_Beggar = game.monster.genMonster("Crazed Beggar", (153, 6080), "a Crazed Beggar")
 Crazed_Beggar.setOutfit(38, 97, 59, 38)
 Crazed_Beggar.setAddons(3)
 Crazed_Beggar.setTargetChance(0)

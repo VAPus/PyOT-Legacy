@@ -1,4 +1,4 @@
-bug = game.monster.genMonster(_("Bug"), (45, 5990), _("a bug"))
+bug = game.monster.genMonster("Bug", (45, 5990), "a bug")
 bug.bloodType("slime")
 bug.setHealth(29)
 bug.setExperience(18)

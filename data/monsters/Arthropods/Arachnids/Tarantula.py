@@ -1,5 +1,5 @@
 
-tarantula = game.monster.genMonster(_("Tarantula"), (219, 5995), _("a tarantula"))
+tarantula = game.monster.genMonster("Tarantula", (219, 5995), "a tarantula")
 tarantula.setHealth(225)
 tarantula.bloodType(color="slime")
 tarantula.setDefense(armor=22, fire=1.15, earth=0, energy=0.9, ice=1.1, holy=1, death=1, physical=1, drown=1)

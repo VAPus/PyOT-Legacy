@@ -1,4 +1,4 @@
-goblin_assassin = game.monster.genMonster(_("Goblin Assassin"), (296, 6002), _("a goblin assassin"))
+goblin_assassin = game.monster.genMonster("Goblin Assassin", (296, 6002), "a goblin assassin")
 goblin_assassin.setHealth(75, healthmax=75)
 goblin_assassin.bloodType(color="blood")
 goblin_assassin.setDefense(armor=7, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.1, physical=1, drown=1)

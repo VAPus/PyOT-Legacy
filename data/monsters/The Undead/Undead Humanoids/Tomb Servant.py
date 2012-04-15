@@ -1,4 +1,4 @@
-tomb_servant = game.monster.genMonster(_("Tomb Servant"), (100, 5995), _("a tomb servant"))#turns into ash
+tomb_servant = game.monster.genMonster("Tomb Servant", (100, 5995), "a tomb servant")#turns into ash
 tomb_servant.setHealth(475)
 tomb_servant.bloodType(color="blood")
 tomb_servant.setDefense(armor=24, fire=1.1, earth=1, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=1)

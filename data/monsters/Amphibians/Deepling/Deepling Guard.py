@@ -1,4 +1,4 @@
-Deepling_Guard = game.monster.genMonster(_("Deepling Guard"), (8, 5980), _("a deepling guard")) #neeed outfit and looktype
+Deepling_Guard = game.monster.genMonster("Deepling Guard", (8, 5980), "a deepling guard") #neeed outfit and looktype
 Deepling_Guard.setHealth(1900, healthmax=1900 )
 Deepling_Guard.bloodType(color="blood")
 Deepling_Guard.setDefense(armor=1, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=0.9, physical=1, drown=1)

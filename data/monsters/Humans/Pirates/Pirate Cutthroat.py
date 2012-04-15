@@ -1,4 +1,4 @@
-pirate_cutthroat = game.monster.genMonster(_("Pirate Cutthroat"), (96, 6080), _("a pirate cutthroat"))
+pirate_cutthroat = game.monster.genMonster("Pirate Cutthroat", (96, 6080), "a pirate cutthroat")
 pirate_cutthroat.setHealth(325)
 pirate_cutthroat.bloodType(color="blood")
 pirate_cutthroat.setDefense(armor=15, fire=1.05, earth=0.9, energy=1, ice=0.95, holy=0.8, death=1.05, physical=1, drown=1)

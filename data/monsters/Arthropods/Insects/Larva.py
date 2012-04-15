@@ -1,4 +1,4 @@
-larva = game.monster.genMonster(_("Larva"), (82, 6023), _("a larva"))
+larva = game.monster.genMonster("Larva", (82, 6023), "a larva")
 larva.setHealth(70, healthmax=70)
 larva.bloodType(color="slime")
 larva.setDefense(armor=4, fire=1.1, earth=0, energy=0.9, ice=1.05, holy=1, death=1, physical=1, drown=1)

@@ -1,5 +1,5 @@
 # bad
-boar = game.monster.genMonster(_("Boar"), (380, 13239), _("a boar"))
+boar = game.monster.genMonster("Boar", (380, 13239), "a boar")
 boar.bloodType("blood")
 boar.setHealth(198)
 boar.setExperience(60)

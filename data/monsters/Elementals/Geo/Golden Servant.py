@@ -1,4 +1,4 @@
-golden_servant = game.monster.genMonster(_("Golden Servant"), (396, 5980), _("a golden servant"))
+golden_servant = game.monster.genMonster("Golden Servant", (396, 5980), "a golden servant")
 golden_servant.setHealth(550)
 golden_servant.bloodType(color="blood")
 golden_servant.setDefense(armor=31, fire=0.85, earth=0.2, energy=0.75, ice=1.05, holy=0, death=1, physical=1, drown=1)

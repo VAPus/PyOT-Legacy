@@ -1,4 +1,4 @@
-grim_reaper = game.monster.genMonster(_("Grim Reaper"), (300, 8955), _("a grim reaper"))
+grim_reaper = game.monster.genMonster("Grim Reaper", (300, 8955), "a grim reaper")
 grim_reaper.setHealth(3900)
 grim_reaper.bloodType(color="undead")
 grim_reaper.setDefense(armor=42, fire=1.1, earth=0.6, energy=1.1, ice=0.35, holy=1.1, death=0.2, physical=0.8, drown=1)

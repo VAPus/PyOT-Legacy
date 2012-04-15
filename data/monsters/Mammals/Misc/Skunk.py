@@ -1,4 +1,4 @@
-Skunk = game.monster.genMonster(_("Skunk"), (106, 6035), _("a skunk"))
+Skunk = game.monster.genMonster("Skunk", (106, 6035), "a skunk")
 Skunk.setTargetChance(0)
 Skunk.bloodType("blood")
 Skunk.setHealth(20)

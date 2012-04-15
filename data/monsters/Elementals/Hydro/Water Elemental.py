@@ -1,4 +1,4 @@
-water_elemental = game.monster.genMonster(_("Water Elemental"), (286, 10499), _("a water elemental"))
+water_elemental = game.monster.genMonster("Water Elemental", (286, 10499), "a water elemental")
 water_elemental.setHealth(550, healthmax=550)
 water_elemental.bloodType(color="undead")
 water_elemental.setDefense(armor=50, fire=0, earth=0, energy=1.25, ice=0, holy=0.5, death=0.5, physical=0.3, drown=1)

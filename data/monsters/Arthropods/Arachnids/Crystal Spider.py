@@ -1,5 +1,5 @@
 
-crystal_spider = game.monster.genMonster(_("Crystal Spider"), (263, 7344), _("a crystal spider"))
+crystal_spider = game.monster.genMonster("Crystal Spider", (263, 7344), "a crystal spider")
 crystal_spider.setHealth(1250)
 crystal_spider.bloodType(color="undead")
 crystal_spider.setDefense(armor=47, fire=1, earth=0.8, energy=1.2, ice=1, holy=0.8, death=1, physical=1, drown=1)

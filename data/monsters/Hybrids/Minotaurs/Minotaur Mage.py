@@ -1,5 +1,5 @@
 
-minotaur_mage = game.monster.genMonster(_("Minotaur Mage"), (23, 5981), _("a minotaur mage"))
+minotaur_mage = game.monster.genMonster("Minotaur Mage", (23, 5981), "a minotaur mage")
 minotaur_mage.setHealth(155)
 minotaur_mage.bloodType(color="blood")
 minotaur_mage.setDefense(armor=20, fire=1.1, earth=0.8, energy=0.8, ice=1, holy=0.9, death=1.05, physical=1, drown=1)

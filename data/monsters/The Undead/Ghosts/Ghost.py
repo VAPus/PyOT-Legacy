@@ -1,4 +1,4 @@
-ghost = game.monster.genMonster(_("Ghost"), (48, 5993), _("a ghost"))
+ghost = game.monster.genMonster("Ghost", (48, 5993), "a ghost")
 ghost.setHealth(150)
 ghost.bloodType(color="undead")
 ghost.setDefense(armor=2, fire=1, earth=0, energy=1, ice=1, holy=1, death=0, physical=0, drown=0)

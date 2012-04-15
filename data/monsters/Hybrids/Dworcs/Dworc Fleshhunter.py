@@ -1,4 +1,4 @@
-dworc_fleshhunter = game.monster.genMonster(_("Dworc Fleshhunter"), (215, 6058), _("a dworc fleshhunter"))
+dworc_fleshhunter = game.monster.genMonster("Dworc Fleshhunter", (215, 6058), "a dworc fleshhunter")
 dworc_fleshhunter.setHealth(85, healthmax=85)
 dworc_fleshhunter.bloodType(color="blood")
 dworc_fleshhunter.setDefense(armor=2, fire=1.13, earth=0, energy=1, ice=1.13, holy=1, death=1.08, physical=1, drown=1)

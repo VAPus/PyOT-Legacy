@@ -1,5 +1,5 @@
 
-orc_marauder = game.monster.genMonster(_("Orc Marauder "), (342, 11254), _("an orc marauder "))
+orc_marauder = game.monster.genMonster("Orc Marauder ", (342, 11254), "an orc marauder ")
 orc_marauder.setHealth(185, healthmax=185)
 orc_marauder.bloodType(color="blood")
 orc_marauder.setDefense(armor=17, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.9, death=1.1, physical=1, drown=1)

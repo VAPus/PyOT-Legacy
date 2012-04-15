@@ -1,4 +1,4 @@
-killer_caiman = game.monster.genMonster(_("Killer Caiman "), (358, 11138), _("a killer caiman "))
+killer_caiman = game.monster.genMonster("Killer Caiman ", (358, 11138), "a killer caiman ")
 killer_caiman.setHealth(1500)
 killer_caiman.bloodType(color="blood")
 killer_caiman.setDefense(armor=45, fire=1, earth=0.8, energy=1.05, ice=0.9, holy=1, death=1, physical=0.95, drown=1)

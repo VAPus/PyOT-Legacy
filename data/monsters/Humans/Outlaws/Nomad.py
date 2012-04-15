@@ -1,4 +1,4 @@
-Nomad = game.monster.genMonster(_("Nomad"), (146, 6080), _("a Nomad"))
+Nomad = game.monster.genMonster("Nomad", (146, 6080), "a Nomad")
 Nomad.setOutfit(114, 20, 22, 2)
 Nomad.setAddons(3)
 Nomad.setTargetChance(10)

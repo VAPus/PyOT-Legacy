@@ -1,5 +1,5 @@
 #move to misc/shapeshifter folder
-son_of_verminor = game.monster.genMonster(_("Son Of Verminor"), (19, 1496), _("a son of verminor"))
+son_of_verminor = game.monster.genMonster("Son Of Verminor", (19, 1496), "a son of verminor")
 son_of_verminor.setHealth(8500)
 son_of_verminor.bloodType(color="slime")
 son_of_verminor.setDefense(armor=53, fire=0.9, earth=0, energy=0.8, ice=1, holy=1, death=1, physical=1, drown=1)

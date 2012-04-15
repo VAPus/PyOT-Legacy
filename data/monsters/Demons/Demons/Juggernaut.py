@@ -1,4 +1,4 @@
-juggernaut = game.monster.genMonster(_("Juggernaut"), (244, 6336), _("a juggernaut"))
+juggernaut = game.monster.genMonster("Juggernaut", (244, 6336), "a juggernaut")
 juggernaut.setHealth(20000, healthmax=20000)
 juggernaut.bloodType(color="blood")
 juggernaut.setDefense(armor=90, fire=0.7, earth=0.8, energy=1.1, ice=0.9, holy=1.05, death=1, physical=0.8, drown=1)

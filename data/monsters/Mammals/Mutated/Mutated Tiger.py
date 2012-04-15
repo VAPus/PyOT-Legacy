@@ -1,5 +1,5 @@
 
-mutated_tiger = game.monster.genMonster(_("Mutated Tiger"), (318, 9913), _("a mutated tiger"))
+mutated_tiger = game.monster.genMonster("Mutated Tiger", (318, 9913), "a mutated tiger")
 mutated_tiger.setHealth(1100)
 mutated_tiger.bloodType(color="blood")
 mutated_tiger.setDefense(armor=26, fire=0.8, earth=0.2, energy=0.8, ice=-0.8, holy=1, death=1.05, physical=1, drown=1)

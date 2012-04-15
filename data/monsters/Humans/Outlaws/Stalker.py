@@ -1,4 +1,4 @@
-Stalker = game.monster.genMonster(_("Stalker"), (128, 6080), _("a Stalker"))
+Stalker = game.monster.genMonster("Stalker", (128, 6080), "a Stalker")
 Stalker.setOutfit(95, 116, 95, 114)
 Stalker.setTargetChance(10)
 Stalker.bloodType("blood")

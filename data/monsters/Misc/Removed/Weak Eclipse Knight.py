@@ -1,5 +1,5 @@
 #largely unknown
-weak_eclipse_knight = game.monster.genMonster(_("Weak Eclipse Knight"), (234, 6328), _("a weak eclipse knight"))
+weak_eclipse_knight = game.monster.genMonster("Weak Eclipse Knight", (234, 6328), "a weak eclipse knight")
 weak_eclipse_knight.setHealth(10000)
 weak_eclipse_knight.bloodType(color="blood")
 weak_eclipse_knight.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1.1, holy=1.1, death=1, physical=0.9, drown=1)

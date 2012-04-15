@@ -1,4 +1,4 @@
-earth_elemental = game.monster.genMonster(_("Earth Elemental"), (301, 8933), _("a earth elemental"))
+earth_elemental = game.monster.genMonster("Earth Elemental", (301, 8933), "a earth elemental")
 earth_elemental.setHealth(650)
 earth_elemental.bloodType(color="undead")
 earth_elemental.setDefense(armor=58, fire=1.25, earth=0, energy=0, ice=0.85, holy=0.5, death=0.6, physical=0.7, drown=1)

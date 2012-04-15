@@ -1,6 +1,6 @@
 #mostly unknown
 #always around not really a boss
-energized_raging_mage = game.monster.genMonster(_("Energized Raging Mage"), (423, 5995), _("the energized raging mage")) #unknown corpse
+energized_raging_mage = game.monster.genMonster("Energized Raging Mage", (423, 5995), "the energized raging mage") #unknown corpse
 energized_raging_mage.setHealth(4000)
 energized_raging_mage.bloodType(color="blood")
 energized_raging_mage.setDefense(armor=30, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)

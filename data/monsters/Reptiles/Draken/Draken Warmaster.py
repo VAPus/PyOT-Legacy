@@ -1,4 +1,4 @@
-draken_warmaster = game.monster.genMonster(_("Draken Warmaster"), (334, 11107), _("a draken warmaster"))
+draken_warmaster = game.monster.genMonster("Draken Warmaster", (334, 11107), "a draken warmaster")
 draken_warmaster.setHealth(4150)
 draken_warmaster.bloodType(color="blood")
 draken_warmaster.setDefense(armor=48, fire=0, earth=0, energy=0.95, ice=1.05, holy=0.95, death=0.5, physical=0.95, drown=1)

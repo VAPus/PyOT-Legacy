@@ -1,4 +1,4 @@
-herald_of_gloom = game.monster.genMonster(_("Herald of Gloom"), (320, 9915), _("a herald of gloom"))
+herald_of_gloom = game.monster.genMonster("Herald of Gloom", (320, 9915), "a herald of gloom")
 herald_of_gloom.setHealth(450, healthmax=450)
 herald_of_gloom.bloodType(color="blood")#undead?
 herald_of_gloom.setDefense(armor=24, fire=0.6, earth=0.3, energy=1, ice=1, holy=1.1, death=0.9, physical=1.05, drown=1)

@@ -1,4 +1,4 @@
-dragon_lord_hatchling = game.monster.genMonster(_("Dragon Lord Hatchling"), (8, 5980), _("a dragon lord hatchling"))
+dragon_lord_hatchling = game.monster.genMonster("Dragon Lord Hatchling", (8, 5980), "a dragon lord hatchling")
 dragon_lord_hatchling.setHealth(750)
 dragon_lord_hatchling.bloodType(color="blood")
 dragon_lord_hatchling.setDefense(armor=30, fire=0, earth=0.75, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)

@@ -1,4 +1,4 @@
-askarak_demon = game.monster.genMonster(_("Askarak Demon"), (420, 5980), _("an askarak demon"))#corpse
+askarak_demon = game.monster.genMonster("Askarak Demon", (420, 5980), "an askarak demon")#corpse
 askarak_demon.setHealth(1500)
 askarak_demon.bloodType(color="blood")
 askarak_demon.setDefense(armor=26, fire=1.3, earth=1, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#

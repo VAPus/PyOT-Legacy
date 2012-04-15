@@ -1,4 +1,4 @@
-brimstone_bug = game.monster.genMonster(_("Brimstone Bug"), (352, 12527), _("a brimstone bug"))
+brimstone_bug = game.monster.genMonster("Brimstone Bug", (352, 12527), "a brimstone bug")
 brimstone_bug.bloodType("slime")
 brimstone_bug.setHealth(1300)
 brimstone_bug.setExperience(900)

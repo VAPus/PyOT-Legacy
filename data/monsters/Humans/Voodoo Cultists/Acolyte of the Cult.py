@@ -1,4 +1,4 @@
-acolyte_of_the_cult = game.monster.genMonster(_("Acolyte of the Cult"), (194, 6080), _("an acolyte of the cult"))
+acolyte_of_the_cult = game.monster.genMonster("Acolyte of the Cult", (194, 6080), "an acolyte of the cult")
 acolyte_of_the_cult.setOutfit(114, 121, 121, 57)
 acolyte_of_the_cult.setHealth(390, healthmax=390)
 acolyte_of_the_cult.bloodType(color="blood")

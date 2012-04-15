@@ -1,4 +1,4 @@
-Barbarian_Headsplitter = game.monster.genMonster(_("Barbarian Headsplitter"), (253, 6080), _("a Barbarian Headsplitter"))
+Barbarian_Headsplitter = game.monster.genMonster("Barbarian Headsplitter", (253, 6080), "a Barbarian Headsplitter")
 Barbarian_Headsplitter.setOutfit(115,105,119,132)
 Barbarian_Headsplitter.setTargetChance(10)
 Barbarian_Headsplitter.bloodType("blood")

@@ -1,4 +1,4 @@
-banshee = game.monster.genMonster(_("Banshee"), (78, 6019), _("a banshee"))
+banshee = game.monster.genMonster("Banshee", (78, 6019), "a banshee")
 banshee.setHealth(1000)
 banshee.bloodType(color="blood")
 banshee.setDefense(26, fire=0, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)

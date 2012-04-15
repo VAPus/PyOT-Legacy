@@ -1,4 +1,4 @@
-Filth_Toad = game.monster.genMonster(_("Filth Toad"), (222, 6077), _("a filth toad"))
+Filth_Toad = game.monster.genMonster("Filth Toad", (222, 6077), "a filth toad")
 Filth_Toad.setTargetChance(10)
 Filth_Toad.bloodType("slime") ##?
 Filth_Toad.setHealth(185)

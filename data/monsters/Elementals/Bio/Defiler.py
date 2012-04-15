@@ -1,4 +1,4 @@
-defiler = game.monster.genMonster(_("Defiler"), (238, 6532), _("a defiler"))
+defiler = game.monster.genMonster("Defiler", (238, 6532), "a defiler")
 defiler.setHealth(3650)
 defiler.bloodType(color="slime")
 defiler.setDefense(armor=68, fire=1.25, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)

@@ -1,4 +1,4 @@
-charged_energy_elemental = game.monster.genMonster(_("Charged Energy Elemental"), (293, 8966), _("a charged energy elemental"))
+charged_energy_elemental = game.monster.genMonster("Charged Energy Elemental", (293, 8966), "a charged energy elemental")
 charged_energy_elemental.setHealth(500)
 charged_energy_elemental.bloodType(color="undead")
 charged_energy_elemental.setDefense(armor=27, fire=0, earth=1.5, energy=0, ice=0, holy=0, death=0.95, physical=1, drown=1)

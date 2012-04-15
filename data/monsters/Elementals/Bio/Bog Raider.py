@@ -1,4 +1,4 @@
-bog_raider = game.monster.genMonster(_("Bog Raider"), (299, 8951), _("a bog raider"))
+bog_raider = game.monster.genMonster("Bog Raider", (299, 8951), "a bog raider")
 bog_raider.setHealth(1300, healthmax=1300)
 bog_raider.bloodType(color="blood")
 bog_raider.setDefense(armor=22, fire=0.15, earth=0.7, energy=1.1, ice=1.05, holy=1.05, death=0.95, physical=1.05, drown=1)

@@ -1,4 +1,4 @@
-quara_hydromancer = game.monster.genMonster(_("Quara Hydromancer"), (47, 6066), _("a quara hydromancer"))
+quara_hydromancer = game.monster.genMonster("Quara Hydromancer", (47, 6066), "a quara hydromancer")
 quara_hydromancer.setHealth(1100)
 quara_hydromancer.bloodType(color="blood")
 quara_hydromancer.setDefense(armor=33, fire=0, earth=1.1, energy=1.25, ice=0, holy=1, death=1, physical=1, drown=0)

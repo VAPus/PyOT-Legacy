@@ -1,4 +1,4 @@
-dwarf_henchman = game.monster.genMonster(_("Dwarf Henchman"), (160, 5980), _("a dwarf henchman"))
+dwarf_henchman = game.monster.genMonster("Dwarf Henchman", (160, 5980), "a dwarf henchman")
 dwarf_henchman.setOutfit(66, 50, 20, 20)
 dwarf_henchman.setHealth(350)
 dwarf_henchman.bloodType(color="blood")

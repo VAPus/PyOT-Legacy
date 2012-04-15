@@ -1,4 +1,4 @@
-lizard_zaogun = game.monster.genMonster(_("Lizard Zaogun"), (343, 11284), _("a lizard zaogun"))
+lizard_zaogun = game.monster.genMonster("Lizard Zaogun", (343, 11284), "a lizard zaogun")
 lizard_zaogun.setHealth(2955)
 lizard_zaogun.bloodType(color="blood")
 lizard_zaogun.setDefense(armor=46, fire=0.55, earth=0, energy=0.8, ice=0.85, holy=1, death=0.9, physical=0.5, drown=1)

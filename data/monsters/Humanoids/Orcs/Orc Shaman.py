@@ -1,5 +1,5 @@
 
-orc_shaman = game.monster.genMonster(_("Orc Shaman"), (6, 5978), _("an orc shaman"))
+orc_shaman = game.monster.genMonster("Orc Shaman", (6, 5978), "an orc shaman")
 orc_shaman.setHealth(115)
 orc_shaman.bloodType(color="blood")
 orc_shaman.setDefense(armor=8, fire=1, earth=1.1, energy=0.5, ice=1, holy=0.9, death=1.05, physical=1, drown=1)

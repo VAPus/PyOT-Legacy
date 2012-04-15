@@ -1,5 +1,5 @@
 
-running_elite_orc_guard = game.monster.genMonster(_("Running Elite Orc Guard"), (7, 5979), _("a running elite orc guard"))
+running_elite_orc_guard = game.monster.genMonster("Running Elite Orc Guard", (7, 5979), "a running elite orc guard")
 running_elite_orc_guard.setHealth(1)
 running_elite_orc_guard.bloodType(color="blood")
 running_elite_orc_guard.setDefense(-1)

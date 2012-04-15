@@ -1,4 +1,4 @@
-Smuggler = game.monster.genMonster(_("Smuggler"), (134, 6080), _("a Smuggler"))
+Smuggler = game.monster.genMonster("Smuggler", (134, 6080), "a Smuggler")
 Smuggler.setOutfit(95, 0, 113, 115)
 Smuggler.setTargetChance(10)
 Smuggler.bloodType("blood")

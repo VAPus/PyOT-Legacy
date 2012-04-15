@@ -1,5 +1,5 @@
 #mostly unknown
-Elf_Overseer = game.monster.genMonster(_("Elf Overseer"), (159, 5980), _("an elf overseer"))
+Elf_Overseer = game.monster.genMonster("Elf Overseer", (159, 5980), "an elf overseer")
 Elf_Overseer.setOutfit(0, 150, 165, 10)
 Elf_Overseer.setHealth(500, healthmax=500)
 Elf_Overseer.bloodType(color="blood")

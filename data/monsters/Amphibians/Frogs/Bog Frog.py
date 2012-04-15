@@ -1,4 +1,4 @@
-bogl_frog = game.monster.genMonster(_("Bog Frog"), (226, 6079), _("a bog frog")) ##corpse?
+bogl_frog = game.monster.genMonster("Bog Frog", (226, 6079), "a bog frog") ##corpse?
 bogl_frog.setOutfit(255, 255, 255, 255) ##color
 bogl_frog.setTargetChance(10)
 bogl_frog.bloodType("blood")

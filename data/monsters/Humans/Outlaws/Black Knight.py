@@ -1,4 +1,4 @@
-Black_Knight = game.monster.genMonster(_("Black Knight"), (131, 6080), _("a Black Knight"))
+Black_Knight = game.monster.genMonster("Black Knight", (131, 6080), "a Black Knight")
 Black_Knight.setOutfit(95, 95, 95, 95)
 Black_Knight.setAddons(3)
 Black_Knight.setTargetChance(10)
