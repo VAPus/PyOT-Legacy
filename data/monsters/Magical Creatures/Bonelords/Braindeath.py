@@ -1,4 +1,4 @@
-Braindeath = game.monster.genMonster("Braindeath", (226, 6079), "a Braindeath")
+Braindeath = game.monster.genMonster(_("Braindeath"), (226, 6079), _("a Braindeath"))
 Braindeath.setTargetChance(10)
 Braindeath.bloodType("blood")
 Braindeath.setHealth(1225)

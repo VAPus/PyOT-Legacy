@@ -1,4 +1,4 @@
-hellfire_fighter = game.monster.genMonster("Hellfire Fighter", (243, 6324), "a hellfire fighter")
+hellfire_fighter = game.monster.genMonster(_("Hellfire Fighter"), (243, 6324), _("a hellfire fighter"))
 hellfire_fighter.setHealth(3800, healthmax=3800)
 hellfire_fighter.bloodType(color="blood")
 hellfire_fighter.setDefense(armor=68, fire=0, earth=1, energy=0.8, ice=1.25, holy=1, death=0.8, physical=0.5, drown=1)

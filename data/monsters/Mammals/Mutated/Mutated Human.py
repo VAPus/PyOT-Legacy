@@ -1,5 +1,5 @@
 
-mutated_human = game.monster.genMonster("Mutated Human", (323, 9107), "a mutated human")
+mutated_human = game.monster.genMonster(_("Mutated Human"), (323, 9107), _("a mutated human"))
 mutated_human.setHealth(240)
 mutated_human.bloodType(color="blood")
 mutated_human.setDefense(armor=15, fire=1, earth=0, energy=1, ice=0.8, holy=1.25, death=0, physical=1, drown=1)

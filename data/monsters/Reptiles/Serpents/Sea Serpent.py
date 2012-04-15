@@ -1,4 +1,4 @@
-sea_serpent = game.monster.genMonster("Sea Serpent", (275, 8307), "a sea serpent")
+sea_serpent = game.monster.genMonster(_("Sea Serpent"), (275, 8307), _("a sea serpent"))
 sea_serpent.setHealth(1750)
 sea_serpent.bloodType(color="blood")
 sea_serpent.setDefense(armor=27, fire=0.7, earth=1, energy=1.05, ice=0, holy=1, death=0.9, physical=1.1, drown=0)

@@ -1,4 +1,4 @@
-terramite = game.monster.genMonster("Terramite", (346, 11347), "a terramite")
+terramite = game.monster.genMonster(_("Terramite"), (346, 11347), _("a terramite"))
 terramite.setHealth(365)
 terramite.bloodType(color="slime")
 terramite.setDefense(armor=15, fire=1.1, earth=0.8, energy=1.05, ice=1, holy=1, death=1, physical=0.95, drown=1)

@@ -1,5 +1,5 @@
 
-ice_witch = game.monster.genMonster("Ice Witch", (149, 6081), "an ice witch")
+ice_witch = game.monster.genMonster(_("Ice Witch"), (149, 6081), _("an ice witch"))
 ice_witch.setOutfit(0, 47, 105, 105)
 ice_witch.setHealth(650)
 ice_witch.bloodType(color="blood")

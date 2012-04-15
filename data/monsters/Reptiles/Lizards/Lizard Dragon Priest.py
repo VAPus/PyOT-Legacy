@@ -1,4 +1,4 @@
-lizard_dragon_priest = game.monster.genMonster("Lizard Dragon Priest", (339, 11280), "a lizard dragon priest")
+lizard_dragon_priest = game.monster.genMonster(_("Lizard Dragon Priest"), (339, 11280), _("a lizard dragon priest"))
 lizard_dragon_priest.setHealth(1450)
 lizard_dragon_priest.bloodType(color="blood")
 lizard_dragon_priest.setDefense(armor=24, fire=0.15, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

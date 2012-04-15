@@ -1,5 +1,5 @@
 
-dark_magician = game.monster.genMonster("Dark Magician", (133, 6080), "a dark magician")
+dark_magician = game.monster.genMonster(_("Dark Magician"), (133, 6080), _("a dark magician"))
 dark_magician.setOutfit(69, 66, 69, 66) #needs addons
 dark_magician.setHealth(325, healthmax=325)
 dark_magician.bloodType(color="blood")

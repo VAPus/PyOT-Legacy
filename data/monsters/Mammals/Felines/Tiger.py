@@ -1,4 +1,4 @@
-Tiger = game.monster.genMonster("Tiger", (125, 6051), "a tiger")
+Tiger = game.monster.genMonster(_("Tiger"), (125, 6051), _("a tiger"))
 Tiger.setTargetChance(10)
 Tiger.bloodType("blood")
 Tiger.setHealth(75)

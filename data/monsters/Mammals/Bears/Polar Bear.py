@@ -1,4 +1,4 @@
-Polar_Bear = game.monster.genMonster("Polar Bear", (42, 5987), "a polar bear")
+Polar_Bear = game.monster.genMonster(_("Polar Bear"), (42, 5987), _("a polar bear"))
 Polar_Bear.setTargetChance(10)
 Polar_Bear.bloodType("blood")
 Polar_Bear.setHealth(85)

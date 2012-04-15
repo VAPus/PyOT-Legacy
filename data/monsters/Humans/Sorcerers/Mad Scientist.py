@@ -1,5 +1,5 @@
 
-mad_scientist = game.monster.genMonster("Mad Scientist", (133, 6080), "a mad scientist")
+mad_scientist = game.monster.genMonster(_("Mad Scientist"), (133, 6080), _("a mad scientist"))
 mad_scientist.setOutfit(97, 0, 38, 97) #needs 1 addon
 mad_scientist.setHealth(325)
 mad_scientist.bloodType(color="blood")

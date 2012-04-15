@@ -1,4 +1,4 @@
-infernalist = game.monster.genMonster("Infernalist", (130, 6080), "a infernalist")
+infernalist = game.monster.genMonster(_("Infernalist"), (130, 6080), _("a infernalist"))
 infernalist.setOutfit(78, 76, 94, 115) #needs 2 addons
 infernalist.setHealth(3650, healthmax=3650)
 infernalist.bloodType(color="blood")

@@ -1,4 +1,4 @@
-green_djinn = game.monster.genMonster("Green Djinn", (51, 6016), "a green djinn")
+green_djinn = game.monster.genMonster(_("Green Djinn"), (51, 6016), _("a green djinn"))
 green_djinn.setHealth(330)
 green_djinn.bloodType(color="blood")
 green_djinn.setDefense(armor=22, fire=0.8, earth=1, energy=0.5, ice=1.1, holy=1.13, death=0.8, physical=0.8, drown=1)

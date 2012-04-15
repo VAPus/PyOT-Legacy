@@ -1,4 +1,4 @@
-Panda = game.monster.genMonster("Panda", (123, 6049), "a panda")
+Panda = game.monster.genMonster(_("Panda"), (123, 6049), _("a panda"))
 Panda.setTargetChance(10)
 Panda.bloodType("blood")
 Panda.setHealth(80)

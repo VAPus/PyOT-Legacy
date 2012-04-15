@@ -1,4 +1,4 @@
-massive_water_elemental = game.monster.genMonster("Massive Water Elemental", (11, 10499), "a massive water elemental") #same corpse id as water elem need to add aid to corpse bodies
+massive_water_elemental = game.monster.genMonster(_("Massive Water Elemental"), (11, 10499), _("a massive water elemental")) #same corpse id as water elem need to add aid to corpse bodies
 massive_water_elemental.setHealth(1250, healthmax=1250)
 massive_water_elemental.bloodType(color="undead")
 massive_water_elemental.setDefense(armor=48, fire=0, earth=0, energy=1.25, ice=0, holy=0.5, death=0.5, physical=0.4, drown=1)

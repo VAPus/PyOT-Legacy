@@ -1,5 +1,5 @@
 
-quara_predator_scount = game.monster.genMonster("Quara Predator Scount", (20, 6067), "a quara predator scount")
+quara_predator_scount = game.monster.genMonster(_("Quara Predator Scount"), (20, 6067), _("a quara predator scount"))
 quara_predator_scount.setHealth(890)
 quara_predator_scount.bloodType(color="blood")
 quara_predator_scount.setDefense(armor=33, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)

@@ -1,4 +1,4 @@
-bat = game.monster.genMonster("Bat", (122, 6053), "a bat")
+bat = game.monster.genMonster(_("Bat"), (122, 6053), _("a bat"))
 bat.bloodType("blood")
 bat.setHealth(30)
 bat.setExperience(10)

@@ -1,4 +1,4 @@
-crab = game.monster.genMonster("Crab", (112, 6039), "a crab")
+crab = game.monster.genMonster(_("Crab"), (112, 6039), _("a crab"))
 crab.setTargetChance(10)
 crab.bloodType("blood")
 crab.setHealth(55)

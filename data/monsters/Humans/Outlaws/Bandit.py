@@ -1,4 +1,4 @@
-Bandit = game.monster.genMonster("Bandit", (129, 6080), "a Bandit")
+Bandit = game.monster.genMonster(_("Bandit"), (129, 6080), _("a Bandit"))
 Bandit.setOutfit(58, 59, 45, 114)
 Bandit.setTargetChance(10)
 Bandit.bloodType("blood")

@@ -1,4 +1,4 @@
-hand_of_cursed_fate = game.monster.genMonster("Hand of Cursed Fate", (230, 6312), "a hand of cursed fate")
+hand_of_cursed_fate = game.monster.genMonster(_("Hand of Cursed Fate"), (230, 6312), _("a hand of cursed fate"))
 hand_of_cursed_fate.setHealth(10500)
 hand_of_cursed_fate.bloodType(color="blood")
 hand_of_cursed_fate.setDefense(armor=60, fire=0, earth=0, energy=0, ice=1.1, holy=1.25, death=0, physical=1, drown=1)

@@ -1,4 +1,4 @@
-frost_dragon = game.monster.genMonster("Frost Dragon", (248, 7091), "a frost dragon")
+frost_dragon = game.monster.genMonster(_("Frost Dragon"), (248, 7091), _("a frost dragon"))
 frost_dragon.setHealth(1800)
 frost_dragon.bloodType(color="undead")
 frost_dragon.setDefense(armor=42, fire=0, earth=0, energy=1, ice=0, holy=1, death=0.9, physical=0.95, drown=1)

@@ -1,4 +1,4 @@
-ghoul = game.monster.genMonster("Ghoul", (18, 5976), "a ghoul")
+ghoul = game.monster.genMonster(_("Ghoul"), (18, 5976), _("a ghoul"))
 ghoul.setHealth(100)
 ghoul.bloodType(color="blood")
 ghoul.setDefense(armor=9, fire=1, earth=0.8, energy=0.7, ice=0.9, holy=1.25, death=0, physical=1, drown=0)

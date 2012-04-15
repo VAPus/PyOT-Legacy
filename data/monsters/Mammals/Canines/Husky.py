@@ -1,4 +1,4 @@
-Husky = game.monster.genMonster("Husky", (258, 7316), "a husky")
+Husky = game.monster.genMonster(_("Husky"), (258, 7316), _("a husky"))
 Husky.setTargetChance(10)
 Husky.bloodType("blood")
 Husky.setHealth(140)

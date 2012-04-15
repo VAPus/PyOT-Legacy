@@ -1,4 +1,4 @@
-undead_gladiator = game.monster.genMonster("Undead Gladiator", (306, 9823), "an undead gladiator")
+undead_gladiator = game.monster.genMonster(_("Undead Gladiator"), (306, 9823), _("an undead gladiator"))
 undead_gladiator.setHealth(1000)
 undead_gladiator.bloodType(color="undead")
 undead_gladiator.setDefense(armor=37, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

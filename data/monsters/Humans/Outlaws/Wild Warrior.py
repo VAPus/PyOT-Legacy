@@ -1,4 +1,4 @@
-Wild_Warrior = game.monster.genMonster("Wild Warrior", (131, 6090), "a Wild Warrior")
+Wild_Warrior = game.monster.genMonster(_("Wild Warrior"), (131, 6090), _("a Wild Warrior"))
 Wild_Warrior.setOutfit(57, 57, 57, 57)
 Wild_Warrior.setTargetChance(10)
 Wild_Warrior.bloodType("blood")

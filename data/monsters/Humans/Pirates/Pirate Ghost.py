@@ -1,4 +1,4 @@
-pirate_ghost = game.monster.genMonster("Pirate Ghost", (35, 5995), "a pirate ghost")
+pirate_ghost = game.monster.genMonster(_("Pirate Ghost"), (35, 5995), _("a pirate ghost"))
 pirate_ghost.setHealth(275)
 pirate_ghost.bloodType(color="undead")
 pirate_ghost.setDefense(armor=20, fire=1, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=0, drown=1)

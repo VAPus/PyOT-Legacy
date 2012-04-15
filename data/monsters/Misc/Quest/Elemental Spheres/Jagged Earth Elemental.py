@@ -1,4 +1,4 @@
-jagged_earth_elemental = game.monster.genMonster("Jagged Earth Elemental", (285, 8933), "a jagged earth elemental")
+jagged_earth_elemental = game.monster.genMonster(_("Jagged Earth Elemental"), (285, 8933), _("a jagged earth elemental"))
 jagged_earth_elemental.setHealth(1500)
 jagged_earth_elemental.bloodType(color="undead")
 jagged_earth_elemental.setDefense(armor=83, fire=1.15, earth=0, energy=0.85, ice=0.8, holy=0.5, death=0.55, physical=0.65, drown=1)

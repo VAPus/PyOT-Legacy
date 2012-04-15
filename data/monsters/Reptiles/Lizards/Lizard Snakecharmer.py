@@ -1,4 +1,4 @@
-lizard_snakecharmer = game.monster.genMonster("Lizard Snakecharmer", (115, 6041), "a lizard_snakecharmer")
+lizard_snakecharmer = game.monster.genMonster(_("Lizard Snakecharmer"), (115, 6041), _("a lizard_snakecharmer"))
 lizard_snakecharmer.setHealth(315, healthmax=None)
 lizard_snakecharmer.bloodType(color="blood")
 lizard_snakecharmer.setDefense(armor=24, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

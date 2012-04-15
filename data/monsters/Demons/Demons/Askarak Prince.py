@@ -1,4 +1,4 @@
-askarak_prince = game.monster.genMonster("Askarak Prince", (419, 5980), "a askarak prince")#corpse
+askarak_prince = game.monster.genMonster(_("Askarak Prince"), (419, 5980), _("a askarak prince"))#corpse
 askarak_prince.setHealth(2600, healthmax=2600)
 askarak_prince.bloodType(color="blood")
 askarak_prince.setDefense(armor=33, fire=1.3, earth=0, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#

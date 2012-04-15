@@ -1,4 +1,4 @@
-nightslayer = game.monster.genMonster("Nightslayer", (152, 6080), "a nightslayer")
+nightslayer = game.monster.genMonster(_("Nightslayer"), (152, 6080), _("a nightslayer"))
 nightslayer.setOutfit(95, 95, 95, 95)#?
 nightslayer.setHealth(400, healthmax=400)
 nightslayer.bloodType(color="blood")

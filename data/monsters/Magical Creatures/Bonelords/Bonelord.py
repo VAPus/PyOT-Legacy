@@ -1,4 +1,4 @@
-Bonelord = game.monster.genMonster("Bonelord", (17, 5992), "a Bonelord")
+Bonelord = game.monster.genMonster(_("Bonelord"), (17, 5992), _("a Bonelord"))
 Bonelord.setTargetChance(10)
 Bonelord.bloodType("blood")
 Bonelord.setHealth(260)

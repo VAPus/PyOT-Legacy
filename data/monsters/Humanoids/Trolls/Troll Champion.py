@@ -1,5 +1,5 @@
 
-troll_champion = game.monster.genMonster("Troll Champion", (281, 7926), "a troll champion")
+troll_champion = game.monster.genMonster(_("Troll Champion"), (281, 7926), _("a troll champion"))
 troll_champion.setHealth(75)
 troll_champion.bloodType(color="blood")
 troll_champion.setDefense(armor=11, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)

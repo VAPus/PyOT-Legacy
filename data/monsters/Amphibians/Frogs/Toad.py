@@ -1,4 +1,4 @@
-Toad = game.monster.genMonster("Toad", (222, 6077), "a toad")
+Toad = game.monster.genMonster(_("Toad"), (222, 6077), _("a toad"))
 Toad.setTargetChance(10)
 Toad.bloodType("blood")
 Toad.setHealth(135)

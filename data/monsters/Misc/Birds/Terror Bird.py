@@ -1,4 +1,4 @@
-Terror_Bird = game.monster.genMonster("Terror Bird", (218, 6057), "a terror bird")
+Terror_Bird = game.monster.genMonster(_("Terror Bird"), (218, 6057), _("a terror bird"))
 Terror_Bird.setTargetChance(10)
 Terror_Bird.bloodType("blood")
 Terror_Bird.setHealth(300)

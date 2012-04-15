@@ -1,4 +1,4 @@
-draken_elite = game.monster.genMonster("Draken Elite", (362, 12609), "a draken elite")
+draken_elite = game.monster.genMonster(_("Draken Elite"), (362, 12609), _("a draken elite"))
 draken_elite.setHealth(5550)
 draken_elite.bloodType(color="blood")
 draken_elite.setDefense(armor=64, fire=0, earth=0, energy=0.6, ice=1, holy=0.7, death=0.7, physical=1, drown=1)

@@ -1,4 +1,4 @@
-mutated_rat = game.monster.genMonster("Mutated Rat", (305, 9871), "a mutated rat")
+mutated_rat = game.monster.genMonster(_("Mutated Rat"), (305, 9871), _("a mutated rat"))
 mutated_rat.setHealth(550)
 mutated_rat.bloodType(color="blood")
 mutated_rat.setDefense(armor=35, fire=1.1, earth=0, energy=1, ice=1, holy=0.9, death=0, physical=1, drown=0)
