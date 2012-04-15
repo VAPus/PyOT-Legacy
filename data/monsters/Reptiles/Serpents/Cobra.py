@@ -1,5 +1,5 @@
 
-cobra = game.monster.genMonster("Cobra", (81, 10603), "a cobra")
+cobra = game.monster.genMonster(_("Cobra"), (81, 10603), _("a cobra"))
 cobra.setHealth(65)
 cobra.bloodType(color="blood")
 cobra.setDefense(armor=2, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

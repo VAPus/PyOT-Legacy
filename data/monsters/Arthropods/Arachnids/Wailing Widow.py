@@ -1,5 +1,5 @@
 
-wailing_widow = game.monster.genMonster("Wailing Widow", (347, 11310), "a wailing widow")
+wailing_widow = game.monster.genMonster(_("Wailing Widow"), (347, 11310), _("a wailing widow"))
 wailing_widow.setHealth(850)
 wailing_widow.bloodType(color="slime")
 wailing_widow.setDefense(armor=33, fire=1.1, earth=0, energy=1, ice=1, holy=0.9, death=0, physical=1, drown=1)

@@ -1,4 +1,4 @@
-Penguin = game.monster.genMonster("Penguin", (250, 7334), "a penguin")
+Penguin = game.monster.genMonster(_("Penguin"), (250, 7334), _("a penguin"))
 Penguin.setTargetChance(0)
 Penguin.bloodType("blood")
 Penguin.setHealth(33)

@@ -1,4 +1,4 @@
-serpent_spawn = game.monster.genMonster("Serpent Spawn", (220, 4323), "a serpent spawn")
+serpent_spawn = game.monster.genMonster(_("Serpent Spawn"), (220, 4323), _("a serpent spawn"))
 serpent_spawn.setHealth(3000)
 serpent_spawn.bloodType(color="slime")
 serpent_spawn.setDefense(armor=47, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)

@@ -1,4 +1,4 @@
-cockroach = game.monster.genMonster("Cockroach", (284, 8593), "a cockroach")
+cockroach = game.monster.genMonster(_("Cockroach"), (284, 8593), _("a cockroach"))
 cockroach.setTargetChance(0)
 cockroach.bloodType("slime")
 cockroach.setHealth(1)

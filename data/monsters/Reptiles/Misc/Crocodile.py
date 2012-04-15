@@ -1,5 +1,5 @@
 
-crocodile = game.monster.genMonster("Crocodile", (119, 6046), "a crocodile")
+crocodile = game.monster.genMonster(_("Crocodile"), (119, 6046), _("a crocodile"))
 crocodile.setHealth(105)
 crocodile.bloodType(color="blood")
 crocodile.setDefense(armor=9, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

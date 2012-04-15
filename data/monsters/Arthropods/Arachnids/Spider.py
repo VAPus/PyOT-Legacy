@@ -1,4 +1,4 @@
-spider = game.monster.genMonster("Spider", (30, 5961), "a spider")
+spider = game.monster.genMonster(_("Spider"), (30, 5961), _("a spider"))
 spider.setHealth(20)
 spider.bloodType(color="slime")
 spider.setDefense(armor=2, fire=1.2, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

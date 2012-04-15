@@ -1,4 +1,4 @@
-ancient_scarab = game.monster.genMonster("Ancient Scarab", (79, 6021), "an ancient scarab")
+ancient_scarab = game.monster.genMonster(_("Ancient Scarab"), (79, 6021), _("an ancient scarab"))
 ancient_scarab.setHealth(1000)
 ancient_scarab.bloodType(color="blood")
 ancient_scarab.setDefense(armor=40, fire=1.2, earth=0, energy=0.8, ice=1.05, holy=1, death=1, physical=0.9, drown=1)

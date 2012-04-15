@@ -1,4 +1,4 @@
-dragon = game.monster.genMonster("Dragon", (34, 5973), "a dragon")
+dragon = game.monster.genMonster(_("Dragon"), (34, 5973), _("a dragon"))
 dragon.setHealth(1000)
 dragon.bloodType(color="blood")
 dragon.setDefense(armor=22, fire=0, earth=0.2, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)

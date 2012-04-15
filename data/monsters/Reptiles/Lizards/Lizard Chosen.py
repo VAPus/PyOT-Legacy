@@ -1,4 +1,4 @@
-lizard_chosen = game.monster.genMonster("Lizard Chosen", (344, 11288), "a lizard chosen")
+lizard_chosen = game.monster.genMonster(_("Lizard Chosen"), (344, 11288), _("a lizard chosen"))
 lizard_chosen.setHealth(3050, healthmax=3050)
 lizard_chosen.bloodType(color="blood")
 lizard_chosen.setDefense(armor=30, fire=0.9, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)

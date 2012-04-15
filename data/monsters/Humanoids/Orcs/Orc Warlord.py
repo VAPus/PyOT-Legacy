@@ -1,4 +1,4 @@
-orc_warlord = game.monster.genMonster("Orc Warlord", (2, 6008), "an orc warlord")
+orc_warlord = game.monster.genMonster(_("Orc Warlord"), (2, 6008), _("an orc warlord"))
 orc_warlord.setHealth(950, healthmax=950)
 orc_warlord.bloodType(color="blood")
 orc_warlord.setDefense(armor=30, fire=0.2, earth=1.1, energy=0.8, ice=1, holy=0.9, death=1.05, physical=1, drown=1)

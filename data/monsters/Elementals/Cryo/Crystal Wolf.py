@@ -1,5 +1,5 @@
 # Bad fixed
-crystal_wolf = game.monster.genMonster("Crystal Wolf", (226, 6079), "a crystal wolf") # unkown yet
+crystal_wolf = game.monster.genMonster(_("Crystal Wolf"), (226, 6079), _("a crystal wolf")) # unkown yet
 crystal_wolf.setTargetChance(10)
 crystal_wolf.bloodType("blood")
 crystal_wolf.setHealth(750)

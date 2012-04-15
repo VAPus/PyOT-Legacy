@@ -1,4 +1,4 @@
-cat = game.monster.genMonster("Cat", (276, 7637), "a cat")
+cat = game.monster.genMonster(_("Cat"), (276, 7637), _("a cat"))
 cat.bloodType("blood")
 cat.setHealth(20)
 cat.setExperience(0)

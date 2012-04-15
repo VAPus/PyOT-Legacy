@@ -1,4 +1,4 @@
-nightstalker = game.monster.genMonster("Nightstalker", (320, 9915), "a nightstalker")
+nightstalker = game.monster.genMonster(_("Nightstalker"), (320, 9915), _("a nightstalker"))
 nightstalker.setHealth(700)
 nightstalker.bloodType(color="undead")
 nightstalker.setDefense(armor=44, fire=1, earth=1, energy=1.05, ice=0.8, holy=0.8, death=1.05, physical=1.05, drown=1)

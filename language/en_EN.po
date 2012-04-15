@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-13 17:54+0200\n"
+"POT-Creation-Date: 2012-04-15 21:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-
-#: ../language/test.py:1
-msgid "hello world!"
-msgstr ""
 
 #: ../core/game/item.py:238
 #, python-format
@@ -189,10 +185,6 @@ msgstr ""
 msgid "Target lost."
 msgstr ""
 
-#: ../core/game/player.py:359
-msgid "findItem - stackpos"
-msgstr ""
-
 #: ../core/game/spell.py:416
 msgid "You need a target to cast this spell."
 msgstr ""
@@ -212,4 +204,2560 @@ msgstr ""
 #: ../core/game/spell.py:445 ../core/game/spell.py:587
 #, python-format
 msgid "Your %s is too high!"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Guard.py:1
+msgid "Deepling Guard"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Guard.py:1
+msgid "a deepling guard"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Scout.py:1
+msgid "Deepling Scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Scout.py:1
+msgid "a deepling scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Spellsinger.py:1
+msgid "Deepling Spellsinger"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Spellsinger.py:1
+msgid "a deepling spellsinger"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Warrior.py:1
+msgid "Deepling Warrior"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Warrior.py:1
+msgid "a deepling warrior"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Worker.py:1
+msgid "Deepling Worker"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Deepling/Deepling Worker.py:1
+msgid "a deepling worker"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Azure Frog.py:1
+msgid "Azure Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Azure Frog.py:1
+msgid "an azure frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Bog Frog.py:1
+msgid "Bog Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Bog Frog.py:1
+msgid "a bog frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Coral Frog.py:1
+msgid "Coral Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Coral Frog.py:1
+msgid "a coral frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Crimson Frog.py:1
+msgid "Crimson Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Crimson Frog.py:1
+msgid "a crimson frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Filth Toad.py:1
+msgid "Filth Toad"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Filth Toad.py:1
+msgid "a filth toad"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Green Frog.py:1
+msgid "Green Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Green Frog.py:1
+msgid "a green frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Orchid Frog.py:1
+msgid "Orchid Frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Orchid Frog.py:1
+msgid "an orchid frog"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Toad.py:1
+msgid "Toad"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Frogs/Toad.py:1
+msgid "a toad"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Constrictor.py:1
+msgid "Quara Constrictor"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Constrictor.py:1
+msgid "a quara constrictor"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Constrictor Scout.py:1
+msgid "Quara Constrictor Scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Constrictor Scout.py:1
+msgid "a quara constrictor scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Hydromancer.py:1
+msgid "Quara Hydromancer"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Hydromancer.py:1
+msgid "a quara hydromancer"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Hydromancer Scout.py:1
+msgid "Quara Hydromancer Scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Hydromancer Scout.py:1
+msgid "a quara hydromancer scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Mantassin.py:1
+msgid "Quara Mantassin"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Mantassin.py:1
+msgid "a quara mantassin"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Mantassin Scout.py:2
+msgid "Quara Mantassin Scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Mantassin Scout.py:2
+msgid "a quara mantassin scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Pincher.py:1
+msgid "Quara Pincher"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Pincher.py:1
+msgid "a quara pincher"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Pincher Scout.py:1
+msgid "Quara Pincher Scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Pincher Scout.py:1
+msgid "a quara pincher scout"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Predator.py:1
+msgid "Quara Predator"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Predator.py:1
+msgid "a quara predator"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Predator Scount.py:2
+msgid "Quara Predator Scount"
+msgstr ""
+
+#: ../data/monsters/Amphibians/Quara/Quara Predator Scount.py:2
+msgid "a quara predator scount"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Crystal Spider.py:2
+msgid "Crystal Spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Crystal Spider.py:2
+msgid "a crystal spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Giant Spider.py:2
+msgid "Giant Spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Giant Spider.py:2
+msgid "a giant spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Poison Spider.py:2
+msgid "Poison Spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Poison Spider.py:2
+msgid "a poison spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Sacred Spider.py:2
+msgid "Sacred Spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Sacred Spider.py:2
+msgid "a sacred spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Scorpion.py:1
+msgid "Scorpion"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Scorpion.py:1
+msgid "a scorpion"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Spider.py:1
+msgid "Spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Spider.py:1
+msgid "a spider"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Spider Queen.py:1
+msgid "Spider Queen"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Spider Queen.py:1
+msgid "a spider queen"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Tarantula.py:2
+msgid "Tarantula"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Tarantula.py:2
+msgid "a tarantula"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Wailing Widow.py:2
+msgid "Wailing Widow"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Arachnids/Wailing Widow.py:2
+msgid "a wailing widow"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab (Underwater).py:1
+msgid "Blood Crab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab (Underwater).py:1
+msgid "a blood crab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Crab.py:1
+msgid "Crab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Crab.py:1
+msgid "a crab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Crustacea Gigantica.py:1
+msgid "Crustacea Gigantica"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Crustacea Gigantica.py:1
+msgid "a crustacea gigantica"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Yielothax.py:1
+msgid "Yielothax"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Crustaceans/Yielothax.py:1
+msgid "a yielothax"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Ancient Scarab.py:1
+msgid "Ancient Scarab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Ancient Scarab.py:1
+msgid "an ancient scarab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Blue Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Pink Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Red Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Yellow Butterfly.py:1
+msgid "Butterfly"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Blue Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Pink Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Red Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Yellow Butterfly.py:1
+msgid "a butterfly"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Brimstone Bug.py:1
+msgid "Brimstone Bug"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Brimstone Bug.py:1
+msgid "a brimstone bug"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Bug.py:1
+msgid "Bug"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Bug.py:1
+msgid "a bug"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Centipede.py:1
+msgid "Centipede"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Centipede.py:1
+msgid "a centipede"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Cockroach.py:1
+msgid "Cockroach"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Cockroach.py:1
+msgid "a cockroach"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Insectoid Scout.py:2
+msgid "Insectoid Scout"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Insectoid Scout.py:2
+msgid "an insectoid scout"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Insect Swarm.py:1
+msgid "Insect Swarm"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Insect Swarm.py:1
+msgid "an insect swarm"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Lancer Beetle.py:1
+msgid "Lancer Beetle"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Lancer Beetle.py:1
+msgid "a lancer beetle"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Larva.py:1
+msgid "Larva"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Larva.py:1
+msgid "a larva"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Sandcrawler.py:1
+msgid "Sandcrawler"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Sandcrawler.py:1
+msgid "a sandcrawler"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Scarab.py:1
+msgid "Scarab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Scarab.py:1
+msgid "a scarab"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Terramite.py:1
+msgid "Terramite"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Terramite.py:1
+msgid "a terramite"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Wasp.py:1
+msgid "Wasp"
+msgstr ""
+
+#: ../data/monsters/Arthropods/Insects/Wasp.py:1
+msgid "a wasp"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Demon.py:1
+msgid "Askarak Demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Demon.py:1
+msgid "an askarak demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Lord.py:1
+msgid "Askarak Lord"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Lord.py:1
+msgid "an askarak lord"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Prince.py:1
+msgid "Askarak Prince"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Askarak Prince.py:1
+msgid "a askarak prince"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Dark Torturer.py:1
+msgid "Dark Torturer"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Dark Torturer.py:1
+msgid "a dark torturer"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Demon.py:1
+msgid "Demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Demon.py:1
+msgid "a demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Destroyer.py:1
+msgid "Destroyer"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Destroyer.py:1
+msgid "a Destroyer"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Diabolic Imp.py:1
+msgid "Diabolic Imp"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Diabolic Imp.py:1
+msgid "a diabolic imp"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Fire Devil.py:1
+msgid "Fire Devil"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Fire Devil.py:1
+msgid "a fire devil"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Fury.py:2
+msgid "Fury"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Fury.py:2
+msgid "a fury"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Gozzler.py:1
+msgid "Gozzler"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Gozzler.py:1
+msgid "a gozzler"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Grave Guard.py:1
+msgid "Grave Guard"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Grave Guard.py:1
+msgid "a grave guard"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hand of Cursed Fate.py:1
+msgid "Hand of Cursed Fate"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hand of Cursed Fate.py:1
+msgid "a hand of cursed fate"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hellhound.py:1
+msgid "Hellhound"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hellhound.py:1
+msgid "a hellhound"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hellspawn.py:1
+msgid "Hellspawn"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Hellspawn.py:1
+msgid "a hellspawn"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Juggernaut.py:1
+msgid "Juggernaut"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Juggernaut.py:1
+msgid "a juggernaut"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightmare.py:1
+msgid "Nightmare"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightmare.py:1
+msgid "a nightmare"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightmare Scion.py:1
+msgid "Nightmare Scion"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightmare Scion.py:1
+msgid "a nightmare scion"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightstalker.py:1
+msgid "Nightstalker"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Nightstalker.py:1
+msgid "a nightstalker"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Plaguesmith.py:1
+msgid "Plaguesmith"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Plaguesmith.py:1
+msgid "a plaguesmith"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Demon.py:1
+msgid "Shaburak Demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Demon.py:1
+msgid "a shaburak demon"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Lord.py:1
+msgid "Shaburak Lord"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Lord.py:1
+msgid "a shaburak lord"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Prince.py:1
+msgid "Shaburak Prince"
+msgstr ""
+
+#: ../data/monsters/Demons/Demons/Shaburak Prince.py:1
+msgid "a shaburak prince"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Bog Raider.py:1
+msgid "Bog Raider"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Bog Raider.py:1
+msgid "a bog raider"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Carniphila.py:2
+msgid "Carniphila"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Carniphila.py:2
+msgid "a carniphila"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Defiler.py:1
+msgid "Defiler"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Defiler.py:1
+msgid "a defiler"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Haunted Treeling.py:2
+msgid "Haunted Treeling "
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Haunted Treeling.py:2
+msgid "a haunted treeling"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Son of Verminor.py:2
+msgid "Son Of Verminor"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Son of Verminor.py:2
+msgid "a son of verminor"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Spit Nettle.py:2
+msgid "Spit Nettle"
+msgstr ""
+
+#: ../data/monsters/Elementals/Bio/Spit Nettle.py:2
+msgid "a spit nettle"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Acid Blob.py:2
+msgid "Acid Blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Acid Blob.py:2
+msgid "an acid blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Death Blob.py:2
+msgid "Death Blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Death Blob.py:2
+msgid "a death blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Mercury Blob.py:2
+msgid "Mercury Blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Mercury Blob.py:2
+msgid "a mercury blob"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Slime.py:2
+#: ../data/monsters/Elementals/Blobs/Slime Summon.py:2
+msgid "Slime"
+msgstr ""
+
+#: ../data/monsters/Elementals/Blobs/Slime.py:2
+#: ../data/monsters/Elementals/Blobs/Slime Summon.py:2
+msgid "a slime"
+msgstr ""
+
+#: ../data/monsters/Elementals/Cryo/Crystal Wolf.py:2
+msgid "Crystal Wolf"
+msgstr ""
+
+#: ../data/monsters/Elementals/Cryo/Crystal Wolf.py:2
+msgid "a crystal wolf"
+msgstr ""
+
+#: ../data/monsters/Elementals/Cryo/Ice Golem.py:1
+msgid "Ice Golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Cryo/Ice Golem.py:1
+msgid "an ice golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Electro/Energy Elemental.py:1
+msgid "Energy Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Electro/Energy Elemental.py:1
+msgid "a energy elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Electro/Massive Energy Elemental.py:1
+msgid "Massive Energy Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Electro/Massive Energy Elemental.py:1
+msgid "a massive energy elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Clay Guardian.py:2
+msgid "Clay Guardian"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Clay Guardian.py:2
+msgid "a clay guardian"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Damaged Worker Golem.py:1
+msgid "Damaged Worker Golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Damaged Worker Golem.py:1
+msgid "a damaged worker golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Diamond Servant.py:1
+msgid "Diamond Servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Diamond Servant.py:1
+msgid "a diamond servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Earth Elemental.py:1
+msgid "Earth Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Earth Elemental.py:1
+msgid "a earth elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Eternal Guardian.py:1
+msgid "Eternal Guardian"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Eternal Guardian.py:1
+msgid "an eternal guardian"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Gargoyle.py:1
+msgid "Gargoyle"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Gargoyle.py:1
+msgid "a gargoyle"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Golden Servant.py:1
+msgid "Golden Servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Golden Servant.py:1
+msgid "a golden servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Iron Servant.py:1
+msgid "Iron Servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Iron Servant.py:1
+msgid "an iron servant"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Massive Earth Elemental.py:1
+msgid "Massive Earth Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Massive Earth Elemental.py:1
+msgid "a massive earth elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Medusa.py:2
+msgid "Medusa"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Medusa.py:2
+msgid "a medusa"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Stone Golem.py:1
+msgid "Stone Golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Stone Golem.py:1
+msgid "a stone golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/War Golem.py:1
+msgid "War Golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/War Golem.py:1
+msgid "a war golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Worker Golem.py:1
+msgid "Worker Golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Geo/Worker Golem.py:1
+msgid "a worker golem"
+msgstr ""
+
+#: ../data/monsters/Elementals/Hydro/Massive Water Elemental.py:1
+msgid "Massive Water Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Hydro/Massive Water Elemental.py:1
+msgid "a massive water elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Hydro/Water Elemental.py:1
+msgid "Water Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Hydro/Water Elemental.py:1
+msgid "a water elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Fire Elemental.py:1
+msgid "Fire Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Fire Elemental.py:1
+msgid "a fire elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Hellfire Fighter.py:1
+msgid "Hellfire Fighter"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Hellfire Fighter.py:1
+msgid "a hellfire fighter"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Massive Fire Elemental.py:1
+msgid "Massive Fire Elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Massive Fire Elemental.py:1
+msgid "a massive fire elemental"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Thornfire Wolf.py:2
+msgid "Thornfire Wolf"
+msgstr ""
+
+#: ../data/monsters/Elementals/Pyro/Thornfire Wolf.py:2
+msgid "a thornfire wolf"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Geomancer.py:1
+msgid "Dwarf Geomancer"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Geomancer.py:1
+msgid "a dwarf geomancer"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Guard.py:1
+msgid "Dwarf Guard"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Guard.py:1
+msgid "a dwarf guard"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Miner.py:2
+msgid "Dwarf Miner"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Miner.py:2
+msgid "a dwarf miner"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf.py:1
+msgid "Dwarf"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf.py:1
+msgid "a dwarf"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Soldier.py:1
+msgid "Dwarf Soldier"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Dwarves/Dwarf Soldier.py:1
+msgid "a dwarf soldier"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Arcanist.py:1
+msgid "Elf Arcanist"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Arcanist.py:1
+msgid "an elf arcanist"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Overseer.py:2
+msgid "Elf Overseer"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Overseer.py:2
+msgid "an elf overseer"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf.py:1
+msgid "Elf"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf.py:1
+msgid "an elf"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Scout.py:1
+msgid "Elf Scout"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Elf Scout.py:1
+msgid "an elf scout"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Firestarter.py:2
+msgid "Firestarter"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Elves/Firestarter.py:2
+msgid "a firestarter"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Behemoth.py:1
+msgid "Behemoth"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Behemoth.py:1
+msgid "a behemoth"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops Drone.py:1
+msgid "Cyclops Drone"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops Drone.py:1
+msgid "a cyclops drone"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops.py:1
+msgid "Cyclops"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops.py:1
+msgid "a cyclops"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops Smith.py:1
+msgid "Cyclops Smith"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Cyclops Smith.py:1
+msgid "a cyclops smith"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Frost Giantess.py:1
+msgid "Frost Giantess"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Frost Giantess.py:1
+msgid "a frost giantess"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Frost Giant.py:1
+msgid "Frost Giant"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Frost Giant.py:1
+msgid "a frost giant"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Yeti.py:1
+msgid "Yeti"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Giants/Yeti.py:1
+msgid "a yeti"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Assassin.py:1
+msgid "Goblin Assassin"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Assassin.py:1
+msgid "a goblin assassin"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Leader.py:1
+msgid "Goblin Leader"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Leader.py:1
+msgid "a goblin leader"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin.py:1
+msgid "Goblin"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin.py:1
+msgid "a goblin"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Scavenger.py:1
+msgid "Goblin Scavenger"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Goblins/Goblin Scavenger.py:1
+msgid "a goblin scavenger"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Berserker.py:2
+msgid "Orc Berserker"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Berserker.py:2
+msgid "an orc berserker"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Leader.py:1
+msgid "Orc Leader"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Leader.py:1
+msgid "an orc leader"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Marauder.py:2
+msgid "Orc Marauder "
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Marauder.py:2
+msgid "an orc marauder "
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc.py:2
+msgid "Orc"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc.py:2
+msgid "an orc"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Rider.py:2
+msgid "Orc Rider"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Rider.py:2
+msgid "an orc rider"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Shaman.py:2
+msgid "Orc Shaman"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Shaman.py:2
+msgid "an orc shaman"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Spearman.py:1
+msgid "Orc Spearman"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Spearman.py:1
+msgid "an orc spearman"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Warlord.py:1
+msgid "Orc Warlord"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Warlord.py:1
+msgid "an orc warlord"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Warrior.py:2
+msgid "Orc Warrior"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Orcs/Orc Warrior.py:2
+msgid "an orc warrior"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Frost Troll.py:2
+msgid "Frost Troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Frost Troll.py:2
+msgid "a frost troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Island Troll.py:2
+msgid "Island Troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Island Troll.py:2
+msgid "an island troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Swamp Troll.py:2
+msgid "Swamp Troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Swamp Troll.py:2
+msgid "a swamp troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll Champion.py:2
+msgid "Troll Champion"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll Champion.py:2
+msgid "a troll champion"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll Guard.py:2
+msgid "Troll Guard"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll Guard.py:2
+msgid "a troll guard"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll.py:1
+msgid "Troll"
+msgstr ""
+
+#: ../data/monsters/Humanoids/Trolls/Troll.py:1
+msgid "a troll"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Amazon.py:1
+msgid "Amazon"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Amazon.py:1
+msgid "a Amazon"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Valkyrie.py:1
+msgid "Valkyrie"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Valkyrie.py:1
+msgid "a Valkyrie"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Witch.py:2
+msgid "Witch"
+msgstr ""
+
+#: ../data/monsters/Humans/Amazons/Witch.py:2
+msgid "a witch"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Bloodwalker.py:1
+msgid "Barbarian Bloodwalker"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Bloodwalker.py:1
+msgid "a Barbarian Bloodwalker"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Brutetamer.py:1
+msgid "Barbarian Brutetamer"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Brutetamer.py:1
+msgid "a Barbarian Brutetamer"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Headsplitter.py:1
+msgid "Barbarian Headsplitter"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Headsplitter.py:1
+msgid "a Barbarian Headsplitter"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Skullhunter.py:1
+msgid "Barbarian Skullhunter"
+msgstr ""
+
+#: ../data/monsters/Humans/Barbarians/Barbarian Skullhunter.py:1
+msgid "a Barbarian Skullhunter"
+msgstr ""
+
+#: ../data/monsters/Humans/Monks/Dark Monk.py:1
+msgid "Dark Monk"
+msgstr ""
+
+#: ../data/monsters/Humans/Monks/Dark Monk.py:1
+msgid "a Dark Monk"
+msgstr ""
+
+#: ../data/monsters/Humans/Monks/Monk.py:1
+msgid "Monk"
+msgstr ""
+
+#: ../data/monsters/Humans/Monks/Monk.py:1
+msgid "a Monk"
+msgstr ""
+
+#: ../data/monsters/Humans/Necromancers/Necromancer.py:2
+msgid "Necromancer"
+msgstr ""
+
+#: ../data/monsters/Humans/Necromancers/Necromancer.py:2
+msgid "a necromancer"
+msgstr ""
+
+#: ../data/monsters/Humans/Necromancers/Priestess.py:2
+msgid "Priestess"
+msgstr ""
+
+#: ../data/monsters/Humans/Necromancers/Priestess.py:2
+msgid "a priestess"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Assassin.py:1
+msgid "Assassin"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Assassin.py:1
+msgid "a Assassin"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Bandit.py:1
+msgid "Bandit"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Bandit.py:1
+msgid "a Bandit"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Black Knight.py:1
+msgid "Black Knight"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Black Knight.py:1
+msgid "a Black Knight"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Crazed Beggar.py:1
+msgid "Crazed Beggar"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Crazed Beggar.py:1
+msgid "a Crazed Beggar"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Gang Member.py:1
+msgid "Gang Member"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Gang Member.py:1
+msgid "a Gang Member"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Gladiator.py:1
+msgid "Gladiator"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Gladiator.py:1
+msgid "a Gladiator"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Hero.py:1
+msgid "Hero"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Hero.py:1
+msgid "a Hero"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Hunter.py:1
+msgid "Hunter"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Hunter.py:1
+msgid "a Hunter"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Nomad.py:1
+msgid "Nomad"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Nomad.py:1
+msgid "a Nomad"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Poacher.py:1
+msgid "Poacher"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Poacher.py:1
+msgid "a Poacher"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Smuggler.py:1
+msgid "Smuggler"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Smuggler.py:1
+msgid "a Smuggler"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Stalker.py:1
+msgid "Stalker"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Stalker.py:1
+msgid "a Stalker"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Wild Warrior.py:1
+msgid "Wild Warrior"
+msgstr ""
+
+#: ../data/monsters/Humans/Outlaws/Wild Warrior.py:1
+msgid "a Wild Warrior"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Buccaneer.py:1
+msgid "Pirate Buccaneer"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Buccaneer.py:1
+msgid "a pirate buccaneer"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Corsair.py:1
+msgid "Pirate Corsair"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Corsair.py:1
+msgid "a pirate corsair"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Cutthroat.py:1
+msgid "Pirate Cutthroat"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Cutthroat.py:1
+msgid "a pirate cutthroat"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Ghost.py:1
+msgid "Pirate Ghost"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Ghost.py:1
+msgid "a pirate ghost"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Marauder.py:1
+msgid "Pirate Marauder "
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Marauder.py:1
+msgid "a pirate marauder "
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Skeleton.py:1
+msgid "Pirate Skeleton"
+msgstr ""
+
+#: ../data/monsters/Humans/Pirates/Pirate Skeleton.py:1
+msgid "a pirate skeleton"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Dark Apprentice.py:2
+msgid "Dark Apprentice"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Dark Apprentice.py:2
+msgid "a dark apprentice"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Dark Magician.py:2
+msgid "Dark Magician"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Dark Magician.py:2
+msgid "a dark magician"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Energized Raging Mage.py:3
+msgid "Energized Raging Mage"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Energized Raging Mage.py:3
+msgid "the energized raging mage"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Ice Witch.py:2
+msgid "Ice Witch"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Ice Witch.py:2
+msgid "an ice witch"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Infernalist.py:1
+msgid "Infernalist"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Infernalist.py:1
+msgid "a infernalist"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Mad Scientist.py:2
+msgid "Mad Scientist"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Mad Scientist.py:2
+msgid "a mad scientist"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Warlock.py:2
+msgid "Warlock"
+msgstr ""
+
+#: ../data/monsters/Humans/Sorcerers/Warlock.py:2
+msgid "a warlock"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Acolyte of the Cult.py:1
+msgid "Acolyte of the Cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Acolyte of the Cult.py:1
+msgid "an acolyte of the cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Adept of the Cult.py:1
+msgid "Adept of the Cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Adept of the Cult.py:1
+msgid "an adept of the cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Enlightened of the Cult.py:1
+msgid "Enlightened of the Cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Enlightened of the Cult.py:1
+msgid "a enlightened of the cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Novice of the Cult.py:1
+msgid "Novice of the Cult"
+msgstr ""
+
+#: ../data/monsters/Humans/Voodoo Cultists/Novice of the Cult.py:1
+msgid "a novice of the cult"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Toolshaper.py:1
+msgid "Chakoya Toolshaper"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Toolshaper.py:1
+msgid "a chakoya toolshaper"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Tribewarden.py:1
+msgid "Chakoya Tribewarden"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Tribewarden.py:1
+msgid "a chakoya tribewarden"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Windcaller.py:1
+msgid "Chakoya Windcaller"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Chakoyas/Chakoya Windcaller.py:1
+msgid "a chakoya windcaller"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Fleshhunter.py:1
+msgid "Dworc Fleshhunter"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Fleshhunter.py:1
+msgid "a dworc fleshhunter"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Venomsniper.py:1
+msgid "Dworc Venomsniper"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Venomsniper.py:1
+msgid "a dworc venomsniper"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Voodoomaster.py:1
+msgid "Dworc Voodoomaster"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Dworcs/Dworc Voodoomaster.py:1
+msgid "a dworc voodoomaster"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Archer.py:1
+msgid "Minotaur Archer"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Archer.py:1
+msgid "a minotaur archer"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Guard.py:2
+msgid "Minotaur Guard"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Guard.py:2
+msgid "a minotaur guard"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Mage.py:2
+msgid "Minotaur Mage"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur Mage.py:2
+msgid "a minotaur mage"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur.py:2
+msgid "Minotaur"
+msgstr ""
+
+#: ../data/monsters/Hybrids/Minotaurs/Minotaur.py:2
+msgid "a minotaur"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Bonelord.py:1
+msgid "Bonelord"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Bonelord.py:1
+msgid "a Bonelord"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Braindeath.py:1
+msgid "Braindeath"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Braindeath.py:1
+msgid "a Braindeath"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Elder Bonelord.py:1
+msgid "Elder Bonelord"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Elder Bonelord.py:1
+msgid "a Elder Bonelord"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Gazer.py:1
+msgid "Gazer"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Bonelords/Gazer.py:1
+msgid "a Gazer"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Blue Djinn.py:1
+msgid "Blue Djinn"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Blue Djinn.py:1
+msgid "a blue djinn"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Efreet.py:1
+msgid "Efreet"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Efreet.py:1
+msgid "a efreet"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Green Djinn.py:1
+msgid "Green Djinn"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Green Djinn.py:1
+msgid "a green djinn"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Marid.py:1
+msgid "Marid"
+msgstr ""
+
+#: ../data/monsters/Magical Creatures/Djinn/Marid.py:1
+msgid "a marid"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Kongra.py:1
+msgid "Kongra"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Kongra.py:1
+msgid "a Kongra"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Merlkin.py:1
+msgid "Merlkin"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Merlkin.py:1
+msgid "a Merlkin"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Sibang.py:1
+msgid "Sibang"
+msgstr ""
+
+#: ../data/monsters/Mammals/Apes/Sibang.py:1
+msgid "a Sibang"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Bear.py:1
+msgid "Bear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Bear.py:1
+msgid "a bear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Panda.py:1
+msgid "Panda"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Panda.py:1
+msgid "a panda"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Polar Bear.py:1
+msgid "Polar Bear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Polar Bear.py:1
+msgid "a polar bear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Undead Cavebear.py:1
+msgid "Undead Cavebear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Bears/Undead Cavebear.py:1
+msgid "an undead cavebear"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Dog.py:1
+msgid "Dog"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Dog.py:1
+msgid "a dog"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Husky.py:1
+msgid "Husky"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Husky.py:1
+msgid "a husky"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/War Wolf.py:1
+msgid "War Wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/War Wolf.py:1
+msgid "a war wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Werewolf.py:1
+msgid "Werewolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Werewolf.py:1
+msgid "a werewolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Winter Wolf.py:1
+msgid "Winter Wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Winter Wolf.py:1
+msgid "a winter wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Wolf.py:1
+msgid "Wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Canines/Wolf.py:1
+msgid "a wolf"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Cat.py:1
+msgid "Cat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Cat.py:1
+msgid "a cat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Lion.py:1
+msgid "Lion"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Lion.py:1
+msgid "a lion"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Tiger.py:1
+msgid "Tiger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Felines/Tiger.py:1
+msgid "a tiger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Cave Rat.py:1
+msgid "Cave Rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Cave Rat.py:1
+msgid "a cave rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Rabbit.py:1
+msgid "Rabbit"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Rabbit.py:1
+msgid "a rabbit"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Rat.py:1
+msgid "Rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Rat.py:1
+msgid "a rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Silver Rabbit.py:1
+msgid "Silver Rabbit"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Silver Rabbit.py:1
+msgid "a silver rabbit"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Squirrel.py:1
+msgid "Squirrel"
+msgstr ""
+
+#: ../data/monsters/Mammals/Glires/Squirrel.py:1
+msgid "a squirrel"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Badger.py:1
+msgid "Badger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Badger.py:1
+msgid "a badger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Bat.py:1
+msgid "Bat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Bat.py:1
+msgid "a bat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Ghoulish Hyaena.py:1
+msgid "Ghoulish Hyaena"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Ghoulish Hyaena.py:1
+msgid "a ghoulish hyaena"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Gnarlhound.py:1
+msgid "Gnarlhound"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Gnarlhound.py:1
+msgid "a gnarlhound"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Hyaena.py:1
+msgid "Hyaena"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Hyaena.py:1
+msgid "a hyaena"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Skunk.py:1
+msgid "Skunk"
+msgstr ""
+
+#: ../data/monsters/Mammals/Misc/Skunk.py:1
+msgid "a skunk"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Bat.py:2
+msgid "Mutated Bat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Bat.py:2
+msgid "a mutated bat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Human.py:2
+msgid "Mutated Human"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Human.py:2
+msgid "a mutated human"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Rat.py:1
+msgid "Mutated Rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Rat.py:1
+msgid "a mutated rat"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Tiger.py:2
+msgid "Mutated Tiger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Mutated/Mutated Tiger.py:2
+msgid "a mutated tiger"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Black Sheep.py:1
+msgid "Black Sheep"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Black Sheep.py:1
+msgid "a black sheep"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Boar.py:2
+msgid "Boar"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Boar.py:2
+msgid "a boar"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Deer.py:1
+msgid "Deer"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Deer.py:1
+msgid "a deer"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Elephant.py:1
+msgid "Elephant"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Elephant.py:1
+msgid "an elephant"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Mammoth.py:1
+msgid "Mammoth"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Mammoth.py:1
+msgid "a mammoth"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Pig.py:1
+msgid "Pig"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Pig.py:1
+msgid "a pig"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Sheep.py:1
+msgid "Sheep"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Sheep.py:1
+msgid "a sheep"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Stampor.py:1
+msgid "Stampor"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/Stampor.py:1
+msgid "a stampor"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/White Deer.py:2
+msgid "White Deer"
+msgstr ""
+
+#: ../data/monsters/Mammals/Ungulates/White Deer.py:2
+msgid "a white deer"
+msgstr ""
+
+#: ../data/monsters/Misc/Annelids/Carrion Worm.py:1
+msgid "Carrion Worm"
+msgstr ""
+
+#: ../data/monsters/Misc/Annelids/Carrion Worm.py:1
+msgid "a Carrion Worm"
+msgstr ""
+
+#: ../data/monsters/Misc/Annelids/Rotworm.py:1
+msgid "Rotworm"
+msgstr ""
+
+#: ../data/monsters/Misc/Annelids/Rotworm.py:1
+msgid "a Rotworm"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Chicken.py:1
+msgid "Chicken"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Chicken.py:1
+msgid "a chicken"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Flamingo.py:1
+msgid "Flamingo"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Flamingo.py:1
+msgid "a flamingo"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Parrot.py:1
+msgid "Parrot"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Parrot.py:1
+msgid "a parrot"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Penguin.py:1
+msgid "Penguin"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Penguin.py:1
+msgid "a penguin"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Seagull.py:1
+msgid "Seagull"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Seagull.py:1
+msgid "a seagull"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Terror Bird.py:1
+msgid "Terror Bird"
+msgstr ""
+
+#: ../data/monsters/Misc/Birds/Terror Bird.py:1
+msgid "a terror bird"
+msgstr ""
+
+#: ../data/monsters/Misc/Mollusks/Slug.py:2
+msgid "Slug"
+msgstr ""
+
+#: ../data/monsters/Misc/Mollusks/Slug.py:2
+msgid "a slug"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Lizard Gate Guardian.py:2
+msgid "Lizard Gate Guardian"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Lizard Gate Guardian.py:2
+msgid "a lizard gate guardian"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Rift Scythe.py:1
+msgid "Rift Scythe"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Rift Scythe.py:1
+msgid "a rift scythe"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Rift Worm.py:1
+msgid "Rift Worm"
+msgstr ""
+
+#: ../data/monsters/Misc/Quest/Rift Worm.py:1
+msgid "a Rift Worm"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Eclipse Knight.py:2
+msgid "Weak Eclipse Knight"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Eclipse Knight.py:2
+msgid "a weak eclipse knight"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Gloombringer.py:2
+msgid "Weak Gloombringer"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Gloombringer.py:2
+msgid "a weak gloombringer"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Harbinger of Darkness.py:2
+msgid "Weak Harbinger of Darkness"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Harbinger of Darkness.py:2
+msgid "a weak harbinger of darkness"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Spawn of Despair.py:2
+msgid "Weak Spawn of Despair"
+msgstr ""
+
+#: ../data/monsters/Misc/Removed/Weak Spawn of Despair.py:2
+msgid "a weak spawn of despair"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Hatchling.py:1
+msgid "Dragon Hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Hatchling.py:1
+msgid "a dragon hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Lord Hatchling.py:1
+msgid "Dragon Lord Hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Lord Hatchling.py:1
+msgid "a dragon lord hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Lord.py:1
+msgid "Dragon Lord"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon Lord.py:1
+msgid "a dragon lord"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon.py:1
+msgid "Dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Dragon.py:1
+msgid "a dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Draptor.py:2
+msgid "Draptor"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Draptor.py:2
+msgid "a draptor"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Frost Dragon Hatchling.py:1
+msgid "Frost Dragon Hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Frost Dragon Hatchling.py:1
+msgid "a frost dragon hatchling"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Frost Dragon.py:1
+msgid "Frost Dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Frost Dragon.py:1
+msgid "a frost dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Ghastly Dragon.py:1
+msgid "Ghastly Dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Ghastly Dragon.py:1
+msgid "a ghastly dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Undead Dragon.py:1
+msgid "Undead Dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Undead Dragon.py:1
+msgid "an undead dragon"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Wyrm.py:1
+msgid "Wyrm"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Dragons/Wyrm.py:1
+msgid "a wyrm"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Abomination.py:1
+msgid "Draken Abomination"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Abomination.py:1
+msgid "a draken abomination"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Elite.py:1
+msgid "Draken Elite"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Elite.py:1
+msgid "a draken elite"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Spellweaver.py:1
+msgid "Draken Spellweaver"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Spellweaver.py:1
+msgid "a draken spellweaver"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Warmaster.py:1
+msgid "Draken Warmaster"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Draken/Draken Warmaster.py:1
+msgid "a draken warmaster"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Chosen.py:1
+msgid "Lizard Chosen"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Chosen.py:1
+msgid "a lizard chosen"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Dragon Priest.py:1
+msgid "Lizard Dragon Priest"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Dragon Priest.py:1
+msgid "a lizard dragon priest"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard High Guard.py:1
+msgid "Lizard High Guard"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard High Guard.py:1
+msgid "a lizard high guard"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Legionnaire.py:1
+msgid "Lizard Legionnaire"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Legionnaire.py:1
+msgid "a lizard legionnaire"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Magistratus.py:2
+msgid "Lizard Magistratus"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Magistratus.py:2
+msgid "a lizard magistratus"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Noble.py:2
+msgid "Lizard Noble"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Noble.py:2
+msgid "a lizard noble"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Sentinel.py:1
+msgid "Lizard Sentinel"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Sentinel.py:1
+msgid "a lizard sentinel"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Snakecharmer.py:1
+msgid "Lizard Snakecharmer"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Snakecharmer.py:1
+msgid "a lizard_snakecharmer"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Templar.py:1
+msgid "Lizard Templar"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Templar.py:1
+msgid "a lizard templar"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Zaogun.py:1
+msgid "Lizard Zaogun"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Lizard Zaogun.py:1
+msgid "a lizard zaogun"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Wyvern.py:2
+msgid "Wyvern"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Lizards/Wyvern.py:2
+msgid "a wyvern"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Crocodile.py:2
+msgid "Crocodile"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Crocodile.py:2
+msgid "a crocodile"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Hydra.py:1
+msgid "Hydra"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Hydra.py:1
+msgid "a hydra"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Killer Caiman.py:1
+msgid "Killer Caiman "
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Killer Caiman.py:1
+msgid "a killer caiman "
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Thornback Tortoise.py:1
+msgid "Thornback Tortoise"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Thornback Tortoise.py:1
+msgid "a thornback tortoise"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Tortoise.py:1
+msgid "Tortoise"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Misc/Tortoise.py:1
+msgid "a tortoise"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Cobra.py:2
+msgid "Cobra"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Cobra.py:2
+msgid "a cobra"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Sea Serpent.py:1
+msgid "Sea Serpent"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Sea Serpent.py:1
+msgid "a sea serpent"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Serpent Spawn.py:1
+msgid "Serpent Spawn"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Serpent Spawn.py:1
+msgid "a serpent spawn"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Snake.py:2
+msgid "Snake"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Snake.py:2
+msgid "a snake"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Young Sea Serpent.py:2
+msgid "Young Sea Serpent"
+msgstr ""
+
+#: ../data/monsters/Reptiles/Serpents/Young Sea Serpent.py:2
+msgid "a young sea serpent"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Ghost.py:1
+msgid "Ghost"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Ghost.py:1
+msgid "a ghost"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1
+#: ../data/monsters/The Undead/Ghosts/Phantasm Summon.py:1
+msgid "Phantasm"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1
+#: ../data/monsters/The Undead/Ghosts/Phantasm Summon.py:1
+msgid "a phantasm"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Souleater.py:1
+msgid "Souleater"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Souleater.py:1
+msgid "a souleater"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Spectre.py:1
+msgid "Spectre"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Spectre.py:1
+msgid "a spectre"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Wisp.py:1
+msgid "Wisp"
+msgstr ""
+
+#: ../data/monsters/The Undead/Ghosts/Wisp.py:1
+msgid "a wisp"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Betrayed Wraith.py:1
+msgid "Betrayed Wraith"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Betrayed Wraith.py:1
+msgid "a betrayed wraith"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Bonebeast.py:1
+msgid "Bonebeast"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Bonebeast.py:1
+msgid "a bonebeast"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Demon Skeleton.py:1
+msgid "Demon Skeleton"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Demon Skeleton.py:1
+msgid "a demon skeleton"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Lost Soul.py:1
+msgid "Lost Soul"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Lost Soul.py:1
+msgid "a lost soul"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Skeleton.py:1
+msgid "Skeleton"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Skeleton.py:1
+msgid "a skeleton"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Skeleton Warrior.py:1
+msgid "Skeleton Warrior"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Skeleton Warrior.py:1
+msgid "a skeleton warrior"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Undead Gladiator.py:1
+msgid "Undead Gladiator"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Undead Gladiator.py:1
+msgid "an undead gladiator"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Undead Mine Worker.py:1
+msgid "Undead Mine Worker"
+msgstr ""
+
+#: ../data/monsters/The Undead/Skeletons/Undead Mine Worker.py:1
+msgid "an undead mine worker"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Banshee.py:1
+msgid "Banshee"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Banshee.py:1
+msgid "a banshee"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Blightwalker.py:1
+msgid "Blightwalker"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Blightwalker.py:1
+msgid "a blightwalker"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Crypt Shambler.py:1
+msgid "Crypt Shambler"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Crypt Shambler.py:1
+msgid "a crypt shambler"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Death Priest.py:1
+msgid "Death Priest"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Death Priest.py:1
+msgid "a death_priest"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Elder Mummy.py:1
+msgid "Elder Mummy"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Elder Mummy.py:1
+msgid "a eder mummy"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Ghoul.py:1
+msgid "Ghoul"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Ghoul.py:1
+msgid "a ghoul"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Grim Reaper.py:1
+msgid "Grim Reaper"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Grim Reaper.py:1
+msgid "a grim reaper"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Lich.py:1
+msgid "Lich"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Lich.py:1
+msgid "a lich"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Mummy.py:1
+msgid "Mummy"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Mummy.py:1
+msgid "a mummy"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Tomb Servant.py:1
+msgid "Tomb Servant"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Tomb Servant.py:1
+msgid "a tomb servant"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Undead Prospector.py:1
+msgid "Undead Prospector"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Undead Prospector.py:1
+msgid "an undead prospector"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Vampire Bride.py:1
+msgid "Vampire Bride"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Vampire Bride.py:1
+msgid "a vampire bride"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Vampire.py:1
+msgid "Vampire"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Vampire.py:1
+msgid "a vampire"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Zombie.py:1
+msgid "Zombie"
+msgstr ""
+
+#: ../data/monsters/The Undead/Undead Humanoids/Zombie.py:1
+msgid "a zombie"
 msgstr ""

@@ -1,4 +1,4 @@
-war_golem = game.monster.genMonster("War Golem", (326, 10005), "a war golem")
+war_golem = game.monster.genMonster(_("War Golem"), (326, 10005), _("a war golem"))
 war_golem.setHealth(4300)
 war_golem.bloodType(color="blood")
 war_golem.setDefense(armor=39, fire=0.85, earth=0.5, energy=0.95, ice=0.3, holy=0.5, death=0.2, physical=0.9, drown=1)

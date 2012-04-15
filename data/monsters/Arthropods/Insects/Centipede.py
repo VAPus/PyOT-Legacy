@@ -1,4 +1,4 @@
-centipede = game.monster.genMonster("Centipede", (124, 6050), "a centipede")
+centipede = game.monster.genMonster(_("Centipede"), (124, 6050), _("a centipede"))
 centipede.setHealth(70, healthmax=70)
 centipede.bloodType(color="slime")
 centipede.setDefense(armor=9, fire=1.15, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)

@@ -1,4 +1,4 @@
-Sibang = game.monster.genMonster("Sibang", (118, 6045), "a Sibang")
+Sibang = game.monster.genMonster(_("Sibang"), (118, 6045), _("a Sibang"))
 Sibang.setTargetChance(10)
 Sibang.bloodType("blood")
 Sibang.setHealth(225)

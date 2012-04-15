@@ -1,4 +1,4 @@
-Merlkin = game.monster.genMonster("Merlkin", (117, 6044), "a Merlkin")
+Merlkin = game.monster.genMonster(_("Merlkin"), (117, 6044), _("a Merlkin"))
 Merlkin.setTargetChance(10)
 Merlkin.bloodType("blood")
 Merlkin.setHealth(235)

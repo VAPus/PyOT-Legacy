@@ -1,4 +1,4 @@
-phantasm = game.monster.genMonster("Phantasm", (241, 6344), "a phantasm")
+phantasm = game.monster.genMonster(_("Phantasm"), (241, 6344), _("a phantasm"))
 phantasm.setHealth(3950)
 phantasm.bloodType(color="undead")
 phantasm.setDefense(armor=2, fire=1.1, earth=0.8, energy=1.1, ice=0.8, holy=1.1, death=0, physical=0, drown=1)

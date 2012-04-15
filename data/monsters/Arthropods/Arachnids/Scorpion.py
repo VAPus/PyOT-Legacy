@@ -1,4 +1,4 @@
-scorpion = game.monster.genMonster("Scorpion", (43, 5988), "a scorpion")
+scorpion = game.monster.genMonster(_("Scorpion"), (43, 5988), _("a scorpion"))
 scorpion.setHealth(45, healthmax=45)
 scorpion.bloodType(color="slime")
 scorpion.setDefense(armor=15, fire=1.1, earth=0, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)

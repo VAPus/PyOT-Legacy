@@ -1,4 +1,4 @@
-wasp = game.monster.genMonster("Wasp", (44, 5989), "a wasp")
+wasp = game.monster.genMonster(_("Wasp"), (44, 5989), _("a wasp"))
 wasp.setHealth(35)
 wasp.bloodType(color="slime")
 wasp.setDefense(armor=4, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

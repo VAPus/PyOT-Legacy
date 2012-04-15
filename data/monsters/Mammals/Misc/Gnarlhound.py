@@ -1,4 +1,4 @@
-Gnarlhound = game.monster.genMonster("Gnarlhound", (341, 11250), "a gnarlhound")
+Gnarlhound = game.monster.genMonster(_("Gnarlhound"), (341, 11250), _("a gnarlhound"))
 Gnarlhound.setTargetChance(10)
 Gnarlhound.bloodType("blood")
 Gnarlhound.setHealth(198)

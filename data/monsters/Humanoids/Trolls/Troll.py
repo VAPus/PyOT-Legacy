@@ -1,4 +1,4 @@
-troll = game.monster.genMonster("Troll", (15, 5960), "a troll")
+troll = game.monster.genMonster(_("Troll"), (15, 5960), _("a troll"))
 troll.setHealth(50)
 troll.bloodType(color="blood")
 troll.setDefense(armor=6, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)

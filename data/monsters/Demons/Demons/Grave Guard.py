@@ -1,4 +1,4 @@
-grave_guard = game.monster.genMonster("Grave Guard", (234, 6328), "a grave guard")#incorrect corpse?
+grave_guard = game.monster.genMonster(_("Grave Guard"), (234, 6328), _("a grave guard"))#incorrect corpse?
 grave_guard.setHealth(720)
 grave_guard.bloodType(color="blood")
 grave_guard.setDefense(armor=37, fire=0, earth=1, energy=1, ice=1.1, holy=1.1, death=1, physical=1, drown=1)

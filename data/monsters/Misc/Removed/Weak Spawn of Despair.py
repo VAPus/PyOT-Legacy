@@ -1,5 +1,5 @@
 #largely unknown
-weak_spawn_of_despair = game.monster.genMonster("Weak Spawn of Despair", (322, 9923), "a weak spawn of despair")
+weak_spawn_of_despair = game.monster.genMonster(_("Weak Spawn of Despair"), (322, 9923), _("a weak spawn of despair"))
 weak_spawn_of_despair.setHealth(1000)
 weak_spawn_of_despair.bloodType(color="blood")
 weak_spawn_of_despair.setDefense(armor=10, fire=1, earth=1, energy=1, ice=1.1, holy=1.1, death=1.1, physical=1, drown=1)

@@ -1,4 +1,4 @@
-bonebeast = game.monster.genMonster("Bonebeast", (101, 6030), "a bonebeast")
+bonebeast = game.monster.genMonster(_("Bonebeast"), (101, 6030), _("a bonebeast"))
 bonebeast.setHealth(515)
 bonebeast.bloodType(color="undead")
 bonebeast.setDefense(armor=44, fire=1.1, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)

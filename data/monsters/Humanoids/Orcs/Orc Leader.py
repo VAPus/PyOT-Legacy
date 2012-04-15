@@ -1,4 +1,4 @@
-orc_leader = game.monster.genMonster("Orc Leader", (59, 6001), "an orc leader")
+orc_leader = game.monster.genMonster(_("Orc Leader"), (59, 6001), _("an orc leader"))
 orc_leader.setHealth(450, healthmax=450)
 orc_leader.bloodType(color="blood")
 orc_leader.setDefense(armor=22, fire=0, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.1, physical=1, drown=1)

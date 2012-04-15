@@ -1,5 +1,5 @@
 
-fury = game.monster.genMonster("Fury", (149, 6081), "a fury")
+fury = game.monster.genMonster(_("Fury"), (149, 6081), _("a fury"))
 fury.setOutfit(94, 77, 96, 0) #needs addons
 fury.setHealth(4100, healthmax=4100)
 fury.bloodType(color="blood")

@@ -1,4 +1,4 @@
-minotaur_archer = game.monster.genMonster("Minotaur Archer", (24, 5982), "a minotaur archer")
+minotaur_archer = game.monster.genMonster(_("Minotaur Archer"), (24, 5982), _("a minotaur archer"))
 minotaur_archer.setHealth(100)
 minotaur_archer.bloodType(color="blood")
 minotaur_archer.setDefense(armor=7, fire=0.8, earth=1, energy=1, ice=1.1, holy=0.9, death=1.05, physical=1, drown=1)

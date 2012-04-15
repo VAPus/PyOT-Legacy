@@ -1,4 +1,4 @@
-fire_devil = game.monster.genMonster("Fire Devil", (40, 5985), "a fire devil")
+fire_devil = game.monster.genMonster(_("Fire Devil"), (40, 5985), _("a fire devil"))
 fire_devil.setHealth(200)
 fire_devil.bloodType(color="blood")
 fire_devil.setDefense(armor=13, fire=0, earth=0.8, energy=0.7, ice=1.2, holy=1.1, death=0.8, physical=0.9, drown=1)

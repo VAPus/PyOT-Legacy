@@ -1,4 +1,4 @@
-Assassin = game.monster.genMonster("Assassin", (152, 6080), "a Assassin")
+Assassin = game.monster.genMonster(_("Assassin"), (152, 6080), _("a Assassin"))
 Assassin.setOutfit(95, 95, 95, 95)
 Assassin.setAddons(3)
 Assassin.setTargetChance(10)
