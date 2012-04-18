@@ -131,6 +131,12 @@ class TibiaPacket(object):
 
         
     def string(self, string):
+        # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
+        try:
+            string = string.decode("utf-8").encode('iso8859-1')
+        except UnicodeDecodeError:
+            pass # From client or translated source
+            
         length = len(string)
         self.data += struct.pack("<H", length) + string
 

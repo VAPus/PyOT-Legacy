@@ -915,6 +915,8 @@ class Creature(object):
         return self.turn(direction)
 
     def say(self, message, messageType=None):
+        print message
+        print hex(ord(message[0]))
         if not messageType:
             messageType = self.defaultSpeakType
 
@@ -1426,6 +1428,13 @@ class Creature(object):
     def toggleHideHealth(self):
         self.doHideHealth = not self.doHideHealth
 
+    ######## Language placeholders #########
+    def l(self, message):
+        return message
+    
+    def lp(self, singular, plural, n):
+        return singular if n != 1 else plural
+        
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
@@ -1616,13 +1625,6 @@ class Boost(Condition):
 
             pid += 1
         self.creature.refreshStatus()
-
-    ######## Language placeholders #########
-    def l(self, message):
-        return message
-    
-    def lp(self, singular, plural, n):
-        return singular if n != 1 else plural
         
 def MultiCondition(type, subtype="", *argc):
     conditions = []
