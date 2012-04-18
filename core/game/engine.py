@@ -1030,7 +1030,7 @@ def _N():
 import platform
 if platform.system() == "Windows":
     # No colorss? :(
-    _txtColor = lambda x: x
+    _txtColor = lambda x, c: x
 else:
     def _txtColor(text, color):
         
