@@ -68,7 +68,7 @@ msgid ""
 msgstr ""
 ", %(all)+d%% Físico, %(all)+d%% Muerte, %(all)+d%% Fuego, %(all)+d%% Hielo,"
 "%(all)+d%% Tierra, %(all)+d%% Energia, %(all)+d%% Sagrado, %(all)+d%% Ahogamiento"
-"%(all)+d%% Veneno, %(all)+d%% Drenaje de Mana, Drenaje de Vida"
+"%(all)+d%% Veneno, %(all)+d%% Drenaje de Mana, %(all)+d%% Drenaje de Vida"
 #: ../core/game/item.py:292 ../core/game/item.py:296 ../core/game/item.py:298
 #, python-format
 msgid ""
@@ -2092,4 +2092,4 @@ msgid "Zombie"
 msgstr "Nomuerto"
 #: ../data/monsters/The Undead/Undead Humanoids/Zombie.py:1
 msgid "a zombie"
-msgstr "un nomuerto" 
+msgstr "un nomuerto"
