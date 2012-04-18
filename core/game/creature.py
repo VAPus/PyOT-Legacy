@@ -20,7 +20,7 @@ def __uid():
     while True:
         idsTaken += 1
         yield idsTaken
-        
+
 __uniqueId = __uid().next
 __uniqueLock = threading.Lock()
 def uniqueId():
@@ -35,13 +35,13 @@ allCreatures = {}
 class CreatureBase(object):
     def __init__(self):
         self.scripts = {"onFollow":[], "onTargetLost":[]}
-        
+
     def regOnFollow(self, function):
         self.scripts["onFollow"].append(function)
-        
+
     def unregOnFollow(self, function):
         self.scripts["onFollow"].remove(function)
-        
+
     def onFollow(self, target):
         pass
         #for func in self.scripts["onFollow"]:
@@ -52,14 +52,14 @@ class CreatureBase(object):
 
     def unregOnTargetLost(self, function):
         self.scripts["onTargetLost"].remove(function)
-        
+
     def onTargetLost(self, target):
         pass
         #for func in self.scripts["onTargetLost"]:
         #    game.scriptsystem.scriptPool.callInThread(func, self, target)
-            
+
 class Creature(object):
-    
+
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0
@@ -92,13 +92,13 @@ class Creature(object):
         self.walkPattern = None
         self.activeSummons = []
         self.doHideHealth = False
-        
+
         # Options
         self.canMove = True
-        
-        # We are trackable 
+
+        # We are trackable
         allCreatures[self.cid] = self
-        
+
         # Speaktypes
         self.defaultSpeakType = 'MSG_SPEAK_SAY'
         self.defaultYellType = 'MSG_SPEAK_YELL'
@@ -121,7 +121,7 @@ class Creature(object):
             return False
         else:
             return True
-            
+
     @staticmethod
     def actionDecor(f):
         """ Decorator used by external actions """
@@ -141,53 +141,53 @@ class Creature(object):
 
     def registerAll(self, event, func, **kwargs):
         game.scriptsystem.register(event, self.thingId(), func, **kwargs)
-        
+
     def isPlayer(self):
         return False
 
     def isNPC(self):
         return False
-        
+
     def isMonster(self):
         return False
 
     def isItem(self):
         return False
-        
+
     def isPushable(self, by):
         return False
-    
+
     def isAttackable(self, by):
         return False
 
     def isSummon(self):
         return False
-            
+
     def isSummonFor(self, creature):
         return False
-        
+
     def name(self):
         return self.data["name"]
 
     def description(self):
         return "You see a creature."
-        
+
     def clientId(self):
         return self.cid
 
     def thingId(self):
         return self.creatureType # Used to indentify my "thing"
-    
+
     def actionIds(self):
         return ('creature',) # Static actionID
 
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
-        
+
     def stepDuration(self, ground, delay=1.5):
         if not ground.speed:
             ground.speed = 100
-                
+
         postValue = (config.drawingSpeed - 50) / 1000.0
         return (ground.speed / self.speed) + postValue
 
@@ -200,7 +200,7 @@ class Creature(object):
     def refreshStatus(self, streamX=None): pass
     def refreshSkills(self, streamX=None): pass
     def refreshConditions(self, streamX=None): pass
-    
+
     def refresh(self):
         stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
         for player in self.knownBy:
@@ -209,14 +209,14 @@ class Creature(object):
             stream.addTileCreature(self.position, stackpos, self, player, True)
 
             stream.send(player.client)
-            
+
     def despawn(self):
         self.alive = False
         try:
             tile = game.map.getTile(self.position)
             stackpos = tile.findCreatureStackpos(self)
             tile.removeCreature(self)
-            
+
             for spectator in getSpectators(self.position):
                 stream = spectator.packet()
                 stream.removeTileItem(self.position, stackpos)
@@ -229,30 +229,30 @@ class Creature(object):
                     reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition)
                 elif self.spawnTime == 0:
                     return
-                    
+
                 else:
                     reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:
             pass
-        
+
 
     def vertifyMove(self, tile):
         """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
         return True
-        
+
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
         if not self.alive or not level and not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
-            
+
         if not self.data["health"] or not self.canMove:
             return False
 
-            
+
         import data.map.info
-        
-        
+
+
         oldPosition = self.position.copy()
-        
+
         # Recalculate position
         position = oldPosition.copy()
         if direction == 0:
@@ -282,30 +282,30 @@ class Creature(object):
         if position.x < 1 or position.y < 1 or position.x > data.map.info.width or position.y > data.map.info.height:
             self.cancelWalk()
             return
-                    
+
         # New Tile
         newTile = getTile(position)
         oldTile = getTile(oldPosition)
 
         if not newTile:
-            
+
             self.cancelWalk(direction)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             if failback: reactor.callLater(0, failback)
             return False
-            
+
         if not oldTile:
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
-        
-        
+
+
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:
             self.cancelWalk(direction % 4)
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             if failback: reactor.callLater(0, failback)
             return False
-            
+
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
@@ -326,12 +326,12 @@ class Creature(object):
                 self.walkPattern = [] # If we got a queue of moves, we need to end it!
                 if failback: failback()
                 return False
-                
+
         for thing in newTile.things:
             if thing.solid:
                 if level and isinstance(thing, Creature):
                     continue
-                
+
                 #self.turn(direction) # Fix me?
                 self.cancelWalk(direction % 4)
                 self.notPossible()
@@ -344,22 +344,22 @@ class Creature(object):
         delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction = _time + delay
         self.extAction = _time + delay
-                
+
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
-        
+
         # Clear target if we change level
         if level:
             self.cancelTarget()
             self.target = None
             self.targetMode = 0
-            
-        
+
+
         # Send to Player
         if self.isPlayer():
             # Mark for save
             self.saveData = True
-            
+
             ignore = (self,)
             stream = self.packet()
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
@@ -367,14 +367,14 @@ class Creature(object):
                 stream.uint8(0x6D)
                 stream.position(oldPosition)
                 stream.uint8(oldStackpos)
-                stream.position(position)   
+                stream.position(position)
             else:
                 stream.removeTileItem(oldPosition, oldStackpos)
-                    
+
             # Levels
             if oldPosition.z > position.z:
                 stream.moveUpPlayer(self, oldPosition)
-                        
+
             elif oldPosition.z < position.z:
                 stream.moveDownPlayer(self, oldPosition)
 
@@ -385,7 +385,7 @@ class Creature(object):
             elif oldPosition.y < position.y:
                 stream.uint8(0x67)
                 stream.mapDescription(Position(oldPosition.x - 8, position.y + 7, position.z), 18, 1, self)
-                
+
             # X movements
             if oldPosition.x < position.x:
                 stream.uint8(0x66)
@@ -393,7 +393,7 @@ class Creature(object):
             elif oldPosition.x > position.x:
                 stream.uint8(0x68)
                 stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 1, 14, self)
-            
+
             # If we're entering protected zone, fix icons
             pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
             pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
@@ -405,29 +405,29 @@ class Creature(object):
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
-                
-                
+
+
             stream.send(self.client)
             self.position = position
             self.direction = direction % 4
-            
+
         else:
             ignore = ()
-            
+
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
-        newPosCreatures = getPlayers(position, ignore=ignore)   
+        newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
 
         for spectator in (spectators):
             # Make packet
             if not spectator.client:
                 continue
-                
+
             canSeeNew = spectator in newPosCreatures
             canSeeOld = spectator in oldPosCreatures
             isKnown = self in spectator.knownCreatures
             stream = spectator.packet()
-            
+
             if not canSeeOld and canSeeNew:
                 stream.addTileCreature(position, newStackPos, self, spectator)
                 # Too high stack?
@@ -440,7 +440,7 @@ class Creature(object):
                         stream.uint8(0x00)
                         stream.uint8(0xFF)"""
                 """ / Cheat """
-            
+
             elif canSeeOld and not canSeeNew:
                 if isKnown:
                     stream.removeTileItem(oldPosition, oldStackpos)
@@ -454,9 +454,9 @@ class Creature(object):
                         stream.uint8(0x00)
                         stream.uint8(0xFF)"""
                     #oldTile.removeCreature(self)
-                    
+
                 """ / Cheat """
-                
+
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
                     """ Cheat!!! """
@@ -470,24 +470,24 @@ class Creature(object):
                             stream.uint8(0xFF)
                         oldTile.removeCreature(self)"""
                     """ / Cheat """
-                    
+
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
                     stream.position(position)
-                    
+
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     stream.addTileCreature(position, newStackPos, self, spectator)
-                    
-            stream.send(spectator.client) 
-            
+
+            stream.send(spectator.client)
+
         if self.scripts["onNextStep"]:
             scripts = self.scripts["onNextStep"][:]
             self.scripts["onNextStep"] = []
             for script in scripts:
                 script(self)
-            
+
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
             game.scriptsystem.get('walkOn').runSync(item, self, None, position=position, fromPosition=oldPosition)
@@ -497,37 +497,37 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
-            
+
         # Deal with appear and disappear. Ahh the power of sets :)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
             game.scriptsystem.get('disappear').runSync(creature2, self)
             game.scriptsystem.get('disappear').runSync(self, creature2)
-            
+
         for creature2 in appearTo:
             game.scriptsystem.get('appear').runSync(creature2, self)
             game.scriptsystem.get('appear').runSync(self, creature2)
         if not self.isPlayer():
             self.position = position
             self.direction = direction % 4
-        
+
         if callback: reactor.callLater(0, callback)
         return True
-        
+
     def magicEffect(self, type, pos=None):
         if not type: return
-        
+
         if not pos or pos[0] == 0xFFFF:
             pos = self.position
         for spectator in getSpectators(pos):
             stream = spectator.packet()
             stream.magicEffect(pos, type)
             stream.send(spectator)
-        
+
     def shoot(self, fromPos, toPos, type):
         if not type: return
-        
+
         if fromPos == toPos:
             self.magicEffect(type, fromPos)
         else:
@@ -547,11 +547,11 @@ class Creature(object):
         mount = game.resource.getMount(self.mount)
         if mount:
             self.mounted = mounted
-        
+
             if mount.speed:
                 self.setSpeed((self.speed + mount.speed) if mounted else (self.speed - mount.speed))
             self.refreshOutfit()
-    
+
     def setOutfit(self, looktype, lookhead=0, lookbody=0, looklegs=0, lookfeet=0, addon=0):
         self.outfit = [looktype, lookhead, lookbody, looklegs, lookfeet]
         self.addon = addon
@@ -567,17 +567,17 @@ class Creature(object):
                 stream.uint32(self.clientId())
                 stream.uint16(self.speed)
                 stream.send(spectator)
-            
+
     def onDeath(self):
         #del allCreatures[self.clientId()]
         pass # To be overrided in monster and player
 
     def remove(self, entriesToo=True):
         """ Remove this creature from the map, stop the brain and so on """
-        
+
         # All remove creatures are dead. No matter if they actually are alive.
         self.alive = False
-        
+
         tile = self.position.getTile()
         try:
             tile.removeCreature(self)
@@ -588,7 +588,7 @@ class Creature(object):
             ignore = (self,)
         else:
             ignore = ()
-            
+
         for spectator in game.engine.getSpectators(self.position, ignore=ignore):
             stream = spectator.packet(0x69)
             stream.position(self.position)
@@ -596,20 +596,20 @@ class Creature(object):
             stream.uint8(0x00)
             stream.uint8(0xFF)
             stream.send(spectator)
-        
+
         # Don't call this on a player
         if entriesToo:
             if self.isPlayer():
                 raise Exception("Creature.remove(True) (entriesToo = True) has been called on a player. This is (unfortunatly), not supported (yet?)")
-            
+
             try:
                 del allCreatures[self.clientId()]
             except:
                 pass
-            
+
     def rename(self, name):
         self.data["name"] = name
-        
+
         self.refresh()
 
     def privRename(self, player, name):
@@ -618,12 +618,12 @@ class Creature(object):
             stream = player.packet()
             stream.removeTileItem(self.position, stackpos)
             originalName = self.data["name"]
-            
+
             self.data["name"] = name
             stream.addTileCreature(self.position, stackpos, self, player, True)
             self.data["name"] = originalName
-            stream.send(player.client)     
-                
+            stream.send(player.client)
+
     def hitEffects(self):
         if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
             return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD
@@ -635,18 +635,18 @@ class Creature(object):
             return game.enum.COLOR_GREY, game.enum.EFFECT_HITAREA
         elif self.base.blood == game.enum.FLUID_FIRE:
             return game.enum.COLOR_ORANGE, game.enum.EFFECT_DRAWBLOOD
-        
+
     def damageToBlock(self, dmg, type):
         # Overrided to creatures.
         return dmg
-        
+
     def onHit(self, by, dmg, type, effect=None):
         if not self.alive:
             print "[DEBUG]: A dead creature seem to have been hit"
             return
-            
+
         self.lastDamager = by
-          
+
         if not type == game.enum.DISTANCE:
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
@@ -655,7 +655,7 @@ class Creature(object):
         if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
-            
+
         elif type == game.enum.FIRE:
             textColor = game.enum.COLOR_ORANGE
             magicEffect = game.enum.EFFECT_HITBYFIRE
@@ -663,23 +663,23 @@ class Creature(object):
         elif type == game.enum.EARTH:
             textColor = game.enum.COLOR_LIGHTGREEN
             magicEffect = game.enum.EFFECT_HITBYPOSION
-           
+
         elif type == game.enum.ENERGY:
             textColor = game.enum.COLOR_PURPLE
             magicEffect = game.enum.EFFECT_ENERGYHIT
-            
+
         elif type == game.enum.HOLY:
             textColor = game.enum.COLOR_YELLOW
             magicEffect = game.enum.EFFECT_HOLYDAMAGE
-            
+
         elif type == game.enum.DEATH:
             textColor = game.enum.COLOR_DARKRED
             magicEffect = game.enum.EFFECT_SMALLCLOUDS
-            
+
         elif type == game.enum.DROWN:
             textColor = game.enum.COLOR_LIGHTBLUE
             magicEffect = game.enum.EFFECT_ICEATTACK
-			
+
         elif type == game.enum.DISTANCE:
             textColor, magicEffect = game.enum.COLOR_RED, None
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
@@ -687,49 +687,49 @@ class Creature(object):
         elif type == game.enum.LIFEDRAIN:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
-            
+
         else: ### type == game.enum.MELEE:
-            textColor, magicEffect = self.hitEffects()           
+            textColor, magicEffect = self.hitEffects()
         if effect:
             magicEffect = effect
-            
+
         dmg = [dmg]
         textColor = [textColor]
         magicEffect = [magicEffect]
         type = [type]
-        
+
         process = game.scriptsystem.get("hit").runSync(self, self.lastDamager, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
-            
+
         dmg = dmg[0]
         textColor = textColor[0]
         magicEffect = magicEffect[0]
         type = type[0]
-        
+
         if magicEffect:
             self.magicEffect(magicEffect)
-            
+
         if dmg:
             tile = game.map.getTile(self.position)
             for item in tile.getItems():
                 if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                     tile.removeItem(item)
-                            
+
             splash = game.item.Item(game.enum.SMALLSPLASH)
-                
+
             if self.isPlayer():
                 splash.fluidSource = game.enum.FLUID_BLOOD
             else:
                 splash.fluidSource = self.base.blood
             if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
                 tile.placeItem(splash)
-                
+
                 # Start decay
                 splash.decay(self.position)
-                
+
             updateTile(self.position, tile)
-        
+
         if by and by.isPlayer():
             by.message(_lp(by, "%(who)s loses 1 hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
 
@@ -741,24 +741,24 @@ class Creature(object):
 
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
-        
+
         # Modify health
         if dmg:
             self.modifyHealth(dmg)
-        
+
             if by and self.data["health"] < 1:
                 by.target = None
                 by.targetMode = 0
                 if by.isPlayer():
                     by.cancelTarget()
-        
+
             return True
         else:
             return False
-    
+
     def onHeal(self, by, amount):
         if by and by.isPlayer():
-            by.message(_lp(by, "%(who)s gain 1 hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+            by.message(_lp(by, "%(who)s gain 1 hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
 
         if self.isPlayer():
             if by:
@@ -766,43 +766,43 @@ class Creature(object):
             else:
                 self.message(_lp(self, "You gain 1 hitpoint.", "You gain %d hitpoints.", amount) % amount, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
         self.modifyHealth(amount)
-        
+
     def onSpawn(self):
         pass # To be overrided
-        
+
     def setHealth(self, health):
         if self.data["health"] == 0 and health:
             self.alive = True
-            
+
         self.data["health"] = max(0, health)
-        
+
         if not self.getHideHealth():
             for spectator in getSpectators(self.position):
                 stream = spectator.packet(0x8C)
                 stream.uint32(self.clientId())
                 stream.uint8(int(self.data["health"] * 100 / self.data["healthmax"]))
                 stream.send(spectator)
-         
+
         self.refreshStatus()
-        
+
         if self.data["health"] == 0:
             self.alive = False
             self.onDeath()
             return False
-            
+
         return True
-           
+
 
     def modifyHealth(self, health, spawn=False):
         return self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))
-        
+
     def teleport(self, position):
         """if not self.actionLock(self.teleport, position):
             return False"""
-            
+
         # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position.copy()
-        
+
         newTile = getTile(position)
         oldPosCreatures = set()
         if not newTile:
@@ -821,11 +821,11 @@ class Creature(object):
             oldPosCreatures = game.engine.getCreatures(oldPosition)
         except:
             pass # Just append creature
-        
+
         stackpos = placeCreature(self, position)
         if not stackpos:
             raise game.errors.ImpossibleMove()
-        
+
         removeCreature(self, oldPosition)
         self.position = position
         if self.creatureType == 0 and self.client:
@@ -837,7 +837,7 @@ class Creature(object):
             stream.uint8(0x64)
             stream.position(position)
             stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
-            
+
             # If we're entering protected zone, fix icons
             pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
             pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
@@ -849,11 +849,11 @@ class Creature(object):
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
-                
+
             #stream.magicEffect(position, 0x02)
-            
+
             stream.send(self.client)
-        
+
         newPosCreatures = game.engine.getCreatures(position)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
@@ -861,31 +861,31 @@ class Creature(object):
             game.scriptsystem.get('disappear').runSync(creature2, self)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runSync(creature2, self)    
-         
-        
+            game.scriptsystem.get('appear').runSync(creature2, self)
+
+
         for spectator in getSpectators(position, ignore=(self,)):
             stream = spectator.packet()
             stream.addTileCreature(position, stackpos, self, spectator.player)
             stream.magicEffect(position, 0x02)
             stream.send(spectator)
-        
+
         if self.target and not self.canSee(self.target.position):
             self.cancelTarget()
             self.target = None
             self.targetMode = 0
-            
+
     def turn(self, direction):
         assert direction < 4
         if self.direction == direction:
             return
-            
+
         if not self.alive: #or not self.actionLock(self.turn, direction):
             return
 
         self.direction = direction
         self.extAction = time.time() + 0.15
-        
+
         # Make package
         for spectator in getSpectators(self.position):
             stream = spectator.packet(0x6B)
@@ -895,7 +895,7 @@ class Creature(object):
             stream.uint32(self.clientId())
             stream.uint8(direction)
             stream.send(spectator)
-        
+
     def turnAgainst(self, position):
         # First north/south
         margin = 0
@@ -905,19 +905,19 @@ class Creature(object):
         elif position.y < self.position.y:
             direction = 0
             margin = self.position.y - position.y
-            
+
         if position.x > self.position.x and (position.x - self.position.x > margin):
             direction = 1
 
         elif position.x < self.position.x and (self.position.x - position.x > margin):
             direction = 3
-            
+
         return self.turn(direction)
-        
+
     def say(self, message, messageType=None):
         if not messageType:
             messageType = self.defaultSpeakType
-            
+
         for spectator in getSpectators(self.position, config.sayRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -931,7 +931,7 @@ class Creature(object):
     def yell(self, message, messageType=None):
         if not messageType:
             messageType = self.defaultYellType
-            
+
         for spectator in getSpectators(self.position, config.yellRange):
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -945,7 +945,7 @@ class Creature(object):
     def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
         group = getSpectators(self.position, config.whisperRange)
         listeners = getSpectators(self.position, config.sayRange) - group
-        
+
         for spectator in group:
             stream = spectator.packet(0xAA)
             stream.uint32(0)
@@ -965,7 +965,7 @@ class Creature(object):
             stream.position(self.position)
             stream.string(config.whisperNoise)
             stream.send(spectator)
-            
+
     def broadcast(self, message, messageType='MSG_GAMEMASTER_BROADCAST'):
         import game.players
         for player in game.player.allPlayers.values():
@@ -977,10 +977,10 @@ class Creature(object):
             stream.position(self.position)
             stream.string(message)
             stream.send(player.client)
-            
+
     def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
         if not to.isPlayer(): return
-        
+
         stream = to.packet(0xAA)
         stream.uint32(0)
         stream.string(self.data["name"])
@@ -988,8 +988,8 @@ class Creature(object):
         stream.uint8(messageType)
         stream.position(self.position)
         stream.string(message)
-        stream.send(to.client)    
-        
+        stream.send(to.client)
+
     def stopAction(self):
         ret = False
         try:
@@ -999,17 +999,17 @@ class Creature(object):
             pass
         self.action = None
         return ret
-        
+
     def cancelWalk(self, d=None):
         return # Is only executed on players
-        
+
     def canSee(self, position, radius=(8,6)):
         # We are on ground level and we can't see underground
         # We're on a diffrent instanceLevel
         # Or We are undergorund and we may only see 2 floors
-        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2): 
+        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2):
             return False
-        
+
         offsetz = self.position.z-position.z
 
         return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz + 1) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz + 1)
@@ -1018,33 +1018,33 @@ class Creature(object):
         # We are on ground level and we can't see underground
         # We're on a diffrent instanceLevel
         # Or We are undergorund and we may only see 2 floors
-        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2): 
+        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2):
             return False
-        
+
         offsetz = self.position.z-position.z
 
         return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz)
 
-                
+
     def canTarget(self, position, radius=(8,6), allowGroundChange=False):
         if self.position.instanceId != position.instanceId:
             return False
-            
+
         if not allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
-        
+
         # Can't target protected zone
         if position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
-            
+
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
-        
+
     def distanceStepsTo(self, position):
         return abs(self.position.x-position.x)+abs(self.position.y-position.y)
-        
+
     def inRange(self, position, x, y, z=0):
-        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )   
-    
+        return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )
+
     def positionInDirection(self, direction):
         position = self.position.copy()
         if direction == 0:
@@ -1078,7 +1078,7 @@ class Creature(object):
                 self.vars[inspect.stack()[0][1] + name] = value
         except:
             return None
-            
+
     def getVar(self, name):
         try:
             return self.vars[inspect.stack()[0][1] + name]
@@ -1092,13 +1092,13 @@ class Creature(object):
             game.engine.saveGlobalStorage = True
         except:
             return False
-    
+
     def getGlobal(self, field, default=None):
         try:
             return game.engine.globalStorage['storage'][field]
         except:
             return default
-            
+
     def removeGlobal(self, field):
         try:
             del game.engine.globalStorage['storage'][field]
@@ -1113,25 +1113,25 @@ class Creature(object):
             game.engine.saveGlobalStorage = True
         except:
             return False
-    
+
     def getGlobalObject(self, field, default=None):
         try:
             return game.engine.globalStorage['objectStorage'][field]
         except:
             return default
-            
+
     def removeGlobalObject(self, field):
         try:
             del game.engine.globalStorage['objectStorage'][field]
             game.engine.saveGlobalStorage = True
         except:
             pass
-        
+
     def __followCallback(self, who):
         if self.target == who:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
-            
+
     def follow(self, target):
         """if self.targetMode == 2 and self.target == target:
             self.targetMode = 0
@@ -1150,75 +1150,75 @@ class Creature(object):
     def setSolid(self, solid):
         if self.solid == solid:
             return
-            
+
         self.solid = solid
-        
+
         for client in getSpectators(self.position):
             stream = client.packet(0x92)
             stream.uint32(self.cid)
             stream.uint8(self.solid)
             stream.send(client)
-            
+
     def setSolidFor(self, player, solid):
         stream = player.packet(0x92)
         stream.uint32(self.cid)
         stream.uint8(solid)
         stream.send(player.client)
-        
+
     # Shields
     def setPartyShield(self, shield):
         if self.shield == shield:
             return
-            
+
         self.shield = shield
-    
+
         for player in getPlayers(self.position):
             stream = player.packet(0x90)
             stream.uint32(self.cid)
             stream.uint8(self.getPartShield(player))
             stream.send(player.client)
-            
+
     def getPartyShield(self, creature):
         return self.shield # TODO
-        
+
     # Emblem
     def setEmblem(self, emblem):
         if self.emblem == emblem:
             return
-        
+
         self.emblem = emblem
 
         for player in getPlayers(self.position):
             stream = player.packet()
             stream.addTileCreature(self.position, game.map.getTile(self.position).findStackpos(self), self, player)
             stream.send(player.client)
-            
+
     # Skull
     def setSkull(self, skull):
         if self.skull == skull:
             return
-        
+
         self.skull = skull
 
         for player in getPlayers(self.position):
             stream = player.packet(0x90)
             stream.uint32(self.cid)
             stream.uint8(self.getSkull(player))
-            stream.send(player.client)    
-            
+            stream.send(player.client)
+
     def getSkull(self, creature):
         return self.skull # TODO
-        
+
     def square(self, creature, color=27):
         pass
-    
+
     # Conditions
     def condition(self, condition, stackbehavior=enum.CONDITION_LATER, maxLength=0):
         try:
             oldCondition = self.conditions[condition.type]
             if not oldCondition.length:
                 raise
-            
+
             if stackbehavior == enum.CONDITION_IGNORE:
                 return False
             elif stackbehavior == enum.CONDITION_LATER:
@@ -1228,13 +1228,13 @@ class Creature(object):
                     oldCondition.length = min(condition.length + oldCondition.length, maxLength)
                 else:
                     oldCondition.length += condition.length
-                    
+
             elif stackbehavior == enum.CONDITION_MODIFY:
                 if maxLength:
                     condition.length = min(condition.length + oldCondition.length, maxLength)
                 else:
                     condition.length += oldCondition.length
-                    
+
                 self.conditions[condition.type] = condition
             elif stackbehavior == enum.CONDITION_REPLACE:
                 oldCondition.stop()
@@ -1244,8 +1244,8 @@ class Creature(object):
         except:
             condition.start(self)
             self.conditions[condition.type] = condition
-            
-   
+
+
         self.refreshConditions()
 
     def multiCondition(self, *argc, **kwargs):
@@ -1253,14 +1253,14 @@ class Creature(object):
             stackbehavior = kwargs["stackbehavior"]
         except:
             stackbehavior = enum.CONDITION_LATER
-        
+
         currCon = argc[0]
         for con in argc[1:]:
             currCon.callback = lambda: self.condition(con, stackbehavior)
             currCon = con
-            
+
         self.condition(argc[0], stackbehavior)
-        
+
     def hasCondition(self, conditionType, subtype=""):
         if subtype and isinstance(conditionType, str):
             conditionType = "%s_%s" % (conditionType, subtype)
@@ -1277,7 +1277,7 @@ class Creature(object):
             return self.conditions[conditionType]
         except:
             return False
-            
+
     def loseCondition(self, conditionType, subtype=""):
         if subtype and isinstance(conditionType, str):
             conditionType = "%s_%s" % (conditionType, subtype)
@@ -1290,17 +1290,17 @@ class Creature(object):
     def loseAllConditions(self):
         if not self.conditions:
             return False
-            
+
         for condition in self.conditions.copy():
             condition.stop()
-            
+
         return True
     ##############
     ### Spells ###
     ##############
     def castSpell(self, spell, strength=None, target=None):
         game.spell.spells[spell][0](self, strength, target)
-    
+
     #############
     ### House ###
     #############
@@ -1309,9 +1309,9 @@ class Creature(object):
         try:
             # Find door pos
             doorPos = game.map.houseDoors[tile.houseId]
-            
-            
-            
+
+
+
             # Try north
             found = True
             doorPos[1] -= 1
@@ -1320,11 +1320,11 @@ class Creature(object):
                 if i.solid:
                     found = False
                     break
-                    
+
             if found:
                 self.teleport(doorPos)
                 return True
-            
+
             # Try south
             found = True
             doorPos[1] += 2 # Two to counter north change
@@ -1333,11 +1333,11 @@ class Creature(object):
                 if i.solid:
                     found = False
                     break
-                    
+
             if found:
                 self.teleport(doorPos)
                 return True
-                
+
             # Try east
             found = True
             doorPos[1] -= 1 # counter south change
@@ -1347,7 +1347,7 @@ class Creature(object):
                 if i.solid:
                     found = False
                     break
-                    
+
             if found:
                 self.teleport(doorPos)
                 return True
@@ -1360,72 +1360,72 @@ class Creature(object):
                 if i.solid:
                     found = False
                     break
-                    
+
             if found:
                 self.teleport(doorPos)
                 return True
-                
+
             return False # Not found
-            
+
         except:
             return False # Not in a house
-    
+
     #####################
     ### Compatibility ###
     #####################
-    
+
     def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
         pass
-    
+
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
-        if groupCooldown == None: groupCooldown = cooldown   
+        if groupCooldown == None: groupCooldown = cooldown
         t = time.time()  + cooldown
         self.cooldowns[icon] = t
         self.cooldowns[group << 8] = t
-        
+
     def cooldownIcon(self, icon, cooldown):
         self.cooldowns[icon] = time.time() + cooldown
-        
+
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
 
     ################
     ### Instance ###
     ################
-    
+
     def setInstance(self, instanceId=None):
         # Teleport to the same position within instance
         newPosition = self.position.copy()
         newPosition.instanceId = instanceId
         self.teleport(instanceId)
-        
+
     ###################
     ### Walkability ###
     ###################
     def walkable(self, state=True):
         self.canWalk = state
-        
+
     def toggleWalkable(self):
         self.canWalk = not self.canWalk
-    
+
     ####################
     ### Internal Use ###
     ####################
     def use(self, position, thing):
         game.scriptsystem.get('use').runSync(thing, self, None, position=position, index=0)
-        
+
     #####################
     ### Hidden health ###
     #####################
     def hideHealth(self, do = True):
         self.doHideHealth = do
-        
+
     def getHideHealth(self):
         return self.doHideHealth
-        
+
     def toggleHideHealth(self):
         self.doHideHealth = not self.doHideHealth
-        
+
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
@@ -1433,14 +1433,14 @@ class Condition(object):
         self.creature = None
         self.tickEvent = None
         self.check = check
-        
+
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
         else:
             self.type = type
         self.effectArgs = argc
         self.effectKwargs = kwargs
-        
+
         try:
             self.effect
         except:
@@ -1452,28 +1452,28 @@ class Condition(object):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana
-                
+
     def start(self, creature):
         self.creature = creature
         if self.creature.isPlayer():
             self.saveCondition = True
-            
+
         self.init()
         self.tick()
-        
+
     def stop(self):
         try:
             self.tickEvent.cancel()
         except:
             pass
-        
+
         self.finish()
-        
+
     def init(self):
         pass
 
     def callback(self): pass
-    
+
     def finish(self):
         del self.creature.conditions[self.type]
         if self.creature.isPlayer():
@@ -1493,39 +1493,39 @@ class Condition(object):
         if not gainhp:
             gainhp = self.creature.getVocation().health
             self.creature.onHeal(None, gainhp[0])
-            
-        else:    
+
+        else:
             self.creature.onHeal(None, gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
         if not gainmana:
             gainmana = self.creature.getVocation().mana
             self.creature.modifyMana(gainmana[0])
-            
-        else:    
+
+        else:
             self.creature.modifyMana(gainmana)
-                    
+
     def tick(self):
         if not self.creature:
             return
-            
+
         self.effect(*self.effectArgs, **self.effectKwargs)
         self.length -= self.every # This "can" become negative!
-        
+
         if self.check: # This is what we do if we got a check function, independantly of the length
             if self.check(self.creature):
                 self.tickEvent = reactor.callLater(self.every, self.tick)
             else:
                 self.finish()
-                
+
         elif self.length > 0:
             self.tickEvent = reactor.callLater(self.every, self.tick)
         else:
             self.finish()
-            
+
     def copy(self):
         return copy.deepcopy(self)
-        
+
     def __getstate__(self):
         d = self.__dict__.copy()
         d["creature"] = None
@@ -1546,12 +1546,12 @@ class Boost(Condition):
         self.effectKwargs = kwargs
         self.mod = [mod] if not isinstance(mod, list) else mod
         self.percent = percent
-    
+
     def add(self, type, mod):
         self.ptype.append(type)
         self.mod.append(mod)
         return self
-        
+
     def tick(self): pass
     def init(self):
         pid = 0
@@ -1563,7 +1563,7 @@ class Boost(Condition):
             except:
                 pvalue = self.creature.data[ptype]
                 inStruct = 1
-            
+
             if isinstance(self.mod[pid], int):
                 if self.percent:
                     pvalue *= self.mod[pid]
@@ -1571,7 +1571,7 @@ class Boost(Condition):
                     pvalue += self.mod[pid]
             else:
                 pvalue = self.mod[pid](self.creature, ptype, True)
-                
+
             # Hack
             if ptype == "speed":
                 self.type = game.enum.CONDITION_HASTE
@@ -1582,9 +1582,9 @@ class Boost(Condition):
                 else:
                     self.creature.data[ptype] = pvalue
             pid += 1
-            
+
         self.tickEvent = reactor.callLater(self.length, self.finish)
-            
+
         self.creature.refreshStatus()
     def callback(self):
         pid = 0
@@ -1596,7 +1596,7 @@ class Boost(Condition):
             except:
                 pvalue = self.creature.data[ptype]
                 inStruct = 1
-            
+
             if isinstance(self.mod[pid], int):
                 if self.percent:
                     pvalue /= self.mod[pid]
@@ -1604,7 +1604,7 @@ class Boost(Condition):
                     pvalue -= self.mod[pid]
             else:
                 pvalue = self.mod[pid](self.creature, ptype, False)
-                
+
             # Hack
             if ptype == "speed":
                 self.creature.setSpeed(pvalue)
@@ -1613,18 +1613,17 @@ class Boost(Condition):
                     setattr(self.creature, ptype, pvalue)
                 else:
                     self.creature.data[ptype] = pvalue
-                
+
             pid += 1
         self.creature.refreshStatus()
-        
+
 def MultiCondition(type, subtype="", *argc):
     conditions = []
     for x in argc:
         conditions.append(Condition(type, subtype, **x))
-        
+
     for index in len(conditions):
         if index != len(conditions)-1:
             conditions[index].callback = lambda self: self.creature.condition(conditions[index+1])
-    
+
     return conditions[0]
-    
