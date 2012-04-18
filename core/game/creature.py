@@ -1617,6 +1617,13 @@ class Boost(Condition):
             pid += 1
         self.creature.refreshStatus()
 
+    ######## Language placeholders #########
+    def l(self, message):
+        return message
+    
+    def lp(self, singular, plural, n):
+        return singular if n != 1 else plural
+        
 def MultiCondition(type, subtype="", *argc):
     conditions = []
     for x in argc:

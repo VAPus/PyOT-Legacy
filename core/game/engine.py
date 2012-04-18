@@ -122,13 +122,14 @@ def loader(timer):
         
     
     # Loading languages
-    print "> > Loading languages... ",
     import language
-    if language.LANGUAGES:
-        print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
-    else:
-        print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
-        
+    if config.enableTranslations:
+        print "> > Loading languages... ",
+        if language.LANGUAGES:
+            print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
+        else:
+            print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
+            
     # Globalize certain things
     print "> > Globalize data...",
     import game.player, game.creature, game.npc, game.monster, game.spell, game.party

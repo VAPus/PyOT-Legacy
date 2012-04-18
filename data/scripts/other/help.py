@@ -377,3 +377,8 @@ register("talkaction", "aime", playerAI)
 def openMarket(creature, **k):
     creature.openMarket()
 register("talkaction", "market", openMarket)
+
+def setLang(creature, **k):
+    creature.setLanguage("es_ES")
+    
+register("talkaction", "spanish", setLang)

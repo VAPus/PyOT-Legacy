@@ -19,6 +19,8 @@ import random
 import math
 import otjson
 import datetime
+import language
+
 try:
     import cPickle as pickle
 except:
@@ -161,6 +163,14 @@ class Player(Creature):
         self.saveCondition = False
         self.doSave = True
         
+        if self.data["language"] != config.defaultLanguage:
+            try:
+                self.l = language.LANGUAGES[self.data["language"]].gettext
+                self.lp = language.LANGUAGES[self.data["language"]].ngettext
+            except:
+                print "WARNING: Language %s not loaded, falling back to defaults"
+                pass
+            
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -2466,3 +2476,13 @@ class Player(Creature):
             stream.uint32(1)
             
         stream.send(self.client)
+        
+    def setLanguage(self, lang):
+        try:
+            self.l = language.LANGUAGES[lang].gettext
+            self.lp = language.LANGUAGES[lang].ngettext
+        except:
+            print "WARNING: Language %s not loaded, falling back to defaults" % lang
+            pass
+        
+        self.data["language"] = lang

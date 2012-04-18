@@ -161,6 +161,7 @@ findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15
 
 # Language
 # Default (fallback) language.
+enableTranslations = True
 defaultLanguage = "en_EN" # ISO-4 code
 
 ########## Advance settings #########
