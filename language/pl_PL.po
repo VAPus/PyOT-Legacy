@@ -1,0 +1,215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-13 17:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ../language/test.py:1
+msgid "hello world!"
+msgstr ""
+
+#: ../core/game/item.py:238
+#, python-format
+msgid "You see %s"
+msgstr ""
+
+#: ../core/game/item.py:240
+#, python-format
+msgid "that will expire in %d second."
+msgid_plural "that will expire in %d seconds."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../core/game/item.py:242
+#, python-format
+msgid " (Vol:%d)."
+msgstr ""
+
+#: ../core/game/item.py:246
+#, python-format
+msgid "Arm:%d"
+msgstr ""
+
+#: ../core/game/item.py:248
+#, python-format
+msgid "Atk:%d"
+msgstr ""
+
+#: ../core/game/item.py:256
+#, python-format
+msgid " physical %s"
+msgstr ""
+
+#: ../core/game/item.py:258 ../core/game/item.py:264
+#, python-format
+msgid " %+d"
+msgstr ""
+
+#: ../core/game/item.py:262
+#, python-format
+msgid "Def:%d"
+msgstr ""
+
+#: ../core/game/item.py:267
+#, python-format
+msgid ", %+d speed"
+msgstr ""
+
+#: ../core/game/item.py:269
+#, python-format
+msgid ", %+d magic level"
+msgstr ""
+
+#: ../core/game/item.py:271
+#, python-format
+msgid ""
+", %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, "
+"%(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, "
+"%(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain"
+msgstr ""
+
+#: ../core/game/item.py:292 ../core/game/item.py:296 ../core/game/item.py:298
+#, python-format
+msgid ""
+"\n"
+"It weighs %.2f oz."
+msgstr ""
+
+#: ../core/game/item.py:307
+#, python-format
+msgid ""
+"\n"
+"You Read: %s"
+msgstr ""
+
+#: ../core/game/player.py:181
+msgid "He"
+msgstr ""
+
+#: ../core/game/player.py:183
+msgid "She"
+msgstr ""
+
+#: ../core/game/player.py:187
+msgid "his"
+msgstr ""
+
+#: ../core/game/player.py:189
+msgid "heres"
+msgstr ""
+
+#: ../core/game/player.py:193
+#, python-format
+msgid "You see yourself. You are %s."
+msgstr ""
+
+#: ../core/game/player.py:195
+#, python-format
+msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
+msgstr ""
+
+#: ../core/game/player.py:711
+#, python-format
+msgid "You gained %d experience point."
+msgid_plural "You gained %d experience points."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../core/game/player.py:720
+#, python-format
+msgid "You lost %d experience point."
+msgid_plural "You lost %d experience points."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../core/game/player.py:1013
+msgid "Sorry, not possible."
+msgstr ""
+
+#: ../core/game/player.py:1016
+msgid "You cannot take this object."
+msgstr ""
+
+#: ../core/game/player.py:1020
+msgid "This object is too heavy for you to carry."
+msgstr ""
+
+#: ../core/game/player.py:1023
+msgid "Destination is out of range."
+msgstr ""
+
+#: ../core/game/player.py:1026
+msgid "There is not enough room."
+msgstr ""
+
+#: ../core/game/player.py:1029
+msgid "You are exhausted."
+msgstr ""
+
+#: ../core/game/player.py:1032
+msgid "You need a magic item to cast this spell."
+msgstr ""
+
+#: ../core/game/player.py:1035
+#, python-format
+msgid "You do not have enough %s."
+msgstr ""
+
+#: ../core/game/player.py:1038
+msgid "You can only use it on creatures."
+msgstr ""
+
+#: ../core/game/player.py:1413
+msgid "Channel not found."
+msgstr ""
+
+#: ../core/game/player.py:1873
+msgid "Message too long"
+msgstr ""
+
+#: ../core/game/player.py:1947
+msgid "You strike a critical hit!"
+msgstr ""
+
+#: ../core/game/player.py:2019
+msgid "Target lost."
+msgstr ""
+
+#: ../core/game/player.py:359
+msgid "findItem - stackpos"
+msgstr ""
+
+#: ../core/game/spell.py:416
+msgid "You need a target to cast this spell."
+msgstr ""
+
+#: ../core/game/spell.py:420 ../core/game/spell.py:565
+msgid "Target is too far away"
+msgstr ""
+
+#: ../core/game/spell.py:430 ../core/game/spell.py:573
+msgid "You need to learn this spell first."
+msgstr ""
+
+#: ../core/game/spell.py:433 ../core/game/spell.py:576
+msgid "Your vocation cannot use this spell."
+msgstr ""
+
+#: ../core/game/spell.py:445 ../core/game/spell.py:587
+#, python-format
+msgid "Your %s is too high!"
+msgstr ""
