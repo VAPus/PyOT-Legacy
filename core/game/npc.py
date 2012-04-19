@@ -129,7 +129,7 @@ class NPC(Creature):
                     count = amount
                    
                     stack = Item(itemId).stackable
-                    player.message("Bought %sx %s for %s gold." % (amount ,game.item.items[itemId]["name"] ,offer[1] * amount), 'MSG_INFO_DESCR')
+                    player.message(_lp(player, "Bought %(amount)sx %(name)s for %(price)s gold.", "Bought %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": amount , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[1] * amount}, 'MSG_INFO_DESCR')
                     container = player.inventory[2]
                     if withBackpack:
                         container = game.item.Item(1988)
@@ -152,7 +152,7 @@ class NPC(Creature):
                     item = player.findItemById(itemId, count)
                     if item.count == count:
                         player.addMoney(offer[2] * amount)
-                        player.message("Sold %sx %s for %s gold." % (count ,game.item.items[itemId]["name"] ,offer[2] * amount), 'MSG_INFO_DESCR')
+                        player.message(_lp(player, "Sold %(amount)sx %(name)s for %(price)s gold.", "Sold %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": count , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[2] * amount}, 'MSG_INFO_DESCR')
                         if self.forSale and player.openTrade == self: # Resend my items
                             self.sendGoods(player, self.forSale)
                 else:
@@ -221,8 +221,8 @@ class NPCBase(CreatureBase):
         self.brainFeatures = [] #["default"]
         self.classActions = []
         self.actions = ['creature', 'npc', self.data["name"]]
-        self.speakGreet ="Welcome, %(playerName)s! I have been expecting you."
-        self.speakFarewell = "Good bye, %(playerName)s!" 
+        self.speakGreet = _("Welcome, %(playerName)s! I have been expecting you.")
+        self.speakFarewell = _("Good bye, %(playerName)s!")
         self.brain = brain
         self._onSaid = {}
         self.speakTreeFunc = None

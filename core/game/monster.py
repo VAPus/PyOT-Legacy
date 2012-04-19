@@ -214,9 +214,9 @@ class Monster(Creature):
 
         if self.lastDamager and self.lastDamager.isPlayer() and self.lastDamager != self.master:
             if lootMsg:
-                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ', '.join(lootMsg)), 'MSG_LOOT')
+                self.lastDamager.message(_l(self.lastDamager, "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, 'MSG_LOOT')
             else:
-                self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), 'MSG_LOOT')
+                self.lastDamager.message(_l(self.lastDamager, "Loot of %s: Nothing.") % (self.data["name"]), 'MSG_LOOT')
                 
             if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
                 self.lastDamager.modifyExperience(self.base.experience *self.lastDamager.getExperienceRate())
