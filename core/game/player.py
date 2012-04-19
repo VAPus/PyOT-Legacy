@@ -174,17 +174,17 @@ class Player(Creature):
                 pass
 
     def cl(self, context, message):
-        contexts = Set()
+        contexts = []
         if 'gender' not in context:
             if self.data["sex"] == 1:
-                contexts.add('base')
+                contexts.append('base')
             else:
-                contexts.add('female')
+                contexts.append('female')
         else:
             if context['gender'] != 'female':
-                contexts.add('base')
+                contexts.append('base')
             else:
-                contexts.add('female')
+                contexts.append('female')
 
         if 'case' in context:
             if context['case'] == 'look':
@@ -192,11 +192,11 @@ class Player(Creature):
 
         #Fallback contexts
         if contexts[0] == 'female_look':
-            contexts.add('base_look')
-            contexts.add('female')
-            contexts.add('base')
+            contexts.append('base_look')
+            contexts.append('female')
+            contexts.append('base')
         elif contexts[0] == 'base_look' or contexts[0] == 'female':
-            contexts.add('base')
+            contexts.append('base')
 
         try:
             return language.LANGUAGES[self.data["language"]]._pgettext(contexts, message)
@@ -204,17 +204,17 @@ class Player(Creature):
             return self.l(message)
 
     def clp(self, context, msgid1, msgid2, n):
-        contexts = Set()
+        contexts = []
         if 'gender' not in context:
             if self.data["sex"] == 1:
-                contexts.add('base')
+                contexts.append('base')
             else:
-                contexts.add('female')
+                contexts.append('female')
         else:
             if context['gender'] != 'female':
-                contexts.add('base')
+                contexts.append('base')
             else:
-                contexts.add('female')
+                contexts.append('female')
 
         if 'case' in context:
             if context['case'] == 'look':
@@ -222,11 +222,11 @@ class Player(Creature):
 
         #Fallback contexts
         if contexts[0] == 'female_look':
-            contexts.add('base_look')
-            contexts.add('female')
-            contexts.add('base')
+            contexts.append('base_look')
+            contexts.append('female')
+            contexts.append('base')
         elif contexts[0] == 'base_look' or contexts[0] == 'female':
-            contexts.add('base')
+            contexts.append('base')
 
         try:
             return language.LANGUAGES[self.data["language"]]._npgettext(contexts, msgid1, msgid2, n)
