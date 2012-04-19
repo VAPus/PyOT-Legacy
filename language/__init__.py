@@ -20,6 +20,7 @@ if config.enableTranslations:
     # Initialize GNUTranslations (regular gettext is singel language only :()
     for language in __all__:
         LANGUAGES[language] = gettext.GNUTranslations(open("%s/%s.mo" % (base, language)))
+        LANGUAGES[language].CONTEXT = "%s\x04%s"
 
 
 # Functions
@@ -36,27 +37,28 @@ if LANGUAGES:
         else:
             return creature.lp(singular, plural, n)
 
-    def _pgettext(self, contexts, message):
+    def _pgettext(gnut, contexts, message):
         index = 0
         found = False
         tmsg = None
         while not found:
-            ctxt_msg_id = self.CONTEXT % (contexts[index], message)
+            ctxt_msg_id = gnut.CONTEXT % (contexts[index], message)
             missing = object()
-            tmsg = self._catalog.get(ctxt_msg_id, missing)
+            tmsg = gnut._catalog.get(ctxt_msg_id, missing)
             if tmsg is missing:
                 if len(contexts) <= index+1:
-                    tmsg = self.gettext(message)
+                    tmsg = gnut.gettext(message)
                     found = True
                 else:
                     index += 1
             else:
                 found = True
         # Encode the Unicode tmsg back to an 8-bit string, if possible
-        if self._output_charset:
-            return tmsg.encode(self._output_charset)
-        elif self._charset:
-            return tmsg.encode(self._charset)
+        """exceptions.UnicodeDecodeError: 'ascii' codec can't decode byte
+        if gnut._output_charset:
+            return tmsg.encode(gnut._output_charset)
+        elif gnut._charset:
+            return tmsg.decode(gnut._charset)"""
         return tmsg
 
     def _npgettext(self, contexts, msgid1, msgid2, n):
@@ -67,10 +69,11 @@ if LANGUAGES:
             ctxt_msg_id = self.CONTEXT % (contexts[index], msgid1)
             try:
                 tmsg = self._catalog[(ctxt_msg_id, self.plural(n))]
+                """exceptions.UnicodeDecodeError: 'ascii' codec can't decode byte
                 if self._output_charset:
                     tmsg = tmsg.encode(self._output_charset)
                 elif self._charset:
-                    tmsg = tmsg.encode(self._charset)
+                    tmsg = tmsg.encode(self._charset)"""
                 found = True
             except KeyError:
                 if len(contexts) <= index+1:

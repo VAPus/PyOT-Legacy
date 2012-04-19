@@ -163,6 +163,9 @@ class Player(Creature):
         self.saveCondition = False
         self.doSave = True
 
+        #For tests
+        self.data["language"] = 'es_ES'
+
         if self.data["language"] != config.defaultLanguage:
             try:
                 self.l = language.LANGUAGES[self.data["language"]].gettext
@@ -198,10 +201,16 @@ class Player(Creature):
         elif contexts[0] == 'base_look' or contexts[0] == 'female':
             contexts.append('base')
 
-        try:
-            return language.LANGUAGES[self.data["language"]]._pgettext(contexts, message)
+        #Debug
+        print 'cl[%s]: %s' % (self.data["language"], ' -> '.join(contexts))
+
+        #return language.LANGUAGES[self.data["language"]]._pgettext(contexts, message)
+        return language._pgettext(language.LANGUAGES[self.data["language"]], contexts, message)
+        """try:
+            return language.LANGUAGES[self.data["language"]]._pgettext(*contexts, message)
         except:
-            return self.l(message)
+            print 'cl exception!'
+            return self.l(message)"""
 
     def clp(self, context, msgid1, msgid2, n):
         contexts = []
@@ -227,6 +236,9 @@ class Player(Creature):
             contexts.append('base')
         elif contexts[0] == 'base_look' or contexts[0] == 'female':
             contexts.append('base')
+
+        #Debug
+        print 'cl[%s]: %s' % (self.data["language"], ' -> '.join(contexts))
 
         try:
             return language.LANGUAGES[self.data["language"]]._npgettext(contexts, msgid1, msgid2, n)
