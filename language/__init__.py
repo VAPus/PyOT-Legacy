@@ -36,12 +36,22 @@ if LANGUAGES:
         else:
             return creature.lp(singular, plural, n)
 
-    def _pgettext(self, context, message):
-        ctxt_msg_id = self.CONTEXT % (context, message)
-        missing = object()
-        tmsg = self._catalog.get(ctxt_msg_id, missing)
-        if tmsg is missing:
-            return self.gettext(message)
+    def _pgettext(self, contexts, message):
+        index = 0
+        found = False
+        tmsg = None
+        while not found:
+            ctxt_msg_id = self.CONTEXT % (contexts[index], message)
+            missing = object()
+            tmsg = self._catalog.get(ctxt_msg_id, missing)
+            if tmsg is missing:
+                if len(contexts) <= index+1:
+                    tmsg = self.gettext(message)
+                    found = True
+                else:
+                    index += 1
+            else:
+                found = True
         # Encode the Unicode tmsg back to an 8-bit string, if possible
         if self._output_charset:
             return tmsg.encode(self._output_charset)
@@ -49,17 +59,26 @@ if LANGUAGES:
             return tmsg.encode(self._charset)
         return tmsg
 
-    def _npgettext(self, context, msgid1, msgid2, n):
-        ctxt_msg_id = self.CONTEXT % (context, msgid1)
-        try:
-            tmsg = self._catalog[(ctxt_msg_id, self.plural(n))]
-            if self._output_charset:
-                return tmsg.encode(self._output_charset)
-            elif self._charset:
-                return tmsg.encode(self._charset)
-            return tmsg
-        except KeyError:
-            return self.ngettext(singular, plural, n)
+    def _npgettext(self, contexts, msgid1, msgid2, n):
+        index = 0
+        found = False
+        tmsg = None
+        while not found:
+            ctxt_msg_id = self.CONTEXT % (contexts[index], msgid1)
+            try:
+                tmsg = self._catalog[(ctxt_msg_id, self.plural(n))]
+                if self._output_charset:
+                    tmsg = tmsg.encode(self._output_charset)
+                elif self._charset:
+                    tmsg = tmsg.encode(self._charset)
+                found = True
+            except KeyError:
+                if len(contexts) <= index+1:
+                    tmsg = self.ngettext(msgid1, msgid2, n)
+                    found = True
+                else:
+                    index += 1
+        return tmsg
 
 else:
     _l = lambda c,m: m

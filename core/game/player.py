@@ -262,9 +262,9 @@ class Player(Creature):
 
     def description(self, isSelf=False):
         if isSelf:
-            output = self.l("You see yourself. You are %s.") % self.cl({'case':'look'}, self.getVocation().description())
+            output = self.cl({'case':'look'}, "You see yourself. You are %s.") % self.cl({'case':'look'}, self.getVocation().description())
         else:
-            output = self.l("You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
+            output = self.cl({'case':'look'}, "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
                                                 "level": self.data["level"],
                                                 "prefix": self.cl({'case':'look'}, self.sexPrefix()),
                                                 "description": self.cl({'case':'look'}, self.getVocation().description())}
