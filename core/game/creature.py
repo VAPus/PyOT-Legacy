@@ -915,8 +915,6 @@ class Creature(object):
         return self.turn(direction)
 
     def say(self, message, messageType=None):
-        print message
-        print hex(ord(message[0]))
         if not messageType:
             messageType = self.defaultSpeakType
 
