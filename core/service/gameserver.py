@@ -269,3 +269,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
 class GameFactory(protocolbase.TibiaFactory):
     __slots__ = ()
     protocol = GameProtocol
+
+    def __repr__(self):
+        return "<Game Server Factory>"

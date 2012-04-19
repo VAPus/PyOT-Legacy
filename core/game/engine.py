@@ -58,7 +58,7 @@ def loader(timer):
     # Reset online status
     print "> > Reseting players online status...",
     sql.conn.runQuery("UPDATE players SET online = 0")
-    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    print "%40s\n" % _txtColor("\t[DONE]", "blue")
     
     @inlineCallbacks
     def sync(d, timer):
@@ -70,23 +70,23 @@ def loader(timer):
                 globalStorage[x[0]] = pickle.loads(x[1])
             else:
                 globalStorage[x[0]] = x[1]
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        print "%50s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading groups...",
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
             groups[x[0]] = (x[1], otjson.loads(x[2]))
-        print "%70s\n" % _txtColor("\t[DONE]", "blue")
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading house data...",
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
             game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
         # Load scripts
         print "> > Loading scripts...",
         game.scriptsystem.importer()
         game.scriptsystem.get("startup").runSync()
-        print "%65s\n" % _txtColor("\t[DONE]", "blue")
+        print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
         # Load map (if configurated to do so)
         if config.loadEntierMap:
@@ -96,7 +96,7 @@ def loader(timer):
             for fileSec in files:
                 x, y, junk = fileSec.split('/')[-1].split('.')
                 game.map.load(int(x),int(y), None)
-            print "%60s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
+            print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
             
         # Charge rent?
         def _charge(house):
@@ -142,7 +142,7 @@ def loader(timer):
     for i in globalize:
         setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
         
-    print "%65s\n" % _txtColor("\t[DONE]", "blue")    
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")    
     
     __builtin__.sql = sql.conn
     __builtin__.config = config
@@ -208,13 +208,13 @@ def loader(timer):
     print "> > Loading game protocols...",
     for version in config.supportProtocols:
         game.protocol.loadProtocol(version)
-    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    print "%50s\n" % _txtColor("\t[DONE]", "blue")
     
     # Do we issue saves?
     if config.doSaveAll:
         print "> > Schedule global save...",
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        print "%50s\n" % _txtColor("\t[DONE]", "blue")
         
     # Do we save on shutdowns?
     if config.saveOnShutdown:
@@ -226,7 +226,7 @@ def loader(timer):
     print "> > Turn world time and light on...",
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-    print "%50s" % _txtColor("\t[DONE]", "blue")
+    print "%45s" % _txtColor("\t[DONE]", "blue")
     
     reactor.callLater(60, looper, game.pathfinder.clear, 60)
     

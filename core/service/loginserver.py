@@ -104,3 +104,6 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 class LoginFactory(protocolbase.TibiaFactory):
     __slots__ = ()
     protocol = LoginProtocol
+
+    def __repr__(self):
+        return "<Login Server Factory>"

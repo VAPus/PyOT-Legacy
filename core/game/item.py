@@ -676,7 +676,7 @@ def loadItems():
                 loadItems[data[0]][data[1]] = data[2]
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
-    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    print "%50s\n" % _txtColor("\t[DONE]", "blue")
             
     # Replace the existing items
     items = loadItems
