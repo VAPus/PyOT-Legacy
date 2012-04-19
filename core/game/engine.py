@@ -578,7 +578,7 @@ def transformItem(item, transformTo, pos):
     
     """
     pos = item.vertifyPosition(None, pos)
-    if not pos2:
+    if not pos:
         raise Exception("BUG: Can't vertify position")
  
     tile = game.map.getTile(pos)
