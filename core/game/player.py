@@ -523,7 +523,6 @@ class Player(Creature):
                     
     def modifyItem(self, thing, position, mod):
         if thing.count <= 0:
-            
             thing.count = 1
             
             # Silently ignore for now.

@@ -166,7 +166,7 @@ class Item(object):
                 raise Exception("Cannot vertify Position inside inventory when creature == None!")
             
             if pos.y < 64:
-                if creature.inventory[pos.y] == self:
+                if creature.inventory[pos.y-1] == self:
                     return pos
                 else:
                     return False # We cant assume that inventory items move
@@ -186,7 +186,7 @@ class Item(object):
                             pos.z = z
                             return pos
                     return False # Not found
-        
+
         tile = pos.getTile()
         
         if isinstance(pos, StackPosition) and tile.things[pos.stackpos] == self:
@@ -502,9 +502,10 @@ class Item(object):
     def refresh(self, position):
         position = self.vertifyPosition(self.decayCreature, position)
         creature = self.decayCreature
+
         if not position:
             raise Exception("BUG: Item position cannot be vertified!")
-        
+
         if position.x != 0xFFFF:
             tile = position.getTile()
             stackPos = tile.findStackpos(self)
@@ -517,8 +518,10 @@ class Item(object):
                     
                 stream.send(spectator)
         else:
+
             # Option 2, the inventory
             if position.y < 64:
+
                 sendUpdate = False
                 currItem = creature.inventory[position.y-1]
                 if currItem:
@@ -526,7 +529,7 @@ class Item(object):
                     if creature.removeCache(currItem):
                         sendUpdate = True
                         
-                ret = creaturef.addCache(self)
+                ret = creature.addCache(self)
                 if ret:
                     sendUpdate = True
                     creature.inventory[position.y-1] = self

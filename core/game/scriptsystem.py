@@ -327,6 +327,7 @@ class ThingScripts(object):
             ok = Value()
             d = defer.gatherResults(deferList)
             d.addCallback(self.makeResult(ok))
+            d.addErrback(log.err)
             while True:
                 try:
                     ok.value
@@ -340,8 +341,11 @@ class ThingScripts(object):
         elif end:
             d = defer.gatherResults(deferList)
             d.addCallback(self.handleCallback(end))
+            d.addErrback(log.err)
         else:
-            defer.DeferredList(deferList)
+            d = defer.DeferredList(deferList)
+            d.addErrback(log.err)
+            
     @defer.inlineCallbacks
     def _runDefer(self, thing, creature, end, returnVal, **kwargs):
         deferList = []
@@ -365,14 +369,14 @@ class ThingScripts(object):
             # This is actually blocking code, but is rarely used.
             ok = Value()
             d = defer.gatherResults(deferList)
-            yield d
         elif end:
             d = defer.gatherResults(deferList)
             d.addCallback(self.handleCallback(end))
-            yield d
         else:
-            yield defer.DeferredList(deferList)
+            d = defer.DeferredList(deferList)
             
+        d.addErrback(log.err)  
+        yield d
 class CreatureScripts(ThingScripts):
     def _run(self, thing, creature, end, returnVal, **kwargs):
         ok = True
