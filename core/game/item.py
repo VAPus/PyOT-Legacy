@@ -222,20 +222,23 @@ class Item(object):
                        
         raise AttributeError, name
         
-    def name(self):
+    def name(self, player=None):
+        if not player:
+            raise Exception("We need to have a player when asking for a items name now apperently!")
+            
         if self.count > 1 and "plural" in items[self.itemId]:
-            return str(self.count) + " " + items[self.itemId]["plural"]
+            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, items[self.itemId]["plural"])}
         else:
             try:
-                return items[self.itemId]["article"] + " " + items[self.itemId]["name"]
+                return _l(player, items[self.itemId]["article"] + " " + items[self.itemId]["name"])
             except:
-                return items[self.itemId]["name"]
+                return _l(player, items[self.itemId]["name"])
     
     def description(self, player=None, position=None):
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
-        description = _l(player, "You see %s") % self.name()
+        description = _l(player, "You see %s") % self.name(player)
         if self.showDuration:
             description += _lp(player, "that will expire in %d second.", "that will expire in %d seconds.", self.duration) % self.duration # TODO: days? , minutes, hours
         if self.containerSize:
