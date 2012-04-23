@@ -764,7 +764,7 @@ class Creature(object):
             if by:
                 self.message(_lp(self, "You gain 1 hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
             else:
-                self.message(_lp(self, "You gain 1 hitpoint.", "You gain %d hitpoints.", amount) % amount, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
         self.modifyHealth(amount)
 
     def onSpawn(self):
