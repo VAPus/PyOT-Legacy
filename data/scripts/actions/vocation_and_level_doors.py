@@ -19,7 +19,7 @@ def openDoor(creature, thing, position, **k):
                 break
 
     if not canEnter:
-        creature.message("Only the worthy may pass.")
+        creature.lmessage("Only the worthy may pass.")
     
     thing.transform(thing.itemId+1, position)
 

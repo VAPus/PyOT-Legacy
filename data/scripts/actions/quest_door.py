@@ -13,7 +13,7 @@ def openDoor(creature, thing, position, **k):
             canEnter = False
 
     if not canEnter:
-        creature.message("The door is sealed against unwanted intruders.")
+        creature.lmessage("The door is sealed against unwanted intruders.")
     
     thing.transform(thing.itemId+1, position)
 

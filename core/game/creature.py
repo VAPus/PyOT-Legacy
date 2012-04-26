@@ -1377,6 +1377,18 @@ class Creature(object):
     def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
         pass
 
+    def lmessage(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        pass
+
+    def lcmessage(self, context, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        pass
+    
+    def lcpmessage(self, context, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        pass
+    
+    def lpmessage(self, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        pass
+    
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
         if groupCooldown == None: groupCooldown = cooldown
         t = time.time()  + cooldown

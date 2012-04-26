@@ -2,7 +2,7 @@ depots = (2594, 2592)
 
 def openDepot(creature, thing, **k):
     if thing.owners and creature not in thing.owners:
-        creature.message("This depot box is already in use by someone else")
+        creature.lmessage("This depot box is already in use by someone else")
         return False
         
     if thing.depotId:

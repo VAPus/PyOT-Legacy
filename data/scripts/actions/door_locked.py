@@ -14,7 +14,7 @@ def onUseDoor(creature, thing, position, **k):
             if creature.data["id"] == game.house.houseData[houseId].owner or creature.data["id"] in game.house.houseData[houseId].data["subowners"]:
                 transformItem(thing, thing.itemId+2, position)
                 return
-        creature.message("It is locked.")
+        creature.lmessage("It is locked.")
 
 def onUseKey(creature, thing, onThing, onPosition, **k):
     if not onThing.actions or not onThing.itemId in lockedDoors or not onThing.itemId-1 in lockedDoors or not onThing.itemId-2 in lockedDoors:
@@ -26,7 +26,7 @@ def onUseKey(creature, thing, onThing, onPosition, **k):
             canOpen = True
             
     if not canOpen:
-        creature.message("The key does not match.")
+        creature.lmessage("The key does not match.")
         return
         
     if onThing.itemId in lockedDoors:

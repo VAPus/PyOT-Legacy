@@ -33,18 +33,18 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         if developed:
             magicEffect(onPosition, effect_renew)
             onThing.transform(developed[0], onPosition)
-            creature.message("You have renewed the %s !" % (developed[1]))
+            creature.lmessage("You have renewed the %s !" % (developed[1]))
             creature.modifyItem(thing, position, -1)
             
         else:
             magicEffect(onPosition, effect_broke)
             creature.modifyItem(onThing, onPosition, -1)
             creature.modifyItem(thing, position, -1)
-            creature.message("Your Rusty Remover has broken.")
+            creature.lmessage("Your Rusty Remover has broken.")
             return
             
     else:
-        creature.message("Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
+        creature.lmessage("Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
         return
  
 register("useWith", 9930, onUseWith)

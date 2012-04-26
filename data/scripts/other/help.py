@@ -1,5 +1,5 @@
 def callback(creature, text):
-    creature.message("No you!!")
+    creature.lmessage("No you!!")
     
 def repeater(creature, text):
     creature.message(text)
@@ -9,9 +9,9 @@ def teleporter(creature, text):
     try:
         creature.teleport(Position(int(x),int(y),int(z)))
     except:
-        creature.message("Can't teleport to solid tiles!")
+        creature.lmessage("Can't teleport to solid tiles!")
     else:
-        creature.message("Welcome to %s" % text)
+        creature.lmessage("Welcome to %s" % text)
 
 def up(creature, text):
     up = creature.position.copy()
@@ -39,7 +39,7 @@ def tiler(creature, text):
             id = int(text.split(" ")[1])
             
         if not id in game.item.items:
-            creature.message("Item not found!")
+            creature.lmessage("Item not found!")
             return False
         item = game.item.Item( id )
         last = id
@@ -59,7 +59,7 @@ def tilerE(creature, text):
     return tiler(creature, str(last))
     
 def mypos(creature, text):
-    creature.message("Your position is: "+str(creature.position))
+    creature.lmessage("Your position is: "+str(creature.position))
     print creature.position.getTile()
     if isinstance(creature.position.getTile(), game.map.HouseTile):
         print creature.position.getTile().houseId
@@ -76,7 +76,7 @@ def speedsetter(creature, text):
     try:
         creature.setSpeed(int(text))
     except:
-        creature.message("Invalid speed!")
+        creature.lmessage("Invalid speed!")
 register("talkactionFirstWord", 'speed', speedsetter)
 
 def makeitem(creature, text):
@@ -143,7 +143,7 @@ def creatureSpawn(creature, text):
     try:
         game.monster.getMonster(text.title()).spawn(pos)
     except:
-        creature.message("Monster named '%s' can't be spawned!" % text)
+        creature.lmessage("Monster named '%s' can't be spawned!" % text)
     return False
     
 register("talkactionFirstWord", 's', creatureSpawn)
@@ -156,7 +156,7 @@ def npcSpawn(creature, text):
     try:
         game.npc.getNPC(text.title()).spawn(pos)
     except:
-        creature.message("NPC named '%s' can't be spawned!" % text)
+        creature.lmessage("NPC named '%s' can't be spawned!" % text)
     return False
     
 register("talkactionFirstWord", 'n', npcSpawn)
@@ -202,7 +202,7 @@ def trackScripts(creature, text):
     if t:
         creature.windowMessage("===Scripts bound to '%s'===\n%s" % (text, t))
     else:
-        creature.message("No scripts what so ever on %s" % text)
+        creature.lmessage("No scripts what so ever on %s" % text)
 
 register('talkactionFirstWord', 'track', trackScripts)
 
@@ -215,18 +215,18 @@ def mountPlayer(creature, text):
             if creature.canUseMount(text):
                 creature.mount = game.resource.getMount(text).cid
         except:
-            creature.message("Invalid mount.")
+            creature.lmessage("Invalid mount.")
             
     elif not creature.mount:
-        creature.message("You have no mount.")
+        creature.lmessage("You have no mount.")
     else:
         status = not creature.mounted
         creature.changeMountStatus(status)
         
         if status:
-            creature.message("You're now mounted.")
+            creature.lmessage("You're now mounted.")
         else:
-            creature.message("You're now unmouned.")
+            creature.lmessage("You're now unmouned.")
         
     return False
 register('talkactionFirstWord', '!mount', mountPlayer)
@@ -235,9 +235,9 @@ register('talkaction', '!mount', mountPlayer)
 def addMount(creature, text):
     try:
         creature.addMount(text.title())
-        creature.message("You can now use %s" % text)
+        creature.lmessage("You can now use %s" % text)
     except:
-        creature.message("Invalid mount.")
+        creature.lmessage("Invalid mount.")
     return False
 
 register('talkactionFirstWord', 'mount', addMount)
@@ -245,9 +245,9 @@ register('talkactionFirstWord', 'mount', addMount)
 def addOutfit(creature, text):
     try:
         creature.addOutfit(text.title())
-        creature.message("You can now use %s" % text)
+        creature.lmessage("You can now use %s" % text)
     except:
-        creature.message("Invalid outfit.")
+        creature.lmessage("Invalid outfit.")
     return False
 
 register('talkactionFirstWord', 'outfit', addOutfit)
@@ -275,14 +275,14 @@ def summon(creature, text):
     try:
         mon = game.monster.getMonster(text)
     except:
-        creature.message("Invalid creature.")
+        creature.lmessage("Invalid creature.")
     if mon.summonable:
         if creature.data["mana"] > mon.summonable:
             creature.modifyMana(-1*mon.summonable)
             mon = game.monster.getMonster(text).spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
             mon.setMaster(creature)
         else:
-            creature.message("You do not have enough mana.")
+            creature.lmessage("You do not have enough mana.")
     return False
     
 register("talkactionFirstWord", "res", summon)

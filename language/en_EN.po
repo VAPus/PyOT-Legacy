@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-27 01:25+0200\n"
+"POT-Creation-Date: 2012-04-27 01:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,103 +177,103 @@ msgstr ""
 msgid "Good bye, %(playerName)s!"
 msgstr ""
 
-#: ../core/game/player.py:190
+#: ../core/game/player.py:187
 msgid "He"
 msgstr ""
 
-#: ../core/game/player.py:192
+#: ../core/game/player.py:189
 msgid "She"
 msgstr ""
 
-#: ../core/game/player.py:197
+#: ../core/game/player.py:194
 msgid "his"
 msgstr ""
 
-#: ../core/game/player.py:199
+#: ../core/game/player.py:196
 msgid "heres"
 msgstr ""
 
-#: ../core/game/player.py:203
+#: ../core/game/player.py:200
 #, python-format
 msgid "You see yourself. You are %s."
 msgstr ""
 
-#: ../core/game/player.py:207
+#: ../core/game/player.py:204
 #, python-format
 msgctxt "look_at_male"
 msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
 msgstr ""
 
-#: ../core/game/player.py:212
+#: ../core/game/player.py:209
 #, python-format
 msgctxt "look_at_female"
 msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
 msgstr ""
 
-#: ../core/game/player.py:727
+#: ../core/game/player.py:724
 #, python-format
 msgid "You gained %d experience point."
 msgid_plural "You gained %d experience points."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/player.py:736
+#: ../core/game/player.py:733
 #, python-format
 msgid "You lost %d experience point."
 msgid_plural "You lost %d experience points."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/player.py:1029
+#: ../core/game/player.py:1038
 msgid "Sorry, not possible."
 msgstr ""
 
-#: ../core/game/player.py:1032
+#: ../core/game/player.py:1041
 msgid "You cannot take this object."
 msgstr ""
 
-#: ../core/game/player.py:1036
+#: ../core/game/player.py:1045
 msgid "This object is too heavy for you to carry."
 msgstr ""
 
-#: ../core/game/player.py:1039
+#: ../core/game/player.py:1048
 msgid "Destination is out of range."
 msgstr ""
 
-#: ../core/game/player.py:1042
+#: ../core/game/player.py:1051
 msgid "There is not enough room."
 msgstr ""
 
-#: ../core/game/player.py:1045
+#: ../core/game/player.py:1054
 msgid "You are exhausted."
 msgstr ""
 
-#: ../core/game/player.py:1048
+#: ../core/game/player.py:1057
 msgid "You need a magic item to cast this spell."
 msgstr ""
 
-#: ../core/game/player.py:1051
+#: ../core/game/player.py:1060
 #, python-format
 msgid "You do not have enough %s."
 msgstr ""
 
-#: ../core/game/player.py:1054
+#: ../core/game/player.py:1063
 msgid "You can only use it on creatures."
 msgstr ""
 
-#: ../core/game/player.py:1429
+#: ../core/game/player.py:1438
 msgid "Channel not found."
 msgstr ""
 
-#: ../core/game/player.py:1889
+#: ../core/game/player.py:1898
 msgid "Message too long"
 msgstr ""
 
-#: ../core/game/player.py:1963
+#: ../core/game/player.py:1972
 msgid "You strike a critical hit!"
 msgstr ""
 
-#: ../core/game/player.py:2035
+#: ../core/game/player.py:2044
 msgid "Target lost."
 msgstr ""
 
@@ -296,6 +296,155 @@ msgstr ""
 #: ../core/game/spell.py:445 ../core/game/spell.py:587
 #, python-format
 msgid "Your %s is too high!"
+msgstr ""
+
+#: ../data/scripts/watches.py:5
+#, python-format
+msgid "The time is %(hours)02d:%(minutes)02d."
+msgstr ""
+
+#: ../data/scripts/actions/door_locked.py:17
+msgid "It is locked."
+msgstr ""
+
+#: ../data/scripts/actions/door_locked.py:29
+msgid "The key does not match."
+msgstr ""
+
+#: ../data/scripts/actions/quest_door.py:16
+msgid "The door is sealed against unwanted intruders."
+msgstr ""
+
+#: ../data/scripts/actions/rusty_remover.py:36
+#, python-format
+msgid "You have renewed the %s !"
+msgstr ""
+
+#: ../data/scripts/actions/rusty_remover.py:43
+msgid "Your Rusty Remover has broken."
+msgstr ""
+
+#: ../data/scripts/actions/rusty_remover.py:47
+msgid "Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs)."
+msgstr ""
+
+#: ../data/scripts/actions/vocation_and_level_doors.py:22
+msgid "Only the worthy may pass."
+msgstr ""
+
+#: ../data/scripts/other/depot.py:5
+msgid "This depot box is already in use by someone else"
+msgstr ""
+
+#: ../data/scripts/other/help.py:2
+msgid "No you!!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:12
+msgid "Can't teleport to solid tiles!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:14
+#, python-format
+msgid "Welcome to %s"
+msgstr ""
+
+#: ../data/scripts/other/help.py:42
+msgid "Item not found!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:62
+msgid "Your position is: "
+msgstr ""
+
+#: ../data/scripts/other/help.py:79
+msgid "Invalid speed!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:146
+#, python-format
+msgid "Monster named '%s' can't be spawned!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:159
+#, python-format
+msgid "NPC named '%s' can't be spawned!"
+msgstr ""
+
+#: ../data/scripts/other/help.py:205
+#, python-format
+msgid "No scripts what so ever on %s"
+msgstr ""
+
+#: ../data/scripts/other/help.py:218 ../data/scripts/other/help.py:240
+msgid "Invalid mount."
+msgstr ""
+
+#: ../data/scripts/other/help.py:221
+msgid "You have no mount."
+msgstr ""
+
+#: ../data/scripts/other/help.py:227
+msgid "You're now mounted."
+msgstr ""
+
+#: ../data/scripts/other/help.py:229
+msgid "You're now unmouned."
+msgstr ""
+
+#: ../data/scripts/other/help.py:238 ../data/scripts/other/help.py:248
+#, python-format
+msgid "You can now use %s"
+msgstr ""
+
+#: ../data/scripts/other/help.py:250
+msgid "Invalid outfit."
+msgstr ""
+
+#: ../data/scripts/other/help.py:278
+msgid "Invalid creature."
+msgstr ""
+
+#: ../data/scripts/other/help.py:285
+msgid "You do not have enough mana."
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:4
+msgid "Your not standing in a house"
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:13
+#: ../data/scripts/other/house_access.py:79
+msgid "Your not the owner of this house"
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:31
+msgid "Guestlist have been updated!"
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:53
+msgid "Your not standing in front of a door (with a doorId)"
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:66
+msgid "door access have been updated!"
+msgstr ""
+
+#: ../data/scripts/other/house_access.py:93
+msgid "sub-owner list have been updated!"
+msgstr ""
+
+#: ../data/scripts/other/mailbox.py:16
+msgid "To whom shall this letter be sent?"
+msgstr ""
+
+#: ../data/scripts/other/mailbox.py:21 ../data/scripts/other/mailbox.py:28
+#: ../data/scripts/other/mailbox.py:47 ../data/scripts/other/mailbox.py:54
+msgid "Did you spell it right?"
+msgstr ""
+
+#: ../data/scripts/other/mailbox.py:41
+msgid "To whom shall this parcel be sent?"
 msgstr ""
 
 #: ../data/monsters/Amphibians/Deepling/Deepling Guard.py:1

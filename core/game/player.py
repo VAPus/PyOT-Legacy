@@ -920,6 +920,18 @@ class Player(Creature):
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
 
+    def lmessage(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        self.message(self.l(message), msgType, color, value, pos)
+        
+    def lcmessage(self, context, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        self.message(self.lc(context, message), msgType, color, value, pos)
+    
+    def lcpmessage(self, context, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        self.message(self.lcp(context, singular, plural, n), msgType, color, value, pos)
+    
+    def lpmessage(self, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+        self.message(self.lp(singular, plural, n), msgType, color, value, pos)
+        
     def orangeStatusMessage(self, message, msgType="MSG_STATUS_CONSOLE_ORANGE", color=0, value=0, pos=None):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)
@@ -2481,11 +2493,12 @@ class Player(Creature):
         stream.send(self.client)
 
     def setLanguage(self, lang):
+        C = "%s\x04%s"
         try:
             self.l = language.LANGUAGES[lang].gettext
             self.lp = language.LANGUAGES[lang].ngettext
-            self.lc = lambda context, message: self.l("%s\x04%s" % (context, message))
-            self.lcp = lambda context, message: self.lcp("%s\x04%s" % (context, singular), "%s\x04%s" % (context, plural), n)
+            self.lc = lambda context, message: self.l(C % (context, message))
+            self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
         except:
             print "WARNING: Language %s not loaded, falling back to defaults" % lang
             pass

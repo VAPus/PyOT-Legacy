@@ -1,7 +1,7 @@
 def _houseCheck(creature):
     houseId = getHouseId(creature.position)
     if not houseId:
-        creature.message("Your not standing in a house")
+        creature.lmessage("Your not standing in a house")
         return False
     
     house = getHouseById(houseId)
@@ -10,7 +10,7 @@ def _houseCheck(creature):
         return False
 
     if creature.data["id"] != house.owner and not house.isSubOwner(creature):
-        creature.message("Your not the owner of this house")
+        creature.lmessage("Your not the owner of this house")
         return False
     
     return house
@@ -28,7 +28,7 @@ def guestList(creature, **k):
                 # Force save
                 house.save = True
                 
-                creature.message("Guestlist have been updated!")
+                creature.lmessage("Guestlist have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)
@@ -50,7 +50,7 @@ def doorAccess(creature, **k):
 
         # No doorId?
         if not doorId:
-            creature.message("Your not standing in front of a door (with a doorId)")
+            creature.lmessage("Your not standing in front of a door (with a doorId)")
             return False
 
         _text = '\n'.join(house.getDoorAccess(doorId))
@@ -63,7 +63,7 @@ def doorAccess(creature, **k):
                 # Force save
                 house.save = True
                 
-                creature.message("door access have been updated!")
+                creature.lmessage("door access have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)
@@ -76,7 +76,7 @@ def subownerList(creature, **k):
     if house:
         # Perform owner check
         if creature.data["id"] != house.owner:
-            creature.message("Your not the owner of this house")
+            creature.lmessage("Your not the owner of this house")
             return False  
             
         _text = '\n'.join(house.data["subowners"])
@@ -90,7 +90,7 @@ def subownerList(creature, **k):
                 # Force save
                 house.save = True
                 
-                creature.message("sub-owner list have been updated!")
+                creature.lmessage("sub-owner list have been updated!")
         
         # Register the writeback event
         creature.setWindowHandler(windowId, writeback)

@@ -4,7 +4,7 @@ cd ../data/monsters
 sed -i 's/genMonster(\"\([^"]*\)\"/genMonster\(_\(\"\1\"\)/g' */*.py */*/*.py */*/*/*.py
 sed -i 's/genMonster(\(.*\), \"\([^"]*\)\"/genMonster(\1, _(\"\2\")/g' */*.py */*/*.py */*/*/*.py
 )
-xgettext -k_l:2 -k_lp:2,3 -k_lc:2c,3 -k_lcp:2c,3,4 -o en_EN.po ../*.py ../{core,data}/*.py ../{core,data}/*/*.py ../{core,data}/*/*/*.py ../data/*/*/*/*.py
+xgettext -k_l:2 -k_lp:2,3 -k_lc:2c,3 -k_lcp:2c,3,4 -kl:1 -klp:1,2 -klc:1c,2 -klcp:1c,2,3 -klmessage:1  -klpmessage:1,2 -klcmessage:1c,2 -klcpmessage:1c,2,3 -o en_EN.po ../*.py ../{core,data}/*.py ../{core,data}/*/*.py ../{core,data}/*/*/*.py ../data/*/*/*/*.py
 
 (
 cd ../data/monsters
