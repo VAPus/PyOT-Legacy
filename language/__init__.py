@@ -20,7 +20,6 @@ if config.enableTranslations:
     # Initialize GNUTranslations (regular gettext is singel language only :()
     for language in __all__:
         LANGUAGES[language] = gettext.GNUTranslations(open("%s/%s.mo" % (base, language)))
-        LANGUAGES[language].CONTEXT = "%s\x04%s"
 
 
 # Functions
@@ -34,61 +33,35 @@ if LANGUAGES:
     def _lp(creature, singular, plural, n):
         if type(creature) == str:
             return LANGUAGES[creature].ngettext(singular, plural, n)
-        else:
-            return creature.lp(singular, plural, n)
+            
+        return creature.lp(singular, plural, n)
 
-    def _pgettext(gnut, contexts, message):
-        index = 0
-        found = False
-        tmsg = None
-        while not found:
-            ctxt_msg_id = gnut.CONTEXT % (contexts[index], message)
-            missing = object()
-            tmsg = gnut._catalog.get(ctxt_msg_id, missing)
-            if tmsg is missing:
-                if len(contexts) <= index+1:
-                    tmsg = gnut.gettext(message)
-                    found = True
-                else:
-                    index += 1
-            else:
-                found = True
-        # Encode the Unicode tmsg back to an 8-bit string, if possible
-        """exceptions.UnicodeDecodeError: 'ascii' codec can't decode byte
-        if gnut._output_charset:
-            return tmsg.encode(gnut._output_charset)
-        elif gnut._charset:
-            return tmsg.decode(gnut._charset)"""
-        return tmsg
+    def _lc(creature, context, message):
+        # We don't need to do this harder then the documentation say it is :p
+        if type(creature) == str:
+            # Must be done outside of the call to prevent error.
+            return LANGUAGES[creature].gettext("%s\x04%s" % (context, message))
 
-    def _npgettext(self, contexts, msgid1, msgid2, n):
-        index = 0
-        found = False
-        tmsg = None
-        while not found:
-            ctxt_msg_id = self.CONTEXT % (contexts[index], msgid1)
-            try:
-                tmsg = self._catalog[(ctxt_msg_id, self.plural(n))]
-                """exceptions.UnicodeDecodeError: 'ascii' codec can't decode byte
-                if self._output_charset:
-                    tmsg = tmsg.encode(self._output_charset)
-                elif self._charset:
-                    tmsg = tmsg.encode(self._charset)"""
-                found = True
-            except KeyError:
-                if len(contexts) <= index+1:
-                    tmsg = self.ngettext(msgid1, msgid2, n)
-                    found = True
-                else:
-                    index += 1
-        return tmsg
+        return creature.lc(context, message)
+        
+        
+    def _lcp(creature, context, singular, plural, n):
+        # We don't need to do this harder then the documentation say it is :p
+        # Note: Must be inlined, otherwise error in auto generation :(
+        if type(creature) == str:
+            return LANGUAGES[creature].ngettext("%s\x04%s" % (context, singular), "%s\x04%s" % (context, plural), n)
+
+        return creature.lcp(context, singular, plural, n)
+            
 
 else:
     _l = lambda c,m: m
-    _lp = lambda c,s,p,n: p if n > 1 else s
-    _pgettext = lambda c,m: m
-    _npgettext = lambda c,s,p,n: p if n > 1 else s
+    _lp = lambda c,s,p,n: p if n != 1 else s
+    _lc = lambda cr,c,m: m
+    _lcp = lambda cr,c,s,p,n: p if n != 1 else s
 
 __builtin__._l = _l
+__builtin__._lc = _lc
 __builtin__._lp = _lp
+__builtin__._lcp = _lcp
 __builtin__._ = lambda m: m

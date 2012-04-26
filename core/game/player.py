@@ -163,87 +163,8 @@ class Player(Creature):
         self.saveCondition = False
         self.doSave = True
 
-        #For tests
-        self.data["language"] = 'es_ES'
-
-        if self.data["language"] != config.defaultLanguage:
-            try:
-                self.l = language.LANGUAGES[self.data["language"]].gettext
-                self.lp = language.LANGUAGES[self.data["language"]].ngettext
-                #self.cl = language.LANGUAGES[self.data["language"]]._pgettext
-                #self.clp = language.LANGUAGES[self.data["language"]]._npgettext
-            except:
-                print "WARNING: Language %s not loaded, falling back to defaults"
-                pass
-
-    def cl(self, context, message):
-        contexts = []
-        if 'gender' not in context:
-            if self.data["sex"] == 1:
-                contexts.append('base')
-            else:
-                contexts.append('female')
-        else:
-            if context['gender'] != 'female':
-                contexts.append('base')
-            else:
-                contexts.append('female')
-
-        if 'case' in context:
-            if context['case'] == 'look':
-                contexts[0] = contexts[0] + '_look'
-
-        #Fallback contexts
-        if contexts[0] == 'female_look':
-            contexts.append('base_look')
-            contexts.append('female')
-            contexts.append('base')
-        elif contexts[0] == 'base_look' or contexts[0] == 'female':
-            contexts.append('base')
-
-        #Debug
-        print 'cl[%s]: %s' % (self.data["language"], ' -> '.join(contexts))
-
-        #return language.LANGUAGES[self.data["language"]]._pgettext(contexts, message)
-        return language._pgettext(language.LANGUAGES[self.data["language"]], contexts, message)
-        """try:
-            return language.LANGUAGES[self.data["language"]]._pgettext(*contexts, message)
-        except:
-            print 'cl exception!'
-            return self.l(message)"""
-
-    def clp(self, context, msgid1, msgid2, n):
-        contexts = []
-        if 'gender' not in context:
-            if self.data["sex"] == 1:
-                contexts.append('base')
-            else:
-                contexts.append('female')
-        else:
-            if context['gender'] != 'female':
-                contexts.append('base')
-            else:
-                contexts.append('female')
-
-        if 'case' in context:
-            if context['case'] == 'look':
-                contexts[0] = contexts[0] + '_look'
-
-        #Fallback contexts
-        if contexts[0] == 'female_look':
-            contexts.append('base_look')
-            contexts.append('female')
-            contexts.append('base')
-        elif contexts[0] == 'base_look' or contexts[0] == 'female':
-            contexts.append('base')
-
-        #Debug
-        print 'cl[%s]: %s' % (self.data["language"], ' -> '.join(contexts))
-
-        try:
-            return language.LANGUAGES[self.data["language"]]._npgettext(contexts, msgid1, msgid2, n)
-        except:
-            return self.lp(msgid1, msgid2, n)
+        if self.data["language"] != "en_EN":
+            self.setLanguage(self.data["language"])
 
     def generateClientID(self):
         return 0x10000000 + uniqueId()
@@ -261,12 +182,14 @@ class Player(Creature):
         return ('creature', 'player') # Static actionID
 
     def sexPrefix(self):
+        # TODO: Can be dropped now that we are going for context stuff
         if self.data["sex"] == 1:
             return _("He")
         else:
             return _("She")
 
     def sexAdjective(self):
+        # TODO: Can be dropped now that we are going for context stuff
         if self.data["sex"] == 1:
             return _("his")
         else:
@@ -274,12 +197,19 @@ class Player(Creature):
 
     def description(self, isSelf=False):
         if isSelf:
-            output = self.cl({'case':'look'}, "You see yourself. You are %s.") % self.cl({'case':'look'}, self.getVocation().description())
+            output = _l(self, "You see yourself. You are %s.") % _lc(self, 'look_at', self.getVocation().description())
         else:
-            output = self.cl({'case':'look'}, "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
+            ### TODO: We can drop sex prefixes now that we need to hardcode them anyway!
+            if self.data["sex"] == 1:
+                output = _lc(self, 'look_at_male', "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
                                                 "level": self.data["level"],
-                                                "prefix": self.cl({'case':'look'}, self.sexPrefix()),
-                                                "description": self.cl({'case':'look'}, self.getVocation().description())}
+                                                "prefix": _l(self, self.sexPrefix()),
+                                                "description": _l(self, self.getVocation().description())}
+            else:
+                output = _lc(self, 'look_at_female', "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s.") % {"name": self.name(),
+                                                "level": self.data["level"],
+                                                "prefix": _l(self, self.sexPrefix()),
+                                                "description": _l(self, self.getVocation().description())}
         return output
 
     def packet(self, *args):
@@ -2554,8 +2484,8 @@ class Player(Creature):
         try:
             self.l = language.LANGUAGES[lang].gettext
             self.lp = language.LANGUAGES[lang].ngettext
-            self.cl = language.LANGUAGES[lang]._pgettext
-            self.clp = language.LANGUAGES[lang]._npgettext
+            self.lc = lambda context, message: self.l("%s\x04%s" % (context, message))
+            self.lcp = lambda context, message: self.lcp("%s\x04%s" % (context, singular), "%s\x04%s" % (context, plural), n)
         except:
             print "WARNING: Language %s not loaded, falling back to defaults" % lang
             pass

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-21 22:59+0200\n"
+"POT-Creation-Date: 2012-04-27 01:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,64 +55,73 @@ msgstr[1] ""
 
 #: ../core/game/creature.py:767
 #, python-format
-msgid "You gain 1 hitpoint."
+msgid "You gain %d hitpoint."
 msgid_plural "You gain %d hitpoints."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/item.py:238
+#: ../core/game/item.py:230
+#, python-format
+msgid "%(count)d %(plural_name)s"
+msgstr ""
+
+#: ../core/game/item.py:233
+msgid " "
+msgstr ""
+
+#: ../core/game/item.py:241
 #, python-format
 msgid "You see %s"
 msgstr ""
 
-#: ../core/game/item.py:240
+#: ../core/game/item.py:243
 #, python-format
 msgid "that will expire in %d second."
 msgid_plural "that will expire in %d seconds."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/item.py:242
+#: ../core/game/item.py:245
 #, python-format
 msgid " (Vol:%d)."
 msgstr ""
 
-#: ../core/game/item.py:246
+#: ../core/game/item.py:249
 #, python-format
 msgid "Arm:%d"
 msgstr ""
 
-#: ../core/game/item.py:248
+#: ../core/game/item.py:251
 #, python-format
 msgid "Atk:%d"
 msgstr ""
 
-#: ../core/game/item.py:256
+#: ../core/game/item.py:259
 #, python-format
 msgid " physical %s"
 msgstr ""
 
-#: ../core/game/item.py:258 ../core/game/item.py:264
+#: ../core/game/item.py:261 ../core/game/item.py:267
 #, python-format
 msgid " %+d"
 msgstr ""
 
-#: ../core/game/item.py:262
+#: ../core/game/item.py:265
 #, python-format
 msgid "Def:%d"
 msgstr ""
 
-#: ../core/game/item.py:267
+#: ../core/game/item.py:270
 #, python-format
 msgid ", %+d speed"
 msgstr ""
 
-#: ../core/game/item.py:269
+#: ../core/game/item.py:272
 #, python-format
 msgid ", %+d magic level"
 msgstr ""
 
-#: ../core/game/item.py:271
+#: ../core/game/item.py:274
 #, python-format
 msgid ""
 ", %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, "
@@ -120,14 +129,14 @@ msgid ""
 "%(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain"
 msgstr ""
 
-#: ../core/game/item.py:292 ../core/game/item.py:296 ../core/game/item.py:298
+#: ../core/game/item.py:295 ../core/game/item.py:299 ../core/game/item.py:301
 #, python-format
 msgid ""
 "\n"
 "It weighs %.2f oz."
 msgstr ""
 
-#: ../core/game/item.py:307
+#: ../core/game/item.py:310
 #, python-format
 msgid ""
 "\n"
@@ -168,11 +177,11 @@ msgstr ""
 msgid "Good bye, %(playerName)s!"
 msgstr ""
 
-#: ../core/game/player.py:191
+#: ../core/game/player.py:190
 msgid "He"
 msgstr ""
 
-#: ../core/game/player.py:193
+#: ../core/game/player.py:192
 msgid "She"
 msgstr ""
 
@@ -189,75 +198,82 @@ msgstr ""
 msgid "You see yourself. You are %s."
 msgstr ""
 
-#: ../core/game/player.py:205
+#: ../core/game/player.py:207
 #, python-format
+msgctxt "look_at_male"
 msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
 msgstr ""
 
-#: ../core/game/player.py:720
+#: ../core/game/player.py:212
+#, python-format
+msgctxt "look_at_female"
+msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
+msgstr ""
+
+#: ../core/game/player.py:727
 #, python-format
 msgid "You gained %d experience point."
 msgid_plural "You gained %d experience points."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/player.py:729
+#: ../core/game/player.py:736
 #, python-format
 msgid "You lost %d experience point."
 msgid_plural "You lost %d experience points."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../core/game/player.py:1022
+#: ../core/game/player.py:1029
 msgid "Sorry, not possible."
 msgstr ""
 
-#: ../core/game/player.py:1025
+#: ../core/game/player.py:1032
 msgid "You cannot take this object."
 msgstr ""
 
-#: ../core/game/player.py:1029
+#: ../core/game/player.py:1036
 msgid "This object is too heavy for you to carry."
 msgstr ""
 
-#: ../core/game/player.py:1032
+#: ../core/game/player.py:1039
 msgid "Destination is out of range."
 msgstr ""
 
-#: ../core/game/player.py:1035
+#: ../core/game/player.py:1042
 msgid "There is not enough room."
 msgstr ""
 
-#: ../core/game/player.py:1038
+#: ../core/game/player.py:1045
 msgid "You are exhausted."
 msgstr ""
 
-#: ../core/game/player.py:1041
+#: ../core/game/player.py:1048
 msgid "You need a magic item to cast this spell."
 msgstr ""
 
-#: ../core/game/player.py:1044
+#: ../core/game/player.py:1051
 #, python-format
 msgid "You do not have enough %s."
 msgstr ""
 
-#: ../core/game/player.py:1047
+#: ../core/game/player.py:1054
 msgid "You can only use it on creatures."
 msgstr ""
 
-#: ../core/game/player.py:1422
+#: ../core/game/player.py:1429
 msgid "Channel not found."
 msgstr ""
 
-#: ../core/game/player.py:1882
+#: ../core/game/player.py:1889
 msgid "Message too long"
 msgstr ""
 
-#: ../core/game/player.py:1956
+#: ../core/game/player.py:1963
 msgid "You strike a critical hit!"
 msgstr ""
 
-#: ../core/game/player.py:2028
+#: ../core/game/player.py:2035
 msgid "Target lost."
 msgstr ""
 

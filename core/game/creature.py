@@ -1433,6 +1433,12 @@ class Creature(object):
     def lp(self, singular, plural, n):
         return singular if n != 1 else plural
         
+    def lc(self, context, message):
+        return message
+        
+    def lcp(self, context, singular, plural, n):
+        return singular if n != 1 else plural
+        
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
