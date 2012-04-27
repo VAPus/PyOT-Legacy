@@ -636,15 +636,15 @@ def loadItems():
         cid = item[1]
         attr = {'cid':cid, 'a':item[6]}
 
-        if item[3] != 1:
-            loadItemNames[item[2]] = sid
-
         if item[3]:
             attr['type'] = item[3]
 
         if item[2]:
             attr['name'] = item[2]
-
+            
+            if item[3] != 1:
+                loadItemNames[attr['name']] = sid
+                
         if item[5]:
             attr['speed'] = item[5]
 

@@ -1,4 +1,5 @@
 echo "MUST BE RUN ON A FRESH REV!"
+rm en_EN.po
 (
 cd ../data/monsters
 sed -i 's/genMonster(\"\([^"]*\)\"/genMonster\(_\(\"\1\"\)/g' */*.py */*/*.py */*/*/*.py
@@ -16,3 +17,6 @@ python2 generate_items.py >> en_EN.po
 
 # Important, otherwise non-English characters will display as fucked up in non-English translations. This can, for no reason be anything other than UTF9 in any translation.
 sed -i 's/CHARSET/UTF-8/' en_EN.po
+
+# Fix duplicates
+msguniq en_EN.po -o en_EN.po
