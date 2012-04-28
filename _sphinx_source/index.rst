@@ -13,13 +13,15 @@ PyOT is super fast, and uses diffrent methods than other projects. Some of which
 * Async SQL
 * Async core code
 * Async scriptsystem
-* Ability to utilize epoll (Linux), iocp (Windows) and kpoll (FreeBSD)
-* Ability to utilize jit from pypy (currently the logger module is a bit of a slowdown, we'll work on it, or just wait until pypy 1.7 which seems to fix this)
+* Ability to utilize the best reactor designs (epoll (Linux), iocp (Windows) and kqueue (FreeBSD))
+* Ability to utilize JIT using PyPy
 * Very flexible core
 * Very configurable core
 * Very fast save format (save takes from less than 0.1ms to 0.3ms per player, scales over several sql connections, allowing for upto 10k saves per second)
-* Sector maps, dynamic load and unload for optimal memory usage (down to ~18MB on a 32bit systems and ~32MB on 64bit after login!)
+* Sector maps, dynamic load and unload for optimal memory usage (down to ~18MB on a 32bit systems and ~32MB on 64bit after login!) (*Multilingual mode may require more) 
 * Support for instances or even having multiple worlds on one server!
+* Support for multiple languages (at the same time, now each individual account can have their own language!) (*all server sided messages, client UI is a different matter)
+* Ability to dynamicly script maps and custom items!
 
 The Future for PyOT
 =========================
@@ -28,7 +30,6 @@ The Future for PyOT
 * Better NPC framework
 * Even more configurable behavior
 * Core support for all client features
-* Support for scripted mapping (say you want to add a extra floor to houses using scripts) [Done]
 * Finish a base of scripts that emulates the default behavior rather well (can also be configurable)
 * Document all features
 * Write a couple of pages on scripting
