@@ -181,6 +181,9 @@ class Player(Creature):
     def actionIds(self):
         return ('creature', 'player') # Static actionID
 
+    def __repr__(self):
+        return "<Player (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
+        
     def sexPrefix(self):
         # TODO: Can be dropped now that we are going for context stuff
         if self.data["sex"] == 1:

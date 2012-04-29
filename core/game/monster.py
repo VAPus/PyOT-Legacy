@@ -71,6 +71,9 @@ class Monster(Creature):
             
     def isSummonFor(self, creature):
         return self.master == creature
+
+    def __repr__(self):
+        return "<Monster (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
         
     def damageToBlock(self, dmg, type):
         if type == enum.MELEE:

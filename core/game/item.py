@@ -98,6 +98,9 @@ class Container(object):
     def findSlot(self, item):
         return self.items.index(item)
 
+    def __repr__(self):
+        return "<Container (%d/%d) at %s>" % (self.size(), self.items.maxlen, hex(id(self)))
+        
 bindconstant.bind_all(Container)
             
 ### Item ###
@@ -581,6 +584,12 @@ class Item(object):
                     stream = creature.packet()
                     stream.updateContainerItem(position.y - 64, position.z, self)
                     stream.send(creature.client)
+                    
+    def __repr__(self):
+        # Remove actions:
+        r = self.__dict__.copy()
+        del r["actions"]
+        return "<Item (%s) at %s>" % (r, hex(id(self)))
             
 def cid(itemid):
     try:

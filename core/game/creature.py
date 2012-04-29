@@ -121,6 +121,9 @@ class Creature(object):
             return False
         else:
             return True
+            
+    def __repr__(self):
+        return "<Creature (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
 
     @staticmethod
     def actionDecor(f):
