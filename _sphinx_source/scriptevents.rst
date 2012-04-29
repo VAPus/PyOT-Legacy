@@ -467,7 +467,7 @@ The events are:
 
     .. code-block:: python
 
-        def thankYouNotice(creature, author):
+        def thankYouNotice(creature, author, **k):
             author.message("You have just been thanked by %s!" % creature.name())
 
         register('thankYou', thankYouNotice)    
