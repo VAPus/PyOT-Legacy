@@ -1525,16 +1525,19 @@ class Player(Creature):
 
     def privateChannelMessage(self, text, receiver, channelType="MSG_CHANNEL"):
         player = game.engine.getPlayer(receiver)
-        stream = player.packet(0xAA)
-        stream.uint32(1)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"])
-        stream.uint8(stream.enum(channelType))
-        stream.string(text)
-        stream.send(player.client)
+        if player:
+            stream = player.packet(0xAA)
+            stream.uint32(1)
+            stream.string(self.data["name"])
+            stream.uint16(self.data["level"])
+            stream.uint8(stream.enum(channelType))
+            stream.string(text)
+            stream.send(player.client)
 
-        return True
-
+            return True
+            
+        return False
+        
     def isPrivate(self, name):
         try:
             return self.openChannels[name]
