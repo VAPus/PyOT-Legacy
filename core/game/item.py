@@ -515,9 +515,11 @@ class Item(object):
             
             for spectator in game.engine.getSpectators(position):
                 stream = spectator.packet()
-                stream.removeTileItem(position, stackPos)
-                if toId:
+                
+                if self.itemId:
                     stream.updateTileItem(position, stackPos, self)
+                else:
+                    stream.removeTileItem(position, stackPos)
                     
                 stream.send(spectator)
         else:
