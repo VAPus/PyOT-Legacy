@@ -1485,6 +1485,7 @@ class Player(Creature):
             return False
 
     def channelMessage(self, text, channelType="MSG_CHANNEL", channelId=0):
+        channel = game.chat.getChannel(channelId)
         try:
             members = game.chat.getChannel(channelId).members
         except:
@@ -1499,10 +1500,14 @@ class Player(Creature):
 
         if not members:
             return False # No members
-
+            
+        # At to the channel archives:
+        
+        messageId = channel.addMessage(self, text, channelType)
+        
         for player in members:
             stream = player.packet(0xAA)
-            stream.uint32(1)
+            stream.uint32(messageId)
             stream.string(self.data["name"])
             if self.isPlayer():
                 stream.uint16(self.data["level"])
@@ -1515,6 +1520,7 @@ class Player(Creature):
             stream.string(text)
             stream.send(player.client)
 
+        
         return True
 
     def privateChannelMessage(self, text, receiver, channelType="MSG_CHANNEL"):
@@ -1924,6 +1930,7 @@ class Player(Creature):
                 self.channelMessage(text, "MSG_CHANNEL", channelId)
 
             #elif channelType == game.enum.MSG_PRIVATE_TO:
+            else:
                 self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
 
             for creature in game.engine.getCreatures(self.position):

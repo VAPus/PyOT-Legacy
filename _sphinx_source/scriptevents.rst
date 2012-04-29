@@ -454,3 +454,20 @@ The events are:
     Called when the skill (or magic level) of a player gets adjusted
 
     :returns: (Optionally) False (prevent level adjustments)
+
+.. function:: thankYou(creature, messageId, author, channelType, channel, text)
+
+    :param messageId: Original messageId.
+    :param author: The author of the message.
+    :param channelType: The message channel type.
+    :param text: The message text.
+    :param channel: The channel object.
+
+    :example:
+
+    .. code-block:: python
+
+        def thankYouNotice(creature, author):
+            author.message("You have just been thanked by %s!" % creature.name())
+
+        register('thankYou', thankYouNotice)    

@@ -1,6 +1,7 @@
 import weakref
 
 channels = {}
+GLOBAL_MESSAGES = []
 
 class Channel(object):
     def __init__(self, name, id, public=False):
@@ -45,6 +46,26 @@ class Channel(object):
         else:
             return False
             
+    def addMessage(self, player, text, type):
+        id = len(GLOBAL_MESSAGES) # First get the next ID.
+        self.messages.append((weakref.proxy(player), text, type)) # Then we append the tuple.
+        GLOBAL_MESSAGES.append((weakref.proxy(player), self, text, type)) # Then we append the tuple.
+        return id
+        
+    def getLocalMessage(self, messageId):
+        try:
+            return self.messages[messageId]
+        except:
+            assert messageId < len(self.messages)
+            return None
+            
+    def getMessage(self, messageId):
+        try:
+            return GLOBAL_MESSAGES[messageId]
+        except:
+            assert messageId < len(GLOBAL_MESSAGES)
+            return None        
+            
 def openChannel(channelName, id = None, public=True):
     channelId = id or len(channels)
     channel = Channel(channelName, channelId, public)
@@ -80,3 +101,10 @@ def getChannel(id):
         return channels[id]
     except:
         return
+        
+def getMessage(self, messageId):
+    try:
+        return GLOBAL_MESSAGES[messageId]
+    except:
+        assert messageId < len(GLOBAL_MESSAGES)
+        return None   

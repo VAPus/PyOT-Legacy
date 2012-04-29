@@ -612,6 +612,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xBE: # Stop action
             player.stopAction()
+            
+        elif packetType == 0xE7: # Thanks
+            self.handleThanks(player, packet)
         
         elif packetType == 0xF0:
             player.questLog()
@@ -1547,4 +1550,11 @@ class BaseProtocol(object):
         if not party or party.leader != player:
             return
         
-        party.changeLeader(creature)    
+        party.changeLeader(creature)
+        
+    @inlineCallbacks
+    def handleThanks(self, player, packet):
+        messageId = packet.uint32()
+        message = game.chat.getMessage(messageId)
+        
+        yield game.scriptsystem.get("thankYou").runDefer(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
