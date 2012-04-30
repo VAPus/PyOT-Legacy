@@ -1,0 +1,261 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyOT Polsh Pack\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-13 17:54+0200\n"
+"PO-Revision-Date: 2012-04-21 22:07+0100\n"
+"Last-Translator: OscaTutenchamon\n"
+"Language-Team: Polish <LL@li.org>\n"
+"Language: Polish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"X-Poedit-KeywordsList: male;female;look_at_male;look_at_female;loot;look;kill\n"
+
+#: ../language/test.py:1
+msgid "hello world!"
+msgstr "witaj świecie!"
+
+#: ../core/game/item.py:238
+#, python-format
+msgid "You see %s"
+msgstr "Widzisz %s"
+
+#: ../core/game/item.py:240
+#, python-format
+msgid "that will expire in %d second."
+msgid_plural "that will expire in %d seconds."
+msgstr[0] ", wygaśnie za %s s."
+msgstr[1] ", wygasną za %s s."
+msgstr[2] ", wygasną za %s s."
+
+#: ../core/game/item.py:242
+#, python-format
+msgid " (Vol:%d)."
+msgstr " (Il. %d)"
+
+#: ../core/game/item.py:246
+#, python-format
+msgid "Arm:%d"
+msgstr "Pan. %d"
+
+#: ../core/game/item.py:248
+#, python-format
+msgid "Atk:%d"
+msgstr "Atk %d"
+
+#: ../core/game/item.py:256
+#, python-format
+msgid " physical %s"
+msgstr " obrażenia fizyczne %s"
+
+#: ../core/game/item.py:258
+#: ../core/game/item.py:264
+#, python-format
+msgid " %+d"
+msgstr " %+d"
+
+#: ../core/game/item.py:262
+#, python-format
+msgid "Def:%d"
+msgstr "Obr. %d"
+
+#: ../core/game/item.py:267
+#, python-format
+msgid ", %+d speed"
+msgstr ", %+d szybkości"
+
+#: ../core/game/item.py:269
+#, python-format
+msgid ", %+d magic level"
+msgstr ", %+d poziomu magicznego"
+
+#: ../core/game/item.py:271
+#, python-format
+msgid ", %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain"
+msgstr ", %(all)+d%% Obrażenia fizyczne, %(all)+d%% Śmierć, %(all)+d%% Ogień, %(all)+d%% Lód, %(all)+d%% Ziemia, %(all)+d%% Energia, %(all)+d%% Świętość, %(all)+d%% Tonięcie, %(all)+d%% Trucizna, %(all)+d%% Utrata many, %(all)+d%% Utrta życia"
+
+#: ../core/game/item.py:292
+#: ../core/game/item.py:296
+#: ../core/game/item.py:298
+#, python-format
+msgid ""
+"\n"
+"It weighs %.2f oz."
+msgstr ""
+"\n"
+"Waga: %.2f oz."
+
+#: ../core/game/item.py:307
+#, python-format
+msgid ""
+"\n"
+"You Read: %s"
+msgstr ""
+"\n"
+"Czytasz: %s"
+
+#: ../core/game/player.py:181
+msgid "He"
+msgstr "On"
+
+#: ../core/game/player.py:183
+msgid "She"
+msgstr "Ona"
+
+#: ../core/game/player.py:187
+msgid "his"
+msgstr "jego"
+
+#: ../core/game/player.py:189
+msgid "heres"
+msgstr "jej"
+
+#: ../core/game/player.py:193
+#, python-format
+msgid "You see yourself. You are %s."
+msgstr "Widzisz siebie. Jesteś %s."
+
+#: ../core/game/player.py:195
+#, python-format
+msgid "You see %(name)s (Level %(level)d). %(prefix)s is %(description)s."
+msgstr "Oto %(name)s (Poziom %(level)d). %(prefix)s jest %(description)s."
+
+#: ../core/game/player.py:711
+#, python-format
+msgctxt "male"
+msgid "You gained %d experience point."
+msgid_plural "You gained %d experience points."
+msgstr[0] "Zyskałeś %d punkt doświadczenia."
+msgstr[1] "Zyskałeś %d punkty doświadczenia."
+msgstr[2] "Zyskałeś %d punktów doświadczenia."
+
+#: ../core/game/player.py:711
+#, python-format
+msgctxt "female"
+msgid "You gained %d experience point."
+msgid_plural "You gained %d experience points."
+msgstr[0] "Zyskałaś %d punkt doświadczenia."
+msgstr[1] "Zyskałaś %d punkty doświadczenia."
+msgstr[2] "Zyskałaś %d punktów doświadczenia."
+
+#: ../core/game/player.py:720
+#, python-format
+msgctxt "male"
+msgid "You lost %d experience point."
+msgid_plural "You lost %d experience points."
+msgstr[0] "Straciłeś %d punkt doświadczenia"
+msgstr[1] "Straciłeś %d punkty doświadczenia"
+msgstr[2] "Straciłeś %d punktów doświadczenia"
+
+#: ../core/game/player.py:720
+#, python-format
+msgctxt "female"
+msgid "You lost %d experience point."
+msgid_plural "You lost %d experience points."
+msgstr[0] "Straciłaś %d punkt doświadczenia"
+msgstr[1] "Straciłaś %d punkty doświadczenia"
+msgstr[2] "Straciłaś %d punktów doświadczenia"
+
+#: ../core/game/player.py:1013
+msgid "Sorry, not possible."
+msgstr "Przepraszamy, niemożliwe."
+
+#: ../core/game/player.py:1016
+msgid "You cannot take this object."
+msgstr "Nie możesz wziąć tego przedmiotu."
+
+#: ../core/game/player.py:1020
+msgid "This object is too heavy for you to carry."
+msgstr "Ten przedmiot jest dla Ciebie zbyt ciężki."
+
+#: ../core/game/player.py:1023
+msgid "Destination is out of range."
+msgstr "Punkt docelowy poza zasięgiem."
+
+#: ../core/game/player.py:1026
+msgid "There is not enough room."
+msgstr "Zbyt mało miejsca."
+
+#: ../core/game/player.py:1029
+msgctxt "male"
+msgid "You are exhausted."
+msgstr "Jesteś wykończony."
+
+#: ../core/game/player.py:1029
+msgctxt "female"
+msgid "You are exhausted."
+msgstr "Jesteś wykończona."
+
+#: ../core/game/player.py:1032
+msgid "You need a magic item to cast this spell."
+msgstr "Potrzebujesz magicznego przedmiotu, aby rzucić ten czar."
+
+#: ../core/game/player.py:1035
+#, python-format
+msgid "You do not have enough %s."
+msgstr "Nie masz wystarczającej ilości %s."
+
+#: ../core/game/player.py:1038
+msgid "You can only use it on creatures."
+msgstr "Możesz użyć tego tylko na stworzeniu."
+
+#: ../core/game/player.py:1413
+msgid "Channel not found."
+msgstr "Kanał nie został znaleziony."
+
+#: ../core/game/player.py:1873
+msgid "Message too long"
+msgstr "Wiadomość zbyt długa."
+
+#: ../core/game/player.py:1947
+msgctxt "male"
+msgid "You strike a critical hit!"
+msgstr "Zadałeś krytyczne uderzenie!"
+
+#: ../core/game/player.py:1947
+msgctxt "female"
+msgid "You strike a critical hit!"
+msgstr "Zadałaś krytyczne uderzenie"
+
+#: ../core/game/player.py:2019
+msgid "Target lost."
+msgstr "Cel zgubiony."
+
+#: ../core/game/player.py:359
+msgid "findItem - stackpos"
+msgstr "findItem - stackpos"
+
+#: ../core/game/spell.py:416
+msgid "You need a target to cast this spell."
+msgstr "Potrzebujesz celu, aby rzucić ten czar."
+
+#: ../core/game/spell.py:420
+#: ../core/game/spell.py:565
+msgid "Target is too far away"
+msgstr "Cel jest zbyt daleko."
+
+#: ../core/game/spell.py:430
+#: ../core/game/spell.py:573
+msgid "You need to learn this spell first."
+msgstr "Musisz nauczyć się tego czaru."
+
+#: ../core/game/spell.py:433
+#: ../core/game/spell.py:576
+msgid "Your vocation cannot use this spell."
+msgstr "Twoja profesja nie może użyć tego czaru."
+
+#: ../core/game/spell.py:445
+#: ../core/game/spell.py:587
+#, python-format
+msgid "Your %s is too high!"
+msgstr "Twój %s jest zbyt wysoki!"
+
