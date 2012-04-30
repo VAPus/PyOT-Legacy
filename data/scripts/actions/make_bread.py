@@ -6,6 +6,8 @@ ITEM_MILL = (1381, 1382, 1383, 1384)
 TYPE_EMPTY = 0
 TYPE_WATER = 1
 OVEN_ON = (1786, 1788, 1790, 1792, 6356, 6358, 6360, 6362)
+
+@register("useWith", (2692, 2693, 2694))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if thing.itemId == ITEM_WHEAT and onThing.itemId in ITEM_MILL:
         creature.addItem(Item(ITEM_FLOUR))
@@ -21,5 +23,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         creature.modifyItem(thing, position, -1)
         return True
     return False
-
-register("useWith", (2692, 2693, 2694), onUseWith)

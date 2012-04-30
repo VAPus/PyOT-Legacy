@@ -1,5 +1,6 @@
 containers = 2005
 
+@register('useWith', containers)
 def onUse(creature, thing, position, onThing, **k):
     print thing.itemId
     print onThing.itemId
@@ -8,4 +9,3 @@ def onUse(creature, thing, position, onThing, **k):
     creature.removeItem(position)
     creature.addItem(thing)
     
-register('useWith', containers, onUse)

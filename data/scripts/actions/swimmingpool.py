@@ -1,3 +1,6 @@
+"""
+
+Script is all bugged, really really really bugged!!!
 import game.scriptsystem
 import game.enum
 
@@ -18,3 +21,4 @@ def stepOut(creature, position, **k):
 
 game.scriptsystem.get("walkOn").register(range(4620, 4625+1), stepIn)
 game.scriptsystem.get("walkOff").register(range(4620, 4625+1), stepOut)
+"""

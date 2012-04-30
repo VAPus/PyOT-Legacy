@@ -1,17 +1,15 @@
-# Stairfronts
-"""stairnorth = None,
-stairsouth = None
-stairwest = 1390,
-staireast = 1389,
+stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433
 
-def walker(direction):
-    def callback(creature, **k):
-        creature.move(direction)
-    return callback
-    
-scriptsystem.get("walkOn").register(stairwest, walker(3))
-scriptsystem.get("walkOn").register(staireast, walker(1))"""
+ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
+rampsDown = 8561, 6920, 6924, 8565, 6128, 479, 6921, 8563, 6917, 8559, 6127, 8566, 6923, 6919, 8562, 8377, 8560, 475, 8564, 6922, 480, 6918, 476
 
+laddersUp = 1386, 3678, 5543, 8599
+laddersDown = 369, 370, 408, 409, 427, 428, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606, 8281, 410, 429
+trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972, 3137, 5731, 6173, 6174,
+sewers=430, 8580
+
+# Stairs
+@register("walkOn", stairs)
 def floorchange(creature, thing, position, **k):
     print "Called"
     # Check if we can do this
@@ -50,6 +48,7 @@ def floorchange(creature, thing, position, **k):
         elif destThing.floorchange == "east":
             creature.move(WEST, level=1)
 
+@register('useWith', stairs)
 def itemFloorChange(thing, position, onPosition, onThing, **k):
     newPos = position.copy()
     if thing.floorchange == "north":
@@ -89,7 +88,10 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
     teleportItem(onThing, onPosition, newPos)
     
     return False
-    
+
+# Ladders up
+
+@register("use", laddersUp)
 def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
@@ -106,7 +108,10 @@ def floorup(creature, thing, position, **k):
             creature.turn(3)
         else:
             creature.turn(2)
-    
+
+# Ladders down
+# Trapdoors, holes etc
+@register("walkOn", laddersDown+trapsAndHoles)
 def floordown(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
@@ -116,6 +121,8 @@ def floordown(creature, thing, position, **k):
         except:
             creature.notPossible()
             
+# Ramps
+@register("walkOn", ramps)            
 def teleportOrWalkDirection(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
@@ -133,6 +140,7 @@ def teleportOrWalkDirection(creature, thing, position, **k):
     elif thing.floorchange == "west":
         creature.move(WEST, level=-1)
 
+@register("walkOn", rampsDown)
 def teleportOrWalkDirectionDown(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
@@ -161,12 +169,17 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
     except:
         raise
         pass
+    
+if not config.monsterStairHops:
+    @register("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp)
+    def vertifyRampWalk(creature, **k):
+        # Check if we can walk on ramps
+        if not creature.isPlayer():
+            return False
+            
+# Sewer Gates
 
-def vertifyRampWalk(creature, **k):
-    # Check if we can walk on ramps
-    if not config.monsterStairHops and not creature.isPlayer():
-        return False
-
+@register("use", sewers)
 def sewer(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
         newPos = position.copy()
@@ -184,34 +197,3 @@ def sewer(creature, thing, position, **k):
         elif newPos.x == crePos.x and newPos.y < crePos.y:
             creature.turn(0)
         ##dont turn if on the grate
-            
-# Stairs
-stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433
-register("walkOn", stairs, floorchange)
-register('useWith', stairs, itemFloorChange)
-
-# Ramps
-ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
-rampsDown = 8561, 6920, 6924, 8565, 6128, 479, 6921, 8563, 6917, 8559, 6127, 8566, 6923, 6919, 8562, 8377, 8560, 475, 8564, 6922, 480, 6918, 476
-
-register("walkOn", ramps, teleportOrWalkDirection)
-register("walkOn", rampsDown, teleportOrWalkDirectionDown)
-
-# Ladders up
-laddersUp = 1386, 3678, 5543, 8599
-register("use", laddersUp, floorup)
-
-# Ladders down
-laddersDown = 369, 370, 408, 409, 427, 428, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606, 8281, 410, 429
-register("walkOn", laddersDown, floordown)
-
-# Trapdoors, holes etc
-trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972, 3137, 5731, 6173, 6174,
-register("walkOn", trapsAndHoles, floordown)
-
-# Sewer Gates
-sewers=430, 8580
-register("use", sewers, sewer)
-
-if not config.monsterStairHops:
-    register("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp, vertifyRampWalk)

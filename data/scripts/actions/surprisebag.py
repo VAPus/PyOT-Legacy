@@ -4,6 +4,7 @@
 PRESENT_BLUE = [2687, 6394, 6280, 6574, 6578, 6575, 6577, 6569, 6576, 6572, 2114]
 PRESENT_RED = [2152, 2152, 2152, 2153, 5944, 2112, 6568, 6566, 2492, 2520, 2195, 2114, 2114, 2114, 6394, 6394, 6576, 6576, 6578, 6578, 6574, 6574]
 
+@register("use", (6570, 6571))
 def onUse(creature, thing, position, **k):
     count = 1
     if thing.itemId == 6570:
@@ -22,6 +23,3 @@ def onUse(creature, thing, position, **k):
     magicEffect(position, EFFECT_GIFT_WRAPS)
     creature.removeItem(position)
     return True
-
-
-register("use", (6570, 6571), onUse)

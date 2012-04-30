@@ -4,6 +4,7 @@ openTraps = 462, 9625
 ladders = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
 ropes = 2120, 7731
 
+@register("useWith", ropes)
 def onUse(creature, position, onThing, onPosition, **k):
     if onPosition.x == 0xFFFF:
         creature.notPossible()
@@ -28,6 +29,4 @@ def onUse(creature, position, onThing, onPosition, **k):
             creature.teleport(newPos)
         else:
             creature.notPossible()
-
-register("useWith", ropes, onUse)
     

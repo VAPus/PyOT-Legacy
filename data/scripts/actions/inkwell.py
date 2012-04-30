@@ -1,3 +1,4 @@
+@register("useWith", 2600)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     rand = random.randint(1, 2)
     if onThing.itemId == 7528:
@@ -19,5 +20,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
             onThing.transform(7535, onPosition)
     
     return True
-
-register("useWith", 2600, onUseWith)

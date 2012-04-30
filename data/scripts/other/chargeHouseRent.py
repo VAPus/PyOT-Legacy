@@ -1,3 +1,4 @@
+@register("chargeRent")
 @inlineCallbacks
 def payRent(house):
     player = yield loadPlayerById(house.owner)
@@ -10,5 +11,3 @@ def payRent(house):
         return
 
     print "TODO: Player couldn't pay the rent. Need to add it for sale or something!!!"
-
-register("chargeRent", payRent)

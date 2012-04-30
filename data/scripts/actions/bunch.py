@@ -1,5 +1,6 @@
 DISTILLERY = (5469, 5470, 5513, 5514)
 
+@register("useWith", 5467)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     print "____called"
     if onThing.itemId in DISTILLERY:
@@ -14,4 +15,4 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     return False
 
 
-register("useWith", 5467, onUseWith)
+

@@ -7,11 +7,10 @@ increase = 1210, 1213, 1219, 1221, 1232, 1235, 1237, 1239, 1250, 1253, 1539, 154
             2578, 3697, 3699, 3709,3743, 3945, 3947, 3949, 7058, 8684, 8686, 8688, 8690, 9141, 9575, 9577, 9579, 9581, 9747, 9749,\
             9825, 9827, 9884, 9887, 9889, 9892, 9895, 9898, 9901, 9904
 
+@register('use', increase)
 def onUse(creature, thing, position, **k):
     if position[0] == 0xFFFF:
         thing.itemId += 1
         thing.refresh(position)
     else:
         thing.transform(thing.itemId+1, position)
-
-register('use', increase, onUse)

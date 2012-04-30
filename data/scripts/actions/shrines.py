@@ -32,6 +32,7 @@ SMALL_EMERALD: ENCHANTED_SMALL_EMERALD,
 SMALL_AMETHYST: ENCHANTED_SMALL_AMETHYST
 }
 
+@register("useWith", (2146, 2147, 2149, 2150))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == HOTA_WEAK and thing.itemId == SMALL_RUBY:
         creature.modifyItem(thing, position, -1)
@@ -71,6 +72,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     thing.transform(ENCHANTED_GEMS[thing.itemId], position)
     
     return True
-
-
-register("useWith", (2146, 2147, 2149, 2150), onUseWith)

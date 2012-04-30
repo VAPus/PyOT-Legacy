@@ -4,6 +4,7 @@ PUMPKINHEAD_LIGHT_ON = 2097
 CANDLE = 2048
 KNIFE = 2566
 
+@register("useWith", (2566, 2096))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if thing.itemId == PUMPKINHEAD_LIGHT_OFF and onThing.itemId == CANDLE:
         thing.transform(PUMPKINHEAD_LIGHT_ON, position)
@@ -14,5 +15,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         return False
     
     return True
-
-register("useWith", (2566, 2096), onUseWith)

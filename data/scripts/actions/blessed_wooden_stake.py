@@ -2,7 +2,7 @@ convert = {}
 convert[2956] = 5905 # Vampire dust
 convert[2916] = 5906 # Demon dust
 
-
+@register("useWith", 5942)
 def useWith(creature, thing, onThing, onPosition, **k):
     if not onThing.itemId in convert:
         return
@@ -19,4 +19,3 @@ def useWith(creature, thing, onThing, onPosition, **k):
 
     onThing.transform(onThing.itemId + 1, onPosition)
 
-register("useWith", 5942, useWith)

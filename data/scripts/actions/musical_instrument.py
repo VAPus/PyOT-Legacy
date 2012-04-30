@@ -9,6 +9,7 @@ usedPartyTrumpet = 6573
 
 extras = {birdCage, woodenWhistle, didgeridoo, cornucopia, partyTrumpet}
 
+@register("use", extras|instruments)
 def onUse(creature, thing, positon, **k):
     chance = random.randint(1,5)
 
@@ -37,4 +38,3 @@ def onUse(creature, thing, positon, **k):
             creature.magicEffect(EFFECT_SOUND_PURPLE)
             summonCreature("Wolf", creature.positionInDirection(NORTH))
             
-register("use", extras|instruments, onUse)

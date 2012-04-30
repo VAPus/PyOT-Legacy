@@ -563,14 +563,26 @@ def reimporter():
 def get(type):
     return globalScripts[type]
     
-def register(type, *argc, **kwargs):
-    globalScripts[type].register(*argc)
+def register(type, *argc):
+    def _wrapper(f):
+        globalScripts[type].register(*argc, callback=f)
+        return f
+        
+    return _wrapper
 
 def unregister(type, *argc):
-    globalScripts[type].unregister(*argc)
+    def _wrapper(f):
+        globalScripts[type].unregister(*argc, callback=f)
+        return f
+        
+    return _wrapper
     
-def registerFirst(type, *argc, **kwargs):
-    globalScripts[type].registerFirst(*argc)
+def registerFirst(type, *argc):
+    def _wrapper(f):
+        globalScripts[type].registerFirst(*argc, callback=f)
+        return f
+        
+    return _wrapper
     
 def regEvent(timeleap, callback):
     globalEvents.append(reactor.callLater(timeleap, callEvent, timeleap, callback))

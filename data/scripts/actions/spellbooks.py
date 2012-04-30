@@ -1,5 +1,6 @@
 spellBooks = 2175, 6120, 8900, 8901, 8902, 8903, 8904, 8918
 
+@register('use', spellBooks)
 def spellBook(creature, thing, **k):
     text = ""
     lists = {}
@@ -19,5 +20,3 @@ def spellBook(creature, thing, **k):
             text += "  %s - %s : %s\n" % (spell, game.spell.spells[spell][1], game.spell.spells[spell][3])
         text += "\n"
     creature.textWindow(thing, text=text)
-    
-register('use', spellBooks, spellBook)

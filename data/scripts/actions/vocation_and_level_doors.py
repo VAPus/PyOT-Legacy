@@ -1,7 +1,7 @@
 doors = 1227, 1229, 1245, 1247, 1259, 1261, 3540, 3549, 5103, 5112, 5121, 5130, 5292, 5294, 6206, 6208, 6263, 6265, 6896, 6905, 7038, 7047, 8555,\
         8557, 9179, 9181, 9281, 9283, 10280, 10282, 10284, 10473, 10482
 
-
+@register('use', doors)
 def openDoor(creature, thing, position, **k):
     if not thing.actions:
         thing.transform(thing.itemId+1, position)
@@ -22,5 +22,3 @@ def openDoor(creature, thing, position, **k):
         creature.lmessage("Only the worthy may pass.")
     
     thing.transform(thing.itemId+1, position)
-
-register('use', doors, openDoor)

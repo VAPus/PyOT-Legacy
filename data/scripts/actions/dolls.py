@@ -49,6 +49,7 @@ DOLLS = {\
 8982: ("Hail TibiaNordic!", "So cold..", "Run, mammoth!"),\
 }
 
+@register("use", DOLLS.keys())
 def onUse(creature, thing, position, **k):
     if not thing.itemId in DOLLS: return
 
@@ -74,6 +75,4 @@ def onUse(creature, thing, position, **k):
     thing.transform(usedDolls[thing.itemId], position)
 
     thing.decay(position)
-    
-register("use", DOLLS.keys(), onUse)
 

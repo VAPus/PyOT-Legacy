@@ -18,6 +18,7 @@ item = {
 effect_broke = 3
 effect_renew = 28
 
+@register("useWith", 9930)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     
     developed = None
@@ -46,5 +47,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     else:
         creature.lmessage("Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs).")
         return
- 
-register("useWith", 9930, onUseWith)

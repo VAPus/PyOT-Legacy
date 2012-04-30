@@ -1,6 +1,8 @@
 thingId = 5466
 fireBugs = 5468
 #need to be able to burn spider webs and light empty coal basins
+
+@register('useWith', thingId)
 def onUse(creature, position, onId, onThing, onPosition, **k):
     if onId == 5466: # Sugar cane
         if(random.randint(0,20) == 0):
@@ -12,5 +14,3 @@ def onUse(creature, position, onId, onThing, onPosition, **k):
 
     else:
         return False
-
-register('useWith', thingId, onUse)

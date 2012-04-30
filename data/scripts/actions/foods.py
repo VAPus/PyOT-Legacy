@@ -84,6 +84,7 @@ foods[11136] = (120, "Mmmm.")
 foods[11246] = (180, "Yum.")
 foods[11370] = (36, "Urgh.")
 
+@register('use', foods.keys())
 def onUse(creature, thing, position, **a):
     global foods
     gainhp = creature.getVocation().health
@@ -100,5 +101,3 @@ def onUse(creature, thing, position, **a):
         creature.say(sound, 'MSG_SPEAK_MONSTER_SAY')
     elif someCondition and (someCondition.length >= 1200 or someCondition.length + gainmana[1] > 1200):
         creature.cancelMessage("You are full.")     
-
-register('use', foods.keys(), onUse)

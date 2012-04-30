@@ -15,6 +15,7 @@ def _houseCheck(creature):
     
     return house
 
+@register("talkaction", "aleta sio")
 def guestList(creature, **k):
     house = _houseCheck(creature)
     if house:
@@ -36,6 +37,7 @@ def guestList(creature, **k):
     # Return False to not display text
     return False
 
+@register("talkaction", "aleta grav")
 def doorAccess(creature, **k):
     house = _houseCheck(creature)
     if house:
@@ -70,7 +72,8 @@ def doorAccess(creature, **k):
 
     # Return False to not display text
     return False
-    
+
+@register("talkaction", "aleta som")
 def subownerList(creature, **k):
     house = _houseCheck(creature)
     if house:
@@ -99,6 +102,7 @@ def subownerList(creature, **k):
     return False
 
 # Is he allowed to enter the house?
+@registerFirst("preWalkOn", "houseDoor")
 def guestListCheck(creature, thing, newTile, **k):
     try:
         house = getHouseById(newTile.houseId)
@@ -114,6 +118,7 @@ def guestListCheck(creature, thing, newTile, **k):
         return True # Not a house. Mapping bug.
 
 # Close door?
+@registerFirst("use", "houseDoor")
 def houseDoorUseCheck(creature, thing, position, **k):
     try:
         if not thing.doorId:
@@ -131,6 +136,7 @@ def houseDoorUseCheck(creature, thing, position, **k):
     except:
         return True # Not a house. Mapping bug.
 
+@register("talkactionFirstWord", "alana sio")
 def kickFromHouse(creature, text, **k):
     if creature.name() == text:
         creature.kickFromHouse()
@@ -150,10 +156,3 @@ def kickFromHouse(creature, text, **k):
             
         except:
             return
-    
-registerFirst("use", "houseDoor", houseDoorUseCheck)
-registerFirst("preWalkOn", "houseDoor", guestListCheck)
-register("talkaction", "aleta sio", guestList)
-register("talkaction", "aleta som", subownerList)
-register("talkaction", "aleta grav", doorAccess)
-register("talkactionFirstWord", "alana sio", kickFromHouse)

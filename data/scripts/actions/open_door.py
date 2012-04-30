@@ -8,6 +8,7 @@ openVertical = 1211, 1220, 1224, 1228, 1233, 1238, 1242, 1246, 1251, 1256, 1260,
                 6798, 6802, 6902, 6904, 6906, 6908, 7044, 7046, 7048, 7050, 7055, 8543, 8548, 8552, 8556, 8697, 9167, 9172, 9176, 9180, 9269,\
                 9274, 9278, 9282, 10270, 10275, 10283, 10470, 10472, 10474, 10476, 10485
 
+@register('use', openHorizontal)
 def openHorizontalDoor(creature, thing, position, **k):
     newPos = position.copy()
     newPos.y += 1
@@ -15,6 +16,7 @@ def openHorizontalDoor(creature, thing, position, **k):
     thing.transform(thing.itemId-1, position)
     relocate(position, newPos)
 
+@register('use', openVertical)
 def openVerticalDoor(creature, thing, position, **k):
     newPos = position.copy()
     newPos.x += 1
@@ -22,5 +24,4 @@ def openVerticalDoor(creature, thing, position, **k):
     thing.transform(thing.itemId-1, position)
     relocate(position, newPos)
 
-register('use', openHorizontal, openHorizontalDoor)
-register('use', openVertical, openVerticalDoor)
+

@@ -5,6 +5,7 @@ ITEM_PRE_SUGAR_CANE = 5471
 ITEM_SUGAR_CANE = 5463
 ITEM_BUNCH_SUGAR_CANE = 5467
 
+@register("useWith", 2550)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == ITEM_PRE_WHEAT:
         onThing.transform(ITEM_WHEAT, onPosition)
@@ -16,7 +17,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         return False
     onThing.decay(onPosition)
     return True
-
-
-
-register("useWith", 2550, onUseWith)

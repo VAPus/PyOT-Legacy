@@ -4,6 +4,8 @@ greetings = ('hi', 'hey', 'hello', 'hail')
 farwells = ('bye', 'farewell', 'cya')
 offers = ('offer', 'trade')
 
+# Have to apply on all prestores
+@register("playerSayTo", 'npc')
 def saidTo(creature, creature2, said, channelType, channelId, **k):
     if not creature2.isNPC():
         return # We got nothing todo
@@ -271,6 +273,3 @@ class Equipment(Shop):
         self.offer(2120, 50)
         self.offer(2050, 2)
 regClassAction('equipment', Equipment)
-
-# Have to apply on all prestores
-register("playerSayTo", 'npc', saidTo)

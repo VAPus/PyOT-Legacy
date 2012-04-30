@@ -41,6 +41,7 @@ def doFailAction(creature, id, mount, pos, onThing):
         creature.say(mount.failMsg[id], 'MSG_SPEAK_MONSTER_SAY')
     return action
 
+@register("useWith", (13295, 13294, 13293, 13298, 13247, 13305, 13291, 5907, 13307, 13292, 13938, 13939, 13508, 13535, 13536, 13537, 13538, 13539, 13498))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     try:
         mount = allMounts[thing.itemId]
@@ -81,6 +82,3 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
                 return True
     
     return
-
-
-register("useWith", (13295, 13294, 13293, 13298, 13247, 13305, 13291, 5907, 13307, 13292, 13938, 13939, 13508, 13535, 13536, 13537, 13538, 13539, 13498), onUseWith)
