@@ -10,7 +10,6 @@ import traceback
 from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
-import inspect
 
 modPool = []
 globalScripts = {}
@@ -22,17 +21,13 @@ class Value(object):
     pass
 
 class Scripts(object):
-    __slots__ = ('scripts')
-    def __init__(self):
+    __slots__ = ('scripts', 'parameters')
+    def __init__(self, parameters = ()):
         self.scripts = []
-    
-    def validate(self, func):
-        if inspect.getargspec(func)[2] is None:
-            raise InvalidScriptFunctionArgument("%s lakes a '**k' argument!" % func)
-
-    def register(self, callback, weakfunc=True):
-        self.validate(callback)
+        self.parameters = parameters
         
+    def register(self, callback, weakfunc=True):
+
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
@@ -94,9 +89,10 @@ class NCScripts(Scripts):
             return ok
                 
 class TriggerScripts(object):
-    __slots__ = ('scripts')
-    def __init__(self):
+    __slots__ = ('scripts', 'parameters')
+    def __init__(self, parameters = ()):
         self.scripts = {}
+        self.parameters = parameters
 
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
@@ -159,14 +155,11 @@ class TriggerScripts(object):
 
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
-    __slots__ = ('scripts', 'thingScripts')
-    def __init__(self):
+    __slots__ = ('scripts', 'thingScripts', 'parameters')
+    def __init__(self, parameters = ()):
         self.scripts = {}
         self.thingScripts = {}
-
-    def validate(self, func):
-        if inspect.getargspec(func)[2] is None:
-            raise InvalidScriptFunctionArgument("%s lakes a '**k' argument!" % func)
+        self.parameters = parameters
         
     def haveScripts(self, id):
         if type(id) in (list, tuple, set):
@@ -180,7 +173,6 @@ class ThingScripts(object):
             return False
             
     def register(self, id, callback, weakfunc=True):
-        self.validate(callback)
         
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(id))
@@ -207,7 +199,6 @@ class ThingScripts(object):
                 self.thingScripts[id].append(func)
                 
     def registerFirst(self, id, callback, weakfunc=True):
-        self.validate(callback)
         
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback)
@@ -565,7 +556,27 @@ def get(type):
     
 def register(type, *argc):
     def _wrapper(f):
-        globalScripts[type].register(*argc, callback=f)
+        object = globalScripts[type]
+        
+        # Step 1, check if it has **f
+        hasKeyword = "k" in f.func_code.co_varnames
+        
+        # Step 2, vertify parameters
+        if object.parameters and not hasKeyword:
+            if len(object.parameters) > 4:
+                raise InvalidScriptFunctionArgument("Function lakes the **k argument")
+            
+            for param in object.parameters:
+                if not param in f.func_code.co_varnames:
+                    raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
+                
+        # Step 3, veritify parameter names
+        if object.parameters:
+            for param in f.func_code.co_varnames:
+                if param not in object.parameters:
+                    raise InvalidScriptFunctionArgument("Function parameter '%s' is invalid" % param)
+                
+        object.register(*argc, callback=f)
         return f
         
     return _wrapper
@@ -579,7 +590,26 @@ def unregister(type, *argc):
     
 def registerFirst(type, *argc):
     def _wrapper(f):
-        globalScripts[type].registerFirst(*argc, callback=f)
+        object = globalScripts[type]
+        # Step 1, check if it has **f
+        hasKeyword = "k" in f.func_code.co_varnames
+        
+        # Step 2, vertify parameters
+        if object.parameters and not hasKeyword:
+            if len(object.parameters) > 4:
+                raise InvalidScriptFunctionArgument("Function lakes the **k argument")
+            
+            for param in object.parameters:
+                if not param in f.func_code.co_varnames:
+                    raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
+                
+        # Step 3, veritify parameter names
+        if object.parameters:
+            for param in f.func_code.co_varnames:
+                if param not in object.parameters:
+                    raise InvalidScriptFunctionArgument("Function parameter '%s' is invalid" % param)
+                
+        object.registerFirst(*argc, callback=f)
         return f
         
     return _wrapper
