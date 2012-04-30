@@ -17,21 +17,21 @@ The registration function:
 
 **For Scripts()**:
 
-    .. function:: register(type, callback [, weakfunc=True])
+    .. function:: register(type[, weakfunc=True])
     
-    Register a ``callback`` (function) to the ``type`` script event. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded! 
+    Register a  callback to the ``type`` script event. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded! 
     
 **For TriggerScripts()**:
 
-    .. function:: register(type, trigger, callback [, weakfunc=True])
+    .. function:: register(type, trigger[, weakfunc=True])
     
-    Register a ``callback`` (function) to the ``type`` script event. Which is called when the ``trigger`` matches. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
+    Register a callback to the ``type`` script event. Which is called when the ``trigger`` matches. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded!
 
 **For ThingScripts() and CreatureScripts()**:
 
-    .. function:: register(type, id, callback [, weakfunc=True])
+    .. function:: register(type, id[, weakfunc=True])
     
-    Register a ``callback`` (function) to the ``type`` script event. ``id`` is the identifier in which things are identified for this callback to be called.
+    Register a callback to the ``type`` script event script event. ``id`` is the identifier in which things are identified for this callback to be called.
 
     * It can be a number and it will be checked up against the things thingId(). Example: register("use", 1234, onUse)
     * It can also a list of number to register bind to, or a range. Example: register("useWith", (1142, 1234), onUse)
@@ -72,11 +72,12 @@ The events are:
     
     .. code-block:: python
            
+        @register("talkaction", "Hello")
         def onSay(creature, text):
             creature.message("Apperently you tried to say 'Hello', but was intercepted by this function")
             return False
            
-        register("talkaction", "Hello", onSay)
+        
 
 
 .. function:: talkactionFirstWord(creature, text)
@@ -93,11 +94,12 @@ The events are:
     
     .. code-block:: python
            
+        @register("talkactionFirstWord", "!repeater")
         def onSay(creature, text):
             creature.message("I was asked to repeat %s" % text)
             return False
            
-        register("talkactionFirstWord", "!repeater", onSay)
+        
         
 .. function:: use(creature, thing, position, index)
 
@@ -116,13 +118,14 @@ The events are:
     :example:
     
     .. code-block:: python
-           
+        
+        @register("use", 1234)
         def onUse(creature, thing, position, **k):
             if thing.isItem():
                 creature.message("I seem to have used a '%s' on position %s" % (thing.name(), str(position)))
 
            
-        register("use", 1234, onUse)
+        
         
 .. function:: useWith(creature, thing, position, onThing, onPosition)
 
@@ -149,6 +152,8 @@ The events are:
         lockedDoors = 1209, 1212, 1231, 1234, 1249, 1252, 3535, 3544, 4913, 4616, 5098, 5107, 5116, 5125, 5134, 5137, 5140, 5143, 5278, 5281, 5732, 5735,\
                         6192, 6195, 6249, 6252, 6891, 6900, 7033, 7042, 8541, 8544, 9165, 9168, 9267, 9270, 10268, 10271, 10468, 10477 
         keys = range(2086, 2092+1)
+
+        @register('useWith', keys)
         def onUseKey(creature, thing, onThing, onPosition, **k):
             if not onThing.actions or not onThing.itemId in lockedDoors or not onThing.itemId-1 in lockedDoors or not onThing.itemId-2 in lockedDoors:
                 return
@@ -169,7 +174,7 @@ The events are:
             else:
                 transformItem(onThing, onThing.itemId-1, onPosition)
 
-        register('useWith', keys, onUseKey)
+        
         
         
 .. function:: login(creature)
@@ -185,10 +190,10 @@ The events are:
         
     .. code-block:: python
     
+        @register("login")
         def onLogin(creature):
             creature.message("Welcome back %s" % creature.name())
            
-        register("login", onLogin)
             
 .. function:: logout(creature)
 
@@ -203,10 +208,10 @@ The events are:
         
     .. code-block:: python
     
+        @register("logout")
         def onLogout(creature):
             creature.save()
                 
-        register("logout", onLogout)
         
 .. function:: walkOn(creature, thing, position, fromPosition)
     
@@ -225,11 +230,12 @@ The events are:
         
     .. code-block:: python
         
+        @register("walkOn", 1234)
         def walkOn(creature, thing, **k):
             creature.message("You can't stand here!")
             creature.move(NORTH)
             
-        register("walkOn", 1234, walkOn)
+        
         
 .. function:: walkOff(creature, thing, position)
     
@@ -247,12 +253,13 @@ The events are:
     :example:
         
     .. code-block:: python
+
         
+        @register("walkOff", 1234)
         def walkOff(creature, **k):
             creature.message("You left this holy place!")
             creature.modifyHealth(-30)
             
-        register("walkOff", 1234, walkOff)
         
 .. function:: preWalkOn(creature, thing, position, oldTile, newTile)
     
@@ -273,11 +280,12 @@ The events are:
         
     .. code-block:: python
         
+        @register("preWalkOn", 1234)
         def tileCheck(creature, **k):
             creature.message("We won't allow you to touch this holy ground!")
             return False
             
-        register("preWalkOn", 1234, tileCheck)
+        
         
 .. function:: lookAt(creature, thing, position)
 
@@ -296,12 +304,12 @@ The events are:
     
     .. code-block:: python
            
+        @register("lookAt", 1234)
         def lookAt(creature, **k):
             creature.say("I can't look, that thing scare the crap out of me!")
             return False
 
            
-        register("lookAt", 1234, lookAt)
 
 .. function:: postLoadSector(sector, instanceId)
     
@@ -353,12 +361,13 @@ The events are:
 
     .. code-block:: python
 
+        @register('move')
         def preventWalking(creature):
             if random.randint(0, 10) == 1:
                 creature.message("Your leg hurt too much")
-                return FalseglobalScripts["skill"] = Scripts()
+                return False
 
-        register('move', preventWalking)
+        
 
 .. function:: appear(creature, creature2)
     
@@ -467,7 +476,8 @@ The events are:
 
     .. code-block:: python
 
+        @register('thankYou')    
         def thankYouNotice(creature, author, **k):
             author.message("You have just been thanked by %s!" % creature.name())
 
-        register('thankYou', thankYouNotice)    
+        

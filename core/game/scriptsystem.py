@@ -10,6 +10,7 @@ import traceback
 from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
+import inspect
 
 modPool = []
 globalScripts = {}
@@ -401,14 +402,14 @@ class CreatureScripts(ThingScripts):
             return ok if type(ok) != bool else None
             
 # All global events can be initialized here
-globalScripts["talkaction"] = TriggerScripts()
-globalScripts["talkactionFirstWord"] = TriggerScripts()
+globalScripts["talkaction"] = TriggerScripts(('creature', 'text'))
+globalScripts["talkactionFirstWord"] = TriggerScripts(('creature', 'text'))
 globalScripts["login"] = Scripts()
 globalScripts["loginAccountFailed"] = NCScripts()
 globalScripts["loginCharacterFailed"] = NCScripts()
 globalScripts["logout"] = Scripts()
-globalScripts["use"] = ThingScripts()
-globalScripts["useWith"] = ThingScripts()
+globalScripts["use"] = ThingScripts(('creature', 'thing', 'position', 'index'))
+globalScripts["useWith"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition'))
 globalScripts["rotate"] = ThingScripts()
 globalScripts["walkOn"] = ThingScripts()
 globalScripts["walkOff"] = ThingScripts()
@@ -557,9 +558,10 @@ def get(type):
 def register(type, *argc):
     def _wrapper(f):
         object = globalScripts[type]
-        
+        iargs = inspect.getargspec(f)
+        vars = iargs[0]
         # Step 1, check if it has **f
-        hasKeyword = "k" in f.func_code.co_varnames
+        hasKeyword = bool(iargs[2])
         
         # Step 2, vertify parameters
         if object.parameters and not hasKeyword:
@@ -567,12 +569,14 @@ def register(type, *argc):
                 raise InvalidScriptFunctionArgument("Function lakes the **k argument")
             
             for param in object.parameters:
-                if not param in f.func_code.co_varnames:
+                if not param in vars:
+                    print vars
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
                 
         # Step 3, veritify parameter names
         if object.parameters:
-            for param in f.func_code.co_varnames:
+            for param in vars:
+                if param == 'k': continue
                 if param not in object.parameters:
                     raise InvalidScriptFunctionArgument("Function parameter '%s' is invalid" % param)
                 
@@ -591,8 +595,10 @@ def unregister(type, *argc):
 def registerFirst(type, *argc):
     def _wrapper(f):
         object = globalScripts[type]
+        iargs = inspect.getargspec(f)
+        vars = iargs[0]
         # Step 1, check if it has **f
-        hasKeyword = "k" in f.func_code.co_varnames
+        hasKeyword = bool(iargs[2])
         
         # Step 2, vertify parameters
         if object.parameters and not hasKeyword:
@@ -600,12 +606,13 @@ def registerFirst(type, *argc):
                 raise InvalidScriptFunctionArgument("Function lakes the **k argument")
             
             for param in object.parameters:
-                if not param in f.func_code.co_varnames:
+                if not param in vars:
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
                 
         # Step 3, veritify parameter names
         if object.parameters:
-            for param in f.func_code.co_varnames:
+            for param in vars:
+                if param == 'k': continue
                 if param not in object.parameters:
                     raise InvalidScriptFunctionArgument("Function parameter '%s' is invalid" % param)
                 
