@@ -10,7 +10,7 @@ usedPartyTrumpet = 6573
 extras = {birdCage, woodenWhistle, didgeridoo, cornucopia, partyTrumpet}
 
 @register("use", extras|instruments)
-def onUse(creature, thing, positon, **k):
+def onUse(creature, thing, position, **k):
     chance = random.randint(1,5)
 
     if thing.itemId in instruments:
