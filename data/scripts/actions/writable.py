@@ -19,4 +19,4 @@ def writable(creature, thing, position, **k):
 useScript = game.scriptsystem.get("use")
 for item in game.item.items:
     if item and "writable" in item:
-        useScript.register(game.item.reverseItems[item["cid"]](writable)
+        useScript.register(game.item.reverseItems[item["cid"]], writable)
