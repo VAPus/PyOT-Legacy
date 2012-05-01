@@ -16,8 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
-"X-Poedit-KeywordsList: male;female;look_at_male;look_at_female;loot;look;kill\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2)\n"
+"X-Poedit-KeywordsList: male;female;look_at_male;look_at_female;loot;look;"
+"kill\n"
 
 #: ../core/game/creature.py:734
 #, python-format
@@ -165,7 +167,11 @@ msgid ""
 ", %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, "
 "%(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, "
 "%(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain"
-msgstr ", %(all)+d%% Obrażenia fizyczne, %(all)+d%% Śmierć, %(all)+d%% Ogień, %(all)+d%% Lód, %(all)+d%% Ziemia, %(all)+d%% Energia, %(all)+d%% Świętość, %(all)+d%% Tonięcie, %(all)+d%% Trucizna, %(all)+d%% Utrata many, %(all)+d%% Utrta życia"
+msgstr ""
+", %(all)+d%% Obrażenia fizyczne, %(all)+d%% Śmierć, %(all)+d%% Ogień, "
+"%(all)+d%% Lód, %(all)+d%% Ziemia, %(all)+d%% Energia, %(all)+d%% Świętość, "
+"%(all)+d%% Tonięcie, %(all)+d%% Trucizna, %(all)+d%% Utrata many, %(all)+d%% "
+"Utrta życia"
 
 #: ../core/game/item.py:295 ../core/game/item.py:299 ../core/game/item.py:301
 #, python-format
@@ -422,7 +428,9 @@ msgstr "Twój Zmywacz Rdzy wyczerpał się."
 
 #: ../data/scripts/actions/rusty_remover.py:47
 msgid "Use it on Rusty Items (Common, Semi-Rare or Rare: Armors or Legs)."
-msgstr "Użyj tego na zardzewiałych przedmiotach (zwykłych, częściowo-rzadkich lub rzadkich: zbrojach lub nogawicach)."
+msgstr ""
+"Użyj tego na zardzewiałych przedmiotach (zwykłych, częściowo-rzadkich lub "
+"rzadkich: zbrojach lub nogawicach)."
 
 #: ../data/scripts/actions/vocation_and_level_doors.py:22
 msgid "Only the worthy may pass."
@@ -799,13 +807,13 @@ msgstr ""
 msgid "a wailing widow"
 msgstr ""
 
-#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1
-#: ../data/monsters/Arthropods/Crustaceans/Blood Crab (Underwater).py:1
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1 Crab
+#: (Underwater).py:1
 msgid "Blood Crab"
 msgstr ""
 
-#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1
-#: ../data/monsters/Arthropods/Crustaceans/Blood Crab (Underwater).py:1
+#: ../data/monsters/Arthropods/Crustaceans/Blood Crab.py:1 Crab
+#: (Underwater).py:1
 msgid "a blood crab"
 msgstr ""
 
@@ -842,16 +850,16 @@ msgid "an ancient scarab"
 msgstr ""
 
 #: ../data/monsters/Arthropods/Insects/Blue Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Pink Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Red Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Yellow Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Pink
+#: ../data/monsters/Arthropods/Insects/Red
+#: ../data/monsters/Arthropods/Insects/Yellow
 msgid "Butterfly"
 msgstr ""
 
 #: ../data/monsters/Arthropods/Insects/Blue Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Pink Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Red Butterfly.py:1
-#: ../data/monsters/Arthropods/Insects/Yellow Butterfly.py:1
+#: ../data/monsters/Arthropods/Insects/Pink
+#: ../data/monsters/Arthropods/Insects/Red
+#: ../data/monsters/Arthropods/Insects/Yellow
 msgid "a butterfly"
 msgstr ""
 
@@ -2895,13 +2903,13 @@ msgstr ""
 msgid "a ghost"
 msgstr ""
 
-#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1
-#: ../data/monsters/The Undead/Ghosts/Phantasm Summon.py:1
+#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1 Undead/Ghosts/Phantasm
+#: Summon.py:1
 msgid "Phantasm"
 msgstr ""
 
-#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1
-#: ../data/monsters/The Undead/Ghosts/Phantasm Summon.py:1
+#: ../data/monsters/The Undead/Ghosts/Phantasm.py:1 Undead/Ghosts/Phantasm
+#: Summon.py:1
 msgid "a phantasm"
 msgstr ""
 
@@ -3104,6 +3112,7 @@ msgstr ""
 #: ../data/monsters/The Undead/Undead Humanoids/Zombie.py:1
 msgid "a zombie"
 msgstr ""
+
 # ID: 100
 msgid "void"
 msgstr ""
@@ -12329,7 +12338,6 @@ msgstr ""
 # msgid_plural "demon dusts"
 # msgstr[0] ""
 # msgstr[1] ""
-
 # ID: 5907
 msgid "slingshot"
 msgstr ""
@@ -12439,7 +12447,6 @@ msgstr ""
 # msgid_plural "heaven blossoms"
 # msgstr[0] ""
 # msgstr[1] ""
-
 # ID: 5922
 msgid "holy orchid"
 msgid_plural "holy orchids"
@@ -13999,9 +14006,6 @@ msgstr ""
 msgid "husky"
 msgstr ""
 
-msgid "a husky"
-msgstr ""
-
 # ID: 7277
 msgid "stone throne"
 msgstr ""
@@ -15113,13 +15117,6 @@ msgid "parasol"
 msgstr ""
 
 msgid "a parasol"
-msgstr ""
-
-# ID: 7728
-msgid ""
-msgstr ""
-
-msgid " "
 msgstr ""
 
 # ID: 7730
@@ -16436,7 +16433,6 @@ msgstr ""
 # msgid_plural "cucumbers"
 # msgstr[0] ""
 # msgstr[1] ""
-
 # ID: 8843
 msgid "onion"
 msgid_plural "onions"
@@ -17459,9 +17455,6 @@ msgstr ""
 msgid "bat"
 msgstr ""
 
-msgid "a bat"
-msgstr ""
-
 # ID: 9511
 msgid "candle"
 msgstr ""
@@ -17478,9 +17471,6 @@ msgstr ""
 
 # ID: 9521
 msgid "skeleton"
-msgstr ""
-
-msgid "a skeleton"
 msgstr ""
 
 # ID: 9531
@@ -18658,7 +18648,6 @@ msgstr ""
 # msgid_plural "dark essences"
 # msgstr[0] ""
 # msgstr[1] ""
-
 # ID: 10165
 msgid "golem blueprint"
 msgstr ""
@@ -23741,10 +23730,6 @@ msgstr ""
 msgid "It seems to be a switch."
 msgstr ""
 
-# Description for ID: 1209
-msgid "It is locked."
-msgstr ""
-
 # Description for ID: 1387
 msgid "You can see the other side through it."
 msgstr ""
@@ -23766,7 +23751,8 @@ msgid "It is a volume of The Mystic Secrets of Tibia."
 msgstr ""
 
 # Description for ID: 2078
-msgid "It's property of the Postmaster's Guild and only rewarded to loyal members."
+msgid ""
+"It's property of the Postmaster's Guild and only rewarded to loyal members."
 msgstr ""
 
 # Description for ID: 2095
@@ -23882,19 +23868,27 @@ msgid "This rune vibrates with ancient powers. It seems to be rotting rapidly."
 msgstr ""
 
 # Description for ID: 2349
-msgid "The blue crystal is softly humming a ghostly melody. It seems to be rotting rapidly."
+msgid ""
+"The blue crystal is softly humming a ghostly melody. It seems to be rotting "
+"rapidly."
 msgstr ""
 
 # Description for ID: 2350
-msgid "It was once part of a formidable two handed weapon. It seems to be rotting rapidly."
+msgid ""
+"It was once part of a formidable two handed weapon. It seems to be rotting "
+"rapidly."
 msgstr ""
 
 # Description for ID: 2351
-msgid "This ritual weapon was forged from the sharp fang of a giant cobra. It seems to be rotting rapidly."
+msgid ""
+"This ritual weapon was forged from the sharp fang of a giant cobra. It seems "
+"to be rotting rapidly."
 msgstr ""
 
 # Description for ID: 2352
-msgid "This arrow seems not suitable for the use with ordinary bows. It seems to be rotting rapidly."
+msgid ""
+"This arrow seems not suitable for the use with ordinary bows. It seems to be "
+"rotting rapidly."
 msgstr ""
 
 # Description for ID: 2353
@@ -23902,7 +23896,8 @@ msgid "It is still beating with unholy life. It seems to be rotting rapidly."
 msgstr ""
 
 # Description for ID: 2354
-msgid "This ancient relic shows signs of untold age. It seems to be rotting rapidly."
+msgid ""
+"This ancient relic shows signs of untold age. It seems to be rotting rapidly."
 msgstr ""
 
 # Description for ID: 2375
@@ -24270,7 +24265,8 @@ msgid "contains a pink butterfly."
 msgstr ""
 
 # Description for ID: 4874
-msgid "It is a masterpiece of dwarvish smithery and made of especially hard steel."
+msgid ""
+"It is a masterpiece of dwarvish smithery and made of especially hard steel."
 msgstr ""
 
 # Description for ID: 5015
@@ -24334,7 +24330,9 @@ msgid "It contains pure fighting spirit."
 msgstr ""
 
 # Description for ID: 5885
-msgid "It contains the sweat spilled in many battles and is said to be used for certain perfumes too."
+msgid ""
+"It contains the sweat spilled in many battles and is said to be used for "
+"certain perfumes too."
 msgstr ""
 
 # Description for ID: 5886
@@ -24342,7 +24340,8 @@ msgid "It is made from fine giant spider silk."
 msgstr ""
 
 # Description for ID: 5887
-msgid "Even the king would be proud to wear an armor made of this refined steel."
+msgid ""
+"Even the king would be proud to wear an armor made of this refined steel."
 msgstr ""
 
 # Description for ID: 5888
@@ -24350,11 +24349,13 @@ msgid "This rare metal must have been refined in the depths of Tibia."
 msgstr ""
 
 # Description for ID: 5889
-msgid "An armor made of this steel is said to protect against firy dragon breath."
+msgid ""
+"An armor made of this steel is said to protect against firy dragon breath."
 msgstr ""
 
 # Description for ID: 5890
-msgid "Some thousands of these would probably make an extremely comfortable pillow."
+msgid ""
+"Some thousands of these would probably make an extremely comfortable pillow."
 msgstr ""
 
 # Description for ID: 5891
@@ -24382,7 +24383,9 @@ msgid "Some people swear that honey makes excellent glue."
 msgstr ""
 
 # Description for ID: 5903
-msgid "It is the proof that Ferumbras has fallen. For now. The Edron Academy should be interested in this."
+msgid ""
+"It is the proof that Ferumbras has fallen. For now. The Edron Academy should "
+"be interested in this."
 msgstr ""
 
 # Description for ID: 5905
@@ -24398,11 +24401,14 @@ msgid "A hermit near Carlin might be able to tell you more about it."
 msgstr ""
 
 # Description for ID: 5908
-msgid "Sharp and light, this is a useful tool for tanners, doctors and assassins."
+msgid ""
+"Sharp and light, this is a useful tool for tanners, doctors and assassins."
 msgstr ""
 
 # Description for ID: 5924
-msgid "The words 'Ramsay the Reckless' are engraved inside. It appears to be cracked and broken."
+msgid ""
+"The words 'Ramsay the Reckless' are engraved inside. It appears to be "
+"cracked and broken."
 msgstr ""
 
 # Description for ID: 5937
@@ -24418,7 +24424,9 @@ msgid "Many mighty priests of Tibia have blessed this stake."
 msgstr ""
 
 # Description for ID: 5944
-msgid "This strange object seems to be made of half spirit, half metal. It is unknown by most smiths."
+msgid ""
+"This strange object seems to be made of half spirit, half metal. It is "
+"unknown by most smiths."
 msgstr ""
 
 # Description for ID: 5945
@@ -24482,7 +24490,9 @@ msgid "It is a kit for an armor rack."
 msgstr ""
 
 # Description for ID: 6120
-msgid "It apparently belonged to someone called Dragha, the apprentice of a voodoomaster."
+msgid ""
+"It apparently belonged to someone called Dragha, the apprentice of a "
+"voodoomaster."
 msgstr ""
 
 # Description for ID: 6124
@@ -24514,7 +24524,9 @@ msgid "It is enchanted with unholy, necromantic powers."
 msgstr ""
 
 # Description for ID: 6497
-msgid "It contains presents which were stolen from Santa. Bring them back to Ruprecht on Vega."
+msgid ""
+"It contains presents which were stolen from Santa. Bring them back to "
+"Ruprecht on Vega."
 msgstr ""
 
 # Description for ID: 6500
@@ -24606,15 +24618,21 @@ msgid "Barbarian women are said to use it for conjuring beasts."
 msgstr ""
 
 # Description for ID: 7381
-msgid "Made from a mammoth's legbones, it is one of the favoured weapons among barbarians."
+msgid ""
+"Made from a mammoth's legbones, it is one of the favoured weapons among "
+"barbarians."
 msgstr ""
 
 # Description for ID: 7387
-msgid "The beautiful jewel on the top of this sceptre is sharp enough to cut through glass."
+msgid ""
+"The beautiful jewel on the top of this sceptre is sharp enough to cut "
+"through glass."
 msgstr ""
 
 # Description for ID: 7427
-msgid "Only those who have descended to the deepest depths may wield this hammer without it cursing them."
+msgid ""
+"Only those who have descended to the deepest depths may wield this hammer "
+"without it cursing them."
 msgstr ""
 
 # Description for ID: 7430
@@ -24626,15 +24644,21 @@ msgid "A beautiful gem is embedded in this weapon."
 msgstr ""
 
 # Description for ID: 7439
-msgid "Drinking this potion increases temporarily your fighting skill while decreasing your defense."
+msgid ""
+"Drinking this potion increases temporarily your fighting skill while "
+"decreasing your defense."
 msgstr ""
 
 # Description for ID: 7440
-msgid "Drinking this potion increases temporarily your magic skill while decreasing your magic defense."
+msgid ""
+"Drinking this potion increases temporarily your magic skill while decreasing "
+"your magic defense."
 msgstr ""
 
 # Description for ID: 7443
-msgid "Drinking this potion increases temporarily your distance skill while decreasing your defense."
+msgid ""
+"Drinking this potion increases temporarily your distance skill while "
+"decreasing your defense."
 msgstr ""
 
 # Description for ID: 7445
@@ -24646,7 +24670,9 @@ msgid "This small statue has been carefully shaped from an ice cube."
 msgstr ""
 
 # Description for ID: 7457
-msgid "These boots keep your toes warm in even the iciest regions but they feel kind of heavy."
+msgid ""
+"These boots keep your toes warm in even the iciest regions but they feel "
+"kind of heavy."
 msgstr ""
 
 # Description for ID: 7458
@@ -24658,7 +24684,9 @@ msgid "It is imbued with protective magic."
 msgstr ""
 
 # Description for ID: 7464
-msgid "They offer little protection but will at least provide some comfort and warmth."
+msgid ""
+"They offer little protection but will at least provide some comfort and "
+"warmth."
 msgstr ""
 
 # Description for ID: 7477
@@ -24698,27 +24726,38 @@ msgid "It says 'Roses are red...'."
 msgstr ""
 
 # Description for ID: 7530
-msgid "It says 'Roses are red, violets are blue...' Sounds good, but what now.."
+msgid ""
+"It says 'Roses are red, violets are blue...' Sounds good, but what now.."
 msgstr ""
 
 # Description for ID: 7531
-msgid "It says 'Roses are red, and so is my blood.' Damn, that sounds stupid. You have to start over."
+msgid ""
+"It says 'Roses are red, and so is my blood.' Damn, that sounds stupid. You "
+"have to start over."
 msgstr ""
 
 # Description for ID: 7532
-msgid "It says 'Roses are red, violets are blue, sugar is sweet...' Very poetic, now for the final rhyme."
+msgid ""
+"It says 'Roses are red, violets are blue, sugar is sweet...' Very poetic, "
+"now for the final rhyme."
 msgstr ""
 
 # Description for ID: 7533
-msgid "It says 'Roses are red, violets are blue, I love blood and carnage...' No, no, this is a war poem."
+msgid ""
+"It says 'Roses are red, violets are blue, I love blood and carnage...' No, "
+"no, this is a war poem."
 msgstr ""
 
 # Description for ID: 7534
-msgid "It says 'Roses are red, violets are blue, sugar is sweet and so are you.' Excellent!."
+msgid ""
+"It says 'Roses are red, violets are blue, sugar is sweet and so are you.' "
+"Excellent!."
 msgstr ""
 
 # Description for ID: 7535
-msgid "It says 'Roses are red, violets are blue, sugar is sweet, there's mud on my shoe.' You blew it."
+msgid ""
+"It says 'Roses are red, violets are blue, sugar is sweet, there's mud on my "
+"shoe.' You blew it."
 msgstr ""
 
 # Description for ID: 7552
@@ -24734,19 +24773,27 @@ msgid "This poor guy has been wrapped up in spider silk."
 msgstr ""
 
 # Description for ID: 7582
-msgid "This vase looks incredibly fragile. Better make sure it won't move one bit, just don't touch it."
+msgid ""
+"This vase looks incredibly fragile. Better make sure it won't move one bit, "
+"just don't touch it."
 msgstr ""
 
 # Description for ID: 7588
-msgid "This potion can only be consumed by paladins and knights of level 50 or higher."
+msgid ""
+"This potion can only be consumed by paladins and knights of level 50 or "
+"higher."
 msgstr ""
 
 # Description for ID: 7589
-msgid "This potion can only be consumed by sorcerers, druids and paladins of level 50 or higher."
+msgid ""
+"This potion can only be consumed by sorcerers, druids and paladins of level "
+"50 or higher."
 msgstr ""
 
 # Description for ID: 7590
-msgid "This potion can only be consumed by sorcerers and druids of level 80 or higher."
+msgid ""
+"This potion can only be consumed by sorcerers and druids of level 80 or "
+"higher."
 msgstr ""
 
 # Description for ID: 7591
@@ -24758,7 +24805,9 @@ msgid "Return it to a magic store for deposit."
 msgstr ""
 
 # Description for ID: 7670
-msgid "The plant in there sprouted, but only gardeners might recognise what it will develop into."
+msgid ""
+"The plant in there sprouted, but only gardeners might recognise what it will "
+"develop into."
 msgstr ""
 
 # Description for ID: 7673
@@ -24766,7 +24815,9 @@ msgid "Something has been planted in there, but you cannot see what it is yet."
 msgstr ""
 
 # Description for ID: 7674
-msgid "This plant urgently needs some water, else it will wither away and disappear completely."
+msgid ""
+"This plant urgently needs some water, else it will wither away and disappear "
+"completely."
 msgstr ""
 
 # Description for ID: 7680
@@ -24846,11 +24897,14 @@ msgid "It bears the seal of the CGB."
 msgstr ""
 
 # Description for ID: 7963
-msgid "This rare fish is almost too precious to simply be eaten. Maybe you can find a collector."
+msgid ""
+"This rare fish is almost too precious to simply be eaten. Maybe you can find "
+"a collector."
 msgstr ""
 
 # Description for ID: 7967
-msgid "It will only work for a few days after the challenge of Kurik has been won."
+msgid ""
+"It will only work for a few days after the challenge of Kurik has been won."
 msgstr ""
 
 # Description for ID: 8109
@@ -24878,7 +24932,9 @@ msgid "The effects of this amulet are unknown."
 msgstr ""
 
 # Description for ID: 8267
-msgid "It seems to be a list of people to be eliminated. The first name on the list is 'Arito'."
+msgid ""
+"It seems to be a list of people to be eliminated. The first name on the list "
+"is 'Arito'."
 msgstr ""
 
 # Description for ID: 8301
@@ -24894,11 +24950,15 @@ msgid "This potion can only be consumed by knights of level 130 or higher."
 msgstr ""
 
 # Description for ID: 8582
-msgid "Push it back to Zirella by holding the left mousebutton down on it and pushing it over the grass."
+msgid ""
+"Push it back to Zirella by holding the left mousebutton down on it and "
+"pushing it over the grass."
 msgstr ""
 
 # Description for ID: 8583
-msgid "It is one of those Zirella mentioned. Rightclick it and select 'Use' to break a branch from it."
+msgid ""
+"It is one of those Zirella mentioned. Rightclick it and select 'Use' to "
+"break a branch from it."
 msgstr ""
 
 # Description for ID: 8692
@@ -24934,7 +24994,9 @@ msgid "It is the invitation to the king's ball."
 msgstr ""
 
 # Description for ID: 8762
-msgid "Carina from Venore tells Chantalle that the 'precious necklace' she loved so much is still for sale."
+msgid ""
+"Carina from Venore tells Chantalle that the 'precious necklace' she loved so "
+"much is still for sale."
 msgstr ""
 
 # Description for ID: 8766
@@ -24966,23 +25028,31 @@ msgid "Strange elemental magic flows over this shield."
 msgstr ""
 
 # Description for ID: 8906
-msgid "It has been temporarily imbued with fire magic and boosts your shielding skill."
+msgid ""
+"It has been temporarily imbued with fire magic and boosts your shielding "
+"skill."
 msgstr ""
 
 # Description for ID: 8907
-msgid "It has been temporarily imbued with ice magic and has a greatly increased shielding value."
+msgid ""
+"It has been temporarily imbued with ice magic and has a greatly increased "
+"shielding value."
 msgstr ""
 
 # Description for ID: 8908
-msgid "It has been temporarily imbued with energy magic and increases your speed."
+msgid ""
+"It has been temporarily imbued with energy magic and increases your speed."
 msgstr ""
 
 # Description for ID: 8909
-msgid "It has been temporarily imbued with earth magic and boosts your regeneration."
+msgid ""
+"It has been temporarily imbued with earth magic and boosts your regeneration."
 msgstr ""
 
 # Description for ID: 8919
-msgid "It is Yandur's healing rune. You can't remove it from his house, but you may use it."
+msgid ""
+"It is Yandur's healing rune. You can't remove it from his house, but you may "
+"use it."
 msgstr ""
 
 # Description for ID: 8920
@@ -24994,7 +25064,8 @@ msgid "This wand holds the spirit and soul of a dragon lord."
 msgstr ""
 
 # Description for ID: 8922
-msgid "It is filled with the dark hatred and rage of a tormented demonic being."
+msgid ""
+"It is filled with the dark hatred and rage of a tormented demonic being."
 msgstr ""
 
 # Description for ID: 8961
@@ -25026,7 +25097,9 @@ msgid "Your name is carved on this mighty sword."
 msgstr ""
 
 # Description for ID: 8981
-msgid "Tibia's most amazing news can be read in it. It was awarded for winning a TibiaNews contest."
+msgid ""
+"Tibia's most amazing news can be read in it. It was awarded for winning a "
+"TibiaNews contest."
 msgstr ""
 
 # Description for ID: 8982
@@ -25046,7 +25119,8 @@ msgid "It is proof that you have killed a vampire lord."
 msgstr ""
 
 # Description for ID: 9117
-msgid "Julius gave it to you to have at least five unusual spots on Vengoth marked."
+msgid ""
+"Julius gave it to you to have at least five unusual spots on Vengoth marked."
 msgstr ""
 
 # Description for ID: 9141
@@ -25090,23 +25164,33 @@ msgid "It seems to be the right leg."
 msgstr ""
 
 # Description for ID: 9808
-msgid "If you can remove the rust layer and dirt from the armor you will be able to see what it is."
+msgid ""
+"If you can remove the rust layer and dirt from the armor you will be able to "
+"see what it is."
 msgstr ""
 
 # Description for ID: 9811
-msgid "If you can remove the rust layer and dirt from the legs you will be able to see what it is."
+msgid ""
+"If you can remove the rust layer and dirt from the legs you will be able to "
+"see what it is."
 msgstr ""
 
 # Description for ID: 9814
-msgid "If you can remove the rust layer and dirt from the shields you will be able to see what it is."
+msgid ""
+"If you can remove the rust layer and dirt from the shields you will be able "
+"to see what it is."
 msgstr ""
 
 # Description for ID: 9817
-msgid "If you can remove the rust layer and dirt from the boots you will be able to see what it is."
+msgid ""
+"If you can remove the rust layer and dirt from the boots you will be able to "
+"see what it is."
 msgstr ""
 
 # Description for ID: 9820
-msgid "If you can remove the rust layer and dirt from the helmets you will be able to see what it is."
+msgid ""
+"If you can remove the rust layer and dirt from the helmets you will be able "
+"to see what it is."
 msgstr ""
 
 # Description for ID: 9932
@@ -25118,11 +25202,14 @@ msgid "They can be recharged with an enchanted ruby."
 msgstr ""
 
 # Description for ID: 9941
-msgid "It is said to increase your ability to concentrate and make the right decisions."
+msgid ""
+"It is said to increase your ability to concentrate and make the right "
+"decisions."
 msgstr ""
 
 # Description for ID: 9942
-msgid "It is said to to make your calmer and less afflicted by anger and anxiety."
+msgid ""
+"It is said to to make your calmer and less afflicted by anger and anxiety."
 msgstr ""
 
 # Description for ID: 9948
@@ -25134,7 +25221,9 @@ msgid "This crest seems important. You shouldn't lose it."
 msgstr ""
 
 # Description for ID: 9956
-msgid "You have a day to light all important locations before the torch stops burning."
+msgid ""
+"You have a day to light all important locations before the torch stops "
+"burning."
 msgstr ""
 
 # Description for ID: 9974
@@ -25142,7 +25231,9 @@ msgid "It is a kit for a crystal table."
 msgstr ""
 
 # Description for ID: 9980
-msgid "It is said to make you more resistant to weaknesses and to supply you with energy."
+msgid ""
+"It is said to make you more resistant to weaknesses and to supply you with "
+"energy."
 msgstr ""
 
 # Description for ID: 9982
@@ -25166,11 +25257,14 @@ msgid "It's hot, beefy and delicious. The perfect food for knights."
 msgstr ""
 
 # Description for ID: 9993
-msgid "Though the hydra tongue is commonly considered a pest plant it tastes surprisingly aromatic."
+msgid ""
+"Though the hydra tongue is commonly considered a pest plant it tastes "
+"surprisingly aromatic."
 msgstr ""
 
 # Description for ID: 9994
-msgid "You know why it's called 'dragon' when you feel the fire in your throat."
+msgid ""
+"You know why it's called 'dragon' when you feel the fire in your throat."
 msgstr ""
 
 # Description for ID: 9995
@@ -25182,7 +25276,9 @@ msgid "Sweetness."
 msgstr ""
 
 # Description for ID: 9997
-msgid "This one would be quite healthy if it wasn't for all the melted cheese on top."
+msgid ""
+"This one would be quite healthy if it wasn't for all the melted cheese on "
+"top."
 msgstr ""
 
 # Description for ID: 9998
@@ -25202,7 +25298,9 @@ msgid "It's only suited for those who like maritime food."
 msgstr ""
 
 # Description for ID: 10006
-msgid "It was given to you by the djinn mantre and contains the collection of recipes you cooked."
+msgid ""
+"It was given to you by the djinn mantre and contains the collection of "
+"recipes you cooked."
 msgstr ""
 
 # Description for ID: 10026
@@ -25210,11 +25308,15 @@ msgid "You can use it to polish Eclesius' crystal ball."
 msgstr ""
 
 # Description for ID: 10027
-msgid "Place ingredients in bowl, then pull lever to grind and blend them. Only for smart magical recipes."
+msgid ""
+"Place ingredients in bowl, then pull lever to grind and blend them. Only for "
+"smart magical recipes."
 msgstr ""
 
 # Description for ID: 10028
-msgid "Not simple fish flakes, but magical fish flakes supporting linguistic development."
+msgid ""
+"Not simple fish flakes, but magical fish flakes supporting linguistic "
+"development."
 msgstr ""
 
 # Description for ID: 10031
@@ -25222,7 +25324,9 @@ msgid "Eclesius made it for you to oil the door of the demon cage."
 msgstr ""
 
 # Description for ID: 10050
-msgid "There is a tag on them which says 'Do not wear! Those are mine!' As if you had wanted to wear them."
+msgid ""
+"There is a tag on them which says 'Do not wear! Those are mine!' As if you "
+"had wanted to wear them."
 msgstr ""
 
 # Description for ID: 10063
@@ -25258,11 +25362,13 @@ msgid "It looks suspiciously similar to a crowbar."
 msgstr ""
 
 # Description for ID: 10219
-msgid "Its leaves stretch out to cover your whole body if you receive earth damage."
+msgid ""
+"Its leaves stretch out to cover your whole body if you receive earth damage."
 msgstr ""
 
 # Description for ID: 10221
-msgid "It tickles your neck in a rather pleasant way and absorbs loads of damage."
+msgid ""
+"It tickles your neck in a rather pleasant way and absorbs loads of damage."
 msgstr ""
 
 # Description for ID: 10289
@@ -25278,23 +25384,32 @@ msgid "It has to be one of the fabled helmets of light."
 msgstr ""
 
 # Description for ID: 10292
-msgid "Someone has sharpened this carrot to inflict some nasty damage especially on rabbits."
+msgid ""
+"Someone has sharpened this carrot to inflict some nasty damage especially on "
+"rabbits."
 msgstr ""
 
 # Description for ID: 10293
-msgid "This bread is so old that it has become unbreakable and a formidable weapon."
+msgid ""
+"This bread is so old that it has become unbreakable and a formidable weapon."
 msgstr ""
 
 # Description for ID: 10294
-msgid "It seems a bit chunky, but what was good enough for a white knight should be good for everyone."
+msgid ""
+"It seems a bit chunky, but what was good enough for a white knight should be "
+"good for everyone."
 msgstr ""
 
 # Description for ID: 10295
-msgid "If you could only figure out how you are supposed to fire more arrows at once."
+msgid ""
+"If you could only figure out how you are supposed to fire more arrows at "
+"once."
 msgstr ""
 
 # Description for ID: 10296
-msgid "Oddly enough it is not made of metal at all, but years without washing grant it added protection."
+msgid ""
+"Oddly enough it is not made of metal at all, but years without washing grant "
+"it added protection."
 msgstr ""
 
 # Description for ID: 10297
@@ -25338,11 +25453,15 @@ msgid "It contains a mysterous machine."
 msgstr ""
 
 # Description for ID: 10308
-msgid "This king Tibianus fan club premium membership card is issued to 'The Evil Mastermind'."
+msgid ""
+"This king Tibianus fan club premium membership card is issued to 'The Evil "
+"Mastermind'."
 msgstr ""
 
 # Description for ID: 10309
-msgid "It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on."
+msgid ""
+"It's like a glove and you can't wear a ring on it. You are not sure if you "
+"should really put it on."
 msgstr ""
 
 # Description for ID: 10311
@@ -25350,7 +25469,9 @@ msgid "Its power is depleted at the moment."
 msgstr ""
 
 # Description for ID: 10313
-msgid "This magnificent weapon was forged to slay arch mumpiz demons with a single blow."
+msgid ""
+"This magnificent weapon was forged to slay arch mumpiz demons with a single "
+"blow."
 msgstr ""
 
 # Description for ID: 10316
@@ -25362,7 +25483,9 @@ msgid "The wearer of this cape commands the forces of heaven."
 msgstr ""
 
 # Description for ID: 10318
-msgid "It is said that the wearer of Nevermourn will never mourn. What a powerful shield."
+msgid ""
+"It is said that the wearer of Nevermourn will never mourn. What a powerful "
+"shield."
 msgstr ""
 
 # Description for ID: 10455
@@ -25370,7 +25493,8 @@ msgid "It's a symbol of peace handed out by Tibia ML."
 msgstr ""
 
 # Description for ID: 10499
-msgid "Something is wobbling inside. Maybe with a fishing rod you could reach it."
+msgid ""
+"Something is wobbling inside. Maybe with a fishing rod you could reach it."
 msgstr ""
 
 # Description for ID: 10500
@@ -25382,11 +25506,15 @@ msgid "It is a memory of a lost love."
 msgstr ""
 
 # Description for ID: 10511
-msgid "This nifty gadget can be used for many vital and less vital purposes. If it's not jammed, that is."
+msgid ""
+"This nifty gadget can be used for many vital and less vital purposes. If "
+"it's not jammed, that is."
 msgstr ""
 
 # Description for ID: 10530
-msgid "It's given to skilled discoverers of extra nasty bugs and to great scholars writing useful reports."
+msgid ""
+"It's given to skilled discoverers of extra nasty bugs and to great scholars "
+"writing useful reports."
 msgstr ""
 
 # Description for ID: 10531
@@ -25398,7 +25526,9 @@ msgid "It's the only left-over from a famous pirate treasure."
 msgstr ""
 
 # Description for ID: 10542
-msgid "You read: |PLAYERNAME| helped to keep the fire basins burning and is one of the lightbearers of |YEAR|"
+msgid ""
+"You read: |PLAYERNAME| helped to keep the fire basins burning and is one of "
+"the lightbearers of |YEAR|"
 msgstr ""
 
 # Description for ID: 10613
@@ -25410,11 +25540,14 @@ msgid "An extremely rare crystal you recovered from the Lost Mines."
 msgstr ""
 
 # Description for ID: 10615
-msgid "The astronomer Spectulus gave you this device to safely transport the mirror crystal."
+msgid ""
+"The astronomer Spectulus gave you this device to safely transport the mirror "
+"crystal."
 msgstr ""
 
 # Description for ID: 10616
-msgid "The special carrying device Spectulus gave you now contains a mirror crystal."
+msgid ""
+"The special carrying device Spectulus gave you now contains a mirror crystal."
 msgstr ""
 
 # Description for ID: 10719
@@ -25422,7 +25555,9 @@ msgid "It shines as beautifully as a good friendship."
 msgstr ""
 
 # Description for ID: 10760
-msgid "This poison is meant to weaken the enemy and should be used on the rice fields near Chaochai."
+msgid ""
+"This poison is meant to weaken the enemy and should be used on the rice "
+"fields near Chaochai."
 msgstr ""
 
 # Description for ID: 10926
@@ -25454,7 +25589,9 @@ msgid "It smells like a mixture of wood and fish. Phew."
 msgstr ""
 
 # Description for ID: 11101
-msgid "A map showing recent troop movements and tactical instructions of parts of the Emperor's army."
+msgid ""
+"A map showing recent troop movements and tactical instructions of parts of "
+"the Emperor's army."
 msgstr ""
 
 # Description for ID: 11124
@@ -25470,7 +25607,9 @@ msgid "It is a kit for a dragon statue."
 msgstr ""
 
 # Description for ID: 11134
-msgid "Bring this encrypted book to a sage in Farmine to gain wisdom or unlock more of Zao's culture."
+msgid ""
+"Bring this encrypted book to a sage in Farmine to gain wisdom or unlock more "
+"of Zao's culture."
 msgstr ""
 
 # Description for ID: 11198
@@ -25486,7 +25625,9 @@ msgid "Is the Mystic Talisman."
 msgstr ""
 
 # Description for ID: 11343
-msgid "It seems just perfect to try and create something out of it with a sharp obsidian knife."
+msgid ""
+"It seems just perfect to try and create something out of it with a sharp "
+"obsidian knife."
 msgstr ""
 
 # Description for ID: 11393
@@ -25498,11 +25639,15 @@ msgid "It seems to be burning from inside."
 msgstr ""
 
 # Description for ID: 11401
-msgid "It contains all the knowledge of the Tibian lands gathered arduosly by Tibia-Stats."
+msgid ""
+"It contains all the knowledge of the Tibian lands gathered arduosly by Tibia-"
+"Stats."
 msgstr ""
 
 # Description for ID: 11756
-msgid "There is no better way to get rid off top secret data. Awarded by TibiaSpy.com"
+msgid ""
+"There is no better way to get rid off top secret data. Awarded by TibiaSpy."
+"com"
 msgstr ""
 
 # Description for ID: 11773
@@ -25510,7 +25655,9 @@ msgid "It contains spices that were gathered all around the Tibian world."
 msgstr ""
 
 # Description for ID: 12284
-msgid "This crate has been marked with lizard symbols. It is large enough for a grown person to fit in."
+msgid ""
+"This crate has been marked with lizard symbols. It is large enough for a "
+"grown person to fit in."
 msgstr ""
 
 # Description for ID: 12287
@@ -25522,11 +25669,15 @@ msgid "The water in this bowl has been purified."
 msgstr ""
 
 # Description for ID: 12290
-msgid "Purified by sacred fires, this coal has the power to cleanse a significant amount of impure water."
+msgid ""
+"Purified by sacred fires, this coal has the power to cleanse a significant "
+"amount of impure water."
 msgstr ""
 
 # Description for ID: 12295
-msgid "This chunk was cut from sacred wood in the temple complex and looks ideal for carving."
+msgid ""
+"This chunk was cut from sacred wood in the temple complex and looks ideal "
+"for carving."
 msgstr ""
 
 # Description for ID: 12297
@@ -25538,11 +25689,15 @@ msgid "This clay has been mixed with sacred earth."
 msgstr ""
 
 # Description for ID: 12303
-msgid "This bowl was coated with sacred clay and can be used to purify small amounts of corrupted water."
+msgid ""
+"This bowl was coated with sacred clay and can be used to purify small "
+"amounts of corrupted water."
 msgstr ""
 
 # Description for ID: 12320
-msgid "This plant poison is meant to destroy the growths near the Keeper's lair deep beneath the gardens."
+msgid ""
+"This plant poison is meant to destroy the growths near the Keeper's lair "
+"deep beneath the gardens."
 msgstr ""
 
 # Description for ID: 12328
@@ -25554,7 +25709,9 @@ msgid "Only a single word is scribbled on the sheet: SOLOSARASATIQUARIUM."
 msgstr ""
 
 # Description for ID: 12403
-msgid "It seems to be perfect to shape a weapon from it. Someone could definitely be interested in it."
+msgid ""
+"It seems to be perfect to shape a weapon from it. Someone could definitely "
+"be interested in it."
 msgstr ""
 
 # Description for ID: 12405
@@ -25562,7 +25719,9 @@ msgid "Someone put a cocktail straw in it."
 msgstr ""
 
 # Description for ID: 12406
-msgid "It contains a long list of 'saved maidens' and their addresses. Someone might be interested in it."
+msgid ""
+"It contains a long list of 'saved maidens' and their addresses. Someone "
+"might be interested in it."
 msgstr ""
 
 # Description for ID: 12414
@@ -25586,7 +25745,9 @@ msgid "The strong smell of orcish sweat sticks to it."
 msgstr ""
 
 # Description for ID: 12448
-msgid "Though the name implies it, this simple and thin belt is not suited to be used as rope."
+msgid ""
+"Though the name implies it, this simple and thin belt is not suited to be "
+"used as rope."
 msgstr ""
 
 # Description for ID: 12471
@@ -25594,11 +25755,14 @@ msgid "Distinctive shape and flavour."
 msgstr ""
 
 # Description for ID: 12497
-msgid "It was given to you by the djinn maitre and contains new recipes you cooked."
+msgid ""
+"It was given to you by the djinn maitre and contains new recipes you cooked."
 msgstr ""
 
 # Description for ID: 12500
-msgid "Supposedly the last will of someone. Whatever may have been written on it is long vanished."
+msgid ""
+"Supposedly the last will of someone. Whatever may have been written on it is "
+"long vanished."
 msgstr ""
 
 # Description for ID: 12540
@@ -25606,15 +25770,21 @@ msgid "It looks as if it was sealed with milky goodness."
 msgstr ""
 
 # Description for ID: 12542
-msgid "Nomads state that this meal fills you with energy several times before the pot is empty."
+msgid ""
+"Nomads state that this meal fills you with energy several times before the "
+"pot is empty."
 msgstr ""
 
 # Description for ID: 12543
-msgid "You're never sure what demonic balls will do, but they sure taste sweet and exciting."
+msgid ""
+"You're never sure what demonic balls will do, but they sure taste sweet and "
+"exciting."
 msgstr ""
 
 # Description for ID: 12544
-msgid "It's said to have incredible effects if you drink it while wearing a magical ring with time limit."
+msgid ""
+"It's said to have incredible effects if you drink it while wearing a magical "
+"ring with time limit."
 msgstr ""
 
 # Description for ID: 12559
@@ -25710,7 +25880,8 @@ msgid "It's an adorned fire field rune."
 msgstr ""
 
 # Description for ID: 12655
-msgid "The title of this heavy book reads: 'Rabaz' Unabridged Almanach Of Botany'."
+msgid ""
+"The title of this heavy book reads: 'Rabaz' Unabridged Almanach Of Botany'."
 msgstr ""
 
 # Description for ID: 12656
@@ -25722,31 +25893,43 @@ msgid "This old cape might be worth more than what it looks like."
 msgstr ""
 
 # Description for ID: 12660
-msgid "They will expire within a short time, sell them back to Esrik before they do."
+msgid ""
+"They will expire within a short time, sell them back to Esrik before they do."
 msgstr ""
 
 # Description for ID: 12662
-msgid "This rare artefact can be traded with Milos or Trimegis for a fraction of their knowledge."
+msgid ""
+"This rare artefact can be traded with Milos or Trimegis for a fraction of "
+"their knowledge."
 msgstr ""
 
 # Description for ID: 12663
-msgid "In memory of her - half plant, half demon, incredibly powerful and betrayed by her own creators."
+msgid ""
+"In memory of her - half plant, half demon, incredibly powerful and betrayed "
+"by her own creators."
 msgstr ""
 
 # Description for ID: 12666
-msgid "It was awarded in memory of the dedicated service of Tibia's gamemaster team."
+msgid ""
+"It was awarded in memory of the dedicated service of Tibia's gamemaster team."
 msgstr ""
 
 # Description for ID: 12667
-msgid "This mighty statue contains a true Phoenix feather inside. Awarded to winner of Tibiafans competition."
+msgid ""
+"This mighty statue contains a true Phoenix feather inside. Awarded to winner "
+"of Tibiafans competition."
 msgstr ""
 
 # Description for ID: 12670
-msgid "The spirit meter consists of a large handle combined with a green crystal full of magical markings."
+msgid ""
+"The spirit meter consists of a large handle combined with a green crystal "
+"full of magical markings."
 msgstr ""
 
 # Description for ID: 12671
-msgid "This ecto-magical device was designed and calibrated (but not tested) by Spectulus and Sinclair."
+msgid ""
+"This ecto-magical device was designed and calibrated (but not tested) by "
+"Spectulus and Sinclair."
 msgstr ""
 
 # Description for ID: 13028
@@ -25754,7 +25937,8 @@ msgid "The eternal love is awarded to winners of TibiaTR contest."
 msgstr ""
 
 # Description for ID: 13030
-msgid "It seems to be an favourite doll of emperor. It was rewarded by TibiaNation."
+msgid ""
+"It seems to be an favourite doll of emperor. It was rewarded by TibiaNation."
 msgstr ""
 
 # Description for ID: 13130
@@ -25762,11 +25946,14 @@ msgid "It is incredibly sticky and too sweet to eat it."
 msgstr ""
 
 # Description for ID: 13158
-msgid "This ribbon was handcrafted by Rottin Wood and the Married Men of the forest."
+msgid ""
+"This ribbon was handcrafted by Rottin Wood and the Married Men of the forest."
 msgstr ""
 
 # Description for ID: 13161
-msgid "The wool that was stuffed under the ribbon makes the spoon look and feel like a real rabbit's foot."
+msgid ""
+"The wool that was stuffed under the ribbon makes the spoon look and feel "
+"like a real rabbit's foot."
 msgstr ""
 
 # Description for ID: 13165
@@ -25822,15 +26009,21 @@ msgid "It might do some funny things to you."
 msgstr ""
 
 # Description for ID: 13239
-msgid "This berry is not edible in its raw form. Maybe Emilie of the Winterberry Society in Thais can help."
+msgid ""
+"This berry is not edible in its raw form. Maybe Emilie of the Winterberry "
+"Society in Thais can help."
 msgstr ""
 
 # Description for ID: 13540
-msgid "It seems to be a part of an outfit. Find all six parts to complete the outfit."
+msgid ""
+"It seems to be a part of an outfit. Find all six parts to complete the "
+"outfit."
 msgstr ""
 
 # Description for ID: 13546
-msgid "This fish, and rare ingredient, can only be found in the dirtiest, murkiest and muddiest of waters."
+msgid ""
+"This fish, and rare ingredient, can only be found in the dirtiest, murkiest "
+"and muddiest of waters."
 msgstr ""
 
 # Description for ID: 13559
@@ -25850,7 +26043,9 @@ msgid "It grants you the power of the cursed priest."
 msgstr ""
 
 # Description for ID: 13828
-msgid "Use this knife on a dead war wolf to retrieve some leather. Don't lose it and don't leave the cave."
+msgid ""
+"Use this knife on a dead war wolf to retrieve some leather. Don't lose it "
+"and don't leave the cave."
 msgstr ""
 
 # Description for ID: 13830
@@ -25858,7 +26053,9 @@ msgid "Dogs would probably find this treat really yummy."
 msgstr ""
 
 # Description for ID: 13864
-msgid "It seems the water wants back to the bog it came from. Soon it will all be trickled away."
+msgid ""
+"It seems the water wants back to the bog it came from. Soon it will all be "
+"trickled away."
 msgstr ""
 
 # Description for ID: 13866
@@ -25874,7 +26071,8 @@ msgid "It feels cold and smooth."
 msgstr ""
 
 # Description for ID: 13877
-msgid "It seems all its former magical power has left this broken carcass of a ring."
+msgid ""
+"It seems all its former magical power has left this broken carcass of a ring."
 msgstr ""
 
 # Description for ID: 13879
@@ -25886,7 +26084,9 @@ msgid "It's very toxic. Do not ever drink green liquids."
 msgstr ""
 
 # Description for ID: 13925
-msgid "It seems to be a part of an outfit. If you own the outfit you might refine it by using the item."
+msgid ""
+"It seems to be a part of an outfit. If you own the outfit you might refine "
+"it by using the item."
 msgstr ""
 
 # Description for ID: 13933
@@ -25898,11 +26098,15 @@ msgid "Be careful, this vessel can hold the molten gold only for a short time."
 msgstr ""
 
 # Description for ID: 13942
-msgid "A piece of skin from a yielothax. Tiny hairs are visible on its surface - and they seem to be alive."
+msgid ""
+"A piece of skin from a yielothax. Tiny hairs are visible on its surface - "
+"and they seem to be alive."
 msgstr ""
 
 # Description for ID: 13946
-msgid "This hat was handcrafted by Uman the Wise and cursed by Zathroth the Destroyer."
+msgid ""
+"This hat was handcrafted by Uman the Wise and cursed by Zathroth the "
+"Destroyer."
 msgstr ""
 
 # Description for ID: 13948
@@ -25914,6 +26118,7 @@ msgid "Granted by RadioTibia.com.br to hear the sounds of Tibia."
 msgstr ""
 
 # Description for ID: 13954
-msgid "This bucket was prepared to hold magical water trying to escape just that important bit longer."
+msgid ""
+"This bucket was prepared to hold magical water trying to escape just that "
+"important bit longer."
 msgstr ""
-
