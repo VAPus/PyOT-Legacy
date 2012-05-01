@@ -2,7 +2,6 @@ from game.item import Item
 import game.item
 from twisted.internet import threads, reactor
 from twisted.python import log
-import bindconstant
 import scriptsystem
 from collections import deque
 import config
@@ -390,7 +389,6 @@ class Tile(object):
         self.things = saved[0]
         self.countNflags = saved[1]
         
-#bindconstant.bind_all(Tile) # Apply constanting to Tile  
 
 class HouseTile(Tile):
     __slots__ = ('houseId', 'position')
@@ -434,7 +432,6 @@ class HouseTile(Tile):
         except KeyError:
             pass
     
-#bindconstant.bind_all(HouseTile) # Apply constanting to HouseTile 
 
 import data.map.info as mapInfo
 dummyItems = {} 

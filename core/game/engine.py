@@ -9,7 +9,6 @@ import game.map
 import config
 import math
 import game.pathfinder
-import bindconstant
 import sql
 import otjson
 import game.enum
@@ -450,8 +449,6 @@ def getSpectators(pos, radius=(8,6), ignore=()):
             players.add(player.client)
         
     return players
-        
-getSpectators = bindconstant._make_constants(getSpectators)
 
 def hasSpectators(pos, radius=(8,6), ignore=()):
     for player in game.player.allPlayers.values():
@@ -480,7 +477,6 @@ def getCreatures(pos, radius=(8,6), ignore=()):
             creatures.add(creature)
     return creatures
         
-getCreatures = bindconstant._make_constants(getCreatures)
 
 def getPlayers(pos, radius=(8,6), ignore=()):
     """Gives you the players in the area.
@@ -504,7 +500,6 @@ def getPlayers(pos, radius=(8,6), ignore=()):
     
     return players
         
-getPlayers = bindconstant._make_constants(getPlayers)
 
 # Calculate new position by direction
 def positionInDirection(nposition, direction, amount=1):

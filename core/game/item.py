@@ -4,7 +4,6 @@ import sql
 from twisted.python import log
 from collections import deque, namedtuple
 import game.enum
-import bindconstant
 import config
 import game.engine
 import copy
@@ -101,7 +100,6 @@ class Container(object):
     def __repr__(self):
         return "<Container (%d/%d) at %s>" % (self.size(), self.items.maxlen, hex(id(self)))
         
-bindconstant.bind_all(Container)
             
 ### Item ###
 class Item(object):
