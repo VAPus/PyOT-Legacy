@@ -1,4 +1,4 @@
-shaburak_demon = game.monster.genMonster("Shaburak Demon", (417, 5980), "a shaburak demon")#corpse
+shaburak_demon = genMonster("Shaburak Demon", (417, 5980), "a shaburak demon")#corpse
 shaburak_demon.setHealth(1500)
 shaburak_demon.bloodType(color="blood")
 shaburak_demon.setDefense(armor=26, fire=1, earth=1.3, energy=0.5, ice=0.5, holy=1, death=1, physical=1, drown=1)#

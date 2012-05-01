@@ -1,4 +1,4 @@
-plaguesmith = game.monster.genMonster("Plaguesmith", (247, 6516), "a plaguesmith")
+plaguesmith = genMonster("Plaguesmith", (247, 6516), "a plaguesmith")
 plaguesmith.setHealth(8250, healthmax=8250)
 plaguesmith.bloodType(color="blood")
 plaguesmith.setDefense(armor=32, fire=0.7, earth=0, energy=1.1, ice=0.8, holy=1.1, death=0.9, physical=1, drown=1)

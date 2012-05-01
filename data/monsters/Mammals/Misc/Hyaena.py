@@ -1,4 +1,4 @@
-Hyaena = game.monster.genMonster("Hyaena", (94, 6026), "a hyaena")
+Hyaena = genMonster("Hyaena", (94, 6026), "a hyaena")
 Hyaena.setTargetChance(10)
 Hyaena.bloodType("blood")
 Hyaena.setHealth(60)

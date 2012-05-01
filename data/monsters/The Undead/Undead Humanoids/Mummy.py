@@ -1,4 +1,4 @@
-mummy = game.monster.genMonster("Mummy", (65, 6004), "a mummy")
+mummy = genMonster("Mummy", (65, 6004), "a mummy")
 mummy.setHealth(240)
 mummy.bloodType(color="undead")
 mummy.setDefense(armor=15, fire=1, earth=1, energy=1, ice=0.8, holy=1.25, death=1, physical=1, drown=1)

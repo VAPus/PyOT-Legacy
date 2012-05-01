@@ -1,5 +1,5 @@
 
-poison_spider = game.monster.genMonster("Poison Spider", (36, 5974), "a poison spider")
+poison_spider = genMonster("Poison Spider", (36, 5974), "a poison spider")
 poison_spider.setHealth(26)
 poison_spider.bloodType(color="slime")
 poison_spider.setDefense(armor=2, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

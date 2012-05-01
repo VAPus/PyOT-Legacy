@@ -1,4 +1,4 @@
-gozzler = game.monster.genMonster("Gozzler", (8, 5980), "a gozzler")
+gozzler = genMonster("Gozzler", (8, 5980), "a gozzler")
 gozzler.setHealth(240, healthmax=240)
 gozzler.bloodType(color="blood")
 gozzler.setDefense(armor=26, fire=1, earth=1, energy=1, ice=1, holy=0.5, death=0.5, physical=1.05, drown=1)

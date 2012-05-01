@@ -175,6 +175,14 @@ def loader(timer):
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     
+    # Resources
+    __builtin__.genMonster = game.monster.genMonster
+    __builtin__.genNPC = game.npc.genNPC
+    __builtin__.genQuest = game.resource.genQuest
+    __builtin__.genOutfit = game.resource.genOutfit
+    __builtin__.genMount = game.resource.genMount
+    __builtin__.regVocation = game.vocation.regVocation
+    
     # Used alot in monster and npcs
     __builtin__.chance = game.monster.chance
     

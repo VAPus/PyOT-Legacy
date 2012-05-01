@@ -1,4 +1,4 @@
-Rift_Worm = game.monster.genMonster("Rift Worm", (295, 0), "a Rift Worm")
+Rift_Worm = genMonster("Rift Worm", (295, 0), "a Rift Worm")
 Rift_Worm.setTargetChance(10)
 Rift_Worm.bloodType("blood")
 Rift_Worm.setHealth(2800)

@@ -1,4 +1,4 @@
-Azure_Frog = game.monster.genMonster("Azure Frog", (226, 6079), "an azure frog")
+Azure_Frog = genMonster("Azure Frog", (226, 6079), "an azure frog")
 Azure_Frog.setOutfit(69, 66, 69, 66)
 Azure_Frog.bloodType("blood")
 Azure_Frog.setHealth(60)

@@ -1,5 +1,5 @@
 #I think this can be shorten :p
-addons = game.npc.genNPC("Addons", (130, 39, 122, 125, 37, 2212))
+addons = genNPC("Addons", (130, 39, 122, 125, 37, 2212))
 addons.setWalkable(False)
 outfits = ('Citizen', 'Hunter', 'Mage', 'Knight', 'Warrior', 'Summoner', 'Nobleman', 'Oriental', 'Wizard', 'Assassin', 'Beggar', 'Shaman', 'Barbarian', 'Druid', 'Pirate', 'Norseman', 'Jester', 'Brotherhood', 'Hunter', 'Yalaharian', 'Newly Wed', 'Warmaster', 'Wayfarer', 'Elementalist', 'Afflicted')
 mounts = ('Black Sheep', 'Blazerbringer', 'Crystal Wolf', 'Draptor', 'Dromedary', 'King Scorpion', 'Kingly Deer', 'Midnight Panther', 'Mule', 'Racing Bird', 'Rapid Boar', 'Rented Horse', 'Shadow Draptor', 'Stampor', 'Tamed Panda', 'Tiger Slug', 'Tin Lizzard', 'Titanica', 'Undead Cavebear', 'Uniwheel', 'War Bear', 'Fire War Horse', 'Brown War Horse', 'Widow Queen')

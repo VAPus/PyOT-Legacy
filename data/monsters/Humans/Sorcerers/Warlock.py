@@ -1,5 +1,5 @@
 
-warlock = game.monster.genMonster("Warlock", (130, 6080), "a warlock")
+warlock = genMonster("Warlock", (130, 6080), "a warlock")
 warlock.setOutfit(19, 71, 128, 128) #needs an addon
 warlock.setHealth(3500)
 warlock.bloodType(color="blood")

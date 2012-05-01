@@ -1,4 +1,4 @@
-Parrot = game.monster.genMonster("Parrot", (217, 6056), "a parrot")
+Parrot = genMonster("Parrot", (217, 6056), "a parrot")
 Parrot.setTargetChance(0)
 Parrot.bloodType("blood")
 Parrot.setHealth(25)

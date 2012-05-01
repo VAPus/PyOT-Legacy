@@ -1,4 +1,4 @@
-chakoya_windcaller = game.monster.genMonster("Chakoya Windcaller", (260, 7320), "a chakoya windcaller")
+chakoya_windcaller = genMonster("Chakoya Windcaller", (260, 7320), "a chakoya windcaller")
 chakoya_windcaller.setHealth(84, healthmax=84)
 chakoya_windcaller.bloodType(color="blood")
 chakoya_windcaller.setDefense(armor=7, fire=0.5, earth=1, energy=1.15, ice=0, holy=0.8, death=1.08, physical=1, drown=1)

@@ -1,4 +1,4 @@
-Carrion_Worm = game.monster.genMonster("Carrion Worm", (192, 6069), "a Carrion Worm")
+Carrion_Worm = genMonster("Carrion Worm", (192, 6069), "a Carrion Worm")
 Carrion_Worm.setTargetChance(0)
 Carrion_Worm.bloodType("blood")
 Carrion_Worm.setHealth(145)

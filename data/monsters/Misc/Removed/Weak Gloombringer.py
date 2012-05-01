@@ -1,5 +1,5 @@
 #largely unknown
-weak_gloombringer = game.monster.genMonster("Weak Gloombringer", (12, 5980), "a weak gloombringer")
+weak_gloombringer = genMonster("Weak Gloombringer", (12, 5980), "a weak gloombringer")
 weak_gloombringer.setHealth(10000)
 weak_gloombringer.bloodType(color="blood")
 weak_gloombringer.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

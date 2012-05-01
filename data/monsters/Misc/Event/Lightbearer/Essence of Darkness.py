@@ -1,5 +1,5 @@
 #mostly incorrect?
-essence_of_darkness = game.monster.genMonster("Essence Of Darkness", (315, 9960), "an essence of darkness")
+essence_of_darkness = genMonster("Essence Of Darkness", (315, 9960), "an essence of darkness")
 essence_of_darkness.setHealth(1000) #or more
 essence_of_darkness.bloodType(color="undead")
 essence_of_darkness.setDefense(armor=10, fire=0.02, earth=0, energy=0, ice=0, holy=0.8, death=0, physical=0, drown=1)

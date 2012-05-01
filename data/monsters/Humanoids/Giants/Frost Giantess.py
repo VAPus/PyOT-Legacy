@@ -1,4 +1,4 @@
-frost_giantess = game.monster.genMonster("Frost Giantess", (265, 7330), "a frost giantess")
+frost_giantess = genMonster("Frost Giantess", (265, 7330), "a frost giantess")
 frost_giantess.setHealth(275)
 frost_giantess.bloodType(color="blood")
 frost_giantess.setDefense(armor=22, fire=1.1, earth=1, energy=1.1, ice=0, holy=0.9, death=1.03, physical=1, drown=1)

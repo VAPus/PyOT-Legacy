@@ -1,4 +1,4 @@
-butterfly = game.monster.genMonster("Butterfly", (228, 4992), "a butterfly")
+butterfly = genMonster("Butterfly", (228, 4992), "a butterfly")
 butterfly.setHealth(2)
 butterfly.bloodType(color="slime")
 butterfly.setDefense(armor=2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1)

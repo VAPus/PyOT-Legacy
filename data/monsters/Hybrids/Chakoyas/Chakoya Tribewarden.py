@@ -1,4 +1,4 @@
-chakoya_tribewarden = game.monster.genMonster("Chakoya Tribewarden", (258, 7320), "a chakoya tribewarden")#261? wrong looktype?
+chakoya_tribewarden = genMonster("Chakoya Tribewarden", (258, 7320), "a chakoya tribewarden")#261? wrong looktype?
 chakoya_tribewarden.setHealth(68, healthmax=68)
 chakoya_tribewarden.bloodType(color="blood")
 chakoya_tribewarden.setDefense(armor=9, fire=0.75, earth=1, energy=1.15, ice=0, holy=0.9, death=1.05, physical=1, drown=1)

@@ -1,4 +1,4 @@
-soya = game.npc.genNPC("Soya", (139, 132, 79, 97, 132, 2212))
+soya = genNPC("Soya", (139, 132, 79, 97, 132, 2212))
 soya.setWalkable(False)
 
 shop = soya.module('shop')

@@ -1,5 +1,5 @@
 #most values are unknown
-Sacred_Spider = game.monster.genMonster("Sacred Spider", (219, 5995), "a sacred spider")
+Sacred_Spider = genMonster("Sacred Spider", (219, 5995), "a sacred spider")
 Sacred_Spider.setHealth(550)
 Sacred_Spider.bloodType(color="slime")
 Sacred_Spider.setDefense(armor=29, fire=1.05, earth=0, energy=0.9, ice=1.1, holy=1, death=1, physical=1, drown=1)

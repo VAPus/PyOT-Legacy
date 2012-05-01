@@ -1,4 +1,4 @@
-coral_frog = game.monster.genMonster("Coral Frog", (226, 6079), "a coral frog")
+coral_frog = genMonster("Coral Frog", (226, 6079), "a coral frog")
 coral_frog.setOutfit(69, 66, 69, 66)
 coral_frog.setTargetChance(10)
 coral_frog.bloodType("blood")

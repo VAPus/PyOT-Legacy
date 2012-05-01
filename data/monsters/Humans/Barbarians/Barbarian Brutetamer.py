@@ -1,4 +1,4 @@
-Barbarian_Brutetamer = game.monster.genMonster("Barbarian Brutetamer", (264, 6081), "a Barbarian Brutetamer")
+Barbarian_Brutetamer = genMonster("Barbarian Brutetamer", (264, 6081), "a Barbarian Brutetamer")
 Barbarian_Brutetamer.setOutfit(78,116,95,121)
 Barbarian_Brutetamer.setTargetChance(10)
 Barbarian_Brutetamer.bloodType("blood")

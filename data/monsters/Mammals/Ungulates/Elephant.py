@@ -1,4 +1,4 @@
-Elephant = game.monster.genMonster("Elephant", (211, 6052), "an elephant")
+Elephant = genMonster("Elephant", (211, 6052), "an elephant")
 Elephant.setTargetChance(10)
 Elephant.bloodType("blood")
 Elephant.setHealth(320)

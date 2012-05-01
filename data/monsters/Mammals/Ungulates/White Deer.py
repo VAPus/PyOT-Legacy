@@ -1,5 +1,5 @@
 # bad  (suppose to summon enraged or hurt white deer when it dies)
-White_Deer = game.monster.genMonster("White Deer", (400, 6079), "a white deer") # uknown yet
+White_Deer = genMonster("White Deer", (400, 6079), "a white deer") # uknown yet
 White_Deer.setTargetChance(10)
 White_Deer.bloodType("blood")
 White_Deer.setHealth(195)

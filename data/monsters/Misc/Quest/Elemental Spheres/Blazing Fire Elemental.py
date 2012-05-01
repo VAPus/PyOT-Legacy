@@ -1,4 +1,4 @@
-blazing_fire_elemental = game.monster.genMonster("Blazing Fire Elemental", (49, 8964), "a blazing fire elemental")
+blazing_fire_elemental = genMonster("Blazing Fire Elemental", (49, 8964), "a blazing fire elemental")
 blazing_fire_elemental.setHealth(650)
 blazing_fire_elemental.bloodType(color="blood")
 blazing_fire_elemental.setDefense(armor=20, fire=0, earth=0.5, energy=0.8, ice=1.25, holy=0, death=0.6, physical=1, drown=1)

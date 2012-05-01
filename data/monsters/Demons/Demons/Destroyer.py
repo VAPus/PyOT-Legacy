@@ -1,4 +1,4 @@
-destroyer = game.monster.genMonster("Destroyer", (236, 6320), "a Destroyer")
+destroyer = genMonster("Destroyer", (236, 6320), "a Destroyer")
 destroyer.setHealth(3700, healthmax=3700)
 destroyer.bloodType(color="blood")
 destroyer.setDefense(armor=37, fire=0.7, earth=0.8, energy=0, ice=1.15, holy=1.03, death=0.8, physical=0.8, drown=1)

@@ -1,5 +1,5 @@
 #mostly unknown
-lizard_gate_guardian = game.monster.genMonster("Lizard Gate Guardian", (343, 11278), "a lizard gate guardian")
+lizard_gate_guardian = genMonster("Lizard Gate Guardian", (343, 11278), "a lizard gate guardian")
 lizard_gate_guardian.setHealth(2955, healthmax=None)
 lizard_gate_guardian.bloodType(color="blood")
 lizard_gate_guardian.setDefense(armor=2, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

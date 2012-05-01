@@ -1,4 +1,4 @@
-Bride_of_Night = game.monster.genMonster("Bride of Night", (58, 6081), "a bride of night")
+Bride_of_Night = genMonster("Bride of Night", (58, 6081), "a bride of night")
 Bride_of_Night.setHealth(275)
 Bride_of_Night.bloodType(color="blood")
 Bride_of_Night.setDefense(armor=15, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)

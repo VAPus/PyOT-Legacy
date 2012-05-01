@@ -1,4 +1,4 @@
-wisp = game.monster.genMonster("Wisp", (294, 6324), "a wisp")
+wisp = genMonster("Wisp", (294, 6324), "a wisp")
 wisp.setHealth(115)
 wisp.bloodType(color="undead")
 wisp.setDefense(armor=6, fire=1, earth=0.1, energy=0.6, ice=1, holy=1, death=0, physical=0.4, drown=1)

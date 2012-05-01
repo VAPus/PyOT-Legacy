@@ -1,5 +1,5 @@
 
-island_troll = game.monster.genMonster("Island Troll", (282, 7930), "an island troll")
+island_troll = genMonster("Island Troll", (282, 7930), "an island troll")
 island_troll.setHealth(50)
 island_troll.bloodType(color="blood")
 island_troll.setDefense(armor=6, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

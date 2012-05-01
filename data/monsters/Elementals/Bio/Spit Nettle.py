@@ -1,5 +1,5 @@
 
-spit_nettle = game.monster.genMonster("Spit Nettle", (221, 6062), "a spit nettle")
+spit_nettle = genMonster("Spit Nettle", (221, 6062), "a spit nettle")
 spit_nettle.setHealth(150, healthmax=150)
 spit_nettle.bloodType(color="slime")
 spit_nettle.setDefense(armor=15, fire=1.1, earth=0, energy=0, ice=0.8, holy=1, death=1, physical=1, drown=1)

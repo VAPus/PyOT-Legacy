@@ -1,4 +1,4 @@
-ghastly_dragon = game.monster.genMonster("Ghastly Dragon", (351, 11362), "a ghastly dragon")
+ghastly_dragon = genMonster("Ghastly Dragon", (351, 11362), "a ghastly dragon")
 ghastly_dragon.setHealth(7800)
 ghastly_dragon.bloodType(color="undead")
 ghastly_dragon.setDefense(armor=33, fire=0.9, earth=0, energy=0.9, ice=0.5, holy=1.15, death=0, physical=1.1, drown=1)

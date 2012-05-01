@@ -1,4 +1,4 @@
-Insect_Swarm = game.monster.genMonster("Insect Swarm", (349, 0), "an insect swarm") #no corpse
+Insect_Swarm = genMonster("Insect Swarm", (349, 0), "an insect swarm") #no corpse
 Insect_Swarm.setHealth(50)
 Insect_Swarm.bloodType(color="blood")
 Insect_Swarm.setDefense(armor=4, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

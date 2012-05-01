@@ -1,4 +1,4 @@
-Gang_Member = game.monster.genMonster("Gang Member", (151, 6080), "a Gang Member")
+Gang_Member = genMonster("Gang Member", (151, 6080), "a Gang Member")
 Gang_Member.setOutfit(114, 19, 42, 20)
 Gang_Member.setTargetChance(0)
 Gang_Member.bloodType("blood")

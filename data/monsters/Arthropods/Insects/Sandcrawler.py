@@ -1,4 +1,4 @@
-sandcrawler = game.monster.genMonster("Sandcrawler", (350, 11360), "a sandcrawler")
+sandcrawler = genMonster("Sandcrawler", (350, 11360), "a sandcrawler")
 sandcrawler.setHealth(30)
 sandcrawler.bloodType(color="slime")
 sandcrawler.setDefense(armor=2, fire=1.1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

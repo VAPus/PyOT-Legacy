@@ -1,4 +1,4 @@
-dwarf_soldier = game.monster.genMonster("Dwarf Soldier", (71, 6014), "a dwarf soldier")
+dwarf_soldier = genMonster("Dwarf Soldier", (71, 6014), "a dwarf soldier")
 dwarf_soldier.setHealth(135, healthmax=135)
 dwarf_soldier.bloodType(color="blood")
 dwarf_soldier.setDefense(armor=9, fire=1.05, earth=0.9, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)

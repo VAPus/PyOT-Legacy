@@ -1,5 +1,5 @@
 #largely unknown
-shadow_hound = game.monster.genMonster("Shadow Hound", (322, 9923), "a shadow hound")
+shadow_hound = genMonster("Shadow Hound", (322, 9923), "a shadow hound")
 shadow_hound.setHealth(555)
 shadow_hound.bloodType(color="blood")
 shadow_hound.setDefense(armor=44, fire=1.1, earth=0, energy=1.0, ice=1.0, holy=1.25, death=0, physical=1.0, drown=1)

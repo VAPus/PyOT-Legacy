@@ -1,4 +1,4 @@
-diabolic_imp = game.monster.genMonster("Diabolic Imp", (237, 6364), "a diabolic imp")
+diabolic_imp = genMonster("Diabolic Imp", (237, 6364), "a diabolic imp")
 diabolic_imp.setHealth(1950)
 diabolic_imp.bloodType(color="blood")
 diabolic_imp.setDefense(armor=30, fire=0, earth=0.5, energy=1, ice=1.1, holy=1.05, death=0.9, physical=1, drown=1)

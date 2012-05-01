@@ -1,5 +1,5 @@
 #mostly unknown
-Firestarter = game.monster.genMonster("Firestarter", (159, 5980), "a firestarter")
+Firestarter = genMonster("Firestarter", (159, 5980), "a firestarter")
 Firestarter.setOutfit(95, 95, 95, 95)#wrong colors
 Firestarter.setHealth(180)
 Firestarter.bloodType(color="blood")

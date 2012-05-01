@@ -1,4 +1,4 @@
-spectre = game.monster.genMonster("Spectre", (235, 6348), "a spectre")
+spectre = genMonster("Spectre", (235, 6348), "a spectre")
 spectre.setHealth(1350)
 spectre.bloodType(color="undead")
 spectre.setDefense(armor=44, fire=1.08, earth=0, energy=1.08, ice=0.99, holy=1, death=0, physical=0.1, drown=0)

@@ -1,4 +1,4 @@
-scarab = game.monster.genMonster("Scarab", (83, 6024), "a scarab")
+scarab = genMonster("Scarab", (83, 6024), "a scarab")
 scarab.setHealth(320, healthmax=320)
 scarab.bloodType(color="slime")
 scarab.setDefense(armor=23, fire=1.18, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=0.95, drown=1)

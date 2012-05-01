@@ -1,4 +1,4 @@
-marid = game.monster.genMonster("Marid", (104, 6033), "a marid")
+marid = genMonster("Marid", (104, 6033), "a marid")
 marid.setHealth(550, healthmax=550)
 marid.bloodType(color="blood")
 marid.setDefense(armor=27, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=0.8, death=1.08, physical=1, drown=1)

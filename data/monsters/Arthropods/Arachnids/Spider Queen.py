@@ -1,4 +1,4 @@
-spider_queen = game.monster.genMonster("Spider Queen", (219, 5995), "a spider queen")
+spider_queen = genMonster("Spider Queen", (219, 5995), "a spider queen")
 spider_queen.setHealth(225)
 spider_queen.bloodType(color="slime")
 spider_queen.setDefense(-1)

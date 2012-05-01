@@ -1,4 +1,4 @@
-behemoth = game.monster.genMonster("Behemoth", (55, 5999), "a behemoth")
+behemoth = genMonster("Behemoth", (55, 5999), "a behemoth")
 behemoth.setHealth(4000)
 behemoth.bloodType(color="blood")
 behemoth.setDefense(armor=57, fire=0.7, earth=0.2, energy=0.9, ice=1.1, holy=0.7, death=1.05, physical=0.9, drown=1)

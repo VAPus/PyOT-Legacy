@@ -1,4 +1,4 @@
-Sheep = game.monster.genMonster("Sheep", (14, 5991), "a sheep")
+Sheep = genMonster("Sheep", (14, 5991), "a sheep")
 Sheep.setTargetChance(0)
 Sheep.bloodType("blood")
 Sheep.setHealth(20)

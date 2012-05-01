@@ -1,4 +1,4 @@
-Green_Frog = game.monster.genMonster("Green Frog", (224, 6079), "a green frog")
+Green_Frog = genMonster("Green Frog", (224, 6079), "a green frog")
 Green_Frog.setOutfit(69, 66, 69, 66)
 Green_Frog.setTargetChance(10)
 Green_Frog.bloodType("slime")

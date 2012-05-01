@@ -1,4 +1,4 @@
-Monk = game.monster.genMonster("Monk", (57, 6080), "a Monk")
+Monk = genMonster("Monk", (57, 6080), "a Monk")
 Monk.setTargetChance(10)
 Monk.bloodType("blood")
 Monk.setHealth(240)

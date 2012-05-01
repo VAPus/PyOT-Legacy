@@ -1,4 +1,4 @@
-Gladiator = game.monster.genMonster("Gladiator", (131, 6080), "a Gladiator")
+Gladiator = genMonster("Gladiator", (131, 6080), "a Gladiator")
 Gladiator.setOutfit(78, 3, 79, 114)
 Gladiator.setTargetChance(10)
 Gladiator.bloodType("blood")

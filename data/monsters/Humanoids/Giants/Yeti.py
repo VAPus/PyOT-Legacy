@@ -1,4 +1,4 @@
-Yeti = game.monster.genMonster("Yeti", (8, 5980), "a yeti") ##looktype and corpse
+Yeti = genMonster("Yeti", (8, 5980), "a yeti") ##looktype and corpse
 Yeti.setHealth(950)
 Yeti.bloodType(color="blood")
 Yeti.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)

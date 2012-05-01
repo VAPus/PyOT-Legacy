@@ -1,4 +1,4 @@
-Thornback_Tortoise = game.monster.genMonster("Thornback Tortoise", (198, 6073), "a thornback tortoise")
+Thornback_Tortoise = genMonster("Thornback Tortoise", (198, 6073), "a thornback tortoise")
 Thornback_Tortoise.setTargetChance(10)
 Thornback_Tortoise.bloodType("blood")
 Thornback_Tortoise.setHealth(300)

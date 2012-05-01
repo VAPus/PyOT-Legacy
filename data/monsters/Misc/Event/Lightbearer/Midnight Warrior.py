@@ -1,4 +1,4 @@
-midnight_warrior = game.monster.genMonster("Midnight Warrior", (8, 5980), "a midnight warrior")
+midnight_warrior = genMonster("Midnight Warrior", (8, 5980), "a midnight warrior")
 midnight_warrior.setOutfit(95, 95, 95, 95)#
 midnight_warrior.setHealth(1000)
 midnight_warrior.bloodType(color="blood")

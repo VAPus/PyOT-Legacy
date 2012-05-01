@@ -1,5 +1,5 @@
 
-death_blob = game.monster.genMonster("Death Blob", (315, 9960), "a death blob")
+death_blob = genMonster("Death Blob", (315, 9960), "a death blob")
 death_blob.setHealth(320)
 death_blob.bloodType(color="undead")
 death_blob.setDefense(armor=15, fire=1.1, earth=0, energy=1.1, ice=0.9, holy=1.1, death=0, physical=0.8, drown=1)

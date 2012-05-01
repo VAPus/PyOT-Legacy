@@ -1,4 +1,4 @@
-Flamingo = game.monster.genMonster("Flamingo", (212, 6054), "a flamingo")
+Flamingo = genMonster("Flamingo", (212, 6054), "a flamingo")
 Flamingo.setTargetChance(10)
 Flamingo.bloodType("blood")
 Flamingo.setHealth(25)

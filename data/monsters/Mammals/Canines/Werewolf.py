@@ -1,4 +1,4 @@
-Werewolf = game.monster.genMonster("Werewolf", (308, 6080), "a werewolf")
+Werewolf = genMonster("Werewolf", (308, 6080), "a werewolf")
 Werewolf.setTargetChance(10)
 Werewolf.bloodType("blood")
 Werewolf.setHealth(1955)

@@ -1,5 +1,5 @@
 
-carniphila = game.monster.genMonster("Carniphila", (120, 6047), "a carniphila")
+carniphila = genMonster("Carniphila", (120, 6047), "a carniphila")
 carniphila.setHealth(255)
 carniphila.bloodType(color="slime")
 carniphila.setDefense(armor=29, fire=1.2, earth=0, energy=0.9, ice=0.8, holy=1, death=1, physical=1, drown=1)

@@ -1,5 +1,5 @@
 #mostly unknown
-rift_brood = game.monster.genMonster("Rift Brood", (290, 8966), "a Rift Brood")
+rift_brood = genMonster("Rift Brood", (290, 8966), "a Rift Brood")
 rift_brood.setHealth(3000)
 rift_brood.bloodType(color="undead")
 rift_brood.setDefense(armor=29, fire=0, earth=1.25, energy=0, ice=0, holy=0.85, death=1.25, physical=0.6, drown=1)

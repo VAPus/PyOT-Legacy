@@ -1,4 +1,4 @@
-massive_fire_elemental = game.monster.genMonster("Massive Fire Elemental", (242, 8964), "a massive fire elemental")
+massive_fire_elemental = genMonster("Massive Fire Elemental", (242, 8964), "a massive fire elemental")
 massive_fire_elemental.setHealth(1200, healthmax=1200)
 massive_fire_elemental.bloodType(color="blood")
 massive_fire_elemental.setDefense(armor=48, fire=0, earth=1, energy=0.7, ice=1.15, holy=1, death=0.8, physical=0.6, drown=1)

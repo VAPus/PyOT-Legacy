@@ -1,4 +1,4 @@
-Kongra = game.monster.genMonster("Kongra", (116, 6043), "a Kongra")
+Kongra = genMonster("Kongra", (116, 6043), "a Kongra")
 Kongra.setTargetChance(10)
 Kongra.bloodType("blood")
 Kongra.setHealth(340)

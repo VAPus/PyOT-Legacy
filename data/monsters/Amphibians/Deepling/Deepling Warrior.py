@@ -1,4 +1,4 @@
-Deepling_Warrior = game.monster.genMonster("Deepling Warrior", (8, 5980), "a deepling warrior") #need outfit and corpse
+Deepling_Warrior = genMonster("Deepling Warrior", (8, 5980), "a deepling warrior") #need outfit and corpse
 Deepling_Warrior.setHealth(1600, healthmax=1600)
 Deepling_Warrior.bloodType(color="blood")
 Deepling_Warrior.setDefense(armor=1, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=0.9, physical=1, drown=0)

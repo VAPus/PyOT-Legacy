@@ -1,4 +1,4 @@
-elf = game.monster.genMonster("Elf", (62, 6003), "an elf")
+elf = genMonster("Elf", (62, 6003), "an elf")
 elf.setHealth(100, healthmax=100)
 elf.bloodType(color="blood")
 elf.setDefense(armor=7, fire=1, earth=1, energy=1, ice=1, holy=0.8, death=1.1, physical=1, drown=1)

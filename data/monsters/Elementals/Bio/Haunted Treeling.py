@@ -1,5 +1,5 @@
 
-haunted_treeling = game.monster.genMonster("Haunted Treeling ", (310, 9867), "a haunted treeling")
+haunted_treeling = genMonster("Haunted Treeling ", (310, 9867), "a haunted treeling")
 haunted_treeling.setHealth(450)
 haunted_treeling.bloodType(color="undead")
 haunted_treeling.setDefense(armor=22, fire=1.05, earth=0, energy=1, ice=0.9, holy=0.8, death=0.9, physical=1, drown=1)

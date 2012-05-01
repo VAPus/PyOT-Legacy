@@ -1,5 +1,5 @@
 # The quest itself
-quest = game.resource.genQuest("The hello world")
+quest = genQuest("The hello world")
 quest.mission("Say hello world")
 quest.description("Simply type 'hello world' to finish this quest")
 

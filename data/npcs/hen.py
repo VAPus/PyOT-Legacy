@@ -1,4 +1,4 @@
-hen = game.npc.genNPC("Hen", (130, 39, 122, 125, 37, 2212), "AltSystemTest the test char")
+hen = genNPC("Hen", (130, 39, 122, 125, 37, 2212), "AltSystemTest the test char")
 hen.setWalkable(False)
 
 playersWhoGotFreeIcecream = set()

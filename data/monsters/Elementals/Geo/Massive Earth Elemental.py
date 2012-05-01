@@ -1,4 +1,4 @@
-massive_earth_elemental = game.monster.genMonster("Massive Earth Elemental", (285, 8933), "a massive earth elemental")
+massive_earth_elemental = genMonster("Massive Earth Elemental", (285, 8933), "a massive earth elemental")
 massive_earth_elemental.setHealth(1330)
 massive_earth_elemental.bloodType(color="undead")
 massive_earth_elemental.setDefense(armor=62, fire=1.15, earth=0, energy=0.9, ice=0.85, holy=0.5, death=0.55, physical=0.75, drown=1)

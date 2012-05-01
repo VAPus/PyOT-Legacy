@@ -1,4 +1,4 @@
-Elder_Bonelord = game.monster.genMonster("Elder Bonelord", (226, 6037), "a Elder Bonelord")
+Elder_Bonelord = genMonster("Elder Bonelord", (226, 6037), "a Elder Bonelord")
 Elder_Bonelord.setTargetChance(10)
 Elder_Bonelord.bloodType("blood")
 Elder_Bonelord.setHealth(500)
