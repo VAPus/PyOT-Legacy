@@ -7,7 +7,7 @@ import struct
 from zlib import adler32
   
 class TibiaProtocol(Protocol):
-    __slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
+    #__slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
     def __init__(self):
         self.gotFirst = False
         self.xtea = None
@@ -123,7 +123,7 @@ class TibiaProtocol(Protocol):
         reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
 class TibiaFactory(Factory):
-    __slots__ = 'clientCount'
+    #__slots__ = 'clientCount'
     protocol = None # This HAVE to be overrided!
     def __init__(self):
         #self.clients = []

@@ -14,7 +14,7 @@ def connect(module = config.sqlModule):
     elif module == "oursql":
         try:
             import oursql
-        except:
+        except ImportError:
             print "Falling oursql back to MySQLdb"
             return connect("MySQLdb")
 
@@ -26,7 +26,7 @@ def connect(module = config.sqlModule):
     elif module == "pymysql": # This module is indentical, but uses a diffrent name
         try:
             import pymysql
-        except:
+        except ImportError:
             print "Falling pymysql back to MySQLdb"
             return connect("MySQLdb")          
 

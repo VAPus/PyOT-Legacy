@@ -7,7 +7,7 @@ N = int(config.RSAKeys["n"])
 def bytes( long_int ):
     bytes = []
     while long_int != 0:
-        b = long_int%256
+        b = long_int % 256
         bytes.insert( 0, chr(b) )
         long_int //= 256
     bytes.insert( 0, "\x00" )
@@ -20,10 +20,8 @@ def decryptXTEA(stream, k):
     buffer = ""
     pos = 0
     while pos < (len(stream)):
-        try:
-            v0,v1 = struct.unpack("<2L", stream[pos:pos+8])
-        except:
-            print "[DEBUG] XTEA got a too small packet", len(stream), pos
+        v0, v1 = struct.unpack("<2L", stream[pos:pos+8])
+        
         sum = (0x9E3779B9 * 32) & 0xffffffff
         for i in xrange(32):
             v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (sum + k[sum>>11 & 3]))) & 0xffffffff
