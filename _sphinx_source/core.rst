@@ -1,14 +1,6 @@
 core Package
 ============
 
-:mod:`bindconstant` Module
---------------------------
-
-.. automodule:: bindconstant
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`otjson` Module
 --------------------
 

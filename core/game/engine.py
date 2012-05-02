@@ -68,7 +68,7 @@ def loader(timer):
         else:
             sys.stdout.write("\x1b]2;PyOT r%s\x07" % revs[1])
 
-    except OSError:
+    except (OSError, CalledProcessError):
         # hg not in space.
         log.msg("Begin loading...")
         if platform.system() == "Windows":
