@@ -23,7 +23,9 @@ import game.protocol
 import game.chat
 import __builtin__
 import re
-
+import subprocess
+import platform
+import os
 try:
     import cPickle as pickle
 except:
@@ -37,6 +39,7 @@ except:
 # Some half important constants
 IS_ONLINE = False
 IS_RUNNING = True
+MERCURIAL_REV = 0
 
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -46,9 +49,34 @@ pickleFields = 'objectStorage',
 groups = {}
 globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "_txtColor"]
 
+def windowsLoading():
+    if config.consoleColumns:
+        os.system("mode con cols=%d" % config.consoleColumns)
+    if config.consoleColor:
+        os.system("color %s" % config.consoleColor)
+
 # The loader rutines, async loading :)
 def loader(timer):
-    log.msg("Begin loading...")
+    # Attempt to get the Merucurial rev
+    try:
+        revs = subprocess.check_output(["hg", "id", "-n", "-i"]).replace("\n", "").split(" ")
+        log.msg("Begin loading (PyOT rev %s, %s)" % (revs[1], revs[0]))
+        MERCURIAL_REV = revs[1]
+        if platform.system() == "Windows":
+            os.system("title PyOT r%s" % revs[1])
+            windowsLoading()
+        else:
+            sys.stdout.write("\x1b]2;PyOT r%s\x07" % revs[1])
+
+    except OSError:
+        # hg not in space.
+        log.msg("Begin loading...")
+        if platform.system() == "Windows":
+            os.system("title PyOT")
+            windowsLoading()
+        else:
+            sys.stdout.write("\x1b]2;PyOT\x07")
+
     import game.item
     import game.house, game.guild
     
