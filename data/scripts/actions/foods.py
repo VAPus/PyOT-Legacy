@@ -1,7 +1,3 @@
-# We meed this so we can skip ugly casting down below
-from __future__ import division # Python3 thingy
-
-global foods
 foods = {}
 foods[2328] = (84, "Gulp.")
 foods[2362] = (48, "Yum.")
