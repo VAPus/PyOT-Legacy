@@ -319,7 +319,7 @@ class Creature(object):
 
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, position=oldPosition)
+            game.scriptsystem.get('walkOff').runDeferNoReturn(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
@@ -493,7 +493,7 @@ class Creature(object):
 
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').runSync(item, self, None, position=position, fromPosition=oldPosition)
+            game.scriptsystem.get('walkOn').runDeferNoReturn(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2], self.position.instanceId))
@@ -505,12 +505,12 @@ class Creature(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').runSync(creature2, self)
-            game.scriptsystem.get('disappear').runSync(self, creature2)
+            game.scriptsystem.get('disappear').runDeferNoReturn(creature2, self)
+            game.scriptsystem.get('disappear').runDeferNoReturn(self, creature2)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runSync(creature2, self)
-            game.scriptsystem.get('appear').runSync(self, creature2)
+            game.scriptsystem.get('appear').runDeferNoReturn(creature2, self)
+            game.scriptsystem.get('appear').runDeferNoReturn(self, creature2)
         if not self.isPlayer():
             self.position = position
             self.direction = direction % 4
