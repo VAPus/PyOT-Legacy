@@ -12,7 +12,7 @@ class TibiaProtocol(Protocol):
         self.gotFirst = False
         self.xtea = None
         self.onInit()
-        self.buffer = ""
+        self.buffer = []
         self.nextPacketLength = 0
         self.bufferLength = 0
         
@@ -44,7 +44,7 @@ class TibiaProtocol(Protocol):
             if gotLength == rest:
                 self.nextPacketLength = 0
                 self.bufferLength = 0
-                self.handlePacketFrame(self.buffer + data)
+                self.handlePacketFrame(''.join(self.buffer) + data)
                 
             elif gotLength > rest:
                 nextPacketLength = struct.unpack("<H", data[:2])[0]
@@ -53,18 +53,18 @@ class TibiaProtocol(Protocol):
                     self.transport.loseConnection()
                     return
                 bufferLength = len(data)-2
-                self.handlePacketFrame(self.buffer + data[:rest])
+                strBuffer = ''.join(self.buffer)
+                self.handlePacketFrame(strBuffer + data[:rest])
                 
                 if nextPacketLength == bufferLength:
-                    self.handlePacketFrame(self.buffer + data[rest:])
+                    self.handlePacketFrame(strBuffer + data[rest:])
                 else:
                     self.bufferLength = bufferLength
                     self.nextPacketLength = nextPacketLength
             elif gotLength < rest:
-                self.buffer += data
+                self.buffer.append(data)
                 self.bufferLength += len(data)
         else:
-                
             gotLength = struct.unpack("<H", data[:2])[0]
             if gotLength > 20000:
                 log.msg("Packet length is bigger then 20k, dropping")
@@ -75,7 +75,7 @@ class TibiaProtocol(Protocol):
             elif len(data)-2 != gotLength:
                 self.nextPacketLength = gotLength
                 self.bufferLength = len(data)-2
-                self.buffer = data[2:]
+                self.buffer = [data[2:]]
                 return
                 
             else:
