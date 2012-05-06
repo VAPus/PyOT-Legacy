@@ -111,6 +111,7 @@ def merger(old, new):
     for i in new:
         old.append(i)
     return old
+    
 # I replace ground, and put old stuff onto new ground
 def iReplacer(old, new):
     old[0] = new[0]
@@ -118,13 +119,6 @@ def iReplacer(old, new):
         for i in new[1:]:
             old.append(i)
     return old
-
-### Mainmap
-USE_NUMPY = True
-try:
-    import numpy as N
-except:
-    USE_NUMPY = False
 
 # Python 3
 try:
@@ -135,7 +129,7 @@ except:
 class Map(object):
     def __init__(self, xA, yA, ground=100, zs=16):
         self.levels = zs
-        self.size = (xA, yA)
+        self.size = [xA, yA]
         self._author = ""
         self._description = ""
         self.towns = {}
@@ -143,21 +137,18 @@ class Map(object):
         self.houses = {}
         self.flags = {}
         
-        if USE_NUMPY:
-            self.area = N.empty((zs, xA, yA), dtype=list)
-            
-        else:    
-            self.area = {7:[]}
-            for x in xrange(0, xA+1):
-                self.area[7].append([])
-                for y in xrange(0, yA+1):
-                    self.area[7][x].append([])
-                    if ground == None:
-                        self.area[7][x][y] = None
-                    elif isinstance(ground, int):
-                        self.area[7][x][y] = [Item(ground)]
-                    else:
-                        self.area[7][x][y] = [ground]
+        # Level 7 always got to be filled up.
+        self.area = {7:[]}
+        for x in xrange(0, xA+1):
+            self.area[7].append([])
+            for y in xrange(0, yA+1):
+                self.area[7][x].append([])
+                if ground == None:
+                    self.area[7][x][y] = None
+                elif isinstance(ground, int):
+                    self.area[7][x][y] = [Item(ground)]
+                else:
+                    self.area[7][x][y] = [ground]
 
 
     def author(self, name):
@@ -190,11 +181,8 @@ class Map(object):
         try:
             self.area[level]
         except:
-            if USE_NUMPY:
-                raise Exception("Out of map!")
-            
             self.area[level] = []
-            for x in xrange(0, self.size[0]+1):
+            """for x in xrange(0, self.size[0]+1):
                 self.area[level].append([])
                 for y in xrange(0, self.size[1]+1):
                     self.area[level][x].append([])
@@ -204,9 +192,43 @@ class Map(object):
                         self.area[level][x][y] = [Item(ground)]
                     else:
                         self.area[level][x][y] = [ground]
-                        
+            """
+    def _ensureRange(self, x,y,z):
+        try:
+            self.area[z][x][y]
+            return
+        except:
+            self._level(z)
+            
+            lX = len(self.area[z]) - 1
+            diffX = x - lX
+            if diffX > 0:
+                for n in xrange(diffX):
+                    self.area[z].append(None)
+            
+            try:
+                lY = len(self.area[z][x]) -1
+            except:
+                self.area[z][x] = []
+                lY = -1
+                
+            diffY = y - lY
+
+            if diffY > 0:
+                for n in xrange(diffY):
+                    if not isinstance(self.area[z][x], list):
+                        self.area[z][x] = []
+                    self.area[z][x].append(None) # Dealth with in addTo
+                
+            if self.size[0] < x:
+                self.size[0] = x
+                
+            if self.size[1] < y:
+                self.size[1] = y
+            
     def addTo(self,x,y,thing,level=7):
-        self._level(level)
+        self._ensureRange(x,y,level)
+        
         if type(thing) != list:
             try:
                 self.area[level][x][y].append(thing)
@@ -218,18 +240,13 @@ class Map(object):
     def add(self, thing):
         # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
         try:
-            self._level(thing.level)
-        except:
-            pass
-        
-        try:
             if isinstance(thing, Tile):
+                self._ensureRange(thing.pos[0], thing.pos[1], thing.pos[2])
                 self.area[thing.pos[2]][thing.pos[0]][thing.pos[1]] = thing.area
             else:
+                self._ensureRange(thing.x, thing.y, thing.level)
                 self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
         except:
-            if USE_NUMPY:
-                raise Exception("Out of map!")
             
             self.size = (thing.x if thing.x > self.size[0] else self.size[0], thing.y if thing.y > self.size[1] else self.size[1])
             while True:
@@ -247,21 +264,13 @@ class Map(object):
             self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
     def _levelsTo(self, x, y): # Rather heavy!
         levels = []
-        if not USE_NUMPY:
-            for level in list(self.area.keys()):
-                try:
-                    if self.area[level][x][y]: # Raise a error, then it's skipped
-                        levels.append(level)
-                except:
-                    pass
-        else:
-            """for level in xrange(16):
-                try:
-                    if self.area[level][x][y]: # Raise a error, then it's skipped
-                        levels.append(level)
-                except:
-                    pass  """
-            return range(self.levels)
+        for level in list(self.area.keys()):
+            try:
+                if self.area[level][x][y]: # Raise a error, then it's skipped
+                    levels.append(level)
+            except:
+                pass
+
         return levels
     def compile(self, areas=(32,32)):
         print("--Begin compilation")
@@ -270,6 +279,10 @@ class Map(object):
         toX = int(self.size[0] / areas[0])
         toY = int(self.size[1] / areas[1])
         nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+        doubleNull = chr(0) + chr(0)
+        trippelNull = chr(0) * 3
+        HiFormat = struct.Struct("<Hi")
+        
         for xA in xrange(areaX, toX):
             for yA in xrange(areaY, toY):
                 
@@ -318,18 +331,18 @@ class Map(object):
 
                         if y:
                             if nullRows:
-                                output.append(chr(0) + chr(0) + chr(nullRows))
+                                output.append(doubleNull + chr(nullRows))
                                 nullRows = 0
                                 
                             if pos in self.houses:
-                                y.append(struct.pack("<Hi", 50, self.houses[pos]))
+                                y.append(HiFormat.pack(50, self.houses[pos]))
                                 if not pos in self.flags:
                                     self.flags[pos] = 1
                                 elif not self.flags[pos] & 1:
                                     self.flags[pos] += 1
                                     
                             if pos in self.flags:
-                                y.append(struct.pack("<Hi", 51, self.flags[pos]))
+                                y.append(HiFormat.pack(51, self.flags[pos]))
 
                             output.append(','.join(y))
                         else:
@@ -338,7 +351,7 @@ class Map(object):
 
                         row += 1
                     if nullRows:
-                        output.append(chr(0) + chr(0) + chr(nullRows))
+                        output.append(doubleNull + chr(nullRows))
    
                     if output:
                         # Apply skipping if necessary
@@ -346,9 +359,8 @@ class Map(object):
                         
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
-                        remove = chr(0) * 3
                         for code in output[::-1]:
-                            if code == remove: count += 1
+                            if code == trippelNull: count += 1
                             else: break
       
                         if count:
@@ -380,7 +392,7 @@ class Map(object):
                     else:
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
-                        remove = chr(0) * 3 + '|'
+                        remove = trippelNull + '|'
                         for code in output[::-1]:
                             if code == remove: count += 1
                             else: break
@@ -431,20 +443,12 @@ class Map(object):
         output += "waypoints = %s\n" % str(self.waypoints)
         low = 15
         num = 0
-        if USE_NUMPY:
-            for level,__junk in enumerate(self.area):
-                    if level in nothingness:
-                            continue
-                    if level < low:
-                            low = level
-                    num += 1
-        else:
-            for level in self.area:
-                    if level in nothingness:
-                            continue
-                    if level < low:
-                            low = level
-                    num += 1
+        for level in self.area:
+            if level in nothingness:
+                continue
+            if level < low:
+                low = level
+        num += 1
         print("Northingness on: %s" % (nothingness))
         output += "levels = (%d, %d)" % (num, low)
         with open('info.py', "w") as f:
@@ -565,11 +569,11 @@ class Item(object):
             
         # A bool?
         elif isinstance(value, bool):
-            string += "b" + struct.pack("<B", value)
+            string += "b" + chr(value)
             
         # Or a list (actions etc)
         elif isinstance(value, list) or isinstance(value, tuple):
-            string += "l" + struct.pack("<B", len(value))
+            string += "l" + chr(len(value))
             for attr in value:
                 string += self.writeAttribute(None, attr)
                 

@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys
+from struct import unpack, unpack_from, Struct
+import sys
+import gc
 
 # Python 3
 try:
@@ -23,61 +25,59 @@ class Reader(object):
         
     def peekUint8(self):
         try:
-            a = self.uint8()
-            self.pos -= 1
-            return a
+            return ord(self.data[self.pos])
         except:
             return None
-    def int8(self):
+    def int8(self, format=Struct("<b")):
         self.pos += 1
-        return struct.unpack("<b", self.data[self.pos-1:self.pos])[0]
+        return format.unpack(self.data[self.pos-1:self.pos])[0]
 
     # 16bit - 2bytes, C type: short
-    def uint16(self):
+    def uint16(self, format=Struct("<H")):
         self.pos += 2
-        return struct.unpack("<H", self.data[self.pos-2:self.pos])[0]
-    def int16(self):
+        return format.unpack(self.data[self.pos-2:self.pos])[0]
+    def int16(self, format=Struct("<h")):
         self.pos += 2
-        return struct.unpack("<h", self.data[self.pos-2:self.pos])[0]
+        return format.unpack(self.data[self.pos-2:self.pos])[0]
 
     # 32bit - 4bytes, C type: int
-    def uint32(self):
+    def uint32(self, format=Struct("<I")):
         self.pos += 4
-        return struct.unpack("<I", self.data[self.pos-4:self.pos])[0]
-    def int32(self):
+        return format.unpack(self.data[self.pos-4:self.pos])[0]
+    def int32(self, format=Struct("<i")):
         self.pos += 4
-        return struct.unpack("<i", self.data[self.pos-4:self.pos])[0]
+        return format.unpack(self.data[self.pos-4:self.pos])[0]
 
     # 64bit - 8bytes, C type: long long
     def uint64(self):
         self.pos += 8
-        return struct.unpack("<Q", self.data[self.pos-8:self.pos])[0]
+        return unpack("<Q", self.data[self.pos-8:self.pos])[0]
     def int64(self):
         self.pos += 8
-        return struct.unpack("<q", self.data[self.pos-8:self.pos])[0]
+        return unpack("<q", self.data[self.pos-8:self.pos])[0]
 
     # 32bit - 4bytes, C type: float
     def float(self):
         self.pos += 4
-        return struct.unpack("<f", self.data[self.pos-4:self.pos])[0]
+        return unpack("<f", self.data[self.pos-4:self.pos])[0]
 
     # 64bit - 8bytes, C type: double
     def double(self):
         self.pos += 8
-        return struct.unpack("<d", self.data[self.pos-8:self.pos])[0]
+        return unpack("<d", self.data[self.pos-8:self.pos])[0]
 
     def string(self):
         length = self.uint16()
         self.pos += length
-        return ''.join(map(str, struct.unpack("%ds" % length, self.data[self.pos-length:self.pos])))
+        return ''.join(map(str, unpack("%ds" % length, self.data[self.pos-length:self.pos])))
 
     def getX(self, size):
         self.pos += size
-        return ''.join(map(str, struct.unpack_from("B"*size, self.data, self.pos - size)))
+        return ''.join(map(str, unpack_from("B"*size, self.data, self.pos - size)))
 
     def getXString(self, size):
         self.pos += size
-        return ''.join(map(str, struct.unpack("%ds" % size, self.data[self.pos-size:self.pos])))
+        return ''.join(map(str, unpack("%ds" % size, self.data[self.pos-size:self.pos])))
         
     def getData(self):
         return self.data[self.pos:]
@@ -117,7 +117,7 @@ class Node(object):
                 
             else:
                 nextIsEscaped = False 
-                self.data += struct.pack("<B", byte)
+                self.data += chr(byte)
                 
             byte = otbm.uint8()
         self.data = Reader(self.data)
@@ -174,9 +174,9 @@ class Node(object):
 
 
 dummyItems = {}
-def genItem(itemid, *argc, **kwargs):
+def genItem(itemid, fallback):
     if not itemid in dummyItems:
-        dummyItems[itemid] = Item(itemid, *argc, **kwargs)
+        dummyItems[itemid] = fallback
     return dummyItems[itemid]
 
 otbmFile = open("map.otbm", 'rb')
@@ -197,17 +197,15 @@ minorVersionItems = root.data.uint32()
 tiles = (width * height) / 4 # This also count null tiles which we doesn't pass, bad
 
 print("OTBM v%d, %dx%d" % (version, width, height)) 
-_output_ = []
-_output_.append("""
+
 from generator import Map, Item, Tile, Spawn
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
-m = Map($$$MAX_X$$$,$$$MAX_Y$$$,None,$$$MAX_Z$$$)
+m = Map(width,height,None,15)
 at = m.addTo
 a = m.add
-I = Item
-T = Tile
+
 print ("--Done generating the map layout")
-""")
+
 # Prepopulate map with a ground level of voids
 
 nodes = root.next()
@@ -216,9 +214,9 @@ description = ""
 spawns = ""
 houses = ""
 
-_output_.append("""m.author("OTBMXML2sec generator")
+m.author("OTBMXML2sec generator")
 print ("--Beging parsing description, spawns, and houses")
-""")
+
 while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
@@ -233,7 +231,7 @@ while nodes.data.peekUint8():
     else:
         print("Unknown nodes data")
         
-_output_.append('m.description("""%s""")' % (description))
+m.description(description)
 print (description)
 node = nodes.next()
 onTile = 0
@@ -255,13 +253,6 @@ while node:
             if tileType == 5 or tileType == 14: # Tile
                 tileX = tile.data.uint8() + baseX
                 tileY = tile.data.uint8() + baseY
-                
-                if tileX > MAX_X:
-                    MAX_X = tileX
-                if tileY > MAX_Y:
-                    MAX_Y = tileY
-                if baseZ > MAX_Z:
-                    MAX_Z = baseZ
                     
                 houseId = 0
                 if tileType == 14:
@@ -277,68 +268,67 @@ while node:
                         flags = tile.data.uint32()
                         
                     elif attr == 9: # ITEM, ground item
-                        _itemG_ = "I(%d)" % (tile.data.uint16())
+                        _itemG_ = Item(tile.data.uint16())
                         _render_ = True
                         
                     else:
                         print("Unknown tile attrubute")
-                
+                        
+                _tile_ = []
                 if _itemG_:
-                    _tile_ = ["ti=[%s]" % _itemG_]
-                else:
-                    _tile_ = ["ti=[]"]
+                    _tile_.append(_itemG_)
+
                 
                 item = tile.next()
-                itemNum = 0
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        _tile_.append("i%d=I(%d)" % (itemNum, itemId))
+                        currItem=Item(itemId)
                         
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
                             if attr == 10: # depotId
-                                _tile_.append("i%d.attribute(\"depotId\",%d)" % (itemNum, item.data.uint16()))
+                                currItem.attribute("depotId",item.data.uint16())
                                 safe = False
                             elif attr == 14: # houseDoorId
                                 safe = False
-                                _tile_.append("i%d.attribute(\"doorId\",%d)" % (itemNum, item.data.uint8()))
+                                currItem.attribute("doorId",item.data.uint8())
                                 
-                                _tile_.append("i%d.action('houseDoor')" % itemNum)
+                                currItem.action('houseDoor')
                             elif attr == 20: # Sleeperguid
                                 item.data.uint32() # TODO: care?
                             elif attr == 21: # sleepstart
                                 item.data.uint32()
                             elif attr == 8: # Teleport destination
                                 safe = False
-                                _tile_.append("i%d.attribute(\"teledest\",[%d,%d,%d])" % (itemNum,item.data.uint16(),item.data.uint16(),item.data.uint8()))
+                                currItem.attribute("teledest",[item.data.uint16(),item.data.uint16(),item.data.uint8()])
                             elif attr == 15: # Item count
                                 safe = False
-                                _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
+                                currItem.attribute("count",item.data.uint8())
                             elif attr == 4: # action id
                                 safe = False
-                                _tile_.append("i%d.action('%d')" % (itemNum, item.data.uint16()))
+                                currItem.action(str(item.data.uint16()))
                             elif attr == 5:
                                 safe = False
-                                _tile_.append("i%d.action('%d')" % (itemNum, item.data.uint16() + 0xFFFF))
+                                currItem.action(str(item.data.uint16() + 0xFFFF))
                             elif attr == 6:
                                 safe = False
-                                _tile_.append('i%d.attribute("text","""%s""")' % (itemNum, item.data.string()))
+                                currItem.attribute("text",item.data.string())
                             elif attr == 18:
                                 safe = False
-                                _tile_.append("i%d.attribute(\"written\",%d)" % (itemNum, item.data.uint32()))
+                                currItem.attribute("written",item.data.uint32())
                             elif attr == 19:
                                 safe = False
-                                _tile_.append("i%d.attribute(\"writtenBy\",\"%s\")" % (itemNum, item.data.string()))
+                                currItem.attribute("writtenBy",item.data.string())
                             elif attr == 7:
                                 safe = False
-                                _tile_.append("i%d.attribute(\"description\",\"%s\")" % (itemNum, item.data.string()))
+                                currItem.attribute("description",item.data.string())
                             elif attr == 12:
-                                runeCharges = item.data.uint8()
+                                item.data.uint8()
                             elif attr == 22:
                                 safe = False
-                                _tile_.append("i%d.attribute(\"count\",%d)" % (itemNum, item.data.uint8()))
+                                currItem.attribute("count",item.data.uint8())
                             elif attr == 16:
                                 duration = item.data.uint32()
                                 print("duration = %d" % duration)
@@ -346,29 +336,28 @@ while node:
                                 decayState = item.data.uint8()
                                 print("TODO: decaystate = %d on %d" % (decayState, itemId))
                             elif attr == 23:
-                                count = item.data.uint32()
+                                item.data.uint32()
                                 break # All after this is container items
                             else:
                                 print("Unknown item attribute %d" % attr)
                         _render_ = True
                         
-                        _tile_.append("ti.append(i%d)" % itemNum)
-                        itemNum += 1
+                        if not currItem.attributes and not currItem.actions:
+                            _tile_.append(genItem(itemId, currItem))
+                        else:
+                            _tile_.append(currItem)
                     else:
                         print("Unknown item header")
                     item = tile.next()
             else:
                 print("Unknown tile node")
             if _render_:
-                if len(_tile_) == 1:
-                    _output_.append("at(%d,%d,%s%s)" % (tileX, tileY, _tile_[0].replace("ti=",""), ',%d'%baseZ if baseZ != 7 else ''))
-                else:
-                    _tile_.append("at(%d,%d,ti%s)" % (tileX, tileY, ',%d'%baseZ if baseZ != 7 else ''))
-                    _output_.append("\n".join(_tile_))
+                at(tileX,tileY,_tile_, baseZ)
+                
                 if houseId:
-                    _output_.append("m.houses[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, houseId))
+                    m.houses[(tileX, tileY, baseZ)]=houseId
                 if flags:
-                    _output_.append("m.flags[(%d,%d,%d)]=%d" % (tileX, tileY, baseZ, flags))
+                    m.flags[(tileX, tileY, baseZ)]=flags
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000
@@ -384,7 +373,7 @@ while node:
                 townId = town.data.uint32()
                 townName = town.data.string()
                 temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
-                _output_.append("m.town(%d, \"%s\", %s)" % (townId, townName, temple))
+                m.town(townId, townName, temple)
             else:
                 print("Unknown town node")
                 
@@ -399,7 +388,7 @@ while node:
             if waypointType == 16:
                 name = waypoint.data.string()
                 cords = [waypoint.data.uint16(),waypoint.data.uint16(),waypoint.data.uint8()]
-                _output.append("m.waypoint(\"%d\", %s)" % (name, cords))
+                m.waypoint(name, cords)
             else:
                 print("Unknown waypoint type")
             waypoint = node.next()
@@ -462,16 +451,10 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     for entry in spawnSectors:
         x = (entry[0]*32)+16
         y = (entry[1]*32)+16
-        _output_.append("# Spawns for sector %s" % str(entry))
-        _output_.append(spawn)
-        _output_.append('\n'.join(spawnData[entry]))
-        _output_.append("at(%d, %d, s, %d)\n" % (x, y, baseZ))
-        if x > MAX_X:
-            MAX_X = x
-        if y > MAX_Y:
-            MAX_Y = y
-        if baseZ > MAX_Z:
-            MAX_Z = baseZ
+        # Too lazy to refactor this, probably adds a second to the convertion time, but should otherwise have no ill effects.
+        exec("""%s
+%s
+at(%d, %d, s, %d)""" % (spawn,'\n'.join(spawnData[entry]),x,y,baseZ))
         
 print("---Done with spawns")
 
@@ -487,8 +470,9 @@ if houses:
 
     print("---Done houses")
 
-_output_.append("m.compile()")
-_output_[0] = _output_[0].replace("$$$MAX_X$$$", str(MAX_X+1)).replace("$$$MAX_Y$$$", str(MAX_Y+1)).replace("$$$MAX_Z$$$", str(MAX_Z+1))
+gc.collect()
+m.compile()
+"""
 lef = len(_output_)
 le = lef / 100
 co = 1
@@ -499,5 +483,5 @@ for i in xrange(le, lef, le):
 print("-- Writing genmap.py")
 with open("genmap.py", "wb") as f:
     f.write("\n".join(_output_))
-
-print("-- Done! (map truncated to %dx%dx%d)" % (MAX_X, MAX_Y, MAX_Z))
+"""
+print("-- Done!")
