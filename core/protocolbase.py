@@ -21,7 +21,7 @@ class TibiaProtocol(Protocol):
         log.msg("Connection made from {0}:{1}".format(peer.host, peer.port))
         
         # Enable TCP_NO_DELAY
-        self.transport.setTcpNoDelay(True)
+        # self.transport.setTcpNoDelay(True)
 
         # Add self to a queue
         self.factory.addClient(self)
