@@ -1,4 +1,5 @@
-import struct
+from struct import unpack, pack
+
 import sys
 if sys.subversion[0] != 'PyPy':
     try:
@@ -7,13 +8,16 @@ if sys.subversion[0] != 'PyPy':
         import otcrypto_python as otcrypto
 else:
     import otcrypto_python as otcrypto
-from twisted.internet import reactor
+
 from zlib import adler32
 
+"""
+from twisted.internet import reactor
 def inThread(f):
     def func(*argc, **argw):
         reactor.callInThread(f, *argc, **argw)
     return func
+"""
 
 class TibiaPacketReader(object):
     __slots__ = ('pos', 'data')
@@ -27,65 +31,65 @@ class TibiaPacketReader(object):
         return ord(self.data[self.pos-1:self.pos])
     def int8(self):
         self.pos += 1
-        return struct.unpack("<b", self.data[self.pos-1:self.pos])[0]
+        return unpack("<b", self.data[self.pos-1:self.pos])[0]
 
     # 16bit - 2bytes, C type: short
     def uint16(self):
         self.pos += 2
-        return struct.unpack("<H", self.data[self.pos-2:self.pos])[0]
+        return unpack("<H", self.data[self.pos-2:self.pos])[0]
     def int16(self):
         self.pos += 2
-        return struct.unpack("<h", self.data[self.pos-2:self.pos])[0]
+        return unpack("<h", self.data[self.pos-2:self.pos])[0]
 
     # 32bit - 4bytes, C type: int
     def uint32(self):
         self.pos += 4
-        return struct.unpack("<I", self.data[self.pos-4:self.pos])[0]
+        return unpack("<I", self.data[self.pos-4:self.pos])[0]
     def int32(self):
         self.pos += 4
-        return struct.unpack("<i", self.data[self.pos-4:self.pos])[0]
+        return unpack("<i", self.data[self.pos-4:self.pos])[0]
 
     # 64bit - 8bytes, C type: long long
     def uint64(self):
         self.pos += 8
-        return struct.unpack("<Q", self.data[self.pos-8:self.pos])[0]
+        return unpack("<Q", self.data[self.pos-8:self.pos])[0]
     def int64(self):
         self.pos += 8
-        return struct.unpack("<q", self.data[self.pos-8:self.pos])[0]
+        return unpack("<q", self.data[self.pos-8:self.pos])[0]
 
     # 32bit - 4bytes, C type: float
     def float(self):
         self.pos += 4
-        return struct.unpack("<f", self.data[self.pos-4:self.pos])[0]
+        return unpack("<f", self.data[self.pos-4:self.pos])[0]
 
     # 64bit - 8bytes, C type: double
     def double(self):
         self.pos += 8
-        return struct.unpack("<d", self.data[self.pos-8:self.pos])[0]
-        
-    # Positions
-    # Returns list(x,y,z)
-    #def position(self):
-    #    position = components.position.Position(self.uint16(),self.uint16(),self.uint8())
-    #    return position
+        return unpack("<d", self.data[self.pos-8:self.pos])[0]
 
     def string(self):
         length = self.uint16()
         self.pos += length
-        return ''.join(map(str, struct.unpack("%ds" % length, self.data[self.pos-length:self.pos])))
+        #return ''.join(map(str, unpack("%ds" % length, self.data[self.pos-length:self.pos])))
+        return self.data[self.pos-length:self.pos]
 
     def getX(self, size):
         self.pos += size
-        return ''.join(map(str, struct.unpack_from("B"*size, self.data, self.pos - size)))
+        #return ''.join(map(str, struct.unpack_from("B"*size, self.data, self.pos - size)))
+        return self.data[self.pos-size:self.pos]
 
     def getData(self):
         return self.data[self.pos:]
 
     def position(self, instance=None):
-        return game.map.Position(self.uint16(), self.uint16(), self.uint8(), instance)
+        self.pos += 5
+        x,y,z = unpack("<HHB", self.data[self.pos - 5:self.pos]) 
+        return game.map.Position(x, y, z, instance)
         
     def stackPosition(self, instance=None):
-        return game.map.StackPosition(self.uint16(), self.uint16(), self.uint8(), self.uint8(), instance)
+        self.pos += 6
+        x,y,z, stackPos = unpack("<HHBB", self.data[self.pos - 6:self.pos]) 
+        return game.map.StackPosition(x, y, z, stackPos, instance)
         
 class TibiaPacket(object):
     __slots__ = ('data')
@@ -101,33 +105,33 @@ class TibiaPacket(object):
     def uint8(self, data):
         self.data += chr(data)
     def int8(self, data):
-        self.data += struct.pack("<b", data)
+        self.data += pack("<b", data)
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
-        self.data += struct.pack("<H", data)
+        self.data += pack("<H", data)
     def int16(self, data):
-        self.data += struct.pack("<h", data)
+        self.data += pack("<h", data)
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data):
-        self.data += struct.pack("<I", data)
+        self.data += pack("<I", data)
     def int32(self, data):
-        self.data += struct.pack("<i", data)
+        self.data += pack("<i", data)
 
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        self.data += struct.pack("<Q", data)
+        self.data += pack("<Q", data)
     def int64(self, data):
-        self.data += struct.pack("<q", data)
+        self.data += pack("<q", data)
 
     # 32bit - 4bytes, C type: float
     def float(self, data):
-        self.data += struct.pack("<f", data)
+        self.data += pack("<f", data)
 
     # 64bit - 8bytes, C type: double
     def double(self, data):
-        self.data += struct.pack("<d", data)
+        self.data += pack("<d", data)
 
         
     def string(self, string):
@@ -138,7 +142,7 @@ class TibiaPacket(object):
             pass # From client or translated source
             
         length = len(string)
-        self.data += struct.pack("<H", length) + string
+        self.data += pack("<H", length) + string
 
     def put(self, string):
         self.data += str(string)
@@ -151,19 +155,19 @@ class TibiaPacket(object):
         if not stream or not self.data:
             return
 
-        data = struct.pack("<H", len(self.data))+self.data
+        data = pack("<H", len(self.data))+self.data
 
         if stream.xtea:
             data = otcrypto.encryptXTEA(data, stream.xtea)
 
-        stream.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
+        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
             
     #@inThread
     def sendto(self, list):
         if not list or not self.data:
             return # Noone to send to
         
-        data = struct.pack("<H", len(self.data))+self.data
+        data = pack("<H", len(self.data))+self.data
         for client in list:
             if not client:
                 continue
@@ -171,4 +175,4 @@ class TibiaPacket(object):
             if client.xtea:
                 data = otcrypto.encryptXTEA(data, client.xtea)
 
-            client.transport.write(struct.pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
+            client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    

@@ -214,9 +214,9 @@ def field(fieldId):
         game.engine.placeItem(item, position)
             
         if item.damage:
-            game.scriptsystem.register('walkOn', item, callback)
+            game.scriptsystem.get('walkOn').register(item, callback)
             if item.duration:
-                item.decay(position, callback=lambda i: game.scriptsystem.register('walkOn', i, callback))
+                item.decay(position, callback=lambda i: game.scriptsystem.get('walkOn').register(i, callback))
                 
     return makeFieldCallback
     
@@ -272,7 +272,7 @@ class Spell(object):
         reactor.callLater(0.1, l)
         spells[name] = (self.func,)
         if words:
-            game.scriptsystem.register("talkaction", words, self.func)
+            game.scriptsystem.get("talkaction").register(words, self.func)
             
     def effects(self, caster=None, shoot=None, target=None, area=None):
         self.castEffect = caster
