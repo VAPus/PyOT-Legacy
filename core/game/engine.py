@@ -256,10 +256,10 @@ def loader(timer):
         
     # Do we save on shutdowns?
     if config.saveOnShutdown:
-        game.scriptsystem.register("shutdown", lambda **k: saveAll(True), False)
+        game.scriptsystem.get("shutdown").register(lambda **k: saveAll(True), False)
         
     # Reset online status on shutdown
-    game.scriptsystem.register("shutdown", lambda **k: sql.conn.runQuery("UPDATE players SET online = 0"), False)
+    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runQuery("UPDATE players SET online = 0"), False)
     # Light stuff
     print "> > Turn world time and light on...",
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)

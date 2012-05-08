@@ -13,6 +13,7 @@ import inspect
 import game.errors
 import math
 import collections
+import data.map.info
 
 # Unique ids, thread safe too
 def __uid():
@@ -249,11 +250,7 @@ class Creature(object):
 
         if not self.data["health"] or not self.canMove:
             return False
-
-
-        import data.map.info
-
-
+            
         oldPosition = self.position.copy()
 
         # Recalculate position
@@ -288,7 +285,7 @@ class Creature(object):
 
         # New Tile
         newTile = getTile(position)
-        oldTile = getTile(oldPosition)
+        
 
         if not newTile:
 
@@ -296,7 +293,9 @@ class Creature(object):
             self.walkPattern = [] # If we got a queue of moves, we need to end it!
             if failback: reactor.callLater(0, failback)
             return False
-
+        
+        # oldTile
+        oldTile = getTile(oldPosition)
         if not oldTile:
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
@@ -421,7 +420,7 @@ class Creature(object):
         newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
 
-        for spectator in (spectators):
+        for spectator in spectators:
             # Make packet
             if not spectator.client:
                 continue
@@ -433,46 +432,13 @@ class Creature(object):
 
             if not canSeeOld and canSeeNew:
                 stream.addTileCreature(position, newStackPos, self, spectator)
-                # Too high stack?
-                """ Cheat!!! """
-                """if isKnown:
-                    for pos in position.roundPoint(1):
-                        stream.uint8(0x69)
-                        stream.position(pos)
-                        stream.tileDescription(pos.getTile(), spectator)
-                        stream.uint8(0x00)
-                        stream.uint8(0xFF)"""
-                """ / Cheat """
 
             elif canSeeOld and not canSeeNew:
                 if isKnown:
                     stream.removeTileItem(oldPosition, oldStackpos)
-                """ Cheat!!! """
-                """if isKnown:
-                    #oldTile.placeCreature(self)
-                    for pos in oldPosition.roundPoint(1):
-                        stream.uint8(0x69)
-                        stream.position(pos)
-                        stream.tileDescription(pos.getTile(), spectator)
-                        stream.uint8(0x00)
-                        stream.uint8(0xFF)"""
-                    #oldTile.removeCreature(self)
-
-                """ / Cheat """
 
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
-                    """ Cheat!!! """
-                    """if not isKnown:
-                        oldTile.placeCreature(self)
-                        for pos in oldPosition.roundPoint(1):
-                            stream.uint8(0x69)
-                            stream.position(pos)
-                            stream.tileDescription(pos.getTile(), spectator)
-                            stream.uint8(0x00)
-                            stream.uint8(0xFF)
-                        oldTile.removeCreature(self)"""
-                    """ / Cheat """
 
                     stream.uint8(0x6D)
                     stream.position(oldPosition)

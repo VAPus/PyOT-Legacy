@@ -104,32 +104,34 @@ class Container(object):
 ### Item ###
 class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
-    
+
     def __init__(self, itemId, count=1, actions=None, **kwargs):
-        if not count or count < 0:
-            count = 1
+        
         try:
-            if not items[itemId]:
-                raise
+            self._attributes = items[itemId]["a"]
+            self._itemBase = items[itemId]
         except (KeyError, IndexError):
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
+            self._attributes = items[itemId]["a"]
+            self._itemBase = items[itemId]
             
         self.itemId = itemId
         self.actions = actions or []
         self.actions.append('item')
-
         
         if kwargs:
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if items[itemId]["a"] & 64:
+        if self._attributes & 64:
+            if not count or count < 0:
+                count = 1
             self.count = count
             
         # Extend items such as containers
         try:
-            self.container = Container(items[itemId]["containerSize"])
+            self.container = Container(self._itemBase["containerSize"])
         except KeyError:
             pass
 
@@ -150,10 +152,10 @@ class Item(object):
         return self.itemId # Used for scripts
 
     def register(self, event, func, **kwargs):
-        game.scriptsystem.register(event, self, func, **kwargs)
+        game.scriptsystem.get(event).register(self, func, **kwargs)
         
     def registerAll(self, event, func, **kwargs):
-        game.scriptsystem.register(event, self.itemId, func, **kwargs)
+        game.scriptsystem.get(event).register(self.itemId, func, **kwargs)
         
     def getsub(self):
         try:
@@ -209,17 +211,66 @@ class Item(object):
         
     def actionIds(self):
         return self.actions
+    
+    @property
+    def solid(self):
+        return self._attributes & 1
+        
+    @property
+    def blockprojectile(self):
+        return self._attributes & 2
+        
+    @property
+    def blockpath(self):
+        return self._attributes & 4
+        
+    """
+    # Changeable attributes. Ignore.
+    @property
+    def usable(self):
+        return items[self.itemId]["a"] & 8
+        
+    @property
+    def pickable(self):
+        return items[self.itemId]["a"] & 16
+        
+    @property
+    def movable(self):
+        return items[self.itemId]["a"] & 32
+    """    
+    @property
+    def stackable(self):
+        return self._attributes & 64
+        
+    @property
+    def ontop(self):
+        return self._attributes & 128
+        
+    @property
+    def hangable(self):
+        return self._attributes & 256
+        
+    @property
+    def rotatable(self):
+        return self._attributes & 512
+        
+    @property
+    def animation(self):
+        return self._attributes & 1024
+        
+    @property
+    def type(self):
+        try:
+            return self._itemBase["type"]
+        except KeyError:
+            return False
             
     def __getattr__(self, name):
-        #try:
-        #    return object.__getattr__(self, name)
-        #except:
-        _loadItem = items[self.itemId]
         try:
-            return _loadItem["a"] & (1 << self.attributes.index(name))
+            return self._attributes & (1 << self.attributes.index(name))
         except:
             try:
-                return _loadItem[name]
+                return self._itemBase[name]
             except:
                 if not "__" in name:
                     return None
@@ -423,6 +474,8 @@ class Item(object):
             
     def __getstate__(self):
         params = self.__dict__.copy()
+        del params["_attributes"]
+        del params["_itemBase"]
         try:
             del params["decayCreature"]
             del params["inContainer"] # This only exists if inPlayer exists.
@@ -462,6 +515,9 @@ class Item(object):
             self.decay(self.decayPosition, duration=state[1])
         else:
             self.__dict__ = state
+            
+        self._attributes = items[self.itemId]["a"]
+        self._itemBase = items[self.itemId]
 
     def copy(self):
         newItem = copy.deepcopy(self)

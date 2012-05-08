@@ -142,7 +142,7 @@ class BasePacket(TibiaPacket):
         return skip
 
     def tileDescription(self, tile, player):
-        self.data += pack("<H", 0)
+        self.data += "\x00\x00"
         count = 0
         for item in tile.topItems():  
             self.data += pack("<H", item.cid)

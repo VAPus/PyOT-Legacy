@@ -1,9 +1,9 @@
 #!/bin/sh
 if [ -x /usr/bin/python2 ]; then
-	python2 -tOO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+	python2 -t /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
 elif [ -x /usr/bin/python2.7 ]; then
-	python2.7 -tOO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+	python2.7 -t /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
 else
 	echo "You might not have a compatible version of Python on your system, attempting to use the current version you got. DON'T REPORT BUGS IF THE SERVER AIN'T STARTING"
-	python -tOO /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+	python -t /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
 fi
