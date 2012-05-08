@@ -29,7 +29,7 @@ except:
 global anyPlayer
 anyPlayer = CreatureBase()
 allPlayers = {}
-#allPlayersObject = allPlayers.viewvalues() # Quick speedup
+allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
 class Player(Creature):
     def __init__(self, client, data):

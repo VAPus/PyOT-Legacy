@@ -480,14 +480,14 @@ def getSpectators(pos, radius=(8,6), ignore=()):
     """
     
     players = set()   
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
             players.add(player.client)
         
     return players
 
 def hasSpectators(pos, radius=(8,6), ignore=()):
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore: return True
         
     return False
@@ -508,7 +508,7 @@ def getCreatures(pos, radius=(8,6), ignore=()):
     
     creatures = set()
                 
-    for creature in game.creature.allCreatures.values():
+    for creature in game.creature.allCreaturesObject:
         if creature.canSee(pos, radius) and creature not in ignore:
             creatures.add(creature)
     return creatures
@@ -530,7 +530,7 @@ def getPlayers(pos, radius=(8,6), ignore=()):
     
     players = set()
               
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore:
             players.add(player)
     
@@ -746,7 +746,7 @@ def saveAll(force=False):
     commited = False
     
     t = time.time()
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         result = player._saveQuery(force)
         if result:
             sql.runOperation(*result)
@@ -851,7 +851,7 @@ def checkLightLevel(lightValue=[None]):
     
     l = getLightLevel()
     if lightValue[0] != l:
-        for c in game.player.allPlayers.values():
+        for c in game.player.allPlayersObject:
             stream = c.packet()
             
             # Make sure this player actually is online. TODO: Track them in a seperate list?
@@ -887,7 +887,7 @@ def getPlayer(playerName):
         return None
 
 def getCreatureByCreatureId(cid):
-    for creature in game.creature.allCreatures.values():
+    for creature in game.creature.allCreaturesObject:
         if creature.cid == cid:
             return creature
             
@@ -916,7 +916,7 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
     """ Broadcasts a message to every player
     
     """
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         stream = player.packet(0xAA)
         
         # Make sure this player actually is online. TODO: Track them in a seperate list?
@@ -992,7 +992,7 @@ def loadPlayer(playerName):
 def loadPlayerById(playerId):
     try:
         # Quick look
-        for player in game.player.allPlayers.values():
+        for player in game.player.allPlayersObject:
             if player.data["id"] == playerId:
                 returnValue(player)
                 return

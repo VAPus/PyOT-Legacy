@@ -30,7 +30,7 @@ def uniqueId():
     return id
 
 allCreatures = {}
-#allCreaturesObject = allCreatures.viewvalues()
+allCreaturesObject = allCreatures.viewvalues()
 
 class CreatureBase(object):
     def __init__(self):
@@ -971,7 +971,7 @@ class Creature(object):
 
     def broadcast(self, message, messageType='MSG_GAMEMASTER_BROADCAST'):
         import game.players
-        for player in game.player.allPlayers.values():
+        for player in game.player.allPlayersObject:
             stream = player.packet(0xAA)
             stream.uint32(0)
             stream.string(self.data["name"])
