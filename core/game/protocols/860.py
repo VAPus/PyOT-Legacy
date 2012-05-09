@@ -113,7 +113,7 @@ class Packet(base.BasePacket):
                     
                     self.creature(creature, known, removeKnown)
                     
-                if creature.creatureType != 0 and creature.noBrain:
+                if creature.creatureType != 0 and not creature.brainEvent:
                     creature.base.brain.handleThink(creature, False)
 
             for item in tile.bottomItems():
