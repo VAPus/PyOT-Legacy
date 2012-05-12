@@ -384,7 +384,12 @@ class BasePacket(TibiaPacket):
             self.uint16(0xFFFF)
         else:
             self.uint16(player.data["level"])
-        self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
+        
+        if not player.data["experience"]:
+            self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
+        else:
+            self.uint8(0)
+            
         self.uint16(player.data["mana"]) # mana
         self.uint16(player.data["manamax"]) # mana max
         if player.data["maglevel"] > 255:

@@ -138,6 +138,11 @@ class Player(Creature):
         # Skill goals
         self.skillGoals = {}
         for x in self.skills:
+            if not self.skills[x]: # New player usually.
+                self.skills[x] = config.defaultSkillLevel
+                self.data["skills"][x] = config.defaultSkillLevel
+                
+                
             self.skillGoals[x] = config.skillFormula(self.skills[x],
                                                      self.getVocation().meleeSkill)
 
@@ -684,10 +689,17 @@ class Player(Creature):
                 self.saveData = True
                 self.data["level"] = level
 
-                self.data["healthmax"] = vocation.maxHP(self.data["level"])
-                self.data["manamax"] = vocation.maxMana(self.data["level"])
-                self.data["capasity"] = vocation.maxCapasity(self.data["level"]) * 100
+                self.data["healthmax"] = vocation.maxHP(level)
+                self.data["manamax"] = vocation.maxMana(level)
+                self.data["capasity"] = vocation.maxCapasity(level) * 100
 
+                if self.data["manamax"] < config.minMana:
+                    self.data["manamax"] = config.minMana
+                    print "[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"])
+                
+                if self.data["healthmax"] < config.minHealth:
+                    self.data["healthmax"] = config.minHealth
+                    
                 if self.data["health"] > self.data["healthmax"]:
                     self.data["health"] = self.data["healthmax"]
 
@@ -701,7 +713,7 @@ class Player(Creature):
                         self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
                     self.refreshStatus()
 
-            game.scriptsystem.get("level").runDefer(self, endCallback, fromLevel=oldLevel, toLevel=level)
+            game.scriptsystem.get("level").runSync(self, endCallback, fromLevel=oldLevel, toLevel=level)
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)

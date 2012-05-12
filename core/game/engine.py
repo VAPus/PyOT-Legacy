@@ -58,25 +58,34 @@ def windowsLoading():
 # The loader rutines, async loading :)
 def loader(timer):
     # Attempt to get the Merucurial rev
-    try:
-        revs = subprocess.check_output(["hg", "id", "-n", "-i"]).replace("\n", "").split(" ")
-        log.msg("Begin loading (PyOT rev %s, %s)" % (revs[1], revs[0]))
-        MERCURIAL_REV = revs[1]
-        if platform.system() == "Windows":
-            os.system("title PyOT r%s" % revs[1])
-            windowsLoading()
-        else:
-            sys.stdout.write("\x1b]2;PyOT r%s\x07" % revs[1])
+    if os.path.exists(".hg"):
+        try:
+            revs = subprocess.check_output(["hg", "id", "-n", "-i"]).replace("\n", "").split(" ")
+            log.msg("Begin loading (PyOT rev %s, %s)" % (revs[1], revs[0]))
+            MERCURIAL_REV = revs[1]
+            if platform.system() == "Windows":
+                os.system("title PyOT r%s" % revs[1])
+                windowsLoading()
+            else:
+                sys.stdout.write("\x1b]2;PyOT r%s\x07" % revs[1])
 
-    except (OSError, subprocess.CalledProcessError):
-        # hg not in space.
+        except (OSError, subprocess.CalledProcessError):
+            # hg not in space.
+            log.msg("Begin loading...")
+            if platform.system() == "Windows":
+                os.system("title PyOT")
+                windowsLoading()
+            else:
+                sys.stdout.write("\x1b]2;PyOT\x07")
+    else:
+        MERCURIAL_REV = "unknown"
         log.msg("Begin loading...")
         if platform.system() == "Windows":
             os.system("title PyOT")
             windowsLoading()
         else:
-            sys.stdout.write("\x1b]2;PyOT\x07")
-
+            sys.stdout.write("\x1b]2;PyOT\x07")      
+            
     import game.item
     import game.house, game.guild
     

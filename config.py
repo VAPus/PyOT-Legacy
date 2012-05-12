@@ -159,6 +159,13 @@ enableMarket = True # It works for 9.44+ only. Lower versions might not access i
 # MIGHT BE BUGGY, NOT WELL TESTED!
 findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15%
 
+# Skills
+defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
+
+# Vocation stuff (often occure on custom vocations, or pre-level 8 promoted characters.).
+minHealth = 150
+minMana = 100
+
 # Language
 # Default (fallback) language.
 enableTranslations = True
