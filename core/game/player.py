@@ -141,6 +141,8 @@ class Player(Creature):
             if not self.skills[x]: # New player usually.
                 self.skills[x] = config.defaultSkillLevel
                 self.data["skills"][x] = config.defaultSkillLevel
+                if self.data["skill_tries"][x] == None:
+                    self.data["skill_tries"][x] = 0
                 
                 
             self.skillGoals[x] = config.skillFormula(self.skills[x],
@@ -253,6 +255,8 @@ class Player(Creature):
         # If we relogin we might be in remove mode,
         # make sure we're not tagget for it!
         self.removeMe = False
+        self.client.ready = True
+        self.alive = True
 
         stream = self.packet(0x0A)
 
