@@ -2533,3 +2533,27 @@ class Player(Creature):
             pass
 
         self.data["language"] = lang
+        
+    ###### Group stuff
+    def getGroupFlags(self, default={}):
+        try:
+            return game.engine.groups[self.data["group_id"]]
+        except:
+            print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
+            return default
+            
+    def hasGroupFlag(self, flag):
+        try:
+            return flag in game.engine.groups[self.data["group_id"]][1]
+        except:
+            print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
+            return False
+            
+    def hasGroupFlags(self, *flags):
+        g = self.getGroupFlags()
+        
+        for flag in flags:
+            if not flag in g:
+                return False
+                
+        return True

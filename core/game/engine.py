@@ -226,6 +226,9 @@ def loader(timer):
     # We use this in the import system
     __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
     
+    # Access
+    __builtin__.access = game.scriptsystem.access
+    
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
         monster = game.monster

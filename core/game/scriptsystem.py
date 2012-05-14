@@ -628,3 +628,24 @@ def regEventTime(date, callback):
     import dateutil.parser.parse as parse
     import datetime.datetime.now as now
     globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, callback))
+    
+# Another cool decorator
+def access(isPlayer=True, isMonster=False, isNPC=False, *groupFlags):
+    def _wrapper(f):
+        def access_wrapper_inner(creature, **k):
+            if isMonster and not creature.isMonster():
+                return
+                
+            if isNPC and not creature.isNPC():
+                return
+            
+            if isPlayer:
+                if not creature.isPlayer() or not creature.hasGroupFlags(*groupFlags):
+                    return 
+                    
+            else:
+                assert not groupFlags
+                
+            return f(creature, **k)
+        return access_wrapper_inner
+    return _wrapper

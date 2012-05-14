@@ -1,4 +1,5 @@
 @register("talkactionFirstWord", 'teleport')
+@access("TELEPORT")
 def teleporter(creature, text):
     x,y,z = text.split(',')
     try:
@@ -9,6 +10,7 @@ def teleporter(creature, text):
         creature.lmessage("Welcome to %s" % text)
 
 @register("talkaction", '/up')
+@access("TELEPORT")
 def up(creature, text):
     up = creature.position.copy()
     up.z -= 1
@@ -18,6 +20,7 @@ def up(creature, text):
             creature.notPossible()
             
 @register("talkaction", '/down')
+@access("TELEPORT")
 def down(creature, text):
     up = creature.position.copy()
     up.z += 1
@@ -27,6 +30,7 @@ def down(creature, text):
             creature.notPossible()
 
 @register("talkactionFirstWord", 'set')
+@access("SPAWN")
 def tiler(creature, text):
         global last
         if len(text.split(" ")) < 2:
@@ -53,6 +57,7 @@ def tiler(creature, text):
 global last
 last = 0
 @register("talkaction", 't')
+@access("SPAWN")
 def tilerE(creature, text):
     global last
     last += 1
@@ -67,6 +72,7 @@ def mypos(creature, text):
     print str(creature.position) # Print to console to be sure
 
 @register("talkactionFirstWord", 'speed')
+@access("SPEED")
 def speedsetter(creature, text):
     try:
         creature.setSpeed(int(text))
@@ -74,6 +80,7 @@ def speedsetter(creature, text):
         creature.lmessage("Invalid speed!")
 
 @register("talkactionFirstWord", 'i')
+@access("CREATEITEM")
 def makeitem(creature, text):
     #try:
     if True:    
@@ -104,17 +111,14 @@ def makeitem(creature, text):
 
 # Reimport tester
 @register("talkaction", 'reload')
+@access("RELOAD")
 def reimporter(creature, text):
     game.scriptsystem.reimporter()
-    return False
-
-@register("talkaction", 'reloadtest')
-def saySomething(creature, text):
-    creature.say("Test 1")
     return False
     
 # Tester of container functions
 @register("talkactionFirstWord", 'pop')
+@access("DEVELOPER")
 def popItems(creature, text):
     i,c = map(int, text.split(" "))
     item = creature.findItemById(i,c)
@@ -123,6 +127,7 @@ def popItems(creature, text):
 
 # Experience tester
 @register("talkactionFirstWord", 'exp')
+@access("DEVELOPER")
 def modexp(creature, text):
     exp = int(text)
     creature.modifyExperience(exp)
@@ -131,6 +136,7 @@ def modexp(creature, text):
 
 # Creature tester
 @register("talkactionFirstWord", 's')
+@access("SPAWN")
 def creatureSpawn(creature, text):
     print "Spawner called"
     pos = creature.position.copy()
@@ -144,6 +150,7 @@ def creatureSpawn(creature, text):
 
 # NPC tester
 @register("talkactionFirstWord", 'n')
+@access("SPAWN")
 def npcSpawn(creature, text):
     print "Spawner called"
     pos = creature.position.copy()
@@ -156,17 +163,20 @@ def npcSpawn(creature, text):
     
 
 @register("talkaction", 'saveme')
+@access("SAVEME")
 def saveMe(creature, text):
     creature.save()
     return False
     
 
 @register("talkaction", 'saveall')
+@access("SAVEALL")
 def saveAll(creature, text):
     engine.saveAll()
     return False
 
 @register('talkactionFirstWord', 'depot')
+@access("SPAWN")
 def spawnDepot(creature, text):
     depotId = int(text)
     box = game.item.Item(2594, depotId=depotId)
@@ -177,6 +187,7 @@ def spawnDepot(creature, text):
     
 
 @register('talkactionFirstWord', 'track')
+@access("DEVELOPER")
 def trackScripts(creature, text):
     import inspect
     try:
@@ -226,6 +237,7 @@ def mountPlayer(creature, text):
 
 
 @register('talkactionFirstWord', 'mount')
+@access("DEVELOPER")
 def addMount(creature, text):
     try:
         creature.addMount(text.title())
@@ -236,6 +248,7 @@ def addMount(creature, text):
 
 
 @register('talkactionFirstWord', 'outfit')
+@access("DEVELOPER")
 def addOutfit(creature, text):
     try:
         creature.addOutfit(text.title())
@@ -258,13 +271,8 @@ def testhide(creature, thing, **k):
     thing.refresh()
 """
 
-@register("talkaction", "summon tiger")
-def testsummon(creature,**k):
-    tiger = game.monster.getMonster("Tiger").spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
-    tiger.setMaster(creature)
-    return False
-
 @register("talkactionFirstWord", "res")
+#@access("SPAWN") # Should this have access?
 def summon(creature, text):
     try:
         mon = game.monster.getMonster(text)
@@ -287,23 +295,27 @@ def setowner(creature,text):
     
 
 @register("talkaction", "poisonme")
+@access("DEVELOPER")
 def poisonme(creature, **k):
     creature.condition(Condition(CONDITION_POISON, 0, 10, damage=10))
     print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
     
 
 @register("talkaction", "conditionme")
+@access("DEVELOPER")
 def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
     
 
 @register("talkaction", "restore")
+@access("DEVELOPER")
 def restoreme(creature, **k):
     creature.modifyHealth(10000)
     creature.modifyMana(10000)
     
 
 @register("talkactionFirstWord", "info")
+@access("DEVELOPER")
 def readData(creature, text):
     msg = ""
     pos = Position(*map(int, text.split(',')))
@@ -316,6 +328,7 @@ def readData(creature, text):
     creature.windowMessage(msg)        
 
 @register("talkaction", "boostme")
+@access("DEVELOPER")
 def testBoost(creature, **k):
     # Give a +1000 for 20s
     creature.condition(Boost("speed", 1000, 20))
@@ -336,6 +349,7 @@ def walkRandomStep(creature, callback):
     creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
 
 @register("talkaction", "aime")
+@access("DEVELOPER")
 def playerAI(creature, **k):
     creature.setSpeed(1500)
     
@@ -365,11 +379,13 @@ def playerAI(creature, **k):
     _playerAI()
 
 @register("talkaction", "market")
+@access("DEVELOPER")
 def openMarket(creature, **k):
     creature.openMarket()
 
 
 @register("talkaction", "spanish")
+@access("DEVELOPER")
 def setLang(creature, **k):
     creature.setLanguage("es_ES")
     
