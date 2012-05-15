@@ -662,7 +662,7 @@ def access(*groupFlags, **kwargs):
                     
             else:
                 assert not groupFlags
-                
+
             return f(creature, **k)
         return access_wrapper_inner
     return _wrapper

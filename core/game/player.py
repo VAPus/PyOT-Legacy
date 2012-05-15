@@ -2537,7 +2537,7 @@ class Player(Creature):
     ###### Group stuff
     def getGroupFlags(self, default={}):
         try:
-            return game.engine.groups[self.data["group_id"]]
+            return game.engine.groups[self.data["group_id"]][1]
         except:
             print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
             return default
@@ -2551,7 +2551,7 @@ class Player(Creature):
             
     def hasGroupFlags(self, *flags):
         g = self.getGroupFlags()
-        
+
         for flag in flags:
             if not flag in g:
                 return False
