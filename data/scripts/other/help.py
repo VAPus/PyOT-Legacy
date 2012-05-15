@@ -8,7 +8,22 @@ def teleporter(creature, text):
         creature.lmessage("Can't teleport to solid tiles!")
     else:
         creature.lmessage("Welcome to %s" % text)
+        
+    return False
 
+@register("talkactionFirstWord", 'fteleport')
+@access("TELEPORT")
+def forcedTeleporter(creature, text):
+    x,y,z = text.split(',')
+    try:
+        creature.teleport(Position(int(x),int(y),int(z)), force=True)
+    except:
+        creature.lmessage("Can't teleport to void tiles!")
+    else:
+        creature.lmessage("Welcome to %s" % text)
+        
+    return False
+        
 @register("talkaction", '/up')
 @access("TELEPORT")
 def up(creature, text):

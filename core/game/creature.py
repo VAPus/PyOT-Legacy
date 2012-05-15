@@ -771,7 +771,7 @@ class Creature(object):
     def modifyHealth(self, health, spawn=False):
         return self.setHealth(min(self.data["health"] + health, self.data["healthmax"]))
 
-    def teleport(self, position):
+    def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
             return False"""
 
@@ -781,10 +781,13 @@ class Creature(object):
         newTile = getTile(position)
         oldPosCreatures = set()
         if not newTile:
-            raise game.errors.SolidTile()
-        for i in newTile.getItems():
-            if newTile.things[0].solid:
-                raise game.errors.SolidTile()
+            raise game.errors.SolidTile("Tile doesn't exist") # Yea, it's fatal, even in force mode!
+        
+        if not force:
+            for i in newTile.getItems():
+                if i.solid:
+                    print "PIN"
+                    raise game.errors.SolidTile()
 
         try:
             oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
