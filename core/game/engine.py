@@ -61,7 +61,7 @@ def loader(timer):
     if os.path.exists(".hg"):
         try:
             MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
-            log.msg("Begin loading (PyOT r%s)" % rev)
+            log.msg("Begin loading (PyOT r%s)" % MERCURIAL_REV)
             if platform.system() == "Windows":
                 os.system("title PyOT r%s" % MERCURIAL_REV)
                 windowsLoading()
