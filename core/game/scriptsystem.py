@@ -630,7 +630,24 @@ def regEventTime(date, callback):
     globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, callback))
     
 # Another cool decorator
-def access(isPlayer=True, isMonster=False, isNPC=False, *groupFlags):
+def access(*groupFlags, **kwargs):
+    isPlayer = True
+    isMonster = False
+    isNPC = False
+    
+    # XXX: Cheat Python2 syntax, Python3 got a nice fix for this by allowing kwargs to come after a *argc argument. Too bad pypy and twisted still is py2 only.
+    # Unwrap it to get the overhead in loading instead of runtime.
+    for arg in kwargs:
+        if arg == "isPlayer":
+            isPlayer = kwargs[arg]
+        elif arg == "isMonster":
+            isMonster = kwargs[arg]
+        elif arg == "isNPC":
+            isNPC = kwargs[arg]
+        else:
+            raise TypeError("Calling scriptsystem.access() with invalid parameter %s" % arg)
+            
+    # Notice: We may make a optimized wrapper call when len(groupFlags) == 1 using creature.hasGroupFlag(unwrapperGroupFlag).
     def _wrapper(f):
         def access_wrapper_inner(creature, **k):
             if isMonster and not creature.isMonster():
