@@ -60,14 +60,13 @@ def loader(timer):
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
-            revs = subprocess.check_output(["hg", "id", "-n", "-i"]).replace("\n", "").split(" ")
-            log.msg("Begin loading (PyOT rev %s, %s)" % (revs[1], revs[0]))
-            MERCURIAL_REV = revs[1]
+            MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
+            log.msg("Begin loading (PyOT r%s)" % rev)
             if platform.system() == "Windows":
-                os.system("title PyOT r%s" % revs[1])
+                os.system("title PyOT r%s" % MERCURIAL_REV)
                 windowsLoading()
             else:
-                sys.stdout.write("\x1b]2;PyOT r%s\x07" % revs[1])
+                sys.stdout.write("\x1b]2;PyOT r%s\x07" % MERCURIAL_REV)
 
         except (OSError, subprocess.CalledProcessError):
             # hg not in space.
