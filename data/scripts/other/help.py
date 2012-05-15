@@ -18,7 +18,8 @@ def up(creature, text):
             creature.teleport(up)
     except:
             creature.notPossible()
-            
+    return False
+
 @register("talkaction", '/down')
 @access("TELEPORT")
 def down(creature, text):
@@ -28,6 +29,7 @@ def down(creature, text):
             creature.teleport(up)
     except:
             creature.notPossible()
+    return False
 
 @register("talkactionFirstWord", 'set')
 @access("SPAWN")
@@ -78,6 +80,7 @@ def speedsetter(creature, text):
         creature.setSpeed(int(text))
     except:
         creature.lmessage("Invalid speed!")
+    return False
 
 @register("talkactionFirstWord", 'i')
 @access("CREATEITEM")
