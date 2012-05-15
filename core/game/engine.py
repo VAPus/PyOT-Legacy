@@ -219,6 +219,10 @@ def loader(timer):
     __builtin__.genMount = game.resource.genMount
     __builtin__.regVocation = game.vocation.regVocation
     
+    # Grab them
+    __builtin__.getNPC = game.npc.getNPC
+    __builtin__.getMonster = game.monster.getMonster
+    
     # Used alot in monster and npcs
     __builtin__.chance = game.monster.chance
     
