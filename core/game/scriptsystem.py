@@ -154,6 +154,59 @@ class TriggerScripts(object):
             end()
         return ok
 
+class RegexTriggerScripts(TriggerScripts):
+    __slots__ = ('scripts', 'parameters')
+
+    def register(self, trigger, callback, weakfunc=True):
+        if weakfunc:
+            func = weakref.proxy(callback, self._unregCallback(trigger))
+        else:
+            func = callback
+            
+        if not trigger in self.scripts:
+            self.scripts[trigger] = [func], re.compile(trigger).search
+        else:
+            self.scripts[trigger][0].append(func)
+        
+    def registerFirst(self, trigger, callback, weakfunc=True):
+        if not trigger in self.scripts:
+            self.register(trigger, callback, weakfunc)
+        else:
+            if weakfunc:
+                func = weakref.proxy(callback, self._unregCallback(trigger))
+            else:
+                func = callback
+            self.scripts[trigger][0].insert(0, func)
+
+    def _run(self, trigger, creature, end, **kwargs):
+        ok = True
+
+        """if not trigger in self.scripts:
+            return end() if end else None"""
+        for scriptTrigger in self.scripts:
+            spectre = self.scripts[scriptTrigger]
+
+            obj = spectre[1](trigger)
+
+            if not obj:
+                continue
+            else:
+                args = obj.groupdict()
+                
+            for func in spectre[0]:
+                if func:
+                    for arg in kwargs:
+                        args[arg] = kwargs[arg]
+                          
+                    ok = func(creature=creature, **args)
+                    if not (ok if ok is not None else True):
+                        break
+                             
+        if end and (ok if ok is not None else True):
+            end()
+        return ok
+
+        
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
     __slots__ = ('scripts', 'thingScripts', 'parameters')
@@ -404,6 +457,7 @@ class CreatureScripts(ThingScripts):
 # All global events can be initialized here
 globalScripts["talkaction"] = TriggerScripts(('creature', 'text'))
 globalScripts["talkactionFirstWord"] = TriggerScripts(('creature', 'text'))
+globalScripts["talkactionRegex"] = RegexTriggerScripts(('creature', 'text'))
 globalScripts["login"] = Scripts(('creature',))
 globalScripts["loginAccountFailed"] = NCScripts()
 globalScripts["loginCharacterFailed"] = NCScripts()

@@ -1,7 +1,6 @@
-@register("talkactionFirstWord", 'teleport')
+@register("talkactionRegex", r'teleport (?P<x>\d+),(?P<y>\d+),(?P<z>\d+)')
 @access("TELEPORT")
-def teleporter(creature, text):
-    x,y,z = text.split(',')
+def teleporter(creature, x, y, z, text):
     try:
         creature.teleport(Position(int(x),int(y),int(z)))
     except:
@@ -11,10 +10,10 @@ def teleporter(creature, text):
         
     return False
 
-@register("talkactionFirstWord", 'fteleport')
+@register("talkactionRegex", r'fteleport (?P<x>\d+),(?P<y>\d+),(?P<z>\d+)')
 @access("TELEPORT")
-def forcedTeleporter(creature, text):
-    x,y,z = text.split(',')
+def forcedTeleporter(creature, x,y,z, text):
+    # Keep in mind that the extra parameters are always strings! You will need to cast them if you intend to use them in functions that require ints.
     try:
         creature.teleport(Position(int(x),int(y),int(z)), force=True)
     except:

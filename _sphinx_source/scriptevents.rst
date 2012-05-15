@@ -21,7 +21,7 @@ The registration function:
     
     Register a  callback to the ``type`` script event. ``Weakfunc`` should only be set to False if the event gets generated inside the function, non-weak functions won't be reloaded! 
     
-**For TriggerScripts()**:
+**For TriggerScripts() and RegexTriggerScripts() **:
 
     .. function:: register(type, trigger[, weakfunc=True])
     
@@ -99,7 +99,36 @@ The events are:
             creature.message("I was asked to repeat %s" % text)
             return False
            
-        
+.. function:: talkactionRegex(creature, text)
+
+    Called when a regex of the trigger matches the text. (RegexTriggerScript)
+  
+    :param creature: The creature that tries to say something.
+    :type creature: usually :class:`game.player.Player`
+    :param text: What was said.
+    :type text: :func:`str`
+    :param ?: Any parameter from the regex query, etc (?P<myParam>\w+) will match a word in the text, parameter will be named myParam.
+    :type ?: :func:`str`
+    :returns: Return True/None will use the default internal behavior, while return False will stop it.
+    
+    :example:
+    
+    .. code-block:: python
+           
+        @register("talkactionRegex", r'fteleport (?P<x>\d+),(?P<y>\d+),(?P<z>\d+)')
+        @access("TELEPORT")
+        def forcedTeleporter(creature, x,y,z, text):
+            # Keep in mind that the extra parameters are always strings! You will need to cast them if you intend to use them in functions that require ints.
+            try:
+                creature.teleport(Position(int(x),int(y),int(z)), force=True)
+            except:
+                creature.lmessage("Can't teleport to void tiles!")
+            else:
+                creature.lmessage("Welcome to %s" % text)
+                
+            return False
+           
+                
         
 .. function:: use(creature, thing, position, index)
 

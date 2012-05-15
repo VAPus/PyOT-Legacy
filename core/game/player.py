@@ -1958,8 +1958,11 @@ class Player(Creature):
             for creature in game.engine.getCreatures(self.position):
                 creature.playerSay(self, text, channelType, channelId or reciever)
 
+        def part2():
+            game.scriptsystem.get("talkactionRegex").runSync(text, self, endCallback, text=text)
+            
         def part1():
-            game.scriptsystem.get("talkaction").runSync(text, self, endCallback, text=' '.join(splits[0:]))
+            game.scriptsystem.get("talkaction").runSync(text, self, part2, text=text)
 
         if len(splits) > 1:
             game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, part1, text=' '.join(splits[1:]))
