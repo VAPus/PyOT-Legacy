@@ -1936,39 +1936,50 @@ class Player(Creature):
                 mode = game.enum.MSG_SPEAK_WHISPER
                 del splits[0]
 
-        def endCallback():
-
-            if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
-                if mode == game.enum.MSG_SPEAK_SAY:
-                    self.say(' '.join(splits[0:]))
-
-                elif mode == game.enum.MSG_SPEAK_YELL:
-                    self.yell(' '.join(splits[0:]))
-
-                elif mode == game.enum.MSG_SPEAK_WHISPER:
-                    self.whisper(' '.join(splits[0:]))
-
-            elif channelType == game.enum.MSG_CHANNEL:
-                self.channelMessage(text, "MSG_CHANNEL", channelId)
-
-            #elif channelType == game.enum.MSG_PRIVATE_TO:
-            else:
-                self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
-
-            for creature in game.engine.getCreatures(self.position):
-                creature.playerSay(self, text, channelType, channelId or reciever)
-
-        def part2():
-            game.scriptsystem.get("talkactionRegex").runSync(text, self, endCallback, text=text)
-            
-        def part1():
-            game.scriptsystem.get("talkaction").runSync(text, self, part2, text=text)
+        doRegex = True
 
         if len(splits) > 1:
-            game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, part1, text=' '.join(splits[1:]))
-        else:
-            part1()
+            d = game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, text=' '.join(splits[1:]))
 
+            if d != None:
+                doRegex = False
+            elif not d and d != None:
+                return
+        
+        
+        d = game.scriptsystem.get("talkaction").runSync(text, self, text=text)
+
+        if d != None:
+            doRegex = False
+        elif not d and d != None:
+            return
+            
+        if doRegex:
+            d = game.scriptsystem.get("talkactionRegex").runSync(text, self, text=text)
+
+            if not d and d != None:
+                return
+                
+        if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
+            if mode == game.enum.MSG_SPEAK_SAY:
+                self.say(text)
+
+            elif mode == game.enum.MSG_SPEAK_YELL:
+                self.yell(text)
+
+            elif mode == game.enum.MSG_SPEAK_WHISPER:
+                self.whisper(text)
+
+        elif channelType == game.enum.MSG_CHANNEL:
+            self.channelMessage(text, "MSG_CHANNEL", channelId)
+
+        #elif channelType == game.enum.MSG_PRIVATE_TO:
+        else:
+            self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
+
+        for creature in game.engine.getCreatures(self.position):
+            creature.playerSay(self, text, channelType, channelId or reciever)
+            
     def attackTarget(self):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
