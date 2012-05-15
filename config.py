@@ -174,8 +174,8 @@ defaultLanguage = "en_EN" # ISO-4 code
 # (WINDOWS ONLY)
 # Adjust size and/or color of the windows
 # Set to None to disable.
-consoleColumns = 160
-consoleColor = "0a"
+consoleColumns = 110
+consoleColor = "5f"
 
 ########## Advance settings #########
 suggestedLoginServerThreadPoolSize = 2 # sqlMinConnections + 1 is often good enough
