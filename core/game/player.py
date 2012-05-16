@@ -1943,7 +1943,7 @@ class Player(Creature):
 
             if d != None:
                 doRegex = False
-            elif not d and d != None:
+            if not d and d != None:
                 return
         
         
@@ -1951,7 +1951,7 @@ class Player(Creature):
 
         if d != None:
             doRegex = False
-        elif not d and d != None:
+        if not d and d != None:
             return
             
         if doRegex:

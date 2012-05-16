@@ -448,7 +448,6 @@ class Creature(object):
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     stream.addTileCreature(position, newStackPos, self, spectator)
-
             stream.send(spectator.client)
 
         if self.scripts["onNextStep"]:
@@ -786,7 +785,6 @@ class Creature(object):
         if not force:
             for i in newTile.getItems():
                 if i.solid:
-                    print "PIN"
                     raise game.errors.SolidTile()
 
         try:
