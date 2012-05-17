@@ -712,9 +712,9 @@ class Player(Creature):
 
                 if send:
                     if level > oldLevel:
-                        self.message("You advanced from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
+                        self.message("You advanced from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
                     elif level < oldLevel:
-                        self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), 'MSG_EVENT_ADVANCE')
+                        self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
                     self.refreshStatus()
 
             game.scriptsystem.get("level").runSync(self, endCallback, fromLevel=oldLevel, toLevel=level)
@@ -740,7 +740,7 @@ class Player(Creature):
 
         if up:
             level = 0
-            self.message(_lp(self, "You gained %d experience point.", "You gained %d experience points.", exp) % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp, pos=self.position)
+            self.message(_lp(self, "You gained %d experience point.", "You gained %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp, pos=self.position)
             while True:
                 if config.totalExpFormula(self.data["level"]+level) > self.data["experience"]:
                     break
@@ -749,7 +749,7 @@ class Player(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, 'MSG_EXPERIENCE', color=config.experienceMessageColor, value=exp)
+            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -934,24 +934,24 @@ class Player(Creature):
         stream.string(desc)
         stream.send(self.client)
 
-    def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def message(self, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
 
-    def lmessage(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lmessage(self, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         self.message(self.l(message), msgType, color, value, pos)
         
-    def lcmessage(self, context, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lcmessage(self, context, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         self.message(self.lc(context, message), msgType, color, value, pos)
     
-    def lcpmessage(self, context, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lcpmessage(self, context, singular, plural, n, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         self.message(self.lcp(context, singular, plural, n), msgType, color, value, pos)
     
-    def lpmessage(self, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lpmessage(self, singular, plural, n, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         self.message(self.lp(singular, plural, n), msgType, color, value, pos)
         
-    def orangeStatusMessage(self, message, msgType="MSG_STATUS_CONSOLE_ORANGE", color=0, value=0, pos=None):
+    def orangeStatusMessage(self, message, msgType=game.enum.MSG_STATUS_CONSOLE_ORANGE, color=0, value=0, pos=None):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
@@ -1051,7 +1051,7 @@ class Player(Creature):
         stream.send(self.client)
 
     def cancelMessage(self, message):
-        self.message(message, 'MSG_STATUS_SMALL')
+        self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
         self.cancelMessage(_l(self, "Sorry, not possible."))
@@ -1503,7 +1503,7 @@ class Player(Creature):
         except:
             return False
 
-    def channelMessage(self, text, channelType="MSG_CHANNEL", channelId=0):
+    def channelMessage(self, text, channelType=game.enum.MSG_CHANNEL, channelId=0):
         channel = game.chat.getChannel(channelId)
         try:
             members = game.chat.getChannel(channelId).members
@@ -1533,7 +1533,7 @@ class Player(Creature):
             else:
                 stream.uint16(0)
             stream.uint8(stream.enum(channelType))
-            if channelType in ("MSG_CHANNEL_MANAGEMENT", "MSG_CHANNEL", "MSG_CHANNEL_HIGHLIGHT"):
+            if channelType in (MSG_CHANNEL_MANAGEMENT, MSG_CHANNEL, MSG_CHANNEL_HIGHLIGHT):
                 stream.uint16(channelId)
 
             stream.string(text)
@@ -1542,7 +1542,7 @@ class Player(Creature):
         
         return True
 
-    def privateChannelMessage(self, text, receiver, channelType="MSG_CHANNEL"):
+    def privateChannelMessage(self, text, receiver, channelType=game.enum.MSG_CHANNEL):
         player = game.engine.getPlayer(receiver)
         if player:
             stream = player.packet(0xAA)
@@ -1930,10 +1930,10 @@ class Player(Creature):
         mode = channelType
         if channelId == 1:
             if splits[0] == "#y":
-                mode = game.enum.MSG_SPEAK_YELL
+                mode = game.enum._MSG_SPEAK_YELL
                 del splits[0]
             elif splits[0] == "#w":
-                mode = game.enum.MSG_SPEAK_WHISPER
+                mode = game.enum._MSG_SPEAK_WHISPER
                 del splits[0]
 
         doRegex = True
@@ -1960,22 +1960,22 @@ class Player(Creature):
             if not d and d != None:
                 return
                 
-        if channelType in (game.enum.MSG_SPEAK_SAY, game.enum.MSG_SPEAK_YELL, game.enum.MSG_SPEAK_WHISPER):
+        if channelType in (game.enum._MSG_SPEAK_SAY, game.enum._MSG_SPEAK_YELL, game.enum._MSG_SPEAK_WHISPER):
             if mode == game.enum.MSG_SPEAK_SAY:
                 self.say(text)
 
-            elif mode == game.enum.MSG_SPEAK_YELL:
+            elif mode == game.enum._MSG_SPEAK_YELL:
                 self.yell(text)
 
-            elif mode == game.enum.MSG_SPEAK_WHISPER:
+            elif mode == game.enum._MSG_SPEAK_WHISPER:
                 self.whisper(text)
 
-        elif channelType == game.enum.MSG_CHANNEL:
-            self.channelMessage(text, "MSG_CHANNEL", channelId)
+        elif channelType == game.enum._MSG_CHANNEL:
+            self.channelMessage(text, MSG_CHANNEL, channelId)
 
         #elif channelType == game.enum.MSG_PRIVATE_TO:
         else:
-            self.privateChannelMessage(text, reciever, "MSG_PRIVATE_FROM")
+            self.privateChannelMessage(text, reciever, MSG_PRIVATE_FROM)
 
         for creature in game.engine.getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)
@@ -2012,7 +2012,7 @@ class Player(Creature):
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
 
     def criticalHit(self):
-        self.message(_l(self, "You strike a critical hit!"), 'MSG_STATUS_CONSOLE_RED')
+        self.message(_l(self, "You strike a critical hit!"), MSG_STATUS_CONSOLE_RED)
 
     def cancelTarget(self):
         if self.target:

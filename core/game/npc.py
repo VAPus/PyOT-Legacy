@@ -129,7 +129,7 @@ class NPC(Creature):
                     count = amount
                    
                     stack = Item(itemId).stackable
-                    player.message(_lp(player, "Bought %(amount)sx %(name)s for %(price)s gold.", "Bought %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": amount , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[1] * amount}, 'MSG_INFO_DESCR')
+                    player.message(_lp(player, "Bought %(amount)sx %(name)s for %(price)s gold.", "Bought %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": amount , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[1] * amount})
                     container = player.inventory[2]
                     if withBackpack:
                         container = game.item.Item(1988)
@@ -152,7 +152,7 @@ class NPC(Creature):
                     item = player.findItemById(itemId, count)
                     if item.count == count:
                         player.addMoney(offer[2] * amount)
-                        player.message(_lp(player, "Sold %(amount)sx %(name)s for %(price)s gold.", "Sold %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": count , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[2] * amount}, 'MSG_INFO_DESCR')
+                        player.message(_lp(player, "Sold %(amount)sx %(name)s for %(price)s gold.", "Sold %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": count , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[2] * amount})
                         if self.forSale and player.openTrade == self: # Resend my items
                             self.sendGoods(player, self.forSale)
                 else:

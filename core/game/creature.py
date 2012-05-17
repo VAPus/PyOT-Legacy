@@ -699,13 +699,13 @@ class Creature(object):
             updateTile(self.position, tile)
 
         if by and by.isPlayer():
-            by.message(_lp(by, "%(who)s loses 1 hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
+            by.message(_lp(by, "%(who)s loses 1 hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
 
         if self.isPlayer():
             if by:
-                self.message(_lp(self, "You lose 1 hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
+                self.message(_lp(self, "You lose 1 hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
             else:
-                self.message(_lp(self, "You lose 1 hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, 'MSG_DAMAGE_RECEIVED', value = -1 * dmg, color = textColor, pos=self.position)
+                self.message(_lp(self, "You lose 1 hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
 
         elif not self.target and self.data["health"] < 1:
             self.follow(by) # If I'm a creature, set my target
@@ -727,15 +727,15 @@ class Creature(object):
     def onHeal(self, by, amount):
         if self.data["healthmax"] != self.data["health"]:
             if by and by.isPlayer() and by != self:
-                by.message(_lp(by, "%(who)s gain 1 hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                by.message(_lp(by, "%(who)s gain 1 hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
 
             if self.isPlayer():
                 if by != self:
-                    self.message(_lp(self, "You gain 1 hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                    self.message(_lp(self, "You gain 1 hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
                 elif by is self:
-                    self.message(_lp(self, "You healed yourself for 1 hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                    self.message(_lp(self, "You healed yourself for 1 hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
                 else:
-                    self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
+                    self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
              
                 self.modifyHealth(amount)
         else:
@@ -1350,19 +1350,19 @@ class Creature(object):
     ### Compatibility ###
     #####################
 
-    def message(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def message(self, message, msgType=None, color=0, value=0, pos=None):
         pass
 
-    def lmessage(self, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lmessage(self, message, msgType=None, color=0, value=0, pos=None):
         pass
 
-    def lcmessage(self, context, message, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lcmessage(self, context, message, msgType=None, color=0, value=0, pos=None):
         pass
     
-    def lcpmessage(self, context, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lcpmessage(self, context, singular, plural, n, msgType=None, color=0, value=0, pos=None):
         pass
     
-    def lpmessage(self, singular, plural, n, msgType='MSG_INFO_DESCR', color=0, value=0, pos=None):
+    def lpmessage(self, singular, plural, n, msgType=None, color=0, value=0, pos=None):
         pass
     
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
