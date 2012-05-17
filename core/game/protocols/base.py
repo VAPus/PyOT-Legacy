@@ -1066,7 +1066,7 @@ class BaseProtocol(object):
                     player.message(thing.description(player, position) + extra, 'MSG_INFO_DESCR')
             elif isinstance(thing, Creature):
                 def afterScript():
-                    if self == thing:
+                    if player == thing:
                         player.message(thing.description(True), 'MSG_INFO_DESCR')
                     else:
                         player.message(thing.description(), 'MSG_INFO_DESCR')
