@@ -10,6 +10,7 @@ import time
 import io
 import struct
 import sys
+import itertools
 
 ##### Position class ####
 def __uid():
@@ -325,24 +326,30 @@ class Tile(object):
         return self.things[0]
         
     def bottomItems(self):
-        return self.things[self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES):]
+        x = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
+        for n in xrange(x, len(self.things)):
+            yield self.things[n]
         
     def topItems(self):
-        return self.things[:self._depack(PACK_ITEMS)]
+        for n in xrange(self._depack(PACK_ITEMS)):
+            yield self.things[n]
 
     def getItems(self):
-        items = self.topItems()[:]
-        try:
-            items.extend(self.bottomItems())
-        except:
-            pass
-        
-        return items
-        
+        return itertools.chain(self.topItems(), self.bottomItems())
+ 
     def creatures(self):
         cc = self._depack(PACK_ITEMS)
-        return self.things[cc:cc + self._depack(PACK_CREATURES)]
+        cd = self._depack(PACK_CREATURES)
         
+        for n in xrange(cc, cc + cd):
+            yield self.things[n]
+        
+    def topCreature(self):
+        cd = self._depack(PACK_CREATURES)
+        if cd:
+            cc = self._depack(PACK_ITEMS)
+            return self.things[cc]
+
     def removeItem(self, item):
         item.stopDecay()
         self.things.remove(item)

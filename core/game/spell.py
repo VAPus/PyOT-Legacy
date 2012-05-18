@@ -493,21 +493,22 @@ class Spell(object):
             if self.targetType == TARGET_AREA:
                 area = self.targetArea(caster=creature) if callable(self.targetArea) else self.targetArea
                 positions = calculateAreaDirection(creature.position, creature.direction, area)
-                targets = []
+                targetGenerators = []
                 for pos in positions:
                     if self.areaEffect:
                         creature.magicEffect(self.areaEffect, pos)
                         
                     creatures = game.map.getTile(pos).creatures()
                     if creatures:
-                        targets.extend(creatures)
+                        targetGenerators.append(creatures)
                         
-                for targ in targets:
-                    if self._targetEffect:
-                        targ.magicEffect(self._targetEffect)
+                for generator in targetGenerator:
+                    for creature in generator:
+                        if self._targetEffect:
+                            targ.magicEffect(self._targetEffect)
                         
-                    for call in self.effectOnTarget:
-                        call(target=targ, caster=creature, strength=strength)
+                        for call in self.effectOnTarget:
+                            call(target=targ, caster=creature, strength=strength)
                         
         return spellCallback
         

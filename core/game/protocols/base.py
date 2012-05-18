@@ -1043,9 +1043,13 @@ class BaseProtocol(object):
         if position.x == 0xFFFF:
             thing = player.findItem(stackPosition)
         elif stackpos == 0 and clientId == 99:
+            thing = None
             try:
-                thing = game.map.getTile(position).creatures()[0]
+                thing = game.map.getTile(position).topCreature()
             except:
+                pass
+
+            if not thing:
                 player.notPossible()
                 return
         else:
@@ -1169,12 +1173,12 @@ class BaseProtocol(object):
         if clientId != 99:
             thing = player.findItem(stackPosition1)
         else:
-            thing = position.getTile().creatures()[0]
+            thing = position.getTile().topCreature()
             
         if onClientId != 99:
             onThing = player.findItem(stackPosition2)
         else:
-            onThing = game.map.getTile(onPosition).creatures()[0]
+            onThing = game.map.getTile(onPosition).topCreature()
         
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
