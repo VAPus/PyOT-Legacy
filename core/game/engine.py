@@ -60,7 +60,12 @@ def loader(timer):
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
-            MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
+            # This will work independantly of the OS (no need to have mercurial installed!
+            # Not sure if it's 100% accurate, be aware that this is not the active rev, but the latest fetched one.
+            # Downloaded packages doesn't have this file, thats why we keep in in a try, it will raise.
+            
+            MERCURIAL_REV = (os.path.getsize(".hg/store/00changelog.i") / 64) - 1 # Since mercurial start on rev 0, we need to -1 to get the rev number.
+            #MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
             log.msg("Begin loading (PyOT r%s)" % MERCURIAL_REV)
             if platform.system() == "Windows":
                 os.system("title PyOT r%s" % MERCURIAL_REV)
