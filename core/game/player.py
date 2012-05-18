@@ -1961,7 +1961,7 @@ class Player(Creature):
                 return
                 
         if channelType in (game.enum._MSG_SPEAK_SAY, game.enum._MSG_SPEAK_YELL, game.enum._MSG_SPEAK_WHISPER):
-            if mode == game.enum.MSG_SPEAK_SAY:
+            if mode == game.enum._MSG_SPEAK_SAY:
                 self.say(text)
 
             elif mode == game.enum._MSG_SPEAK_YELL:

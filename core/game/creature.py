@@ -101,8 +101,8 @@ class Creature(object):
         allCreatures[self.cid] = self
 
         # Speaktypes
-        self.defaultSpeakType = 'MSG_SPEAK_SAY'
-        self.defaultYellType = 'MSG_SPEAK_YELL'
+        self.defaultSpeakType = MSG_SPEAK_SAY
+        self.defaultYellType = MSG_SPEAK_YELL
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -918,7 +918,7 @@ class Creature(object):
             stream.string(message.upper())
             stream.send(spectator)
 
-    def whisper(self, message, messageType='MSG_SPEAK_WHISPER'):
+    def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
         group = getSpectators(self.position, config.whisperRange)
         listeners = getSpectators(self.position, config.sayRange) - group
 
@@ -942,7 +942,7 @@ class Creature(object):
             stream.string(config.whisperNoise)
             stream.send(spectator)
 
-    def broadcast(self, message, messageType='MSG_GAMEMASTER_BROADCAST'):
+    def broadcast(self, message, messageType=enum.MSG_GAMEMASTER_BROADCAST):
         import game.players
         for player in game.player.allPlayersObject:
             stream = player.packet(0xAA)
@@ -961,7 +961,7 @@ class Creature(object):
         stream.uint32(0)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(messageType)
+        stream.uint8(stream.enum(messageType))
         stream.position(self.position)
         stream.string(message)
         stream.send(to.client)
