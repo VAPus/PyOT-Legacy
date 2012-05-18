@@ -905,9 +905,9 @@ class BaseProtocol(object):
 
                     process = [0]
                     
-                    _items_ = thisTile.getItems()
-                    count = len(_items_) * 2
-                    for item in _items_:
+                    count = 0
+                    for item in thisTile.getItems():
+                        count += 1
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=newItem)
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
                     if process[0] == count:
