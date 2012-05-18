@@ -905,9 +905,9 @@ class BaseProtocol(object):
 
                     process = [0]
                     
-                    _items_ = thisTile.getItems()
-                    count = len(_items_) * 2
-                    for item in _items_:
+                    count = 0
+                    for item in thisTile.getItems():
+                        count += 1
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=newItem)
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
                     if process[0] == count:
@@ -1043,9 +1043,13 @@ class BaseProtocol(object):
         if position.x == 0xFFFF:
             thing = player.findItem(stackPosition)
         elif stackpos == 0 and clientId == 99:
+            thing = None
             try:
-                thing = game.map.getTile(position).creatures()[0]
+                thing = game.map.getTile(position).topCreature()
             except:
+                pass
+
+            if not thing:
                 player.notPossible()
                 return
         else:
@@ -1169,12 +1173,12 @@ class BaseProtocol(object):
         if clientId != 99:
             thing = player.findItem(stackPosition1)
         else:
-            thing = position.getTile().creatures()[0]
+            thing = position.getTile().topCreature()
             
         if onClientId != 99:
             onThing = player.findItem(stackPosition2)
         else:
-            onThing = game.map.getTile(onPosition).creatures()[0]
+            onThing = game.map.getTile(onPosition).topCreature()
         
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
