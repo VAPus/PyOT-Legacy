@@ -19,7 +19,7 @@ if config.enableTranslations:
 
     # Initialize GNUTranslations (regular gettext is singel language only :()
     for language in __all__:
-        LANGUAGES[language] = gettext.GNUTranslations(open("%s/%s.mo" % (base, language)))
+        LANGUAGES[language] = gettext.GNUTranslations(open("%s/%s.mo" % (base, language), 'rb'))
 
 
 # Functions
