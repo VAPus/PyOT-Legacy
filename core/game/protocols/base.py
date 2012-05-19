@@ -434,10 +434,10 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA2)
         self.uint16(icons)
 
-    def message(self, player, message, msgType='MSG_STATUS_DEFAULT', color=0, value=0, pos=None):
+    def message(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
         self.uint8(self.enum(msgType))
-        if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
+        if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
             if pos:
                 self.position(pos)
             else:
@@ -446,7 +446,7 @@ class BasePacket(TibiaPacket):
             self.uint8(color)
             self.uint32(0)
             self.uint8(0)
-        elif msgType in ('MSG_EXPERIENCE', 'MSG_EXPERIENCE_OTHERS', 'MSG_HEALED', 'MSG_HEALED_OTHERS'):
+        elif msgType in (MSG_EXPERIENCE, MSG_EXPERIENCE_OTHERS, MSG_HEALED, MSG_HEALED_OTHERS):
             if pos:
                 self.position(pos)
             else:
@@ -1067,13 +1067,13 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    player.message(thing.description(player, position) + extra, 'MSG_INFO_DESCR')
+                    player.message(thing.description(player, position) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():
                     if player == thing:
-                        player.message(thing.description(True), 'MSG_INFO_DESCR')
+                        player.message(thing.description(True))
                     else:
-                        player.message(thing.description(), 'MSG_INFO_DESCR')
+                        player.message(thing.description())
             game.scriptsystem.get('lookAt').runSync(thing, player, afterScript, position=stackPosition)
         else:
             player.notPossible()
@@ -1084,7 +1084,7 @@ class BaseProtocol(object):
         count = packet.uint8()
         
         item = game.item.Item(sid(clientId), count)
-        player.message(item.description(player), 'MSG_INFO_DESCR')
+        player.message(item.description(player))
         del item
         
     def handleRotateItem(self, player, packet):
@@ -1408,7 +1408,7 @@ class BaseProtocol(object):
                 # TODO propper description handling
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
-                player.message(thing.description(player) + extra, 'MSG_INFO_DESCR')
+                player.message(thing.description(player) + extra)
             game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
             
     def handleAcceptTrade(self, player, packet):
