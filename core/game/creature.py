@@ -245,7 +245,7 @@ class Creature(object):
         return True
 
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
-        if not self.alive or not level and not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
+        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
 
         if not self.data["health"] or not self.canMove:

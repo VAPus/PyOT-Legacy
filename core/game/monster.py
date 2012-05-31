@@ -110,7 +110,8 @@ class Monster(Creature):
         # Remove master summons
         if self.master:
             self.master.activeSummons.remove(self)
-            
+        
+        
         self.turnOffBrain()
         
         # Remove summons
@@ -193,6 +194,7 @@ class Monster(Creature):
         
         scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if self.alive or self.data["health"] > 0:
+            print "[May bug] Death events brought us back to life?"
             return
         
         # Remove bpth small and full splashes on the tile.
