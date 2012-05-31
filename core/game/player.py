@@ -182,9 +182,6 @@ class Player(Creature):
     def isPushable(self, by):
         return config.playerIsPushable
 
-    def isAttackable(self, by):
-        return True
-
     def actionIds(self):
         return ('creature', 'player') # Static actionID
 

@@ -96,6 +96,7 @@ class Creature(object):
 
         # Options
         self.canMove = True
+        self.attackable = True
 
         # We are trackable
         allCreatures[self.cid] = self
@@ -162,7 +163,7 @@ class Creature(object):
         return False
 
     def isAttackable(self, by):
-        return False
+        return self.attackable
 
     def isSummon(self):
         return False

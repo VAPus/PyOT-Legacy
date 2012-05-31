@@ -410,3 +410,12 @@ def setLang(creature, **k):
 @access("DEVELOPER")
 def moveForward(creature, **k):
     creature.move(creature.direction)
+    
+@register("talkaction", "immune")
+@access("DEVELOPER")
+def makeImmune(creature, **k):
+    creature.attackable = False
+    for monster in game.creature.allCreaturesObject:
+        if isinstance(monster, game.monster.Monster) and monster.target == creature:
+            monster.target = None
+            monster.targetMode = 0

@@ -261,7 +261,7 @@ class Monster(Creature):
         bestDist = 127
         for player in targets:
             # Can we target him, same floor
-            if self.canTarget(player.position):
+            if player.isAttackable(self) and self.canTarget(player.position):
                 # Calc x+y distance, diagonal is honored too.
                 dist = self.distanceStepsTo(player.position) 
                 if dist < bestDist:
@@ -674,25 +674,26 @@ class MonsterBrain(object):
             else:
                 monster.say(text)
                     
-        for feature in monster.base.brainFeatures:
-            ret = brainFeatures[0][feature](monster)
+        feature = monster.base.brainFeatures[0]
+        #for feature in monster.base.brainFeatures:
+        ret = brainFeatures[0][feature](monster)
                 
-            if ret == False:
-                monster.turnOffBrain()
-                return False
-            elif ret == True:
-                monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
-                return True
+        if ret == False:
+            monster.turnOffBrain()
+            return False
+        elif ret == True:
+            monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
+            return True
 
-        for feature in monster.base.brainFeatures:
-            ret = brainFeatures[1][feature](monster)
+        #for feature in monster.base.brainFeatures:
+        ret = brainFeatures[1][feature](monster)
 
-            if ret == False:
-                monster.turnOffBrain()
-                return False
-            elif ret == True:
-                monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
-                return True
+        if ret == False:
+            monster.turnOffBrain()
+            return False
+        elif ret == True:
+            monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
+            return True
                     
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
@@ -701,21 +702,15 @@ class MonsterBrain(object):
                 monster.turnOffBrain()
                 return False
             
-            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
-                self.walkRandomStep(monster) # Walk a random step
+            """if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+                self.walkRandomStep(monster) # Walk a random step"""
 
         monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
         
-    def walkRandomStep(self, monster, badDir=None):
+    def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:
             badDir = []
-            
-        # How far are we (x,y) from our spawn point?
-        xFrom = monster.position.x-monster.spawnPosition.x
-        yFrom = monster.position.y-monster.spawnPosition.y
-        
-        steps = [0,1,2,3]
-        
+
         random.shuffle(steps)
         
         for step in steps:
@@ -723,14 +718,14 @@ class MonsterBrain(object):
             if step in badDir:
                 continue
             
-            # Prevent us from autowalking futher then 5 steps
+            # Prevent us from autowalking futher then radius steps from our spawn point
             if step == 0 and monster.radiusTo[1]-(monster.position.y-1) > monster.radius:
                 continue
                 
             elif step == 1 and (monster.position.x+1)-monster.radiusTo[0] > monster.radius:
                 continue
                 
-            elif step == 2 and (monster.position.x+1)-monster.radiusTo[1] > monster.radius:
+            elif step == 2 and (monster.position.y+1)-monster.radiusTo[1] > monster.radius:
                 continue
                 
             elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
@@ -741,9 +736,9 @@ class MonsterBrain(object):
                 def _():
                     if len(badDir) < 4:
                         self.walkRandomStep(monster, badDir)
-                monster.move(step, callback=_)
+                monster.move(step, callback=_, stopIfLock=True)
             else:
-                monster.move(step)
+                monster.move(step, stopIfLock=True)
                 
             return
         

@@ -3,8 +3,10 @@ from twisted.internet import reactor
 from twisted.python import log
 from packet import TibiaPacketReader, TibiaPacket
 import config
-import struct
-from zlib import adler32
+from struct import unpack
+
+if config.checkAdler32:
+    from zlib import adler32
   
 class TibiaProtocol(Protocol):
     #__slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
@@ -12,9 +14,8 @@ class TibiaProtocol(Protocol):
         self.gotFirst = False
         self.xtea = None
         self.onInit()
-        self.buffer = []
-        self.nextPacketLength = 0
-        self.bufferLength = 0
+        self.data = []
+        self.expect = 0
         
     def connectionMade(self):
         peer = self.transport.getPeer()
@@ -37,49 +38,37 @@ class TibiaProtocol(Protocol):
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
 
-    def dataReceived(self, data):
-        if self.nextPacketLength:
-            rest = self.nextPacketLength - self.bufferLength
-            gotLength = len(data)
-            if gotLength == rest:
-                self.nextPacketLength = 0
-                self.bufferLength = 0
-                self.handlePacketFrame(''.join(self.buffer) + data)
+    def dataToPacket(self, data):
+        if self.expect:
+            if len(data) >= self.expect:
+                frame = data[:self.expect]
+                frame = ''.join(self.data) + frame
+                self.handlePacketFrame(frame)
+                self.data = []
+                self.expect = 0
                 
-            elif gotLength > rest:
-                nextPacketLength = struct.unpack("<H", data[:2])[0]
-                if nextPacketLength > 20000:
-                    log.msg("Packet length is bigger then 20k, dropping")
-                    self.transport.loseConnection()
-                    return
-                bufferLength = len(data)-2
-                strBuffer = ''.join(self.buffer)
-                self.handlePacketFrame(strBuffer + data[:rest])
+                remains = data[self.expect:]
+                if remains:
+                    self.dataToPacket(remains)
                 
-                if nextPacketLength == bufferLength:
-                    self.handlePacketFrame(strBuffer + data[rest:])
-                else:
-                    self.bufferLength = bufferLength
-                    self.nextPacketLength = nextPacketLength
-            elif gotLength < rest:
-                self.buffer.append(data)
-                self.bufferLength += len(data)
-        else:
-            gotLength = struct.unpack("<H", data[:2])[0]
-            if gotLength > 20000:
-                log.msg("Packet length is bigger then 20k, dropping")
-                self.transport.loseConnection()
-                return
-            
-            # Length
-            elif len(data)-2 != gotLength:
-                self.nextPacketLength = gotLength
-                self.bufferLength = len(data)-2
-                self.buffer = [data[2:]]
-                return
                 
             else:
+                self.data.append(data)
+                self.expect -= len(data)
+        else:
+            expect = unpack("<H", data[:2])[0]
+            recevied = len(data) - 2
+            if recevied == expect:
                 self.handlePacketFrame(data[2:])
+            elif recevied > expect:
+                self.handlePacketFrame(data[2:2+expect])
+                self.dataToPacket(data[2+expect:])
+            else:
+                self.expect = expect-recevied
+                self.data.append(data)  
+                
+    def dataReceived(self, data):
+        self.dataToPacket(data)
             
         
     def handlePacketFrame(self, packetData):
