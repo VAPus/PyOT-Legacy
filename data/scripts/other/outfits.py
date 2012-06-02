@@ -158,3 +158,15 @@ outfit.look(433, gender=1)
 outfit = game.resource.genOutfit("Afflicted", premium=True)
 outfit.look(430, gender=0)
 outfit.look(431, gender=1)
+
+outfit = game.resource.genOutfit("Deepling", premium=True)
+outfit.look(463, gender=0)
+outfit.look(464, gender=1)
+
+outfit = game.resource.genOutfit("Insectoid", premium=True)
+outfit.look(465, gender=0)
+outfit.look(466, gender=1)
+
+outfit = game.resource.genOutfit("Entrepreneur", premium=True)
+outfit.look(471, gender=0)
+outfit.look(472, gender=1)

@@ -10,30 +10,30 @@ quara_hydromancer_scout.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=
 quara_hydromancer_scout.voices("Qua hah tsh!", "Teech tsha tshul!", "Quara tsha Fach!", "Tssssha Quara!", "Blubber.", "Blup.")
 quara_hydromancer_scout.loot( ("white pearl", 2.25), ("fish", 15.25, 2), ("small emerald", 1.25, 2), (2148, 100, 88), ("quara eye", 9.75), ("fish fin", 1.25, 3), ("black pearl", 1.75), ("wand of cosmic energy", 1.25), ("knight armor", 0.25), ("ring of healing", 0.5) )
 
-#Paralyze (on target?)
+#Missing - Paralyze (on target?)
 
-qhld = spell.Spell("qhs lifedrain")
+qhld = spell.Spell() #life drain
 qhld.element(PHYSICAL) #life drain
 qhld.effects(area=EFFECT_MAGIC_GREEN) #effect?
 
-qhldb = spell.Spell("qhs ld beam", target=TARGET_AREA)
+qhldb = spell.Spell(target=TARGET_AREA) #lifedrain beam
 qhldb.area(AREA_BEAM7) #7 or 4?
 qhldb.element(PHYSICAL) #life drain
 qhldb.effects(area=EFFECT_BUBBLES)
 
-qhbberserk = spell.Spell("qhsbubble berserk")
+qhbberserk = spell.Spell() #bubbler berserk
 qhbberserk.area(AREA_SQUARE)
 qhbberserk.element(ICE)
 qhbberserk.effects(area=EFFECT_BUBBLES)
 
-qhib = spell.Spell("qhs ice beam", target=TARGET_AREA)
+qhib = spell.Spell(target=TARGET_AREA) #ice beam
 qhib.area(AREA_BEAM7) #7 or 4?
 qhib.element(ICE) #life drain
 qhib.effects(area=EFFECT_MAGIC_GREEN)
 
 quara_hydromancer_scout.regMelee(40) #poisons you 5 hp/turn##max melee could be wrong
 quara_hydromancer_scout.regSelfSpell("Light Healing", 25, 55, check=chance(20)) #strength?
-quara_hydromancer_scout.regTargetSpell("qhs ld beam", 125, 250, check=chance(20))
-quara_hydromancer_scout.regTargetSpell("qhs ice beam", 1, 210, check=chance(20))
-quara_hydromancer_scout.regTargetSpell("qhs lifedrain", 45, 170, check=chance(20))
-quara_hydromancer_scout.regTargetSpell("qhsbubble berserk", 130, 165, check=chance(20))
+quara_hydromancer_scout.regTargetSpell(qhldb, 125, 250, check=chance(20))
+quara_hydromancer_scout.regTargetSpell(qhib, 1, 210, check=chance(20))
+quara_hydromancer_scout.regTargetSpell(qhld, 45, 170, check=chance(20))
+quara_hydromancer_scout.regTargetSpell(qhbberserk, 130, 165, check=chance(20))

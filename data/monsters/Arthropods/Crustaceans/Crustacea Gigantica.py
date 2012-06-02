@@ -8,4 +8,5 @@ Crustacea_Gigantica.setBehavior(summonable=0, hostile=1, illusionable=0, convinc
 Crustacea_Gigantica.walkAround(energy=0, fire=0, poison=0)
 Crustacea_Gigantica.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 Crustacea_Gigantica.voices("Chrchrchr", "Klonklonk", "Chrrrrr")
+
 Crustacea_Gigantica.regMelee(160)

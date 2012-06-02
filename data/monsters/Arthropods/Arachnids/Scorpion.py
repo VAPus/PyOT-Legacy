@@ -7,5 +7,6 @@ scorpion.setSpeed(150)
 scorpion.setBehavior(summonable=310, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=5)
 scorpion.walkAround(energy=1, fire=1, poison=0)
 scorpion.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
-scorpion.regMelee(50)
 scorpion.loot( ("scorpion tail", 4.75) )
+
+scorpion.regMelee(50) #poison always up to 18~
