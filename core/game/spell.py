@@ -221,7 +221,7 @@ def field(fieldId):
     return makeFieldCallback
     
 class Spell(object):
-    def __init__(self, name, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+    def __init__(self, name=None, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
         self.name = name
         self.words = words
         self.targetType = target

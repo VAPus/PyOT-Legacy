@@ -319,7 +319,7 @@ class Creature(object):
 
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runDeferNoReturn(item, self, None, position=oldPosition)
+            game.scriptsystem.get('walkOff').runSync(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
@@ -351,6 +351,9 @@ class Creature(object):
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
 
+        assert self in newTile.creatures()
+        assert self not in oldTile.creatures()
+        
         # Clear target if we change level
         if level:
             self.cancelTarget()
@@ -413,7 +416,6 @@ class Creature(object):
 
             stream.send(self.client)
             
-
         else:
             ignore = ()
             
@@ -424,22 +426,27 @@ class Creature(object):
         newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
 
+        print oldPosition, " -> ", position, " ", spectators
         for spectator in spectators:
             # Make packet
             if not spectator.client:
                 continue
 
             canSeeNew = spectator in newPosCreatures
+            if canSeeNew:
+                assert spectator.canSee(position)
             canSeeOld = spectator in oldPosCreatures
-            isKnown = self in spectator.knownCreatures
+            if canSeeOld:
+                assert spectator.canSee(oldPosition)
             stream = spectator.packet()
 
             if not canSeeOld and canSeeNew:
                 stream.addTileCreature(position, newStackPos, self, spectator, resend=True)
 
             elif canSeeOld and not canSeeNew:
-                if isKnown:
-                    stream.removeTileItem(oldPosition, oldStackpos)
+                stream.removeTileItem(oldPosition, oldStackpos)
+                spectator.knownCreatures.remove(self)
+                self.knownBy.remove(spectator)
 
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
@@ -451,6 +458,8 @@ class Creature(object):
 
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
+                    spectator.knownCreatures.remove(self)
+                    self.knownBy.remove(spectator)
                     stream.addTileCreature(position, newStackPos, self, spectator)
             stream.send(spectator.client)
 

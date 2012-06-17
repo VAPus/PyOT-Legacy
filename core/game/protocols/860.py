@@ -19,29 +19,29 @@ class Packet(base.BasePacket):
     maxOutfits = 25
     maxMounts = 0
     protocolEnums = {}
-    protocolEnums["MSG_NONE"] = 0
-    protocolEnums["MSG_SPEAK_SAY"] = 0x01
-    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
-    protocolEnums["MSG_SPEAK_YELL"] = 0x03
-    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
-    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    protocolEnums["_MSG_NONE"] = 0
+    protocolEnums["_MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["_MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["_MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["_MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["_MSG_SPEAK_MONSTER_YELL"] = 0x14
     
-    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
-    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
-    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
-    protocolEnums["MSG_STATUS_WARNING"] = 0x15
-    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
-    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
-    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
-    protocolEnums["MSG_INFO_DESCR"] = 0x19
-    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
-    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B
+    protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["_MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["_MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["_MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["_MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["_MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["_MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["_MSG_INFO_DESCR"] = 0x19
+    protocolEnums["_MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x1B
     
     # Alias
-    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_LOOT'] = protocolEnums["MSG_INFO_DESCR"]
-    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["MSG_EVENT_ADVANCE"]
+    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['MSG_LOOT'] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["_MSG_EVENT_ADVANCE"]
     
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls

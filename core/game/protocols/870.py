@@ -3,38 +3,62 @@ import base, sys
 import math
 import game.enum
 import game.item
+from struct import pack
 
 p860 = sys.modules["game.protocols.860"]
-provide = []
+provide = [871]
 
 def vertify(): return True
 
 class Packet(base.BasePacket):
     maxOutfits = 25
     protocolEnums = {}
-    protocolEnums["MSG_NONE"] = 0
-    protocolEnums["MSG_SPEAK_SAY"] = 0x01
-    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
-    protocolEnums["MSG_SPEAK_YELL"] = 0x03
-    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
-    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    protocolEnums["_MSG_NONE"] = 0
+    protocolEnums["_MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["_MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["_MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["_MSG_NPC_TO"] = 0x04
+    protocolEnums["_MSG_NPC_FROM"] = 0x05
+    protocolEnums["_MSG_PRIVATE_FROM"] = 0x06
+    protocolEnums["_MSG_PRIVATE_TO"] = 0x06
+    protocolEnums["_MSG_CHANNEL_MANAGEMENT"] = 0x07
+    protocolEnums["_MSG_CHANNEL"] = 0x08
     
-    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
-    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
-    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
-    protocolEnums["MSG_STATUS_WARNING"] = 0x15
-    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
-    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
-    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
-    protocolEnums["MSG_INFO_DESCR"] = 0x19
-    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
-    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B
+
+    protocolEnums["_MSG_GAMEMASTER_CHANNEL"] = 0x0A
+    protocolEnums["_MSG_GAMEMASTER_PRIVATE_TO"] = 0x0B
+    protocolEnums["_MSG_CHANNEL_HIGHLIGHT"] = 0x0C
+    protocolEnums["_MSG_SPEAK_MONSTER_SAY"] = 0x0D
+    protocolEnums["_MSG_EVENT_ORANGE"] = 0x0D
+    protocolEnums["_MSG_SPEAK_MONSTER_YELL"] = 0x0E
+    protocolEnums["_MSG_STATUS_CONSOLE_ORANGE"] = 0x0E
+    protocolEnums["_MSG_STATUS_WARNING"] = 0x0F
+    
+    protocolEnums["_MSG_EVENT_ADVANCE"] = 0x10
+    protocolEnums["_MSG_STATUS_DEFAULT"] = 0x11
+    protocolEnums["_MSG_EVENT_DEFAULT"] = 0x12
+    protocolEnums["_MSG_INFO_DESCR"] = 0x13
+    protocolEnums["_MSG_STATUS_SMALL"] = 0x14
+    protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x15    
+    protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x16
+    
+    
+    
+    
+    
+    
+
+    
     
     # Alias
-    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_LOOT'] = protocolEnums["MSG_INFO_DESCR"]
-    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["MSG_EVENT_ADVANCE"]
+    protocolEnums["_MSG_DAMAGE_RECEIVED"] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums["_MSG_DAMAGE_DEALT"] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums["_MSG_LOOT"] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums["_MSG_PARTY"] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums["_MSG_HOTKEY_USE"] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums["_MSG_PARTY_MANAGEMENT"] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums["_MSG_TRADE_NPC"] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums["_MSG_EXPERIENCE"] = protocolEnums["_MSG_EVENT_ADVANCE"]
     
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
@@ -72,49 +96,48 @@ class Packet(base.BasePacket):
                     self.uint8(0xFE)""" # No animations in 8.6
             
         else:
-            print item
             self.uint16(item)
             if count:
                 self.uint8(count)
     
-    def tileDescription(self, tile, player=None):
-        # self.uint16(0x00) No animations!
-        
-        isSolid = False
-        for item in tile.topItems():
-            if item.solid:
-                isSolid = True
-                
+    def tileDescription(self, tile, player):
+        count = 0
+        for item in tile.topItems():  
             self.item(item)
+            count += 1
+            if count == 10:
+                return
         
-        if not isSolid:
-            for creature in tile.creatures():
-                if creature == None:
-                    del creature
-                    continue
-                
-                known = False
-                removeKnown = 0
-                if player:
-                    known = creature in player.knownCreatures
+        for creature in tile.creatures():
+            known = False
+            removeKnown = 0
+            if player:
+                known = creature in player.knownCreatures
                     
-                    if not known:
-                        if len(player.knownCreatures) > self.maxKnownCreatures:
-                            removeKnown = player.checkRemoveKnown()
-                            if not removeKnown:
-                                player.exit("Too many creatures in known list. Please relogin")
-                                return
-                        player.knownCreatures.add(creature)
-                        creature.knownBy.add(player)
+                if not known:
+                    if len(player.knownCreatures) > self.maxKnownCreatures:
+                        removeKnown = player.checkRemoveKnown()
+                        if not removeKnown:
+                            player.exit("Too many creatures in known list. Please relogin")
+                            return
+                    player.knownCreatures.add(creature)
+                    creature.knownBy.add(player)
                     
                     self.creature(creature, known, removeKnown)
+                else:
+                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+            if creature.creatureType != 0 and not creature.brainEvent:
+                creature.base.brain.handleThink(creature, False)
                     
-                if creature.creatureType != 0 and creature.noBrain:
-                    print "Begin think 1"
-                    creature.base.brain.handleThink(creature, False)
-
-            for item in tile.bottomItems():
-                self.item(item)
+            count += 1
+            if count == 10:
+                return
+                
+        for item in tile.bottomItems():
+            self.item(item)
+            count += 1
+            if count == 10:
+                return
         
     def creature(self, creature, known, removeKnown=0):
         if known:
@@ -142,9 +165,9 @@ class Packet(base.BasePacket):
     def skills(self, player):
         self.uint8(0xA1) # Skill type
         for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
-            self.uint8(player.skills[x+(game.enum.SKILL_LAST+1)]) # Value / Level
-            currHits = player.getStorage('__skill%d'%x) or 0
-            goalHits = player.getStorage('__skillGoal%d'%x) or config.skillFormula(10, player.getVocation().meleeSkill)
+            self.uint8(player.skills[x]) # Value / Level
+            currHits = player.data["skill_tries"][x]
+            goalHits = player.skillGoals[x]
             if currHits < 1:
                 self.uint8(0)
             else:
@@ -174,6 +197,16 @@ class Packet(base.BasePacket):
         #self.uint16(player.speed) # Speed
         
         #self.uint16(0x00) # Condition
+
+    def openChannel(self, channel):
+        self.uint8(0xAC)
+        self.uint16(channel.id)
+        self.string(channel.name)
+
+    def message(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+        self.uint8(0xB4)
+        self.uint8(self.enum(msgType))
+        self.string(message)
         
 class Protocol(base.BaseProtocol):
     Packet = Packet

@@ -472,6 +472,43 @@ class BasePacket(TibiaPacket):
         self.string(playerName)
         self.uint8(online)
         
+    def openChannels(self, channels):
+        self.uint8(0xAB)
+        self.uint8(len(channels))
+        for channelId in channels:
+            self.uint16(channelId)
+            self.string(channels[channelId].name)
+
+    def openChannel(self, channel):
+        self.uint8(0xAC)
+        self.uint16(channel.id)
+        self.string(channel.name)
+
+        # TODO: Send members for certain channels
+        self.uint32(0)
+
+    def say(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+        self.uint8(0xAA)
+        self.uint8(self.enum(msgType))
+        if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
+            if pos:
+                self.position(pos)
+            else:
+                self.position(player.position)
+            self.uint32(value)
+            self.uint8(color)
+            self.uint32(0)
+            self.uint8(0)
+        elif msgType in (MSG_EXPERIENCE, MSG_EXPERIENCE_OTHERS, MSG_HEALED, MSG_HEALED_OTHERS):
+            if pos:
+                self.position(pos)
+            else:
+                self.position(player.position)
+            self.uint32(value)
+            self.uint8(color)
+            
+        self.string(message)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):

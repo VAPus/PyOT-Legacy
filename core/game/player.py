@@ -1428,38 +1428,28 @@ class Player(Creature):
         stream.send(self.client)
     # Channel system
     def openChannels(self):
-        stream = self.packet(0xAB)
-        channels = game.chat.getChannels(self)
-
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
-
         if type(channels2) == dict:
             channels = channels2
-
-        stream.uint8(len(channels))
-        for channelId in channels:
-            stream.uint16(channelId)
-            stream.string(channels[channelId].name)
-
+            
+        stream = self.packet()
+        self.openChannels(game.chat.getChannels(self))
+        
         stream.send(self.client)
 
     def openChannel(self, id):
 
         if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
-            stream = self.packet(0xAC)
+            
             channel = game.chat.getChannel(id)
 
             if not channel:
-                print id
                 return self.cancelMessage(_l(self, "Channel not found."))
-
-            stream.uint16(id)
-            stream.string(channel.name)
-
-            # TODO: Send members for certain channels
-            stream.uint32(0)
-
+            
+            stream = self.packet()
+            stream.openChannel(channel)
             stream.send(self.client)
+
             channel.addMember(self)
 
     def openPrivateChannel(self, between):

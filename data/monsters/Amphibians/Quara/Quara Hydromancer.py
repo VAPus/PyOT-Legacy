@@ -36,4 +36,4 @@ quara_hydromancer.regSelfSpell("Light Healing", 25, 55, check=chance(20)) #stren
 quara_hydromancer.regTargetSpell(qhldb, 170, 240, check=chance(20))
 quara_hydromancer.regTargetSpell(qhib, 100, 180, check=chance(20))
 quara_hydromancer.regTargetSpell(qhld, 1, 170, check=chance(20))
-quara_hydromancer.regTargetSpell(qhbberserk 90, 150, check=chance(20))
+quara_hydromancer.regTargetSpell(qhbberserk, 90, 150, check=chance(20))
