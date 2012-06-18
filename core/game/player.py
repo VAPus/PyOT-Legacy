@@ -67,6 +67,13 @@ class Player(Creature):
         self.partyObj = None
         self.solid = not config.playerWalkthrough
 
+
+        # Cache a protocol packet instance
+        try:
+            self._packet = self.client.protocol.Packet()
+        except:
+            self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
+        
         # Extra icons
         self.extraIcons = 0
 
@@ -219,12 +226,11 @@ class Player(Creature):
                                                 "description": _l(self, self.getVocation().description())}
         return output
 
-    def packet(self, *args):
-        try:
-            return self.client.protocol.Packet(*args)
-        except:
-            p = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1])
-            return p.Packet(*args)
+    def packet(self, type=None):
+        self._packet.clear()
+        if type:
+            self._packet.uint8(type)
+        return self._packet
 
     def ip(self):
         if self.client:
