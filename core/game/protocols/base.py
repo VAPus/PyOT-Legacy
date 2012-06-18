@@ -176,7 +176,7 @@ class BasePacket(TibiaPacket):
                 else:
                     self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
-                creature.base.brain.handleThink(creature, False)
+                creature.base.brain.beginThink(creature, False)
                     
             count += 1
             if count == 10:
@@ -199,10 +199,10 @@ class BasePacket(TibiaPacket):
         self.uint8(0x14)
         self.string(message) # Error message
 
-    def outfit(self, look, addon=0, mount=0x00):
+    def outfit(self, look, addon=0, mount=0):
         
         self.uint16(look[0])
-        if look[0] != 0:
+        if look[0]:
             self.uint8(look[1])
             self.uint8(look[2])
             self.uint8(look[3])

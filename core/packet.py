@@ -1,12 +1,8 @@
 from struct import unpack, pack
 
-import sys
-if sys.subversion[0] != 'PyPy':
-    try:
-        import otcrypto
-    except:
-        import otcrypto_python as otcrypto
-else:
+try:
+    import otcrypto
+except:
     import otcrypto_python as otcrypto
 
 from zlib import adler32
@@ -97,16 +93,15 @@ class TibiaPacket(object):
         self.data = ""
         if header:
             self.uint8(header)
-
+            
     def clear(self):
         self.data = ""
-        
     # 8bit - 1byte, C type: char
     def uint8(self, data):
         self.data += chr(data)
     def int8(self, data):
         self.data += pack("<b", data)
-
+        
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
         self.data += pack("<H", data)
@@ -118,7 +113,6 @@ class TibiaPacket(object):
         self.data += pack("<I", data)
     def int32(self, data):
         self.data += pack("<i", data)
-
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
         self.data += pack("<Q", data)
@@ -143,7 +137,7 @@ class TibiaPacket(object):
             
         length = len(string)
         self.data += pack("<H", length) + string
-
+        
     def put(self, string):
         self.data += str(string)
         
@@ -160,7 +154,7 @@ class TibiaPacket(object):
             data = otcrypto.encryptXTEA(data, stream.xtea)
 
         stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
-            
+                
     #@inThread
     def sendto(self, list):
         if not list or not self.data:
@@ -175,3 +169,4 @@ class TibiaPacket(object):
                 data = otcrypto.encryptXTEA(data, client.xtea)
 
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+            

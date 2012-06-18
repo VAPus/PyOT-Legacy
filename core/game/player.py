@@ -179,7 +179,7 @@ class Player(Creature):
 
         if self.data["language"] != "en_EN":
             self.setLanguage(self.data["language"])
-
+        
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -2007,7 +2007,11 @@ class Player(Creature):
     def criticalHit(self):
         self.message(_l(self, "You strike a critical hit!"), MSG_STATUS_CONSOLE_RED)
 
-    def cancelTarget(self):
+    def cancelTarget(self, streamX=None):
+        if not streamX:
+            stream = self.packet()
+        else:
+            stream = streamX
         if self.target:
             self.target.scripts["onNextStep"] = filter(lambda a: a != self.followCallback, self.target.scripts["onNextStep"])
             """try:
@@ -2015,10 +2019,12 @@ class Player(Creature):
             except:
                 pass"""
             #self.walkPattern  =deque()
-        stream = self.packet(0xA3)
+        stream.uint8(0xA3)
 
         stream.uint32(0)
-        stream.send(self.client)
+        
+        if not streamX:
+            stream.send(self.client)
 
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:

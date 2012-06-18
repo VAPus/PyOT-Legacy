@@ -16,6 +16,7 @@ class TibiaProtocol(Protocol):
         self.onInit()
         self.data = []
         self.expect = 0
+        self.player = None
         
     def connectionMade(self):
         peer = self.transport.getPeer()

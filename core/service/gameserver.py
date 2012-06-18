@@ -199,6 +199,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     # Update last login
                     sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
 
+            self.packet = self.player.packet
             self.player.sendFirstPacket()
             self.ready = True # We can now accept other packages
 
@@ -263,8 +264,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             game.scriptsystem.get("logout").runSync(self.player)
             self.player.despawn()
             
-    def packet(self, *args):
-        return self.protocol.Packet(*args)
+    """def packet(self, type=None):
+        if self.player:
+            return (type)"""
 
 class GameFactory(protocolbase.TibiaFactory):
     __slots__ = ()

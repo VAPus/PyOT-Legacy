@@ -189,7 +189,7 @@ class Creature(object):
     def generateClientID(self):
         raise NotImplementedError("This function must be overrided by a secondary level class!")
 
-    def stepDuration(self, ground, delay=1.5):
+    def stepDuration(self, ground):
         if not ground.speed:
             ground.speed = 100
 
@@ -407,8 +407,9 @@ class Creature(object):
             if pzStatus and not pzIcon:
                 self.setIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
-                self.cancelTarget()
-                self.target = None
+                if not level:
+                    self.cancelTarget(stream)
+                    self.target = None
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
@@ -426,7 +427,6 @@ class Creature(object):
         newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
 
-        print oldPosition, " -> ", position, " ", spectators
         for spectator in spectators:
             # Make packet
             if not spectator.client:
@@ -543,7 +543,7 @@ class Creature(object):
             for spectator in getSpectators(self.position):
                 stream = spectator.packet(0x8F)
                 stream.uint32(self.clientId())
-                stream.uint16(self.speed)
+                stream.uint16(int(self.speed))
                 stream.send(spectator)
 
     def onDeath(self):
@@ -830,7 +830,7 @@ class Creature(object):
             if pzStatus and not pzIcon:
                 self.setIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)
-                self.cancelTarget()
+                self.cancelTarget(stream)
                 self.target = None
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
@@ -909,6 +909,7 @@ class Creature(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
+            assert stream.enum(messageType) > 0
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message)
@@ -923,6 +924,7 @@ class Creature(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
+            assert stream.enum(messageType) > 0
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message.upper())
@@ -937,6 +939,7 @@ class Creature(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
+            assert stream.enum(messageType) > 0
             stream.uint8(stream.enum(messageType))
             stream.position(self.position)
             stream.string(message)
@@ -997,21 +1000,8 @@ class Creature(object):
             return False
 
         offsetz = self.position.z-position.z
-
         return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz + 1) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz + 1)
-
-    def canSee2(self, position, radius=(7,5)):
-        # We are on ground level and we can't see underground
-        # We're on a diffrent instanceLevel
-        # Or We are undergorund and we may only see 2 floors
-        if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2):
-            return False
-
-        offsetz = self.position.z-position.z
-
-        return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz)
-
-
+    
     def canTarget(self, position, radius=(8,6), allowGroundChange=False):
         if self.position.instanceId != position.instanceId:
             return False

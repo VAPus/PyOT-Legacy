@@ -654,9 +654,9 @@ class MonsterBase(CreatureBase):
                 self.lootTable.append(loot)
         
 class MonsterBrain(object):
-    def beginThink(self, monster, isOk=False):
+    def beginThink(self, monster, check=False):
         if not monster.brainEvent:
-            monster.brainEvent = reactor.callLater(0, self.handleThink, monster)
+            monster.brainEvent = reactor.callLater(0, self.handleThink, monster, check)
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
@@ -704,8 +704,8 @@ class MonsterBrain(object):
                 monster.turnOffBrain()
                 return False
             
-            """if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
-                self.walkRandomStep(monster) # Walk a random step"""
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+                self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
         
@@ -738,7 +738,7 @@ class MonsterBrain(object):
                 def _():
                     if len(badDir) < 4:
                         self.walkRandomStep(monster, badDir)
-                monster.move(step, callback=_, stopIfLock=True)
+                monster.move(step, failback=_, stopIfLock=True)
             else:
                 monster.move(step, stopIfLock=True)
                 

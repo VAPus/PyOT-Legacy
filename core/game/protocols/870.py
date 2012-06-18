@@ -127,7 +127,7 @@ class Packet(base.BasePacket):
                 else:
                     self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
-                creature.base.brain.handleThink(creature, False)
+                creature.base.brain.beginThink(creature, False)
                     
             count += 1
             if count == 10:
