@@ -93,6 +93,10 @@ class Creature(object):
         self.activeSummons = []
         self.doHideHealth = False
 
+        # Light stuff
+        self.lightLevel = 0
+        self.lightColor = 0
+        
         # Options
         self.canMove = True
         self.attackable = True
@@ -1111,6 +1115,10 @@ class Creature(object):
     def playerSay(self, player, say, type, channel):
         pass # Override me
 
+    def cancelTarget(self):
+        self.target = None
+        self.targetMode = 0
+        
     # Change passability
     def setSolid(self, solid):
         if self.solid == solid:
@@ -1416,6 +1424,20 @@ class Creature(object):
     def lcp(self, context, singular, plural, n):
         return singular if n != 1 else plural
         
+    ###################
+    ### Light stuff ###
+    ###################
+    def setLight(self, level=0, color=0):
+        self.lightColor = color
+        self.lightLevel = level
+        
+        self.refreshLight()
+        
+    def refreshLight(self):
+        for spectator in getSpectators(self.position):
+            with spectator.packet() as stream:
+                stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
+                
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length

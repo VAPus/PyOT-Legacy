@@ -67,7 +67,10 @@ class Player(Creature):
         self.partyObj = None
         self.solid = not config.playerWalkthrough
 
-
+        """# Light stuff
+        self.lightLevel = 0x7F
+        self.lightColor = 27"""
+        
         # Cache a protocol packet instance
         try:
             self._packet = self.client.protocol.Packet()
@@ -288,8 +291,8 @@ class Player(Creature):
             self.refreshStatus(stream)
             self.refreshSkills(stream)
 
-            stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
-            stream.creaturelight(self.cid, 0,0)
+            stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
+            stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
             self.refreshConditions(stream)
 
             stream.magicEffect(self.position, 0x03)

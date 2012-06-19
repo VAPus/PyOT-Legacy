@@ -283,6 +283,7 @@ def loader(timer):
     # Light stuff
     print "> > Turn world time and light on...",
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
     print "%45s" % _txtColor("\t[DONE]", "blue")
     
@@ -849,6 +850,7 @@ def getLightLevel():
     """
     
     tibiaTime = getTibiaTime()
+    print tibiaTime
     light = 0
     if tibiaTime[0] >= config.tibiaDayFullLightStart and tibiaTime[0] < config.tibiaDayFullLightEnds:
         return config.tibiaFullDayLight
@@ -869,17 +871,13 @@ def checkLightLevel(lightValue=[None]):
     
     """
     
-    l = getLightLevel()
-    if lightValue[0] != l:
+    light = getLightLevel()
+    if lightValue[0] != light:
         for c in game.player.allPlayersObject:
-            stream = c.packet()
-            
-            # Make sure this player actually is online. TODO: Track them in a seperate list?
-            if not stream: continue
-            
-            stream.worldlight(l, game.enum.LIGHTCOLOR_WHITE)
-            stream.send(c.client)
-        lightValue[0] = l
+            if not c.client: continue
+            with c.packet() as stream:
+                stream.worldlight(light, LIGHTCOLOR_DEFAULT)
+        lightValue[0] = light
         
 # Player lookup and mail
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok

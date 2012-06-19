@@ -233,8 +233,8 @@ class BasePacket(TibiaPacket):
             
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
-        self.uint8(0) # Light
-        self.uint8(0) # Light
+        self.uint8(creature.lightLevel) # Light
+        self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.skull) # Skull
         self.uint8(creature.shield) # Party/Shield
