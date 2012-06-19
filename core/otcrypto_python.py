@@ -33,10 +33,11 @@ def decryptXTEA(stream, k):
     return buffer
 
 def encryptXTEA(stream, k):
+    
     buffer = ""
     pos = 0
 
-    pad = len(stream) % 8
+    pad = (8 - (len(stream) % 8)) % 8
     if pad:
         stream += "\x33" * pad
 
