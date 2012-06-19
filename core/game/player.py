@@ -74,6 +74,8 @@ class Player(Creature):
         except:
             self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
         
+        self._packet.stream = self.client
+        
         # Extra icons
         self.extraIcons = 0
 
@@ -244,12 +246,11 @@ class Player(Creature):
                                            self.position.y - 6, self.position.z),
                                   18, 14, self)
         else:
-            stream = self.packet(0x64) # Map description
-            stream.position(self.position)
-            stream.mapDescription(Position(self.position.x - 8,
-                                           self.position.y - 6, self.position.z),
-                                  18, 14, self)
-            stream.send(self.client)
+            with self.packet(0x64) as stream: # Map description
+                stream.position(self.position)
+                stream.mapDescription(Position(self.position.x - 8,
+                                            self.position.y - 6, self.position.z),
+                                    18, 14, self)
 
     def sendFirstPacket(self):
         if not self.data["health"]:
@@ -261,39 +262,37 @@ class Player(Creature):
         self.client.ready = True
         self.alive = True
 
-        stream = self.packet(0x0A)
+        with self.packet(0x0A) as stream:
+            stream.uint32(self.clientId()) # Cid
+            stream.uint16(config.drawingSpeed) # Drawing speed
+            stream.uint8(1) # Rule violations?
 
-        stream.uint32(self.clientId()) # Cid
-        stream.uint16(config.drawingSpeed) # Drawing speed
-        stream.uint8(1) # Rule violations?
+            #stream.violation(0)
 
-        #stream.violation(0)
+            stream.uint8(0x64) # Map description
+            stream.position(self.position)
+            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
+                                        self.position.z),
+                                18, 14, self)
 
-        stream.uint8(0x64) # Map description
-        stream.position(self.position)
-        stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
-                                       self.position.z),
-                              18, 14, self)
+            for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
+                if self.inventory[slot-1]:
+                    stream.uint8(0x78)
+                    stream.uint8(slot)
 
-        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
-            if self.inventory[slot-1]:
-                stream.uint8(0x78)
-                stream.uint8(slot)
+                    stream.item(self.inventory[slot-1])
+                else:
+                    stream.uint8(0x79)
+                    stream.uint8(slot)
 
-                stream.item(self.inventory[slot-1])
-            else:
-                stream.uint8(0x79)
-                stream.uint8(slot)
+            self.refreshStatus(stream)
+            self.refreshSkills(stream)
 
-        self.refreshStatus(stream)
-        self.refreshSkills(stream)
+            stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
+            stream.creaturelight(self.cid, 0,0)
+            self.refreshConditions(stream)
 
-        stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_WHITE)
-        stream.creaturelight(self.cid, 0,0)
-        self.refreshConditions(stream)
-
-        stream.magicEffect(self.position, 0x03)
-        stream.send(self.client)
+            stream.magicEffect(self.position, 0x03)
 
         self.sendVipList()
 
@@ -312,29 +311,14 @@ class Player(Creature):
 
             reactor.callLater(self.rates[1], loseStamina)
 
-    def refreshStatus(self, streamX=None):
-        if not streamX:
-            if self.client:
-                stream = self.packet()
-            else:
-                return False # No client
+    def refreshStatus(self, stream=None):
+        if stream:
+            stream.status(self)
         else:
-            stream = streamX
+            with self.packet() as stream:
+                stream.status(self)
 
-        stream.status(self)
-
-        if not streamX:
-            stream.send(self.client)
-
-    def refreshConditions(self, streamX=None):
-        if not streamX:
-            if self.client:
-                stream = self.packet()
-            else:
-                return False # No client
-        else:
-            stream = streamX
-
+    def refreshConditions(self, stream=None):
         send = self.extraIcons
         for conId in self.conditions:
             try:
@@ -342,11 +326,12 @@ class Player(Creature):
                 send += conId
             except:
                 pass
-
-        stream.icons(send)
-
-        if not streamX:
-            stream.send(self.client)
+            
+        if stream:
+            stream.icons(send)
+        else:
+            with self.packet() as stream:
+                stream.icons(send)
 
     def setIcon(self, icon):
         if not self.extraIcons & icon:
@@ -356,18 +341,14 @@ class Player(Creature):
         if self.extraIcons & icon:
             self.extraIcons -= icon
 
-    def refreshSkills(self, streamX=None):
-        if not streamX:
-            stream = self.packet()
+    def refreshSkills(self, stream=None):
+        if stream:
+            stream.skills(self)
+
         else:
-            stream = streamX
-
-        stream.skills(self)
-
-        if not streamX:
-            stream.send(self.client)
-
-
+            with self.packet() as stream:
+                stream.skills(self)
+                
     def pong(self):
         self.packet(0x1E).send(self.client)
 
@@ -484,11 +465,10 @@ class Player(Creature):
                         bags.append(item)
                     index += 1
 
-        if count and foundCount < count:
+        if (count and foundCount < count) or not items:
             return None
-        elif not items:
-            return None
-        elif items and not count:
+
+        elif not count:
             if items[0][0] == 1:
                 self.inventory[items[0][3]] = None
                 stream.removeInventoryItem(items[0][2]+1)
@@ -599,17 +579,13 @@ class Player(Creature):
                 pass
 
             del bag.container.items[position.z]
-            stream = self.packet()
-            stream.removeContainerItem(position.y - 64, position.z)
-            if update:
-                self.refreshStatus(stream)
-            stream.send(self.client)
+            with self.packet() as stream:
+                stream.removeContainerItem(position.y - 64, position.z)
+                if update:
+                    self.refreshStatus(stream)
 
     def getContainer(self, openId):
-        print openId
-
         try:
-            print self.openContainers[openId]
             return self.openContainers[openId]
         except:
             return

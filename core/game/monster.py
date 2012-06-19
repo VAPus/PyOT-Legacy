@@ -684,7 +684,7 @@ class MonsterBrain(object):
             monster.turnOffBrain()
             return False
         elif ret == True:
-            monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
+            monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
             return True
 
         #for feature in monster.base.brainFeatures:
@@ -694,7 +694,7 @@ class MonsterBrain(object):
             monster.turnOffBrain()
             return False
         elif ret == True:
-            monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
+            monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
             return True
                     
         # Are anyone watching?
@@ -707,7 +707,7 @@ class MonsterBrain(object):
             if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
-        monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
+        monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
         
     def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:

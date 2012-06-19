@@ -75,7 +75,6 @@ class Creature(object):
         self.addon = self.data["lookaddons"]
         self.action = None
         self.lastAction = 0
-        self.extAction = 0
         self.lastStep = 0
         self.target = None # target for follow/attacks
         self.targetMode = 0 # 0 = no particular reason, 1 = attack, 2 = follow
@@ -107,21 +106,13 @@ class Creature(object):
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
-        if self.lastAction >= _time:
+        if self.lastAction > _time:
             if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
                 return False
             reactor.callLater(self.lastAction - _time, *argc, **kwargs)
             return False
         else:
             self.lastAction = _time
-            return True
-
-    def extActionLock(self, *argc, **kwargs):
-        _time = time.time()
-        if self.extAction >= _time:
-            reactor.callLater(self.extAction - _time, *argc, **kwargs)
-            return False
-        else:
             return True
             
     def __repr__(self):
@@ -131,11 +122,10 @@ class Creature(object):
     def actionDecor(f):
         """ Decorator used by external actions """
         def new_f(creature, *argc, **kwargs):
-            if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs) or not creature.extActionLock(new_f, creature, *argc, **kwargs) :
+            if not creature.alive or not creature.actionLock(new_f, creature, *argc, **kwargs):
                 return
             else:
                 _time = time.time()
-                creature.extAction = _time
                 creature.lastAction = _time
                 f(creature, *argc, **kwargs)
 
@@ -346,7 +336,6 @@ class Creature(object):
         self.lastStep = _time
         delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction = _time + delay
-        self.extAction = _time + delay
 
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
@@ -870,7 +859,7 @@ class Creature(object):
             return
 
         self.direction = direction
-        self.extAction = time.time() + 0.15
+        self.lastAction = time.time() + 0.15
 
         # Make package
         for spectator in getSpectators(self.position):

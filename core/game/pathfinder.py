@@ -81,7 +81,7 @@ class AStar(object):
             # If no route can be found, we didn't find a path
             if t is None:
                 self.found = False
-                break
+                return
             else:
                 currentNode = t
                 
@@ -158,11 +158,12 @@ class AStar(object):
         self.result = _result
     
     def getNode(self, x, y):
+        point = x + (y << 8)
         try:
-            return self.nodes[x,y]
+            return self.nodes[point]
         except KeyError:
             node = Node(x,y)
-            self.nodes[x,y] = node
+            self.nodes[point] = node
             return node
             
     def getCheapest(self):
@@ -250,5 +251,18 @@ class AStar(object):
                 _openNodes.add(n)            
             
 def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
-    return AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId).result
+    cachePoint = (xStart, yStart, xGoal, yGoal, zStart)
+    
+    try:
+        return AStarRouteCache[cachePoint]
+    except:
+        pass
+    
+    aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId)
+    if aStar.found:
+        AStarRouteCache[cachePoint] = aStar.result
+        return aStar.result
+    else:
+        AStarRouteCache[cachePoint] = None
+        return None
     

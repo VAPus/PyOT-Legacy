@@ -88,14 +88,17 @@ class TibiaPacketReader(object):
         return game.map.StackPosition(x, y, z, stackPos, instance)
         
 class TibiaPacket(object):
-    __slots__ = ('data')
+    __slots__ = ('data', 'stream')
     def __init__(self, header=None):
         self.data = ""
+        self.stream = None
+        
         if header:
             self.uint8(header)
             
     def clear(self):
         self.data = ""
+        
     # 8bit - 1byte, C type: char
     def uint8(self, data):
         self.data += chr(data)
@@ -170,3 +173,9 @@ class TibiaPacket(object):
 
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
             
+    # For use with with statement. Easier :)
+    def __exit__(self, type, value, traceback):
+        self.send(self.stream)
+        
+    def __enter__(self):
+        return self

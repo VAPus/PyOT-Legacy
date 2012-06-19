@@ -358,7 +358,7 @@ def autoWalkCreature(creature, callback=None):
     """
     
     try:
-        creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(creature.positionInDirection(creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
+        creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
@@ -399,7 +399,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
         callback(None)
 
     
-@action()
+#@action()
 def handleAutoWalking(creature, callback=None, level=0):
     if not creature.walkPattern:
         return
@@ -410,7 +410,7 @@ def handleAutoWalking(creature, callback=None, level=0):
     if creature.walkPattern:
         def mcallback():
             try:
-                creature.action = reactor.callLater(creature.stepDuration(game.map.getTile(positionInDirection(creature.position, creature.walkPattern[0])).getThing(0)), handleAutoWalking, creature, callback)
+                creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
             except IndexError:
                 return
 
