@@ -667,6 +667,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xE7: # Thanks
             self.handleThanks(player, packet)
+            
+        elif packetType == 0xE8:
+            self.handleDebugAssert(player, packet)
         
         elif packetType == 0xF0:
             player.questLog()
@@ -1614,3 +1617,6 @@ class BaseProtocol(object):
         message = game.chat.getMessage(messageId)
         
         yield game.scriptsystem.get("thankYou").runDefer(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
+
+    def handleDebugAssert(self, player, packet):
+        logger.writeEntry("debugs", '\n'.join([packet.string(), packet.string(), packet.string(), packet.string()]), player.name(), "IP:%s" % player.getIP() )

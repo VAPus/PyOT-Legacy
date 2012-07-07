@@ -20,6 +20,7 @@ import game.scriptsystem
 import game.errors
 import glob
 import game.protocol
+import core.logger
 import game.chat
 import __builtin__
 import re
@@ -215,6 +216,7 @@ def loader(timer):
     __builtin__.StackPosition = game.map.StackPosition
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
+    __builtin__.logger = core.logger
     
     # Resources
     __builtin__.genMonster = game.monster.genMonster
