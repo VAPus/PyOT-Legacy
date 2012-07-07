@@ -7,4 +7,4 @@ fish.setSpeed(250) #?
 fish.setBehavior(summonable=0, hostile=0, illusionable=1, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=25) #runs hostile?
 fish.walkAround(energy=1, fire=0, poison=0)
 fish.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
-fish.voices("Blib!"; "Blub!")
+fish.voices("Blib!", "Blub!")

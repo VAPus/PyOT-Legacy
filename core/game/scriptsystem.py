@@ -535,11 +535,12 @@ def handleModule(name):
         tb_list = traceback.format_list(tb_list)
         
         print "--------------------------"
-        print "EXCEPTION IN SCRIPT:"
+        print "EXCEPTION IN SCRIPT (%s):" % exc_value.filename
         
         for elt in tb_list[1:]:
             print elt
-
+        if exc_type == SyntaxError:
+            print ">>>", exc_value.text,
         print "%s: %s" % (exc_type.__name__, exc_value)
         print "--------------------------"
         

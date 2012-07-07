@@ -850,7 +850,6 @@ def getLightLevel():
     """
     
     tibiaTime = getTibiaTime()
-    print tibiaTime
     light = 0
     if tibiaTime[0] >= config.tibiaDayFullLightStart and tibiaTime[0] < config.tibiaDayFullLightEnds:
         return config.tibiaFullDayLight
@@ -865,19 +864,21 @@ def getLightLevel():
             lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft)
             return config.tibiaFullDayLight - lightChange
         
-def checkLightLevel(lightValue=[None]):
+LIGHT_LEVEL = getLightLevel()
+
+def checkLightLevel():
     """ Check if the lightlevel have changed and send updates to the players.
-    **NEVER call with parameters!**
     
     """
     
     light = getLightLevel()
-    if lightValue[0] != light:
+    if LIGHT_LEVEL != light:
         for c in game.player.allPlayersObject:
             if not c.client: continue
             with c.packet() as stream:
                 stream.worldlight(light, LIGHTCOLOR_DEFAULT)
-        lightValue[0] = light
+        global LIGHT_LEVEL
+        LIGHT_LEVEL = light
         
 # Player lookup and mail
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok

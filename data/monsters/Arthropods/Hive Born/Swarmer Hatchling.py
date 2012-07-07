@@ -7,5 +7,5 @@ swarmer_hatchling.setSpeed(250) #incorrect
 swarmer_hatchling.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)
 swarmer_hatchling.walkAround(energy=0, fire=1, poison=0) #?
 swarmer_hatchling.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
-name.voices("Flzlzlzlzlzlzlz?")
+swarmer_hatchling.voices("Flzlzlzlzlzlzlz?")
 swarmer_hatchling.regMelee(0)
