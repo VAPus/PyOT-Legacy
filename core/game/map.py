@@ -332,7 +332,12 @@ class Tile(object):
         
     def topItems(self):
         for n in xrange(self._depack(PACK_ITEMS)):
-            yield self.things[n]
+            try:
+                yield self.things[n]
+            except:
+                print "XXX: Hack applied"
+                self._modpack(PACK_ITEMS, -1)
+                return
             
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())
