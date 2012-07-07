@@ -1,7 +1,7 @@
 Deepling_Worker = genMonster("Deepling Worker", (470 , 15497), "a deepling worker")
 Deepling_Worker.setHealth(190)
 Deepling_Worker.bloodType(color="blood")
-Deepling_Worker.setDefense(armor=1, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
+Deepling_Worker.setDefense(armor=15, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
 Deepling_Worker.setExperience(130)
 Deepling_Worker.setSpeed(200) #?
 Deepling_Worker.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
