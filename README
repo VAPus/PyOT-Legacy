@@ -1,48 +1,36 @@
 In order to run PyOT you need:
 ================================
 
-* Python 2.7+
+* Python 2.7+ or Pypy 1.7+
 
 * Twisted 10+
 
 * zope.interface
 
-* MySQLdb 1.2.3 (or pymysql)
+* MySQLdb 1.2.3+ (or pymysql)
 
-* cjson/usjon/simplejson
+* Optional: cjson/usjon/simplejson (gives a speedup to saving and loading of players when your using Python)
 
-* pywin32 if you intend to use IOCP (default on windows)
-
-* setuptools / python distribute to compile the cryptomodule
-
-
-You also need to compile otcrypto:
-==================================
-
-python setup.py build # You can also choose install here, but it might conflict on some systems
-cp build/*/*.so core
-
-There is a precompiled version inside the WINDOWS folder.
-
+* Optional: pywin32 if you intend to use IOCP (default on windows)
 
 Links for Windows:
 ------------------
 
-http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi
+http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
 
 http://www.codegood.com/download/10/
 
-http://twistedmatrix.com/Releases/Twisted/11.0/Twisted-11.0.0.winxp32-py2.7.msi
+http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.1.0.win32-py2.7.msi
 
-http://downloads.sourceforge.net/project/pywin32/pywin32/Build216/pywin32-216.win32-py2.7.exe?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fpywin32%2Ffiles%2Fpywin32%2FBuild216%2F&ts=1310085256&use_mirror=netcologne
+http://sourceforge.net/projects/pywin32/files/pywin32/Build%20217/pywin32-217.win32-py2.7.exe/download
 
-Grab zope.interface-3.8.0.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
+Grab zope.interface-4.8.1.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
 
 and last
 
 Base-12.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
 
-note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood if you really need it)
+note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of most of the libs except mysqldb, which you can get on codegood.com if you really need it)
 
 
 Installation
