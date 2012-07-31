@@ -12,7 +12,7 @@ def getGuildNameById(id):
 def guildExists(id):
     if getGuildById(id) is not None:
         return True
-    else
+    else:
         return False
         
 class Guild(object):
