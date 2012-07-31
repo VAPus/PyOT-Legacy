@@ -38,10 +38,10 @@ class Packet(base.BasePacket):
     protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x1B
     
     # Alias
-    protocolEnums['MSG_DAMAGE_RECEIVED'] = protocolEnums["_MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_DAMAGE_DEALT'] = protocolEnums["_MSG_EVENT_DEFAULT"]
-    protocolEnums['MSG_LOOT'] = protocolEnums["_MSG_INFO_DESCR"]
-    protocolEnums['MSG_EXPERIENCE'] = protocolEnums["_MSG_EVENT_ADVANCE"]
+    protocolEnums['_MSG_DAMAGE_RECEIVED'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_DAMAGE_DEALT'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_LOOT'] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums['_MSG_EXPERIENCE'] = protocolEnums["_MSG_EVENT_ADVANCE"]
     
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
