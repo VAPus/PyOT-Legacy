@@ -23,6 +23,8 @@ class Packet(base.BasePacket):
     protocolEnums["_MSG_SPEAK_SAY"] = 0x01
     protocolEnums["_MSG_SPEAK_WHISPER"] = 0x02
     protocolEnums["_MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["_MSG_NPC_TO"] = 0x04
+    protocolEnums["_MSG_NPC_FROM"] = 0x05
     protocolEnums["_MSG_SPEAK_MONSTER_SAY"] = 0x13
     protocolEnums["_MSG_SPEAK_MONSTER_YELL"] = 0x14
     
