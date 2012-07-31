@@ -6,11 +6,8 @@ def getGuildById(id):
     except:
         return None
         
-def getGuildId(name):
-    try:
-        return guilds[name]
-    except:
-    	return None
+def getGuildNameById(id):
+    return getGuildById(id).name
         
 class Guild(object):
     def __init__(self, id, name, owner):
