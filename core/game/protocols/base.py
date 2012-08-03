@@ -1049,7 +1049,7 @@ class BaseProtocol(object):
                         stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
                     stream.send(player.client)
         else:
-            if game.map.getTile(toPosition).creatures() is not None:
+            if game.map.getTile(toPosition).creatures():
                 player.notEnoughRoom()
                 return
                 
