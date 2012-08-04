@@ -182,6 +182,7 @@ if not config.monsterStairHops:
 @register("use", sewers)
 def sewer(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
+        crePos = creature.position.copy()
         newPos = position.copy()
         newPos.z += 1
         try:
