@@ -7,10 +7,11 @@ N = int(config.RSAKeys["n"])
 def bytes( long_int ):
     bytes = []
     while long_int != 0:
-        b = long_int % 256
-        bytes.insert( 0, chr(b) )
-        long_int //= 256
-    bytes.insert( 0, "\x00" )
+        b = long_int & 255
+        bytes.append( chr(b) )
+        long_int >>= 8
+    bytes.append( "\x00" )
+    bytes.reverse()
     return ''.join(bytes)
 
 def decryptRSA(stream):
@@ -18,8 +19,7 @@ def decryptRSA(stream):
 
 def decryptXTEA(stream, k):
     buffer = ""
-    pos = 0
-    while pos < (len(stream)):
+    for pos in xrange(0, len(stream), 8):
         v0, v1 = unpack("<2L", stream[pos:pos+8])
         
         sum = (0x9E3779B9 * 32) & 0xffffffff
@@ -28,21 +28,16 @@ def decryptXTEA(stream, k):
             sum = (sum - 0x9E3779B9) & 0xffffffff
             v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ (sum + k[sum & 3]))) & 0xffffffff
         buffer += pack("<2L", v0, v1)
-        pos += 8
 
     return buffer
 
 def encryptXTEA(stream, k):
-    
     buffer = ""
-    pos = 0
-
-    pad = (8 - (len(stream) % 8)) % 8
+    pad = 8 - (len(stream) & 7)
     if pad:
         stream += "\x33" * pad
 
-    pos = 0
-    while pos < (len(stream)):
+    for pos in xrange(0, len(stream), 8):
         v0, v1= unpack("<2L", stream[pos:pos+8])
         sum = 0
         for i in xrange(32):
@@ -50,7 +45,6 @@ def encryptXTEA(stream, k):
             sum = (sum + 0x9E3779B9) & 0xffffffff
             v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ (sum + k[sum>>11 & 3]))) & 0xffffffff
         buffer += pack("<2L", v0, v1)
-        pos += 8
 
 
     return buffer
