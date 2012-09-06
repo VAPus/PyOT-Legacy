@@ -24,10 +24,10 @@ class TibiaPacketReader(object):
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return ord(self.data[self.pos-1:self.pos])
+        return ord(self.data[self.pos-1])
     def int8(self):
         self.pos += 1
-        return unpack("<b", self.data[self.pos-1:self.pos])[0]
+        return unpack("<b", self.data[self.pos-1])[0]
 
     # 16bit - 2bytes, C type: short
     def uint16(self):

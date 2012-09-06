@@ -40,7 +40,15 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             return
 
         # Set the XTEA key
-        self.xtea = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+        k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+        sum = 0
+        a, b = [], []
+        for x in xrange(32):
+            a.append(sum + k[sum & 3] & 0xffffffff)
+            sum = (sum + 0x9E3779B9) & 0xffffffff
+            b.append(sum + k[sum>>11 & 3] & 0xffffffff)
+                
+        self.xtea = tuple(a + b)
 
         # Check if version is correct
         if version > config.versionMax or version < config.versionMin:

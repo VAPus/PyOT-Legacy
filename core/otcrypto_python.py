@@ -21,12 +21,9 @@ def decryptXTEA(stream, k):
     buffer = ""
     for pos in xrange(0, len(stream), 8):
         v0, v1 = unpack("<2L", stream[pos:pos+8])
-        
-        sum = (0x9E3779B9 * 32) & 0xffffffff
         for i in xrange(32):
-            v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (sum + k[sum>>11 & 3]))) & 0xffffffff
-            sum = (sum - 0x9E3779B9) & 0xffffffff
-            v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ (sum + k[sum & 3]))) & 0xffffffff
+            v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (k[63-i]))) & 0xffffffff
+            v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ (k[31-i]))) & 0xffffffff
         buffer += pack("<2L", v0, v1)
 
     return buffer
@@ -39,11 +36,9 @@ def encryptXTEA(stream, k):
 
     for pos in xrange(0, len(stream), 8):
         v0, v1= unpack("<2L", stream[pos:pos+8])
-        sum = 0
         for i in xrange(32):
-            v0 = (v0 + (((v1<<4 ^ v1>>5) + v1) ^ (sum + k[sum & 3]))) & 0xffffffff
-            sum = (sum + 0x9E3779B9) & 0xffffffff
-            v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ (sum + k[sum>>11 & 3]))) & 0xffffffff
+            v0 = (v0 + (((v1<<4 ^ v1>>5) + v1) ^ (k[i]))) & 0xffffffff
+            v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ (k[32 + i]))) & 0xffffffff
         buffer += pack("<2L", v0, v1)
 
 

@@ -87,7 +87,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 return
 
             # Set the XTEA key
-            self.xtea = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+            k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+            sum = 0
+            a, b = [], []
+            for x in xrange(32):
+                a.append(sum + k[sum & 3] & 0xffffffff)
+                sum = (sum + 0x9E3779B9) & 0xffffffff
+                b.append(sum + k[sum>>11 & 3] & 0xffffffff)
+                
+            self.xtea = tuple(a + b)
 
             ip = self.transport.getPeer().host
             if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
@@ -242,9 +250,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
     def onPacket(self, packet):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
-        packet.pos = 0
-        packet.data = packet.data[2:2+packet.uint16()]
-        packet.pos = 0
+        packet.pos = 2
 
         self.protocol.handle(self.player, packet)
 

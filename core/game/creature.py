@@ -113,7 +113,8 @@ class Creature(object):
         if self.lastAction > _time:
             if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
                 return False
-            reactor.callLater(self.lastAction - _time, *argc, **kwargs)
+            else:
+                reactor.callLater(self.lastAction - _time, *argc, **kwargs)
             return False
         else:
             self.lastAction = _time
@@ -243,7 +244,7 @@ class Creature(object):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
 
-        if not self.data["health"] or not self.canMove:
+        if not self.data["health"] or not self.canMove or not self.speed:
             return False
             
         oldPosition = self.position.copy()
