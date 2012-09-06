@@ -11,6 +11,7 @@ import io
 import struct
 import sys
 import itertools
+import gc
 
 ##### Position class ####
 def __uid():
@@ -835,6 +836,7 @@ def load(sectorX, sectorY, instanceId):
     
     scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
     
+    gc.collect()
     return True
 
 # Map cleaner

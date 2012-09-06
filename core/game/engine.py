@@ -872,14 +872,14 @@ def checkLightLevel():
     """ Check if the lightlevel have changed and send updates to the players.
     
     """
-    
+    global LIGHT_LEVEL
     light = getLightLevel()
     if LIGHT_LEVEL != light:
         for c in game.player.allPlayersObject:
             if not c.client: continue
             with c.packet() as stream:
                 stream.worldlight(light, LIGHTCOLOR_DEFAULT)
-        global LIGHT_LEVEL
+
         LIGHT_LEVEL = light
         
 # Player lookup and mail

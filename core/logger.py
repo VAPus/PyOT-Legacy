@@ -6,8 +6,8 @@ files = {}
 files["debugs"] = open("logs/debugs.log", "a")
 
 def writeEntry(file, data, producer="UNKNOWN", extra=""):
+    global files
     if file not in files:
-        global files
         files[file] = open("logs/%s.log" % file, "a")
 
     producer = "%s: By %s - %s" % (file.upper(), producer, asctime())
