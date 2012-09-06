@@ -174,8 +174,8 @@ def getTile(pos):
     x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
     iX = x / 32
     iY = y / 32
-    pX = x -iX * 32
-    pY = y -iY * 32
+    pX = x & 31
+    pY = y & 31
 
     try:
         area = knownMap[instanceId]
@@ -183,7 +183,7 @@ def getTile(pos):
         knownMap[instanceId] = {}
         area = knownMap[instanceId]
         
-    sectorSum = (iX * 32768) + iY
+    sectorSum = (iX << 15) + iY
     try:
         return area[sectorSum][z][pX][pY]
     except KeyError:
@@ -196,10 +196,10 @@ def getTile(pos):
         return None
 
 def getTileConst(x,y,z,instanceId):
-    iX = x / 32
-    iY = y / 32
-    pX = x -iX * 32
-    pY = y -iY * 32
+    iX = x >> 5
+    iY = y >> 5
+    pX = x & 31
+    pY = y & 31
 
     try:
         area = knownMap[instanceId]
@@ -207,7 +207,7 @@ def getTileConst(x,y,z,instanceId):
         knownMap[instanceId] = {}
         area = knownMap[instanceId]
         
-    sectorSum = (iX * 32768) + iY
+    sectorSum = (iX << 15) + iY
     try:
         return area[sectorSum][z][pX][pY]
     except KeyError:
@@ -552,7 +552,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 """
 
 def loadSectorMap(code, instanceId, baseX, baseY):
-    thisSectorMap = {}
+    thisSectorMap = [None, None, None, None,None, None, None, None,None, None, None, None,None, None, None, None]
     pos = 0
     codeLength = len(code)
     skip = False
