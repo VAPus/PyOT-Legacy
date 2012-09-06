@@ -1,11 +1,24 @@
-import re
+#!/usr/bin/python2
 
+import re
+import argparse
 from xml.dom.minidom import parse
 
-import argparse
+# Helpers
+functions = {}
+def functionName(type):
+    global functions
+    if not type in functions:
+        functions[type] = 0
+        return type
+    name = type + str(functions[type])
+    functions[type] += 1
+    return name
+    
+
 parser = argparse.ArgumentParser(description='Process a script')
 parser.add_argument('script', metavar='<script>', type=str, help='A script')
-                   
+USE_UNIQUE_ID = False                   
 args = parser.parse_args()
 if args.script:
     fileName = args.script
@@ -17,6 +30,11 @@ dom = parse("actions.xml")
 list = []
 for element in dom.getElementsByTagName("action"):
         if element.getAttribute("script").split("/")[-1] == fileName or element.getAttribute("value").split("/")[-1] == fileName:
+            uniqueid = element.getAttribute("uniqueid")
+            if uniqueid:
+                list.append(str(uniqueid))
+                USE_UNIQUE_ID = True
+                continue
             try:
                 list.append(int(element.getAttribute("itemid")))
             except:
@@ -24,54 +42,72 @@ for element in dom.getElementsByTagName("action"):
                     list.append(i)
 
 file = file.replace("math.random(1, #", "math.random(0, #")
-lenRe = re.compile(r"#(?P<a>[^)]*)")
+lenRe = re.compile(r"#(?P<a>[^) ]*)")
 file = lenRe.sub(r"len(\g<a>)-1", file)
-file = file.replace("local ", "").replace(" then", ":").replace(" true", " True").replace(" false", " False").replace(" .. ", " + ").replace("-- ", "# ").replace("elseif", "elif").replace("else", "else:").replace("itemEx", "item2").replace("fromPosition", "frompos").replace("toPosition", "topos")
+
+# Replace all true with True and false with False
+trueRe = re.compile(r" (?i)true")
+falseRe = re.compile(r" (?i)false")
+file = trueRe.sub(r" True", file)
+file = falseRe.sub(r" True", file)
+
+file = file.replace("local ", "").replace(" then", ":").replace(" .. ", " + ").replace("--- ", "# ").replace("-- ", "# ").replace("elseif", "elif").replace("else", "else:").replace("itemEx", "item2").replace("fromPosition", "frompos").replace("toPosition", "topos")
 newcode = ""
 level = 0
-regLine = ""
-if "onUse" in file:
-    if file.count("item2") >= 2 or file.count("topos") >= 2:
-        file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUseWith(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)")
-        try:
-            regLine = 'register("useWith", %s, onUseWith)' % tuple(list)
-        except:
-            regLine = 'register("useWith", %s, onUseWith)' % repr(tuple(list))
-    else:
-        file = file.replace("onUse(cid, item, frompos, item2, topos)", "onUse(creature, thing, position, stackpos, **k)")
-        try:
-            regLine = 'register("use", %s, onUse)' % tuple(list)
-        except:
-            regLine = 'register("use", %s, onUse)' % repr(tuple(list))
-
-if "onEquip" in file:
-    file = file.replace("onEquip(cid, item, slot)", "onEquip(creature, thing, slot, **k)")
-    try:
-        regLine = regLine + '\nregister("equip", %s, onEquip)' % tuple(list)
-    except:
-        regLine = regLine + '\nregister("equip", %s, onEquip' % repr(tuple(list))
+data = []
+for line in file.split("\n"):
+    if "onUse" in line:
+        if line.count("item2") >= 2 or line.count("topos") >= 2:
+            NAME = functionName("onUseWith")
+            line = line.replace("onUse(cid, item, frompos, item2, topos)", "%s(creature, thing, position, stackpos, onThing, onPosition, onStackpos, **k)" % NAME)
             
-if "onDeEquip" in file:
-    file = file.replace("onDeEquip(cid, item, slot)", "unEquip(creature, thing, slot, **k)")
-    try:
-        regLine = regLine + '\nregister("unEquip", %s, unEquip)' % tuple(list)
-    except:
-        regLine = regLine + '\nregister("unEquip", %s, unEquip)' % repr(tuple(list))
-            
-if "onStepIn" in file:
-    file = file.replace("onStepIn(cid, item, position, fromPosition)", "walkOn(creature, thing, position, fromPosition, **k)")
-    try:
-        regLine = regLine + '\nregister("walkOn", %s, walkOn)' % tuple(list)
-    except:
-        regLine = regLine + '\nregister("walkOn", %s, walkOn)' % repr(tuple(list))
+            try:
+                data.append('@register("useWith", %s)' % tuple(list))
+            except:
+                data.append('@register("useWith", %s)' % repr(tuple(list)))
+        else:
+            NAME = functionName("onUse")
+            line = line.replace("onUse(cid, item, frompos, item2, topos)", "%s(creature, thing, position, stackpos, **k)" % NAME)
+            try:
+                data.append('@register("use", %s)' % tuple(list))
+            except:
+                data.append('@register("use", %s)' % repr(tuple(list)))
 
-if "onStepOut" in file:
-    file = file.replace("onStepOut(cid, item, position, fromPosition)", "walkOff(creature, thing, position, fromPosition, **k)")
-    try:
-        regLine = regLine + '\nregister("walkOff", %s, walkOff)' % tuple(list)
-    except:
-        regLine = regLine + '\nregister("walkOff", %s, walkOff)' % repr(tuple(list))
-        
+    elif "onEquip" in line:
+        NAME = functionName("onEquip")
+        line = line.replace("onEquip(cid, item, slot)", "%s(creature, thing, slot, **k)" % NAME)
+        try:
+            data.append('@register("equip", %s)' % tuple(list))
+        except:
+            data.append('@register("equip", %s' % repr(tuple(list)))
+                
+    elif "onDeEquip" in line:
+        NAME = functionName("unEquip")
+        line = line.replace("onDeEquip(cid, item, slot)", "%s(creature, thing, slot, **k)" % NAME)
+        try:
+            data.append('@register("unEquip", %s)' % tuple(list))
+        except:
+            data.append('@register("unEquip", %s)' % repr(tuple(list)))
+                
+    elif "onStepIn" in line:
+        NAME = functionName("walkOn")
+        line = line.replace("onStepIn(cid, item, position, fromPosition)", "%s(creature, thing, position, fromPosition, **k)" % NAME)
+        try:
+            data.append('@register("walkOn", %s)' % tuple(list))
+        except:
+            data.append('@register("walkOn", %s)' % repr(tuple(list)))
+
+    elif "onStepOut" in line:
+        NAME = functionName("WalkOff")
+        line = line.replace("onStepOut(cid, item, position, fromPosition)", "%s(creature, thing, position, fromPosition, **k)" % NAME)
+        try:
+            data.append('@register("walkOff", %s)' % tuple(list))
+        except:
+            data.append('@register("walkOff", %s)' % repr(tuple(list)))
+
+    data.append(line)
+file = "\n".join(data)
+
 file = file.replace("math.random", "random.randint").replace("doPlayerSendTextMessage(cid, MESSAGE_INFO_DESCR, ", "creature.message(")
 file = file.replace("doDecayItem(item2.uid)", "onThing.decay(onPosition)")
 file = file.replace("doDecayItem(item.uid)", "thing.decay(position)").replace("doSendMagicEffect(", "magicEffect(").replace("getThingPos(item2.uid)", "onPosition").replace("getThingPos(item.uid)", "position")
@@ -294,6 +330,14 @@ file = getThingFromPos.sub("getTile(\g<param>).getThing(<INSERT the stackpos you
 getTileInfo = re.compile(r"getTileInfo\((?P<param>(.*))\).house")
 file = getTileInfo.sub("getHouseByPos(\g<param>)", file)
 
+# string.lower
+strLower = re.compile(r"string.lower\((?P<item>\w+)\)")
+file = strLower.sub("\g<item>.lower()", file)
+
+# Reverse .insert arguments
+inserts = re.compile(r"table.insert\((?P<item>\w+), (?P<thing>\w+)\)")
+file = inserts.sub("\g<item>.append(\g<thing>)", file)
+
 # Do this last in case you convert some params before
 dictKeyTransform = re.compile(r"(?P<name>(\w+))\.(?P<key>(%s))(?P<ending>(\)|\n|,| ))" % '|'.join(possibleKeys))
 file = dictKeyTransform.sub("""\g<name>["\g<key>"]\g<ending>""", file)
@@ -360,8 +404,18 @@ newcode = ifs.sub(r"\g<type> \g<param>:", newcode).replace(" :\n", ":\n").replac
 crapCode = re.compile("if not ([^.]+).actions:\n([ ]*)([^.]+).actions.append('([^.]+).actionid')", re.M)
 newcode = crapCode.sub("", newcode)
 
+# Fix loops to use range.
+loopFix = re.compile(r"for i in len\((?P<item>\w+)\)-1")
+newcode = loopFix.sub("for i in xrange(len(\g<item>))", newcode)
+
+rangeFix = re.compile(r"for (?P<val>\w+) = (?P<start>[^,]+), (?P<stop>[^:]+)")
+newcode = rangeFix.sub("for \g<val> in xrange(\g<start>, \g<stop>+1)", newcode)
+
 print "# Autoconverted script for PyOT"
 print "# Untested. Please remove this message when the script is working properly!\n"
 
-print newcode + "\n" + regLine
+if USE_UNIQUE_ID:
+    print "# WARNING: Replies on uniqueid!\n\n"
+
+print newcode
 raw_input()
