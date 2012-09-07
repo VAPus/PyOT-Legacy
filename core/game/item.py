@@ -106,7 +106,6 @@ class Item(object):
     attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
-        
         try:
             self._itemBase = items[itemId]
         except (KeyError, IndexError):

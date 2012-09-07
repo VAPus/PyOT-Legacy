@@ -1,6 +1,5 @@
 # The script system
-from twisted.internet import reactor, threads, defer
-from twisted.python.threadpool import ThreadPool
+from twisted.internet import reactor, defer
 from twisted.python import log
 import config
 import weakref
@@ -404,7 +403,6 @@ class ThingScripts(object):
             
         if returnVal:
             # This is actually blocking code, but is rarely used.
-            ok = Value()
             d = defer.gatherResults(deferList)
         elif end:
             d = defer.gatherResults(deferList)

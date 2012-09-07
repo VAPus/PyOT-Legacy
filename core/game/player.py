@@ -1023,7 +1023,7 @@ class Player(Creature):
         return self.windowTextId
 
     def stopAutoWalk(self):
-        ret = self.stopAction()
+        self.stopAction()
 
         self.cancelWalk(self.direction)
 
@@ -1412,7 +1412,8 @@ class Player(Creature):
             stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
     # Channel system
-    def openChannels(self):
+    """def openChannels(self):
+        XXX: BUGGED!
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
         if type(channels2) == dict:
             channels = channels2
@@ -1420,7 +1421,7 @@ class Player(Creature):
         stream = self.packet()
         self.openChannels(game.chat.getChannels(self))
         
-        stream.send(self.client)
+        stream.send(self.client)"""
 
     def openChannel(self, id):
 

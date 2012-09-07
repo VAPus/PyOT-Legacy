@@ -99,7 +99,7 @@ def loader(timer):
     
     # Reset online status
     print "> > Reseting players online status...",
-    sql.conn.runQuery("UPDATE players SET online = 0")
+    sql.conn.runOperation("UPDATE players SET online = 0")
     print "%40s\n" % _txtColor("\t[DONE]", "blue")
     
     @inlineCallbacks
@@ -281,7 +281,7 @@ def loader(timer):
         game.scriptsystem.get("shutdown").register(lambda **k: saveAll(True), False)
         
     # Reset online status on shutdown
-    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runQuery("UPDATE players SET online = 0"), False)
+    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
     print "> > Turn world time and light on...",
     lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)

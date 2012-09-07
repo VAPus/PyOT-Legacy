@@ -1,7 +1,7 @@
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.python import log
-from packet import TibiaPacketReader, TibiaPacket
+from packet import TibiaPacketReader
 import config
 from struct import unpack
 

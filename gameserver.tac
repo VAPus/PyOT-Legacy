@@ -59,7 +59,7 @@ except:
 
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from service.gameserver import GameProtocol, GameFactory
+from service.gameserver import GameFactory
 import time
 import game.engine
 
@@ -79,7 +79,7 @@ gameServer.setServiceParent(topService)
 
 # (optionally) buildt in login server.
 if config.letGameServerRunTheLoginServer:
-    from service.loginserver import LoginProtocol, LoginFactory
+    from service.loginserver import LoginFactory
     loginFactory = LoginFactory()
     tcpService = internet.TCPServer(config.loginPort, loginFactory, interface=config.loginInterface)
     tcpService.setServiceParent(topService)
