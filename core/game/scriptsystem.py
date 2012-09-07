@@ -55,10 +55,9 @@ class Scripts(object):
     def _run(self, creature, end=None, **kwargs):
         ok = True
         for func in self.scripts:
-            if func:
-                ok = func(creature=creature, **kwargs)
-                if not (ok if ok is not None else True):
-                    break
+            ok = func(creature=creature, **kwargs)
+            if not (ok if ok is not None else True):
+                break
                 
         if end and (ok if ok is not None else True):
             end()
@@ -79,10 +78,9 @@ class NCScripts(Scripts):
     def _run(self, end=None, **kwargs):
         ok = True
         for func in self.scripts:
-            if func:
-                ok = func(**kwargs)
-                if not (ok if ok is not None else True):
-                    break
+            ok = func(**kwargs)
+            if not (ok if ok is not None else True):
+                break
                 
         if end and (ok if ok is not None else True):
             end()
@@ -145,10 +143,9 @@ class TriggerScripts(object):
             return end() if end else None
             
         for func in self.scripts[trigger]:
-            if func:
-                ok = func(creature=creature, **kwargs)
-                if not (ok if ok is not None else True):
-                    break
+            ok = func(creature=creature, **kwargs)
+            if not (ok if ok is not None else True):
+                break
 
         if end and (ok if ok is not None else True):
             end()
@@ -194,13 +191,12 @@ class RegexTriggerScripts(TriggerScripts):
                 args = obj.groupdict()
                 
             for func in spectre[0]:
-                if func:
-                    for arg in kwargs:
-                        args[arg] = kwargs[arg]
+                for arg in kwargs:
+                    args[arg] = kwargs[arg]
                           
-                    ok = func(creature=creature, **args)
-                    if not (ok if ok is not None else True):
-                        break
+                ok = func(creature=creature, **args)
+                if not (ok if ok is not None else True):
+                    break
                              
         if end and (ok if ok is not None else True):
             end()
@@ -353,19 +349,17 @@ class ThingScripts(object):
         deferList = []
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                if func:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
         
-        if thing.thingId() in self.scripts:
-            for func in self.scripts[thing.thingId()]:
-                if func:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
+        thingId = thing.thingId()
+        if thingId in self.scripts:
+            for func in self.scripts[thingId]:
+                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
         
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    if func:
-                        deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
             
         if returnVal:
             # This is actually blocking code, but is rarely used.
@@ -396,19 +390,17 @@ class ThingScripts(object):
         deferList = []
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                if func:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
         
-        if thing.thingId() in self.scripts:
-            for func in self.scripts[thing.thingId()]:
-                if func:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
+        thingId = thing.thingId()
+        if thingId in self.scripts:
+            for func in self.scripts[thingId]:
+                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
         
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    if func:
-                        deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
             
         if returnVal:
             # This is actually blocking code, but is rarely used.
@@ -428,26 +420,24 @@ class CreatureScripts(ThingScripts):
         
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                if func:
-                   ok = func(creature=creature, creature2=thing, **kwargs)
-                   if ok is False:
-                       break
+               ok = func(creature=creature, creature2=thing, **kwargs)
+               if ok is False:
+                   break
 
-        if ok and thing.thingId() in self.scripts:
-            for func in self.scripts[thing.thingId()]:
-                if func:
-                    ok = func(creature=creature, creature2=thing, **kwargs)
-                    if ok is False:
-                        break  
+        thingId = thing.thingId()
+        if ok and thingId in self.scripts:
+            for func in self.scripts[thingId]:
+                ok = func(creature=creature, creature2=thing, **kwargs)
+                if ok is False:
+                    break  
 
         if ok:
             for aid in thing.actionIds():
                 if aid in self.scripts:
                     for func in self.scripts[aid]:
-                        if func:
-                            ok = func(creature=creature, creature2=thing, **kwargs)
-                            if ok is False:
-                                break
+                        ok = func(creature=creature, creature2=thing, **kwargs)
+                        if ok is False:
+                            break
                             
         if not returnVal and end and ok is not False:
             return end()

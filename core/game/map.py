@@ -437,7 +437,7 @@ class HouseTile(Tile):
         
         check = True    
         for i in self.things:
-            if "houseDoor" in i.actions:
+            if i.hasAction("houseDoor"):
                 if check and self.houseId in houseDoors:
                     houseDoors[self.houseId].append(self.position)
                     check = False
@@ -771,7 +771,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         
                         # Find and cache doors
                         for i in tile.getItems():
-                            if "houseDoor" in i.actions:
+                            if i.hasAction("houseDoor"):
                                 try:
                                     houseDoors[houseId].append(housePosition)
                                     break

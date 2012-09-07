@@ -61,7 +61,16 @@ class NPC(Creature):
         return "You see %s" % self.base.data["description"]
     
     def actionIds(self):
-        return self.base.actions
+        return self.base.actions or []
+    
+    def hasAction(self, name):
+        if name == "item":
+            return True
+        elif self.base.actions is None:
+            return False
+        else:
+            return name in self.base.actions
+        
 
     def setRespawn(self, state):
         self.respawn = state

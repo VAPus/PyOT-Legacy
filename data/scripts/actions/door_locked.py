@@ -10,7 +10,7 @@ def onUseDoor(creature, thing, position, **k):
         print "Bad door on %s. It might bug" % str(position)
         transformItem(thing, thing.itemId+2, position)
     else:
-        if "houseDoor" in thing.actions:
+        if thing.hasAction("houseDoor"):
             houseId = game.map.getTile(position).houseId
             if creature.data["id"] == game.house.houseData[houseId].owner or creature.data["id"] in game.house.houseData[houseId].data["subowners"]:
                 transformItem(thing, thing.itemId+2, position)
@@ -23,8 +23,8 @@ def onUseKey(creature, thing, onThing, onPosition, **k):
         return
     
     canOpen = False
-    for aid in thing.actions:
-        if aid in onThing.actions:
+    for aid in thing.actionIds():
+        if onThing.hasAction(aid):
             canOpen = True
             
     if not canOpen:

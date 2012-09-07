@@ -231,7 +231,7 @@ doSetItemSpecialDescription = re.compile(r"doSetItemSpecialDescription\((?P<item
 file = doSetItemSpecialDescription.sub("\g<item>.description = \g<type>", file)
 
 doSetItemActionId = re.compile(r"doSetItemActionId\((?P<item>\w+)\.uid, (?P<type>[^)]+)\)")
-file = doSetItemActionId.sub("\g<item>.actions.append('\g<type>')", file)
+file = doSetItemActionId.sub("\g<item>.addAction('\g<type>')", file)
 
 doPlayerAddItem = re.compile(r"doPlayerAddItem\(cid, (?P<item>[^,]+), (?P<count>\w+)\)")
 file = doPlayerAddItem.sub("creature.addItem(Item(\g<item>, \g<count>))", file)
@@ -389,10 +389,10 @@ for line in file.split("\n"):
 
 # Finalize by doing a bit of a cleanup
 doSetItemActionId = re.compile(r"(?P<item>\w+)\.actionid == (?P<type>\w+)")
-newcode = doSetItemActionId.sub("'\g<type>' in \g<item>.actions", newcode)
+newcode = doSetItemActionId.sub("\g<item>.hasAction('\g<type>')", newcode)
 
 doSetItemActionId = re.compile(r"(?P<item>\w+)\.actionid != (?P<type>\w+)")
-newcode = doSetItemActionId.sub("'\g<type>' not in \g<item>.actions", newcode)
+newcode = doSetItemActionId.sub("not \g<item>.hasAction('\g<type>')", newcode)
 
 ifs = re.compile(r"(?P<type>(if|elif))([ \t]*)not([ \t]*)\((?P<param>(.*?))\)([ \t]*):", re.M)
 newcode = ifs.sub(r"\g<type> not \g<param>:", newcode)

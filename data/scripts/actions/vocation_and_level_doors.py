@@ -3,12 +3,12 @@ doors = 1227, 1229, 1245, 1247, 1259, 1261, 3540, 3549, 5103, 5112, 5121, 5130, 
 
 @register('use', doors)
 def openDoor(creature, thing, position, **k):
-    if not thing.actions:
+    if not thing.actionIds():
         thing.transform(thing.itemId+1, position)
         return
 
     canEnter = True
-    for action in actions:
+    for action in thing.actionIds():
         if action > 1000 and action < 2000:
             if not creature.data["level"] > action-1000:
                 canEnter = False

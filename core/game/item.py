@@ -108,23 +108,20 @@ class Item(object):
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         
         try:
-            self._attributes = items[itemId]["a"]
             self._itemBase = items[itemId]
         except (KeyError, IndexError):
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
-            self._attributes = items[itemId]["a"]
             self._itemBase = items[itemId]
             
         self.itemId = itemId
-        self.actions = actions or []
-        self.actions.append('item')
+        self.actions = actions
         
         if kwargs:
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if self._attributes & 64:
+        if self._itemBase["a"] & 64:
             if not count or count < 0:
                 count = 1
             self.count = count
@@ -210,19 +207,36 @@ class Item(object):
         return pos            
         
     def actionIds(self):
-        return self.actions
+        return self.actions or []
+    
+    def hasAction(self, name):
+        if name == "item":
+            return True
+        elif self.actions is None:
+            return False
+        else:
+            return name in self.actions
+        
+    def addAction(self, name):
+        if self.actions is None:
+            self.actions = [name]
+        else:
+            self.actions.append(name)
+            
+    def removeAction(self, name):
+        self.actions.remove(name)
     
     @property
     def solid(self):
-        return self._attributes & 1
+        return self._itemBase["a"] & 1
         
     @property
     def blockprojectile(self):
-        return self._attributes & 2
+        return self._itemBase["a"] & 2
         
     @property
     def blockpath(self):
-        return self._attributes & 4
+        return self._itemBase["a"] & 4
         
     """
     # Changeable attributes. Ignore.
@@ -240,23 +254,23 @@ class Item(object):
     """    
     @property
     def stackable(self):
-        return self._attributes & 64
+        return self._itemBase["a"] & 64
         
     @property
     def ontop(self):
-        return self._attributes & 128
+        return self._itemBase["a"] & 128
         
     @property
     def hangable(self):
-        return self._attributes & 256
+        return self._itemBase["a"] & 256
         
     @property
     def rotatable(self):
-        return self._attributes & 512
+        return self._itemBase["a"] & 512
         
     @property
     def animation(self):
-        return self._attributes & 1024
+        return self._itemBase["a"] & 1024
         
     @property
     def type(self):
@@ -267,7 +281,7 @@ class Item(object):
             
     def __getattr__(self, name):
         try:
-            return self._attributes & (1 << self.attributes.index(name))
+            return self._itemBase["a"] & (1 << self.attributes.index(name))
         except:
             try:
                 return self._itemBase[name]
@@ -474,7 +488,6 @@ class Item(object):
             
     def __getstate__(self):
         params = self.__dict__.copy()
-        del params["_attributes"]
         del params["_itemBase"]
         try:
             del params["decayCreature"]
@@ -516,7 +529,6 @@ class Item(object):
         else:
             self.__dict__ = state
             
-        self._attributes = items[self.itemId]["a"]
         self._itemBase = items[self.itemId]
 
     def copy(self):
