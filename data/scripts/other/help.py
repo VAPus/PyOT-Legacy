@@ -130,7 +130,9 @@ def makeitem(creature, text):
 @register("talkaction", 'reload')
 @access("RELOAD")
 def reimporter(creature, text):
+    start = time.time()
     game.scriptsystem.reimporter()
+    print "Full reload took: ", (time.time() - start)
     return False
     
 # Tester of container functions

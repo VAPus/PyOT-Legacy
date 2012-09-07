@@ -593,7 +593,47 @@ def reimporter():
         for sub in mod[1].__all__:
             if sub != "__init__":
                 reload(sys.modules["data.%s.%s" % (mod[0], sub)])
-                
+         
+    # Step 3 cleanups.
+    reimportCleanup()
+    
+def reimportCleanup():
+    for script in globalScripts:
+        if isinstance(script, Scripts):
+            for func in script.scripts[:]:
+                if not func:
+                    script.scripts.remove(func)
+        elif type(script) == TriggerScripts:
+            for trigger in script.triggers.copy():
+                for func in script.triggers[trigger][:]:
+                    if not func:
+                        script.triggers[trigger].remove(func)
+                if len(script.triggers[trigger]) == 0:
+                    del script.triggers[trigger]
+        elif type(script) == RegexTriggerScripts:
+            for trigger in script.triggers.copy():
+                for func in script.triggers[trigger][0][:]:
+                    if not func:
+                        script.triggers[trigger][0].remove(func)
+                if len(script.triggers[trigger][0]) == 0:
+                    del script.triggers[trigger]
+                    
+                            
+        elif isinstance(script, ThingScripts):
+            for trigger in script.scripts.copy():
+                for func in script.scripts[trigger][:]:
+                    if not func:
+                        script.scripts[trigger].remove(func)
+                if len(script.scripts[trigger]) == 0:
+                    del script.scripts[trigger]
+                    
+            for trigger in script.thingScripts.copy():
+                for func in script.scripts[trigger][:]:
+                    if not func:
+                        script.scripts[trigger].remove(func)
+                if len(script.scripts[trigger]) == 0:
+                    del script.scripts[trigger]
+                    
 # This is the function to get events, it should also be a getAll, and get(..., creature)
 def get(type):
     return globalScripts[type]
