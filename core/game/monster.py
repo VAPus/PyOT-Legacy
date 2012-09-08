@@ -383,8 +383,13 @@ class MonsterBase(CreatureBase):
         self.skull = 0
         
         self.corpseAction = []
+        self.prepared = False
+        self._loot = None
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
+        if not self.prepared:
+            self.prepare()
+            
         if not monster:
             monster = Monster(self, position, None)
         if spawnDelay:
@@ -602,6 +607,14 @@ class MonsterBase(CreatureBase):
             self.defenceSpells.append([interval, obj, check, (min, max)])
         
     def loot(self, *argc):
+        self._loot = argc
+    def prepare(self):
+        self.prepared = True
+        if not self._loot:
+            return
+        
+        argc = self._loot
+        
         # Convert name to Id here
         if config.lootInAlphabeticalOrder:
             cache = []
@@ -654,7 +667,7 @@ class MonsterBase(CreatureBase):
                     loot[0] = item.idByName(loot[0])
         
                 self.lootTable.append(loot)
-        
+        del self._loot
 class MonsterBrain(object):
     def beginThink(self, monster, check=False):
         if not monster.brainEvent:
