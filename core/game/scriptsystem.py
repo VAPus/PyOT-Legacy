@@ -523,8 +523,12 @@ def handleModule(name):
         tb_list = traceback.format_list(tb_list)
         
         print "--------------------------"
-        print "EXCEPTION IN SCRIPT (%s):" % exc_value.filename
-        
+        # This may not be available.
+        try:
+            print "EXCEPTION IN SCRIPT (%s):" % exc_value.filename
+        except AttributeError:
+            print "EXCEPTION IN SCRIPT:"
+            
         for elt in tb_list[1:]:
             print elt
         if exc_type == SyntaxError:

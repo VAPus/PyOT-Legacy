@@ -21,7 +21,6 @@ except:
     
 items = {}
 reverseItems = {}
-itemNames = {}
 
 """if config.itemCache:
     ### Attribute stragegy
@@ -667,6 +666,27 @@ def sid(itemid):
         return reverseItems[itemid]
     except:
         return None
+
+idByNameCache = {}
+def idByName(name):
+    # Slow, should only be used to build the items on load.
+    # We use this so we can prevent having a full runtime list
+    # Main reason for the one above is not to save memory, but to support case independant
+    # Item names. That would require a loop anyway.
+    # This is (sadly) much slower...
+    global idByNameCache
+    
+    name = name.upper()
+    try:
+        return idByNameCache[name]
+    except KeyError:
+        for sid in xrange(100, len(items)):
+            try:
+                if items[sid]["name"].upper() == name:
+                    idByNameCache[name] = sid
+                    return sid
+            except:
+                pass
         
 def attribute(itemId, attr):
     check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
@@ -682,7 +702,6 @@ def attribute(itemId, attr):
 def loadItems():
     global items
     global reverseItems
-    global itemNames
     #global itemAttributes
     
     print "> > Loading items...\n"
@@ -690,7 +709,7 @@ def loadItems():
     if config.itemCache:
         try:
             with _open("data/cache/items.cache", "rb") as f:
-                items, reverseItems, itemNames = marshal.loads(f.read())
+                items, reverseItems = marshal.loads(f.read())
             log.msg("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
@@ -702,10 +721,8 @@ def loadItems():
     
     
     # Make three new values while we are loading
-    loadItemNames = {}
     loadItems = [0] * (config.itemMaxServerId + 1)
     reverseLoadItems = [0] * (config.itemMaxClientId + 1)
-
 
     for item in (yield d1):
         sid = item[0]
@@ -717,9 +734,6 @@ def loadItems():
 
         if item[2]:
             attr['name'] = item[2]
-            
-            if item[3] != 1:
-                loadItemNames[attr['name']] = sid
                 
         if item[5]:
             attr['speed'] = item[5]
@@ -754,12 +768,11 @@ def loadItems():
     # Replace the existing items
     items = loadItems
     reverseItems = reverseLoadItems
-    itemNames = loadItemNames
     
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:
-            f.write(marshal.dumps((tuple(items), tuple(reverseItems), itemNames), 2))
+            f.write(marshal.dumps((tuple(items), tuple(reverseItems)), 2))
             
     
     

@@ -624,16 +624,18 @@ class MonsterBase(CreatureBase):
                     loots = loot[0][:]
                     loot[0] = []
                     for ritem in loots:
-                        try:
-                            loot[0].append(item.itemNames[ritem])
-                        except KeyError:
+                        sid = item.idByName(ritem)
+                        if sid:
+                            loot[0].append()
+                        else:
                             print "Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"])
                         
                 else:
                     loot = list(loot)
-                    try:
-                        loot[0] = item.itemNames[loot[0]]
-                    except KeyError:
+                    sid = item.idByName(loot[0])
+                    if sid:
+                        loot[0] = sid
+                    else:
                         print "Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"])
                         
                 self.lootTable.append(loot)  
@@ -645,11 +647,11 @@ class MonsterBase(CreatureBase):
                     loots = loot[0][:]
                     loot[0] = []
                     for ritem in loots:
-                        loot[0].append(item.itemNames[ritem])
+                        loot[0].append(item.idByName(ritem))
                         
                 elif type(loot[0]) == str:
                     loot = list(loot)
-                    loot[0] = item.itemNames[loot[0]]
+                    loot[0] = item.idByName(loot[0])
         
                 self.lootTable.append(loot)
         

@@ -77,7 +77,7 @@ class Shop(ClassAction):
         
     def offer(self, name, sellPrice=0, buyPrice=0, subtype=0):
         if type(name) == str:
-            name = game.item.itemNames[name]
+            name = game.item.idByName(name)
             
         self.on.offers.append( (name, sellPrice, buyPrice, subtype) )
 
