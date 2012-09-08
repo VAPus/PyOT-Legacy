@@ -626,7 +626,7 @@ class MonsterBase(CreatureBase):
                     for ritem in loots:
                         sid = item.idByName(ritem)
                         if sid:
-                            loot[0].append()
+                            loot[0].append(sid)
                         else:
                             print "Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"])
                         

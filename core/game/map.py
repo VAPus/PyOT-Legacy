@@ -172,8 +172,8 @@ class StackPosition(Position):
         
 def getTile(pos):
     x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
-    iX = x / 32
-    iY = y / 32
+    iX = x >> 5
+    iY = y >> 5
     pX = x & 31
     pY = y & 31
 
