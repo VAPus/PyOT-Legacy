@@ -680,7 +680,7 @@ def idByName(name):
     try:
         return idByNameCache[name]
     except KeyError:
-        for sid in xrange(100, len(items)):
+        for sid in xrange(1500, len(items)):
             try:
                 if items[sid]["name"].upper() == name:
                     idByNameCache[name] = sid
