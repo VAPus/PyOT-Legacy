@@ -33,9 +33,9 @@ SLOT_BACKPACK = 2
 #: Inventory slot for the armor.
 SLOT_ARMOR = 3
 #: Inventory slot for the right hand.
-SLOT_RIGHT = 4
+SLOT_LEFT = 4
 #: Inventory slot for the left hand.
-SLOT_LEFT = 5 
+SLOT_RIGHT = 5 
 #: Inventory slot for legs.
 SLOT_LEGS = 6
 #: Inventory slot for feets.

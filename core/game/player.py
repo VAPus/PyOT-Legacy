@@ -1244,6 +1244,7 @@ class Player(Creature):
         return True
 
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
+        print "Item to container!!!"
         stream = streamX
         update = False
 
@@ -1328,11 +1329,16 @@ class Player(Creature):
             self.addCache(item, container)
             print "Adding to cache ay!"
 
+        
+        
         if not streamX:
             if update:
                 self.refreshStatus(stream)
             stream.send(self.client)
-
+            
+        # HACK!!!
+        self.updateContainer(container)
+        
         return True
 
     def itemToUse(self, item):

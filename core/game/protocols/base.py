@@ -813,7 +813,6 @@ class BaseProtocol(object):
                 if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
                     checkSlots = True
                     if (toPosition.y-1) not in slots:
-                        player.notPossible()
                         return
                     
                 if not oldItem[1].movable or (toPosition.x == 0xFFFF and not oldItem[1].pickable):
@@ -861,73 +860,73 @@ class BaseProtocol(object):
                         
                 
             else:
-                stream = player.packet()
-                        
                 oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
+                if oldItem[1]:
+                    stream = player.packet()
 
-                # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
-                    player.notPossible()
-                    return
-                elif oldItem[1].inTrade:
-                    player.message("Your trading this item.")
-                    return
-                    
-                elif oldItem[1].openIndex != None and oldItem[1].openIndex == toPosition.y-64: # Moving into self
-                    player.notPossible()
-                    return    
+                    # Before we remove it, can it be placed there?
+                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
+                        player.notPossible()
+                        return
+                    elif oldItem[1].inTrade:
+                        player.message("Your trading this item.")
+                        return
                         
-                elif currItem and currItem[1] and toPosition.x == 0xFFFF and toPosition.y >= 64 and currItem[1].containerSize:
-                    
-                        
-                    container = currItem[1].inContainer
-                    if container:
-                        if container == oldItem[1]:
-                            player.notPossible()
-                            return
-                        else:
-                            container = container.inContainer
-                            while container:
-                                if container == oldItem[1]:
-                                    player.notPossible()
-                                    return
-                                
-                if oldItem[1].stackable and count <= 100:
-                    if (count == oldItem[1].count and player.removeCache(oldItem[1])) or (player.modifyCache(oldItem[1], -1 * count)):
-                        player.refreshStatus(stream)
-                        
-                    renew = True
-                    oldItem[1].count -= count
-                    if oldItem[1].count > 0:
-                        if oldItem[0] == 1:
-                            stream.addInventoryItem(fromPosition.y, oldItem[1])
-                        elif oldItem[0] == 2:
-                            stream.updateContainerItem(oldItem[2].openIndex, fromPosition.z, oldItem[1])
+                    elif oldItem[1].openIndex != None and oldItem[1].openIndex == toPosition.y-64: # Moving into self
+                        player.notPossible()
+                        return    
                             
+                    elif currItem and currItem[1] and toPosition.x == 0xFFFF and toPosition.y >= 64 and currItem[1].containerSize:
+                        
+                            
+                        container = currItem[1].inContainer
+                        if container:
+                            if container == oldItem[1]:
+                                player.notPossible()
+                                return
+                            else:
+                                container = container.inContainer
+                                while container:
+                                    if container == oldItem[1]:
+                                        player.notPossible()
+                                        return
+                                    
+                    if oldItem[1].stackable and count <= 100:
+                        if (count == oldItem[1].count and player.removeCache(oldItem[1])) or (player.modifyCache(oldItem[1], -1 * count)):
+                            player.refreshStatus(stream)
+                            
+                        renew = True
+                        oldItem[1].count -= count
+                        if oldItem[1].count > 0:
+                            if oldItem[0] == 1:
+                                stream.addInventoryItem(fromPosition.y, oldItem[1])
+                            elif oldItem[0] == 2:
+                                stream.updateContainerItem(oldItem[2].openIndex, fromPosition.z, oldItem[1])
+                                
+                        else:
+                            if oldItem[0] == 1:
+                                player.inventory[fromPosition.y-1] = None
+                                stream.removeInventoryItem(fromPosition.y)
+                            elif oldItem[0] == 2:
+                                oldItem[2].container.removeItem(oldItem[1])
+                                stream.removeContainerItem(oldItem[2].openIndex, fromPosition.z)
+
                     else:
+                        if player.removeCache(oldItem[1]):
+                            player.refreshStatus(stream)
+                            
                         if oldItem[0] == 1:
+                            game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (toPosition.y-1))
                             player.inventory[fromPosition.y-1] = None
                             stream.removeInventoryItem(fromPosition.y)
                         elif oldItem[0] == 2:
                             oldItem[2].container.removeItem(oldItem[1])
                             stream.removeContainerItem(oldItem[2].openIndex, fromPosition.z)
-
-                else:
-                    if player.removeCache(oldItem[1]):
-                        player.refreshStatus(stream)
-                        
-                    if oldItem[0] == 1:
-                        game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (toPosition.y-1))
-                        player.inventory[fromPosition.y-1] = None
-                        stream.removeInventoryItem(fromPosition.y)
-                    elif oldItem[0] == 2:
-                        oldItem[2].container.removeItem(oldItem[1])
-                        stream.removeContainerItem(oldItem[2].openIndex, fromPosition.z)
-                
-                if toPosition.y == fromPosition.y:
-                    stack = False
                     
-                stream.send(player.client)
+                    if toPosition.y == fromPosition.y:
+                        stack = False
+                        
+                    stream.send(player.client)
                 
             if toMap:
                 stream = player.packet()
@@ -949,10 +948,12 @@ class BaseProtocol(object):
                     
                     count = 0
                     for item in thisTile.getItems():
-                        count += 1
+                        count += 2
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(item, player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=newItem)
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
+
                     if process[0] == count:
+                        print "doing it"
                         if newItem.decayPosition:
                             newItem.decayPosition = toPosition
                             
