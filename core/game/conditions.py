@@ -201,8 +201,77 @@ def MultiCondition(type, subtype="", *argc):
     return conditions[0]
 
 class CountdownCondition(Condition):
-    pass
+    def __init__(self, type, startdmg, subtype=""):
+        # This is constant. EVERY 1 sec, do recalculations
+        # Finishes when dmg hits 1.
+        self.creature = None
+        self.tickEvent = None
+        self.check = check
+        self.damage = startdmg
+        
+        if subtype and isinstance(type, str):
+            self.type = "%s_%s" % (type, subtype)
+        else:
+            self.type = type
 
+        try:
+            self.effect
+        except:
+            if type == CONDITION_FIRE:
+                self.effect = self.effectFire
+            elif type == CONDITION_POISON:
+                self.effect = self.effectPoison
+            elif type == CONDITION_REGENERATEHEALTH:
+                self.effect = self.effectRegenerateHealth
+            elif type == CONDITION_REGENERATEMANA:
+                self.effect = self.effectRegenerateMana        
+
+    def effectPoison(self, damage):
+        self.creature.magicEffect(EFFECT_HITBYPOISON)
+        self.creature.modifyHealth(-damage)
+
+    def effectFire(self, damage):
+        self.creature.magicEffect(EFFECT_HITBYFIRE)
+        self.creature.modifyHealth(-damage)
+
+    def effectRegenerateHealth(self, gainhp):
+        if not gainhp:
+            gainhp = self.creature.getVocation().health
+            self.creature.onHeal(None, gainhp[0])
+
+        else:
+            self.creature.onHeal(None, gainhp)
+
+    def effectRegenerateMana(self, gainmana):
+        if not gainmana:
+            gainmana = self.creature.getVocation().mana
+            self.creature.modifyMana(gainmana[0])
+
+        else:
+            self.creature.modifyMana(gainmana)
+
+    def tick(self):
+        if not self.creature:
+            return
+
+        self.effect(self.damage)
+        
+        # So, time for damage reduction.
+        # If >18, it's 100% chance.
+        # Otherwise, use a chance formula.
+        if self.damage > 18:
+            # Decrease by 2-3.
+            self.damage -= random.randint(2, 3)
+        elif random.randint(0, 99) < 60 - ((18-self.damage) * 2):
+            self.damage -= 1
+            
+        # No damamge? Finish it!
+        # Otherwise, scheduler next tick.
+        if self.damamge <= 0:
+            self.finish()
+        else:
+            self.tickEvent = reactor.callLater(1, self.tick)
+            
 class CountupCondition(Condition):
     pass
 
