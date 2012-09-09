@@ -425,3 +425,7 @@ def makeImmune(creature, **k):
         if isinstance(monster, game.monster.Monster) and monster.target == creature:
             monster.target = None
             monster.targetMode = 0
+            
+@register("talkaction", "kill me now")
+def die(creature, **k):
+    creature.modifyHealth(-9999999999)

@@ -238,7 +238,7 @@ class Item(object):
         
     @property
     def cid(self):
-        return self._itemBase["cid"]
+        return self._itemBase[1]
     
     """
     # Changeable attributes. Ignore.

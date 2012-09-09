@@ -174,7 +174,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character[0][0]))
             if player:    
                 self.player = player
-                if self.player.data["health"] < 1:
+                if self.player.data["health"] <= 0 or self.player.alive == False:
                     self.player.onSpawn()
                 self.player.client = self
                 tile = getTile(self.player.position)

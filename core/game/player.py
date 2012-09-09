@@ -265,6 +265,14 @@ class Player(Creature):
         self.client.ready = True
         self.alive = True
 
+        # We might login using a different client version. Fix it.
+        try:
+            self._packet = self.client.protocol.Packet()
+        except:
+            self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
+        
+        self._packet.stream = self.client
+        
         with self.packet(0x0A) as stream:
             stream.uint32(self.clientId()) # Cid
             stream.uint16(config.drawingSpeed) # Drawing speed
@@ -313,7 +321,7 @@ class Player(Creature):
                         self.refreshStatus()
 
             reactor.callLater(self.rates[1], loseStamina)
-
+        
     def refreshStatus(self, stream=None):
         if stream:
             stream.status(self)
@@ -1599,12 +1607,13 @@ class Player(Creature):
                 stream.send(spectator)
 
     def onSpawn(self):
-        if not self.data["health"]:
+        if not self.data["health"] or not self.alive:
             self.data["health"] = self.data["healthmax"]
             self.data["mana"] = self.data["manamax"]
+            self.alive = True
             game.scriptsystem.get("respawn").runSync(self)
             import data.map.info
-            self.teleport(data.map.info.towns[self.data['town_id']][1])
+            self.teleport(Position(*data.map.info.towns[self.data['town_id']][1]))
 
     # Damage calculation:
     def damageToBlock(self, dmg, type):
