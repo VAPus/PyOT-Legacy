@@ -1574,6 +1574,8 @@ class Player(Creature):
 
         tile = game.map.getTile(self.position)
 
+        self.despawn()
+        
         # Set position
         import data.map.info
         self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
