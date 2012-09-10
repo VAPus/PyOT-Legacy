@@ -23,15 +23,14 @@ class Node(object):
             self.tileTried = True
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
+                for thing in tile.things:
+                    if allowCreatures and isinstance(thing, game.creature.Creature):
+                        break
+                    elif thing.solid:
+                        self.state = False
+                        break
                 if checkCreature and not checkCreature.vertifyMove(tile):
                     self.state = False
-                else:
-                    for thing in tile.things:
-                        if allowCreatures and isinstance(thing, game.creature.Creature):
-                            break
-                        elif thing.solid:
-                            self.state = False
-                            break
             else:
                 self.state = False
                 
@@ -89,6 +88,22 @@ class AStar(object):
         n = currentNode
         prev = self.startNode
         _result = []
+
+        prev = n
+        n = n.parent
+        if not n:
+            self.result = []
+            return
+            
+        while n.parent != None:
+            _result.append(n.step)
+
+            prev = n
+            n = n.parent
+            if not n:
+                break
+        _result.reverse()
+        
         if config.findDiagonalPaths:
             if n.y > prev.y and n.x > prev.x:
                 _result.append(SOUTHEAST)
@@ -116,49 +131,10 @@ class AStar(object):
                 _result.append(EAST)
             else:
                 _result.append(WEST)
-
-        prev = n
-        n = n.parent
-        if not n:
-            self.result = []
-            return
-            
-        while n.parent != None:
-            if config.findDiagonalPaths:
-                if n.y > prev.y and n.x > prev.x:
-                    _result.append(SOUTHEAST)
-                elif n.y < prev.y and n.x > prev.x:
-                    _result.append(NORTHEAST)
-                elif n.y > prev.y and n.x < prev.x:
-                    _result.append(SOUTHWEST)
-                elif n.y < prev.y and n.x < prev.x:
-                    _result.append(NORTHWEST)
-                elif n.y > prev.y:
-                    _result.append(NORTH)
-                elif n.y < prev.y:
-                    _result.append(SOUTH)
-                elif n.x > prev.x:
-                    _result.append(WEST)
-                else:
-                    _result.append(EAST)
-            else:
-                if n.y > prev.y:
-                    _result.append(NORTH)
-                elif n.y < prev.y:
-                    _result.append(SOUTH)
-                elif n.x > prev.x:
-                    _result.append(WEST)
-                else:
-                    _result.append(EAST)
-
-            prev = n
-            n = n.parent
-            if not n:
-                break
         self.result = _result
     
     def getNode(self, x, y):
-        point = x + (y << 8)
+        point = x + (y << 16)
         try:
             return self.nodes[point]
         except KeyError:
@@ -198,6 +174,7 @@ class AStar(object):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.step = NORTH
             _openNodes.add(n)   
 
         n = _getNode(x - 1, y)
@@ -205,6 +182,7 @@ class AStar(object):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.step = WEST
             _openNodes.add(n)   
 
         n = _getNode(x + 1, y)
@@ -212,6 +190,7 @@ class AStar(object):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.step = EAST
             _openNodes.add(n)  
             
         n = _getNode(x, y + 1)
@@ -219,6 +198,7 @@ class AStar(object):
             n.parent = node
             n.cost = cost + 10
             n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.step = SOUTH
             _openNodes.add(n)
             
         if config.findDiagonalPaths:
