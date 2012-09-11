@@ -704,20 +704,18 @@ class Creature(object):
 
             updateTile(self.position, tile)
 
-        if by and by.isPlayer():
-            by.message(_lp(by, "%(who)s loses %(amount)d hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
+            if by and by.isPlayer():
+                by.message(_lp(by, "%(who)s loses %(amount)d hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
 
-        if self.isPlayer():
-            if by:
-                self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
-            else:
-                self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
+            if self.isPlayer():
+                if by:
+                    self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
+                else:
+                    self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
 
-        elif not self.target and self.data["health"] < 1:
-            self.follow(by) # If I'm a creature, set my target
+            elif not self.target and self.data["health"] < 1:
+                self.follow(by) # If I'm a creature, set my target
 
-        # Modify health
-        if dmg:
             self.modifyHealth(dmg)
 
             if by and self.data["health"] < 1:
