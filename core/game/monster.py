@@ -252,6 +252,10 @@ class Monster(Creature):
         return self.base.attackable
 
     def targetCheck(self, targets=None):
+        if not self.target:
+            # Null walkpatterns.
+            self.walkPattern = None
+            
         _target = self.target
         if not targets:
             targets = engine.getPlayers(self.position) # Get all creaturse in range
@@ -284,6 +288,10 @@ class Monster(Creature):
                 self.target = target
             self.targetMode = 1
         else:
+            creature.walkPattern = None
+            self.stopAction()
+            self.target = None
+            self.targetMode = 0
             return
                         
         # Call the scripts
@@ -694,7 +702,6 @@ class MonsterBrain(object):
         feature = monster.base.brainFeatures[0]
         #for feature in monster.base.brainFeatures:
         ret = brainFeatures[0][feature](monster)
-                
         if ret == False:
             monster.turnOffBrain()
             return False
@@ -714,11 +721,9 @@ class MonsterBrain(object):
                     
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
-            
             if check and not engine.hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
                 return False
-            
             if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
