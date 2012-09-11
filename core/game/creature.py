@@ -158,6 +158,8 @@ class Creature(object):
         return False
 
     def isAttackable(self, by):
+        if self.position.getTile().getFlags() &  & TILEFLAGS_PROTECTIONZONE:
+            return False
         return self.attackable
 
     def isSummon(self):
