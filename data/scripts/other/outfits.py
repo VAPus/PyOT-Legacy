@@ -53,6 +53,10 @@ outfit = game.resource.genOutfit("God")
 outfit.look(302, gender=0)
 outfit.look(302, gender=1)
 
+outfit = game.resource.genOutfit("Gnome")
+outfit.look(493, gender=0)
+outfit.look(507, gender=1)
+
 # Start of "Normal" Character Outfits
 # Here, we'll make a Citizen look
 outfit = game.resource.genOutfit("Citizen") # genOutfit autoregister it, you can also use Outfit(name, premium=False) + regOutfit(outfit)
@@ -170,3 +174,11 @@ outfit.look(466, gender=1)
 outfit = game.resource.genOutfit("Entrepreneur", premium=True)
 outfit.look(471, gender=0)
 outfit.look(472, gender=1)
+
+outfit = game.resource.genOutfit("Crystal Warlord", premium=True)
+outfit.look(512, gender=0)
+outfit.look(513, gender=1)
+
+outfit = game.resource.genOutfit("Soil Guardian", premium=True)
+outfit.look(516, gender=0)
+outfit.look(514, gender=1)
