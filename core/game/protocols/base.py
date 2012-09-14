@@ -174,7 +174,10 @@ class BasePacket(TibiaPacket):
                     
                     self.creature(creature, known, removeKnown)
                 else:
-                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+                    if player.client.version >= 953:
+                        self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
+                    else:
+                        self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.beginThink(creature, False)
                     
@@ -404,8 +407,9 @@ class BasePacket(TibiaPacket):
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
         self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
         self.uint16(int(player.speed)) # Speed
-        
-        self.uint16(0x00) # Condition
+        if player.client.version > 961:
+            self.uint16(0x00) # Regeneration time
+        self.uint16(0x00) # Offline training time
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
@@ -523,6 +527,9 @@ class BaseProtocol(object):
             
         elif packetType == 0x1E: # Keep alive
             player.pong()
+            
+        elif packetType == 0x1D:
+            self.handlePing(player)
             
         elif packetType == 0xA0: # Set modes
             player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
@@ -1621,3 +1628,8 @@ class BaseProtocol(object):
 
     def handleDebugAssert(self, player, packet):
         logger.writeEntry("debugs", '\n'.join([packet.string(), packet.string(), packet.string(), packet.string()]), player.name(), "IP:%s" % player.getIP() )
+        
+        
+    def handlePing(self, player):
+        with player.packet(0x1E) as stream:
+            pass

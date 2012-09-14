@@ -285,7 +285,7 @@ class Player(Creature):
             stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
                                         self.position.z),
                                 18, 14, self)
-
+            
             for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
                 if self.inventory[slot-1]:
                     stream.uint8(0x78)
@@ -295,7 +295,7 @@ class Player(Creature):
                 else:
                     stream.uint8(0x79)
                     stream.uint8(slot)
-
+            
             self.refreshStatus(stream)
             self.refreshSkills(stream)
 

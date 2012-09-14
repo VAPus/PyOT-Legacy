@@ -149,8 +149,7 @@ class TibiaPacket(object):
 
     #@inThread
     def send(self, stream):
-        assert stream
-        assert self.data
+        if not stream or not self.data: return
 
         data = pack("<H", len(self.data))+self.data
 
