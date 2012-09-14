@@ -82,6 +82,9 @@ class Player(Creature):
         # Extra icons
         self.extraIcons = 0
 
+        # Send premium code
+        self.sendPremium = config.sendPremium
+        
         # Rates
         # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
         # 3 => drop rate (max items), 4 => regain rate
@@ -299,6 +302,7 @@ class Player(Creature):
             self.refreshStatus(stream)
             self.refreshSkills(stream)
 
+            stream.playerInfo(self)
             stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
             self.refreshConditions(stream)
@@ -1019,6 +1023,14 @@ class Player(Creature):
         stream.send(self.client)
         return self.windowTextId
 
+    def dialog(self, title, message, buttons=["Ok", "Exit"], defaultEnter=0, defaultExit=1):
+        stream = self.packet()
+
+        self.windowTextId += 1
+        stream.dialog(self, self.windowTextId, title, message, buttons, defaultEnter, defaultExit)
+        stream.send(self.client)
+        return self.windowTextId
+    
     def houseWindow(self, text):
         stream = self.packet(0x97)
         self.windowTextId += 1
@@ -2433,6 +2445,15 @@ class Player(Creature):
     def unlearnSpell(self, name):
         return self.setStorage("__ls%s" % name, False)
 
+    def getSpells(self):
+        # Return all spells this user can do.
+        spells = []
+        for spell in game.spell.spells:
+            if self.canUseSpell(spell):
+                spells.append(spell)
+                
+        return spells
+    
     # Networking
     def getIP(self):
         return self.client.transport.getPeer().host
@@ -2567,3 +2588,10 @@ class Player(Creature):
                 return False
                 
         return True
+        
+    # "Premium" stuff
+    def togglePremium(self):
+        self.sendPremium = not self.sendPremium
+        with self.packet().playerInfo(self) as stream:
+            pass
+        

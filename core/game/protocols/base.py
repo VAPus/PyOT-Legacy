@@ -513,6 +513,40 @@ class BasePacket(TibiaPacket):
             
         self.string(message)
         
+    def playerInfo(self, player):
+        # 9.5+
+        if player.client.version >= 950:
+            self.uint8(0x9F)
+            self.uint8(player.sendPremium)
+            self.uint8(player.getVocationId())
+            
+            # Spell counting.
+            spells = player.getSpells()
+            
+            self.uint16(len(spells))
+            randomNr = 0
+            for spell in spells:
+                # TODO: Implant spell ids, unfortunatly we can't do witout them.
+                self.uint8(randomNr)
+                randomNr += 1
+                
+    def dialog(self, player, dialogId, title, message, buttons=["Ok", "Exit"], defaultEnter=0, defaultExit=1):
+        # 9.6+
+        if player.client.version >= 960:
+            self.uint8(0xFA)
+            self.uint32(dialogId)
+            self.string(title)
+            self.string(message)
+            self.uint8(len(buttons))
+            for button in xrange(len(buttons)):
+                self.string(buttons[button])
+                self.uint8(button)
+                
+            self.uint8(defaultEnter)
+            self.uint8(defaultExit)
+        else:
+            pass # TODO send as a text dialog.
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
@@ -683,6 +717,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xF1:
             self.handleQuestLine(player, packet)
+            
+        elif packetType == 0xF9:
+            self.handleDialog(player, packet)
             
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
@@ -1334,6 +1371,16 @@ class BaseProtocol(object):
         
         try: # Try blocks are better than x in y checks :)
             player.windowHandlers[windowId](text)
+            del player.windowHandlers[windowId] # Cleanup
+        except:
+            pass
+        
+    def handleDialog(self, player, packet):
+        windowId = packet.uint32()
+        button = packet.uint8()
+        
+        try:
+            player.windowHandlers[windowId](button)
             del player.windowHandlers[windowId] # Cleanup
         except:
             pass

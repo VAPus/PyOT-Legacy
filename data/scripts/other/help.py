@@ -429,3 +429,14 @@ def makeImmune(creature, **k):
 @register("talkaction", "kill me now")
 def die(creature, **k):
     creature.modifyHealth(-9999999999)
+    
+@register("talkaction", "8.6 dialog")
+def dialog(creature, **k):
+    dialogId = creature.dialog("Test", "Hello world?", ["Great", "Not so great"])
+    
+    def response(button):
+        if button == 0:
+            creature.say("Yay!")
+        else:
+            creature.say("Message needs to be about 20% cooler!")
+    creature.setWindowHandler(dialogId, response)

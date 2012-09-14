@@ -171,6 +171,9 @@ minMana = 100
 enableTranslations = True
 defaultLanguage = "en_EN" # ISO-4 code
 
+# Send premium on 9.5+?
+sendPremium = True
+
 # (WINDOWS ONLY)
 # Adjust size and/or color of the windows
 # Set to None to disable.

@@ -37,8 +37,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
-        pkg.uint16(0xFFFF) # Used for?
-        pkg.uint16(0x00)
+        pkg.uint32(0xFFFFFFFF) # Used for?
         pkg.uint8(0xFF) # Used for?
         pkg.send(self)
 
