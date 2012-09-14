@@ -555,7 +555,7 @@ class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
         packetType = packet.uint8()
-        print "Got a packet %s" % hex(packetType)
+
         if packetType == 0x14: # Logout
             try:
                 player.prepareLogout()
@@ -728,14 +728,18 @@ class BaseProtocol(object):
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()
-            
+    
+    def enum(self, key):
+        return getattr(game.enum, key)
+        
     def handleSay(self, player, packet):
         channelType = packet.uint8()
         channelId = 0
         reciever = ""
-        if channelType in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+
+        if channelType in (self.enum(MSG_CHANNEL_MANAGEMENT), self.enum(MSG_CHANNEL), self.enum(MSG_CHANNEL_HIGHLIGHT)):
             channelId = packet.uint16()
-        elif channelType in (enum.MSG_PRIVATE_TO, enum.MSG_GAMEMASTER_PRIVATE_TO):
+        elif channelType in (self.enum(MSG_PRIVATE_TO), self.enum(MSG_GAMEMASTER_PRIVATE_TO)):
             reciever = packet.string()
 
         text = packet.string()
@@ -1001,7 +1005,6 @@ class BaseProtocol(object):
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
 
                     if process[0] == count:
-                        print "doing it"
                         if newItem.decayPosition:
                             newItem.decayPosition = toPosition
                             
@@ -1257,9 +1260,6 @@ class BaseProtocol(object):
         
         stackPosition1 = position.setStackpos(stackpos)
         stackPosition2 = onPosition.setStackpos(onStack)
-        
-        print stackPosition1
-        print stackPosition2
         
         if clientId != 99:
             thing = player.findItem(stackPosition1)

@@ -1441,16 +1441,14 @@ class Player(Creature):
             stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
     # Channel system
-    """def openChannels(self):
-        XXX: BUGGED!
+    def openChannels(self):
+        channels = game.chat.getChannels(self)
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
-        if type(channels2) == dict:
+        if type(channels2) is dict:
             channels = channels2
-            
-        stream = self.packet()
-        self.openChannels(game.chat.getChannels(self))
-        
-        stream.send(self.client)"""
+
+        with self.packet() as stream:
+            stream.openChannels(channels)
 
     def openChannel(self, id):
 
