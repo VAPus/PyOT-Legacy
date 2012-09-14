@@ -45,12 +45,12 @@ SLOT_RING = 8
 #: Inventory slot for the ammonition.
 SLOT_AMMO = 9
 #what is 10? are 10-12 correct?
-SLOT_DEPOT = 11
+SLOT_PURSE = 11
 
-SLOT_LAST = SLOT_DEPOT
+SLOT_LAST = SLOT_PURSE
 
 SLOT_CLIENT_FIRST = 1
-SLOT_CLIENT_SLOTS = 10
+SLOT_CLIENT_SLOTS = 10 # We don't send purse
 
 # Skills
 SKILL_FIRST = 0

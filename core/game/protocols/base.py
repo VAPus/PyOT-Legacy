@@ -546,12 +546,16 @@ class BasePacket(TibiaPacket):
             self.uint8(defaultExit)
         else:
             pass # TODO send as a text dialog.
+            
+    def delayWalk(self, delay):
+        self.uint8(0xb6)
+        self.uint16(delay * 1000)
         
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
         packetType = packet.uint8()
-        
+        print "Got a packet %s" % hex(packetType)
         if packetType == 0x14: # Logout
             try:
                 player.prepareLogout()
@@ -1214,7 +1218,7 @@ class BaseProtocol(object):
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
         end = None
-        
+
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)

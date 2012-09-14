@@ -293,20 +293,20 @@ class Item(object):
                        
         raise AttributeError, name
     
-    def name(self, player=None):
+    def formatName(self, player=None):
         if not player:
             raise Exception("We need to have a player when asking for a items name now apperently!")
             
         if self.count > 1:
-            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(items[self.itemId]["name"]))}
+            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(self.name))}
             
-        return _l(player, INFLECT.a(items[self.itemId]["name"]))
+        return _l(player, INFLECT.a(self.name))
     
     def description(self, player=None, position=None):
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
-        description = _l(player, "You see %s") % self.name(player)
+        description = _l(player, "You see %s") % self.formatName(player)
         if self.showDuration:
             description += _lp(player, "that will expire in %d second.", "that will expire in %d seconds.", self.duration) % self.duration # TODO: days? , minutes, hours
         if self.containerSize:
@@ -381,8 +381,8 @@ class Item(object):
         
     def rawName(self):
         if self.count:
-            return INFLECT.plural(items[self.itemId]["name"].title())
-        return items[self.itemId]["name"].title()
+            return INFLECT.plural(self.name.title())
+        return self.name.title()
         
     def reduceCount(self, count):
         self.count -= count
