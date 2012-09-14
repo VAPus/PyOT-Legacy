@@ -64,7 +64,7 @@ class Creature(object):
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0
-        self.direction = 0
+        self.direction = SOUTH
         self.position = position
         self.speed = 100.0
         self.scripts = { "onNextStep":[]}
