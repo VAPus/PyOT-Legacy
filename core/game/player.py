@@ -1695,10 +1695,10 @@ class Player(Creature):
             self.inventory = pickle.loads(inventoryData)
         except:
             print "Broken inventory (blame MySQL, it usually means you killed the connection in the middle of a save)"
-        purse = Item(1987)
-        purse.name = "Purse"
-        purse.addAction('purse')
-        self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), purse] # Last item XXX is purse.
+            purse = Item(1987)
+            purse.name = "Purse"
+            purse.addAction('purse')
+            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), purse] # Last item XXX is purse.
 
         # Generate the inventory cache
         for item in self.inventory:
