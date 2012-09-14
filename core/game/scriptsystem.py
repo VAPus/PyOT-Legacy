@@ -153,6 +153,10 @@ class TriggerScripts(object):
 class RegexTriggerScripts(TriggerScripts):
     __slots__ = ('scripts', 'parameters')
 
+    def __init__(self, parameters = ()):
+        self.scripts = {}
+        self.parameters = () # We can't have parameters
+        
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(trigger))
@@ -661,6 +665,8 @@ def register(type, *argc):
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
                 
         # Step 3, veritify parameter names
+        if "test" in vars:
+            print vars, object.parameters
         if object.parameters:
             for param in vars:
                 if param == 'k': continue
@@ -736,20 +742,25 @@ def access(*groupFlags, **kwargs):
             
     # Notice: We may make a optimized wrapper call when len(groupFlags) == 1 using creature.hasGroupFlag(unwrapperGroupFlag).
     def _wrapper(f):
-        def access_wrapper_inner(creature, **k):
-            if isMonster and not creature.isMonster():
-                return
-                
-            if isNPC and not creature.isNPC():
-                return
-            
-            if isPlayer:
-                if not creature.isPlayer() or not creature.hasGroupFlags(*groupFlags):
-                    return 
-                    
+        iargs = inspect.getargspec(f)
+        vars = ", ".join(iargs[0])
+        if iargs[2]:
+            if vars:
+                vars += ", **k"
             else:
-                assert not groupFlags
-
-            return f(creature, **k)
+                vars = "**k"
+                
+        exec """
+def access_wrapper_inner(%s):
+    if isMonster and not creature.isMonster():
+        return
+    if isNPC and not creature.isNPC():
+        return
+    if isPlayer:
+        if not creature.isPlayer() or not creature.hasGroupFlags(*groupFlags):
+            return 
+    else:
+        assert not groupFlags
+    return f(%s)""" % (vars, vars) in globals(), locals()
         return access_wrapper_inner
     return _wrapper
