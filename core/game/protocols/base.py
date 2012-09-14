@@ -815,11 +815,30 @@ class BaseProtocol(object):
             isCreature = True
         if not isCreature:
             # Remove item:
+            oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
             if toPosition.x == 0xFFFF:
                 currItem = player.findItemWithPlacement(toPosition)
             else:
                 currItem = None
-    
+
+            # Item to bag.
+            bag = None
+            if currItem:
+                if currItem[0] == 1:
+                    bag = currItem[1]
+                elif currItem[0] == 2:
+                    bag  = currItem[2]
+                
+            if bag:
+                process = [0]
+                        
+                count = 2
+                yield game.scriptsystem.get('useWith').runDeferNoReturn(oldItem[1], player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=bag)
+                yield game.scriptsystem.get('useWith').runDeferNoReturn(bag, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=oldItem[1])
+
+                if not process[0] == count:
+                    return # Script should supply error.
+                    
             """if currItem and currItem[1] and not ((currItem[1].stackable and currItem[1].itemId == sid(clientId)) or currItem[1].containerSize):
                 currItem[1] = None
             """
@@ -858,7 +877,6 @@ class BaseProtocol(object):
                         return
                     
                 #stream = player.packet()
-                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
@@ -912,7 +930,6 @@ class BaseProtocol(object):
                         
                 
             else:
-                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
                 if oldItem[1]:
                     stream = player.packet()
 
