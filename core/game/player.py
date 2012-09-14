@@ -308,6 +308,9 @@ class Player(Creature):
             stream.playerInfo(self)
             stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
+            
+            if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+                self.setIcon(CONDITION_PROTECTIONZONE)
             self.refreshConditions(stream)
 
             stream.magicEffect(self.position, 0x03)
