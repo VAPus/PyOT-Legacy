@@ -874,6 +874,8 @@ class Creature(object):
             stream.uint16(0x63)
             stream.uint32(self.clientId())
             stream.uint8(direction)
+            if spectator.version >= 953:
+                stream.uint8(self.solid)
             stream.send(spectator)
 
     def turnAgainst(self, position):
