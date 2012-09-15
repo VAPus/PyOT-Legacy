@@ -68,7 +68,8 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
         if username:
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+            salt = yield sql.conn.runQuery("SELECT `salt` FROM `accounts` WHERE `name` = %s", (username))
+            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(salt[0][0]+password).hexdigest()))
 
             if account:
                 characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))

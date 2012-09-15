@@ -137,7 +137,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+            salt = yield sql.conn.runQuery("SELECT `salt` FROM `accounts` WHERE `name` = %s", (username))
+            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(salt[0][0]+password).hexdigest()))
 
             if not account:
                 account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
