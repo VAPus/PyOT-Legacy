@@ -441,8 +441,8 @@ class Creature(object):
 
             elif canSeeOld and not canSeeNew:
                 stream.removeTileItem(oldPosition, oldStackpos)
-                spectator.knownCreatures.remove(self)
-                self.knownBy.remove(spectator)
+                """spectator.knownCreatures.remove(self)
+                self.knownBy.remove(spectator)"""
 
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
