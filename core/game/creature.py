@@ -734,10 +734,10 @@ class Creature(object):
                 by.message(_lp(by, "%(who)s gain %(amount)d hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
 
             if self.isPlayer():
-                if by != self:
-                    self.message(_lp(self, "You gain %(amount)d hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-                elif by is self:
+                if by is self:
                     self.message(_lp(self, "You healed yourself for %(amount)d hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
+                elif by is not None:
+                    self.message(_lp(self, "You gain %(amount)d hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
                 else:
                     self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
              
