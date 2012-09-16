@@ -1,17 +1,12 @@
-import sys
 import protocolbase
 import game.protocol
 from collections import deque
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
-import hashlib
-if sys.subversion[0] != 'PyPy':
-    try:
-        import otcrypto
-    except:
-        import otcrypto_python as otcrypto
-else:
+try:
+    import otcrypto
+except:
     import otcrypto_python as otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
@@ -26,7 +21,6 @@ waitingListIps = deque()
 lastChecks = {}
 class GameProtocol(protocolbase.TibiaProtocol):
     connections = 0
-    __slots__ = 'player', 'protocol', 'ready'
 
     def onInit(self):
         self.player = None
@@ -137,8 +131,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            salt = yield sql.conn.runQuery("SELECT `salt` FROM `accounts` WHERE `name` = %s", (username))
-            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(salt[0][0]+password).hexdigest()))
+            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
 
             if not account:
                 account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
