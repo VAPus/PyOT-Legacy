@@ -437,7 +437,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
-    
+    print fromPos, to
     pattern = []
     currPos = fromPos
     # First diagonal if possible
@@ -468,7 +468,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
             return None
                 
     # Fix for diagonal things like items
-    if len(pattern) > 2 and diagonal == True:
+    """if len(pattern) > 2 and diagonal == True:
         last, last2 = pattern[len(pattern)-2:len(pattern)]
         if abs(last-last2) == 1:
             del pattern[len(pattern)-2:len(pattern)]
@@ -481,10 +481,9 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
                 last = 1 + (6 if last2 == 0 else 4)
             elif last == 3: # last = west, last2 must be 
                 last = 0 + (6 if last2 == 0 else 4)
-            pattern.append(last)
+            pattern.append(last)"""
     if skipFields != 0:
         pattern = pattern[:skipFields]
-        
     return pattern
 
 # Spectator list

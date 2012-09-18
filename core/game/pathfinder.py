@@ -6,6 +6,9 @@ AStarRouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
 def clear():
     AStarRouteCache = {}
     
+# FIXME: Not make this a global...
+CACHE_CURRENT = config.pathfinderCache
+
 class Node(object):
     def __init__(self, x, y):
         self.x = x
@@ -17,6 +20,7 @@ class Node(object):
         self.tileTried = False
         
     def vertify(self, z, instanceId, checkCreature, allowCreatures=False):
+        global CACHE_CURRENT # XXX: Fixme!
         if self.tileTried:
             return self.state
         else:
@@ -24,8 +28,13 @@ class Node(object):
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
                 for thing in tile.things:
-                    if allowCreatures and isinstance(thing, game.creature.Creature):
-                        break
+                    if isinstance(thing, game.creature.Creature):
+                        if allowCreatures:
+                            break
+                        else:
+                            CACHE_CURRENT = False
+                            self.state = False
+                            break
                     elif thing.solid:
                         self.state = False
                         break
@@ -39,6 +48,8 @@ class Node(object):
     
 class AStar(object):
     def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId):
+        global CACHE_CURRENT # XXX: fixme
+        CACHE_CURRENT = config.pathfinderCache
         self.nodes = {}
         self.openNodes = set()
         self.closedNodes = set() 
@@ -47,6 +58,7 @@ class AStar(object):
         self.found = True
         self.z = zStart
         self.instanceId = instanceId
+        self.cache = True
         
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
@@ -149,9 +161,9 @@ class AStar(object):
             return self.final
             
         for n in self.openNodes:
-            if n.distance < min:
+            if n.distance * n.cost < min:
                 min_n = n
-                min = n.distance
+                min = n.distance * n.cost
         return min_n
         
     def aroundNode(self, node):
@@ -205,44 +217,50 @@ class AStar(object):
             n = _getNode(x - 1, y - 1)
             if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.cost = cost + (15 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.step = NORTHWEST
                 _openNodes.add(n)   
 
             n = _getNode(x - 1, y + 1)
             if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.cost = cost + (15 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.step = SOUTHWEST
                 _openNodes.add(n)   
 
             n = _getNode(x + 1, y - 1)
             if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.cost = cost + (15 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.step = NORTHEAST
                 _openNodes.add(n)  
                 
             n = _getNode(x + 1, y + 1)
             if n not in _closedNodes and n.vertify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes or n.cost < cost):
                 n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
+                n.cost = cost + (15 * config.diagonalWalkCost)
                 n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.step = SOUTHEAST
                 _openNodes.add(n)            
             
 def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
     cachePoint = (xStart, yStart, xGoal, yGoal, zStart)
-    
-    try:
-        return AStarRouteCache[cachePoint]
-    except:
-        pass
+    if config.pathfinderCache:
+        try:
+            return AStarRouteCache[cachePoint]
+        except:
+            pass
     
     aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId)
     if aStar.found:
-        AStarRouteCache[cachePoint] = aStar.result
+        if CACHE_CURRENT:
+            AStarRouteCache[cachePoint] = aStar.result
         return aStar.result
     else:
-        AStarRouteCache[cachePoint] = None
+        if CACHE_CURRENT:
+            AStarRouteCache[cachePoint] = None
         return None
     

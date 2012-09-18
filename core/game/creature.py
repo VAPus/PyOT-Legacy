@@ -1012,7 +1012,13 @@ class Creature(object):
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
 
     def distanceStepsTo(self, position):
-        return abs(self.position.x-position.x)+abs(self.position.y-position.y)
+        xSteps = abs(self.position.x-position.x)
+        ySteps = abs(self.position.y-position.y)
+        # Case one, diagonal right next to = 1. Fix diagonal attacks
+        if xSteps == 1 and ySteps == 1:
+            return 1
+        
+        return xSteps+ySteps
 
     def inRange(self, position, x, y, z=0):
         return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )

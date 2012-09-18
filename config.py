@@ -157,7 +157,7 @@ enableMarket = True # It works for 9.44+ only. Lower versions might not access i
 
 # Pathfinder
 # MIGHT BE BUGGY, NOT WELL TESTED!
-findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15%
+findDiagonalPaths = True # Disable this will make the pathfinder somewhat 10-15%
 
 # Skills
 defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
@@ -222,6 +222,9 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+
+# pathfinder cache?
+pathfinderCache = True
 
 # This formula is too complex to put into a lambda
 from math import log

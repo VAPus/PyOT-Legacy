@@ -661,12 +661,9 @@ def register(type, *argc):
             
             for param in object.parameters:
                 if not param in vars:
-                    print vars
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
                 
         # Step 3, veritify parameter names
-        if "test" in vars:
-            print vars, object.parameters
         if object.parameters:
             for param in vars:
                 if param == 'k': continue
@@ -724,19 +721,26 @@ def regEventTime(date, callback):
     
 # Another cool decorator
 def access(*groupFlags, **kwargs):
+    assert groupFlags
     isPlayer = True
     isMonster = False
     isNPC = False
-    
+    checks = []
     # XXX: Cheat Python2 syntax, Python3 got a nice fix for this by allowing kwargs to come after a *argc argument. Too bad pypy and twisted still is py2 only.
     # Unwrap it to get the overhead in loading instead of runtime.
     for arg in kwargs:
         if arg == "isPlayer":
             isPlayer = kwargs[arg]
+            if isPlayer:
+                check.append("if not creature.isPlayer() or not creature.hasGroupFlags(*%s): return" % groupFlags)
         elif arg == "isMonster":
             isMonster = kwargs[arg]
+            if isMonster:
+                checks.append("if not creature.isMonster(): return")
         elif arg == "isNPC":
             isNPC = kwargs[arg]
+            if isNPC:
+                checks.append("if not creature.isNPC(): return")
         else:
             raise TypeError("Calling scriptsystem.access() with invalid parameter %s" % arg)
             
@@ -752,15 +756,7 @@ def access(*groupFlags, **kwargs):
                 
         exec """
 def access_wrapper_inner(%s):
-    if isMonster and not creature.isMonster():
-        return
-    if isNPC and not creature.isNPC():
-        return
-    if isPlayer:
-        if not creature.isPlayer() or not creature.hasGroupFlags(*groupFlags):
-            return 
-    else:
-        assert not groupFlags
-    return f(%s)""" % (vars, vars) in globals(), locals()
+    %s
+    return f(%s)""" % (vars, '\n    '.join(checks), vars) in locals(), locals()
         return access_wrapper_inner
     return _wrapper
