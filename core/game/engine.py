@@ -8,7 +8,6 @@ import time
 import game.map
 import config
 import math
-import game.pathfinder
 import sql
 import otjson
 import game.enum
@@ -188,6 +187,9 @@ def loader(timer):
     
     __builtin__.sql = sql.conn
     __builtin__.config = config
+    
+    import game.pathfinder
+    
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.defer = defer
@@ -239,6 +241,9 @@ def loader(timer):
     # Access
     __builtin__.access = game.scriptsystem.access
     
+    # Pathfinder
+    __builtin__.pathfinder = game.pathfinder
+    
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
         monster = game.monster
@@ -289,7 +294,7 @@ def loader(timer):
     reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
     print "%45s" % _txtColor("\t[DONE]", "blue")
     
-    reactor.callLater(60, looper, game.pathfinder.clear, 60)
+    reactor.callLater(60, looper, pathfinder.clear, 60)
     
 # Just a inner funny call
 def looper(function, time):
@@ -463,7 +468,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
         
     if not pattern:
         # Try a straight line
-        pattern = game.pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
+        pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
         if not pattern:
             return None
                 

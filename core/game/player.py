@@ -11,7 +11,6 @@ import time
 import game.party
 import game.resource
 import game.chat
-import game.pathfinder
 import game.protocol
 import sql
 import game.vocation

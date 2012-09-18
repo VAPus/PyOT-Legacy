@@ -4,10 +4,7 @@ from collections import deque
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
-try:
-    import otcrypto
-except:
-    import otcrypto_python as otcrypto
+import otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
 import sql

@@ -1,10 +1,5 @@
 from struct import unpack, pack
-
-try:
-    import otcrypto
-except:
-    import otcrypto_python as otcrypto
-
+import otcrypto
 from zlib import adler32
 
 """

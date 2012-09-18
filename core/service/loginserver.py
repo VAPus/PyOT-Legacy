@@ -3,10 +3,7 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 from packet import TibiaPacket
 import sql
-try:
-    import otcrypto
-except:
-    import otcrypto_python as otcrypto
+import otcrypto
 import config
 import socket
 
