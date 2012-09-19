@@ -667,7 +667,7 @@ class Creature(object):
             magicEffect = effect
 
         # pvpDamageFactor.
-        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.:
+        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = dmg * config.pvpDamageFactor
             
         dmg = [dmg]
@@ -1192,7 +1192,7 @@ class Creature(object):
             stream.uint8(self.skull)
             stream.send(player.client)
 
-    def getSkull(self, creature):
+    def getSkull(self, creature=None):
         return self.skull # TODO
 
     def square(self, creature, color=27):
