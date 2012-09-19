@@ -80,6 +80,30 @@ globalProtectionZone = True # True = optional PvP. Scripts might change a player
 skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
 protectedZones = True # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.
 
+loginBlock = 60 # In seconds, 0 to disable.
+resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
+pvpDamageFactor = 0.5 # 50%
+
+whiteSkull = 15 * 60 # In seconds, 0 to disable
+
+redSkull = 60 * 60 * 24 * 30 # Red skull, in seconds. 0 to disable
+redSkullUnmarked = {3:24, 5:7*24, 10:30*24} # {KILLS: periode in hours}
+redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
+
+blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
+blackSkullUnmarked = {6:24, 10:7*24, 20:30*24} # {KILLS: periode in hours}
+blackSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
+blackSkullDisableAreaSpells = True
+blackSkullDisableAreaRules = True
+blackSkullDisableSummons = True
+blackSkullFullDamage = True # Receive 100% instead of pvpDamageFactor.
+
+yellowSkull = True # Enable/Disable this. Disaled = all kills and unjust
+orangeSkull = True
+orangeSkullLength = 7 * 24 # In hours.
+
+greenSkull = True
+
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1

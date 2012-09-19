@@ -625,7 +625,6 @@ class Creature(object):
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
 
-        print dmg
         if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
@@ -667,6 +666,10 @@ class Creature(object):
         if effect:
             magicEffect = effect
 
+        # pvpDamageFactor.
+        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.:
+            dmg = dmg * config.pvpDamageFactor
+            
         dmg = [dmg]
         textColor = [textColor]
         magicEffect = [magicEffect]
@@ -1176,8 +1179,9 @@ class Creature(object):
             stream.send(player.client)
 
     # Skull
+    # For white, black and red only.
     def setSkull(self, skull):
-        if self.skull == skull:
+        if self.getSkull(skull):
             return
 
         self.skull = skull
@@ -1185,7 +1189,7 @@ class Creature(object):
         for player in getPlayers(self.position):
             stream = player.packet(0x90)
             stream.uint32(self.cid)
-            stream.uint8(self.getSkull(player))
+            stream.uint8(self.skull)
             stream.send(player.client)
 
     def getSkull(self, creature):
