@@ -757,8 +757,10 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         break
                     # otherwise it should be ",", we don't need to vertify this.
                 if items:
-                    # For the PvP configuration option, yet allow scriptability. Remove the flag.
-                    if not config.protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
+                    # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
+                    if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
+                        flags += TILEFLAGS_PROTECTIONZONE
+                    elif not config.protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
                         flags -= TILEFLAGS_PROTECTIONZONE
                     if houseId:
                         # Fix flags if necessary, TODO: Move this to map maker!

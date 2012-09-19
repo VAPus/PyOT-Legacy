@@ -625,7 +625,7 @@ class Creature(object):
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
 
-
+        print dmg
         if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK

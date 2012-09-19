@@ -1634,7 +1634,10 @@ class Player(Creature):
 
     # Damage calculation:
     def damageToBlock(self, dmg, type):
-        if type == game.enum.MELEE:
+        if dmg > 0:
+            return dmg
+        
+        if type == game.enum.MELEE or type == game.enum.PHYSICAL:
             # Armor and defence
             armor = 0
             defence = 0
@@ -1646,7 +1649,7 @@ class Player(Creature):
                     extradef += item.extradef or 0
                     block = (item.absorbPercentPhysical or 0) + (item.absorbPercentAll or 0)
                     if block:
-                        dmg = dmg * (block / 100.0)
+                        dmg += (-dmg * block / 100.0)
 
             if self.inventory[game.enum.SLOT_LEFT]:
                 defence = self.inventory[game.enum.SLOT_LEFT].defence
@@ -1654,20 +1657,21 @@ class Player(Creature):
                 defence = self.inventory[game.enum.SLOT_RIGHT].defence
 
             defence += extradef
-
-            # Reduce armor to fit action + set defence still
             defRate = 1
             if self.modes[1] == game.enum.OFFENSIVE:
                 defRate = 0.5
             elif self.modes[1] == game.enum.BALANCED:
                 defRate = 0.75
 
+            if random.randint(1, 100) <= defence * defRate:
+                self.lmessage("You blocked an attack!")
+                
             # Apply some shielding effects
-            dmg  = int((dmg - random.uniform(armor*0.475, (armor*0.95)-1)) - (defence * defRate) - (dmg / 100.0) * armor)
+            dmg  = int((dmg + random.uniform(armor*0.475, (armor*0.95)-1)) + ((-dmg * armor) / 100.0))
             if dmg > 0:
-                return dmg
-            else:
                 return 0
+            else:
+                return dmg
 
         return dmg
 

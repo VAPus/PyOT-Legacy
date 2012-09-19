@@ -880,7 +880,7 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_AMMO) and (toPosition.y-1) not in (game.enum.SLOT_PURSE, game.enum.SLOT_BACKPACK):
                     checkSlots = True
                     if (toPosition.y-1) not in slots:
                         return
@@ -934,7 +934,7 @@ class BaseProtocol(object):
                     stream = player.packet()
 
                     # Before we remove it, can it be placed there?
-                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
+                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_BACKPACK, game.enum.SLOT_AMMO, game.enum.SLOT_PURSE) and (toPosition.y-1) not in oldItem[1].slots():
                         player.notPossible()
                         return
                     elif oldItem[1].inTrade:
