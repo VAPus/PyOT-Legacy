@@ -467,9 +467,7 @@ if config.stackTiles:
     dummyTiles = {}
     
 def loadTiles(x,y, instanceId):
-    if x < 0 or y < 0:
-        return None
-    elif x > mapInfo.height or y > mapInfo.width:
+    if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
     
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
@@ -759,9 +757,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         break
                     # otherwise it should be ",", we don't need to vertify this.
                 if items:
+                    # For the PvP configuration option, yet allow scriptability. Remove the flag.
+                    if not config.protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
+                        flags -= TILEFLAGS_PROTECTIONZONE
                     if houseId:
                         # Fix flags if necessary, TODO: Move this to map maker!
-                        if not flags & TILEFLAGS_PROTECTIONZONE:
+                        if config.protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
                             flags += TILEFLAGS_PROTECTIONZONE
                             
                         tile = l_HouseTile(items, flags)
@@ -812,7 +813,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
            
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
-    sectorSum = (sectorX * 32768) + sectorY
+    sectorSum = (sectorX << 15) + sectorY
     
     if sectorSum in knownMap[instanceId]:
         return False
@@ -823,7 +824,7 @@ def load(sectorX, sectorY, instanceId):
     # Attempt to load a sector file
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            knownMap[instanceId][sectorSum] = loadSectorMap(f.read(), instanceId, sectorX * 32, sectorY * 32)
+            knownMap[instanceId][sectorSum] = loadSectorMap(f.read(), instanceId, sectorX << 5, sectorY << 5)
     except IOError:
         # No? Mark it as empty
         knownMap[instanceId][sectorSum] = None
@@ -870,7 +871,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
     reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId):
-    sectorSum = (sectorX * 32768) + sectorY
+    sectorSum = (sectorX << 15) + sectorY
     try:
         del knownMap[instanceId][sectorSum]
     except:

@@ -76,9 +76,9 @@ playerCanWearAllOutfits = False
 playerCanUseAllMounts = False
 
 # PvP
-playersAreAttackable = True # False = optional PvP
-skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP
-protectedZones = True # False will disable protected zones like in Harcore PvP
+playersAreAttackable = True # False = optional PvP. Scripts might change a players attackability.
+skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
+protectedZones = False # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.
 
 # Loot / Drop
 lootDropRate = 1

@@ -442,7 +442,6 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
-    print fromPos, to
     pattern = []
     currPos = fromPos
     # First diagonal if possible
