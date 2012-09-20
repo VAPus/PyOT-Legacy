@@ -82,7 +82,7 @@ class Creature(object):
         self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         self.regenerate = None
         self.alive = True
-        self.lastDamager = None
+        self.lastDamagers = deque(maxlen=config.trackHits)
         self.solid = not config.creatureWalkthrough
         self.shield = 0
         self.emblem = 0
@@ -619,7 +619,7 @@ class Creature(object):
             print "[DEBUG]: A dead creature seem to have been hit"
             return
 
-        self.lastDamager = by
+        self.lastDamagers.appendleft(by)
 
         if not type == game.enum.DISTANCE:
             dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
@@ -675,7 +675,7 @@ class Creature(object):
         magicEffect = [magicEffect]
         type = [type]
 
-        process = game.scriptsystem.get("hit").runSync(self, self.lastDamager, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 

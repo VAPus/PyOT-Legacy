@@ -369,6 +369,13 @@ class Player(Creature):
             with self.packet() as stream:
                 stream.skills(self)
                 
+    def refreshSkull(self, stream=None):
+        for player in getPlayers(self.position):
+            stream = player.packet(0x90)
+            stream.uint32(self.cid)
+            stream.uint8(self.getSkull())
+            stream.send(player.client)
+                
     def pong(self):
         self.packet(0x1E).send(self.client)
 
@@ -1088,6 +1095,9 @@ class Player(Creature):
     def onlyOnCreatures(self):
         self.cancelMessage(_l(self, "You can only use it on creatures."))
 
+    def unmarkedPlayer(self):
+        self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
+        
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
             # Replace it in structure
@@ -1578,12 +1588,14 @@ class Player(Creature):
         self.client.ready = False
 
     def onDeath(self):
+        print "on dead!"
         self.sendReloginWindow()
 
         # Maybe add skull.
-        if self.lastDamager.isPlayer() and config.skullSystem:
-            entry = deathlist.DeathEntry(self.lastDamager.data["id"], self.data["id"], True)
+        if self.lastDamagers[0].isPlayer() and config.skullSystem:
+            entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], True)
             deathlist.addEntry(entry)
+            self.lastDamagers[0].refreshSkull()
             
         # Remove summons
         if self.activeSummons:
@@ -1603,7 +1615,7 @@ class Player(Creature):
         self.data["mana"] = self.data["manamax"]
 
         corpse = game.item.Item(3058)
-        game.scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
+        game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
         if not self.alive and self.data["health"] < 1:
 
             splash = game.item.Item(game.enum.FULLSPLASH)
@@ -2063,8 +2075,12 @@ class Player(Creature):
         if cid in allCreatures:
             if allCreatures[cid].isAttackable(self):
                 target = allCreatures[cid]
+                if target.isPlayer() and self.modes[2]:
+                    self.cancelTarget()
+                    return self.unmarkedPlayer()
                 ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
                 if ret == False:
+                   self.cancelTarget()
                    return
                 elif ret != None:
                     self.target = ret
@@ -2076,11 +2092,14 @@ class Player(Creature):
                     target.target = self
                     target.targetMode = 1
             else:
+                self.cancelTarget()
                 return
         else:
+            self.cancelTarget()
             return self.notPossible()
 
         if not self.target:
+            self.cancelTarget()
             return self.notPossible()
 
 
