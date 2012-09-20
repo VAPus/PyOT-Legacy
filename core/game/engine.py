@@ -836,6 +836,13 @@ def saveAll(force=False):
                 else:
                     log.msg("Not saving house", houseId)
     
+    # Deathlist
+    deathListInsert, deathListUpdate = deathlist.saveQuery()
+    if deathListInsert:
+        sql.runOperation(deathListInsert)
+    if deathListUpdate:
+        sql.runOperation(deathListUpdate)
+        
     if force:        
         log.msg("Full (forced) save took: %f" % (time.time() - t))
 

@@ -52,7 +52,7 @@ def loadDeathList(playerId):
         loadedDeathIds.add(entry[0])
         
 def getSkull(playerId):
-    if not playerId in byKillers: return 0
+    if not playerId in byKiller: return 0
     
     whiteSkull = False
     redEntries = {}
@@ -101,15 +101,19 @@ def addEntry(deathEntry):
     
     toBeSaved.add(deathEntry)
     
+    byKiller[deathEntry.killerId].append(deathEntry)
+    byVictim[deathEntry.victimId].append(deathEntry)
+    loadedDeathIds.add(deathEntry.id)
+    
 def saveQuery():
-    global toBeSaved, toBeUpdated
+    global toBeInserted, toBeUpdated
     inserts = ""
     updates = ""
     queries = []
-    for entry in toBeSaved:
+    for entry in toBeInserted:
         queries.append(entry.saveQuery())
         
     if queries:
         inserts = "INSERT INTO pvp_deaths(`death_id`, `killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % ','.join(queries)
-        toBeSaved.clear()
+        toBeInserted.clear()
     return inserts, updates

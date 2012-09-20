@@ -1580,6 +1580,11 @@ class Player(Creature):
     def onDeath(self):
         self.sendReloginWindow()
 
+        # Maybe add skull.
+        if self.lastDamager.isPlayer() and config.skullSystem:
+            entry = deathlist.DeathEntry(self.lastDamager.data["id"], self.data["id"], True)
+            deathlist.addEntry(entry)
+            
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
