@@ -2,8 +2,6 @@ byKiller = {}
 byVictim = {}
 
 loadedDeathIds = set()
-toBeInserted = set()
-toBeUpdated = set()
 
 lastId = 0
 
@@ -99,21 +97,8 @@ def addEntry(deathEntry):
     deathEntry.id = lastId + 1
     lastId += 1
     
-    toBeSaved.add(deathEntry)
+    sql.runOperation("INSERT INTO pvp_deaths(`death_id`, `killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % deathEntry.saveQuery())
     
     byKiller[deathEntry.killerId].append(deathEntry)
     byVictim[deathEntry.victimId].append(deathEntry)
     loadedDeathIds.add(deathEntry.id)
-    
-def saveQuery():
-    global toBeInserted, toBeUpdated
-    inserts = ""
-    updates = ""
-    queries = []
-    for entry in toBeInserted:
-        queries.append(entry.saveQuery())
-        
-    if queries:
-        inserts = "INSERT INTO pvp_deaths(`death_id`, `killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % ','.join(queries)
-        toBeInserted.clear()
-    return inserts, updates
