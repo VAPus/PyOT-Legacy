@@ -2608,3 +2608,8 @@ class Player(Creature):
     def delayWalk(self, delay):
         with self.packet() as stream:
             stream.delayWalk(delay)
+            
+    # Skull stuff
+    def getSkull(self, creature=None):
+        if not creature:
+            return deathlist.getSkull(self.data["id"])

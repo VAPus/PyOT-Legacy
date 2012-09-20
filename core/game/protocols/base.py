@@ -239,7 +239,7 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.skull) # Skull
+        self.uint8(creature.getSkull()) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
             self.uint8(creature.emblem) # Emblem

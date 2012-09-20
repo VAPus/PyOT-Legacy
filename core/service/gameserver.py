@@ -176,7 +176,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
                 cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":language}
-
+                yield deathlist.loadDeathList(cd['id'])
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]
                 if self.player.data["health"]:

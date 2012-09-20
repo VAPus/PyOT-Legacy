@@ -57,4 +57,6 @@ conn = connect()
 def runOperation(*argc, **kwargs):
     yield conn.runOperation(*argc, **kwargs)
     
-    
+@inlineCallbacks
+def runQuery(*argc, **kwargs):
+    yield conn.runQuery(*argc, **kwargs)

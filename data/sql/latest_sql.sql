@@ -25065,3 +25065,14 @@ ALTER TABLE `players` ADD `online` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AF
 ALTER TABLE `players` ADD `instanceId` MEDIUMINT( 5 ) NULL DEFAULT NULL AFTER `posz` ;
 
 ALTER TABLE `accounts` ADD `language` CHAR( 5 ) NOT NULL DEFAULT 'en_EN' AFTER `premdays` 
+
+CREATE TABLE IF NOT EXISTS `pvp_deaths` (
+  `death_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `killer_id` int(11) unsigned NOT NULL,
+  `victim_id` int(11) unsigned NOT NULL,
+  `unjust` tinyint(1) NOT NULL,
+  `time` int(11) unsigned NOT NULL,
+  `revenged` tinyint(1) NOT NULL DEFAULT '0',
+  `war_id` int(11) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`death_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

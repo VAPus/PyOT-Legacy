@@ -84,14 +84,16 @@ loginBlock = 60 # In seconds, 0 to disable.
 resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
 pvpDamageFactor = 0.5 # 50%
 
+deathListCutoff = 45 # In days. This is the maximum amount of time we care to load in death entries from.
+
 whiteSkull = 15 * 60 # In seconds, 0 to disable
 
 redSkull = 60 * 60 * 24 * 30 # Red skull, in seconds. 0 to disable
-redSkullUnmarked = {3:24, 5:7*24, 10:30*24} # {KILLS: periode in hours}
+redSkullUnmarked = {24:3, 7*24:5, 30*24:10} # {periode in hours: KILLS}
 redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
 
 blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
-blackSkullUnmarked = {6:24, 10:7*24, 20:30*24} # {KILLS: periode in hours}
+blackSkullUnmarked = {24:6, 7*24:10, 30*24:20} # {periode in hours: KILLS}
 blackSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
 blackSkullDisableAreaSpells = True
 blackSkullDisableAreaRules = True
