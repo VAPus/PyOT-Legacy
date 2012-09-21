@@ -1592,7 +1592,7 @@ class Player(Creature):
 
     def losePrecent(self, withBlessings=True):
         if not config.loseCutoff:
-            lose = 0
+            return 0
         
         elif self.data["level"] < config.loseCutoff:
             lose = config.loseConstant
@@ -1604,6 +1604,23 @@ class Player(Creature):
             
         return floor(lose * self.deathPenalityFactor)
             
+    def itemLosePrecent(self):
+        if self.getSkull() in (SKULL_BLACK, SKULL_RED) and config.redSkullLoseRate:
+            return (config.redSkullLoseRate, config.redSkullLoseRate)
+        
+        # This is constants it would seem.
+        container = 100
+        if self.blessings == 1:
+            container = 70
+        elif self.blessings == 2:
+            container = 45
+        elif self.blessings == 3:
+            container = 25
+        elif self.blessings == 4:
+            container = 10
+        else:
+            return (0, 0)
+        return (container, container / 10.0)
     def onDeath(self):
         print "on dead!"
         
@@ -1644,6 +1661,19 @@ class Player(Creature):
         self.data["mana"] = self.data["manamax"]
 
         corpse = game.item.Item(3058)
+        
+        # Are we suppose to lose the container?
+        itemLose = self.itemLosePrecent()
+        if self.inventory[2] and random.randint(1, 100) < itemLose[0]:
+            corpse.container.placeItem(self.inventory[2])
+            self.inventory[2] = None
+            
+        # Loop over each item in the inventory to see if we lose em.
+        for index in xrange(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
+            if self.inventory[index] and random.randint(1, 1000) < (itemLose[1] * 10):
+                corpse.container.placeItem(self.inventory[index])
+                self.inventory[index] = None
+                
         game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
         if not self.alive and self.data["health"] < 1:
 

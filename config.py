@@ -91,11 +91,10 @@ whiteSkull = 15 * 60 # In seconds, 0 to disable
 
 redSkull = 60 * 60 * 24 * 30 # Red skull, in seconds. 0 to disable
 redSkullUnmarked = {24:3, 7*24:5, 30*24:10} # {periode in hours: KILLS}
-redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
+redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates. This also count for blackSkull.
 
 blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
 blackSkullUnmarked = {24:6, 7*24:10, 30*24:20} # {periode in hours: KILLS}
-blackSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates.
 blackSkullDisableAreaSpells = True
 blackSkullDisableAreaRules = True
 blackSkullDisableSummons = True
