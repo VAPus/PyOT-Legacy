@@ -42,6 +42,9 @@ class Packet(base.BasePacket):
     protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x15    
     protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x16
     
+    #Temporary
+    protocolEnums["_MSG_HEALED"] = 0x11
+    
     # Alias
     protocolEnums["_MSG_DAMAGE_RECEIVED"] = protocolEnums["_MSG_EVENT_DEFAULT"]
     protocolEnums["_MSG_DAMAGE_DEALT"] = protocolEnums["_MSG_EVENT_DEFAULT"]
