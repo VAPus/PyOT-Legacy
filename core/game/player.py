@@ -1597,12 +1597,12 @@ class Player(Creature):
         elif self.data["level"] < config.loseCutoff:
             lose = config.loseConstant
         else:
-            lose = floor(config.loseFormula(self.data["level"]) / self.data["experience"])
+            lose = config.loseFormula(self.data["level"]) / self.data["experience"]
             
         if withBlessings:
             lose *= 0.92 ** self.blessings
             
-        return lose * self.deathPenalityFactor
+        return floor(lose * self.deathPenalityFactor)
             
     def onDeath(self):
         print "on dead!"
