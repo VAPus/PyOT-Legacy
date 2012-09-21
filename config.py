@@ -107,6 +107,10 @@ orangeSkullLength = 7 * 24 # In hours.
 
 greenSkull = True
 
+# Lose rate
+loseCutoff = 25 # Set to 0 to disable loose entierly.
+loseConstant = 10 # For players with level < loseCutoff. Otherwise we use loseFormula divided by experience.
+
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1
@@ -254,9 +258,10 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+loseFormula = lambda x: ((x+50)/100)*(50*((x**2) - 5*x + 8)) # x = level
 
 # PvP formulas
-pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05)))
+pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05))
 
 # pathfinder cache?
 pathfinderCache = True

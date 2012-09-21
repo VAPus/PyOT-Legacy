@@ -1587,10 +1587,28 @@ class Player(Creature):
         # And kill the readyness
         self.client.ready = False
 
+    def losePrecent(self):
+        if not config.loseCutoff:
+            return 0
+        
+        if self.data["level"] < config.loseCutoff:
+            return config.loseConstant
+        else:
+            return floor(config.loseFormula(self.data["level"]) / self.data["experience"])
+            
     def onDeath(self):
         print "on dead!"
-        self.sendReloginWindow()
+        
+        print "TODO: Unfair fight."
+        loseRate = self.losePrecent()
+        self.sendReloginWindow(loseRate)
 
+        # Reduce experience, manaspent and total skill tries (ow my)
+        if loseRate:
+            self.modifyExperience(-(self.data["experience"] * (loseRate/100.0)))
+            self.modifySpentMana(-(self.data["manaspent"] * (loseRate/100.0)))
+            print "TODO: Reduce skill tries"
+            
         # PvP experience and death entries.
         if self.lastDamagers[0].isPlayer():
             entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], True)
