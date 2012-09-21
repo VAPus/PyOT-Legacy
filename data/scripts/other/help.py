@@ -326,6 +326,12 @@ def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
     
 
+@register("talkaction", "conditionpercent")
+@access("DEVELOPER")
+def conditionme(creature, **k):
+    creature.multiCondition(PercentCondition(CONDITION_POISON, 50, 0.9, 5), PercentCondition(CONDITION_FIRE, 10, 1.1))
+    
+
 @register("talkaction", "restore")
 @access("DEVELOPER")
 def restoreme(creature, **k):

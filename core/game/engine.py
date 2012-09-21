@@ -242,7 +242,7 @@ def loader(timer):
     __builtin__.Condition = game.conditions.Condition
     __builtin__.Boost = game.conditions.Boost
     __builtin__.CountdownCondition = game.conditions.CountdownCondition
-    __builtin__.CountupCondition = game.conditions.CountupCondition
+    __builtin__.PercentCondition = game.conditions.PercentCondition
     __builtin__.MultiCondition = game.conditions.MultiCondition
     __builtin__.RepeatCondition = game.conditions.RepeatCondition
     

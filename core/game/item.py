@@ -119,7 +119,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if self._itemBase["a"] & 64:
+        if self._itemBase[None] & 64:
             if not count or count < 0:
                 count = 1
             self.count = count
@@ -226,49 +226,53 @@ class Item(object):
     
     @property
     def solid(self):
-        return self._itemBase["a"] & 1
+        return self._itemBase[None] & 1
         
     @property
     def blockprojectile(self):
-        return self._itemBase["a"] & 2
+        return self._itemBase[None] & 2
         
     @property
     def blockpath(self):
-        return self._itemBase["a"] & 4
+        return self._itemBase[None] & 4
         
+    @property
+    def cid(self):
+        return self._itemBase[1]
+    
     """
     # Changeable attributes. Ignore.
     @property
     def usable(self):
-        return items[self.itemId]["a"] & 8
+        return items[self.itemId][None] & 8
         
     @property
     def pickable(self):
-        return items[self.itemId]["a"] & 16
+        return items[self.itemId][None] & 16
         
     @property
     def movable(self):
-        return items[self.itemId]["a"] & 32
+        return items[self.itemId][None] & 32
     """    
     @property
     def stackable(self):
-        return self._itemBase["a"] & 64
+        return self._itemBase[None] & 64
         
     @property
     def ontop(self):
-        return self._itemBase["a"] & 128
+        return self._itemBase[None] & 128
         
     @property
     def hangable(self):
-        return self._itemBase["a"] & 256
+        return self._itemBase[None] & 256
         
     @property
     def rotatable(self):
-        return self._itemBase["a"] & 512
+        return self._itemBase[None] & 512
         
     @property
     def animation(self):
-        return self._itemBase["a"] & 1024
+        return self._itemBase[None] & 1024
         
     @property
     def type(self):
@@ -279,30 +283,30 @@ class Item(object):
             
     def __getattr__(self, name):
         try:
-            return self._itemBase["a"] & (1 << self.attributes.index(name))
+            return self._itemBase[name]
         except:
             try:
-                return self._itemBase[name]
+                return self._itemBase[None] & (1 << self.attributes.index(name))
             except:
                 if not "__" in name:
                     return None
                        
         raise AttributeError, name
     
-    def name(self, player=None):
+    def formatName(self, player=None):
         if not player:
             raise Exception("We need to have a player when asking for a items name now apperently!")
             
         if self.count > 1:
-            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(items[self.itemId]["name"]))}
+            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(self.name))}
             
-        return _l(player, INFLECT.a(items[self.itemId]["name"]))
+        return _l(player, INFLECT.a(self.name))
     
     def description(self, player=None, position=None):
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
-        description = _l(player, "You see %s") % self.name(player)
+        description = _l(player, "You see %s") % self.formatName(player)
         if self.showDuration:
             description += _lp(player, "that will expire in %d second.", "that will expire in %d seconds.", self.duration) % self.duration # TODO: days? , minutes, hours
         if self.containerSize:
@@ -377,8 +381,8 @@ class Item(object):
         
     def rawName(self):
         if self.count:
-            return INFLECT.plural(items[self.itemId]["name"].title())
-        return items[self.itemId]["name"].title()
+            return INFLECT.plural(self.name.title())
+        return self.name.title()
         
     def reduceCount(self, count):
         self.count -= count
@@ -657,7 +661,7 @@ class Item(object):
             
 def cid(itemid):
     try:
-        return items[itemid]["cid"]
+        return items[itemid][1]
     except:
         return None
 
@@ -692,7 +696,7 @@ def attribute(itemId, attr):
     check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     try:
         if attr in check:
-            return items[itemId]["a"] & check.index(attr)
+            return items[itemId][None] & check.index(attr)
             
         return items[itemId][attr]
     except:
@@ -721,13 +725,13 @@ def loadItems():
     
     
     # Make three new values while we are loading
-    loadItems = [0] * (config.itemMaxServerId + 1)
-    reverseLoadItems = [0] * (config.itemMaxClientId + 1)
+    loadItems = [None] * (config.itemMaxServerId + 1)
+    reverseLoadItems = [None] * (config.itemMaxClientId + 1)
 
     for item in (yield d1):
         sid = item[0]
         cid = item[1]
-        attr = {'cid':cid, 'a':item[6]}
+        attr = {1:cid, None:item[6]}
 
         if item[3]:
             attr['type'] = item[3]
