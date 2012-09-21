@@ -1591,11 +1591,14 @@ class Player(Creature):
         print "on dead!"
         self.sendReloginWindow()
 
-        # Maybe add skull.
-        if self.lastDamagers[0].isPlayer() and config.skullSystem:
+        # PvP experience and death entries.
+        if self.lastDamagers[0].isPlayer():
             entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], True)
             deathlist.addEntry(entry)
             self.lastDamagers[0].refreshSkull()
+            
+            # PvP Experience.
+            self.lastDamagers[0].modifyExperience(config.pvpExpFormula(self.lastDamagers[0].data["level"], self.data["level"], self.data["experience"]))
             
         # Remove summons
         if self.activeSummons:
