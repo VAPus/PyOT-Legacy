@@ -65,6 +65,9 @@ class Player(Creature):
         self.windowHandlers = {}
         self.partyObj = None
         self.solid = not config.playerWalkthrough
+        
+        self.blessings = 0
+        self.deathPenalityFactor = 1
 
         """# Light stuff
         self.lightLevel = 0x7F
@@ -1587,14 +1590,19 @@ class Player(Creature):
         # And kill the readyness
         self.client.ready = False
 
-    def losePrecent(self):
+    def losePrecent(self, withBlessings=True):
         if not config.loseCutoff:
-            return 0
+            lose = 0
         
-        if self.data["level"] < config.loseCutoff:
-            return config.loseConstant
+        elif self.data["level"] < config.loseCutoff:
+            lose = config.loseConstant
         else:
-            return floor(config.loseFormula(self.data["level"]) / self.data["experience"])
+            lose = floor(config.loseFormula(self.data["level"]) / self.data["experience"])
+            
+        if withBlessings:
+            lose *= 0.92 ** self.blessings
+            
+        return lose * self.deathPenalityFactor
             
     def onDeath(self):
         print "on dead!"
