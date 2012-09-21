@@ -1,5 +1,5 @@
 class Condition(object):
-    def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
+    def __init__(self, type, subtype="", length=1, every=2, check=None, *argc, **kwargs):
         self.length = length
         self.every = every
         self.creature = None
@@ -206,7 +206,6 @@ class CountdownCondition(Condition):
         # Finishes when dmg hits 1.
         self.creature = None
         self.tickEvent = None
-        self.check = check
         self.damage = startdmg
         
         if subtype and isinstance(type, str):
@@ -267,10 +266,10 @@ class CountdownCondition(Condition):
             
         # No damamge? Finish it!
         # Otherwise, scheduler next tick.
-        if self.damamge <= 0:
+        if self.damage <= 0:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(1, self.tick)
+            self.tickEvent = reactor.callLater(2, self.tick)
             
 class PercentCondition(Condition): #under 100% it will decrase in percentages
     def __init__(self, type, startdmg, percent, rptcount=False, subtype=""):
@@ -337,8 +336,70 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         if self.count <= 0 or self.damage <= 0:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(1, self.tick)
+            self.tickEvent = reactor.callLater(2, self.tick)
             
 
 class RepeatCondition(Condition):
-    pass
+    def __init__(self, type, startdmg, rptcount=False, subtype=""):
+        # This is constant. EVERY 1 sec, do recalculations
+        # Finishes when dmg hits 1.
+        self.creature = None
+        self.tickEvent = None
+        self.damage = startdmg
+        if not rptcount:
+            self.count = 10
+        else:
+            self.count = rptcount
+        
+        if subtype and isinstance(type, str):
+            self.type = "%s_%s" % (type, subtype)
+        else:
+            self.type = type
+
+        try:
+            self.effect
+        except:
+            if type == CONDITION_FIRE:
+                self.effect = self.effectFire
+            elif type == CONDITION_POISON:
+                self.effect = self.effectPoison
+            elif type == CONDITION_REGENERATEHEALTH:
+                self.effect = self.effectRegenerateHealth
+            elif type == CONDITION_REGENERATEMANA:
+                self.effect = self.effectRegenerateMana        
+
+    def effectPoison(self, damage):
+        self.creature.magicEffect(EFFECT_HITBYPOISON)
+        self.creature.modifyHealth(-damage)
+
+    def effectFire(self, damage):
+        self.creature.magicEffect(EFFECT_HITBYFIRE)
+        self.creature.modifyHealth(-damage)
+
+    def effectRegenerateHealth(self, gainhp):
+        if not gainhp:
+            gainhp = self.creature.getVocation().health
+            self.creature.onHeal(None, gainhp[0])
+
+        else:
+            self.creature.onHeal(None, gainhp)
+
+    def effectRegenerateMana(self, gainmana):
+        if not gainmana:
+            gainmana = self.creature.getVocation().mana
+            self.creature.modifyMana(gainmana[0])
+
+        else:
+            self.creature.modifyMana(gainmana)
+
+    def tick(self):
+        if not self.creature:
+            return
+
+        self.effect(self.damage)
+        
+        self.count -= 1
+        if self.count <= 0:
+            self.finish()
+        else:
+            self.tickEvent = reactor.callLater(2, self.tick)
