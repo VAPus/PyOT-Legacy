@@ -255,6 +255,9 @@ drawingSpeed = 25
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
 
+# PvP formulas
+pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05)))
+
 # pathfinder cache?
 pathfinderCache = True
 
