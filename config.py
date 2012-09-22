@@ -83,7 +83,7 @@ protectedZones = True # False will disable protected zones like in Harcore PvP. 
 
 loginBlock = 60 # In seconds, 0 to disable.
 resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
-pvpDamageFactor = 5 # 50%
+pvpDamageFactor = 0.5 # 50%
 
 deathListCutoff = 45 # In days. This is the maximum amount of time we care to load in death entries from.
 
@@ -102,7 +102,7 @@ blackSkullFullDamage = True # Receive 100% instead of pvpDamageFactor.
 
 yellowSkull = True # Enable/Disable this. Disaled = all kills and unjust
 orangeSkull = True
-orangeSkullLength = 7 * 24 # In hours.
+orangeSkullLength = 3600 * 7 * 24 # In seconds.
 
 greenSkull = True
 

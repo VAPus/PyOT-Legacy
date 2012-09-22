@@ -2124,7 +2124,7 @@ class Player(Creature):
                     
                 if self.target and self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if self.target.getSkull(self) != SKULL_YELLOW and config.whiteSkull and self.getSkull() not in SKULL_JUSTIFIED and self.target.getSkull() not in SKULL_JUSTIFIED:
+                    if self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and config.whiteSkull and self.getSkull() not in SKULL_JUSTIFIED and self.target.getSkull() not in SKULL_JUSTIFIED:
                         self.setSkull(SKULL_WHITE)
                     if config.yellowSkull:
                         self.target.setSkull(SKULL_YELLOW, self, config.loginBlock)
@@ -2734,9 +2734,17 @@ class Player(Creature):
             
     # Skull stuff
     def getSkull(self, creature=None):
-        if creature and creature in self.trackSkulls and self.trackSkulls[creature][1] >= time.time():
-            return self.trackSkulls[creature][0]
-        else:
-            if self.skull == 0:
-                self.skull = deathlist.getSkull(self.data["id"])
-            return self.skull
+        if creature:
+            if creature in self.trackSkulls:
+                if self.trackSkulls[creature][1] >= time.time():
+                    return self.trackSkulls[creature][0]
+                del self.trackSkulls[creature]
+            else:
+                skull = deathlist.getSkull(self.data["id"], creature.data["id"])
+                if skull:
+                    self.trackSkulls[creature] = skull
+                    return skull[0]
+
+        if self.skull == 0:
+            self.skull = deathlist.getSkull(self.data["id"])
+        return self.skull

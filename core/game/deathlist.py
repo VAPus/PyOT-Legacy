@@ -52,9 +52,15 @@ def loadDeathList(playerId):
             
         loadedDeathIds.add(entry[0])
         
-def getSkull(playerId):
+def getSkull(playerId, targetId=None):
     if not playerId in byKiller: return SKULL_NONE
     
+    if targetId:
+        orangeTime = time.time() - config.orangeSkullLength
+        for deathEntry in byKiller[playerId]:
+            if deathEntry.victimId == targetId and deathEntry.time > orangeTime:
+                return [SKULL_ORANGE, deathEntry.time - time.time() + config.orangeSkullLength]
+                
     whiteSkull = False
     redEntries = {}
     blackEntries = {}
