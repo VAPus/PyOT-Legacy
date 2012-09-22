@@ -323,7 +323,7 @@ class Creature(object):
                 return self.clearMove(direction, failback)
 
         # PZ blocked?
-        if self.hasCondition(CONDITION_PZBLOCK) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
             return self.clearMove(direction, failback)
             
