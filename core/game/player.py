@@ -337,26 +337,28 @@ class Player(Creature):
             reactor.callLater(self.rates[1], loseStamina)
         
     def refreshStatus(self, stream=None):
-        if stream:
-            stream.status(self)
-        else:
-            with self.packet() as stream:
+        if self.client:
+            if stream:
                 stream.status(self)
+            else:
+                with self.packet() as stream:
+                    stream.status(self)
 
     def refreshConditions(self, stream=None):
-        send = self.extraIcons
-        for conId in self.conditions:
-            try:
-                conId = int(conId)
-                send += conId
-            except:
-                pass
-            
-        if stream:
-            stream.icons(send)
-        else:
-            with self.packet() as stream:
+        if self.client:
+            send = self.extraIcons
+            for conId in self.conditions:
+                try:
+                    conId = int(conId)
+                    send += conId
+                except:
+                    pass
+                
+            if stream:
                 stream.icons(send)
+            else:
+                with self.packet() as stream:
+                    stream.icons(send)
 
     def setIcon(self, icon):
         if not self.extraIcons & icon:
@@ -367,12 +369,13 @@ class Player(Creature):
             self.extraIcons -= icon
 
     def refreshSkills(self, stream=None):
-        if stream:
-            stream.skills(self)
-
-        else:
-            with self.packet() as stream:
+        if self.client:
+            if stream:
                 stream.skills(self)
+
+            else:
+                with self.packet() as stream:
+                    stream.skills(self)
                 
     def refreshSkull(self, stream=None):
         for player in getPlayers(self.position):
