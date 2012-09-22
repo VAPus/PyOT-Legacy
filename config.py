@@ -1,4 +1,4 @@
-# Note: Don't do imports here
+from math import log, floor
 
 # Network:
 loginInterface = '' # Leave blank to accept connections on any hostname
@@ -83,7 +83,7 @@ protectedZones = True # False will disable protected zones like in Harcore PvP. 
 
 loginBlock = 60 # In seconds, 0 to disable.
 resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
-pvpDamageFactor = 0.5 # 50%
+pvpDamageFactor = 5 # 50%
 
 deathListCutoff = 45 # In days. This is the maximum amount of time we care to load in death entries from.
 
@@ -257,7 +257,7 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
-loseFormula = lambda x: ((x+50)/100)*(50*((x**2) - 5*x + 8)) # x = level
+loseFormula = lambda x: (x+50)*(50*((x**2) - (5*x) + 8)) # x = level
 
 # PvP formulas
 pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05))
@@ -266,7 +266,6 @@ pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor(
 pathfinderCache = True
 
 # This formula is too complex to put into a lambda
-from math import log
 def levelFromExpFormula(y): # y = experience
     l1 = ((3 ** 0.5)*(((243*(y**2))-(48600*y)+3680000) ** 0.5)+(27*y)-2700) ** (1.0/3)
     l2 = 30**(2.0/3)

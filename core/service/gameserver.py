@@ -179,23 +179,25 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 yield deathlist.loadDeathList(cd['id'])
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]
-                if self.player.data["health"]:
-                    try:
-                        tile = getTile(self.player.position)
-                        tile.placeCreature(self.player)
-                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
-                        updateTile(self.player.position, tile)
+                if self.player.data["health"] <= 0:
+                    self.player.onSpawn()
+
+                try:
+                    tile = getTile(self.player.position)
+                    tile.placeCreature(self.player)
+                    # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                    updateTile(self.player.position, tile)
                         
-                    except AttributeError:
-                        import data.map.info
-                        self.player.position = Position(*data.map.info.towns[1][1])
-                        tile = getTile(self.player.position)
-                        tile.placeCreature(self.player)
-                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
-                        updateTile(self.player.position, tile)
+                except AttributeError:
+                    import data.map.info
+                    self.player.position = Position(*data.map.info.towns[1][1])
+                    tile = getTile(self.player.position)
+                    tile.placeCreature(self.player)
+                    # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                    updateTile(self.player.position, tile)
                         
-                    # Update last login
-                    sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
+                # Update last login
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()
@@ -250,7 +252,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             print "Lost connection on, ", self.player.position
             self.player.client = None
             
-            if self.player.hasCondition(CONDITION_INFIGHT):
+            if self.player.alive and self.player.hasCondition(CONDITION_INFIGHT):
                 logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
                 callLater(logoutBlock.length, self.onConnectionLost)
                 return

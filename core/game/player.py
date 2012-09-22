@@ -267,7 +267,7 @@ class Player(Creature):
 
     def sendFirstPacket(self):
         if not self.data["health"]:
-            self.data["health"] = 1
+            self.onSpawn()
 
         # If we relogin we might be in remove mode,
         # make sure we're not tagget for it!
@@ -737,6 +737,9 @@ class Player(Creature):
         self.setLevel(self.data["level"] + mod)
 
     def modifyMagicLevel(self, mod):
+        if not mod:
+            return
+        
         def endCallback():
             self.data["maglevel"] += mod
             self.refreshStatus()
@@ -763,7 +766,7 @@ class Player(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
+            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=-exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -788,9 +791,21 @@ class Player(Creature):
     def modifySpentMana(self, mana, refresh=False):
         self.data["manaspent"] += mana
         self.saveData = True
-        if self.data["manaspent"] > int(config.magicLevelFormula(self.data["maglevel"], vocation.mlevel)):
-            self.modifyMagicLevel(1)
-        elif refresh:
+        modify = 0
+        maglevel = self.data["maglevel"]
+        if mana > 0:
+            while self.data["manaspent"] > int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
+                modify += 1
+                maglevel += 1
+                
+            
+        else:
+            while self.data["manaspent"] < int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
+                modify -= 1
+                maglevel -= 1
+                
+        self.modifyMagicLevel(modify)
+        if refresh:
             self.refreshStatus()
 
 
@@ -1602,12 +1617,14 @@ class Player(Creature):
         elif self.data["level"] < config.loseCutoff:
             lose = config.loseConstant
         else:
+            print config.loseFormula(self.data["level"])
+            print self.data["experience"]
             lose = config.loseFormula(self.data["level"]) / self.data["experience"]
             
-        if withBlessings:
+        if withBlessings and self.blessings:
             lose *= 0.92 ** self.blessings
             
-        return floor(lose * self.deathPenalityFactor)
+        return int(lose * self.deathPenalityFactor)
             
     def itemLosePrecent(self):
         if self.getSkull() in (SKULL_BLACK, SKULL_RED) and config.redSkullLoseRate:
@@ -1623,20 +1640,20 @@ class Player(Creature):
             container = 25
         elif self.blessings == 4:
             container = 10
-        else:
-            return (0, 0)
+
         return (container, container / 10.0)
     def onDeath(self):
         print "on dead!"
         
         print "TODO: Unfair fight."
         loseRate = self.losePrecent()
-        self.sendReloginWindow(loseRate)
+        self.sendReloginWindow(100)
 
         # Reduce experience, manaspent and total skill tries (ow my)
         if loseRate:
-            self.modifyExperience(-(self.data["experience"] * (loseRate/100.0)))
-            self.modifySpentMana(-(self.data["manaspent"] * (loseRate/100.0)))
+            print loseRate
+            self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
+            self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
             print "TODO: Reduce skill tries"
             
         # PvP experience and death entries.
@@ -1709,7 +1726,7 @@ class Player(Creature):
                 stream.send(spectator)
 
     def onSpawn(self):
-        if not self.data["health"] or not self.alive:
+        if self.data["health"] <= 0 or not self.alive:
             self.data["health"] = self.data["healthmax"]
             self.data["mana"] = self.data["manamax"]
             self.alive = True
