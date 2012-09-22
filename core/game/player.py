@@ -1639,7 +1639,11 @@ class Player(Creature):
             
         # PvP experience and death entries.
         if self.lastDamagers[0].isPlayer():
-            entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], True)
+            # Just or unjust?
+            unjust = True
+            if self.getSkull() in (SKULL_WHITE, SKULL_RED, SKULL_BLACK) or self.getSkull(self.lastDamagers[0]) == SKULL_GREEN:
+                unjust = False
+            entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
             self.lastDamagers[0].refreshSkull()
             
@@ -2108,7 +2112,7 @@ class Player(Creature):
                     
                 if self.target and self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if config.whiteSkull and self.getSkull() != SKULL_WHITE:
+                    if self.target.getSkull() == SKULL_NONE and config.whiteSkull and self.getSkull() not in (SKULL_WHITE, SKULL_BLACK, SKULL_RED):
                         self.setSkull(SKULL_WHITE)
                         if self._checkWhiteSkull:
                             try:
@@ -2117,7 +2121,8 @@ class Player(Creature):
                                 pass
                             
                         self._checkWhiteSkull = callLater(config.whiteSkull, self.vertifyWhiteSkull)
-
+                    if config.greenSkull and self.getSkull(self.target) != SKULL_GREEN:
+                        self.setSkull(SKULL_GREEN, self.target)
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
@@ -2724,6 +2729,7 @@ class Player(Creature):
             
     # Skull stuff
     def getSkull(self, creature=None):
-        if not creature:
+        if creature and creature.clientId() in self.trackSkulls:
+            return self.trackSkulls[creature.clientId()]
+        else:
             return deathlist.getSkull(self.data["id"])
-        return SKULL_NONE

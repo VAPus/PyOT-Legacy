@@ -92,6 +92,7 @@ class Creature(object):
         self.walkPattern = None
         self.activeSummons = []
         self.doHideHealth = False
+        self.trackSkulls = {}
 
         # Light stuff
         self.lightLevel = 0
@@ -1175,17 +1176,25 @@ class Creature(object):
 
     # Skull
     # For white, black and red only.
-    def setSkull(self, skull):
-        if self.getSkull(skull):
+    def setSkull(self, skull, creature=None):
+        if self.getSkull(creature) == skull:
             return
 
-        self.skull = skull
+        if not creature:
+            self.skull = skull
 
-        for player in getPlayers(self.position):
-            stream = player.packet(0x90)
+            for player in getPlayers(self.position):
+                stream = player.packet(0x90)
+                stream.uint32(self.cid)
+                stream.uint8(self.skull)
+                stream.send(player.client)
+        else:
+            self.trackSkulls[creature.clientId()] = skull
+            
+            stream = creature.packet(0x90)
             stream.uint32(self.cid)
-            stream.uint8(self.skull)
-            stream.send(player.client)
+            stream.uint8(skull)
+            stream.send(creature.client)
 
     def getSkull(self, creature=None):
         return self.skull # TODO
