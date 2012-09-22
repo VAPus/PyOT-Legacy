@@ -1643,7 +1643,7 @@ class Player(Creature):
         if self.lastDamagers[0].isPlayer():
             # Just or unjust?
             unjust = True
-            if self.getSkull() in (SKULL_WHITE, SKULL_RED, SKULL_BLACK) or self.getSkull(self.lastDamagers[0]) == SKULL_GREEN:
+            if self.getSkull() in SKULL_JUSTIFIED or self.getSkull(self.lastDamagers[0]) == SKULL_YELLOW:
                 unjust = False
             entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
@@ -2107,11 +2107,10 @@ class Player(Creature):
                     
                 if self.target and self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if self.target.getSkull() != SKULL_GREEN and config.whiteSkull:# and self.getSkull() not in (SKULL_WHITE, SKULL_BLACK, SKULL_RED):
-                        print self.getSkull()
+                    if self.target.getSkull(self) != SKULL_YELLOW and config.whiteSkull and self.getSkull() not in SKULL_JUSTIFIED and self.target.getSkull() not in SKULL_JUSTIFIED:
                         self.setSkull(SKULL_WHITE)
-                    elif config.greenSkull:
-                        self.setSkull(SKULL_GREEN, self.target, config.loginBlock)
+                    if config.yellowSkull:
+                        self.target.setSkull(SKULL_YELLOW, self, config.loginBlock)
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
