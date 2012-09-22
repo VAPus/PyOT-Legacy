@@ -93,7 +93,8 @@ class Creature(object):
         self.activeSummons = []
         self.doHideHealth = False
         self.trackSkulls = {}
-
+        self._checkSkulls = None
+        
         # Light stuff
         self.lightLevel = 0
         self.lightColor = 0
@@ -1174,28 +1175,60 @@ class Creature(object):
             stream.addTileCreature(self.position, game.map.getTile(self.position).findStackpos(self), self, player)
             stream.send(player.client)
 
-    # Skull
-    # For white, black and red only.
-    def setSkull(self, skull, creature=None):
+    # Skulls
+    def vertifySkulls(self):
+        _time = time.time()
+        if self.getSkull() == SKULL_WHITE:
+            if self.lastDmgPlayer < _time - config.whiteSkull:
+                print "nullify"
+                self.setSkull(SKULL_NONE)
+        
+        for creature in self.trackSkulls.copy():
+            if self.trackSkulls[creature][1] < _time:
+                stream = creature.packet(0x90)
+                stream.uint32(self.cid)
+                stream.uint8(self.skull)
+                stream.send(creature.client)
+                del self.trackSkulls[creature]
+                
+        if self.trackSkulls:
+            self._checkSkulls = callLater(5, self.vertifySkulls)
+        elif self.skull == SKULL_WHITE:
+            self._checkSkulls = callLater(self.lastDmgPlayer - _time + config.whiteSkull, self.vertifySkulls)
+        else:
+            self._checkSkulls = None
+            
+    def setSkull(self, skull, creature=None, _time=0):
+        print "Set skull", skull
         if self.getSkull(creature) == skull:
+            print "return"
             return
 
         if not creature:
+            assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE)
             self.skull = skull
 
             for player in getPlayers(self.position):
+                print player
                 stream = player.packet(0x90)
                 stream.uint32(self.cid)
-                stream.uint8(self.skull)
+                stream.uint8(self.getSkull(player))
                 stream.send(player.client)
         else:
-            self.trackSkulls[creature.clientId()] = skull
+            
+            if creature in self.trackSkulls and self.trackSkulls[creature][0] == skull:
+                self.trackSkulls[creature][1] = time.time() + _time
+            else:
+                self.trackSkulls[creature] = [skull, _time]
             
             stream = creature.packet(0x90)
             stream.uint32(self.cid)
             stream.uint8(skull)
             stream.send(creature.client)
-
+            
+        if not self._checkSkulls:
+            self._checkSkulls = callLater(0, self.vertifySkulls)
+            
     def getSkull(self, creature=None):
         return self.skull # TODO
 

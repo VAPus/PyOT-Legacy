@@ -249,6 +249,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if self.player:
             print "Lost connection on, ", self.player.position
             self.player.client = None
+            
+            if self.player.hasCondition(CONDITION_INFIGHT):
+                logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
+                callLater(logoutBlock.length, self.onConnectionLost)
+                return
+            
             self.player.knownCreatures = set()
             self.player.knownBy = set()
             for x in game.player.allPlayers.values():

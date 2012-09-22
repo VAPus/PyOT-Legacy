@@ -172,7 +172,7 @@ class BasePacket(TibiaPacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown, player)
                 else:
                     if player.client.version >= 953:
                         self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
@@ -218,7 +218,7 @@ class BasePacket(TibiaPacket):
         else:
             self.uint16(0)
             
-    def creature(self, creature, known, removeKnown=0):
+    def creature(self, creature, known, removeKnown=0, player=None):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -239,7 +239,7 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.getSkull()) # Skull
+        self.uint8(creature.getSkull(player)) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
             self.uint8(creature.emblem) # Emblem
@@ -311,7 +311,7 @@ class BasePacket(TibiaPacket):
             elif resend:
                 removeKnown = creature.clientId()
                 known = False
-            self.creature(creature, known, removeKnown)
+            self.creature(creature, known, removeKnown, player)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)

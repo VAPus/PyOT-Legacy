@@ -52,7 +52,6 @@ class Player(Creature):
         self.data["stamina"] = self.data["stamina"] / 1000
 
         self.lastDmgPlayer = 0
-        self._checkWhiteSkull = None
         
         self.targetChecker = None
         self._openChannels = {}
@@ -2074,13 +2073,6 @@ class Player(Creature):
 
         for creature in game.engine.getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)
-    
-    def vertifyWhiteSkull(self):
-        if self.getSkull() == SKULL_WHITE:
-            if self.lastDmgPlayer < time.time() - config.whiteSkull:
-                self.setSkull(SKULL_NONE)
-            else:
-                self._checkWhiteSkull = callLater(self.lastDmgPlayer - time.time() + config.whiteSkull, self.vertifyWhiteSkull)
 
     def attackTarget(self):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
@@ -2112,17 +2104,11 @@ class Player(Creature):
                     
                 if self.target and self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if self.target.getSkull() == SKULL_NONE and config.whiteSkull and self.getSkull() not in (SKULL_WHITE, SKULL_BLACK, SKULL_RED):
+                    if self.target.getSkull() != SKULL_GREEN and config.whiteSkull:# and self.getSkull() not in (SKULL_WHITE, SKULL_BLACK, SKULL_RED):
+                        print self.getSkull()
                         self.setSkull(SKULL_WHITE)
-                        if self._checkWhiteSkull:
-                            try:
-                                self._checkWhiteSkull.stop()
-                            except:
-                                pass
-                            
-                        self._checkWhiteSkull = callLater(config.whiteSkull, self.vertifyWhiteSkull)
-                    if config.greenSkull and self.getSkull(self.target) != SKULL_GREEN:
-                        self.setSkull(SKULL_GREEN, self.target)
+                    elif config.greenSkull:
+                        self.setSkull(SKULL_GREEN, self.target, config.loginBlock)
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
@@ -2729,7 +2715,9 @@ class Player(Creature):
             
     # Skull stuff
     def getSkull(self, creature=None):
-        if creature and creature.clientId() in self.trackSkulls:
-            return self.trackSkulls[creature.clientId()]
+        if creature and creature in self.trackSkulls and self.trackSkulls[creature][1] >= time.time():
+            return self.trackSkulls[creature][0]
         else:
-            return deathlist.getSkull(self.data["id"])
+            if self.skull == 0:
+                self.skull = deathlist.getSkull(self.data["id"])
+            return self.skull
