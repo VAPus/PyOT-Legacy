@@ -51,6 +51,9 @@ class Player(Creature):
         # OT milisec to pyot seconds
         self.data["stamina"] = self.data["stamina"] / 1000
 
+        self.lastDmgPlayer = 0
+        self._checkWhiteSkull = None
+        
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
@@ -2067,7 +2070,14 @@ class Player(Creature):
 
         for creature in game.engine.getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)
-            
+    
+    def vertifyWhiteSkull(self):
+        if self.getSkull() == SKULL_WHITE:
+            if self.lastDmgPlayer < time.time() - config.whiteSkull:
+                self.setSkull(SKULL_NONE)
+            else:
+                self._checkWhiteSkull = callLater(self.lastDmgPlayer - time.time() + config.whiteSkull, self.vertifyWhiteSkull)
+
     def attackTarget(self):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
@@ -2095,6 +2105,22 @@ class Player(Creature):
                 if dmg != 0:
                     self.target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
+                    
+                if self.target and self.target.isPlayer():
+                    self.lastDmgPlayer = time.time()
+                    if config.whiteSkull and self.getSkull() != SKULL_WHITE:
+                        self.setSkull(SKULL_WHITE)
+                        if self._checkWhiteSkull:
+                            try:
+                                self._checkWhiteSkull.stop()
+                            except:
+                                pass
+                            
+                        self._checkWhiteSkull = callLater(config.whiteSkull, self.vertifyWhiteSkull)
+
+                    if config.loginBlock:
+                        self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+                        self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
@@ -2397,7 +2423,9 @@ class Player(Creature):
         stream.send(self.client)
 
     def prepareLogout(self):
-        # TODO: Cases where you can't logout
+        if self.hasCondition(CONDITION_INFIGHT):
+            self.lmessage("You can't logout yet.")
+            return False
 
         # Remove summons
         if self.activeSummons:
@@ -2409,6 +2437,8 @@ class Player(Creature):
         self.removeMe = True
 
         #self.remove(False)
+        
+        return True
 
     # Cleanup the knownCreatures
     def removeKnown(self, creature):
@@ -2696,3 +2726,4 @@ class Player(Creature):
     def getSkull(self, creature=None):
         if not creature:
             return deathlist.getSkull(self.data["id"])
+        return SKULL_NONE

@@ -242,6 +242,12 @@ class Creature(object):
         """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
         return True
 
+    def clearMove(self, direction, failback):
+        self.cancelWalk(direction % 4)
+        self.walkPattern = []
+        if failback: reactor.callLater(0, failback)
+        return False
+        
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
@@ -286,11 +292,7 @@ class Creature(object):
         
 
         if not newTile:
-
-            self.cancelWalk(direction)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
         
         # oldTile
         oldTile = getTile(oldPosition)
@@ -301,18 +303,12 @@ class Creature(object):
 
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:
-            self.cancelWalk(direction % 4)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
 
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            self.cancelWalk(direction % 4)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
 
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -322,22 +318,21 @@ class Creature(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                self.cancelWalk(direction % 4)
-                self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                if failback: failback()
-                return False
+                return self.clearMove(direction, failback)
 
+        # PZ blocked?
+        if self.hasCondition(CONDITION_PZBLOCK) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            self.lmessage("You are PZ blocked")
+            return self.clearMove(direction, failback)
+            
         for thing in newTile.things:
             if thing.solid:
                 if level and isinstance(thing, Creature):
                     continue
 
                 #self.turn(direction) # Fix me?
-                self.cancelWalk(direction % 4)
                 self.notPossible()
-                self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                if failback: reactor.callLater(0, failback)
-                return False
+                return self.clearMove(direction, failback)
 
         _time = time.time()
         self.lastStep = _time
@@ -1477,6 +1472,8 @@ class Condition(object):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana
+            else:
+                self.effect = self.effectNone
 
     def start(self, creature):
         self.creature = creature
@@ -1530,6 +1527,9 @@ class Condition(object):
         else:
             self.creature.modifyMana(gainmana)
 
+    def effectNone(self):
+        pass
+    
     def tick(self):
         if not self.creature:
             return

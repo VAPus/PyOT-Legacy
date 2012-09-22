@@ -53,7 +53,7 @@ def loadDeathList(playerId):
         loadedDeathIds.add(entry[0])
         
 def getSkull(playerId):
-    if not playerId in byKiller: return 0
+    if not playerId in byKiller: return SKULL_NONE
     
     whiteSkull = False
     redEntries = {}

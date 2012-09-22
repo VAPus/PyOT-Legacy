@@ -558,8 +558,8 @@ class BaseProtocol(object):
 
         if packetType == 0x14: # Logout
             try:
-                player.prepareLogout()
-                player.client.transport.loseConnection()
+                if player.prepareLogout():
+                    player.client.transport.loseConnection()
             except:
                 pass # Sometimes the connection is already dead
             
