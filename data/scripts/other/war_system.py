@@ -73,7 +73,7 @@ if config.enableWarSystem:
     warObjects = {} # GUILDID -> [warobjects]
     pendingPayments = []
     
-    _oldGetEmblem = game.creature.Player.getEmblem
+    _oldGetEmblem = game.player.Player.getEmblem
     # New emblem function.
     def getEmblem(self, creature):
         guildId = self.data["guild_id"]
@@ -122,7 +122,7 @@ if config.enableWarSystem:
     @register("startup")
     def init():
         # Replace the getEmblem for players.
-        game.creature.Player.getEmblem = getEmblem
+        game.player.Player.getEmblem = getEmblem
         
         # Load using async sql.
         loadGuildWars()

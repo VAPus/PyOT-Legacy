@@ -27,6 +27,15 @@ class DeathEntry(object):
         self.revenged = revenged
         self.warId = war_id
         
+    def justify(self):
+        sql.runOperation("UPDATE pvp_deaths SET unjust = 0 WHERE death_id = %s", self.id)
+        self.revenged = 1 # Justified kills can't be revenged.
+        self.unjustifed = 0
+        
+    def revenge(self):
+        sql.runOperation("UPDATE pvp_deaths SET revenged = 1 WHERE death_id = %s", self.id)
+        self.revenged = 1
+        
     def saveQuery(self):
         return "(%s, %s, %s, %s, %s, %s, %s)" % (self.id, self.killerId, self.victimId, self.unjustified, self.time, self.revenged, self.warId)
 
@@ -51,14 +60,18 @@ def loadDeathList(playerId):
             byKiller[entry[1]] = [deathEntry]
             
         loadedDeathIds.add(entry[0])
-        
+
+def findUnrevengeKill(killerId, victimId):
+    for kill in byVictim[killerId]:
+        if kill.unjustified and not kill.revenged:
+            return kill
 def getSkull(playerId, targetId=None):
     if not playerId in byKiller: return SKULL_NONE
     
     if targetId:
         orangeTime = time.time() - config.orangeSkullLength
         for deathEntry in byKiller[playerId]:
-            if deathEntry.victimId == targetId and deathEntry.time > orangeTime:
+            if deathEntry.revenged == 0 and deathEntry.victimId == targetId and deathEntry.time > orangeTime:
                 return [SKULL_ORANGE, deathEntry.time - time.time() + config.orangeSkullLength]
                 
     whiteSkull = False

@@ -1660,8 +1660,19 @@ class Player(Creature):
         if self.lastDamagers[0].isPlayer():
             # Just or unjust?
             unjust = True
-            if self.getSkull() in SKULL_JUSTIFIED or self.getSkull(self.lastDamagers[0]) == SKULL_YELLOW:
+            lastDamagerSkull = self.getSkull(self.lastDamagers[0])
+            if self.getSkull() in SKULL_JUSTIFIED or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW):
                 unjust = False
+                
+            # Was this revenge?
+            if lastDamagerSkull == SKULL_ORANGE:
+                revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["player_id"], self.data["player_id"])
+                if not revengeEntry:
+                    print "BUG: This was a revenge, but we can't find the revenge death entry..."
+                elif revengeEntry.revenged == True:
+                    print "BUG: revenging a revenged kill."
+                else:
+                    revengeEntry.revenge()
             entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
             self.lastDamagers[0].refreshSkull()
@@ -1670,7 +1681,7 @@ class Player(Creature):
             self.lastDamagers[0].modifyExperience(config.pvpExpFormula(self.lastDamagers[0].data["level"], self.data["level"], self.data["experience"]))
          
         #if temp skull remove it on death
-        if self.getSkull() == SKULL_WHITE or self.getSkull() == SKULL_YELLOW or self.getSkull() == SKULL_GREEN:
+        if self.getSkull() in (SKULL_WHITE, SKULL_YELLOW, SKULL_GREEN):
             self.setSkull(SKULL_NONE)
 		 
         # Remove summons
