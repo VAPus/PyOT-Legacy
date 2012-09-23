@@ -2128,9 +2128,9 @@ class Player(Creature):
                     
                 if self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED and config.whiteSkull:
+                    if self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED and config.whiteSkull:
                         self.setSkull(SKULL_WHITE)
-                    elif config.yellowSkull and self.target.getSkull(self) == SKULL_WHITE:
+                    elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
                         self.setSkull(SKULL_YELLOW) #, self, config.loginBlock) not needed next statement takes care of it.
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
