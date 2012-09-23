@@ -2130,15 +2130,12 @@ class Player(Creature):
                     self.lastDmgPlayer = time.time()
                     if self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED and config.whiteSkull:
                         self.setSkull(SKULL_WHITE)
-<<<<<<< local
-                    if config.yellowSkull and self.target.getSkull(self) == SKULL_ORANGE:
-                        self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
-                        if self.getSkull(self) == SKULL_NONE:
-                            self.setSkull(SKULL_YELLOW, self, config.loginBlock)
-=======
+                        """if config.yellowSkull and self.target.getSkull(self) == SKULL_ORANGE:
+                            self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
+                            if self.getSkull(self) == SKULL_NONE:
+                                self.setSkull(SKULL_YELLOW, self, config.loginBlock)"""
                     elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
                         self.setSkull(SKULL_YELLOW) #, self, config.loginBlock) not needed next statement takes care of it.
->>>>>>> other
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
