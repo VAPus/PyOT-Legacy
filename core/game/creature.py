@@ -1203,7 +1203,7 @@ class Creature(object):
             return
 
         if not creature:
-            assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE)
+            #assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE) what is this line?
             self.skull = skull
 
             for player in getPlayers(self.position):
