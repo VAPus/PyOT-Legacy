@@ -2544,6 +2544,11 @@ class Player(Creature):
         except:
             return None
 
+    def guildRank(self):
+        guild = self.guild()
+        if guild:
+            return guild.rank(self.data["guild_rank"])
+        
     def party(self):
         # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
         return self.partyObj

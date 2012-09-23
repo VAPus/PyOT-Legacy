@@ -27,9 +27,21 @@ class Guild(object):
         self.motd = motd
         self.balance = balance
         
-    def setBalance(self, amount):
+    # Creature alike money interface.
+    def setMoney(self, amount):
         self.balance = amount
         sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (amount, self.id))
+        
+    def getMoney(self):
+        return self.balance
+    
+    def removeMoney(self, amount):
+        self.balance -= amount
+        sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (self.balance, self.id))
+        
+    def addMoney(self, amount):
+        self.balance += amount
+        sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (self.balance, self.id))
         
     def setMotd(self, motd):
         self.motd = motd

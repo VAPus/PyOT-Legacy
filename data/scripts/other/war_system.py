@@ -1,5 +1,12 @@
 # Is the war system enabled?
 if config.enableWarSystem:
+    # Guild war constants.
+    GUILD_WAR_INVITE = 0
+    GUILD_WAR_REJECT = 1
+    GUILD_WAR_PENDING_PAYMENT = 2
+    GUILD_WAR_CANCEL = 3
+    GUILD_WAR_ACTIVE = 4
+    GUILD_WAR_OVER = 5
     
     class WarEntry(object):
         def __init__(self, warId, guild1, guild2, started, duration, frags, stakes, status):
@@ -19,58 +26,51 @@ if config.enableWarSystem:
             
         def setStatus(self, status):
             global wars, warObjects, warInvites
+            oldStatus = self.status
+            
             self.status = status
             
             sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
             
+            if not self.guild1 in wars:
+                wars[self.guild1] = [], [], []
+                
+            if not self.guild2 in wars:
+                wars[self.guild2] = [], [], []
+                
             if status == GUILD_WAR_ACTIVE:
-                try:
-                    wars[self.guild1].append(self.guild2)
-                    warObjects[self.guild2].append(self)
-                except:
-                    wars[self.guild1] = [entry[12]]
-                    warObjects[self.guild2] = [self]
-                    
-                try:
-                    wars[self.guild2].append(self.guild1)
-                    warObjects[self.guild2].append(self)
-                except:
-                    wars[self.guild2] = [self.guild1]
-                    warObjects[self.guild2] = [self]
+                wars[self.guild1][0].append(self.guild2)
+                wars[self.guild1][1].append(self)
+
+                wars[self.guild2][0].append(self.guild1)
+                wars[self.guild2][1].append(self)
                     
             elif status == GUILD_WAR_INVITE:
-                try:
-                    warInvites[self.guild1].append(self)
-                except:
-                    warInvites[self.guild1] = [self]
-                    
-                try:
-                    warInvites[self.guild2].append(self)
-                except:
-                    warInvites[self.guild2] = [self]
+                wars[self.guild1][2].append(self)
+
+                wars[self.guild2][2].append(self)
                     
             elif status == GUILD_WAR_PENDING_PAYMENT:
+                
                 pendingPayments.append(self)
                 
             elif status == GUILD_WAR_OVER:
                 pass # TODO
                 
-            elif status == GUILD_WAR_REJECT or status == GUILD_WAR_CANCEL:
+            if status in (GUILD_WAR_REJECT, GUILD_WAR_CANCEL) or (oldStatus == GUILD_WAR_INVITE and status == GUILD_WAR_PENDING_PAYMENT):
                 try:
                     # Ow well.
-                    warInvites[self.guild1].remove(self)
+                    wars[self.guild1][2].remove(self)
                 except:
                     pass
                 
                 try:
                     # Ow well.
-                    warInvites[self.guild2].remove(self)
+                    wars[self.guild2][2].remove(self)
                 except:
                     pass
                 
-    wars = {} # GUILDID -> [guilds at war]
-    warInvites = {} # GUILDID -> [warobjects]
-    warObjects = {} # GUILDID -> [warobjects]
+    wars = {} # GUILDID -> [guildIds at war], [warObjects at war], [warObjects on invite]
     pendingPayments = []
     
     _oldGetEmblem = game.player.Player.getEmblem
@@ -82,7 +82,7 @@ if config.enableWarSystem:
                 # Same guild.
                 return EMBLEM_GREEN
             if guildId in wars:
-                if creature.data["guild_id"] in wars[guildId]:
+                if creature.data["guild_id"] in wars[guildId][0]:
                     # We are at war with this guild.
                     return EMBLEM_RED
                     
@@ -95,11 +95,11 @@ if config.enableWarSystem:
     # Cleanup callback.
     def cancelWar(warEntry):
         global wars, warObjects
-        wars[warEntry.guild1].remove(warEntry.guild2)
-        wars[warEntry.guild2].remove(warEntry.guild1)
+        wars[warEntry.guild1][0].remove(warEntry.guild2)
+        wars[warEntry.guild2][0].remove(warEntry.guild1)
         
-        warObjects[warEntry.guild1].remove(warEntry)
-        warObjects[warEntry.guild2].remove(warEntry)
+        wars[warEntry.guild1][1].remove(warEntry)
+        wars[warEntry.guild2][1].remove(warEntry)
         
         # TODO, deside winner.
         
@@ -107,6 +107,24 @@ if config.enableWarSystem:
         global pendingPayments
         for entry in pendingPayments[:]:
             pass # TODO.
+            
+        callLater(3600, checkPayments) # Try once per hour to check for payments.
+    
+    def findInvite(creature, guild):
+        try:
+            for entry in wars[creature.data["guild_id"]][2]:
+                if entry.guild2 == creature.data["guild_id"] and entry.guild1 == guild.id:
+                    return entry
+        except:
+            pass
+        
+    def findIssuedInvite(creature, guild):
+        try:
+            for entry in wars[creature.data["guild_id"]][2]:
+                if entry.guild1 == creature.data["guild_id"] and entry.guild2 == guild.id:
+                    return entry
+        except:
+            pass
         
     # Loader.
     @inlineCallbacks
@@ -116,7 +134,6 @@ if config.enableWarSystem:
             warEntry.setStatus(entry[6])
             
         checkPayments()
-        callLater(3600, checkPayments) # Try once per hour to check for payments.
             
                     
     @register("startup")
@@ -129,8 +146,67 @@ if config.enableWarSystem:
         
     @register("talkactionRegex", "/war (?P<status>(accept|reject|cancel)) (?P<guildname>\w+)")
     def war_management(creature, status, guildname, **k):
-        pass # TODO
+        rank = creature.guildRank()
+        if not rank or not rank.isLeader():
+            creature.lmessage("You are not leader of a guild.")
+            return False
+            
+        # Find invite entry.
+        guild = getGuildByName(guildname)
+        if not guild:
+            creature.lmessage("Guild not found. Did you spell it right?")
+            return False
+            
+        if status == "cancel":
+            entry = findIssuedInvite(creature, guild)
+        else:
+            entry = findInvite(creature, guild)
+                
+        if not entry:
+            creature.lmessage("Invite not found.")
+            
+        if status == "cancel":
+            entry.setStatus(GUILD_WAR_CANCEL)
+        elif status == "reject":
+            entry.setStatus(GUILD_WAR_REJECT)
+        else:
+            entry.setStatus(GUILD_WAR_PENDING_PAYMENT)
+            
+        creature.message(_l(self, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
+        return False
         
     @register("talkactionRegex", "/balance (?P<command>(pick|donate)) (?P<amount>\d+)")
     def balance_management(creature, command, amount, **k):
-        pass # TODO
+        # TODO: This is suppose to happen in the bank balance, not the inventory, but it's harder to debug it then, right?.
+        guild = creature.guild()
+        if not guild:
+            creature.lmessage("You are not member of a guild.")
+            return False
+            
+        if command == "donate":
+            money = creature.getMoney()
+            if money < amount:
+                creature.lmessage("You don't have that much money.")
+                return False
+                
+            creature.removeMoney(amount)
+            guild.addMoney(amount)
+            
+            creature.message(_l(self, "You donated %(amount)d to your guild!") % {"amount": amount})
+            
+        else:
+            if not creature.guildRank().isLeader():
+                creature.lmessage("You are not guild leader.")
+                return False
+            
+            money = guild.getMoney()
+            if money < amount:
+                creature.lmessage("Your guild don't have that much money.")
+                return False
+            
+            guild.removeMoney(amount)
+            creature.addMoney(amount)
+            
+            creature.message(_l(self, "You picked %(amount)d from your guild!") % {"amount": amount})
+            
+        return False
