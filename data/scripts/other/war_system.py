@@ -19,6 +19,8 @@ if config.enableWarSystem:
             self.stakes = stakes
             self.status = status
             
+            self.guild1_frags, self.guild2_frags = warFrags(warId, guild1, guild2)
+            
             # When to cancel war.
             callLater((started + duration) - time.time(), cancelWar, self)
             
@@ -58,7 +60,7 @@ if config.enableWarSystem:
                 wars[self.guild2][2].append(self)
                     
             elif status == GUILD_WAR_OVER:
-                pass # TODO
+                cancelWar(self)
                 
             if status in (GUILD_WAR_REJECT, GUILD_WAR_CANCEL) or (oldStatus == GUILD_WAR_INVITE and status == GUILD_WAR_PENDING_PAYMENT):
                 try:
@@ -96,7 +98,31 @@ if config.enableWarSystem:
         
         # Call default function.
         return _oldGetEmblem(self, creature)
+
+    @inlineCallbacks
+    def warFrags(warId, guild1, guild2):
+        entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s)))", (warId, guild2, warId, guild1))
+        returnValue(entry[0])
     
+    @inlineCallbacks
+    def decideWinner(entry):
+        guild1_frags, guild2_frags = yield warFrags(entry.warid, entry.guild1, entry.guild2)
+        guild1 = getGuildById(entry.guild1)
+        guild2 = getGuildById(entry.guild2)
+        
+        if guild1_frags == guild2_frags:
+            # It's a draw.
+            guild1.addMoney(entry.stakes)
+            guild2.addMoney(entry.stakes)
+            
+        elif guild1_frags > guild2_frags:
+            # Guild1 won
+            guild1.addMoney(entry.stakes * 2)
+            
+        else:
+            # Guild2 won.
+            guild2.addMoney(entry.stakes * 2)
+            
     # Cleanup callback.
     def cancelWar(warEntry):
         global wars, warObjects
@@ -106,7 +132,8 @@ if config.enableWarSystem:
         wars[warEntry.guild1][1].remove(warEntry)
         wars[warEntry.guild2][1].remove(warEntry)
         
-        # TODO, deside winner.
+        # Now, time to figure out who won. Async.
+        decideWinner(warEntry)
     
     def checkPayment(entry):
         guild1 = getGuildById(entry.guild1)
@@ -229,3 +256,29 @@ if config.enableWarSystem:
             creature.message(_l(self, "You picked %(amount)d from your guild!") % {"amount": amount})
             
         return False
+        
+    @register("death", 'player')
+    def fragCounter(creature, creature2, deathData, **k):
+        # If creature is in war with creature2.
+        if creature2.isPlayer():
+            guildId = creature.data["guild_id"]
+            guildId2 = creature2.data["guild_id"]
+            if guildId and guildId2 and guildId in wars:
+                if guildId2 in wars[guildId][0]:
+                    # We are at war with this guild.
+                    entry = None
+                    for entry in wars[guildId][1]:
+                        if entry.guild1 == guildId and entry.guild2 == guildId2:
+                            entry.guild1_frags += 1
+                            break
+                        elif entry.guild2 == guildId and entry.guild1 == guildId2:
+                            entry.guild2_frags += 1
+                            break
+                            
+                    # Is the fight over?
+                    if entry.guild1_frags >= entry.frags or entry.guild2_frags >= entry.frags:
+                        cancelWar(entry)
+                        
+                    # Mark as a just kill regardless. regardless.
+                    deathData["unjust"] = False
+                    

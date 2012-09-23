@@ -1643,10 +1643,27 @@ class Player(Creature):
 
         return (container, container / 10.0)
     def onDeath(self):
-        print "on dead!"
+        lastDmgIsPlayer = self.lastDamagers[0].isPlayer()
+        deathData = {}
+        loseRate = self.losePrecent()
+        deathData["loseRate"] = loseRate
+        
+        lastDamagerSkull = self.getSkull(self.lastDamagers[0])
+        if lastDmgIsPlayer:
+            # Just or unjust?
+            unjust = True
+            if self.getSkull() in SKULL_JUSTIFIED or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW):
+                unjust = False
+                
+            deathData["unjust"] = unjust
+        if game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse, deathData=deathData) == False:
+            return
+        
+        unjust = deathData["unjust"]
+        loseRate = deathData["loseRate"]
         
         print "TODO: Unfair fight."
-        loseRate = self.losePrecent()
+        
         self.sendReloginWindow(100)
 
         # Reduce experience, manaspent and total skill tries (ow my)
@@ -1657,13 +1674,7 @@ class Player(Creature):
             print "TODO: Reduce skill tries"
             
         # PvP experience and death entries.
-        if self.lastDamagers[0].isPlayer():
-            # Just or unjust?
-            unjust = True
-            lastDamagerSkull = self.getSkull(self.lastDamagers[0])
-            if self.getSkull() in SKULL_JUSTIFIED or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW):
-                unjust = False
-                
+        if lastDmgIsPlayer:
             # Was this revenge?
             if lastDamagerSkull == SKULL_ORANGE:
                 revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["player_id"], self.data["player_id"])
@@ -1714,8 +1725,7 @@ class Player(Creature):
             if self.inventory[index] and random.randint(1, 1000) < (itemLose[1] * 10):
                 corpse.container.placeItem(self.inventory[index])
                 self.inventory[index] = None
-                
-        game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
+
         if not self.alive and self.data["health"] < 1:
 
             splash = game.item.Item(game.enum.FULLSPLASH)
