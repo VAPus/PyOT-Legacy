@@ -2130,8 +2130,10 @@ class Player(Creature):
                     self.lastDmgPlayer = time.time()
                     if self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and config.whiteSkull and self.getSkull() not in SKULL_JUSTIFIED and self.target.getSkull() not in SKULL_JUSTIFIED:
                         self.setSkull(SKULL_WHITE)
-                    if config.yellowSkull:
-                        self.target.setSkull(SKULL_YELLOW, self, config.loginBlock)
+                    if config.yellowSkull and self.target.getSkull(self) == SKULL_ORANGE:
+                        self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
+                        if self.getSkull(self) == SKULL_NONE:
+                            self.setSkull(SKULL_YELLOW, self, config.loginBlock)
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)

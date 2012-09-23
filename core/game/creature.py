@@ -612,10 +612,6 @@ class Creature(object):
         return dmg
 
     def onHit(self, by, dmg, type, effect=None):
-        if not self.alive:
-            print "[DEBUG]: A dead creature seem to have been hit"
-            return
-
         self.lastDamagers.appendleft(by)
 
         if not type == game.enum.DISTANCE:
@@ -681,10 +677,9 @@ class Creature(object):
         magicEffect = magicEffect[0]
         type = type[0]
 
-        if magicEffect:
-            self.magicEffect(magicEffect)
-
         if dmg:
+            if magicEffect:
+                self.magicEffect(magicEffect)
             tile = game.map.getTile(self.position)
             for item in tile.getItems():
                 if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
