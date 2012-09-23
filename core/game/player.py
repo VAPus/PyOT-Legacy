@@ -2169,10 +2169,6 @@ class Player(Creature):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
             self.target = None
-            try:
-                self.targetChecker.cancel()
-            except:
-                pass
             return
 
         if cid in allCreatures:
@@ -2211,11 +2207,8 @@ class Player(Creature):
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
-        try:
-            self.targetChecker.cancel()
-        except:
-            pass
-        self.attackTarget()
+        if not self.targetChecker or not self.targetChecker.active():
+            self.attackTarget()
 
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
