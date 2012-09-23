@@ -1668,7 +1668,11 @@ class Player(Creature):
             
             # PvP Experience.
             self.lastDamagers[0].modifyExperience(config.pvpExpFormula(self.lastDamagers[0].data["level"], self.data["level"], self.data["experience"]))
-            
+         
+        #if temp skull remove it on death
+        if self.getSkull() == SKULL_WHITE or self.getSkull() == SKULL_YELLOW or self.getSkull() == SKULL_GREEN:
+            self.setSkull(SKULL_NONE)
+		 
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:

@@ -207,7 +207,7 @@ defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
 
 # Vocation stuff (often occure on custom vocations, or pre-level 8 promoted characters.).
 minHealth = 150
-minMana = 100
+minMana = 0
 
 # Language
 # Default (fallback) language.
