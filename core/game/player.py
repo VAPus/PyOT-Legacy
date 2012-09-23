@@ -2743,11 +2743,11 @@ class Player(Creature):
                 if self.trackSkulls[creature][1] >= time.time():
                     return self.trackSkulls[creature][0]
                 del self.trackSkulls[creature]
-            else:
-                skull = deathlist.getSkull(self.data["id"], creature.data["id"])
-                if skull:
-                    self.trackSkulls[creature] = skull
-                    return skull[0]
+
+            skull = deathlist.getSkull(self.data["id"], creature.data["id"])
+            if skull:
+                self.trackSkulls[creature] = skull
+                return skull[0]
 
         if self.skull == 0:
             self.skull = deathlist.getSkull(self.data["id"])
