@@ -1175,7 +1175,7 @@ class Creature(object):
             stream.addTileCreature(self.position, game.map.getTile(self.position).findStackpos(self), self, player)
             stream.send(player.client)
 
-    def getEmblem(self, craeture, emblem):
+    def getEmblem(self, craeture):
         return self.emblem
     
     # Skulls
