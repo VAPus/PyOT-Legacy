@@ -37,6 +37,9 @@ sqlSocket = None
 # LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
 letGameServerRunTheLoginServer = True
 
+# This servers worldId
+worldId = 0
+
 # Versions:
 versionMin = 860
 versionMax = 963
