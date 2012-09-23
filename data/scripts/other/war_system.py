@@ -30,7 +30,7 @@ if config.enableWarSystem:
             
             self.status = status
             
-            sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
+            
             
             if not self.guild1 in wars:
                 wars[self.guild1] = [], [], []
@@ -38,6 +38,13 @@ if config.enableWarSystem:
             if not self.guild2 in wars:
                 wars[self.guild2] = [], [], []
                 
+                
+            if status == GUILD_WAR_PENDING_PAYMENT:
+                if not checkPayment(self):
+                    pendingPayments.append(self)
+                else:
+                    status = GUILD_WAR_ACTIVE
+                    
             if status == GUILD_WAR_ACTIVE:
                 wars[self.guild1][0].append(self.guild2)
                 wars[self.guild1][1].append(self)
@@ -50,10 +57,6 @@ if config.enableWarSystem:
 
                 wars[self.guild2][2].append(self)
                     
-            elif status == GUILD_WAR_PENDING_PAYMENT:
-                
-                pendingPayments.append(self)
-                
             elif status == GUILD_WAR_OVER:
                 pass # TODO
                 
@@ -70,6 +73,8 @@ if config.enableWarSystem:
                 except:
                     pass
                 
+            sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
+            
     wars = {} # GUILDID -> [guildIds at war], [warObjects at war], [warObjects on invite]
     pendingPayments = []
     
@@ -102,11 +107,25 @@ if config.enableWarSystem:
         wars[warEntry.guild2][1].remove(warEntry)
         
         # TODO, deside winner.
+    
+    def checkPayment(entry):
+        guild1 = getGuildById(entry.guild1)
+        guild2 = getGuildById(entry.guild2)
         
+        if guild1.getMoney() >= entry.stakes and guild2.getMoney() >= entry.stakes:
+            # We can pay.
+            guild1.removeMoney(entry.stakes)
+            guild2.removeMoney(entry.stakes)
+            return True
+            
+        return False
     def checkPayments():
         global pendingPayments
         for entry in pendingPayments[:]:
-            pass # TODO.
+            if checkPayment(entry):
+                pendingPayments.remove(entry)
+                entry.setStatus(GUILD_WAR_ACTIVE)
+                
             
         callLater(3600, checkPayments) # Try once per hour to check for payments.
     
