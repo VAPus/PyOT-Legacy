@@ -28,6 +28,6 @@ def init():
 def war_management(creature, status, guildname, **k):
     pass # TODO
     
-@register("talkactionRegex", "/balance (?P<command>(pick|donate) (?P<amount>\d+)")
+@register("talkactionRegex", "/balance (?P<command>(pick|donate)) (?P<amount>\d+)")
 def balance_management(creature, command, amount, **k):
     pass # TODO
