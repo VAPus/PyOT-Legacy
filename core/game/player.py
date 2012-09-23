@@ -2123,22 +2123,25 @@ class Player(Creature):
                         self.criticalHit()
 
                 if dmg != 0:
+                    """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
+                            self.cancelTarget()
+                            self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
+                    else:
+                        self.target.onHit(self, dmg, game.enum.MELEE)
+                        self.skillAttempt(skillType)"""
                     self.target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
-                    
+
                 if self.target.isPlayer():
-                    self.lastDmgPlayer = time.time()
-                    if self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED and config.whiteSkull:
-                        self.setSkull(SKULL_WHITE)
-                        """if config.yellowSkull and self.target.getSkull(self) == SKULL_ORANGE:
-                            self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
-                            if self.getSkull(self) == SKULL_NONE:
-                                self.setSkull(SKULL_YELLOW, self, config.loginBlock)"""
-                    elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
-                        self.setSkull(SKULL_YELLOW) #, self, config.loginBlock) not needed next statement takes care of it.
-                    if config.loginBlock:
-                        self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-                        self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
+					self.lastDmgPlayer = time.time()
+					if config.whiteSkull and self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
+					    self.setSkull(SKULL_WHITE)
+					elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
+					    if self.getSkull(self) == SKULL_NONE:
+					        self.setSkull(SKULL_YELLOW, self, config.loginBlock)
+					if config.loginBlock:
+					    self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+					    self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)

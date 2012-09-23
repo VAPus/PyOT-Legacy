@@ -83,6 +83,7 @@ trackHits = 40 # How many hits are we suppose to track? This is important for bo
 globalProtectionZone = False # True = optional PvP. Scripts might change a players attackability. This set a global protection zone and override protectedZones = False.
 skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
 protectedZones = True # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.
+protectionLevel = 200 #0 noone is protected, X > 0 protection until that level
 
 loginBlock = 60 # In seconds, 0 to disable.
 resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
