@@ -2126,12 +2126,12 @@ class Player(Creature):
                     self.target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
                     
-                if self.target and self.target.isPlayer():
+                if self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
-                    if self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and config.whiteSkull and self.getSkull() not in SKULL_JUSTIFIED and self.target.getSkull() not in SKULL_JUSTIFIED:
+                    if self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED and config.whiteSkull:
                         self.setSkull(SKULL_WHITE)
-                    if config.yellowSkull:
-                        self.target.setSkull(SKULL_YELLOW, self, config.loginBlock)
+                    elif config.yellowSkull and self.target.getSkull(self) == SKULL_WHITE:
+                        self.setSkull(SKULL_YELLOW) #, self, config.loginBlock) not needed next statement takes care of it.
                     if config.loginBlock:
                         self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
