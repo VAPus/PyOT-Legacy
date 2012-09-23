@@ -18,14 +18,60 @@ if config.enableWarSystem:
             # TODO: fragchecks.
             
         def setStatus(self, status):
+            global wars, warObjects, warInvites
             self.status = status
             
             sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
             
-            # TODO: Execute status stuff.
-    
+            if status == GUILD_WAR_ACTIVE:
+                try:
+                    wars[self.guild1].append(self.guild2)
+                    warObjects[self.guild2].append(self)
+                except:
+                    wars[self.guild1] = [entry[12]]
+                    warObjects[self.guild2] = [self]
+                    
+                try:
+                    wars[self.guild2].append(self.guild1)
+                    warObjects[self.guild2].append(self)
+                except:
+                    wars[self.guild2] = [self.guild1]
+                    warObjects[self.guild2] = [self]
+                    
+            elif status == GUILD_WAR_INVITE:
+                try:
+                    warInvites[self.guild1].append(self)
+                except:
+                    warInvites[self.guild1] = [self]
+                    
+                try:
+                    warInvites[self.guild2].append(self)
+                except:
+                    warInvites[self.guild2] = [self]
+                    
+            elif status == GUILD_WAR_PENDING_PAYMENT:
+                pendingPayments.append(self)
+                
+            elif status == GUILD_WAR_OVER:
+                pass # TODO
+                
+            elif status == GUILD_WAR_REJECT or status == GUILD_WAR_CANCEL:
+                try:
+                    # Ow well.
+                    warInvites[self.guild1].remove(self)
+                except:
+                    pass
+                
+                try:
+                    # Ow well.
+                    warInvites[self.guild2].remove(self)
+                except:
+                    pass
+                
     wars = {} # GUILDID -> [guilds at war]
+    warInvites = {} # GUILDID -> [warobjects]
     warObjects = {} # GUILDID -> [warobjects]
+    pendingPayments = []
     
     _oldGetEmblem = game.creature.Creature.getEmblem
     # New emblem function.
@@ -48,6 +94,7 @@ if config.enableWarSystem:
     
     # Cleanup callback.
     def cancelWar(warEntry):
+        global wars, warObjects
         wars[warEntry.guild1].remove(warEntry.guild2)
         wars[warEntry.guild2].remove(warEntry.guild1)
         
@@ -56,25 +103,22 @@ if config.enableWarSystem:
         
         # TODO, deside winner.
         
+    def checkPayments():
+        global pendingPayments
+        for entry in pendingPayments[:]:
+            pass # TODO.
+        
     # Loader.
     @inlineCallbacks
     def loadGuildWars():
         for entry in (yield sql.runQuery("SELECT w.war_id, w.guild_id, w.guild_id2, w.started, w.duration, w.frags, w.stakes, w.status FROM guild_wars w WHERE (SELECT 1 FROM guilds g WHERE g.world_id = %s AND g.guild_id = w.guild_id) AND w.status IN (0, 2, 4)", config.worldId)):
             warEntry = warEntry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
-            try:
-                wars[entry[1]].append(entry[2])
-                warObjects[entry[2]].append(warEntry)
-            except:
-                wars[entry[1]] = [entry[12]]
-                warObjects[entry[2]] = [warEntry]
-                
-            try:
-                wars[entry[2]].append(entry[1])
-                warObjects[entry[2]].append(warEntry)
-            except:
-                wars[entry[2]] = [entry[1]]
-                warObjects[entry[2]] = [warEntry]
-                
+            warEntry.setStatus(entry[6])
+            
+        checkPayments()
+        callLater(3600, checkPayments) # Try once per hour to check for payments.
+            
+                    
     @register("startup")
     def init():
         _oldGetEmblem = game.creature.Creature.getEmblem
