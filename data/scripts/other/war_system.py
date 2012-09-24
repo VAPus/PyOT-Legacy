@@ -193,8 +193,8 @@ if config.enableWarSystem:
     @register("talkactionRegex", "/war (?P<status>(accept|reject|cancel)) (?P<guildname>\w+)")
     def war_management(creature, status, guildname, **k):
         rank = creature.guildRank()
-        if not rank or not rank.isLeader():
-            creature.lmessage("You are not leader of a guild.")
+        if not rank or not rank.permission(GUILD_MANAGE_WARS):
+            creature.lmessage("You are not allowed to manage wars for this guild.")
             return False
             
         # Find invite entry.
@@ -221,9 +221,34 @@ if config.enableWarSystem:
         creature.message(_l(self, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
         return False
         
-    @register("talkactionRegex", "/balance (?P<command>(pick|donate)) (?P<amount>\d+)")
+    @register("talkactionRegex", "/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?<duration>\d+) (?P<frags>\d+)")
+    def war_invitation(creature, guildname, stakes, duration, frags, **k):
+        rank = creature.guildRank()
+        if not rank or not rank.permission(GUILD_MANAGE_WARS):
+            creature.lmessage("You can't invite a guild to war.")
+            return False
+            
+        myGuild = creature.guild()
+        
+        enemyGuild = getGuildByName(guildname)
+        if not enemyGuild:
+            creature.lmessage("Guild not found.")
+            return False
+            
+        # TODO: Max frags, stakes and duration.
+        # TODO: Make warEntry, save it, send update invite.
+        
+    @register("talkactionRegex", "/balance(?P<command>( pick| donate|))(?P<amount> \d+)")
     def balance_management(creature, command, amount, **k):
         # TODO: This is suppose to happen in the bank balance, not the inventory, but it's harder to debug it then, right?.
+        
+        try:
+            amount = int(amount.trim())
+            command = command.trim()
+        except:
+            creature.lmessage("Invalid parameters.")
+            return False
+            
         guild = creature.guild()
         if not guild:
             creature.lmessage("You are not member of a guild.")
@@ -240,9 +265,9 @@ if config.enableWarSystem:
             
             creature.message(_l(self, "You donated %(amount)d to your guild!") % {"amount": amount})
             
-        else:
-            if not creature.guildRank().isLeader():
-                creature.lmessage("You are not guild leader.")
+        elif command == "donate":
+            if not creature.guildRank().permission(GUILD_WITHDRAW_MONEY):
+                creature.lmessage("You can't withdraw funds from your guild account.")
                 return False
             
             money = guild.getMoney()
@@ -254,6 +279,9 @@ if config.enableWarSystem:
             creature.addMoney(amount)
             
             creature.message(_l(self, "You picked %(amount)d from your guild!") % {"amount": amount})
+        
+        else:
+            creature.lmessage("Guild balance is %d." % guild.getMoney())
             
         return False
         
