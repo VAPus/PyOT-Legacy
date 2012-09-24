@@ -70,6 +70,9 @@ class GuildRank(object):
     
     def isSubLeader(self):
         return self.permissions & GUILD_SUBLEADER
+        
+    def permission(self, permission):
+        return self.permissions & permission
     
     def guild(self):
         return guilds[self.guild_id]
