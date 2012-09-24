@@ -1189,6 +1189,12 @@ class Creature(object):
                 stream.send(creature.client)
                 del self.trackSkulls[creature]
                 
+            elif self.trackSkulls[creature][0] == SKULL_GREEN: # We have to resend SKULL_GREEN every ~5sec.
+                stream = creature.packet(0x90)
+                stream.uint32(self.cid)
+                stream.uint8(SKULL_GREEN)
+                stream.send(creature.client)
+                
         if self.trackSkulls:
             self._checkSkulls = callLater(5, self.vertifySkulls)
         elif self.skull == SKULL_WHITE:
