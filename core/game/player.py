@@ -1652,10 +1652,11 @@ class Player(Creature):
         if lastDmgIsPlayer:
             # Just or unjust?
             unjust = True
-            if self.getSkull() in SKULL_JUSTIFIED or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW):
+            if self.getSkull() or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW, SKULL_GREEN):
                 unjust = False
                 
             deathData["unjust"] = unjust
+            
         if game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse, deathData=deathData) == False:
             return
         
@@ -2155,14 +2156,15 @@ class Player(Creature):
 
                 if self.target.isPlayer():
 					self.lastDmgPlayer = time.time()
-					if config.whiteSkull and self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
-					    self.setSkull(SKULL_WHITE)
-					elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
-					    if self.getSkull(self) == SKULL_NONE:
-					        self.setSkull(SKULL_YELLOW, self, config.loginBlock)
-					if config.loginBlock:
-					    self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-					    self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
+                    if self.target.getSkull(self) != SKULL_GREEN:
+					    if config.whiteSkull and self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
+					        self.setSkull(SKULL_WHITE)
+					    elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
+					        if self.getSkull(self) == SKULL_NONE:
+					            self.setSkull(SKULL_YELLOW, self, config.loginBlock)
+					    if config.loginBlock:
+					        self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+					        self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
@@ -2765,7 +2767,12 @@ class Player(Creature):
     # Skull stuff
     def getSkull(self, creature=None):
         if creature:
-            if creature in self.trackSkulls:
+            # Green skull to members of the same party.
+            myParty = self.party()
+            if myParty and creature.party() == myParty:
+                return SKULL_GREEN
+                
+            elif creature in self.trackSkulls:
                 if self.trackSkulls[creature][1] >= time.time():
                     return self.trackSkulls[creature][0]
                 del self.trackSkulls[creature]
