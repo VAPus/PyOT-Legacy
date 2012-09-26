@@ -226,5 +226,12 @@ class Packet(base.BasePacket):
         else:"""
         self.uint8(self.enum(msgType))
         self.string(message)
+        
+    def skull(creatureId, skull):
+        if skull == SKULL_ORANGE: return
+        self.uint8(0x90)
+        self.uint32(creatureId)
+        self.uint8(skull)
+        
 class Protocol(base.BaseProtocol):
     Packet = Packet

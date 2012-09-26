@@ -1183,16 +1183,14 @@ class Creature(object):
         
         for creature in self.trackSkulls.copy():
             if self.trackSkulls[creature][1] < _time:
-                stream = creature.packet(0x90)
-                stream.uint32(self.cid)
-                stream.uint8(self.skull)
+                stream = creature.packet()
+                stream.skull(self.cid, self.skull)
                 stream.send(creature.client)
                 del self.trackSkulls[creature]
                 
             elif self.trackSkulls[creature][0] == SKULL_GREEN: # We have to resend SKULL_GREEN every ~5sec.
-                stream = creature.packet(0x90)
-                stream.uint32(self.cid)
-                stream.uint8(SKULL_GREEN)
+                stream = creature.packet()
+                stream.skull(self.cid, SKULL_GREEN)
                 stream.send(creature.client)
                 
         if self.trackSkulls:
@@ -1213,10 +1211,8 @@ class Creature(object):
             self.skull = skull
 
             for player in getPlayers(self.position):
-                print player
-                stream = player.packet(0x90)
-                stream.uint32(self.cid)
-                stream.uint8(self.getSkull(player))
+                stream = player.packet()
+                stream.skull(self.cid, self.getSkull(player))
                 stream.send(player.client)
         else:
             
@@ -1225,9 +1221,8 @@ class Creature(object):
             else:
                 self.trackSkulls[creature] = [skull, _time]
             
-            stream = creature.packet(0x90)
-            stream.uint32(self.cid)
-            stream.uint8(skull)
+            stream = creature.packet()
+            stream.skull(self.cid, skull)
             stream.send(creature.client)
             
         if not self._checkSkulls:

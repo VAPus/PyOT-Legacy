@@ -551,6 +551,11 @@ class BasePacket(TibiaPacket):
         self.uint8(0xb6)
         self.uint16(delay * 1000)
         
+    def skull(self, creatureId, skull):
+        self.uint8(0x90)
+        self.uint32(creatureId)
+        self.uint8(skull)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
