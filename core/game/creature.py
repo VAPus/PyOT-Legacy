@@ -747,7 +747,7 @@ class Creature(object):
         if self.data["health"] == 0 and health:
             self.alive = True
 
-        self.data["health"] = max(0, health)
+        self.data["health"] = int(max(0, health))
 
         if not self.getHideHealth():
             for spectator in getSpectators(self.position):
