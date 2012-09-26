@@ -178,6 +178,19 @@ class RegexTriggerScripts(TriggerScripts):
                 func = callback
             self.scripts[trigger][0].insert(0, func)
 
+        
+    def _unregCallback(self, trigger):
+        def trigger_cleanup_callback(func):
+            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
+                for elm in self.scripts[trigger]:
+                    if func in elm[0]:
+                        elm[0].remove(func)
+                        if not len(elm[0]):
+                            del self.scripts[trigger]
+                        return
+                
+        return trigger_cleanup_callback
+    
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
 
