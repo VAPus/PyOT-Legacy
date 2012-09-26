@@ -2155,16 +2155,20 @@ class Player(Creature):
                     self.skillAttempt(skillType)
 
                 if self.target.isPlayer():
-					self.lastDmgPlayer = time.time()
+                    self.lastDmgPlayer = time.time()
+                    # If target do not have a green skull.
                     if self.target.getSkull(self) != SKULL_GREEN:
-					    if config.whiteSkull and self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
-					        self.setSkull(SKULL_WHITE)
-					    elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
-					        if self.getSkull(self) == SKULL_NONE:
-					            self.setSkull(SKULL_YELLOW, self, config.loginBlock)
-					    if config.loginBlock:
-					        self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-					        self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
+                        # If he is unmarked.
+                        if config.whiteSkull and self.target.getSkull() not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
+                            self.setSkull(SKULL_WHITE)
+                        elif config.yellowSkull and (self.target.getSkull() == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
+                            # Allow him to fight back.
+                            if self.getSkull(self) == SKULL_NONE:
+                                self.setSkull(SKULL_YELLOW, self, config.loginBlock)
+                        if config.loginBlock:
+                            # PZ block.
+                            self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+                            self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)

@@ -221,7 +221,7 @@ if config.enableWarSystem:
         creature.message(_l(self, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
         return False
         
-    @register("talkactionRegex", "/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?<duration>\d+) (?P<frags>\d+)")
+    @register("talkactionRegex", "/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?P<duration>\d+) (?P<frags>\d+)")
     def war_invitation(creature, guildname, stakes, duration, frags, **k):
         rank = creature.guildRank()
         if not rank or not rank.permission(GUILD_MANAGE_WARS):
