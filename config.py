@@ -99,11 +99,12 @@ redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to def
 
 blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
 blackSkullUnmarked = {24:6, 7*24:10, 30*24:20} # {periode in hours: KILLS}
-blackSkullDisableAreaSpells = True
-blackSkullDisableAreaRules = True
-blackSkullDisableSummons = True
+blackSkullDisableAreaSpells = True # To be implanted
+blackSkullDisableAreaRules = True # To be implanted
+blackSkullDisableSummons = True # To be implanted
 blackSkullFullDamage = True # Receive 100% instead of pvpDamageFactor.
-
+blackSkullRecoverHealth = 40 # How much health to get when you respawn, -1 for full.
+blackSkullRecoverMana = 0 # How much mana to get when you respawn. -1 for full.
 yellowSkull = True # Enable/Disable this. Disaled = all kills and unjust
 orangeSkull = True
 orangeSkullLength = 3600 * 7 * 24 # In seconds.

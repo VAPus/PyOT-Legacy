@@ -1753,8 +1753,12 @@ class Player(Creature):
 
     def onSpawn(self):
         if self.data["health"] <= 0 or not self.alive:
-            self.data["health"] = self.data["healthmax"]
-            self.data["mana"] = self.data["manamax"]
+            if self.getSkull() == SKULL_BLACK:
+                self.data["health"] = config.blackSkullRecoverHealth if config.blackSkullRecoverHealth != -1 else self.data["healthmax"]
+                self.data["mana"] =  config.blackSkullRecoverMana if config.blackSkullRecoverMana != -1 else self.data["manamax"]
+            else:
+                self.data["health"] = self.data["healthmax"]
+                self.data["mana"] = self.data["manamax"]
             self.alive = True
             game.scriptsystem.get("respawn").runSync(self)
             import data.map.info
