@@ -1487,6 +1487,20 @@ class Creature(object):
             with spectator.packet() as stream:
                 stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
                 
+    ###################
+    ### Summon & convince stuff
+    ###################
+    
+    def summon(self, monsterName, position):
+        if self.getSkull() == SKULL_BLACK and config.blackSkullDisableSummons:
+            return None
+            
+        mon = game.monster.getMonster(monsterName).spawn(position, spawnDelay=0)
+        mon.setMaster(self)
+        mon.setRespawn(False)
+        
+        return mon
+                
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
