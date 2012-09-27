@@ -21,10 +21,13 @@ if config.enableWarSystem:
             
             self.guild1_frags, self.guild2_frags = warFrags(warId, guild1, guild2)
             
+            if self.status == GUILD_WAR_ACTIVE:
+                self.start()
+                
+        def start(self):
             # When to cancel war.
             callLater((started + duration) - time.time(), cancelWar, self)
             
-            # TODO: fragchecks.
             
         def setStatus(self, status):
             global wars, warObjects, warInvites
@@ -48,6 +51,11 @@ if config.enableWarSystem:
                     status = GUILD_WAR_ACTIVE
                     
             if status == GUILD_WAR_ACTIVE:
+                if not self.started:
+                    self.started = time.time()
+                if status != self.status:
+                    sql.runOperation("UPDATE guild_wars SET started = %s WHERE war_id = %s", (self.stated, warId))
+                    
                 wars[self.guild1][0].append(self.guild2)
                 wars[self.guild1][1].append(self)
 
@@ -74,8 +82,13 @@ if config.enableWarSystem:
                     wars[self.guild2][2].remove(self)
                 except:
                     pass
-                
-            sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
+            
+            if self.status != status:
+                sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
+        
+        @inlineCallbacks
+        def insert(self):
+            self.warId = yield sql.runOperationLastId("INSERT INTO guild_wars(guild_id, guild_id2, started, duration, frags, stakes, `status`) VALUES(%s, %s, %s, %s, %s, %s, %s)", (self.guild1, self.guild2, self.started, self.duration, self.frags, self.stakes, self.status))
             
     wars = {} # GUILDID -> [guildIds at war], [warObjects at war], [warObjects on invite]
     pendingPayments = []
@@ -218,7 +231,7 @@ if config.enableWarSystem:
         else:
             entry.setStatus(GUILD_WAR_PENDING_PAYMENT)
             
-        creature.message(_l(self, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
+        creature.message(_l(creature, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
         return False
         
     @register("talkactionRegex", "/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?P<duration>\d+) (?P<frags>\d+)")
@@ -235,8 +248,32 @@ if config.enableWarSystem:
             creature.lmessage("Guild not found.")
             return False
             
-        # TODO: Max frags, stakes and duration.
-        # TODO: Make warEntry, save it, send update invite.
+        try:
+            stakes = int(stakes)
+            duration = int(duration)
+            frags = int(frags)
+        except:
+            creature.lmessage("Invalid parameters")
+            return False
+            
+        if stakes < config.minWarLosePenalty or stakes > config.maxWarLosePenalty:
+            creature.message(_l(creature, "stakes has to be between %(min)d and %(max)d") % {"min":config.minWarLosePenalty, "max":config.maxWarLosePenalty})
+            return False
+            
+        if duration < config.minWarDuration or duration > config.maxWarDuration:
+            creature.message(_l(creature, "duration has to be between %(min)d and %(max)d") % {"min":config.minWarDuration, "max":config.maxWarDuration})
+            return False
+            
+        if frags < config.minWarFrags or frags > config.maxWarFrags:
+            creature.message(_l(creature, "frags has to be between %(min)d and %(max)d") % {"min":config.minWarFrags, "max":config.maxWarFrags})
+            return False
+            
+            
+        warEntry = warEntry(0, myGuild.id, enemyGuild.id, 0, duration, frags, stakes, GUILD_WAR_INVITE)
+        warEntry.setStatus(GUILD_WAR_INVITE)
+        warEntry.insert()
+        
+        return False
         
     @register("talkactionRegex", "/balance(?P<command>( pick| donate|))(?P<amount> \d+)")
     def balance_management(creature, command, amount, **k):
@@ -263,7 +300,7 @@ if config.enableWarSystem:
             creature.removeMoney(amount)
             guild.addMoney(amount)
             
-            creature.message(_l(self, "You donated %(amount)d to your guild!") % {"amount": amount})
+            creature.message(_l(creature, "You donated %(amount)d to your guild!") % {"amount": amount})
             
         elif command == "donate":
             if not creature.guildRank().permission(GUILD_WITHDRAW_MONEY):
@@ -278,7 +315,7 @@ if config.enableWarSystem:
             guild.removeMoney(amount)
             creature.addMoney(amount)
             
-            creature.message(_l(self, "You picked %(amount)d from your guild!") % {"amount": amount})
+            creature.message(_l(creature, "You picked %(amount)d from your guild!") % {"amount": amount})
         
         else:
             creature.lmessage("Guild balance is %d." % guild.getMoney())

@@ -116,7 +116,9 @@ warFee = 1000 # in gold.
 minWarDuratiom = 7 * 3600 * 24  # In seconds
 maxWarDuration = 180 * 3600 * 24 # In seconds
 maxWarLosePenalty = 20000000000 # 2 billion, in gold.
-warFragLimit = 1000 # In kills.
+minWarLosePenalty = 1000 # in gold.
+maxWarFrags = 1000 # In kills.
+minWarFrags = 10
 greenSkull = True
 
 # Lose rate

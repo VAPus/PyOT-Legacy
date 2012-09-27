@@ -2,18 +2,6 @@ byKiller = {}
 byVictim = {}
 
 loadedDeathIds = set()
-
-lastId = 0
-
-# This function set lastId to the lastId in the database, so our new deathEntries have the same id for proper indexing.
-@inlineCallbacks
-def prepare():
-    global lastId
-    for entry in (yield sql.runQuery("SELECT MAX(death_id) FROM pvp_deaths")):
-        lastId = entry[0]
-        
-    if lastId == None: # No entries.
-        lastId = 0
         
 class DeathEntry(object):
     def __init__(self, killerId, victimId, unjustified, revenged=0, _time=None, war_id=0, deathId=0):
@@ -35,9 +23,9 @@ class DeathEntry(object):
     def revenge(self):
         sql.runOperation("UPDATE pvp_deaths SET revenged = 1 WHERE death_id = %s", self.id)
         self.revenged = 1
-        
+    
     def saveQuery(self):
-        return "(%s, %s, %s, %s, %s, %s, %s)" % (self.id, self.killerId, self.victimId, self.unjustified, self.time, self.revenged, self.warId)
+        return "(%s, %s, %s, %s, %s, %s)" % (self.killerId, self.victimId, self.unjustified, self.time, self.revenged, self.warId)
 
 @inlineCallbacks
 def loadDeathList(playerId):
@@ -124,13 +112,10 @@ def getSkull(playerId, targetId=None):
     # None
     return SKULL_NONE, 0
 
+@inlineCallbacks
 def addEntry(deathEntry):
-    global lastId
-    deathEntry.id = lastId + 1
-    lastId += 1
-    
-    sql.runOperation("INSERT INTO pvp_deaths(`death_id`, `killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % deathEntry.saveQuery())
-    
+    deathEntry.id = yield sql.runOperationLastId("INSERT INTO pvp_deaths(`killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % deathEntry.saveQuery())
+
     try:
         byKiller[deathEntry.killerId].append(deathEntry)
     except:

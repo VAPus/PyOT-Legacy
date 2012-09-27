@@ -2,6 +2,19 @@ from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 import config
 
+# Our own methods.
+def runOperationLastId(self, *args, **kw):
+    return self.runInteraction(self._runOperationLastId, *args, **kw)
+
+def _runOperationLastId(self, trans, *args, **kw):
+    trans.execute(*args, **kw)
+    return trans.lastrowid
+
+# Patch adbapi.
+adbapi._runOperationLastId = _runOperationLastId
+adbapi.runOperationLastId = runOperationLastId
+
+# Connection function.
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
         if config.sqlSocket:
@@ -50,6 +63,7 @@ def connect(module = config.sqlModule):
 
     else:
         raise NameError("SQL module %s is invalid" % module)
+    
 # Setup the database pool when this module is imported for the first time
 conn = connect()
 
@@ -60,3 +74,8 @@ def runOperation(*argc, **kwargs):
 @inlineCallbacks
 def runQuery(*argc, **kwargs):
     yield conn.runQuery(*argc, **kwargs)
+    
+# A custom call we got. Not in the twisted standard.
+@inlineCallbacks
+def runOperationLastId(*argc, **kwargs):
+    yield conn.runOperationLastId(*argc, **kwargs)

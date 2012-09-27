@@ -130,10 +130,6 @@ def loader(timer):
             game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
         print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
-        print "> > Preparing deathlist...",
-        yield game.deathlist.prepare()
-        print "%50s\n" % _txtColor("\t[DONE]", "blue")
-        
         # Load scripts
         print "> > Loading scripts...",
         game.scriptsystem.importer()
