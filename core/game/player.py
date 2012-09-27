@@ -2791,5 +2791,9 @@ class Player(Creature):
                 return skull[0]
 
         if self.skull == 0:
-            self.skull = deathlist.getSkull(self.data["id"])
+            self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
+            
+            if self.skullTimeout and not self._checkSkulls:
+                 self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
+                
         return self.skull

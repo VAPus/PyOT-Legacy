@@ -68,11 +68,13 @@ def findUnrevengeKill(killerId, victimId):
 def getSkull(playerId, targetId=None):
     if not playerId in byKiller: return SKULL_NONE
     
+    _time = time.time()
+    
     if targetId:
-        orangeTime = time.time() - config.orangeSkullLength
+        orangeTime = _time - config.orangeSkullLength
         for deathEntry in byKiller[playerId]:
             if deathEntry.revenged == 0 and deathEntry.victimId == targetId and deathEntry.time > orangeTime:
-                return [SKULL_ORANGE, deathEntry.time - time.time() + config.orangeSkullLength]
+                return [SKULL_ORANGE, deathEntry.time - _time + config.orangeSkullLength]
                 
     whiteSkull = False
     redEntries = {}
@@ -85,35 +87,42 @@ def getSkull(playerId, targetId=None):
         blackEntries[i] = 0
         
     # Try to check for white skull and sort entries in red and black.
-    whiteTime = time.time() - config.whiteSkull 
+    
+    whiteTime = _time - config.whiteSkull
+    whiteTimeout = 0
+    redTimeout = 0
+    blackTimeout = 0
     for deathEntry in byKiller[playerId]:
-        if deathEntry.time > whiteTime:
+        if deathEntry.time > whiteTime and (deathEntry.time + config.whiteSkull) > whiteTimeout:
             whiteSkull = True
+            whiteTimeout = deathEntry.time + config.whiteSkull
             
         for t in redEntries:
-            if deathEntry.time > time.time() - t:
+            if deathEntry.time > _time - t and (deathEntry.time + config.redSkull) > redTimeout:
                 redEntries[t] += 1
+                redTimeout = deathEntry.time + config.redSkull
                 
         for t in blackEntries:
-            if deathEntry.time > time.time() - t:
+            if deathEntry.time > _time - t and (deathEntry.time + config.blackSkull) > blackTimeout:
                 blackEntries[t] += 1
+                blackTimeout = deathEntry.time + config.blackSkull
                 
     # Now, check what kid of skulls he qualified for, try black first.
     for t in blackEntries:
         if blackEntries[t] >= config.blackSkullUnmarked[t]:
-            return SKULL_BLACK
+            return SKULL_BLACK, (blackTimeout - _time)
         
     # Now redEntries
     for t in redEntries:
         if redEntries[t] >= config.redSkullUnmarked[t]:
-            return SKULL_RED
+            return SKULL_RED, (redTimeout - _time)
         
     # Now white
     if whiteSkull:
-        return SKULL_WHITE
+        return SKULL_WHITE, (whiteTimeout - _time)
    
     # None
-    return SKULL_NONE
+    return SKULL_NONE, 0
 
 def addEntry(deathEntry):
     global lastId

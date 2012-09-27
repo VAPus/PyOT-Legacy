@@ -1176,11 +1176,15 @@ class Creature(object):
     # Skulls
     def vertifySkulls(self):
         _time = time.time()
-        if self.getSkull() == SKULL_WHITE:
-            if self.lastDmgPlayer < _time - config.whiteSkull:
+        if config.resetSkulls:
+            # TODO, something for red and black too.
+            if self.getSkull() == SKULL_WHITE and self.lastDmgPlayer < _time - config.whiteSkull:
                 print "nullify"
                 self.setSkull(SKULL_NONE)
-        
+                
+        if _time > self.skullTimeout:
+            self.setSkull(SKULL_NONE)
+            
         for creature in self.trackSkulls.copy():
             if self.trackSkulls[creature][1] < _time:
                 stream = creature.packet()
@@ -1195,25 +1199,32 @@ class Creature(object):
                 
         if self.trackSkulls:
             self._checkSkulls = callLater(5, self.vertifySkulls)
-        elif self.skull == SKULL_WHITE:
-            self._checkSkulls = callLater(self.lastDmgPlayer - _time + config.whiteSkull, self.vertifySkulls)
+        elif self.skull:
+            self._checkSkulls = callLater(self.skullTimeout - _time, self.vertifySkulls)
         else:
             self._checkSkulls = None
             
     def setSkull(self, skull, creature=None, _time=0):
-        print "Set skull", skull
         if self.getSkull(creature) == skull:
-            print "return"
             return
 
         if not creature:
             assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE)
             self.skull = skull
-
+            if skull == SKULL_WHITE:
+                self.skullTimeout = time.time() + config.whiteSkull
+            elif skull == SKULL_RED:
+                self.skullTimeout = time.time() + config.redSkull
+            elif skull == SKULL_BLACK:
+                self.skullTimeout = time.time() + config.blackSkull
+            else:
+                self.skullTimeout = 0
+                
             for player in getPlayers(self.position):
                 stream = player.packet()
                 stream.skull(self.cid, self.getSkull(player))
                 stream.send(player.client)
+                
         else:
             
             if creature in self.trackSkulls and self.trackSkulls[creature][0] == skull:
