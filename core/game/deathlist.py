@@ -54,7 +54,7 @@ def findUnrevengeKill(killerId, victimId):
         if kill.unjustified and not kill.revenged:
             return kill
 def getSkull(playerId, targetId=None):
-    if not playerId in byKiller: return SKULL_NONE
+    if not playerId in byKiller: return SKULL_NONE, 0
     
     _time = time.time()
     
