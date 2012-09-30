@@ -291,7 +291,12 @@ def levelFromExpFormula(y): # y = experience
 magicLevelFormula = lambda a,b: 1600*(b**a)
 totalMagicLevelFormula = lambda a,b:(1600*((b**a)-1))/(b-1) # a = level, b = vocation constant
 magicLevelFromManaFormula = lambda n,b: int(round((log((1.0+n+(1600.0/b)) / 1600.0) + log(b)) / (log(b)), 8)) # n = mana, b = vocation constant
+
+# Skills
 skillFormula = lambda a,b: 50*(b**(a-10))
+totalSkillFormula = lambda a,b: 500*(b**(a-10))-500 # a = current level, b = skill constant
+skillTriesToLevel = lambda b, tries: (log((tries/500)+1)/log(b))+10 # b = skill constant, tries = skill tries.
 magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
 fishingFormula = lambda x: 20*(1.1)**(x-10)
+
 meleeDamage = lambda attack,skill,level,factor: (0.085*factor*attack*skill)+(level/5)
