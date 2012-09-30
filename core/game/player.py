@@ -1678,7 +1678,11 @@ class Player(Creature):
                 tries = config.totalSkillFormula(self.data["skills"][skill], self.getVocation().meleeSkill) + self.getSkillAttempts(skill)
                 
                 # Reduce them.
+<<<<<<< local
                 tries /= 1 + (loseRate/100.0)
+=======
+                tries /= loseRate/100.0
+>>>>>>> other
                 tries = int(tries)
                 
                 # Skill tries to level.
