@@ -1672,7 +1672,27 @@ class Player(Creature):
             print loseRate
             self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
             self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
-            print "TODO: Reduce skill tries"
+            
+            for skill in xrange(SKILL_FIRST, SKILL_LAST):
+                # First, get total skill tries.
+                tries = config.totalSkillFormula(self.data["skills"][skill], self.getVocation().meleeSkill) + self.getSkillAttempts(skill)
+                
+                # Reduce them.
+                tries /= loseRate/100.0
+                tries = int(tries)
+                
+                # Skill tries to level.
+                level = int(config.skillTriesToLevel(self.getVocation().meleeSkill, tries))
+                
+                # Previous level skill tries.
+                prevTries = config.totalSkillFormula(level-1, self.getVocation().meleeSkill)
+                
+                # Get the level goals.
+                goal = tries-prevTries
+                
+                # Set new level.
+                self.addSkillLevel(skill, level - self.data["skills"][skill])
+                self.skillAttempts(skill, goal)
             
         # PvP experience and death entries.
         if lastDmgIsPlayer:
