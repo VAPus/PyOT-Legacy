@@ -1,3 +1,7 @@
+# Fix run tests as root.
+import sys
+sys.path.insert(0, "./test")
+
 import framework
 
 # Test if the framework is even working
