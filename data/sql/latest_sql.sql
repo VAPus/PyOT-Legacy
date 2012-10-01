@@ -25020,8 +25020,6 @@ CREATE TABLE `players` (
   `stamina` decimal(65,0) unsigned NOT NULL DEFAULT '151200000' COMMENT 'stored in miliseconds',
   `direction` tinyint(2) unsigned NOT NULL DEFAULT '2',
   `marriage` int(10) unsigned NOT NULL DEFAULT '0',
-  `guild` int(8) unsigned NOT NULL DEFAULT '0',
-  `guild_rank` int(6) unsigned NOT NULL DEFAULT '0',
   `lastlogin` int(11) unsigned NOT NULL DEFAULT '0',
   `conditions` blob,
   `storage` mediumblob,
@@ -25033,8 +25031,8 @@ CREATE TABLE `players` (
   KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
-INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `direction`, `marriage`, `guild`, `guild_rank`, `lastlogin`, `conditions`, `storage`, `depot`, `inventory`) VALUES
-(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, 0, NULL, NULL, '', '');
+INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `marriage`, `lastlogin`, `conditions`, `storage`, `depot`, `inventory`) VALUES
+(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 0, 0, NULL, NULL, '', '');
 
 CREATE TABLE `player_skills` (
   `player_id` int(11) unsigned NOT NULL,
@@ -25110,3 +25108,25 @@ CREATE TABLE IF NOT EXISTS `guild_ranks` (
   `permissions` int(11) unsigned NOT NULL,
   KEY `guild_id` (`guild_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `players` ADD `balance` decimal(65,0) unsigned NOT NULL DEFAULT '0' AFTER `conditions` ;
+
+ALTER TABLE `players` DROP `guild` ;
+
+ALTER TABLE `players` DROP `guild_rank` ;
+
+ALTER TABLE `players` DROP `direction` ;
+
+CREATE TABLE IF NOT EXISTS `player_guild` (
+  `player_id` int(11) unsigned NOT NULL,
+  `guild_id` int(11) unsigned NOT NULL,
+  `guild_rank` int(6) unsigned NOT NULL DEFAULT '0',
+  `guild_title` varchar(255) NOT NULL DEFAULT '',
+  `joined` int(10) NOT NULL,
+  KEY `guild_id` (`guild_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `guild_invites` (
+  `player_id` INT UNSIGNED NOT NULL DEFAULT 0,
+  `guild_id` INT UNSIGNED NOT NULL DEFAULT 0
+) ENGINE = InnoDB;
