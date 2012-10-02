@@ -11,7 +11,6 @@ sewers=430, 8580
 # Stairs
 @register("walkOn", stairs)
 def floorchange(creature, thing, position, **k):
-    print "Called"
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
         return

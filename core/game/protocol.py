@@ -1,10 +1,12 @@
 from twisted.python import log
-import sys
+import sys, os
 
-protocolsAvailable = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960)
+protocolsAvailable = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963)
 protocolsUsed = {}
 
 def getProtocol(version):
+    if not protocolsUsed:
+        loadProtocol(version)
     try:
         return protocolsUsed[version]
     except:
@@ -12,6 +14,9 @@ def getProtocol(version):
     return None
 
 def loadProtocol(version):
+    if "_trial_temp" in os.getcwd():
+        os.chdir("..")
+        
     if not version in protocolsAvailable:
         log.msg("Protocol (Base) %d doesn't exist!" % version)
         return

@@ -174,7 +174,10 @@ class BasePacket(TibiaPacket):
                     
                     self.creature(creature, known, removeKnown)
                 else:
-                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+                    if player.client.version >= 953:
+                        self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
+                    else:
+                        self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.beginThink(creature, False)
                     
@@ -404,8 +407,9 @@ class BasePacket(TibiaPacket):
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
         self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
         self.uint16(int(player.speed)) # Speed
-        
-        self.uint16(0x00) # Condition
+        if player.client.version > 961:
+            self.uint16(0x00) # Regeneration time
+        self.uint16(0x00) # Offline training time
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
@@ -509,11 +513,49 @@ class BasePacket(TibiaPacket):
             
         self.string(message)
         
+    def playerInfo(self, player):
+        # 9.5+
+        if player.client.version >= 950:
+            self.uint8(0x9F)
+            self.uint8(player.sendPremium)
+            self.uint8(player.getVocationId())
+            
+            # Spell counting.
+            spells = player.getSpells()
+            
+            self.uint16(len(spells))
+            randomNr = 0
+            for spell in spells:
+                # TODO: Implant spell ids, unfortunatly we can't do witout them.
+                self.uint8(randomNr)
+                randomNr += 1
+                
+    def dialog(self, player, dialogId, title, message, buttons=["Ok", "Exit"], defaultEnter=0, defaultExit=1):
+        # 9.6+
+        if player.client.version >= 960:
+            self.uint8(0xFA)
+            self.uint32(dialogId)
+            self.string(title)
+            self.string(message)
+            self.uint8(len(buttons))
+            for button in xrange(len(buttons)):
+                self.string(buttons[button])
+                self.uint8(button)
+                
+            self.uint8(defaultEnter)
+            self.uint8(defaultExit)
+        else:
+            pass # TODO send as a text dialog.
+            
+    def delayWalk(self, delay):
+        self.uint8(0xb6)
+        self.uint16(delay * 1000)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
         packetType = packet.uint8()
-        
+
         if packetType == 0x14: # Logout
             try:
                 player.prepareLogout()
@@ -523,6 +565,9 @@ class BaseProtocol(object):
             
         elif packetType == 0x1E: # Keep alive
             player.pong()
+            
+        elif packetType == 0x1D:
+            self.handlePing(player)
             
         elif packetType == 0xA0: # Set modes
             player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
@@ -677,17 +722,24 @@ class BaseProtocol(object):
         elif packetType == 0xF1:
             self.handleQuestLine(player, packet)
             
+        elif packetType == 0xF9:
+            self.handleDialog(player, packet)
+            
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()
-            
+    
+    def enum(self, key):
+        return getattr(game.enum, key)
+        
     def handleSay(self, player, packet):
         channelType = packet.uint8()
         channelId = 0
         reciever = ""
-        if channelType in (enum.MSG_CHANNEL_MANAGEMENT, enum.MSG_CHANNEL, enum.MSG_CHANNEL_HIGHLIGHT):
+
+        if channelType in (self.enum(MSG_CHANNEL_MANAGEMENT), self.enum(MSG_CHANNEL), self.enum(MSG_CHANNEL_HIGHLIGHT)):
             channelId = packet.uint16()
-        elif channelType in (enum.MSG_PRIVATE_TO, enum.MSG_GAMEMASTER_PRIVATE_TO):
+        elif channelType in (self.enum(MSG_PRIVATE_TO), self.enum(MSG_GAMEMASTER_PRIVATE_TO)):
             reciever = packet.string()
 
         text = packet.string()
@@ -763,11 +815,30 @@ class BaseProtocol(object):
             isCreature = True
         if not isCreature:
             # Remove item:
+            oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
             if toPosition.x == 0xFFFF:
                 currItem = player.findItemWithPlacement(toPosition)
             else:
                 currItem = None
-    
+
+            # Item to bag.
+            bag = None
+            if currItem:
+                if currItem[0] == 1:
+                    bag = currItem[1]
+                elif currItem[0] == 2:
+                    bag  = currItem[2]
+                
+            if bag:
+                process = [0]
+                        
+                count = 2
+                yield game.scriptsystem.get('useWith').runDeferNoReturn(oldItem[1], player, lambda: process.__setitem__(0, process[0]+1), position=toPosition, onPosition=fromPosition, onThing=bag)
+                yield game.scriptsystem.get('useWith').runDeferNoReturn(bag, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=oldItem[1])
+
+                if not process[0] == count:
+                    return # Script should supply error.
+                    
             """if currItem and currItem[1] and not ((currItem[1].stackable and currItem[1].itemId == sid(clientId)) or currItem[1].containerSize):
                 currItem[1] = None
             """
@@ -806,7 +877,6 @@ class BaseProtocol(object):
                         return
                     
                 #stream = player.packet()
-                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
@@ -860,7 +930,6 @@ class BaseProtocol(object):
                         
                 
             else:
-                oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
                 if oldItem[1]:
                     stream = player.packet()
 
@@ -953,7 +1022,6 @@ class BaseProtocol(object):
                         yield game.scriptsystem.get('useWith').runDeferNoReturn(newItem, player, lambda: process.__setitem__(0, process[0]+1), position=fromPosition, onPosition=toPosition, onThing=item)
 
                     if process[0] == count:
-                        print "doing it"
                         if newItem.decayPosition:
                             newItem.decayPosition = toPosition
                             
@@ -1170,7 +1238,7 @@ class BaseProtocol(object):
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
         end = None
-        
+
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
@@ -1209,9 +1277,6 @@ class BaseProtocol(object):
         
         stackPosition1 = position.setStackpos(stackpos)
         stackPosition2 = onPosition.setStackpos(onStack)
-        
-        print stackPosition1
-        print stackPosition2
         
         if clientId != 99:
             thing = player.findItem(stackPosition1)
@@ -1327,6 +1392,16 @@ class BaseProtocol(object):
         
         try: # Try blocks are better than x in y checks :)
             player.windowHandlers[windowId](text)
+            del player.windowHandlers[windowId] # Cleanup
+        except:
+            pass
+        
+    def handleDialog(self, player, packet):
+        windowId = packet.uint32()
+        button = packet.uint8()
+        
+        try:
+            player.windowHandlers[windowId](button)
             del player.windowHandlers[windowId] # Cleanup
         except:
             pass
@@ -1621,3 +1696,8 @@ class BaseProtocol(object):
 
     def handleDebugAssert(self, player, packet):
         logger.writeEntry("debugs", '\n'.join([packet.string(), packet.string(), packet.string(), packet.string()]), player.name(), "IP:%s" % player.getIP() )
+        
+        
+    def handlePing(self, player):
+        with player.packet(0x1E) as stream:
+            pass

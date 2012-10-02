@@ -64,7 +64,7 @@ class Creature(object):
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0
-        self.direction = 0
+        self.direction = SOUTH
         self.position = position
         self.speed = 100.0
         self.scripts = { "onNextStep":[]}
@@ -158,6 +158,8 @@ class Creature(object):
         return False
 
     def isAttackable(self, by):
+        if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+            return False
         return self.attackable
 
     def isSummon(self):
@@ -439,8 +441,8 @@ class Creature(object):
 
             elif canSeeOld and not canSeeNew:
                 stream.removeTileItem(oldPosition, oldStackpos)
-                spectator.knownCreatures.remove(self)
-                self.knownBy.remove(spectator)
+                """spectator.knownCreatures.remove(self)
+                self.knownBy.remove(spectator)"""
 
             elif canSeeOld and canSeeNew:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
@@ -702,20 +704,18 @@ class Creature(object):
 
             updateTile(self.position, tile)
 
-        if by and by.isPlayer():
-            by.message(_lp(by, "%(who)s loses 1 hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
+            if by and by.isPlayer():
+                by.message(_lp(by, "%(who)s loses %(amount)d hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
 
-        if self.isPlayer():
-            if by:
-                self.message(_lp(self, "You lose 1 hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
-            else:
-                self.message(_lp(self, "You lose 1 hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
+            if self.isPlayer():
+                if by:
+                    self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
+                else:
+                    self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
 
-        elif not self.target and self.data["health"] < 1:
-            self.follow(by) # If I'm a creature, set my target
+            elif not self.target and self.data["health"] < 1:
+                self.follow(by) # If I'm a creature, set my target
 
-        # Modify health
-        if dmg:
             self.modifyHealth(dmg)
 
             if by and self.data["health"] < 1:
@@ -731,13 +731,13 @@ class Creature(object):
     def onHeal(self, by, amount):
         if self.data["healthmax"] != self.data["health"]:
             if by and by.isPlayer() and by != self:
-                by.message(_lp(by, "%(who)s gain 1 hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
+                by.message(_lp(by, "%(who)s gain %(amount)d hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
 
             if self.isPlayer():
-                if by != self:
-                    self.message(_lp(self, "You gain 1 hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-                elif by is self:
-                    self.message(_lp(self, "You healed yourself for 1 hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
+                if by is self:
+                    self.message(_lp(self, "You healed yourself for %(amount)d hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
+                elif by is not None:
+                    self.message(_lp(self, "You gain %(amount)d hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
                 else:
                     self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
              
@@ -752,7 +752,7 @@ class Creature(object):
         if self.data["health"] == 0 and health:
             self.alive = True
 
-        self.data["health"] = max(0, health)
+        self.data["health"] = int(max(0, health))
 
         if not self.getHideHealth():
             for spectator in getSpectators(self.position):
@@ -874,6 +874,8 @@ class Creature(object):
             stream.uint16(0x63)
             stream.uint32(self.clientId())
             stream.uint8(direction)
+            if spectator.version >= 953:
+                stream.uint8(self.solid)
             stream.send(spectator)
 
     def turnAgainst(self, position):
@@ -1010,7 +1012,13 @@ class Creature(object):
         return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
 
     def distanceStepsTo(self, position):
-        return abs(self.position.x-position.x)+abs(self.position.y-position.y)
+        xSteps = abs(self.position.x-position.x)
+        ySteps = abs(self.position.y-position.y)
+        # Case one, diagonal right next to = 1. Fix diagonal attacks
+        if xSteps == 1 and ySteps == 1:
+            return 1
+        
+        return xSteps+ySteps
 
     def inRange(self, position, x, y, z=0):
         return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )

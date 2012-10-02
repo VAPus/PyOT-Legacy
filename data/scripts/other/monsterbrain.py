@@ -4,6 +4,8 @@ def defaultBrainFeaturePriority(monster):
             # Chance of retargeting?
             if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance:
                 monster.targetCheck()
+                if not monster.target:
+                    return False
                 
             # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
@@ -131,6 +133,8 @@ def defaultBrainFeature(monster):
                 monster.targetCheck()
                 if monster.target:
                     return True # Prevent random walking
+                monster.stopAction()
+            return
         else:
             if not monster.master.alive:
                 monster.master = None # I've become independant

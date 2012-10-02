@@ -10,8 +10,9 @@ def parseText(text):
 # When we're working with IO blocking behavior such as SQL (which might be needed in case of placeInDepot) we are required to use callbacks to deal with result)
 @register('useWith', mailboxes)
 @inlineCallbacks        
-def onSendParcelOrLetter(creature, position, thing, onId, onThing, **k):
+def onSendParcelOrLetter(creature, position, thing, onThing, **k):
     # Is it a letter perhaps?
+    onId = onThing.itemId
     if onId == ITEM_LETTER:
         if not onThing.text:
             creature.lmessage("To whom shall this letter be sent?", onPos=position)
@@ -56,3 +57,6 @@ def onSendParcelOrLetter(creature, position, thing, onId, onThing, **k):
             return
         else:
             returnValue(False) # (equal to return False in other, regular scripts)
+    else:
+        creature.lmessage("It's not a package or letter.")
+        returnValue(False)

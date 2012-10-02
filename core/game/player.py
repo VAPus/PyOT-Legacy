@@ -11,7 +11,6 @@ import time
 import game.party
 import game.resource
 import game.chat
-import game.pathfinder
 import game.protocol
 import sql
 import game.vocation
@@ -82,6 +81,9 @@ class Player(Creature):
         # Extra icons
         self.extraIcons = 0
 
+        # Send premium code
+        self.sendPremium = config.sendPremium
+        
         # Rates
         # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
         # 3 => drop rate (max items), 4 => regain rate
@@ -90,7 +92,7 @@ class Player(Creature):
         self.inventoryWeight = 0
 
         # Direction
-        self.direction = self.data["direction"]
+        self.direction = SOUTH
         #del self.data["direction"]
 
         # Inventory
@@ -106,9 +108,12 @@ class Player(Creature):
                                                            slot = x+1)
 
         else:
+            purse = Item(1987)
+            purse.name = "Purse"
+            purse.addAction('purse')
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463),
                               None, Item(7449), None, None, None,
-                              Item(2546,20), None]
+                              Item(2546,20), purse]
 
             for item in self.inventory:
                 if not item:
@@ -265,6 +270,14 @@ class Player(Creature):
         self.client.ready = True
         self.alive = True
 
+        # We might login using a different client version. Fix it.
+        try:
+            self._packet = self.client.protocol.Packet()
+        except:
+            self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
+        
+        self._packet.stream = self.client
+        
         with self.packet(0x0A) as stream:
             stream.uint32(self.clientId()) # Cid
             stream.uint16(config.drawingSpeed) # Drawing speed
@@ -277,7 +290,7 @@ class Player(Creature):
             stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
                                         self.position.z),
                                 18, 14, self)
-
+            
             for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
                 if self.inventory[slot-1]:
                     stream.uint8(0x78)
@@ -287,12 +300,16 @@ class Player(Creature):
                 else:
                     stream.uint8(0x79)
                     stream.uint8(slot)
-
+            
             self.refreshStatus(stream)
             self.refreshSkills(stream)
 
+            stream.playerInfo(self)
             stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
+            
+            if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+                self.setIcon(CONDITION_PROTECTIONZONE)
             self.refreshConditions(stream)
 
             stream.magicEffect(self.position, 0x03)
@@ -313,7 +330,7 @@ class Player(Creature):
                         self.refreshStatus()
 
             reactor.callLater(self.rates[1], loseStamina)
-
+        
     def refreshStatus(self, stream=None):
         if stream:
             stream.status(self)
@@ -1011,6 +1028,14 @@ class Player(Creature):
         stream.send(self.client)
         return self.windowTextId
 
+    def dialog(self, title, message, buttons=["Ok", "Exit"], defaultEnter=0, defaultExit=1):
+        stream = self.packet()
+
+        self.windowTextId += 1
+        stream.dialog(self, self.windowTextId, title, message, buttons, defaultEnter, defaultExit)
+        stream.send(self.client)
+        return self.windowTextId
+    
     def houseWindow(self, text):
         stream = self.packet(0x97)
         self.windowTextId += 1
@@ -1418,16 +1443,14 @@ class Player(Creature):
             stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
     # Channel system
-    """def openChannels(self):
-        XXX: BUGGED!
+    def openChannels(self):
+        channels = game.chat.getChannels(self)
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
-        if type(channels2) == dict:
+        if type(channels2) is dict:
             channels = channels2
-            
-        stream = self.packet()
-        self.openChannels(game.chat.getChannels(self))
-        
-        stream.send(self.client)"""
+
+        with self.packet() as stream:
+            stream.openChannels(channels)
 
     def openChannel(self, id):
 
@@ -1566,6 +1589,8 @@ class Player(Creature):
 
         tile = game.map.getTile(self.position)
 
+        self.despawn()
+        
         # Set position
         import data.map.info
         self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
@@ -1599,12 +1624,13 @@ class Player(Creature):
                 stream.send(spectator)
 
     def onSpawn(self):
-        if not self.data["health"]:
+        if not self.data["health"] or not self.alive:
             self.data["health"] = self.data["healthmax"]
             self.data["mana"] = self.data["manamax"]
+            self.alive = True
             game.scriptsystem.get("respawn").runSync(self)
             import data.map.info
-            self.teleport(data.map.info.towns[self.data['town_id']][1])
+            self.teleport(Position(*data.map.info.towns[self.data['town_id']][1]))
 
     # Damage calculation:
     def damageToBlock(self, dmg, type):
@@ -1669,7 +1695,10 @@ class Player(Creature):
             self.inventory = pickle.loads(inventoryData)
         except:
             print "Broken inventory (blame MySQL, it usually means you killed the connection in the middle of a save)"
-            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
+            purse = Item(1987)
+            purse.name = "Purse"
+            purse.addAction('purse')
+            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), purse] # Last item XXX is purse.
 
         # Generate the inventory cache
         for item in self.inventory:
@@ -1743,7 +1772,7 @@ class Player(Creature):
         extras.append(self.data["id"])
 
         if self.saveData or extraQuery or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`direction` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.direction, self.position.x, self.position.y, self.position.z, self.position.instanceId]+extras
+            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.position.x, self.position.y, self.position.z, self.position.instanceId]+extras
 
     def save(self, force=False):
         if self.doSave:
@@ -2422,6 +2451,15 @@ class Player(Creature):
     def unlearnSpell(self, name):
         return self.setStorage("__ls%s" % name, False)
 
+    def getSpells(self):
+        # Return all spells this user can do.
+        spells = []
+        for spell in game.spell.spells:
+            if self.canUseSpell(spell):
+                spells.append(spell)
+                
+        return spells
+    
     # Networking
     def getIP(self):
         return self.client.transport.getPeer().host
@@ -2556,3 +2594,13 @@ class Player(Creature):
                 return False
                 
         return True
+        
+    # "Premium" stuff
+    def togglePremium(self):
+        self.sendPremium = not self.sendPremium
+        with self.packet() as stream:
+            stream.playerInfo(self)
+        
+    def delayWalk(self, delay):
+        with self.packet() as stream:
+            stream.delayWalk(delay)

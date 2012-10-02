@@ -1,5 +1,4 @@
 """A collection of functions that almost every other component requires"""
-
 from twisted.internet import reactor, threads, defer
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
 from collections import deque
@@ -8,7 +7,6 @@ import time
 import game.map
 import config
 import math
-import game.pathfinder
 import sql
 import otjson
 import game.enum
@@ -41,7 +39,7 @@ except:
 IS_ONLINE = False
 IS_RUNNING = True
 MERCURIAL_REV = 0
-
+IS_IN_TEST = False
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
@@ -57,7 +55,14 @@ def windowsLoading():
         os.system("color %s" % config.consoleColor)
 
 # The loader rutines, async loading :)
+@inlineCallbacks
 def loader(timer):
+    IS_IN_TEST = "trial_temp" in os.getcwd()
+    if IS_IN_TEST:
+        os.chdir("..")
+        # Also ugly hack.
+        sys.stdout = StringIO()
+        
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
@@ -189,6 +194,9 @@ def loader(timer):
     
     __builtin__.sql = sql.conn
     __builtin__.config = config
+    
+    import game.pathfinder
+    
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.defer = defer
@@ -245,6 +253,10 @@ def loader(timer):
     __builtin__.PercentCondition = game.conditions.PercentCondition
     __builtin__.MultiCondition = game.conditions.MultiCondition
     __builtin__.RepeatCondition = game.conditions.RepeatCondition
+
+    # Pathfinder
+    __builtin__.pathfinder = game.pathfinder
+
     
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
@@ -278,7 +290,7 @@ def loader(timer):
     print "%50s\n" % _txtColor("\t[DONE]", "blue")
     
     # Do we issue saves?
-    if config.doSaveAll:
+    if config.doSaveAll and not IS_IN_TEST:
         print "> > Schedule global save...",
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
@@ -290,14 +302,16 @@ def loader(timer):
     # Reset online status on shutdown
     game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
-    print "> > Turn world time and light on...",
-    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+    if not IS_IN_TEST:
+        print "> > Turn world time and light on...",
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-    print "%45s" % _txtColor("\t[DONE]", "blue")
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        print "%45s" % _txtColor("\t[DONE]", "blue")
     
-    reactor.callLater(60, looper, game.pathfinder.clear, 60)
-    
+        reactor.callLater(60, looper, pathfinder.clear, 60)
+
+    yield d
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""
@@ -444,7 +458,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
-    
+    print fromPos, to
     pattern = []
     currPos = fromPos
     # First diagonal if possible
@@ -470,12 +484,12 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
         
     if not pattern:
         # Try a straight line
-        pattern = game.pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
+        pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
         if not pattern:
             return None
                 
     # Fix for diagonal things like items
-    if len(pattern) > 2 and diagonal == True:
+    """if len(pattern) > 2 and diagonal == True:
         last, last2 = pattern[len(pattern)-2:len(pattern)]
         if abs(last-last2) == 1:
             del pattern[len(pattern)-2:len(pattern)]
@@ -488,10 +502,9 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
                 last = 1 + (6 if last2 == 0 else 4)
             elif last == 3: # last = west, last2 must be 
                 last = 0 + (6 if last2 == 0 else 4)
-            pattern.append(last)
+            pattern.append(last)"""
     if skipFields != 0:
         pattern = pattern[:skipFields]
-        
     return pattern
 
 # Spectator list
@@ -1007,12 +1020,12 @@ def loadPlayer(playerName):
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
     except KeyError:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`direction`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`name` = %s", (playerName))
+        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`name` = %s", (playerName))
         if not character:
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "direction": cd[15], "sex": cd[15], "looktype": cd[17], "lookhead": cd[18], "lookbody": cd[19], "looklegs": cd[20], "lookfeet": cd[21], "lookaddons": cd[22], "lookmount": cd[23], "town_id": cd[24], "skull": cd[25], "stamina": cd[26], "storage": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30], "skills": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "skill_tries": {SKILL_FIST: cd[32], SKILL_SWORD: cd[34], SKILL_CLUB: cd[36], SKILL_AXE: cd[38], SKILL_DISTANCE: cd[40], SKILL_SHIELD: cd[42], SKILL_FISH: cd[44]}, "language":cd[45]}
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44]}
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         
@@ -1025,12 +1038,12 @@ def loadPlayerById(playerId):
                 returnValue(player)
                 return
     except:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`direction`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`id` = %s", (playerId))
+        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`id` = %s", (playerId))
         if not character:
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "direction": cd[15], "sex": cd[15], "looktype": cd[17], "lookhead": cd[18], "lookbody": cd[19], "looklegs": cd[20], "lookfeet": cd[21], "lookaddons": cd[22], "lookmount": cd[23], "town_id": cd[24], "skull": cd[25], "stamina": cd[26], "storage": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30], "skills": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "skill_tries": {SKILL_FIST: cd[32], SKILL_SWORD: cd[34], SKILL_CLUB: cd[36], SKILL_AXE: cd[38], SKILL_DISTANCE: cd[40], SKILL_SHIELD: cd[42], SKILL_FISH: cd[44]}, "language":cd[45]}
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44]}
         game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[cd['name']])
         

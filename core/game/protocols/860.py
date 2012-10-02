@@ -83,45 +83,46 @@ class Packet(base.BasePacket):
             self.uint16(item)
             if count:
                 self.uint8(count)
-
-    def tileDescription(self, tile, player=None):
-        # self.uint16(0x00) No animations!
-        isSolid = False
-        for item in tile.topItems():
-            if item.solid:
-                isSolid = True
-                
+   
+    def tileDescription(self, tile, player):
+        count = 0
+        for item in tile.topItems():  
             self.item(item)
+            count += 1
+            if count == 10:
+                return
         
-        if not isSolid:
-            for creature in tile.creatures():
-                if creature == None:
-                    del creature
-                    continue
-                
-                known = False
-                removeKnown = 0
-                if player:
-                    known = creature in player.knownCreatures
+        for creature in tile.creatures():
+            known = False
+            removeKnown = 0
+            if player:
+                known = creature in player.knownCreatures
                     
-                    if not known:
-                        if len(player.knownCreatures) > self.maxKnownCreatures:
-                            removeKnown = player.checkRemoveKnown()
-                            if not removeKnown:
-                                player.exit("Too many creatures in known list. Please relogin")
-                                return
-                        player.knownCreatures.add(creature)
-                        creature.knownBy.add(player)
+                if not known:
+                    if len(player.knownCreatures) > self.maxKnownCreatures:
+                        removeKnown = player.checkRemoveKnown()
+                        if not removeKnown:
+                            player.exit("Too many creatures in known list. Please relogin")
+                            return
+                    player.knownCreatures.add(creature)
+                    creature.knownBy.add(player)
                     
                     self.creature(creature, known, removeKnown)
+                else:
+                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+            if creature.creatureType != 0 and not creature.brainEvent:
+                creature.base.brain.beginThink(creature, False)
                     
-                if creature.creatureType != 0 and not creature.brainEvent:
-                    creature.base.brain.handleThink(creature, False)
-
-            for item in tile.bottomItems():
-                self.item(item)
+            count += 1
+            if count == 10:
+                return
                 
-
+        for item in tile.bottomItems():
+            self.item(item)
+            count += 1
+            if count == 10:
+                return
+            
     def creature(self, creature, known, removeKnown=0):
         if known:
             self.uint16(0x62)

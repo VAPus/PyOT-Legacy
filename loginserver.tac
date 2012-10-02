@@ -51,13 +51,9 @@ reactor.suggestThreadPoolSize(config.suggestedLoginServerThreadPoolSize)
 config.sqlMinConnections = 1
 config.sqlMaxConnections = 2
 
-#### Initialize OTCrypto module ####
-import otcrypto
-otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
-
 #### Import the LoginServer ####
 from twisted.application import internet, service
-from service.loginserver import LoginProtocol, LoginFactory
+from service.loginserver import LoginFactory
 
 application = service.Application("pyot-login-server")
 

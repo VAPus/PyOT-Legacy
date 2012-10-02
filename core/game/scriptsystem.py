@@ -153,6 +153,10 @@ class TriggerScripts(object):
 class RegexTriggerScripts(TriggerScripts):
     __slots__ = ('scripts', 'parameters')
 
+    def __init__(self, parameters = ()):
+        self.scripts = {}
+        self.parameters = () # We can't have parameters
+        
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
             func = weakref.proxy(callback, self._unregCallback(trigger))
@@ -174,6 +178,19 @@ class RegexTriggerScripts(TriggerScripts):
                 func = callback
             self.scripts[trigger][0].insert(0, func)
 
+        
+    def _unregCallback(self, trigger):
+        def trigger_cleanup_callback(func):
+            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
+                for elm in self.scripts[trigger]:
+                    if func in elm[0]:
+                        elm[0].remove(func)
+                        if not len(elm[0]):
+                            del self.scripts[trigger]
+                        return
+                
+        return trigger_cleanup_callback
+    
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
 
@@ -657,7 +674,6 @@ def register(type, *argc):
             
             for param in object.parameters:
                 if not param in vars:
-                    print vars
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
                 
         # Step 3, veritify parameter names
@@ -718,38 +734,42 @@ def regEventTime(date, callback):
     
 # Another cool decorator
 def access(*groupFlags, **kwargs):
+    assert groupFlags
     isPlayer = True
     isMonster = False
     isNPC = False
-    
+    checks = []
     # XXX: Cheat Python2 syntax, Python3 got a nice fix for this by allowing kwargs to come after a *argc argument. Too bad pypy and twisted still is py2 only.
     # Unwrap it to get the overhead in loading instead of runtime.
     for arg in kwargs:
         if arg == "isPlayer":
             isPlayer = kwargs[arg]
+            if isPlayer:
+                check.append("if not creature.isPlayer() or not creature.hasGroupFlags(*%s): return" % groupFlags)
         elif arg == "isMonster":
             isMonster = kwargs[arg]
+            if isMonster:
+                checks.append("if not creature.isMonster(): return")
         elif arg == "isNPC":
             isNPC = kwargs[arg]
+            if isNPC:
+                checks.append("if not creature.isNPC(): return")
         else:
             raise TypeError("Calling scriptsystem.access() with invalid parameter %s" % arg)
             
     # Notice: We may make a optimized wrapper call when len(groupFlags) == 1 using creature.hasGroupFlag(unwrapperGroupFlag).
     def _wrapper(f):
-        def access_wrapper_inner(creature, **k):
-            if isMonster and not creature.isMonster():
-                return
-                
-            if isNPC and not creature.isNPC():
-                return
-            
-            if isPlayer:
-                if not creature.isPlayer() or not creature.hasGroupFlags(*groupFlags):
-                    return 
-                    
+        iargs = inspect.getargspec(f)
+        vars = ", ".join(iargs[0])
+        if iargs[2]:
+            if vars:
+                vars += ", **k"
             else:
-                assert not groupFlags
-
-            return f(creature, **k)
+                vars = "**k"
+                
+        exec """
+def access_wrapper_inner(%s):
+    %s
+    return f(%s)""" % (vars, '\n    '.join(checks), vars) in locals(), locals()
         return access_wrapper_inner
     return _wrapper

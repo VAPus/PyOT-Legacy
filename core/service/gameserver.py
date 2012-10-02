@@ -1,18 +1,10 @@
-import sys
 import protocolbase
 import game.protocol
 from collections import deque
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 import config
-import hashlib
-if sys.subversion[0] != 'PyPy':
-    try:
-        import otcrypto
-    except:
-        import otcrypto_python as otcrypto
-else:
-    import otcrypto_python as otcrypto
+import otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
 import sql
@@ -26,7 +18,6 @@ waitingListIps = deque()
 lastChecks = {}
 class GameProtocol(protocolbase.TibiaProtocol):
     connections = 0
-    __slots__ = 'player', 'protocol', 'ready'
 
     def onInit(self):
         self.player = None
@@ -37,8 +28,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
-        pkg.uint16(0xFFFF) # Used for?
-        pkg.uint16(0x00)
+        pkg.uint32(0xFFFFFFFF) # Used for?
         pkg.uint8(0xFF) # Used for?
         pkg.send(self)
 
@@ -58,7 +48,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
-
+        IN_TEST = False
+        if packetType == 0xFF:
+            # Special case for tests.
+            IN_TEST = True
+            
         if packetType and not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
@@ -72,30 +66,31 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.transport.loseConnection()
                 return
 
-            if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
-                packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
-                packet.pos = 0 # Reset position
+            if not IN_TEST:
+                if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
+                    packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
+                    packet.pos = 0 # Reset position
 
-            else:
-                log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
-                self.transport.loseConnection()
-                return
+                else:
+                    log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
+                    self.transport.loseConnection()
+                    return
 
-            if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-                log.msg("RSA, first char != 0")
-                self.transport.loseConnection()
-                return
+                if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
+                    log.msg("RSA, first char != 0")
+                    self.transport.loseConnection()
+                    return
 
-            # Set the XTEA key
-            k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
-            sum = 0
-            a, b = [], []
-            for x in xrange(32):
-                a.append(sum + k[sum & 3] & 0xffffffff)
-                sum = (sum + 0x9E3779B9) & 0xffffffff
-                b.append(sum + k[sum>>11 & 3] & 0xffffffff)
-                
-            self.xtea = tuple(a + b)
+                # Set the XTEA key
+                k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+                sum = 0
+                a, b = [], []
+                for x in xrange(32):
+                    a.append(sum + k[sum & 3] & 0xffffffff)
+                    sum = (sum + 0x9E3779B9) & 0xffffffff
+                    b.append(sum + k[sum>>11 & 3] & 0xffffffff)
+                    
+                self.xtea = tuple(a + b)
 
             ip = self.transport.getPeer().host
             if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
@@ -138,19 +133,20 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
 
             if not account:
                 account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
                 if not account or account == True:
                     self.exitWithError("Invalid username or password")
+                    return
 
             if not len(account) >= 2 or not account[1]:
                 language = config.defaultLanguage
             else:
                 language = account[1]
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`direction`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.account_id = %s AND p.`name` = %s", (account[0][0], characterName))
+            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.account_id = %s AND p.`name` = %s", (account[0][0], characterName))
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
@@ -174,7 +170,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character[0][0]))
             if player:    
                 self.player = player
-                if self.player.data["health"] < 1:
+                if self.player.data["health"] <= 0:
                     self.player.onSpawn()
                 self.player.client = self
                 tile = getTile(self.player.position)
@@ -185,7 +181,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
-                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "direction": cd[15], "sex": cd[15], "looktype": cd[17], "lookhead": cd[18], "lookbody": cd[19], "looklegs": cd[20], "lookfeet": cd[21], "lookaddons": cd[22], "lookmount": cd[23], "town_id": cd[24], "skull": cd[25], "stamina": cd[26], "storage": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30], "skills": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "skill_tries": {SKILL_FIST: cd[32], SKILL_SWORD: cd[34], SKILL_CLUB: cd[36], SKILL_AXE: cd[38], SKILL_DISTANCE: cd[40], SKILL_SHIELD: cd[42], SKILL_FISH: cd[44]}, "language":language}
+                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":language}
 
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]
@@ -252,7 +248,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 2
 
-        self.protocol.handle(self.player, packet)
+        return self.protocol.handle(self.player, packet)
 
 
     def onConnectionLost(self):

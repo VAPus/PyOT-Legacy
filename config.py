@@ -39,9 +39,9 @@ letGameServerRunTheLoginServer = True
 
 # Versions:
 versionMin = 860
-versionMax = 960
-versionError = "You must use a client between 8.6 and 9.6"
-supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960) # We support these main branches + compatible protocols to them
+versionMax = 963
+versionError = "You must use a client between 8.6 and 9.63"
+supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"
@@ -157,7 +157,7 @@ enableMarket = True # It works for 9.44+ only. Lower versions might not access i
 
 # Pathfinder
 # MIGHT BE BUGGY, NOT WELL TESTED!
-findDiagonalPaths = False # Disable this will make the pathfinder somewhat 10-15%
+findDiagonalPaths = True # Disable this will make the pathfinder somewhat 10-15%
 
 # Skills
 defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
@@ -170,6 +170,9 @@ minMana = 100
 # Default (fallback) language.
 enableTranslations = True
 defaultLanguage = "en_EN" # ISO-4 code
+
+# Send premium on 9.5+?
+sendPremium = True
 
 # (WINDOWS ONLY)
 # Adjust size and/or color of the windows
@@ -219,6 +222,9 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+
+# pathfinder cache?
+pathfinderCache = True
 
 # This formula is too complex to put into a lambda
 from math import log

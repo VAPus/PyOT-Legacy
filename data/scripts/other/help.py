@@ -431,3 +431,27 @@ def makeImmune(creature, **k):
         if isinstance(monster, game.monster.Monster) and monster.target == creature:
             monster.target = None
             monster.targetMode = 0
+            
+@register("talkaction", "kill me now")
+@access("DEVELOPER")
+def die(creature, **k):
+    creature.modifyHealth(-9999999999)
+    
+@register("talkaction", "8.6 dialog")
+@access("DEVELOPER")
+def dialog(creature, **k):
+    dialogId = creature.dialog("Test", "Hello world?", ["Great", "Not so great"])
+    
+    def response(button):
+        if button == 0:
+            creature.say("Yay!")
+        else:
+            creature.say("Message needs to be about 20% cooler!")
+    creature.setWindowHandler(dialogId, response)
+    
+@register("talkaction", "freeze!")
+def delayWalk(creature, **k):
+    creature.delayWalk(50)
+    creature.lmessage("Ow no, your stuck!")
+    callLater(10, lambda: creature.lmessage("You may walk again!"))
+    

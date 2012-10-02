@@ -1,10 +1,5 @@
 from struct import unpack, pack
-
-try:
-    import otcrypto
-except:
-    import otcrypto_python as otcrypto
-
+import otcrypto
 from zlib import adler32
 
 """
@@ -149,8 +144,7 @@ class TibiaPacket(object):
 
     #@inThread
     def send(self, stream):
-        assert stream
-        assert self.data
+        if not stream or not self.data: return
 
         data = pack("<H", len(self.data))+self.data
 

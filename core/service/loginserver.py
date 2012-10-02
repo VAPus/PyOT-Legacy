@@ -1,22 +1,13 @@
 import protocolbase
-import sys
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 from packet import TibiaPacket
 import sql
-if sys.subversion[0] != 'PyPy':
-    try:
-        import otcrypto
-    except:
-        import otcrypto_python as otcrypto
-else:
-    import otcrypto_python as otcrypto
+import otcrypto
 import config
-import hashlib
 import socket
 
 class LoginProtocol(protocolbase.TibiaProtocol):
-    __slots__ = ()
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packet.pos += 3
@@ -68,7 +59,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
         if username:
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = %s", (username, hashlib.sha1(password).hexdigest()))
+            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
 
             if account:
                 characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
