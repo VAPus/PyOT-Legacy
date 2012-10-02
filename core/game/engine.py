@@ -22,7 +22,6 @@ import glob
 import game.protocol
 import core.logger
 import game.chat
-
 import re
 import subprocess
 import platform
@@ -43,7 +42,7 @@ except:
 IS_ONLINE = False
 IS_RUNNING = True
 MERCURIAL_REV = 0
-
+IS_IN_TEST = False
 serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
@@ -59,7 +58,14 @@ def windowsLoading():
         os.system("color %s" % config.consoleColor)
 
 # The loader rutines, async loading :)
+@inlineCallbacks
 def loader(timer):
+    IS_IN_TEST = "trial_temp" in os.getcwd()
+    if IS_IN_TEST:
+        os.chdir("..")
+        # Also ugly hack.
+        sys.stdout = StringIO()
+        
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
@@ -286,7 +292,7 @@ def loader(timer):
     print "%50s\n" % _txtColor("\t[DONE]", "blue")
     
     # Do we issue saves?
-    if config.doSaveAll:
+    if config.doSaveAll and not IS_IN_TEST:
         print "> > Schedule global save...",
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
@@ -298,14 +304,16 @@ def loader(timer):
     # Reset online status on shutdown
     game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
-    print "> > Turn world time and light on...",
-    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+    if not IS_IN_TEST:
+        print "> > Turn world time and light on...",
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-    print "%45s" % _txtColor("\t[DONE]", "blue")
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        print "%45s" % _txtColor("\t[DONE]", "blue")
     
-    reactor.callLater(60, looper, pathfinder.clear, 60)
-    
+        reactor.callLater(60, looper, pathfinder.clear, 60)
+
+    yield d
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""

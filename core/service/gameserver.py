@@ -48,7 +48,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
-
+        IN_TEST = False
+        if packetType == 0xFF:
+            # Special case for tests.
+            IN_TEST = True
+            
         if packetType and not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
@@ -62,30 +66,31 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.transport.loseConnection()
                 return
 
-            if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
-                packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
-                packet.pos = 0 # Reset position
+            if not IN_TEST:
+                if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
+                    packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
+                    packet.pos = 0 # Reset position
 
-            else:
-                log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
-                self.transport.loseConnection()
-                return
+                else:
+                    log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
+                    self.transport.loseConnection()
+                    return
 
-            if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-                log.msg("RSA, first char != 0")
-                self.transport.loseConnection()
-                return
+                if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
+                    log.msg("RSA, first char != 0")
+                    self.transport.loseConnection()
+                    return
 
-            # Set the XTEA key
-            k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
-            sum = 0
-            a, b = [], []
-            for x in xrange(32):
-                a.append(sum + k[sum & 3] & 0xffffffff)
-                sum = (sum + 0x9E3779B9) & 0xffffffff
-                b.append(sum + k[sum>>11 & 3] & 0xffffffff)
-                
-            self.xtea = tuple(a + b)
+                # Set the XTEA key
+                k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
+                sum = 0
+                a, b = [], []
+                for x in xrange(32):
+                    a.append(sum + k[sum & 3] & 0xffffffff)
+                    sum = (sum + 0x9E3779B9) & 0xffffffff
+                    b.append(sum + k[sum>>11 & 3] & 0xffffffff)
+                    
+                self.xtea = tuple(a + b)
 
             ip = self.transport.getPeer().host
             if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
@@ -134,6 +139,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
                 if not account or account == True:
                     self.exitWithError("Invalid username or password")
+                    return
 
             if not len(account) >= 2 or not account[1]:
                 language = config.defaultLanguage
@@ -244,7 +250,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.data = otcrypto.decryptXTEA(packet.getData(), self.xtea)
         packet.pos = 2
 
-        self.protocol.handle(self.player, packet)
+        return self.protocol.handle(self.player, packet)
 
 
     def onConnectionLost(self):
