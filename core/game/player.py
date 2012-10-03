@@ -381,7 +381,7 @@ class Player(Creature):
         for player in getPlayers(self.position):
             stream = player.packet(0x90)
             stream.uint32(self.cid)
-            stream.uint8(self.getSkull())
+            stream.uint8(self.getSkull(player))
             stream.send(player.client)
                 
     def pong(self):
@@ -1676,7 +1676,6 @@ class Player(Creature):
 
         # Reduce experience, manaspent and total skill tries (ow my)
         if loseRate:
-            print loseRate
             self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
             self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
             
@@ -1705,7 +1704,7 @@ class Player(Creature):
         if lastDmgIsPlayer:
             # Was this revenge?
             if lastDamagerSkull == SKULL_ORANGE:
-                revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["player_id"], self.data["player_id"])
+                revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["id"], self.data["id"])
                 if not revengeEntry:
                     print "BUG: This was a revenge, but we can't find the revenge death entry..."
                 elif revengeEntry.revenged == True:
@@ -1714,6 +1713,10 @@ class Player(Creature):
                     revengeEntry.revenge()
             entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
+            
+            # Resend attackers skull.
+            # Trick to destroy cache:
+            self.lastDamagers[0].skull = 0
             self.lastDamagers[0].refreshSkull()
             
             # PvP Experience.

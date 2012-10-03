@@ -74,4 +74,71 @@ class TestAttackSkulls(framework.FrameworkTestGame):
         
         # 
         self.assertTrue(self.player.data["id"] in deathlist.byKiller)
-        self.assertEqual(self.player.getSkull(target), SKULL_ORANGE)           
+        self.assertEqual(self.player.getSkull(target), SKULL_ORANGE)
+        
+    def test_redskull(self):
+        # Create player to attack.
+        target = self.setupPlayer()
+        
+        # Ignore blocking.
+        self.player.ignoreBlock = True
+        
+        # Kill him enough times.
+        for n in xrange(config.redSkullUnmarked.values()[0]+1):
+            # Set target
+            # Avoid auto attacks.
+            self.player.target = target
+            self.player.targetMode = 1
+
+
+            
+            # Kill him.
+            self.player.attackTarget(-1000)
+            self.assertFalse(target.alive)
+            
+            
+            # Respawn.
+            target.onSpawn()
+
+        
+        # 
+        self.assertEqual(deathlist.getSkull(self.player.data["id"])[0], SKULL_RED)
+        self.assertTrue(self.player.data["id"] in deathlist.byKiller)
+        #self.assertEqual(self.player.getSkull(None), SKULL_RED)
+        
+        # Force refreshment test.
+        self.player.skull = 0
+        self.assertEqual(self.player.getSkull(None), SKULL_RED)
+        
+    def test_blackskull(self):
+        
+        # Ignore blocking.
+        self.player.ignoreBlock = True
+        
+        # Kill him enough times.
+        for n in xrange(config.blackSkullUnmarked.values()[0]+1):
+            # Create player to attack.
+            target = self.setupPlayer()
+            
+            # Set target
+            # Avoid auto attacks.
+            self.player.target = target
+            self.player.targetMode = 1
+
+
+            
+            # Kill him.
+            self.player.attackTarget(-1000)
+            self.assertFalse(target.alive)
+            
+            # Respawn.
+            target.onSpawn()
+
+        # 
+        self.assertEqual(deathlist.getSkull(self.player.data["id"])[0], SKULL_BLACK)
+        self.assertTrue(self.player.data["id"] in deathlist.byKiller)
+        #self.assertEqual(self.player.getSkull(None), SKULL_BLACK)
+        
+        # Force refreshment test.
+        self.player.skull = 0
+        self.assertEqual(self.player.getSkull(None), SKULL_BLACK)

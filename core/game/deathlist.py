@@ -83,22 +83,25 @@ def getSkull(playerId, targetId=None):
     whiteTimeout = 0
     redTimeout = 0
     blackTimeout = 0
+
     for deathEntry in byKiller[playerId]:
-        if deathEntry.time > whiteTime and (deathEntry.time + config.whiteSkull) > whiteTimeout:
+        if deathEntry.time >= whiteTime and (deathEntry.time + config.whiteSkull) >= whiteTimeout:
             whiteSkull = True
             whiteTimeout = deathEntry.time + config.whiteSkull
             
         for t in redEntries:
-            if deathEntry.time > _time - t and (deathEntry.time + config.redSkull) > redTimeout:
+            if deathEntry.time >= _time - (t * 3600):
                 redEntries[t] += 1
-                redTimeout = deathEntry.time + config.redSkull
+                if (deathEntry.time + config.redSkull) > redTimeout:
+                    redTimeout = deathEntry.time + config.redSkull
                 
         for t in blackEntries:
-            if deathEntry.time > _time - t and (deathEntry.time + config.blackSkull) > blackTimeout:
+            if deathEntry.time >= _time - (t * 3600):
                 blackEntries[t] += 1
-                blackTimeout = deathEntry.time + config.blackSkull
-                
-    # Now, check what kid of skulls he qualified for, try black first.
+                if (deathEntry.time + config.blackSkull) > blackTimeout:
+                    blackTimeout = deathEntry.time + config.blackSkull
+
+    # Now, check what kind of skulls he qualified for, try black first.
     for t in blackEntries:
         if blackEntries[t] >= config.blackSkullUnmarked[t]:
             return SKULL_BLACK, blackTimeout
@@ -115,16 +118,21 @@ def getSkull(playerId, targetId=None):
     # None
     return SKULL_NONE, 0
 
+
 @inlineCallbacks
-def addEntry(deathEntry):
+def _addEntryToDatabase(deathEntry):
     deathEntry.id = yield sql.runOperationLastId("INSERT INTO pvp_deaths(`killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % deathEntry.saveQuery())
 
+    loadedDeathIds.add(deathEntry.id)
+    
+def addEntry(deathEntry):
     try:
         byKiller[deathEntry.killerId].append(deathEntry)
-    except:
+    except KeyError:
         byKiller[deathEntry.killerId] = [deathEntry]
     try:
         byVictim[deathEntry.victimId].append(deathEntry)
-    except:
+    except KeyError:
         byVictim[deathEntry.victimId] = [deathEntry]
-    loadedDeathIds.add(deathEntry.id)
+        
+    _addEntryToDatabase(deathEntry)
