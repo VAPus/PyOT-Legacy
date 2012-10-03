@@ -742,6 +742,8 @@ class Player(Creature):
         
         def endCallback():
             self.data["maglevel"] += mod
+            if self.data["maglevel"] < 0:
+                self.data["maglevel"] = 0
             self.refreshStatus()
 
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
@@ -790,6 +792,10 @@ class Player(Creature):
 
     def modifySpentMana(self, mana, refresh=False):
         self.data["manaspent"] += mana
+        
+        if self.data["manaspent"] < 0:
+            self.data["manspent"] = 0
+            
         self.saveData = True
         modify = 0
         maglevel = self.data["maglevel"]
@@ -873,7 +879,7 @@ class Player(Creature):
         self.refreshSkills()
 
     def getSkillAttempts(self, skill):
-        return self.data["skill_tries"][skillType]
+        return self.data["skill_tries"][skill]
 
     # Soul
     def soulGain(self):
@@ -1647,6 +1653,7 @@ class Player(Creature):
         deathData = {}
         loseRate = self.losePrecent()
         deathData["loseRate"] = loseRate
+        corpse = game.item.Item(3058)
         
         lastDamagerSkull = self.getSkull(self.lastDamagers[0])
         if lastDmgIsPlayer:
@@ -1692,7 +1699,7 @@ class Player(Creature):
                 
                 # Set new level.
                 self.addSkillLevel(skill, level - self.data["skills"][skill])
-                self.skillAttempts(skill, goal)
+                self.skillAttempt(skill, goal)
             
         # PvP experience and death entries.
         if lastDmgIsPlayer:
@@ -1732,8 +1739,6 @@ class Player(Creature):
         self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
         self.data["health"] = self.data["healthmax"]
         self.data["mana"] = self.data["manamax"]
-
-        corpse = game.item.Item(3058)
         
         # Are we suppose to lose the container?
         itemLose = self.itemLosePrecent()
@@ -2188,7 +2193,7 @@ class Player(Creature):
                     # If target do not have a green skull.
                     if self.target.getSkull(self) != SKULL_GREEN:
                         # If he is unmarked.
-                        if config.whiteSkull and self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull() not in SKULL_JUSTIFIED and self.getSkull() not in SKULL_JUSTIFIED:
+                        if config.whiteSkull and self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull(self) not in SKULL_JUSTIFIED:
                             self.setSkull(SKULL_WHITE)
                         elif config.yellowSkull and (self.target.getSkull(self) == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
                             # Allow him to fight back.
@@ -2811,6 +2816,7 @@ class Player(Creature):
                 del self.trackSkulls[creature]
 
             skull = deathlist.getSkull(self.data["id"], creature.data["id"])
+            
             if skull[0]:
                 self.trackSkulls[creature] = skull
                 return skull[0]
@@ -2819,6 +2825,6 @@ class Player(Creature):
             self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
             
             if self.skullTimeout and not self._checkSkulls:
-                 self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
+                self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
                 
         return self.skull

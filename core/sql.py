@@ -1,18 +1,22 @@
 from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 import config
+import __builtin__
 
+__builtin__.PYOT_RUN_SQLOPERATIONS = True
 # Our own methods.
 def runOperationLastId(self, *args, **kw):
-    return self.runInteraction(self._runOperationLastId, *args, **kw)
+    if PYOT_RUN_SQLOPERATIONS:
+        return self.runInteraction(self._runOperationLastId, *args, **kw)
+    return random.randint(1, 1000)
 
 def _runOperationLastId(self, trans, *args, **kw):
     trans.execute(*args, **kw)
     return trans.lastrowid
 
-# Patch adbapi.
-adbapi._runOperationLastId = _runOperationLastId
-adbapi.runOperationLastId = runOperationLastId
+# Patch adbapi.ConnectionPool
+adbapi.ConnectionPool._runOperationLastId = _runOperationLastId
+adbapi.ConnectionPool.runOperationLastId = runOperationLastId
 
 # Connection function.
 def connect(module = config.sqlModule):
@@ -67,15 +71,13 @@ def connect(module = config.sqlModule):
 # Setup the database pool when this module is imported for the first time
 conn = connect()
 
-@inlineCallbacks
 def runOperation(*argc, **kwargs):
-    yield conn.runOperation(*argc, **kwargs)
+    return conn.runOperation(*argc, **kwargs)
     
-@inlineCallbacks
 def runQuery(*argc, **kwargs):
-    yield conn.runQuery(*argc, **kwargs)
+    return conn.runQuery(*argc, **kwargs)
     
 # A custom call we got. Not in the twisted standard.
-@inlineCallbacks
 def runOperationLastId(*argc, **kwargs):
-    yield conn.runOperationLastId(*argc, **kwargs)
+    return conn.runOperationLastId(*argc, **kwargs)
+    

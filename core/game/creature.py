@@ -621,7 +621,6 @@ class Creature(object):
         if not type == game.enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-            dmg = max(-self.data["health"], dmg) #wrap this one too?
 
         if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
@@ -655,7 +654,6 @@ class Creature(object):
             textColor, magicEffect = game.enum.COLOR_RED, None
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
-            dmg = max(-self.data["health"], dmg) #wrap this one too?
         elif type == game.enum.LIFEDRAIN:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
@@ -683,6 +681,8 @@ class Creature(object):
         magicEffect = magicEffect[0]
         type = type[0]
 
+        dmg = max(-self.data["health"], dmg)
+        
         if dmg:
             if magicEffect:
                 self.magicEffect(magicEffect)

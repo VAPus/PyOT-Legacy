@@ -32,6 +32,9 @@ def loadDeathList(playerId):
     global byVictim, byKiller, loadedDeathIds
     query = yield sql.runQuery("SELECT death_id, killer_id, victim_id, unjust, `time`, revenged, war_id FROM pvp_deaths WHERE killer_id = %s OR victim_id = %s AND `time` >= %s", (playerId, playerId, int(time.time() - (config.deathListCutoff * 3600 * 24))))
     
+    if not query:
+        return
+    
     for entry in query:
         if entry[0] in loadedDeathIds: continue
         
@@ -62,7 +65,7 @@ def getSkull(playerId, targetId=None):
         orangeTime = _time - config.orangeSkullLength
         for deathEntry in byKiller[playerId]:
             if deathEntry.revenged == 0 and deathEntry.victimId == targetId and deathEntry.time > orangeTime:
-                return [SKULL_ORANGE, deathEntry.time - _time + config.orangeSkullLength]
+                return [SKULL_ORANGE, deathEntry.time + config.orangeSkullLength]
                 
     whiteSkull = False
     redEntries = {}
@@ -98,16 +101,16 @@ def getSkull(playerId, targetId=None):
     # Now, check what kid of skulls he qualified for, try black first.
     for t in blackEntries:
         if blackEntries[t] >= config.blackSkullUnmarked[t]:
-            return SKULL_BLACK, (blackTimeout - _time)
+            return SKULL_BLACK, blackTimeout
         
     # Now redEntries
     for t in redEntries:
         if redEntries[t] >= config.redSkullUnmarked[t]:
-            return SKULL_RED, (redTimeout - _time)
+            return SKULL_RED, redTimeout
         
     # Now white
     if whiteSkull:
-        return SKULL_WHITE, (whiteTimeout - _time)
+        return SKULL_WHITE, whiteTimeout
    
     # None
     return SKULL_NONE, 0
