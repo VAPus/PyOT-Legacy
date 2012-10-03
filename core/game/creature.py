@@ -667,7 +667,7 @@ class Creature(object):
 
         # pvpDamageFactor.
         if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
-            dmg = dmg * config.pvpDamageFactor
+            dmg = int(dmg * config.pvpDamageFactor)
             
         dmg = [dmg]
         textColor = [textColor]
@@ -1183,10 +1183,10 @@ class Creature(object):
     def vertifySkulls(self):
         _time = time.time()
         if config.resetSkulls:
-            # TODO, something for red and black too.
+            """# TODO, something for red and black too.
             if self.getSkull() == SKULL_WHITE and self.lastDmgPlayer < _time - config.whiteSkull:
                 print "nullify"
-                self.setSkull(SKULL_NONE)
+                self.setSkull(SKULL_NONE)"""
                 
         if _time > self.skullTimeout:
             self.setSkull(SKULL_NONE)
@@ -1218,7 +1218,10 @@ class Creature(object):
             assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE)
             self.skull = skull
             if skull == SKULL_WHITE:
-                self.skullTimeout = time.time() + config.whiteSkull
+                if _time:
+                    self.skullTimeout = time.time() + _time
+                else:
+                    self.skullTimeout = time.time() + config.whiteSkull
             elif skull == SKULL_RED:
                 self.skullTimeout = time.time() + config.redSkull
             elif skull == SKULL_BLACK:
@@ -1232,11 +1235,10 @@ class Creature(object):
                 stream.send(player.client)
                 
         else:
-            
             if creature in self.trackSkulls and self.trackSkulls[creature][0] == skull:
                 self.trackSkulls[creature][1] = time.time() + _time
             else:
-                self.trackSkulls[creature] = [skull, _time]
+                self.trackSkulls[creature] = [skull, time.time() + _time]
             
             stream = creature.packet()
             stream.skull(self.cid, skull)

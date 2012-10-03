@@ -25018,7 +25018,6 @@ CREATE TABLE `players` (
   `sex` int(11) NOT NULL DEFAULT '0',
   `skull` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `stamina` decimal(65,0) unsigned NOT NULL DEFAULT '151200000' COMMENT 'stored in miliseconds',
-  `direction` tinyint(2) unsigned NOT NULL DEFAULT '2',
   `marriage` int(10) unsigned NOT NULL DEFAULT '0',
   `lastlogin` int(11) unsigned NOT NULL DEFAULT '0',
   `conditions` blob,
@@ -25110,12 +25109,6 @@ CREATE TABLE IF NOT EXISTS `guild_ranks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE `players` ADD `balance` decimal(65,0) unsigned NOT NULL DEFAULT '0' AFTER `conditions` ;
-
-ALTER TABLE `players` DROP `guild` ;
-
-ALTER TABLE `players` DROP `guild_rank` ;
-
-ALTER TABLE `players` DROP `direction` ;
 
 CREATE TABLE IF NOT EXISTS `player_guild` (
   `player_id` int(11) unsigned NOT NULL,

@@ -23,6 +23,12 @@ TEST_PROTOCOL = 963
 TEST_PLAYER_ID = 0
 TEST_PLAYER_NAME = "__TEST__"
 
+# Async sleeper.
+def asyncSleep(seconds):
+    d = defer.Deferred()
+    reactor.callLater(seconds, d.callback, seconds)
+    return d
+
 class Client(proto_helpers.StringTransport):
     def sendPacket(self, format, *argc, **kwargs):
         import packet as p
@@ -74,17 +80,40 @@ class Client(proto_helpers.StringTransport):
         
 class FrameworkTest(unittest.TestCase):
     def setUp(self):
+        self._overrideConfig = {}
         d = self.initializeEngine()
         self.initializeClient()
         self.addCleanup(self.clearDelayedCalls)
-        return d
+        self.addCleanup(self.clear)
+        self.addCleanup(self.restoreConfig)
         
+        self.init()
+        
+        return d
+    
+    def init(self):
+        pass
+    
     def initializeClient(self):
         self.tr = Client()
         self.client = self.server.buildProtocol(self.tr)
         self.tr.client = self.client
         self.client.makeConnection(self.tr)
     
+    def clear(self):
+        # Clear all players.
+        for player in game.player.allPlayers.values():
+            self.destroyPlayer(player)
+            
+    def overrideConfig(self, name, value):
+        self._overrideConfig[name] = getattr(config, name)
+        
+        setattr(config, name, value)
+        
+    def restoreConfig(self):
+        for key in self._overrideConfig:
+            setattr(config, key, self._overrideConfig[key])
+            
     def clearDelayedCalls(self):
         for call in reactor.getDelayedCalls():
             try:
@@ -103,27 +132,45 @@ class FrameworkTest(unittest.TestCase):
             # Load the core stuff!
             # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
             self.server = SERVER
-            return game.engine.loader(startTime)
+            d = game.engine.loader(startTime)
+            # HACK!
+            # Kinda necessary if any scripts use load events from say SQL.
+            d.addCallback(lambda x: asyncSleep(2))
+            return d
         self.server = SERVER
-
+        
+    def destroyPlayer(self, player):
+        # Despawn.
+        player.despawn()
+        # Force remove.
+        del game.player.allPlayers[player.name()]
+        del game.creature.allCreatures[player.cid]
+        
+        try:
+            self._trackPlayers.remove(player)
+        except:
+            pass
+        
 class FrameworkTestGame(FrameworkTest):
     def setUp(self):
         self.player = None
+        self._trackPlayers = []
         d = defer.maybeDeferred(FrameworkTest.setUp, self) 
         d.addCallback(lambda x: self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True))
         d.addCallback(lambda x: self.fixConnection)        
 
         return d
 
-    def clear(self):
+    def clear(self, recreate = False):
         if self.player: # Tests might clear us already. Etc to test clearing!
-            # Despawn.
-            self.player.despawn()
-            # Force remove.
-            del game.player.allPlayers[self.player.name()]
-            del game.creature.allCreatures[self.player.cid]
+            self.destroyPlayer(self.player)
 
-        self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
+        for player in self._trackPlayers[:]:
+            self.destroyPlayer(player)
+        
+        
+        if recreate:
+            self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
 
     def virtualPlayer(self, id, name):
         # Setup a virtual player.
@@ -154,10 +201,13 @@ class FrameworkTestGame(FrameworkTest):
             self.player = player
             self.client.packet = player.packet
 
+        # Track it.
+        self._trackPlayers.append(player)
+        
         # Note, we do not send firstLoginPacket, or even packet for our spawning. Thats for a test to do.
         
         return player
-
+        
     def fixConnection(self):
         # Imagine we already sent the login packet. And all is well.
         self.client.gotFirst = True

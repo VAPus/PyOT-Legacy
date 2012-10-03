@@ -1787,7 +1787,7 @@ class Player(Creature):
     # Damage calculation:
     def damageToBlock(self, dmg, type):
         if dmg > 0:
-            return dmg
+            return int(dmg)
         
         if type == game.enum.MELEE or type == game.enum.PHYSICAL:
             # Armor and defence
@@ -2145,6 +2145,9 @@ class Player(Creature):
             creature.playerSay(self, text, channelType, channelId or reciever)
 
     def attackTarget(self, dmg = None):
+        if dmg:
+            assert dmg < 0, "Damage must be negative"
+            
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
                 self.target = None
@@ -2170,7 +2173,7 @@ class Player(Creature):
                             dmg = dmg * config.criticalHitMultiplier
                             self.criticalHit()
 
-                if dmg != 0:
+                if dmg:
                     """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
                             self.cancelTarget()
                             self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
@@ -2179,7 +2182,7 @@ class Player(Creature):
                         self.skillAttempt(skillType)"""
                     self.target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
-
+                
                 if self.target.isPlayer():
                     self.lastDmgPlayer = time.time()
                     # If target do not have a green skull.
@@ -2808,7 +2811,7 @@ class Player(Creature):
                 del self.trackSkulls[creature]
 
             skull = deathlist.getSkull(self.data["id"], creature.data["id"])
-            if skull:
+            if skull[0]:
                 self.trackSkulls[creature] = skull
                 return skull[0]
 
