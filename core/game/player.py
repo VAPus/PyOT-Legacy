@@ -2144,7 +2144,7 @@ class Player(Creature):
         for creature in game.engine.getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)
 
-    def attackTarget(self):
+    def attackTarget(self, dmg = None):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
                 self.target = None
@@ -2157,16 +2157,18 @@ class Player(Creature):
 
                 if not self.inventory[5]:
                     skillType = game.enum.SKILL_FIST
-                    dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    if dmg is None:
+                        dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
                 else:
                     skillType = self.inventory[5].weaponSkillType
-                    dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    if dmg is None:
+                        dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
 
-                    # Critical hit
-                    if config.criticalHitRate > random.randint(1, 100):
-                        dmg = dmg * config.criticalHitMultiplier
-                        self.criticalHit()
+                        # Critical hit
+                        if config.criticalHitRate > random.randint(1, 100):
+                            dmg = dmg * config.criticalHitMultiplier
+                            self.criticalHit()
 
                 if dmg != 0:
                     """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
