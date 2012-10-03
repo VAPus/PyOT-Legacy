@@ -180,6 +180,7 @@ def loader(timer):
     # Globalize certain things
     print "> > Globalize data...",
     import game.player, game.creature, game.npc, game.monster, game.spell, game.party
+    import game.conditions
     __builtin__.enum = game.enum
     
     for i in dir(game.enum):
@@ -215,9 +216,7 @@ def loader(timer):
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getTile = game.map.getTile
-    __builtin__.Condition = game.creature.Condition
-    __builtin__.Boost = game.creature.Boost
-    __builtin__.MultiCondition = game.creature.MultiCondition
+    
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
     __builtin__.Position = game.map.Position
@@ -247,8 +246,17 @@ def loader(timer):
     # Access
     __builtin__.access = game.scriptsystem.access
     
+    # Conditions
+    __builtin__.Condition = game.conditions.Condition
+    __builtin__.Boost = game.conditions.Boost
+    __builtin__.CountdownCondition = game.conditions.CountdownCondition
+    __builtin__.PercentCondition = game.conditions.PercentCondition
+    __builtin__.MultiCondition = game.conditions.MultiCondition
+    __builtin__.RepeatCondition = game.conditions.RepeatCondition
+
     # Pathfinder
     __builtin__.pathfinder = game.pathfinder
+
     
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
