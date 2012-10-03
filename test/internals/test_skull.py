@@ -12,11 +12,12 @@ class TestAttackSkulls(framework.FrameworkTestGame):
         
         # Give him a white skull.
         target.setSkull(SKULL_WHITE)
+
+        # Ignore blocking.
+        self.player.ignoreBlock = True
         
         # Damage him
-        # XXX: Avoid death?
-        # XXX: Avoid block?
-        self.player.attackTarget()
+        self.player.attackTarget(10)
         
         self.assertEqual(self.player.getSkull(target), SKULL_YELLOW)
         
@@ -29,9 +30,10 @@ class TestAttackSkulls(framework.FrameworkTestGame):
         self.player.target = target
         self.player.targetMode = 1
         
+        # Ignore blocking.
+        self.player.ignoreBlock = True
+        
         # Damage him
-        # XXX: Avoid death?
-        # XXX: Avoid block?
-        self.player.attackTarget()
+        self.player.attackTarget(10)
         
         self.assertEqual(self.player.getSkull(), SKULL_WHITE)
