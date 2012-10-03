@@ -109,6 +109,10 @@ class Creature(object):
         # Speaktypes
         self.defaultSpeakType = MSG_SPEAK_SAY
         self.defaultYellType = MSG_SPEAK_YELL
+        
+        # Combat
+        self.ignoreBlock = False
+        self.doBlock = True
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -615,7 +619,8 @@ class Creature(object):
         self.lastDamagers.appendleft(by)
 
         if not type == game.enum.DISTANCE:
-            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
+            if not by.ignoreBlock and by.doBlock:
+                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
 
         if type == game.enum.ICE:
@@ -648,7 +653,8 @@ class Creature(object):
 
         elif type == game.enum.DISTANCE:
             textColor, magicEffect = game.enum.COLOR_RED, None
-            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
+            if not by.ignoreBlock and by.doBlock:
+                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
             dmg = max(-self.data["health"], dmg) #wrap this one too?
         elif type == game.enum.LIFEDRAIN:
             textColor = game.enum.COLOR_TEAL
