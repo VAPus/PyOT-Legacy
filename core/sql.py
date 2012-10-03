@@ -1,6 +1,9 @@
 from twisted.enterprise import adbapi
 from twisted.internet.defer import inlineCallbacks
 import config
+import __builtin__
+
+__builtin__.PYOT_RUN_SQLOPERATIONS = True
 
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
@@ -55,6 +58,7 @@ conn = connect()
 
 @inlineCallbacks
 def runOperation(*argc, **kwargs):
-    yield conn.runOperation(*argc, **kwargs)
+    if PYOT_RUN_SQLOPERATIONS:
+        yield conn.runOperation(*argc, **kwargs)
     
     
