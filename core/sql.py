@@ -4,7 +4,21 @@ import config
 import __builtin__
 
 __builtin__.PYOT_RUN_SQLOPERATIONS = True
+# Our own methods.
+def runOperationLastId(self, *args, **kw):
+    if PYOT_RUN_SQLOPERATIONS:
+        return self.runInteraction(self._runOperationLastId, *args, **kw)
+    return random.randint(1, 1000)
 
+def _runOperationLastId(self, trans, *args, **kw):
+    trans.execute(*args, **kw)
+    return trans.lastrowid
+
+# Patch adbapi.ConnectionPool
+adbapi.ConnectionPool._runOperationLastId = _runOperationLastId
+adbapi.ConnectionPool.runOperationLastId = runOperationLastId
+
+# Connection function.
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
         if config.sqlSocket:
@@ -53,12 +67,17 @@ def connect(module = config.sqlModule):
 
     else:
         raise NameError("SQL module %s is invalid" % module)
+    
 # Setup the database pool when this module is imported for the first time
 conn = connect()
 
-@inlineCallbacks
 def runOperation(*argc, **kwargs):
-    if PYOT_RUN_SQLOPERATIONS:
-        yield conn.runOperation(*argc, **kwargs)
+    return conn.runOperation(*argc, **kwargs)
     
+def runQuery(*argc, **kwargs):
+    return conn.runQuery(*argc, **kwargs)
+    
+# A custom call we got. Not in the twisted standard.
+def runOperationLastId(*argc, **kwargs):
+    return conn.runOperationLastId(*argc, **kwargs)
     
