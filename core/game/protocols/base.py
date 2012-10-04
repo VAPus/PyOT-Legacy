@@ -172,7 +172,7 @@ class BasePacket(TibiaPacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown, player)
                 else:
                     if player.client.version >= 953:
                         self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
@@ -218,7 +218,7 @@ class BasePacket(TibiaPacket):
         else:
             self.uint16(0)
             
-    def creature(self, creature, known, removeKnown=0):
+    def creature(self, creature, known, removeKnown=0, player=None):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -239,10 +239,10 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.skull) # Skull
+        self.uint8(creature.getSkull(player)) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
-            self.uint8(creature.emblem) # Emblem
+            self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def worldlight(self, level, color):
@@ -311,7 +311,7 @@ class BasePacket(TibiaPacket):
             elif resend:
                 removeKnown = creature.clientId()
                 known = False
-            self.creature(creature, known, removeKnown)
+            self.creature(creature, known, removeKnown, player)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
@@ -551,6 +551,11 @@ class BasePacket(TibiaPacket):
         self.uint8(0xb6)
         self.uint16(delay * 1000)
         
+    def skull(self, creatureId, skull):
+        self.uint8(0x90)
+        self.uint32(creatureId)
+        self.uint8(skull)
+        
 class BaseProtocol(object):
     Packet = BasePacket
     def handle(self, player, packet):
@@ -558,8 +563,8 @@ class BaseProtocol(object):
 
         if packetType == 0x14: # Logout
             try:
-                player.prepareLogout()
-                player.client.transport.loseConnection()
+                if player.prepareLogout():
+                    player.client.transport.loseConnection()
             except:
                 pass # Sometimes the connection is already dead
             
@@ -880,7 +885,7 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_AMMO) and (toPosition.y-1) not in (game.enum.SLOT_PURSE, game.enum.SLOT_BACKPACK):
                     checkSlots = True
                     if (toPosition.y-1) not in slots:
                         return
@@ -934,7 +939,7 @@ class BaseProtocol(object):
                     stream = player.packet()
 
                     # Before we remove it, can it be placed there?
-                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
+                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_BACKPACK, game.enum.SLOT_AMMO, game.enum.SLOT_PURSE) and (toPosition.y-1) not in oldItem[1].slots():
                         player.notPossible()
                         return
                     elif oldItem[1].inTrade:

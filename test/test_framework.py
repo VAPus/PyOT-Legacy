@@ -37,7 +37,7 @@ class TestVirtualPlayer(framework.FrameworkTestGame):
         player = self.setupPlayer(randint(1, 0x7FFFFFFF), "__TEST2__")
         
         players = game.creature.getPlayers(player.position)
-        
+
         self.assertTrue(players)
         self.assertEqual(len(players), 2)
         self.assertTrue(self.player in players)

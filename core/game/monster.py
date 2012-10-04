@@ -125,7 +125,7 @@ class Monster(Creature):
         tile = map.getTile(self.position)
         lootMsg = []
         corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
-        if self.lastDamager != self.master:
+        if self.lastDamagers[0] != self.master:
             try:
                 maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                 drops = []
@@ -144,7 +144,7 @@ class Monster(Creature):
                     elif len(loot) == 4:
                         drops.append((loot[0], None, loot[4]))
                         
-                ret = scriptsystem.get("loot").runSync(self, self.lastDamager, loot=drops, maxSize=maxSize)
+                ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
@@ -192,7 +192,7 @@ class Monster(Creature):
             except:
                 pass
         
-        scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
+        scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
             return
@@ -217,17 +217,18 @@ class Monster(Creature):
         # Remove me. This also refresh the tile.
         self.remove()
 
-        if self.lastDamager and self.lastDamager.isPlayer() and self.lastDamager != self.master:
+        # TODO experience split, loot etc.
+        if self.lastDamagers[0] and self.lastDamagers[0].isPlayer() and self.lastDamagers[0] != self.master:
             if lootMsg:
-                self.lastDamager.message(_l(self.lastDamager, "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
+                self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
-                self.lastDamager.message(_l(self.lastDamager, "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
+                self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
                 
-            if self.lastDamager.data["stamina"] or config.noStaminaNoExp == False:
-                self.lastDamager.modifyExperience(self.base.experience *self.lastDamager.getExperienceRate())
+            if self.lastDamagers[0].data["stamina"] or config.noStaminaNoExp == False:
+                self.lastDamagers[0].modifyExperience(self.base.experience *self.lastDamagers[0].getExperienceRate())
 
-            if self.base.experience >= self.lastDamager.data["level"]:
-                self.lastDamager.soulGain()
+            if self.base.experience >= self.lastDamagers[0].data["level"]:
+                self.lastDamagers[0].soulGain()
         
         # Begin respawn
         if self.respawn:

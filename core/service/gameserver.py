@@ -146,7 +146,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 language = account[1]
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.account_id = %s AND p.`name` = %s", (account[0][0], characterName))
+            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (account[0][0], characterName, config.worldId))
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
@@ -181,27 +181,29 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
-                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":language}
-
+                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":language, "guild_id":cd[44], "guild_rank":cd[45], "balance":cd[46]}
+                yield deathlist.loadDeathList(cd['id'])
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]
-                if self.player.data["health"]:
-                    try:
-                        tile = getTile(self.player.position)
-                        tile.placeCreature(self.player)
-                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
-                        updateTile(self.player.position, tile)
+                if self.player.data["health"] <= 0:
+                    self.player.onSpawn()
+
+                try:
+                    tile = getTile(self.player.position)
+                    tile.placeCreature(self.player)
+                    # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                    updateTile(self.player.position, tile)
                         
-                    except AttributeError:
-                        import data.map.info
-                        self.player.position = Position(*data.map.info.towns[1][1])
-                        tile = getTile(self.player.position)
-                        tile.placeCreature(self.player)
-                        # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
-                        updateTile(self.player.position, tile)
+                except AttributeError:
+                    import data.map.info
+                    self.player.position = Position(*data.map.info.towns[1][1])
+                    tile = getTile(self.player.position)
+                    tile.placeCreature(self.player)
+                    # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
+                    updateTile(self.player.position, tile)
                         
-                    # Update last login
-                    sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
+                # Update last login
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()
@@ -255,6 +257,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if self.player:
             print "Lost connection on, ", self.player.position
             self.player.client = None
+            
+            if self.player.alive and self.player.hasCondition(CONDITION_INFIGHT):
+                logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
+                callLater(logoutBlock.length, self.onConnectionLost)
+                return
+            
             self.player.knownCreatures = set()
             self.player.knownBy = set()
             for x in game.player.allPlayers.values():

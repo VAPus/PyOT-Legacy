@@ -107,7 +107,7 @@ class Packet(base.BasePacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown, player)
                 else:
                     self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
@@ -123,7 +123,7 @@ class Packet(base.BasePacket):
             if count == 10:
                 return
             
-    def creature(self, creature, known, removeKnown=0):
+    def creature(self, creature, known, removeKnown=0, player=None):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -139,10 +139,10 @@ class Packet(base.BasePacket):
         self.uint8(0) # Light
         self.uint8(0) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.skull) # Skull
+        self.uint8(creature.getSkull(player)) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
-            self.uint8(creature.emblem) # Emblem
+            self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def status(self, player):
@@ -226,5 +226,12 @@ class Packet(base.BasePacket):
         else:"""
         self.uint8(self.enum(msgType))
         self.string(message)
+        
+    def skull(creatureId, skull):
+        if skull == SKULL_ORANGE: return
+        self.uint8(0x90)
+        self.uint32(creatureId)
+        self.uint8(skull)
+        
 class Protocol(base.BaseProtocol):
     Packet = Packet

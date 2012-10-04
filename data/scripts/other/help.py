@@ -300,8 +300,7 @@ def summon(creature, text):
     if mon.summonable:
         if creature.data["mana"] > mon.summonable:
             creature.modifyMana(-mon.summonable)
-            mon = game.monster.getMonster(text).spawn(creature.positionInDirection(creature.direction), spawnDelay=0)
-            mon.setMaster(creature)
+            creature.summon(text, creature.positionInDirection(creature.direction))
         else:
             creature.lmessage("You do not have enough mana.")
     return False

@@ -82,7 +82,7 @@ class Creature(object):
         self.cooldowns = {} # This is a int32, icon are the first 8, then group is the next 7
         self.regenerate = None
         self.alive = True
-        self.lastDamager = None
+        self.lastDamagers = deque(maxlen=config.trackHits)
         self.solid = not config.creatureWalkthrough
         self.shield = 0
         self.emblem = 0
@@ -92,7 +92,9 @@ class Creature(object):
         self.walkPattern = None
         self.activeSummons = []
         self.doHideHealth = False
-
+        self.trackSkulls = {}
+        self._checkSkulls = None
+        
         # Light stuff
         self.lightLevel = 0
         self.lightColor = 0
@@ -107,6 +109,10 @@ class Creature(object):
         # Speaktypes
         self.defaultSpeakType = MSG_SPEAK_SAY
         self.defaultYellType = MSG_SPEAK_YELL
+        
+        # Combat
+        self.ignoreBlock = False
+        self.doBlock = True
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -242,6 +248,12 @@ class Creature(object):
         """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
         return True
 
+    def clearMove(self, direction, failback):
+        self.cancelWalk(direction % 4)
+        self.walkPattern = []
+        if failback: reactor.callLater(0, failback)
+        return False
+        
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
             return
@@ -286,11 +298,7 @@ class Creature(object):
         
 
         if not newTile:
-
-            self.cancelWalk(direction)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
         
         # oldTile
         oldTile = getTile(oldPosition)
@@ -301,18 +309,12 @@ class Creature(object):
 
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:
-            self.cancelWalk(direction % 4)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
 
         try:
             oldStackpos = oldTile.findCreatureStackpos(self)
         except:
-            self.cancelWalk(direction % 4)
-            self.walkPattern = [] # If we got a queue of moves, we need to end it!
-            if failback: reactor.callLater(0, failback)
-            return False
+            return self.clearMove(direction, failback)
 
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -322,22 +324,21 @@ class Creature(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                self.cancelWalk(direction % 4)
-                self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                if failback: failback()
-                return False
+                return self.clearMove(direction, failback)
 
+        # PZ blocked?
+        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            self.lmessage("You are PZ blocked")
+            return self.clearMove(direction, failback)
+            
         for thing in newTile.things:
             if thing.solid:
                 if level and isinstance(thing, Creature):
                     continue
 
                 #self.turn(direction) # Fix me?
-                self.cancelWalk(direction % 4)
                 self.notPossible()
-                self.walkPattern = [] # If we got a queue of moves, we need to end it!
-                if failback: reactor.callLater(0, failback)
-                return False
+                return self.clearMove(direction, failback)
 
         _time = time.time()
         self.lastStep = _time
@@ -615,16 +616,11 @@ class Creature(object):
         return dmg
 
     def onHit(self, by, dmg, type, effect=None):
-        if not self.alive:
-            print "[DEBUG]: A dead creature seem to have been hit"
-            return
-
-        self.lastDamager = by
+        self.lastDamagers.appendleft(by)
 
         if not type == game.enum.DISTANCE:
-            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-            dmg = max(-self.data["health"], dmg) #wrap this one too?
-
+            if not by.ignoreBlock and by.doBlock:
+                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
 
         if type == game.enum.ICE:
             textColor = game.enum.COLOR_TEAL
@@ -656,8 +652,8 @@ class Creature(object):
 
         elif type == game.enum.DISTANCE:
             textColor, magicEffect = game.enum.COLOR_RED, None
-            dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
-            dmg = max(-self.data["health"], dmg) #wrap this one too?
+            if not by.ignoreBlock and by.doBlock:
+                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
         elif type == game.enum.LIFEDRAIN:
             textColor = game.enum.COLOR_TEAL
             magicEffect = game.enum.EFFECT_ICEATTACK
@@ -667,12 +663,16 @@ class Creature(object):
         if effect:
             magicEffect = effect
 
+        # pvpDamageFactor.
+        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
+            dmg = int(dmg * config.pvpDamageFactor)
+            
         dmg = [dmg]
         textColor = [textColor]
         magicEffect = [magicEffect]
         type = [type]
 
-        process = game.scriptsystem.get("hit").runSync(self, self.lastDamager, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 
@@ -681,10 +681,11 @@ class Creature(object):
         magicEffect = magicEffect[0]
         type = type[0]
 
-        if magicEffect:
-            self.magicEffect(magicEffect)
-
+        dmg = max(-self.data["health"], dmg)
+        
         if dmg:
+            if magicEffect:
+                self.magicEffect(magicEffect)
             tile = game.map.getTile(self.position)
             for item in tile.getItems():
                 if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
@@ -1175,20 +1176,78 @@ class Creature(object):
             stream.addTileCreature(self.position, game.map.getTile(self.position).findStackpos(self), self, player)
             stream.send(player.client)
 
-    # Skull
-    def setSkull(self, skull):
-        if self.skull == skull:
+    def getEmblem(self, craeture):
+        return self.emblem
+    
+    # Skulls
+    def vertifySkulls(self):
+        _time = time.time()
+        if config.resetSkulls:
+            """# TODO, something for red and black too.
+            if self.getSkull() == SKULL_WHITE and self.lastDmgPlayer < _time - config.whiteSkull:
+                print "nullify"
+                self.setSkull(SKULL_NONE)"""
+                
+        if _time > self.skullTimeout:
+            self.setSkull(SKULL_NONE)
+            
+        for creature in self.trackSkulls.copy():
+            if self.trackSkulls[creature][1] < _time:
+                stream = creature.packet()
+                stream.skull(self.cid, self.skull)
+                stream.send(creature.client)
+                del self.trackSkulls[creature]
+                
+            elif self.trackSkulls[creature][0] == SKULL_GREEN: # We have to resend SKULL_GREEN every ~5sec.
+                stream = creature.packet()
+                stream.skull(self.cid, SKULL_GREEN)
+                stream.send(creature.client)
+                
+        if self.trackSkulls:
+            self._checkSkulls = callLater(5, self.vertifySkulls)
+        elif self.skull:
+            self._checkSkulls = callLater(self.skullTimeout - _time, self.vertifySkulls)
+        else:
+            self._checkSkulls = None
+            
+    def setSkull(self, skull, creature=None, _time=0):
+        if self.getSkull(creature) == skull:
             return
 
-        self.skull = skull
-
-        for player in getPlayers(self.position):
-            stream = player.packet(0x90)
-            stream.uint32(self.cid)
-            stream.uint8(self.getSkull(player))
-            stream.send(player.client)
-
-    def getSkull(self, creature):
+        if not creature:
+            assert skull in (SKULL_NONE, SKULL_RED, SKULL_BLACK, SKULL_WHITE)
+            self.skull = skull
+            if skull == SKULL_WHITE:
+                if _time:
+                    self.skullTimeout = time.time() + _time
+                else:
+                    self.skullTimeout = time.time() + config.whiteSkull
+            elif skull == SKULL_RED:
+                self.skullTimeout = time.time() + config.redSkull
+            elif skull == SKULL_BLACK:
+                self.skullTimeout = time.time() + config.blackSkull
+            else:
+                self.skullTimeout = 0
+                
+            for player in getPlayers(self.position):
+                stream = player.packet()
+                stream.skull(self.cid, self.getSkull(player))
+                stream.send(player.client)
+                
+        else:
+            if creature in self.trackSkulls and self.trackSkulls[creature][0] == skull:
+                self.trackSkulls[creature][1] = time.time() + _time
+            else:
+                self.trackSkulls[creature] = [skull, time.time() + _time]
+            
+            stream = creature.packet()
+            stream.skull(self.cid, skull)
+            stream.send(creature.client)
+            
+        if not self._checkSkulls:
+            self._checkSkulls = callLater(0, self.vertifySkulls)
+            
+    def getSkull(self, creature=None):
         return self.skull # TODO
 
     def square(self, creature, color=27):
@@ -1447,6 +1506,20 @@ class Creature(object):
             with spectator.packet() as stream:
                 stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
                 
+    ###################
+    ### Summon & convince stuff
+    ###################
+    
+    def summon(self, monsterName, position):
+        if self.getSkull() == SKULL_BLACK and config.blackSkullDisableSummons:
+            return None
+            
+        mon = game.monster.getMonster(monsterName).spawn(position, spawnDelay=0)
+        mon.setMaster(self)
+        mon.setRespawn(False)
+        
+        return mon
+                
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
@@ -1473,6 +1546,8 @@ class Condition(object):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana
+            else:
+                self.effect = self.effectNone
 
     def start(self, creature):
         self.creature = creature
@@ -1526,6 +1601,9 @@ class Condition(object):
         else:
             self.creature.modifyMana(gainmana)
 
+    def effectNone(self):
+        pass
+    
     def tick(self):
         if not self.creature:
             return

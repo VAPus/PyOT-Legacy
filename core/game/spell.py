@@ -425,6 +425,9 @@ class Spell(object):
                     creature.exhausted()
 
                     return False
+                    
+                if creature.getSkull() == SKULL_BLACK and config.blackSkullDisableAreaSpells and self.targetType == TARGET_AREA:
+                    return creature.cancelMessage(_l(creature, "You have a black skull and can't cast area spells."))
                 
                 if self.learned and not creature.canUseSpell(self.name):
                     return creature.cancelMessage(_l(creature, "You need to learn this spell first."))
@@ -570,6 +573,9 @@ class Rune(Spell):
                     creature.exhausted()
                     return False
 
+                if creature.getSkull() == SKULL_BLACK and config.blackSkullDisableAreaRunes and self.targetType == TARGET_AREA:
+                    return creature.cancelMessage(_l(creature, "You have a black skull and can't cast area spells."))
+                
                 if self.learned and not creature.canUseSpell(self.name):
                     return creature.cancelMessage(_l(creature, "You need to learn this spell first."))
                     

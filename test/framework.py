@@ -9,6 +9,8 @@ sys.path.insert(1, 'core')
 sys.path.insert(2, '../core')
 import config
 import packet
+import random
+import string
 from twisted.trial import unittest
 from twisted.test import proto_helpers
 from service.gameserver import GameFactory
@@ -20,8 +22,15 @@ __builtin__.IS_IN_TEST = True
 # Some config.
 SERVER = None
 TEST_PROTOCOL = 963
-TEST_PLAYER_ID = 0
+TEST_PLAYER_ID = random.randint(10, 0x7FFFFFFF)
 TEST_PLAYER_NAME = "__TEST__"
+
+__builtin__.PYOT_RUN_SQLOPERATIONS = False
+# Async sleeper.
+def asyncSleep(seconds):
+    d = defer.Deferred()
+    reactor.callLater(seconds, d.callback, seconds)
+    return d
 
 class Client(proto_helpers.StringTransport):
     def sendPacket(self, format, *argc, **kwargs):
@@ -74,17 +83,40 @@ class Client(proto_helpers.StringTransport):
         
 class FrameworkTest(unittest.TestCase):
     def setUp(self):
+        self._overrideConfig = {}
         d = self.initializeEngine()
         self.initializeClient()
         self.addCleanup(self.clearDelayedCalls)
-        return d
+        self.addCleanup(self.clear)
+        self.addCleanup(self.restoreConfig)
         
+        self.init()
+        
+        return d
+    
+    def init(self):
+        pass
+    
     def initializeClient(self):
         self.tr = Client()
         self.client = self.server.buildProtocol(self.tr)
         self.tr.client = self.client
         self.client.makeConnection(self.tr)
     
+    def clear(self):
+        # Clear all players.
+        for player in game.player.allPlayers.values():
+            self.destroyPlayer(player)
+            
+    def overrideConfig(self, name, value):
+        self._overrideConfig[name] = getattr(config, name)
+        
+        setattr(config, name, value)
+        
+    def restoreConfig(self):
+        for key in self._overrideConfig:
+            setattr(config, key, self._overrideConfig[key])
+            
     def clearDelayedCalls(self):
         for call in reactor.getDelayedCalls():
             try:
@@ -103,34 +135,56 @@ class FrameworkTest(unittest.TestCase):
             # Load the core stuff!
             # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
             self.server = SERVER
-            return game.engine.loader(startTime)
+            d = game.engine.loader(startTime)
+            # HACK!
+            # Kinda necessary if any scripts use load events from say SQL.
+            d.addCallback(lambda x: asyncSleep(2))
+            return d
         self.server = SERVER
-
+        
+    def destroyPlayer(self, player):
+        # Despawn.
+        player.despawn()
+        # Force remove.
+        del game.player.allPlayers[player.name()]
+        del game.creature.allCreatures[player.cid]
+        
+        try:
+            self._trackPlayers.remove(player)
+        except:
+            pass
+        
 class FrameworkTestGame(FrameworkTest):
     def setUp(self):
         self.player = None
+        self._trackPlayers = []
         d = defer.maybeDeferred(FrameworkTest.setUp, self) 
         d.addCallback(lambda x: self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True))
         d.addCallback(lambda x: self.fixConnection)        
 
         return d
 
-    def clear(self):
+    def clear(self, recreate = False):
         if self.player: # Tests might clear us already. Etc to test clearing!
-            # Despawn.
-            self.player.despawn()
-            # Force remove.
-            del game.player.allPlayers[self.player.name()]
-            del game.creature.allCreatures[self.player.cid]
+            self.destroyPlayer(self.player)
 
-        self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
+        for player in self._trackPlayers[:]:
+            self.destroyPlayer(player)
+        
+        # Clear deathlists.
+        deathlist.byKiller = {}
+        deathlist.byVictim = {}
+        deathlist.loadedDeathIds = set()
+        
+        if recreate:
+            self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
 
     def virtualPlayer(self, id, name):
         # Setup a virtual player.
         # No network abilities, or spawning or such.
         
         # Data must be valid, just random.
-        data = {"id": id, "name": name, "world_id": 0, "group_id": 6, "account_id": 0, "vocation": 6, "health": 100, "mana": 100, "soul": 100, "manaspent": 1000, "experience": 5000, "posx": 1000, "posy": 1000, "posz": 7, "instanceId": None, "sex": 0, "looktype": 100, "lookhead": 100, "lookbody": 100, "looklegs": 100, "lookfeet": 100, "lookaddons": 0, "lookmount": 100, "town_id": 1, "skull": 0, "stamina": 0, "storage": "", "inventory": "", "depot": "", "conditions": "", "skills": {SKILL_FIST: 10, SKILL_SWORD: 10, SKILL_CLUB: 10, SKILL_AXE: 10, SKILL_DISTANCE: 10, SKILL_SHIELD: 10, SKILL_FISH: 10}, "skill_tries": {SKILL_FIST: 0, SKILL_SWORD: 0, SKILL_CLUB: 0, SKILL_AXE: 0, SKILL_DISTANCE: 0, SKILL_SHIELD: 0, SKILL_FISH: 0}, "language":"en_EN", "guild_id":0, "guild_rank":0, "balance":0}
+        data = {"id": id, "name": name, "world_id": 0, "group_id": 6, "account_id": 0, "vocation": 6, "health": 100, "mana": 100, "soul": 100, "manaspent": 10000, "experience": 5000, "posx": 1000, "posy": 1000, "posz": 7, "instanceId": None, "sex": 0, "looktype": 100, "lookhead": 100, "lookbody": 100, "looklegs": 100, "lookfeet": 100, "lookaddons": 0, "lookmount": 100, "town_id": 1, "skull": 0, "stamina": 0, "storage": "", "inventory": "", "depot": "", "conditions": "", "skills": {SKILL_FIST: 10, SKILL_SWORD: 10, SKILL_CLUB: 10, SKILL_AXE: 10, SKILL_DISTANCE: 10, SKILL_SHIELD: 10, SKILL_FISH: 10}, "skill_tries": {SKILL_FIST: 0, SKILL_SWORD: 0, SKILL_CLUB: 0, SKILL_AXE: 0, SKILL_DISTANCE: 0, SKILL_SHIELD: 0, SKILL_FISH: 0}, "language":"en_EN", "guild_id":0, "guild_rank":0, "balance":0}
 
         # Add player as if he was online.
         player = game.player.Player(self.client, data)
@@ -141,7 +195,12 @@ class FrameworkTestGame(FrameworkTest):
         
         return player
         
-    def setupPlayer(self, id, name, clientPlayer = False):
+    def setupPlayer(self, id=None, name=None, clientPlayer = False):
+        if id is None:
+            id = random.randint(1, 0x7FFFFFFF)
+        if name is None:
+            name = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(10))
+
         # A virtual player with network abilities and spawning.
         player = self.virtualPlayer(id, name)
         
@@ -154,10 +213,13 @@ class FrameworkTestGame(FrameworkTest):
             self.player = player
             self.client.packet = player.packet
 
+        # Track it.
+        self._trackPlayers.append(player)
+        
         # Note, we do not send firstLoginPacket, or even packet for our spawning. Thats for a test to do.
         
         return player
-
+        
     def fixConnection(self):
         # Imagine we already sent the login packet. And all is well.
         self.client.gotFirst = True

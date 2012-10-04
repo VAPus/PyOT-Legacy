@@ -74,9 +74,7 @@ def defaultBrainFeaturePriority(monster):
                     for summon in monster.base.summons:
                         if random.randint(0, 99) < summon[1]:
                             try:
-                                creature = game.monster.getMonster(summon[0]).spawn(monster.positionInDirection(random.randint(0,3)), spawnDelay=0)
-                                creature.setMaster(monster)
-                                creature.setRespawn(False)
+                                creature = monster.summon(summon[0], monster.positionInDirection(random.randint(0,3)))
                                 monster.activeSummons.append(creature)
                             except:
                                 print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])

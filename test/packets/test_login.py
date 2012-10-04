@@ -6,5 +6,6 @@ class TestLogin(framework.FrameworkTest):
         d = self.client.onFirstPacket(packet)
         def _(x):
             self.assertEqual(self.tr._packet.uint8(), 0x0A)
+            
         d.addCallback(_)
         return d
