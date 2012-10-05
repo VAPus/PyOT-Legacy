@@ -152,7 +152,7 @@ class Packet(base.BasePacket):
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.getSkull(player)) # Skull
-        self.uint8(creature.shield) # Party/Shield
+        self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
             self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough

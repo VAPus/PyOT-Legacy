@@ -360,6 +360,11 @@ class Player(Creature):
                 with self.packet() as stream:
                     stream.icons(send)
 
+    def refreshShield(self):
+        for player in getPlayers(self.position):
+            with player.packet() as stream:
+                stream.shield(self.cid, self.getShield(player))
+                
     def setIcon(self, icon):
         if not self.extraIcons & icon:
             self.extraIcons += icon
@@ -2623,6 +2628,12 @@ class Player(Creature):
     def leaveParty(self):
         if self.partyObj:
             self.partyObj.removeMember(self)
+            
+    def setParty(self, partyObj):
+        if self.partyObj:
+            raise Exception("You got to leave the party before you can join another one")
+        
+        self.partyObj = partyObj
     # Trade
     def tradeItemRequest(self, between, items, confirm=False):
         if confirm:
@@ -2841,3 +2852,18 @@ class Player(Creature):
                 self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
                 
         return self.skull
+    
+    # Shield
+    def setShield(self, shield):
+        raise Exception("NOT AVAILABLE ON PLAYERS.")
+
+    def getShield(self, creature):
+        myParty = self.party()
+        reqParty = creature.party()
+        
+        if myParty:
+            return myParty.getShield(self, creature)
+        elif reqParty:
+            return reqParty.getShield(self, creature)
+        else:
+            return SHIELD_NONE

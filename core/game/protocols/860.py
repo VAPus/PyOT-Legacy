@@ -137,11 +137,11 @@ class Packet(base.BasePacket):
         self.uint8(int(round((float(creature.data["health"]) / creature.data["healthmax"]) * 100))) # Health %
         self.uint8(creature.direction) # Direction
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
-        self.uint8(0) # Light
-        self.uint8(0) # Light
+        self.uint8(creature.lightLevel) # Light
+        self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.getSkull(player)) # Skull
-        self.uint8(creature.shield) # Party/Shield
+        self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
             self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
