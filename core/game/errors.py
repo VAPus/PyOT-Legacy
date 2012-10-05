@@ -25,3 +25,8 @@ class RuneDoesNotExist(SpellDoesNotExist): pass
 # Position
 class PositionOutOfRange(BaseError): pass
 class PositionNegative(BaseError): pass
+
+# Messages
+class MsgNotPossible(BaseError): pass
+class MsgCancel(BaseError): pass
+class MsgUnmarkedPlayer(BaseError): pass

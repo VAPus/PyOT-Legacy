@@ -1222,7 +1222,7 @@ class BaseProtocol(object):
             player.outfit[0] = packet.uint16()
             
         player.addon = packet.uint8()
-        if config.allowMounts:
+        if config.allowMounts and player.client.version >= 870:
             player.mount = packet.uint16()
         player.refreshOutfit()
     

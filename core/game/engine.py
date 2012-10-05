@@ -192,6 +192,10 @@ def loader(timer):
     for i in dir(game.enum):
         if not "__" in i:
             setattr(__builtin__, i, getattr(game.enum, i))
+
+    for i in dir(game.errors):
+        if not "__" in i:
+            setattr(__builtin__, i, getattr(game.errors, i))
             
     for i in globalize:
         setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))

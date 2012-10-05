@@ -113,6 +113,9 @@ class Creature(object):
         # Combat
         self.ignoreBlock = False
         self.doBlock = True
+        
+        # Messages
+        self.raiseMessages = False
 
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
@@ -202,7 +205,8 @@ class Creature(object):
     def notPossible(self):
         # Needs to be overrided in player
         # Here we can inform a script if a illigal event
-        # Right now, don't care
+        if self.raiseMessages:
+            raise MsgNotPossible
         return
 
     def refreshStatus(self, streamX=None): pass
@@ -1519,6 +1523,9 @@ class Creature(object):
         mon.setRespawn(False)
         
         return mon
+        
+    def toggleRaiseMessages(self):
+        self.raiseMessages = not self.raiseMessages
                 
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):

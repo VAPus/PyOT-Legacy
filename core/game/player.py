@@ -1017,20 +1017,21 @@ class Player(Creature):
             stream.string("Current outfit")
             stream.uint8(self.addon)
 
-        if config.allowMounts:
-            mounts = []
-            for mount in game.resource.mounts:
-                if len(mounts) == stream.maxMounts:
-                    break
-                if mount and self.canUseMount(mount.name):
-                    mounts.append(mount)
+        if self.client.version >= 870:
+            if config.allowMounts:
+                mounts = []
+                for mount in game.resource.mounts:
+                    if len(mounts) == stream.maxMounts:
+                        break
+                    if mount and self.canUseMount(mount.name):
+                        mounts.append(mount)
 
-            stream.uint8(len(mounts))
-            for mount in mounts:
-                stream.uint16(mount.cid)
-                stream.string(mount.name)
-        else:
-            stream.uint8(0)
+                stream.uint8(len(mounts))
+                for mount in mounts:
+                    stream.uint16(mount.cid)
+                    stream.string(mount.name)
+            else:
+                stream.uint8(0)
 
         stream.send(self.client)
 
@@ -1094,9 +1095,13 @@ class Player(Creature):
         stream.send(self.client)
 
     def cancelMessage(self, message):
+        if self.raiseMessages:
+            raise MsgCancel(message)
         self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
+        if self.raiseMessages:
+            raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
 
     def notPickupable(self):
@@ -1125,6 +1130,8 @@ class Player(Creature):
         self.cancelMessage(_l(self, "You can only use it on creatures."))
 
     def unmarkedPlayer(self):
+        if self.raiseMessages:
+            raise MsgUnmarkedPlayer
         self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
         
     def updateContainer(self, container, parent=False, update=True):
@@ -2181,6 +2188,9 @@ class Player(Creature):
                             dmg = dmg * config.criticalHitMultiplier
                             self.criticalHit()
 
+                targetIsPlayer = self.target.isPlayer() # onHit might remove this.
+                target = self.target
+                
                 if dmg:
                     """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
                             self.cancelTarget()
@@ -2188,20 +2198,20 @@ class Player(Creature):
                     else:
                         self.target.onHit(self, dmg, game.enum.MELEE)
                         self.skillAttempt(skillType)"""
-                    self.target.onHit(self, dmg, game.enum.MELEE)
+                    target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
                 
-                if self.target.isPlayer():
+                if targetIsPlayer:
                     self.lastDmgPlayer = time.time()
                     # If target do not have a green skull.
-                    if self.target.getSkull(self) != SKULL_GREEN:
+                    if target.getSkull(self) != SKULL_GREEN:
                         # If he is unmarked.
-                        if config.whiteSkull and self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull(self) not in SKULL_JUSTIFIED:
+                        if config.whiteSkull and target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and target.getSkull(self) not in SKULL_JUSTIFIED:
                             self.setSkull(SKULL_WHITE)
-                        elif config.yellowSkull and (self.target.getSkull(self) == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
+                        elif config.yellowSkull and (target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
                             # Allow him to fight back.
-                            if self.getSkull(self.target) == SKULL_NONE:
-                                self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
+                            if self.getSkull(target) == SKULL_NONE:
+                                self.setSkull(SKULL_YELLOW, target, config.loginBlock)
                         if config.loginBlock:
                             # PZ block.
                             self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
