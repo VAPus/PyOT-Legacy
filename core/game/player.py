@@ -1017,20 +1017,21 @@ class Player(Creature):
             stream.string("Current outfit")
             stream.uint8(self.addon)
 
-        if config.allowMounts:
-            mounts = []
-            for mount in game.resource.mounts:
-                if len(mounts) == stream.maxMounts:
-                    break
-                if mount and self.canUseMount(mount.name):
-                    mounts.append(mount)
+        if self.client.version >= 870:
+            if config.allowMounts:
+                mounts = []
+                for mount in game.resource.mounts:
+                    if len(mounts) == stream.maxMounts:
+                        break
+                    if mount and self.canUseMount(mount.name):
+                        mounts.append(mount)
 
-            stream.uint8(len(mounts))
-            for mount in mounts:
-                stream.uint16(mount.cid)
-                stream.string(mount.name)
-        else:
-            stream.uint8(0)
+                stream.uint8(len(mounts))
+                for mount in mounts:
+                    stream.uint16(mount.cid)
+                    stream.string(mount.name)
+            else:
+                stream.uint8(0)
 
         stream.send(self.client)
 
