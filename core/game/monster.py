@@ -125,6 +125,16 @@ class Monster(Creature):
         tile = map.getTile(self.position)
         lootMsg = []
         corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
+        
+        # Set owner.
+        corpse.owners = [self.lastDamagers[0]]
+        
+        def _clear_private_loot():
+            del corpse.owners
+            
+        # Callback to remove owner after config.privateLootFor seconds
+        callLater(config.privateLootFor, _clear_private_loot)
+        
         if self.lastDamagers[0] != self.master:
             try:
                 maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]

@@ -131,6 +131,7 @@ lootMaxRate = 1
 lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real tibia
 stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
 stockLootBagId = 1987 # Id of the bags to append
+privateLootFor = 10 # How long only you and your party can access the loot.
 
 # Experince
 experienceRate = 1
