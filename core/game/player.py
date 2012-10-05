@@ -2187,6 +2187,9 @@ class Player(Creature):
                             dmg = dmg * config.criticalHitMultiplier
                             self.criticalHit()
 
+                targetIsPlayer = self.target.isPlayer() # onHit might remove this.
+                target = self.target
+                
                 if dmg:
                     """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
                             self.cancelTarget()
@@ -2194,20 +2197,20 @@ class Player(Creature):
                     else:
                         self.target.onHit(self, dmg, game.enum.MELEE)
                         self.skillAttempt(skillType)"""
-                    self.target.onHit(self, dmg, game.enum.MELEE)
+                    target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
                 
-                if self.target.isPlayer():
+                if targetIsPlayer:
                     self.lastDmgPlayer = time.time()
                     # If target do not have a green skull.
-                    if self.target.getSkull(self) != SKULL_GREEN:
+                    if target.getSkull(self) != SKULL_GREEN:
                         # If he is unmarked.
-                        if config.whiteSkull and self.target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and self.target.getSkull(self) not in SKULL_JUSTIFIED:
+                        if config.whiteSkull and target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and target.getSkull(self) not in SKULL_JUSTIFIED:
                             self.setSkull(SKULL_WHITE)
-                        elif config.yellowSkull and (self.target.getSkull(self) == SKULL_ORANGE or self.target.getSkull() in SKULL_JUSTIFIED):
+                        elif config.yellowSkull and (.target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
                             # Allow him to fight back.
-                            if self.getSkull(self.target) == SKULL_NONE:
-                                self.setSkull(SKULL_YELLOW, self.target, config.loginBlock)
+                            if self.getSkull(target) == SKULL_NONE:
+                                self.setSkull(SKULL_YELLOW, target, config.loginBlock)
                         if config.loginBlock:
                             # PZ block.
                             self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
