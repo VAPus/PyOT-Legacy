@@ -2208,7 +2208,7 @@ class Player(Creature):
                         # If he is unmarked.
                         if config.whiteSkull and target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and target.getSkull(self) not in SKULL_JUSTIFIED:
                             self.setSkull(SKULL_WHITE)
-                        elif config.yellowSkull and (.target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
+                        elif config.yellowSkull and (target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
                             # Allow him to fight back.
                             if self.getSkull(target) == SKULL_NONE:
                                 self.setSkull(SKULL_YELLOW, target, config.loginBlock)
