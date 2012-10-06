@@ -371,7 +371,13 @@ The events are:
 .. function:: reload()
 
     Called when the server reloads.
+    
+    :returns: False will prevent reloading.
 
+.. function:: postReload()
+
+    Called when the server is done reloading. Useful to restore stuff in case you need them.
+    
 .. function:: startup()
 
     Called when the server starts up. Useful to invoke core hooks or initialize your own scripts.

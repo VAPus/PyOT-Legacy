@@ -15,6 +15,7 @@ import game.resource
 import game.item
 import game.party
 from struct import pack, unpack
+import traceback
 
 # Probably not a good place, but
 from game.creature import Creature
@@ -172,7 +173,7 @@ class BasePacket(TibiaPacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown, player)
                 else:
                     if player.client.version >= 953:
                         self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
@@ -218,7 +219,7 @@ class BasePacket(TibiaPacket):
         else:
             self.uint16(0)
             
-    def creature(self, creature, known, removeKnown=0):
+    def creature(self, creature, known, removeKnown=0, player=None):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -239,10 +240,11 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.skull) # Skull
-        self.uint8(creature.shield) # Party/Shield
+        self.uint8(creature.getSkull(player)) # Skull
+        print creature, creature.getShield(player)
+        self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
-            self.uint8(creature.emblem) # Emblem
+            self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def worldlight(self, level, color):
@@ -311,7 +313,7 @@ class BasePacket(TibiaPacket):
             elif resend:
                 removeKnown = creature.clientId()
                 known = False
-            self.creature(creature, known, removeKnown)
+            self.creature(creature, known, removeKnown, player)
 
     def moveUpPlayer(self, player, oldPos):
         self.uint8(0xBE)
@@ -551,15 +553,35 @@ class BasePacket(TibiaPacket):
         self.uint8(0xb6)
         self.uint16(delay * 1000)
         
+    def skull(self, creatureId, skull):
+        self.uint8(0x90)
+        self.uint32(creatureId)
+        self.uint8(skull)
+        
+    def shield(self, creatureId, shield):
+        self.uint8(0x91)
+        self.uint32(creatureId)
+        self.uint8(shield)
+        
 class BaseProtocol(object):
     Packet = BasePacket
+    
     def handle(self, player, packet):
+        try:
+            self._handle(player, packet)
+        except:
+            print "\n\n[UNHANDLED CORE EXCEPTION!]"
+            traceback.print_exc()
+            print "==============================\n"
+
+            
+    def _handle(self, player, packet):
         packetType = packet.uint8()
 
         if packetType == 0x14: # Logout
             try:
-                player.prepareLogout()
-                player.client.transport.loseConnection()
+                if player.prepareLogout():
+                    player.client.transport.loseConnection()
             except:
                 pass # Sometimes the connection is already dead
             
@@ -685,6 +707,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xA7: # Leave party
             player.leaveParty()
+            
+        elif packetType == 0xA8: # Share experience
+            self.handleShareExperience(player, packet)
             
         elif packetType == 0xC9:
             self.handleUpdateTile(player,packet)
@@ -880,7 +905,7 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_DEPOT, game.enum.SLOT_AMMO) and (toPosition.y-1) != game.enum.SLOT_BACKPACK:
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_AMMO) and (toPosition.y-1) not in (game.enum.SLOT_PURSE, game.enum.SLOT_BACKPACK):
                     checkSlots = True
                     if (toPosition.y-1) not in slots:
                         return
@@ -934,7 +959,7 @@ class BaseProtocol(object):
                     stream = player.packet()
 
                     # Before we remove it, can it be placed there?
-                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) != game.enum.SLOT_BACKPACK and (toPosition.y-1) not in oldItem[1].slots():
+                    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_BACKPACK, game.enum.SLOT_AMMO, game.enum.SLOT_PURSE) and (toPosition.y-1) not in oldItem[1].slots():
                         player.notPossible()
                         return
                     elif oldItem[1].inTrade:
@@ -1217,7 +1242,7 @@ class BaseProtocol(object):
             player.outfit[0] = packet.uint16()
             
         player.addon = packet.uint8()
-        if config.allowMounts:
+        if config.allowMounts and player.client.version >= 870:
             player.mount = packet.uint16()
         player.refreshOutfit()
     
@@ -1657,21 +1682,24 @@ class BaseProtocol(object):
         if not party or party.leader != creature:
             return
         
-        party.addMember(creature)
+        party.addMember(player)
         
     def handleRevokePartyInvite(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        myParty = player.party()
         
-        if creature.party() == player.party():
-            player.message("%s is already a member of the party." % creature.name())
+        if not myParty:
+            player.message("You don't have a party!")
             return
-            
-        # Grab the party
-        party = player.party()
-        if not party or party.leader != player:
+        elif player is not myParty.leader:
+            player.message("You are not the party leader!")
             return
+        elif creature.party() != myParty:
+            player.message("%s is not a member/invite of the party." % creature.name())
+            return
+
         
-        party.removeInvite(creature)        
+        myParty.removeInvite(creature)        
         
     def handlePassPartyLeadership(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
@@ -1686,6 +1714,14 @@ class BaseProtocol(object):
             return
         
         party.changeLeader(creature)
+        
+    def handleShareExperience(self, player, packet):
+        # Grab the party
+        party = player.party()
+        if not party or party.leader != player:
+            return
+        
+        party.toggleShareExperience()
         
     @inlineCallbacks
     def handleThanks(self, player, packet):

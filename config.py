@@ -1,4 +1,4 @@
-# Note: Don't do imports here
+from math import log, floor
 
 # Network:
 loginInterface = '' # Leave blank to accept connections on any hostname
@@ -36,6 +36,9 @@ sqlSocket = None
 
 # LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
 letGameServerRunTheLoginServer = True
+
+# This servers worldId
+worldId = 0
 
 # Versions:
 versionMin = 860
@@ -75,16 +78,68 @@ playerCanChangeColor = True
 playerCanWearAllOutfits = False
 playerCanUseAllMounts = False
 
+# PvP
+trackHits = 40 # How many hits are we suppose to track? This is important for both assists and experience splitting.
+globalProtectionZone = False # True = optional PvP. Scripts might change a players attackability. This set a global protection zone and override protectedZones = False.
+skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
+protectedZones = True # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.
+protectionLevel = 200 #0 noone is protected, X > 0 protection until that level
+
+loginBlock = 60 # In seconds, 0 to disable.
+resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
+pvpDamageFactor = 0.5 # 50%
+
+deathListCutoff = 45 # In days. This is the maximum amount of time we care to load in death entries from.
+
+whiteSkull = 15 * 60 # In seconds, 0 to disable
+
+redSkull = 60 * 60 * 24 * 30 # Red skull, in seconds. 0 to disable
+redSkullUnmarked = {24:3, 7*24:5, 30*24:10} # {periode in hours: KILLS}
+redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates. This also count for blackSkull.
+
+blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
+blackSkullUnmarked = {24:6, 7*24:10, 30*24:20} # {periode in hours: KILLS}
+blackSkullDisableAreaSpells = True
+blackSkullDisableAreaRunes = True
+blackSkullDisableSummons = True
+blackSkullFullDamage = True # Receive 100% instead of pvpDamageFactor.
+blackSkullRecoverHealth = 40 # How much health to get when you respawn, -1 for full.
+blackSkullRecoverMana = 0 # How much mana to get when you respawn. -1 for full.
+yellowSkull = True # Enable/Disable this. Disaled = all kills and unjust
+orangeSkull = True
+orangeSkullLength = 3600 * 7 * 24 # In seconds.
+
+# War system.
+# See data/scripts/other/war_system.py
+enableWarSystem = True
+warFee = 1000 # in gold.
+minWarDuratiom = 7 * 3600 * 24  # In seconds
+maxWarDuration = 180 * 3600 * 24 # In seconds
+maxWarLosePenalty = 20000000000 # 2 billion, in gold.
+minWarLosePenalty = 1000 # in gold.
+maxWarFrags = 1000 # In kills.
+minWarFrags = 10
+greenSkull = True
+
+# Lose rate
+loseCutoff = 25 # Set to 0 to disable loose entierly.
+loseConstant = 10 # For players with level < loseCutoff. Otherwise we use loseFormula divided by experience.
+
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1
 lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real tibia
 stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
 stockLootBagId = 1987 # Id of the bags to append
+privateLootFor = 10 # How long only you and your party can access the loot.
 
 # Experince
 experienceRate = 1
 experienceMessageColor = 215 # Between 1 or 255, else debug
+partyExperienceFactor = 1.05 # 5% extra.
+partyExperienceDistance = 30 # In fields.
+partyExperienceLevelFactor = 2/3.0
+partyExperienceContributeTime = 120
 
 # Map cleaning & unloading
 # Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc
@@ -164,7 +219,7 @@ defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
 
 # Vocation stuff (often occure on custom vocations, or pre-level 8 promoted characters.).
 minHealth = 150
-minMana = 100
+minMana = 0
 
 # Language
 # Default (fallback) language.
@@ -222,12 +277,15 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+loseFormula = lambda x: (x+50)*(50*((x**2) - (5*x) + 8)) # x = level
+
+# PvP formulas
+pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05))
 
 # pathfinder cache?
 pathfinderCache = True
 
 # This formula is too complex to put into a lambda
-from math import log
 def levelFromExpFormula(y): # y = experience
     l1 = ((3 ** 0.5)*(((243*(y**2))-(48600*y)+3680000) ** 0.5)+(27*y)-2700) ** (1.0/3)
     l2 = 30**(2.0/3)
@@ -238,7 +296,12 @@ def levelFromExpFormula(y): # y = experience
 magicLevelFormula = lambda a,b: 1600*(b**a)
 totalMagicLevelFormula = lambda a,b:(1600*((b**a)-1))/(b-1) # a = level, b = vocation constant
 magicLevelFromManaFormula = lambda n,b: int(round((log((1.0+n+(1600.0/b)) / 1600.0) + log(b)) / (log(b)), 8)) # n = mana, b = vocation constant
+
+# Skills
 skillFormula = lambda a,b: 50*(b**(a-10))
+totalSkillFormula = lambda a,b: 500*(b**(a-10))-500 # a = current level, b = skill constant
+skillTriesToLevel = lambda b, tries: (log((tries/500)+1)/log(b))+10 # b = skill constant, tries = skill tries.
 magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
 fishingFormula = lambda x: 20*(1.1)**(x-10)
+
 meleeDamage = lambda attack,skill,level,factor: (0.085*factor*attack*skill)+(level/5)

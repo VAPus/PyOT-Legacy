@@ -42,6 +42,9 @@ class Packet(base.BasePacket):
     protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x15    
     protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x16
     
+    #Temporary
+    protocolEnums["_MSG_HEALED"] = 0x11
+    
     # Alias
     protocolEnums["_MSG_DAMAGE_RECEIVED"] = protocolEnums["_MSG_EVENT_DEFAULT"]
     protocolEnums["_MSG_DAMAGE_DEALT"] = protocolEnums["_MSG_EVENT_DEFAULT"]
@@ -115,7 +118,7 @@ class Packet(base.BasePacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                    self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown, player)
                 else:
                     self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
@@ -131,7 +134,7 @@ class Packet(base.BasePacket):
             if count == 10:
                 return
         
-    def creature(self, creature, known, removeKnown=0):
+    def creature(self, creature, known, removeKnown=0, player=None):
         if known:
             self.uint16(0x62)
             self.uint32(creature.clientId())
@@ -148,10 +151,10 @@ class Packet(base.BasePacket):
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
-        self.uint8(creature.skull) # Skull
-        self.uint8(creature.shield) # Party/Shield
+        self.uint8(creature.getSkull(player)) # Skull
+        self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
-            self.uint8(creature.emblem) # Emblem
+            self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def skills(self, player):

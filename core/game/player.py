@@ -51,6 +51,8 @@ class Player(Creature):
         # OT milisec to pyot seconds
         self.data["stamina"] = self.data["stamina"] / 1000
 
+        self.lastDmgPlayer = 0
+        
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
@@ -65,6 +67,9 @@ class Player(Creature):
         self.windowHandlers = {}
         self.partyObj = None
         self.solid = not config.playerWalkthrough
+        
+        self.blessings = 0
+        self.deathPenalityFactor = 1
 
         """# Light stuff
         self.lightLevel = 0x7F
@@ -262,7 +267,7 @@ class Player(Creature):
 
     def sendFirstPacket(self):
         if not self.data["health"]:
-            self.data["health"] = 1
+            self.onSpawn()
 
         # If we relogin we might be in remove mode,
         # make sure we're not tagget for it!
@@ -332,27 +337,34 @@ class Player(Creature):
             reactor.callLater(self.rates[1], loseStamina)
         
     def refreshStatus(self, stream=None):
-        if stream:
-            stream.status(self)
-        else:
-            with self.packet() as stream:
+        if self.client:
+            if stream:
                 stream.status(self)
+            else:
+                with self.packet() as stream:
+                    stream.status(self)
 
     def refreshConditions(self, stream=None):
-        send = self.extraIcons
-        for conId in self.conditions:
-            try:
-                conId = int(conId)
-                send += conId
-            except:
-                pass
-            
-        if stream:
-            stream.icons(send)
-        else:
-            with self.packet() as stream:
+        if self.client:
+            send = self.extraIcons
+            for conId in self.conditions:
+                try:
+                    conId = int(conId)
+                    send += conId
+                except:
+                    pass
+                
+            if stream:
                 stream.icons(send)
+            else:
+                with self.packet() as stream:
+                    stream.icons(send)
 
+    def refreshShield(self):
+        for player in getPlayers(self.position):
+            with player.packet() as stream:
+                stream.shield(self.cid, self.getShield(player))
+                
     def setIcon(self, icon):
         if not self.extraIcons & icon:
             self.extraIcons += icon
@@ -362,12 +374,20 @@ class Player(Creature):
             self.extraIcons -= icon
 
     def refreshSkills(self, stream=None):
-        if stream:
-            stream.skills(self)
-
-        else:
-            with self.packet() as stream:
+        if self.client:
+            if stream:
                 stream.skills(self)
+
+            else:
+                with self.packet() as stream:
+                    stream.skills(self)
+                
+    def refreshSkull(self, stream=None):
+        for player in getPlayers(self.position):
+            stream = player.packet(0x90)
+            stream.uint32(self.cid)
+            stream.uint8(self.getSkull(player))
+            stream.send(player.client)
                 
     def pong(self):
         self.packet(0x1E).send(self.client)
@@ -722,13 +742,20 @@ class Player(Creature):
         self.setLevel(self.data["level"] + mod)
 
     def modifyMagicLevel(self, mod):
+        if not mod:
+            return
+        
         def endCallback():
             self.data["maglevel"] += mod
+            if self.data["maglevel"] < 0:
+                self.data["maglevel"] = 0
             self.refreshStatus()
 
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
+        exp = int(exp)
+        
         up = True
         if exp < 0:
             up = False
@@ -748,7 +775,7 @@ class Player(Creature):
                 self.setLevel(self.data["level"]+level)
         else:
             level = 0
-            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=exp)
+            self.message(_lp(self, "You lost %d experience point.", "You lost %d experience points.", exp) % exp, MSG_EXPERIENCE, color=config.experienceMessageColor, value=-exp)
             while True:
                 if config.totalExpFormula(self.data["level"]-level) > self.data["experience"]:
                     break
@@ -772,10 +799,26 @@ class Player(Creature):
 
     def modifySpentMana(self, mana, refresh=False):
         self.data["manaspent"] += mana
+        
+        if self.data["manaspent"] < 0:
+            self.data["manspent"] = 0
+            
         self.saveData = True
-        if self.data["manaspent"] > int(config.magicLevelFormula(self.data["maglevel"], vocation.mlevel)):
-            self.modifyMagicLevel(1)
-        elif refresh:
+        modify = 0
+        maglevel = self.data["maglevel"]
+        if mana > 0:
+            while self.data["manaspent"] > int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
+                modify += 1
+                maglevel += 1
+                
+            
+        else:
+            while self.data["manaspent"] < int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
+                modify -= 1
+                maglevel -= 1
+                
+        self.modifyMagicLevel(modify)
+        if refresh:
             self.refreshStatus()
 
 
@@ -843,7 +886,7 @@ class Player(Creature):
         self.refreshSkills()
 
     def getSkillAttempts(self, skill):
-        return self.data["skill_tries"][skillType]
+        return self.data["skill_tries"][skill]
 
     # Soul
     def soulGain(self):
@@ -981,20 +1024,21 @@ class Player(Creature):
             stream.string("Current outfit")
             stream.uint8(self.addon)
 
-        if config.allowMounts:
-            mounts = []
-            for mount in game.resource.mounts:
-                if len(mounts) == stream.maxMounts:
-                    break
-                if mount and self.canUseMount(mount.name):
-                    mounts.append(mount)
+        if self.client.version >= 870:
+            if config.allowMounts:
+                mounts = []
+                for mount in game.resource.mounts:
+                    if len(mounts) == stream.maxMounts:
+                        break
+                    if mount and self.canUseMount(mount.name):
+                        mounts.append(mount)
 
-            stream.uint8(len(mounts))
-            for mount in mounts:
-                stream.uint16(mount.cid)
-                stream.string(mount.name)
-        else:
-            stream.uint8(0)
+                stream.uint8(len(mounts))
+                for mount in mounts:
+                    stream.uint16(mount.cid)
+                    stream.string(mount.name)
+            else:
+                stream.uint8(0)
 
         stream.send(self.client)
 
@@ -1058,9 +1102,13 @@ class Player(Creature):
         stream.send(self.client)
 
     def cancelMessage(self, message):
+        if self.raiseMessages:
+            raise MsgCancel(message)
         self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
+        if self.raiseMessages:
+            raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
 
     def notPickupable(self):
@@ -1088,6 +1136,11 @@ class Player(Creature):
     def onlyOnCreatures(self):
         self.cancelMessage(_l(self, "You can only use it on creatures."))
 
+    def unmarkedPlayer(self):
+        if self.raiseMessages:
+            raise MsgUnmarkedPlayer
+        self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
+        
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
             # Replace it in structure
@@ -1445,6 +1498,15 @@ class Player(Creature):
     # Channel system
     def openChannels(self):
         channels = game.chat.getChannels(self)
+        
+        # Add guild chat.
+        if self.guild():
+            channels[CHANNEL_GUILD] = self.guild().chatChannel
+            
+        # Add party channel.
+        if self.party():
+            channels[CHANNEL_PARTY] = self.party().chatChannel
+            
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
@@ -1455,8 +1517,14 @@ class Player(Creature):
     def openChannel(self, id):
 
         if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
-            
-            channel = game.chat.getChannel(id)
+            if id == CHANNEL_GUILD:
+                # Guild channel.
+                channel  = self.guild().chatChannel
+            elif id == CHANNEL_PARTY:
+                # Party channel.
+                channel = self.party().chatChannel
+            else:
+                channel = game.chat.getChannel(id)
 
             if not channel:
                 return self.cancelMessage(_l(self, "Channel not found."))
@@ -1506,9 +1574,14 @@ class Player(Creature):
             return False
 
     def channelMessage(self, text, channelType=game.enum.MSG_CHANNEL, channelId=0):
-        channel = game.chat.getChannel(channelId)
+        if channelId == CHANNEL_GUILD:
+            channel = self.guild().chatChannel
+        elif channelId == CHANNEL_PARTY:
+            channel = self.party().chatChannel
+        else:
+            channel = game.chat.getChannel(channelId)
         try:
-            members = game.chat.getChannel(channelId).members
+            members = channel.members
         except:
             members = []
 
@@ -1577,9 +1650,116 @@ class Player(Creature):
         # And kill the readyness
         self.client.ready = False
 
-    def onDeath(self):
-        self.sendReloginWindow()
+    def losePrecent(self, withBlessings=True):
+        if not config.loseCutoff:
+            return 0
+        
+        elif self.data["level"] < config.loseCutoff:
+            lose = config.loseConstant
+        else:
+            print config.loseFormula(self.data["level"])
+            print self.data["experience"]
+            lose = config.loseFormula(self.data["level"]) / self.data["experience"]
+            
+        if withBlessings and self.blessings:
+            lose *= 0.92 ** self.blessings
+            
+        return int(lose * self.deathPenalityFactor)
+            
+    def itemLosePrecent(self):
+        if self.getSkull() in (SKULL_BLACK, SKULL_RED) and config.redSkullLoseRate:
+            return (config.redSkullLoseRate, config.redSkullLoseRate)
+        
+        # This is constants it would seem.
+        container = 100
+        if self.blessings == 1:
+            container = 70
+        elif self.blessings == 2:
+            container = 45
+        elif self.blessings == 3:
+            container = 25
+        elif self.blessings == 4:
+            container = 10
 
+        return (container, container / 10.0)
+    def onDeath(self):
+        lastDmgIsPlayer = self.lastDamagers[0].isPlayer()
+        deathData = {}
+        loseRate = self.losePrecent()
+        deathData["loseRate"] = loseRate
+        corpse = game.item.Item(3058)
+        
+        lastDamagerSkull = self.getSkull(self.lastDamagers[0])
+        if lastDmgIsPlayer:
+            # Just or unjust?
+            unjust = True
+            if self.getSkull() or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW, SKULL_GREEN):
+                unjust = False
+                
+            deathData["unjust"] = unjust
+            
+        if game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse, deathData=deathData) == False:
+            return
+        
+        unjust = deathData["unjust"]
+        loseRate = deathData["loseRate"]
+        
+        print "TODO: Unfair fight."
+        
+        self.sendReloginWindow(100)
+
+        # Reduce experience, manaspent and total skill tries (ow my)
+        if loseRate:
+            self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
+            self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
+            
+            for skill in xrange(SKILL_FIRST, SKILL_LAST):
+                # First, get total skill tries.
+                tries = config.totalSkillFormula(self.data["skills"][skill], self.getVocation().meleeSkill) + self.getSkillAttempts(skill)
+                
+                # Reduce them.
+                tries /= 1 + (loseRate/100.0)
+                tries = int(tries)
+                
+                # Skill tries to level.
+                level = int(config.skillTriesToLevel(self.getVocation().meleeSkill, tries))
+                
+                # Previous level skill tries.
+                prevTries = config.totalSkillFormula(level-1, self.getVocation().meleeSkill)
+                
+                # Get the level goals.
+                goal = tries-prevTries
+                
+                # Set new level.
+                self.addSkillLevel(skill, level - self.data["skills"][skill])
+                self.skillAttempt(skill, goal)
+            
+        # PvP experience and death entries.
+        if lastDmgIsPlayer:
+            # Was this revenge?
+            if lastDamagerSkull == SKULL_ORANGE:
+                revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["id"], self.data["id"])
+                if not revengeEntry:
+                    print "BUG: This was a revenge, but we can't find the revenge death entry..."
+                elif revengeEntry.revenged == True:
+                    print "BUG: revenging a revenged kill."
+                else:
+                    revengeEntry.revenge()
+            entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
+            deathlist.addEntry(entry)
+            
+            # Resend attackers skull.
+            # Trick to destroy cache:
+            self.lastDamagers[0].skull = 0
+            self.lastDamagers[0].refreshSkull()
+            
+            # PvP Experience.
+            self.lastDamagers[0].modifyExperience(config.pvpExpFormula(self.lastDamagers[0].data["level"], self.data["level"], self.data["experience"]))
+         
+        #if temp skull remove it on death
+        if self.getSkull() in (SKULL_WHITE, SKULL_YELLOW, SKULL_GREEN):
+            self.setSkull(SKULL_NONE)
+		 
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
@@ -1596,9 +1776,19 @@ class Player(Creature):
         self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
         self.data["health"] = self.data["healthmax"]
         self.data["mana"] = self.data["manamax"]
+        
+        # Are we suppose to lose the container?
+        itemLose = self.itemLosePrecent()
+        if self.inventory[2] and random.randint(1, 100) < itemLose[0]:
+            corpse.container.placeItem(self.inventory[2])
+            self.inventory[2] = None
+            
+        # Loop over each item in the inventory to see if we lose em.
+        for index in xrange(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
+            if self.inventory[index] and random.randint(1, 1000) < (itemLose[1] * 10):
+                corpse.container.placeItem(self.inventory[index])
+                self.inventory[index] = None
 
-        corpse = game.item.Item(3058)
-        game.scriptsystem.get("death").runSync(self, self.lastDamager, corpse=corpse)
         if not self.alive and self.data["health"] < 1:
 
             splash = game.item.Item(game.enum.FULLSPLASH)
@@ -1624,9 +1814,13 @@ class Player(Creature):
                 stream.send(spectator)
 
     def onSpawn(self):
-        if not self.data["health"] or not self.alive:
-            self.data["health"] = self.data["healthmax"]
-            self.data["mana"] = self.data["manamax"]
+        if self.data["health"] <= 0 or not self.alive:
+            if self.getSkull() == SKULL_BLACK:
+                self.data["health"] = config.blackSkullRecoverHealth if config.blackSkullRecoverHealth != -1 else self.data["healthmax"]
+                self.data["mana"] =  config.blackSkullRecoverMana if config.blackSkullRecoverMana != -1 else self.data["manamax"]
+            else:
+                self.data["health"] = self.data["healthmax"]
+                self.data["mana"] = self.data["manamax"]
             self.alive = True
             game.scriptsystem.get("respawn").runSync(self)
             import data.map.info
@@ -1634,7 +1828,10 @@ class Player(Creature):
 
     # Damage calculation:
     def damageToBlock(self, dmg, type):
-        if type == game.enum.MELEE:
+        if dmg > 0:
+            return int(dmg)
+        
+        if type == game.enum.MELEE or type == game.enum.PHYSICAL:
             # Armor and defence
             armor = 0
             defence = 0
@@ -1646,7 +1843,7 @@ class Player(Creature):
                     extradef += item.extradef or 0
                     block = (item.absorbPercentPhysical or 0) + (item.absorbPercentAll or 0)
                     if block:
-                        dmg = dmg * (block / 100.0)
+                        dmg += (-dmg * block / 100.0)
 
             if self.inventory[game.enum.SLOT_LEFT]:
                 defence = self.inventory[game.enum.SLOT_LEFT].defence
@@ -1654,20 +1851,21 @@ class Player(Creature):
                 defence = self.inventory[game.enum.SLOT_RIGHT].defence
 
             defence += extradef
-
-            # Reduce armor to fit action + set defence still
             defRate = 1
             if self.modes[1] == game.enum.OFFENSIVE:
                 defRate = 0.5
             elif self.modes[1] == game.enum.BALANCED:
                 defRate = 0.75
 
+            if random.randint(1, 100) <= defence * defRate:
+                self.lmessage("You blocked an attack!")
+                
             # Apply some shielding effects
-            dmg  = int((dmg - random.uniform(armor*0.475, (armor*0.95)-1)) - (defence * defRate) - (dmg / 100.0) * armor)
+            dmg  = int((dmg + random.uniform(armor*0.475, (armor*0.95)-1)) + ((-dmg * armor) / 100.0))
             if dmg > 0:
-                return dmg
-            else:
                 return 0
+            else:
+                return dmg
 
         return dmg
 
@@ -1987,8 +2185,11 @@ class Player(Creature):
 
         for creature in game.engine.getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)
+
+    def attackTarget(self, dmg = None):
+        if dmg:
+            assert dmg < 0, "Damage must be negative"
             
-    def attackTarget(self):
         if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
             if not self.target.data["health"]:
                 self.target = None
@@ -2001,20 +2202,47 @@ class Player(Creature):
 
                 if not self.inventory[5]:
                     skillType = game.enum.SKILL_FIST
-                    dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    if dmg is None:
+                        dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
                 else:
                     skillType = self.inventory[5].weaponSkillType
-                    dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
+                    if dmg is None:
+                        dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
 
-                    # Critical hit
-                    if config.criticalHitRate > random.randint(1, 100):
-                        dmg = dmg * config.criticalHitMultiplier
-                        self.criticalHit()
+                        # Critical hit
+                        if config.criticalHitRate > random.randint(1, 100):
+                            dmg = dmg * config.criticalHitMultiplier
+                            self.criticalHit()
 
-                if dmg != 0:
-                    self.target.onHit(self, dmg, game.enum.MELEE)
+                targetIsPlayer = self.target.isPlayer() # onHit might remove this.
+                target = self.target
+                
+                if dmg:
+                    """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
+                            self.cancelTarget()
+                            self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
+                    else:
+                        self.target.onHit(self, dmg, game.enum.MELEE)
+                        self.skillAttempt(skillType)"""
+                    target.onHit(self, dmg, game.enum.MELEE)
                     self.skillAttempt(skillType)
+                
+                if targetIsPlayer:
+                    self.lastDmgPlayer = time.time()
+                    # If target do not have a green skull.
+                    if target.getSkull(self) != SKULL_GREEN:
+                        # If he is unmarked.
+                        if config.whiteSkull and target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and target.getSkull(self) not in SKULL_JUSTIFIED:
+                            self.setSkull(SKULL_WHITE)
+                        elif config.yellowSkull and (target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
+                            # Allow him to fight back.
+                            if self.getSkull(target) == SKULL_NONE:
+                                self.setSkull(SKULL_YELLOW, target, config.loginBlock)
+                        if config.loginBlock:
+                            # PZ block.
+                            self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+                            self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
@@ -2045,17 +2273,17 @@ class Player(Creature):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
             self.target = None
-            try:
-                self.targetChecker.cancel()
-            except:
-                pass
             return
 
         if cid in allCreatures:
             if allCreatures[cid].isAttackable(self):
                 target = allCreatures[cid]
+                if target.isPlayer() and self.modes[2]:
+                    self.cancelTarget()
+                    return self.unmarkedPlayer()
                 ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
                 if ret == False:
+                   self.cancelTarget()
                    return
                 elif ret != None:
                     self.target = ret
@@ -2067,11 +2295,14 @@ class Player(Creature):
                     target.target = self
                     target.targetMode = 1
             else:
+                self.cancelTarget()
                 return
         else:
+            self.cancelTarget()
             return self.notPossible()
 
         if not self.target:
+            self.cancelTarget()
             return self.notPossible()
 
 
@@ -2080,11 +2311,8 @@ class Player(Creature):
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
-        try:
-            self.targetChecker.cancel()
-        except:
-            pass
-        self.attackTarget()
+        if not self.targetChecker or not self.targetChecker.active():
+            self.attackTarget()
 
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
@@ -2310,7 +2538,9 @@ class Player(Creature):
         stream.send(self.client)
 
     def prepareLogout(self):
-        # TODO: Cases where you can't logout
+        if self.hasCondition(CONDITION_INFIGHT):
+            self.lmessage("You can't logout yet.")
+            return False
 
         # Remove summons
         if self.activeSummons:
@@ -2321,7 +2551,13 @@ class Player(Creature):
 
         self.removeMe = True
 
+        # Clear party.
+        if self.party():
+            self.leaveParty()
+            
         #self.remove(False)
+        
+        return True
 
     # Cleanup the knownCreatures
     def removeKnown(self, creature):
@@ -2402,6 +2638,11 @@ class Player(Creature):
         except:
             return None
 
+    def guildRank(self):
+        guild = self.guild()
+        if guild:
+            return guild.rank(self.data["guild_rank"])
+        
     def party(self):
         # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
         return self.partyObj
@@ -2413,6 +2654,12 @@ class Player(Creature):
     def leaveParty(self):
         if self.partyObj:
             self.partyObj.removeMember(self)
+            
+    def setParty(self, partyObj):
+        if self.partyObj:
+            raise Exception("You got to leave the party before you can join another one")
+        
+        self.partyObj = partyObj
     # Trade
     def tradeItemRequest(self, between, items, confirm=False):
         if confirm:
@@ -2604,3 +2851,45 @@ class Player(Creature):
     def delayWalk(self, delay):
         with self.packet() as stream:
             stream.delayWalk(delay)
+            
+    # Skull stuff
+    def getSkull(self, creature=None):
+        if creature:
+            # Green skull to members of the same party.
+            myParty = self.party()
+            if myParty and creature.party() == myParty:
+                return SKULL_GREEN
+                
+            elif creature in self.trackSkulls:
+                if self.trackSkulls[creature][1] >= time.time():
+                    return self.trackSkulls[creature][0]
+                del self.trackSkulls[creature]
+
+            skull = deathlist.getSkull(self.data["id"], creature.data["id"])
+            
+            if skull[0]:
+                self.trackSkulls[creature] = skull
+                return skull[0]
+
+        if self.skull == 0:
+            self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
+            
+            if self.skullTimeout and not self._checkSkulls:
+                self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
+                
+        return self.skull
+    
+    # Shield
+    def setShield(self, shield):
+        raise Exception("NOT AVAILABLE ON PLAYERS.")
+
+    def getShield(self, creature):
+        myParty = self.party()
+        reqParty = creature.party()
+        
+        if myParty:
+            return myParty.getShield(self, creature)
+        elif reqParty:
+            return reqParty.getShield(self, creature)
+        else:
+            return SHIELD_NONE

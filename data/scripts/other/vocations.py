@@ -1,5 +1,3 @@
-
-
 # regVocation() # ID, ClientId, name, description, (health, per sec), (mana, per sec), soulseconds)
 vocation = regVocation(0, 1, "Rookie", "a rookie", (1, 12), (2, 6), 120)
 

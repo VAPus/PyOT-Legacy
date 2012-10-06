@@ -25018,10 +25018,7 @@ CREATE TABLE `players` (
   `sex` int(11) NOT NULL DEFAULT '0',
   `skull` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `stamina` decimal(65,0) unsigned NOT NULL DEFAULT '151200000' COMMENT 'stored in miliseconds',
-  `direction` tinyint(2) unsigned NOT NULL DEFAULT '2',
   `marriage` int(10) unsigned NOT NULL DEFAULT '0',
-  `guild` int(8) unsigned NOT NULL DEFAULT '0',
-  `guild_rank` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `lastlogin` int(11) unsigned NOT NULL DEFAULT '0',
   `conditions` blob,
   `storage` mediumblob,
@@ -25033,8 +25030,8 @@ CREATE TABLE `players` (
   KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
-INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `direction`, `marriage`, `guild`, `guild_rank`, `lastlogin`, `conditions`, `storage`, `depot`, `inventory`) VALUES
-(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, 0, NULL, NULL, '', '');
+INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `marriage`, `lastlogin`, `conditions`, `storage`, `depot`, `inventory`) VALUES
+(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 0, 0, NULL, NULL, '', '');
 
 CREATE TABLE `player_skills` (
   `player_id` int(11) unsigned NOT NULL,
@@ -25064,4 +25061,65 @@ ALTER TABLE `players` ADD `online` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AF
 
 ALTER TABLE `players` ADD `instanceId` MEDIUMINT( 5 ) NULL DEFAULT NULL AFTER `posz` ;
 
-ALTER TABLE `accounts` ADD `language` CHAR( 5 ) NOT NULL DEFAULT 'en_EN' AFTER `premdays` 
+ALTER TABLE `accounts` ADD `language` CHAR( 5 ) NOT NULL DEFAULT 'en_EN' AFTER `premdays` ;
+
+CREATE TABLE IF NOT EXISTS `pvp_deaths` (
+  `death_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `killer_id` int(11) unsigned NOT NULL,
+  `victim_id` int(11) unsigned NOT NULL,
+  `unjust` tinyint(1) NOT NULL,
+  `time` int(11) unsigned NOT NULL,
+  `revenged` tinyint(1) NOT NULL DEFAULT '0',
+  `war_id` int(11) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`death_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `guilds` (
+  `guild_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `world_id` tinyint(8) unsigned NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `created` int(11) unsigned NOT NULL,
+  `motd` varchar(255) NOT NULL,
+  `balance` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`guild_id`),
+  KEY `world_id` (`world_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+INSERT INTO .`guilds` (`guild_id`, `world_id`, `name`, `created`, `motd`, `balance`) VALUES ('1', '0', 'Test guild', 0, 'Hello world', '123123123123'), ('2', '0', 'Test guild 2', 0, 'Hello universe', '213123123123');
+
+CREATE TABLE IF NOT EXISTS `guild_wars` (
+  `war_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `guild_id` int(11) unsigned NOT NULL,
+  `guild_id2` int(11) unsigned NOT NULL,
+  `started` int(11) unsigned NOT NULL,
+  `duration` int(11) unsigned NOT NULL,
+  `frags` int(11) unsigned NOT NULL,
+  `stakes` int(11) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0 = invitation, 1 = rejected, 2 = accepted, 3 = cancelled, 4 = active, 5 = over',
+  PRIMARY KEY (`war_id`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `guild_ranks` (
+  `guild_id` int(11) unsigned NOT NULL,
+  `rank_id` int(6) unsigned NOT NULL,
+  `title` varchar(64) NOT NULL,
+  `permissions` int(11) unsigned NOT NULL,
+  KEY `guild_id` (`guild_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `players` ADD `balance` decimal(65,0) unsigned NOT NULL DEFAULT '0' AFTER `conditions` ;
+
+CREATE TABLE IF NOT EXISTS `player_guild` (
+  `player_id` int(11) unsigned NOT NULL,
+  `guild_id` int(11) unsigned NOT NULL,
+  `guild_rank` int(6) unsigned NOT NULL DEFAULT '0',
+  `guild_title` varchar(255) NOT NULL DEFAULT '',
+  `joined` int(10) NOT NULL,
+  KEY `guild_id` (`guild_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `guild_invites` (
+  `player_id` INT UNSIGNED NOT NULL DEFAULT 0,
+  `guild_id` INT UNSIGNED NOT NULL DEFAULT 0
+) ENGINE = InnoDB;
