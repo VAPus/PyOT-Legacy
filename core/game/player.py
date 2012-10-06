@@ -754,6 +754,8 @@ class Player(Creature):
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
+        exp = int(exp)
+        
         up = True
         if exp < 0:
             up = False

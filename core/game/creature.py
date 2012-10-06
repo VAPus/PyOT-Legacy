@@ -92,6 +92,7 @@ class Creature(object):
         self.walkPattern = None
         self.activeSummons = []
         self.doHideHealth = False
+        self.lastPassedDamage = 0
         
         # Skulls
         self.trackSkulls = {}
@@ -622,8 +623,7 @@ class Creature(object):
         return dmg
 
     def onHit(self, by, dmg, type, effect=None):
-        self.lastDamagers.appendleft(by)
-
+        
         if not type == game.enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
@@ -690,6 +690,9 @@ class Creature(object):
         dmg = max(-self.data["health"], dmg)
         
         if dmg:
+            self.lastDamagers.appendleft(by)
+            by.lastPassedDamage = time.time()
+            
             if magicEffect:
                 self.magicEffect(magicEffect)
             tile = game.map.getTile(self.position)

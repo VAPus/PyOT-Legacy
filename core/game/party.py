@@ -97,6 +97,7 @@ class Party(object):
         
         lowestLevel = 9000000000
         highestLevel = 0
+        contributeTime = time.time() - config.partyExperienceContributeTime
         
         for member in self.members:
             if member.data["level"] < lowestLevel:
@@ -105,6 +106,11 @@ class Party(object):
                 highestLevel = member.data["level"]
                 
             if not member.inRange(self.leader.position, config.partyExperienceDistance, config.partyExperienceDistance):
+                isOk = False
+                break
+                
+            
+            if member.lastPassedDamage < contributeTime: # TODO healing.
                 isOk = False
                 break
                 

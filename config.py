@@ -139,6 +139,7 @@ experienceMessageColor = 215 # Between 1 or 255, else debug
 partyExperienceFactor = 1.05 # 5% extra.
 partyExperienceDistance = 30 # In fields.
 partyExperienceLevelFactor = 2/3.0
+partyExperienceContributeTime = 120
 
 # Map cleaning & unloading
 # Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc

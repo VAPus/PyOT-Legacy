@@ -174,6 +174,10 @@ class TestParty(framework.FrameworkTestGame):
         
         self.assertFalse(party.shareExperience)
         
+        # Assume both contributed.
+        member.lastPassedDamage = time.time()
+        self.player.lastPassedDamage = time.time()
+        
         party.toggleShareExperience()
         
         self.assertTrue(party.shareExperience)
@@ -200,7 +204,7 @@ class TestParty(framework.FrameworkTestGame):
         
         self.assertEqual(self.player.getShield(member), SHIELD_LEADER_NOSHAREDEXP)
         
-    def test_share_experience(self):
+    def test_invalid_share_experience(self):
         # Turn of protection zone
         self.overrideConfig("protectedZones", False)
         
@@ -215,7 +219,7 @@ class TestParty(framework.FrameworkTestGame):
         # Make a monster
         bmonster = game.monster.genMonster("__TEST__", (0,0))
         bmonster.setExperience(100)
-        bmonster.setHealth(1)
+        bmonster.setHealth(10)
         
         # Spawn.
         monster = getMonster("__TEST__").spawn(self.player.positionInDirection(NORTH), spawnDelay=0, radius=0)
@@ -233,11 +237,62 @@ class TestParty(framework.FrameworkTestGame):
         
         # Check experience.
         self.assertGreater(self.player.data["experience"], member1Exp)
+        
+        # Check exact experience. It's 100.
+        self.assertEqual(self.player.data["experience"], member1Exp+100)
+        
+        # Check that our non-contributing teammate got non.
+        self.assertEqual(member.data["experience"], member2Exp)
+        
+        # Cleanups
+        del game.monster.monsters["__TEST__"]
+        self.restoreConfig("protectedZones")
+        
+    def test_share_experience(self):
+        # Turn of protection zone
+        self.overrideConfig("protectedZones", False)
+        
+        party = self.player.newParty()
+        
+        member = self.setupPlayer()
+        
+        party.addMember(member)
+        
+        party.toggleShareExperience()
+
+        # Make a monster
+        bmonster = game.monster.genMonster("__TEST__", (0,0))
+        bmonster.setExperience(100)
+        bmonster.setHealth(10)
+        
+        # Spawn.
+        monster = getMonster("__TEST__").spawn(self.player.positionInDirection(NORTH), spawnDelay=0, radius=0)
+        monster.setRespawn(False)
+        
+        # old experience.
+        member1Exp = self.player.data["experience"]
+        member2Exp = member.data["experience"]
+        
+        # Attack.
+        self.player.ignoreBlock = True
+        self.player.target = monster
+        self.player.targetMode = 1
+        self.player.attackTarget(-5)
+        
+        # Attack.
+        member.ignoreBlock = True
+        member.target = monster
+        member.targetMode = 1
+        member.attackTarget(-5)
+        
+        # Check experience.
+        self.assertGreater(self.player.data["experience"], member1Exp)
         self.assertGreater(member.data["experience"], member2Exp)
         
-        # Check exact experience. It's 50.
-        self.assertEqual(self.player.data["experience"], member1Exp+50)
-        self.assertEqual(member.data["experience"], member2Exp+50)
+        # Check exact experience. It's 50 * config.partyExperienceFactor.
+        moreExp = int(50 * config.partyExperienceFactor)
+        self.assertEqual(self.player.data["experience"], member1Exp+moreExp)
+        self.assertEqual(member.data["experience"], member2Exp+moreExp)
         
         # Cleanups
         del game.monster.monsters["__TEST__"]
