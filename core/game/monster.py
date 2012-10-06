@@ -242,7 +242,7 @@ class Monster(Creature):
             if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
                 for member in attackerParty.members:
                     if member.data["stamina"] or config.noStaminaNoExp == False:
-                        exp = (self.base.experience / len(attackerParty.members))
+                        exp = (self.base.experience / len(attackerParty.members)) * config.partyExperienceFactor
                         member.modifyExperience(exp * member.getExperienceRate())
                         
                         if exp >= member.data["level"]:
