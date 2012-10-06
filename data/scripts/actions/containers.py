@@ -1,6 +1,6 @@
 # First use of actions :p
 def container(creature, thing, position, index, **k):
-    if thing.owners
+    if thing.owners:
         party = creature.party()
         ownersParty = thing.owners[0].party()
         if creature not in thing.owners and (not party or party is not ownersParty): # Prevent people to open owned things. + Party features.

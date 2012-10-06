@@ -3,6 +3,8 @@ class Party(object):
         self.leader = leader
         self.members = [leader]
         self.invites = []
+        self.shareExperience = False
+        self.shareExperienceOk = False
 
     def addMember(self, creature):
         if creature in self.members:
@@ -16,6 +18,9 @@ class Party(object):
         creature.setParty(self)
         
         self.members.append(creature)
+        
+        if self.shareExperience:
+            self.checkShareExperience()
         
         self.refreshMemberShields()
         
@@ -80,8 +85,40 @@ class Party(object):
         else:
             player.refreshShield()
             self.leader.refreshShield()
+    
+    def toggleShareExperience(self):
+        self.shareExperience = not self.shareExperience
         
+        if self.shareExperience:
+            self.checkShareExperience()
         
+    def checkShareExperience(self):
+        isOk = True
+        
+        lowestLevel = 9000000000
+        highestLevel = 0
+        
+        for member in self.members:
+            if member.data["level"] < lowestLevel:
+                lowestLevel = member.data["level"]
+            if member.data["level"] > highestLevel:
+                highestLevel = member.data["level"]
+                
+            if not member.inRange(self.leader.position, config.partyExperienceDistance, config.partyExperienceDistance):
+                isOk = False
+                break
+                
+        if isOk:
+            if float(lowestLevel) / highestLevel < config.partyExperienceLevelFactor:
+                isOk = False
+        
+        if isOk != self.shareExperienceOk:
+            self.shareExperienceOk = isOk
+            self.refreshMemberShields()
+            
+        return isOk
+                
+                
     def disband(self):
         for member in self.members:
             for formember in self.members:
@@ -100,10 +137,7 @@ class Party(object):
         self.leader = creature
         self.broadcast("%s is now the leader of the party." % creature.name())
         self.refreshMemberShields()
-        
-    def icons(self):
-        pass # TODO
-        
+
     def getShield(self, forMember, byMember):
         if byMember in self.invites:
             if forMember is self.leader:
@@ -113,8 +147,12 @@ class Party(object):
             return SHIELD_LEADER_INVITE
         
         if forMember is self.leader:
+            if self.shareExperience:
+                return SHIELD_LEADER_SHAREDEXP if self.shareExperienceOk else SHIELD_LEADER_NOSHAREDEXP
             return SHIELD_LEADER
         elif forMember in self.members:
+            if self.shareExperience:
+                return SHIELD_MEMBER_SHAREDEXP if self.shareExperienceOk else SHIELD_MEMBER_NOSHAREDEXP
             return SHIELD_MEMBER
         
         return SHIELD_NONE
@@ -125,7 +163,6 @@ class Party(object):
             for formember in self.members:
                 with formember.packet() as stream:
                     stream.shield(member.cid, self.getShield(member, formember))
-                    
                     
     def broadcast(self, text):
         for member in self.members:

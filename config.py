@@ -136,6 +136,9 @@ privateLootFor = 10 # How long only you and your party can access the loot.
 # Experince
 experienceRate = 1
 experienceMessageColor = 215 # Between 1 or 255, else debug
+partyExperienceFactor = 1.05 # 5% extra.
+partyExperienceDistance = 30 # In fields.
+partyExperienceLevelFactor = 2/3.0
 
 # Map cleaning & unloading
 # Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc

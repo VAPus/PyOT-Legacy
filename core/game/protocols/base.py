@@ -708,6 +708,9 @@ class BaseProtocol(object):
         elif packetType == 0xA7: # Leave party
             player.leaveParty()
             
+        elif packetType == 0xA8: # Share experience
+            self.handleShareExperience(player, packet)
+            
         elif packetType == 0xC9:
             self.handleUpdateTile(player,packet)
             
@@ -1711,6 +1714,14 @@ class BaseProtocol(object):
             return
         
         party.changeLeader(creature)
+        
+    def handleShareExperience(self, player, packet):
+        # Grab the party
+        party = player.party()
+        if not party or party.leader != player:
+            return
+        
+        party.toggleShareExperience()
         
     @inlineCallbacks
     def handleThanks(self, player, packet):

@@ -164,3 +164,83 @@ class TestParty(framework.FrameworkTestGame):
         # Member1 is new leader?
         self.assertEqual(member, party.leader)
         self.assertEqual(len(party.members), 2)
+        
+    def test_toggle_share_experience(self):
+        party = self.player.newParty()
+        
+        member = self.setupPlayer()
+        
+        party.addMember(member)
+        
+        self.assertFalse(party.shareExperience)
+        
+        party.toggleShareExperience()
+        
+        self.assertTrue(party.shareExperience)
+        
+        # shields.
+        self.assertEqual(member.getShield(self.player), SHIELD_MEMBER_SHAREDEXP)
+        
+        self.assertEqual(self.player.getShield(member), SHIELD_LEADER_SHAREDEXP)
+        
+    def test_toggle_not_ok_share_experience(self):
+        party = self.player.newParty()
+        
+        member = self.setupPlayer()
+        
+        party.addMember(member)
+        
+        # Set member level high.
+        member.data["level"] = 10000
+        
+        party.toggleShareExperience()
+        
+        # shields.
+        self.assertEqual(member.getShield(self.player), SHIELD_MEMBER_NOSHAREDEXP)
+        
+        self.assertEqual(self.player.getShield(member), SHIELD_LEADER_NOSHAREDEXP)
+        
+    def test_share_experience(self):
+        # Turn of protection zone
+        self.overrideConfig("protectedZones", False)
+        
+        party = self.player.newParty()
+        
+        member = self.setupPlayer()
+        
+        party.addMember(member)
+        
+        party.toggleShareExperience()
+
+        # Make a monster
+        bmonster = game.monster.genMonster("__TEST__", (0,0))
+        bmonster.setExperience(100)
+        bmonster.setHealth(1)
+        
+        # Spawn.
+        monster = getMonster("__TEST__").spawn(self.player.positionInDirection(NORTH), spawnDelay=0, radius=0)
+        monster.setRespawn(False)
+        
+        # old experience.
+        member1Exp = self.player.data["experience"]
+        member2Exp = member.data["experience"]
+        
+        # Attack.
+        self.player.ignoreBlock = True
+        self.player.target = monster
+        self.player.targetMode = 1
+        self.player.attackTarget(-100)
+        
+        # Check experience.
+        self.assertGreater(self.player.data["experience"], member1Exp)
+        self.assertGreater(member.data["experience"], member2Exp)
+        
+        # Check exact experience. It's 50.
+        self.assertEqual(self.player.data["experience"], member1Exp+50)
+        self.assertEqual(member.data["experience"], member2Exp+50)
+        
+        # Cleanups
+        del game.monster.monsters["__TEST__"]
+        self.restoreConfig("protectedZones")
+        
+        
