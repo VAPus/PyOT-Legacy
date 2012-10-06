@@ -5,6 +5,7 @@ class Party(object):
         self.invites = []
         self.shareExperience = False
         self.shareExperienceOk = False
+        self.chatChannel = game.chat.openInstanceChannel("Party", CHANNEL_PARTY)
 
     def addMember(self, creature):
         if creature in self.members:

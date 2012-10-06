@@ -667,3 +667,8 @@ GUILD_WITHDRAW_MONEY = 1 << 5
 GUILD_MANAGE_WARS = 1 << 6
 GUILD_INVITE = 1 << 7
 GUILD_PROMOTE = 1 << 8 # Upto own permissions except GUILD_PROMOTE unless LEADER.
+
+# Special channel ids.
+CHANNEL_OFFSET = 10
+CHANNEL_PARTY = 1
+CHANNEL_GUILD = 0

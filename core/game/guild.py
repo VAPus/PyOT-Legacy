@@ -26,6 +26,7 @@ class Guild(object):
         self.ranks = {} # rankId -> GuildRank
         self.motd = motd
         self.balance = balance
+        self.chatChannel = game.chat.openInstanceChannel(name, CHANNEL_GUILD)
         
     # Creature alike money interface.
     def setMoney(self, amount):

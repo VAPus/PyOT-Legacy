@@ -1498,6 +1498,15 @@ class Player(Creature):
     # Channel system
     def openChannels(self):
         channels = game.chat.getChannels(self)
+        
+        # Add guild chat.
+        if self.guild():
+            channels[CHANNEL_GUILD] = self.guild().chatChannel
+            
+        # Add party channel.
+        if self.party():
+            channels[CHANNEL_PARTY] = self.party().chatChannel
+            
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
@@ -1508,8 +1517,14 @@ class Player(Creature):
     def openChannel(self, id):
 
         if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
-            
-            channel = game.chat.getChannel(id)
+            if id == CHANNEL_GUILD:
+                # Guild channel.
+                channel  = self.guild().chatChannel
+            elif id == CHANNEL_PARTY:
+                # Party channel.
+                channel = self.party().chatChannel
+            else:
+                channel = game.chat.getChannel(id)
 
             if not channel:
                 return self.cancelMessage(_l(self, "Channel not found."))
@@ -1559,9 +1574,14 @@ class Player(Creature):
             return False
 
     def channelMessage(self, text, channelType=game.enum.MSG_CHANNEL, channelId=0):
-        channel = game.chat.getChannel(channelId)
+        if channelId == CHANNEL_GUILD:
+            channel = self.guild().chatChannel
+        elif channelId == CHANNEL_PARTY:
+            channel = self.party().chatChannel
+        else:
+            channel = game.chat.getChannel(channelId)
         try:
-            members = game.chat.getChannel(channelId).members
+            members = channel.members
         except:
             members = []
 
