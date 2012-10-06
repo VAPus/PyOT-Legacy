@@ -124,74 +124,87 @@ class Monster(Creature):
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
-        corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
-        if self.lastDamagers[0] != self.master:
-            try:
-                maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
-                drops = []
-                for loot in self.base.lootTable:
-                    if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
-                        if len(drops)+1 == maxSize:
-                            if config.stockLootInBagsIfNeeded:
-                                drops.insert(0, (config.stockLootBagId, None))
-                                maxSize += item.items[config.stockLootBagId]["containerSize"]
-                            else:
+        if self.base.data["corpse"]:
+            corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
+            
+            # Set owner.
+            corpse.owners = [self.lastDamagers[0]]
+            
+            def _clear_private_loot():
+                del corpse.owners
+                
+            # Callback to remove owner after config.privateLootFor seconds
+            callLater(config.privateLootFor, _clear_private_loot)
+            
+            if self.lastDamagers[0] != self.master:
+                try:
+                    maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+                    drops = []
+                    for loot in self.base.lootTable:
+                        if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
+                            if len(drops)+1 == maxSize:
+                                if config.stockLootInBagsIfNeeded:
+                                    drops.insert(0, (config.stockLootBagId, None))
+                                    maxSize += item.items[config.stockLootBagId]["containerSize"]
+                                else:
+                                    drops.append(loot)
+                                    break
+                            else:        
                                 drops.append(loot)
-                                break
-                        else:        
-                            drops.append(loot)
+                                
+                        elif len(loot) == 4:
+                            drops.append((loot[0], None, loot[4]))
                             
-                    elif len(loot) == 4:
-                        drops.append((loot[0], None, loot[4]))
-                        
-                ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
-                if type(ret) == list:
-                    drops = ret
+                    ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
+                    if type(ret) == list:
+                        drops = ret
 
-                for loot in drops:
-                    lenLoot = len(loot)
-                    ret = 0
-                    if lenLoot == 2:
-                        ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
-                        lootMsg.append(ritem.name())
-                        ret = corpse.container.placeItemRecursive(ritem)
-                            
-                    elif lenLoot == 3:
-                        count = random.randint(1, loot[2]) * config.lootMaxRate
-                        if count > 100:
-                            while count:
-                                depCount = min(count, 100)
-                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                                lootMsg.append(ritem.name())
-                                ret = corpse.container.placeItemRecursive(ritem)
-                                count -= depCount
-                        else:
-                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                    for loot in drops:
+                        lenLoot = len(loot)
+                        ret = 0
+                        if lenLoot == 2:
+                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
                             lootMsg.append(ritem.name())
                             ret = corpse.container.placeItemRecursive(ritem)
                                 
-                    elif lenLoot == 4:
-                        count = random.randint(loot[4], loot[2]) * config.lootMaxRate
-                        if count > 100:
-                            while count:
-                                depCount = min(count, 100)
-                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                        elif lenLoot == 3:
+                            count = random.randint(1, loot[2]) * config.lootMaxRate
+                            if count > 100:
+                                while count:
+                                    depCount = min(count, 100)
+                                    ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                                    lootMsg.append(ritem.name())
+                                    ret = corpse.container.placeItemRecursive(ritem)
+                                    count -= depCount
+                            else:
+                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                                 lootMsg.append(ritem.name())
                                 ret = corpse.container.placeItemRecursive(ritem)
-                                count -= depCount
                                     
-                        else:
-                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                            lootMsg.append(ritem.name())
-                            ret = corpse.container.placeItemRecursive(ritem)
-                                
+                        elif lenLoot == 4:
+                            count = random.randint(loot[4], loot[2]) * config.lootMaxRate
+                            if count > 100:
+                                while count:
+                                    depCount = min(count, 100)
+                                    ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+                                    lootMsg.append(ritem.name())
+                                    ret = corpse.container.placeItemRecursive(ritem)
+                                    count -= depCount
+                                        
+                            else:
+                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+                                lootMsg.append(ritem.name())
+                                ret = corpse.container.placeItemRecursive(ritem)
+                                    
 
-                    if ret == None:
-                        log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
-                        break
-            except:
-                pass
-        
+                        if ret == None:
+                            log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
+                            break
+                except:
+                    pass
+        else:
+            corpse = None
+            
         scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
@@ -206,29 +219,40 @@ class Monster(Creature):
         splash = game.item.Item(enum.FULLSPLASH)
         splash.fluidSource = self.base.blood
         
-        
-        tile.placeItem(corpse)
+        if corpse:
+            tile.placeItem(corpse)
         tile.placeItem(splash)
         
         # Start decay
-        corpse.decay(self.position)
+        if corpse:
+            corpse.decay(self.position)
         splash.decay(self.position)
         
         # Remove me. This also refresh the tile.
         self.remove()
 
-        # TODO experience split, loot etc.
         if self.lastDamagers[0] and self.lastDamagers[0].isPlayer() and self.lastDamagers[0] != self.master:
             if lootMsg:
                 self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
                 self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
                 
-            if self.lastDamagers[0].data["stamina"] or config.noStaminaNoExp == False:
-                self.lastDamagers[0].modifyExperience(self.base.experience *self.lastDamagers[0].getExperienceRate())
+            # Experience split.
+            attackerParty = self.lastDamagers[0].party()
+            if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
+                for member in attackerParty.members:
+                    if member.data["stamina"] or config.noStaminaNoExp == False:
+                        exp = (self.base.experience / len(attackerParty.members)) * config.partyExperienceFactor
+                        member.modifyExperience(exp * member.getExperienceRate())
+                        
+                        if exp >= member.data["level"]:
+                            member.soulGain()
+            else:
+                if self.lastDamagers[0].data["stamina"] or config.noStaminaNoExp == False:
+                    self.lastDamagers[0].modifyExperience(self.base.experience *self.lastDamagers[0].getExperienceRate())
 
-            if self.base.experience >= self.lastDamagers[0].data["level"]:
-                self.lastDamagers[0].soulGain()
+                    if self.base.experience >= self.lastDamagers[0].data["level"]:
+                        self.lastDamagers[0].soulGain()
         
         # Begin respawn
         if self.respawn:
@@ -376,6 +400,7 @@ class MonsterBase(CreatureBase):
         self.walkAround()
         self.bloodType()
         self.setTargetChance()
+        self.setDefense()
         
         self.meleeAttacks = []
         self.distanceAttacks = []
@@ -394,6 +419,7 @@ class MonsterBase(CreatureBase):
         self.corpseAction = []
         self.prepared = False
         self._loot = None
+        
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
         if not self.prepared:

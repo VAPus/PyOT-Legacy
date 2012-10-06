@@ -15,6 +15,7 @@ import game.resource
 import game.item
 import game.party
 from struct import pack, unpack
+import traceback
 
 # Probably not a good place, but
 from game.creature import Creature
@@ -240,7 +241,8 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.getSkull(player)) # Skull
-        self.uint8(creature.shield) # Party/Shield
+        print creature, creature.getShield(player)
+        self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
             self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
@@ -556,9 +558,24 @@ class BasePacket(TibiaPacket):
         self.uint32(creatureId)
         self.uint8(skull)
         
+    def shield(self, creatureId, shield):
+        self.uint8(0x91)
+        self.uint32(creatureId)
+        self.uint8(shield)
+        
 class BaseProtocol(object):
     Packet = BasePacket
+    
     def handle(self, player, packet):
+        try:
+            self._handle(player, packet)
+        except:
+            print "\n\n[UNHANDLED CORE EXCEPTION!]"
+            traceback.print_exc()
+            print "==============================\n"
+
+            
+    def _handle(self, player, packet):
         packetType = packet.uint8()
 
         if packetType == 0x14: # Logout
@@ -690,6 +707,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xA7: # Leave party
             player.leaveParty()
+            
+        elif packetType == 0xA8: # Share experience
+            self.handleShareExperience(player, packet)
             
         elif packetType == 0xC9:
             self.handleUpdateTile(player,packet)
@@ -1662,21 +1682,24 @@ class BaseProtocol(object):
         if not party or party.leader != creature:
             return
         
-        party.addMember(creature)
+        party.addMember(player)
         
     def handleRevokePartyInvite(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        myParty = player.party()
         
-        if creature.party() == player.party():
-            player.message("%s is already a member of the party." % creature.name())
+        if not myParty:
+            player.message("You don't have a party!")
             return
-            
-        # Grab the party
-        party = player.party()
-        if not party or party.leader != player:
+        elif player is not myParty.leader:
+            player.message("You are not the party leader!")
             return
+        elif creature.party() != myParty:
+            player.message("%s is not a member/invite of the party." % creature.name())
+            return
+
         
-        party.removeInvite(creature)        
+        myParty.removeInvite(creature)        
         
     def handlePassPartyLeadership(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
@@ -1691,6 +1714,14 @@ class BaseProtocol(object):
             return
         
         party.changeLeader(creature)
+        
+    def handleShareExperience(self, player, packet):
+        # Grab the party
+        party = player.party()
+        if not party or party.leader != player:
+            return
+        
+        party.toggleShareExperience()
         
     @inlineCallbacks
     def handleThanks(self, player, packet):

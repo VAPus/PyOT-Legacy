@@ -84,17 +84,20 @@ class Creature(object):
         self.alive = True
         self.lastDamagers = deque(maxlen=config.trackHits)
         self.solid = not config.creatureWalkthrough
-        self.shield = 0
         self.emblem = 0
+        self.shield = 0
         self.skull = 0
         self.knownBy = set()
         self.conditions = {}
         self.walkPattern = None
         self.activeSummons = []
         self.doHideHealth = False
+        self.lastPassedDamage = 0
+        
+        # Skulls
         self.trackSkulls = {}
         self._checkSkulls = None
-        
+
         # Light stuff
         self.lightLevel = 0
         self.lightColor = 0
@@ -620,8 +623,7 @@ class Creature(object):
         return dmg
 
     def onHit(self, by, dmg, type, effect=None):
-        self.lastDamagers.appendleft(by)
-
+        
         if not type == game.enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
@@ -688,6 +690,9 @@ class Creature(object):
         dmg = max(-self.data["health"], dmg)
         
         if dmg:
+            self.lastDamagers.appendleft(by)
+            by.lastPassedDamage = time.time()
+            
             if magicEffect:
                 self.magicEffect(magicEffect)
             tile = game.map.getTile(self.position)
@@ -1526,6 +1531,24 @@ class Creature(object):
         
     def toggleRaiseMessages(self):
         self.raiseMessages = not self.raiseMessages
+        
+    ###################
+    ### Party sheilds
+    ###################
+    def setShield(self, shield):
+        if self.shield == shield:
+            return
+
+        self.shield = shield
+        
+        for player in getPlayers(self.position):
+            with player.packet() as stream:
+                stream.shield(self.cid, shield)
+
+    def getShield(self, craeture):
+        return self.shield
+        
+            
                 
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):

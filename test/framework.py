@@ -113,9 +113,12 @@ class FrameworkTest(unittest.TestCase):
         
         setattr(config, name, value)
         
-    def restoreConfig(self):
-        for key in self._overrideConfig:
+    def restoreConfig(self, key=None):
+        if key:
             setattr(config, key, self._overrideConfig[key])
+        else:
+            for key in self._overrideConfig:
+                setattr(config, key, self._overrideConfig[key])
             
     def clearDelayedCalls(self):
         for call in reactor.getDelayedCalls():
@@ -138,7 +141,7 @@ class FrameworkTest(unittest.TestCase):
             d = game.engine.loader(startTime)
             # HACK!
             # Kinda necessary if any scripts use load events from say SQL.
-            d.addCallback(lambda x: asyncSleep(2))
+            d.addCallback(lambda x: asyncSleep(0.5))
             return d
         self.server = SERVER
         
@@ -184,7 +187,7 @@ class FrameworkTestGame(FrameworkTest):
         # No network abilities, or spawning or such.
         
         # Data must be valid, just random.
-        data = {"id": id, "name": name, "world_id": 0, "group_id": 6, "account_id": 0, "vocation": 6, "health": 100, "mana": 100, "soul": 100, "manaspent": 10000, "experience": 5000, "posx": 1000, "posy": 1000, "posz": 7, "instanceId": None, "sex": 0, "looktype": 100, "lookhead": 100, "lookbody": 100, "looklegs": 100, "lookfeet": 100, "lookaddons": 0, "lookmount": 100, "town_id": 1, "skull": 0, "stamina": 0, "storage": "", "inventory": "", "depot": "", "conditions": "", "skills": {SKILL_FIST: 10, SKILL_SWORD: 10, SKILL_CLUB: 10, SKILL_AXE: 10, SKILL_DISTANCE: 10, SKILL_SHIELD: 10, SKILL_FISH: 10}, "skill_tries": {SKILL_FIST: 0, SKILL_SWORD: 0, SKILL_CLUB: 0, SKILL_AXE: 0, SKILL_DISTANCE: 0, SKILL_SHIELD: 0, SKILL_FISH: 0}, "language":"en_EN", "guild_id":0, "guild_rank":0, "balance":0}
+        data = {"id": id, "name": name, "world_id": 0, "group_id": 6, "account_id": 0, "vocation": 6, "health": 100, "mana": 100, "soul": 100, "manaspent": 10000, "experience": 5000, "posx": 1000, "posy": 1000, "posz": 7, "instanceId": None, "sex": 0, "looktype": 100, "lookhead": 100, "lookbody": 100, "looklegs": 100, "lookfeet": 100, "lookaddons": 0, "lookmount": 100, "town_id": 1, "skull": 0, "stamina": 100000, "storage": "", "inventory": "", "depot": "", "conditions": "", "skills": {SKILL_FIST: 10, SKILL_SWORD: 10, SKILL_CLUB: 10, SKILL_AXE: 10, SKILL_DISTANCE: 10, SKILL_SHIELD: 10, SKILL_FISH: 10}, "skill_tries": {SKILL_FIST: 0, SKILL_SWORD: 0, SKILL_CLUB: 0, SKILL_AXE: 0, SKILL_DISTANCE: 0, SKILL_SHIELD: 0, SKILL_FISH: 0}, "language":"en_EN", "guild_id":0, "guild_rank":0, "balance":0}
 
         # Add player as if he was online.
         player = game.player.Player(self.client, data)

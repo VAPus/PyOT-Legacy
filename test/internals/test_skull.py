@@ -142,3 +142,32 @@ class TestAttackSkulls(framework.FrameworkTestGame):
         # Force refreshment test.
         self.player.skull = 0
         self.assertEqual(self.player.getSkull(None), SKULL_BLACK)
+        
+    def test_greenskull(self):
+        # Ignore blocking.
+        self.player.ignoreBlock = True
+        
+        # Make party
+        party = self.player.newParty()
+        
+        # Target
+        target = self.setupPlayer()
+        
+        party.addMember(target)
+        
+        # We're green?
+        self.assertEqual(self.player.getSkull(target), SKULL_GREEN)
+        self.assertEqual(target.getSkull(self.player), SKULL_GREEN)
+        
+        # Attack
+        # Set target
+        # Avoid auto attacks.
+        self.player.target = target
+        self.player.targetMode = 1
+        self.player.attackTarget(-10)
+        
+        # We're still green?
+        self.assertEqual(self.player.getSkull(target), SKULL_GREEN)
+        self.assertEqual(target.getSkull(self.player), SKULL_GREEN)
+        
+        

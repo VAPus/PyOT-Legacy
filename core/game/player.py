@@ -360,6 +360,11 @@ class Player(Creature):
                 with self.packet() as stream:
                     stream.icons(send)
 
+    def refreshShield(self):
+        for player in getPlayers(self.position):
+            with player.packet() as stream:
+                stream.shield(self.cid, self.getShield(player))
+                
     def setIcon(self, icon):
         if not self.extraIcons & icon:
             self.extraIcons += icon
@@ -749,6 +754,8 @@ class Player(Creature):
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
+        exp = int(exp)
+        
         up = True
         if exp < 0:
             up = False
@@ -1491,6 +1498,15 @@ class Player(Creature):
     # Channel system
     def openChannels(self):
         channels = game.chat.getChannels(self)
+        
+        # Add guild chat.
+        if self.guild():
+            channels[CHANNEL_GUILD] = self.guild().chatChannel
+            
+        # Add party channel.
+        if self.party():
+            channels[CHANNEL_PARTY] = self.party().chatChannel
+            
         channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
@@ -1501,8 +1517,14 @@ class Player(Creature):
     def openChannel(self, id):
 
         if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
-            
-            channel = game.chat.getChannel(id)
+            if id == CHANNEL_GUILD:
+                # Guild channel.
+                channel  = self.guild().chatChannel
+            elif id == CHANNEL_PARTY:
+                # Party channel.
+                channel = self.party().chatChannel
+            else:
+                channel = game.chat.getChannel(id)
 
             if not channel:
                 return self.cancelMessage(_l(self, "Channel not found."))
@@ -1552,9 +1574,14 @@ class Player(Creature):
             return False
 
     def channelMessage(self, text, channelType=game.enum.MSG_CHANNEL, channelId=0):
-        channel = game.chat.getChannel(channelId)
+        if channelId == CHANNEL_GUILD:
+            channel = self.guild().chatChannel
+        elif channelId == CHANNEL_PARTY:
+            channel = self.party().chatChannel
+        else:
+            channel = game.chat.getChannel(channelId)
         try:
-            members = game.chat.getChannel(channelId).members
+            members = channel.members
         except:
             members = []
 
@@ -2524,6 +2551,10 @@ class Player(Creature):
 
         self.removeMe = True
 
+        # Clear party.
+        if self.party():
+            self.leaveParty()
+            
         #self.remove(False)
         
         return True
@@ -2623,6 +2654,12 @@ class Player(Creature):
     def leaveParty(self):
         if self.partyObj:
             self.partyObj.removeMember(self)
+            
+    def setParty(self, partyObj):
+        if self.partyObj:
+            raise Exception("You got to leave the party before you can join another one")
+        
+        self.partyObj = partyObj
     # Trade
     def tradeItemRequest(self, between, items, confirm=False):
         if confirm:
@@ -2841,3 +2878,18 @@ class Player(Creature):
                 self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
                 
         return self.skull
+    
+    # Shield
+    def setShield(self, shield):
+        raise Exception("NOT AVAILABLE ON PLAYERS.")
+
+    def getShield(self, creature):
+        myParty = self.party()
+        reqParty = creature.party()
+        
+        if myParty:
+            return myParty.getShield(self, creature)
+        elif reqParty:
+            return reqParty.getShield(self, creature)
+        else:
+            return SHIELD_NONE

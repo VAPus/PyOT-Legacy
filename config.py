@@ -131,10 +131,15 @@ lootMaxRate = 1
 lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real tibia
 stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
 stockLootBagId = 1987 # Id of the bags to append
+privateLootFor = 10 # How long only you and your party can access the loot.
 
 # Experince
 experienceRate = 1
 experienceMessageColor = 215 # Between 1 or 255, else debug
+partyExperienceFactor = 1.05 # 5% extra.
+partyExperienceDistance = 30 # In fields.
+partyExperienceLevelFactor = 2/3.0
+partyExperienceContributeTime = 120
 
 # Map cleaning & unloading
 # Note: All dropped items on the map will be removed, all creatures will (hopefully) despawn etc

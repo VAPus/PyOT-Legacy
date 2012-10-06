@@ -67,9 +67,14 @@ class Channel(object):
             return None        
             
 def openChannel(channelName, id = None, public=True):
-    channelId = id or len(channels)
+    channelId = id or (len(channels) + CHANNEL_OFFSET)
     channel = Channel(channelName, channelId, public)
     channels[channelId] = channel
+    return channel
+
+def openInstanceChannel(channelName, id):
+    channelId = id
+    channel = Channel(channelName, channelId, False)
     return channel
 
 def delChannel(channelId):
