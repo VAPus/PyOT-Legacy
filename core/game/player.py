@@ -2531,6 +2531,10 @@ class Player(Creature):
 
         self.removeMe = True
 
+        # Clear party.
+        if self.party():
+            self.leaveParty()
+            
         #self.remove(False)
         
         return True
