@@ -1,6 +1,6 @@
-from .. import framework
+from test.framework import FrameworkTestGame
 
-class TestParty(framework.FrameworkTestGame):
+class TestParty(FrameworkTestGame):
     def test_create_party(self):
         # We have no party.
         self.assertFalse(self.player.party())

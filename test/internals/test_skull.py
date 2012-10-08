@@ -1,6 +1,6 @@
-from .. import framework
+from test.framework import FrameworkTestGame
 
-class TestAttackSkulls(framework.FrameworkTestGame):
+class TestAttackSkulls(FrameworkTestGame):
     def init(self):
         # Turn off protection zones.
         self.overrideConfig("protectedZones", False)

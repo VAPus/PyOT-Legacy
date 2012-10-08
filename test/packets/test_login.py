@@ -1,6 +1,6 @@
-from .. import framework
+from test.framework import FrameworkTest
 
-class TestLogin(framework.FrameworkTest):
+class TestLogin(FrameworkTest):
     def test_login(self):
         packet = self.tr.sendPacket("bhhbsss", 0xFF, 0x00, 963, 0, "111", "Test", "111", ret=True)
         d = self.client.onFirstPacket(packet)

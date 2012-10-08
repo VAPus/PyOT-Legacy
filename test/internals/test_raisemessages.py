@@ -1,6 +1,6 @@
-from .. import framework
+from test.framework import FrameworkTestGame
 
-class TestRaiseMessages(framework.FrameworkTestGame):
+class TestRaiseMessages(FrameworkTestGame):
     def init(self):
         # Turn off protection zones.
         self.overrideConfig("protectedZones", False)
