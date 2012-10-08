@@ -23,7 +23,8 @@ class TestRaiseMessages(FrameworkTestGame):
 
         # Make sure we got unmarked warnings on.
         self.player.modes[2] = True
-                
+        
+        self.assertTrue(self.player.raiseMessages)
         # Should raise MsgUnmarkedPlayer
         self.assertRaises(MsgUnmarkedPlayer, self.player.setAttackTarget, (target.cid))
         

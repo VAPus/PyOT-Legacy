@@ -1,8 +1,8 @@
-from .. import framework
+from test.framework import FrameworkTestGame
 import unittest
 import config
 
-class TestGuild(framework.FrameworkTestGame):
+class TestGuild(FrameworkTestGame):
     def init(self):
         # Turn off protection zones.
         self.overrideConfig("protectedZones", False)

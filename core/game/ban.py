@@ -109,9 +109,10 @@ def ipIsBanned(ip):
         entry = banIps[ip]
         if entry.time > time.time():
             return True
-        return False
     except:
         return False
+        
+    return False
 
 def playerIsBanned(player):
     if isinstance(player, game.player.Player):
@@ -122,9 +123,10 @@ def playerIsBanned(player):
         entry = banPlayers[player]
         if entry.time > time.time():
             return True
-        return False
     except:
         return False
+        
+    return False
 
 def accountIsBanned(account):
     if isinstance(account, game.player.Player):
@@ -134,9 +136,10 @@ def accountIsBanned(account):
         entry = banAccounts[account]
         if entry.time > time.time():
             return True
-        return False
     except:
         return False
+        
+    return False
 
 @inlineCallbacks
 def addBan(by, type, data, reason, expire):
