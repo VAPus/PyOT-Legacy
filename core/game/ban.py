@@ -5,15 +5,55 @@ banPlayers = {}
 banIps = {}
 
 class BanEntry(object):
-    __slots__ = 'id', 'time', 'reason'
+    __slots__ = 'id', 'by', 'time', 'reason'
     
-    def __init__(self, id, time, reason):
+    def __init__(self, id, by, time, reason):
         self.id = id
+        self.by = by
         self.time = time
         self.reason = reason
     
     def message(self):
         return "Reason: %s. It will expire: %s" % (self.reason, datetime.datetime.fromtimestamp(self.time).strftime(config.banTimeFormat))
+    
+    def remove(self):
+        global banAccounts
+        global banPlayers
+        global banIps
+        
+        # We can't remove until we got our id.
+        assert self.id
+        
+        # Walk over all and remove us. This is ineffective. But not so common.
+        found = False
+        for entry in banAccounts:
+            if banAccounts[entry] is self:
+                del banAccounts[entry]
+                found = True
+                break
+                
+        if not found:
+            found = False
+            for entry in banPlayers:
+                if banPlayers[entry] is self:
+                    del banPlayers[entry]
+                    found = True
+                    break
+                    
+        if not found:
+            found = False
+            for entry in banPlayers:
+                if banPlayers[entry] is self:
+                    del banPlayers[entry]
+                    found = True
+                    break
+                    
+        if not found:
+            raise Exception("Ban was not found. Can't remove.")
+        
+        sql.runOperation("DELETE FROM bans WHERE ban_id = %s", self.id)
+        
+            
 @inlineCallbacks    
 def refresh():
     global banAccounts, banPlayers, banIps
@@ -23,11 +63,11 @@ def refresh():
     
     _time = time.time()
     
-    for entry in (yield sql.runQuery("SELECT ban_id, ban_type, ban_data, ban_reason, ban_expire FROM bans WHERE ban_expire > %s", (_time))):
-        banEntry = BanEntry(entry[0], entry[4], entry[3])
+    for entry in (yield sql.runQuery("SELECT ban_id, ban_type, ban_by, ban_data, ban_reason, ban_expire FROM bans WHERE ban_expire > %s", (_time))):
+        banEntry = BanEntry(entry[0], entry[3], entry[5], entry[4])
         
         if entry[1] == BAN_ACCOUNT:
-            accountId = int(entry[2])
+            accountId = int(entry[3])
             _banAccounts[accountId] = banEntry
             
             # Check if any player use this account.
@@ -35,7 +75,7 @@ def refresh():
                 if player.data["account_id"] == accountId:
                     player.exit("Your account have been banned! \n%s" % banEntry.message())
         elif entry[1] == BAN_PLAYER:
-            playerId = int(entry[2])
+            playerId = int(entry[3])
             _banPlayers[playerId] = banEntry
             
             # Check if player is online.
@@ -45,7 +85,7 @@ def refresh():
                     break
                     
         elif entry[1] == BAN_IP:
-            _banIps[entry[2]] = banEntry
+            _banIps[entry[3]] = banEntry
             
             # Check if player is online.
             for player in game.player.allPlayersObject:
@@ -99,10 +139,14 @@ def accountIsBanned(account):
         return False
 
 @inlineCallbacks
-def addBan(type, data, reason, expire):
+def addBan(by, type, data, reason, expire):
     global banAccounts, banPlayers, banIps
+    
+    if isinstance(by, game.player.Player):
+        by = by.data["id"]
+        
     expire = time.time() + expire
-    banEntry = BanEntry(0, expire, reason)
+    banEntry = BanEntry(0, by, expire, reason)
     if type == BAN_ACCOUNT:
         banAccounts[data] = banEntry
         
@@ -122,5 +166,5 @@ def addBan(type, data, reason, expire):
             if player.getIP() == data:
                 player.exit("Your ip have been banned! \n%s" % banEntry.message())
                 
-    banEntry.id = yield sql.runOperationLastId("INSERT INTO bans (ban_type, ban_data, ban_reason, ban_expire) VALUES(%s, %s, %s, %s)", (type, data, reason, expire))
+    banEntry.id = yield sql.runOperationLastId("INSERT INTO bans (ban_type, ban_by, ban_data, ban_reason, ban_expire) VALUES(%s, %s, %s, %s, %s)", (type, by, data, reason, expire))
         

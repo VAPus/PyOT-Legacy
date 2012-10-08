@@ -1,4 +1,4 @@
-@register("talkactionRegex", r"/ban (?P<player>\w+) (?P<length>\d+) (?P<reason>.*)")
+@register("talkactionRegex", r"/ban (?P<player>\w+) (?P<length>\d+) ?(?P<reason>.*)")
 @access("BAN")
 def banPlayer(creature, player, length, reason, **k):
     player = getPlayer(player)
@@ -11,12 +11,12 @@ def banPlayer(creature, player, length, reason, **k):
         creature.message("Player %s is already banned" % player.name())
         return False
         
-    addBan(BAN_PLAYER, player.data["id"], reason, int(length))
+    addBan(creature, BAN_PLAYER, player.data["id"], reason, int(length))
     
     creature.message("Player %s has been banned." % player.name())
     return False
     
-@register("talkactionRegex", r"/ipban (?P<playerIp>[.\w]+) (?P<length>\d+) (?P<reason>.*)")
+@register("talkactionRegex", r"/ipban (?P<playerIp>[.\w]+) (?P<length>\d+) ?(?P<reason>.*)")
 @access("BAN")
 def banIp(creature, playerIp, length, reason, **k):
     
@@ -45,12 +45,12 @@ def banIp(creature, playerIp, length, reason, **k):
         return
         
         
-    addBan(BAN_IP, ip, reason, int(length))
+    addBan(creature, BAN_IP, ip, reason, int(length))
     
     creature.message("Ip %s has been banned." % ip)
     return False
     
-@register("talkactionRegex", r"/accban (?P<account>\w+) (?P<length>\d+) (?P<reason>.*)")
+@register("talkactionRegex", r"/accban (?P<account>\w+) (?P<length>\d+) ?(?P<reason>.*?)")
 @access("BAN")
 def banAccount(creature, account, length, reason, **k):
     if accountIsBanned(account):
@@ -58,7 +58,7 @@ def banAccount(creature, account, length, reason, **k):
         return False
         
     # XXX No vertification.
-    addBan(BAN_ACCOUNT, account, reason, int(length))
+    addBan(creature, BAN_ACCOUNT, account, reason, int(length))
     
     creature.message("Account %s has been banned." % account)
     return False

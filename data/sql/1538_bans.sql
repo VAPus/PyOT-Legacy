@@ -6,3 +6,6 @@ CREATE TABLE IF NOT EXISTS `bans` (
   `ban_expire` int(11) unsigned NOT NULL,
   PRIMARY KEY (`ban_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+ALTER TABLE `bans` ADD `ban_by` INT( 11 ) unsigned NULL DEFAULT NULL AFTER `ban_type` ,
+ADD INDEX ( `ban_by` ) 

@@ -807,7 +807,7 @@ def saveAll(force=False):
     commited = False
     
     t = time.time()
-    for player in game.player.allPlayersObject:
+    for player in game.player.allPlayers.values():
         result = player._saveQuery(force)
         if result:
             sql.runOperation(*result)
