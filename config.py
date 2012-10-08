@@ -53,6 +53,9 @@ motd = "PyOT, it's alive!"
 diagonalWalkCost = 3
 stairHopDelay = 2 # In seconds.
 
+# Object using.
+useDelay = 0.5 # How often objects can be used. 0 to disable. Introduced in 8.72.
+
 # Soulgain timer
 soulGain = 240 # 4 minutes
 

@@ -73,6 +73,8 @@ class Player(Creature):
 
         self.lastStairHop = 0
         
+        self.lastUsedObject = 0
+        
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -1123,6 +1125,11 @@ class Player(Creature):
             raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
 
+    def cantUseObjectThatFast(self):
+        if self.raiseMessages:
+            raise MsgCantUseObjectThatFast
+        self.cancelMessage(_l(self, "You cannot use objects that fast."))
+        
     def notPickupable(self):
         self.cancelMessage(_l(self, "You cannot take this object."))
 

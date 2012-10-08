@@ -30,3 +30,4 @@ class PositionNegative(BaseError): pass
 class MsgNotPossible(BaseError): pass
 class MsgCancel(BaseError): pass
 class MsgUnmarkedPlayer(BaseError): pass
+class MsgCantUseObjectThatFast(BaseError): pass

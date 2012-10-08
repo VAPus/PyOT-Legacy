@@ -1004,6 +1004,10 @@ class BaseProtocol(object):
         thing = player.findItem(stackPosition)
         end = None
 
+        if config.useDelay and player.lastUsedObject + config.useDelay > time.time():
+            player.cantUseObjectThatFast()
+            return
+        
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
@@ -1029,6 +1033,8 @@ class BaseProtocol(object):
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
+                if config.useDelay:
+                    player.lastUsedObject = time.time()
             
     @inlineCallbacks
     def handleUseWith(self, player, packet):
@@ -1052,6 +1058,10 @@ class BaseProtocol(object):
             onThing = player.findItem(stackPosition2)
         else:
             onThing = game.map.getTile(onPosition).topCreature()
+        
+        if config.useDelay and player.lastUsedObject + config.useDelay > time.time():
+            player.cantUseObjectThatFast()
+            return
         
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
@@ -1079,7 +1089,8 @@ class BaseProtocol(object):
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
                 game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
-
+                if config.useDelay:
+                    player.lastUsedObject = time.time()
 
     def handleAttack(self, player, packet):
         # HACK?
