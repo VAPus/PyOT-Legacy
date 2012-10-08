@@ -1113,9 +1113,12 @@ def moveItem(player, fromPosition, toPosition, count=0):
     slots = thing.slots()
     
     # Can it be placed there?
-    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != SLOT_AMMO and (toPosition.y-1) not in (SLOT_PURSE, SLOT_BACKPACK):
+    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (SLOT_PURSE, SLOT_BACKPACK):
         if (toPosition.y-1) not in slots:
-            return player.notPossible()
+            if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
+                pass
+            else:
+                return player.notPossible()
         
     if player.freeCapasity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
