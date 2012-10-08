@@ -296,16 +296,7 @@ class Player(Creature):
                                         self.position.z),
                                 18, 14, self)
             
-            for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
-                if self.inventory[slot-1]:
-                    stream.uint8(0x78)
-                    stream.uint8(slot)
-
-                    stream.item(self.inventory[slot-1])
-                else:
-                    stream.uint8(0x79)
-                    stream.uint8(slot)
-            
+            self.refreshInventory(stream)
             self.refreshStatus(stream)
             self.refreshSkills(stream)
 
@@ -336,6 +327,25 @@ class Player(Creature):
 
             reactor.callLater(self.rates[1], loseStamina)
         
+    def refreshInventory(self, streamX = None):
+        if self.client:
+            if not streamX:
+                stream = self.packet()
+            else:
+                stream = streamX
+                
+            for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
+                if self.inventory[slot-1]:
+                    stream.uint8(0x78)
+                    stream.uint8(slot)
+
+                    stream.item(self.inventory[slot-1])
+                else:
+                    stream.uint8(0x79)
+                    stream.uint8(slot)
+                    
+            if streamX:
+                stream.send(self.client)
     def refreshStatus(self, stream=None):
         if self.client:
             if stream:
@@ -1850,6 +1860,9 @@ class Player(Creature):
             elif self.inventory[game.enum.SLOT_RIGHT]:
                 defence = self.inventory[game.enum.SLOT_RIGHT].defence
 
+            if not defence:
+                defence = 0
+                
             defence += extradef
             defRate = 1
             if self.modes[1] == game.enum.OFFENSIVE:
@@ -2190,7 +2203,24 @@ class Player(Creature):
         if dmg:
             assert dmg < 0, "Damage must be negative"
             
-        if self.target and self.target.isAttackable(self) and self.inRange(self.target.position, 1, 1):
+        print "attackTarget!"
+        atkRange = 1
+        weapon = self.inventory[SLOT_RIGHT]
+        ammo = None
+        ok = True
+        if weapon and weapon.range:
+            atkRange = weapon.range
+            # This is probably a slot consuming weapon.
+            ammo = self.inventory[SLOT_AMMO]
+            if weapon.ammoType == "bolt" and (not ammo or ammo.ammoType != "bolt" or ammo.count <= 0):
+                self.cancelMessage("You are out of bolts.")
+                ok = False
+            elif weapon.ammoType == "arrow" and (not ammo or ammo.ammoType != "arrow" or ammo.count <= 0):
+                self.cancelMessage("You are out of arrows.")
+                ok = False
+            
+        print "Ok...", ok
+        if ok and self.target and self.target.isAttackable(self) and self.inRange(self.target.position, atkRange, atkRange):
             if not self.target.data["health"]:
                 self.target = None
             else:
@@ -2205,8 +2235,34 @@ class Player(Creature):
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
+                elif not dmg and atkRange:
+                    # First, hitChance.
+                    chance = min(ammo.maxHitChance, config.hitChance(self.getActiveSkill(SKILL_DISTANCE), weapon.hitChance))
+                    
+                    self.modifyItem(ammo, Position(0xFFFF, SLOT_AMMO+1), -1)
+                    
+                    if chance < random.randint(1,100):
+                        self.message("You missed!")
+                        self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+                        return
+                    
+                    minDmg = config.minDistanceDamage(self.data["level"])
+                    maxDmg = config.distanceDamage(weapon.attack + ammo.attack, self.getActiveSkill(SKILL_DISTANCE), factor)
+                    
+                    dmg = -random.randint(round(minDmg), round(maxDmg))
+                    
+                    
+                    skillType = SKILL_DISTANCE
+                    atkType = DISTANCE
+                    
+                    # Critical hit
+                    if config.criticalHitRate > random.randint(1, 100):
+                        dmg = dmg * config.criticalHitMultiplier
+                        self.criticalHit()
+                        
                 else:
                     skillType = self.inventory[5].weaponSkillType
+                    atkType = MELEE
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
 
@@ -2225,7 +2281,8 @@ class Player(Creature):
                     else:
                         self.target.onHit(self, dmg, game.enum.MELEE)
                         self.skillAttempt(skillType)"""
-                    target.onHit(self, dmg, game.enum.MELEE)
+                    print "calling onhit"
+                    target.onHit(self, dmg, atkType)
                     self.skillAttempt(skillType)
                 
                 if targetIsPlayer:

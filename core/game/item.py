@@ -169,6 +169,8 @@ class Item(object):
             if pos.y < 64:
                 if creature.inventory[pos.y-1] == self:
                     return pos
+                elif creature.inventory[pos.y] == self:
+                    return pos
                 else:
                     return False # We cant assume that inventory items move
                     

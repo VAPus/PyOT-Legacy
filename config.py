@@ -309,3 +309,7 @@ magicPower = lambda lvl,mlvl: max(1,(lvl + 4 * mlvl) / 100)
 fishingFormula = lambda x: 20*(1.1)**(x-10)
 
 meleeDamage = lambda attack,skill,level,factor: (0.085*factor*attack*skill)+(level/5)
+
+minDistanceDamage = lambda level: level // 5
+distanceDamage = lambda attack,skill,factor: (0.09*factor*attack*skill)
+hitChance = lambda skill, hitchance: hitchance*skill

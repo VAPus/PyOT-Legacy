@@ -905,7 +905,7 @@ class BaseProtocol(object):
                 slots = oldItem[1].slots()
                 checkSlots = False
                 # Before we remove it, can it be placed there?
-                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (game.enum.SLOT_AMMO) and (toPosition.y-1) not in (game.enum.SLOT_PURSE, game.enum.SLOT_BACKPACK):
+                if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != game.enum.SLOT_AMMO and (toPosition.y-1) not in (game.enum.SLOT_PURSE, game.enum.SLOT_BACKPACK):
                     checkSlots = True
                     if (toPosition.y-1) not in slots:
                         return
@@ -1139,6 +1139,8 @@ class BaseProtocol(object):
                         else:
                             player.itemToContainer(player.getContainer(fromPosition.y-64) or player.inventory[2], currItem[1].copy(), streamX=stream)
                     """    
+                    # HACK:
+                    player.refreshInventory(stream)
                     if sendUpdate:
                         stream.updateContainerItem(toPosition.y-64, toPosition.z, container.container.items[toPosition.z])
                     stream.send(player.client)
