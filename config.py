@@ -51,6 +51,7 @@ motd = "PyOT, it's alive!"
 
 # Walking
 diagonalWalkCost = 3
+stairHopDelay = 2 # In seconds.
 
 # Soulgain timer
 soulGain = 240 # 4 minutes

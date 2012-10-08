@@ -494,6 +494,10 @@ class Creature(object):
             game.scriptsystem.get('appear').runDeferNoReturn(creature2, self)
             game.scriptsystem.get('appear').runDeferNoReturn(self, creature2)
 
+        # Stairhop delay
+        if level and self.isPlayer():
+            self.lastStairHop = time.time()
+            
         if callback: reactor.callLater(0, callback)
         return True
 
@@ -864,7 +868,11 @@ class Creature(object):
             self.cancelTarget()
             self.target = None
             self.targetMode = 0
-
+            
+        # Stairhop delay
+        if self.isPlayer():
+            self.lastStairHop = time.time()
+            
     def turn(self, direction):
         assert direction < 4
         if self.direction == direction:

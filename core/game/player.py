@@ -71,6 +71,8 @@ class Player(Creature):
         self.blessings = 0
         self.deathPenalityFactor = 1
 
+        self.lastStairHop = 0
+        
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -2334,6 +2336,11 @@ class Player(Creature):
             self.target = None
             return
 
+        if self.lastStairHop - time.time() > config.stairHopDelay:
+            self.cancelTarget()
+            self.message("You can't attack so fast after changing level or teleporting.")
+            return
+        
         if cid in allCreatures:
             if allCreatures[cid].isAttackable(self):
                 target = allCreatures[cid]
