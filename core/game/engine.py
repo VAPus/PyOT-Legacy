@@ -273,6 +273,7 @@ def loader(timer):
     __builtin__.ipIsBanned = game.ban.ipIsBanned
     __builtin__.playerIsBanned = game.ban.playerIsBanned
     __builtin__.accountIsBanned = game.ban.accountIsBanned
+    __builtin__.addBan = game.ban.addBan
     
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban')

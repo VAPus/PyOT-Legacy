@@ -234,7 +234,7 @@ if config.enableWarSystem:
         creature.message(_l(creature, "War invitation with %(guildname)s have been %(status)s") % {"guildname":guildname, "status":status})
         return False
         
-    @register("talkactionRegex", "/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?P<duration>\d+) (?P<frags>\d+)")
+    @register("talkactionRegex", r"/war invite (?P<guildname>\w+) (?P<stakes>\d+) (?P<duration>\d+) (?P<frags>\d+)")
     def war_invitation(creature, guildname, stakes, duration, frags, **k):
         rank = creature.guildRank()
         if not rank or not rank.permission(GUILD_MANAGE_WARS):
@@ -275,7 +275,7 @@ if config.enableWarSystem:
         
         return False
         
-    @register("talkactionRegex", "/balance(?P<command>( pick| donate|))(?P<amount> \d+)")
+    @register("talkactionRegex", r"/balance(?P<command>( pick| donate|))(?P<amount> \d+)")
     def balance_management(creature, command, amount, **k):
         # TODO: This is suppose to happen in the bank balance, not the inventory, but it's harder to debug it then, right?.
         

@@ -31,7 +31,7 @@ def refresh():
             _banAccounts[accountId] = banEntry
             
             # Check if any player use this account.
-            for player in game.player.allPlayerObjects:
+            for player in game.player.allPlayersObject:
                 if player.data["account_id"] == accountId:
                     player.exit("Your account have been banned! \n%s" % banEntry.message())
         elif entry[1] == BAN_PLAYER:
@@ -39,7 +39,7 @@ def refresh():
             _banPlayers[playerId] = banEntry
             
             # Check if player is online.
-            for player in game.player.allPlayerObjects:
+            for player in game.player.allPlayersObject:
                 if player.data["id"] == playerId:
                     player.exit("Your player have been banned! \n%s" % banEntry.message())
                     break
@@ -48,7 +48,7 @@ def refresh():
             _banIps[entry[2]] = banEntry
             
             # Check if player is online.
-            for player in game.player.allPlayerObjects:
+            for player in game.player.allPlayersObject:
                 if player.getIP() == entry[2]:
                     player.exit("Your ip have been banned! \n%s" % banEntry.message())
                     break
@@ -62,7 +62,7 @@ def refresh():
     banIps = _banIps
     
 def ipIsBanned(ip):
-    if isinstance(ip, Player):
+    if isinstance(ip, game.player.Player):
         ip = ip.getIP()
         
     try:
@@ -74,7 +74,7 @@ def ipIsBanned(ip):
         return False
 
 def playerIsBanned(player):
-    if isinstance(player, Player):
+    if isinstance(player, game.player.Player):
         player = player.data["id"]
     return player in banPlayers
 
@@ -87,7 +87,7 @@ def playerIsBanned(player):
         return False
 
 def accountIsBanned(account):
-    if isinstance(account, Player):
+    if isinstance(account, game.player.Player):
         account = account.data["account_id"]
 
     try:
@@ -106,19 +106,19 @@ def addBan(type, data, reason, expire):
     if type == BAN_ACCOUNT:
         banAccounts[data] = banEntry
         
-        for player in game.player.allPlayerObjects:
+        for player in game.player.allPlayersObject:
             if player.data["account_id"] == data:
                 player.exit("Your account have been banned! \n%s" % banEntry.message())
     elif type == BAN_PLAYER:
         banPlayers[data] = banEntry
         
-        for player in game.player.allPlayerObjects:
+        for player in game.player.allPlayersObject:
             if player.data["id"] == data:
                 player.exit("Your player have been banned! \n%s" % banEntry.message())
                 
     elif type == BAN_IP:
         banIps[data] = banEntry
-        for player in game.player.allPlayerObjects:
+        for player in game.player.allPlayersObject:
             if player.getIP() == data:
                 player.exit("Your ip have been banned! \n%s" % banEntry.message())
                 
