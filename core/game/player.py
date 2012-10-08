@@ -2336,7 +2336,7 @@ class Player(Creature):
             self.target = None
             return
 
-        if self.lastStairHop - time.time() > config.stairHopDelay:
+        if time.time() - self.lastStairHop < config.stairHopDelay:
             self.cancelTarget()
             self.message("You can't attack so fast after changing level or teleporting.")
             return
