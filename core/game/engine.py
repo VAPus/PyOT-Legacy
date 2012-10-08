@@ -50,7 +50,7 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "_txtColor"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "_txtColor"]
 
 def windowsLoading():
     if config.consoleColumns:
@@ -1066,7 +1066,132 @@ def loadPlayerById(playerId):
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[cd['name']])
+
+def moveItem(player, fromPosition, toPosition, count=0):
+    # TODO, script events.
+    
+    # Analyse a little.
+    fromMap = False
+    toMap = False
+
+    if fromPosition.x != 0xFFFF:
+        # From map
+        fromMap = True
+
+    if toPosition.x != 0xFFFF:
+        toMap = True
         
+    oldItem = None
+    renew = False
+    stack = True
+        
+    thing = player.findItem(fromPosition)
+    destItem = None
+    if isinstance(toPosition, StackPosition):
+        destItem = player.findItem(toPosition)
+    if not thing:
+        return False
+        
+    # Some vertifications.
+    if thing.stackable and count and count > thing.count:
+        return player.notPossible()
+    
+    elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
+        return player.notPickable()
+                    
+    elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
+        return player.notPossible()
+    
+    if destItem and destItem.inContainer: # Recursive check.
+        container = destItem.inContainer
+            
+        while container:
+            if container == thing:
+                return player.notPossible()
+            container = container.inContainer
+            
+    slots = thing.slots()
+    
+    # Can it be placed there?
+    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) != SLOT_AMMO and (toPosition.y-1) not in (SLOT_PURSE, SLOT_BACKPACK):
+        if (toPosition.y-1) not in slots:
+            return player.notPossible()
+        
+    if player.freeCapasity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
+        player.tooHeavy()
+        return False
+    
+    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1)) == False:
+        return
+    elif toPosition.x == 0xFFFF and toPosition.y < 64 and game.scriptsystem.get("equip").runSync(player, thing, slot = (toPosition.y-1)) == False:
+        return
+    
+    # Special case when both items are the same and stackable.
+    if destItem and destItem.itemId == thing.itemId and destItem.stackable:
+        newCount = min(100, destItem.count + count) - destItem.count
+        player.modifyItem(destItem, toPosition, newCount)
+        player.modifyItem(thing, fromPosition, -count)
+        return
+    
+    # remove from fromPosition.
+    elif count and thing.stackable:
+        newItem = thing.copy()
+        newItem.count = count
+        
+        player.modifyItem(thing, fromPosition, -count)
+    else:
+        newItem = thing.copy()
+        player.removeItem(fromPosition, thing)
+
+    if toMap:
+        # Place to ground.
+        thisTile = toPosition.getTile()
+        
+        for item in thisTile.getItems():
+            if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
+                return
+            if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+                return
+            
+        toPosition.getTile().placeItem(newItem)
+        updateTile(toPosition, toPosition.getTile())
+        
+    elif toPosition.x == 0xFFFF and toPosition.y < 64:
+        # Inventory.
+        player.itemToInventory(newItem, toPosition.y)
+        
+    elif destItem and destItem.container:
+        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
+            return
+        if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+            return
+        
+        player.itemToContainer(destItem, newItem)
+    else:
+        container = player.getContainer(toPosition.y-64)
+        
+        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
+            return
+        if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+            return
+        
+        player.itemToContainer(container, newItem)
+    
+    if destItem and toPosition.x == 0xFFFF:
+        # Move destItem.
+        if thing.inContainer:
+            player.itemToContainer(thing.inContainer, destItem)
+        else:
+            player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
+        
+    # Update everything. Lazy.
+    player.refreshInventory()
+    player.updateAllContainers()
+    player.refreshStatus()
+    
+    # Done.
+    return True
+    
 # Helper calls
 def summonCreature(name, position, master=None):
     import game.monster

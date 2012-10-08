@@ -1487,11 +1487,13 @@ class Player(Creature):
                 return False
             slot = slot[0]
 
-        if stack and item.stackable and item.itemId == self.inventory[slot-1].itemId and self.inventory[slot-1].count+item.count <= 100:
+        if self.inventory[slot-1] and stack and item.stackable and item.itemId == self.inventory[slot-1].itemId and self.inventory[slot-1].count+item.count <= 100:
             self.inventory[slot-1].count += item.count
         else:
             self.inventory[slot-1] = item
 
+        item.decayCreature = self
+        item.decayPosition = Position(0xFFFF, slot-1, 0)
         stream = self.packet()
         stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
@@ -1500,7 +1502,7 @@ class Player(Creature):
 
     def updateInventory(self, slot):
         stream = self.packet()
-        if self.inventory[slot-1].stackable and not self.inventory[slot-1].count:
+        if not self.inventory[slot-1] or (self.inventory[slot-1].stackable and not self.inventory[slot-1].count):
             stream.removeInventoryItem(slot)
         else:
             stream.addInventoryItem(slot, self.inventory[slot-1])

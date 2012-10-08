@@ -445,8 +445,6 @@ class Item(object):
         if position.x == 0xFFFF:
             self.decayCreature = creature
             
-
-        
         def executeDecay():
             try:
                 if self.decayCreature:
@@ -454,18 +452,22 @@ class Item(object):
                     self.decayCreature.removeCache(self)
                     
                     # Change itemId
-                    self.itemid = self.decayTo
+                    if to:
+                        self.itemid = to
                     
-                    # Add cache
-                    self.decayCreature.addCache(self)
+                        # Add cache
+                        self.decayCreature.addCache(self)
                     
-                    # We can assume the bag is open. And the inventory is always visible.
-                    if position.y < 64:
-                        stream = self.decayCreature.packet()
-                        stream.addInventoryItem(position.y, self)
-                        stream.send(self.decayCreature.client)
+                        # We can assume the bag is open. And the inventory is always visible.
+                        if position.y < 64:
+                            stream = self.decayCreature.packet()
+                            stream.addInventoryItem(position.y, self)
+                            stream.send(self.decayCreature.client)
+                        else:
+                            self.decayCreature.updateAllContainers()
+                            
                     else:
-                        self.decayCreature.updateAllContainers()
+                        self.decayCreature.removeItem(position, self)
                         
                 else:
                     self.transform(self.decayTo, self.decayPosition)
@@ -480,9 +482,12 @@ class Item(object):
                     callback(self)
             except:
                 pass # I don't exist here anymore.
-                
-        self.executeDecay = reactor.callLater(duration, executeDecay)
-
+        
+        if duration:
+            self.executeDecay = reactor.callLater(duration, executeDecay)
+        else:
+            executeDelay()
+            
     def stopDecay(self):
         if self.executeDecay:
             try:
