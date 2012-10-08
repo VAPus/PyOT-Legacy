@@ -275,7 +275,7 @@ if config.enableWarSystem:
         
         return False
         
-    @register("talkactionRegex", r"/balance(?P<command>( pick| donate|))(?P<amount> \d+)")
+    @register("talkactionRegex", r"/balance (?P<command>(pick|donate)) ?(?P<amount>\d+)")
     def balance_management(creature, command, amount, **k):
         # TODO: This is suppose to happen in the bank balance, not the inventory, but it's harder to debug it then, right?.
         
@@ -291,6 +291,9 @@ if config.enableWarSystem:
             creature.lmessage("You are not member of a guild.")
             return False
             
+        if not amount:
+            creature.lmessage("You have to specify an amount")
+            return False
         if command == "donate":
             money = creature.getMoney()
             if money < amount:
@@ -302,7 +305,7 @@ if config.enableWarSystem:
             
             creature.message(_l(creature, "You donated %(amount)d to your guild!") % {"amount": amount})
             
-        elif command == "donate":
+        elif command == "pick":
             if not creature.guildRank().permission(GUILD_WITHDRAW_MONEY):
                 creature.lmessage("You can't withdraw funds from your guild account.")
                 return False
@@ -317,10 +320,18 @@ if config.enableWarSystem:
             
             creature.message(_l(creature, "You picked %(amount)d from your guild!") % {"amount": amount})
         
-        else:
-            creature.lmessage("Guild balance is %d." % guild.getMoney())
             
         return False
+        
+    @register("talkaction", "/balance")
+    def balance(creature, text, **k):
+        guild = creature.guild()
+        if not guild:
+            creature.lmessage("You are not member of a guild.")
+            return False
+            
+        if not text:
+            creature.lmessage("Guild balance is %d." % guild.getMoney())
         
     @register("death", 'player')
     def fragCounter(creature, creature2, deathData, **k):
