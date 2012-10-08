@@ -229,6 +229,10 @@ defaultLanguage = "en_EN" # ISO-4 code
 # Send premium on 9.5+?
 sendPremium = True
 
+# Bans
+refreshBans = 900 # In seconds, how often to clean up old bans, and load new from the database. Useful for multiplayer servers. Note, having a high value gives a window where a banned account or ip can use a different server before the bans are reloaded. This can ofcourse be dealt with by sending reload orders.
+banTimeFormat = "%Y-%m-%d %H:%M:%S" # Expire messages.
+
 # (WINDOWS ONLY)
 # Adjust size and/or color of the windows
 # Set to None to disable.

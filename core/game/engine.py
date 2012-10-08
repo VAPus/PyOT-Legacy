@@ -27,6 +27,7 @@ import subprocess
 import platform
 import os
 import game.deathlist
+import game.ban
 
 try:
     import cPickle as pickle
@@ -129,6 +130,10 @@ def loader(timer):
         
         print "> > Loading guilds...",
         game.guild.load()
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
+        print "> > Loading bans...",
+        yield game.ban.refresh()
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading house data...",
@@ -264,8 +269,13 @@ def loader(timer):
     # Deathlist
     __builtin__.deathlist = game.deathlist
     
+    # Bans
+    __builtin__.ipIsBanned = game.ban.ipIsBanned
+    __builtin__.playerIsBanned = game.ban.playerIsBanned
+    __builtin__.accountIsBanned = game.ban.accountIsBanned
+    
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -282,6 +292,8 @@ def loader(timer):
         party = game.party
         errors = game.errors
         chat = game.chat
+        deathlist = game.deathlist
+        ban = game.ban
         engine = sys.modules["game.engine"] # For consistancy
         
             

@@ -93,6 +93,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.xtea = tuple(a + b)
 
             ip = self.transport.getPeer().host
+            
+            # Ban check.
+            if game.ban.ipIsBanned(ip):
+                self.exitWithError("Your ip is banned.\n %s" % game.ban.banIps[ip].message())
+                return 
+        
             if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
                 if ip in waitingListIps:
                     i = waitingListIps.index(ip) + 1
@@ -141,6 +147,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.exitWithError("Invalid username or password")
                     return
 
+            # Ban check.
+            if game.ban.accountIsBanned(account[0]):
+                self.exitWithError("Your account is banned.\n %s" % game.ban.banAccounts[account[0]].message())
+                return 
+            
             if not len(account) >= 2 or not account[1]:
                 language = config.defaultLanguage
             else:
@@ -157,6 +168,15 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
 
+            # Ban check.
+            if isinstance(character, game.player.Player):
+                if game.ban.playerIsBanned(character):
+                    self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character.data["id"]].message())
+                    return 
+            elif game.ban.playerIsBanned(character[0][0]):
+                self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character[0][0]].message())
+                return 
+            
             # If we "made" a new character in a script, character = the player.
             player = None
             if isinstance(character, game.player.Player):

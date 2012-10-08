@@ -2533,12 +2533,14 @@ class Player(Creature):
                 return False
     # Exit
     def exit(self, message):
+        self.prepareLogout(True)
+        
         stream = self.packet()
         stream.exit(message)
         stream.send(self.client)
 
-    def prepareLogout(self):
-        if self.hasCondition(CONDITION_INFIGHT):
+    def prepareLogout(self, force=False):
+        if not force and self.hasCondition(CONDITION_INFIGHT):
             self.lmessage("You can't logout yet.")
             return False
 

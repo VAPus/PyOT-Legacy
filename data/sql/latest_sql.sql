@@ -25123,3 +25123,12 @@ CREATE TABLE IF NOT EXISTS `guild_invites` (
   `player_id` INT UNSIGNED NOT NULL DEFAULT 0,
   `guild_id` INT UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `bans` (
+  `ban_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ban_type` tinyint(4) unsigned NOT NULL COMMENT '0 means ban_data = account_id, 1 means ban_data is playerId, 2 means ban_data = ip.',
+  `ban_data` varchar(64) NOT NULL,
+  `ban_reason` varchar(255) NOT NULL,
+  `ban_expire` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`ban_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
