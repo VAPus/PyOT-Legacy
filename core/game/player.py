@@ -1807,13 +1807,13 @@ class Player(Creature):
         
         # Are we suppose to lose the container?
         itemLoseRate = self.itemLosePrecent()
-        if self.inventory[2] and random.randint(1, 100) < itemLose[0]:
+        if self.inventory[2] and random.randint(1, 100) < itemLoseRate[0]:
             corpse.container.placeItem(self.inventory[2])
             self.inventory[2] = None
             
         # Loop over each item in the inventory to see if we lose em.
         for index in xrange(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
-            if self.inventory[index] and random.randint(1, 1000) < (itemLose[1] * 10):
+            if self.inventory[index] and random.randint(1, 1000) < (itemLoseRate[1] * 10):
                 corpse.container.placeItem(self.inventory[index])
                 self.inventory[index] = None
 
