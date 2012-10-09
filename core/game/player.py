@@ -1707,7 +1707,13 @@ class Player(Creature):
         lastDmgIsPlayer = self.lastDamagers[0].isPlayer()
         deathData = {}
         loseRate = self.losePrecent()
+        itemLoseRate = self.itemLosePrecent()
+        
+        if self.getSkull() in (SKULL_RED, SKULL_BLACK):
+            itemLoseRate = config.redSkullLoseRate, config.redSkullLoseRate
+            
         deathData["loseRate"] = loseRate
+        deathData["itemLoseRate"] = itemLoseRate
         corpse = game.item.Item(3058)
         
         lastDamagerSkull = self.getSkull(self.lastDamagers[0])
@@ -1724,6 +1730,7 @@ class Player(Creature):
         
         unjust = deathData["unjust"]
         loseRate = deathData["loseRate"]
+        itemLoseRate = deathData["itemLoseRate"]
         
         print "TODO: Unfair fight."
         
@@ -1799,7 +1806,7 @@ class Player(Creature):
         self.data["mana"] = self.data["manamax"]
         
         # Are we suppose to lose the container?
-        itemLose = self.itemLosePrecent()
+        itemLoseRate = self.itemLosePrecent()
         if self.inventory[2] and random.randint(1, 100) < itemLose[0]:
             corpse.container.placeItem(self.inventory[2])
             self.inventory[2] = None
