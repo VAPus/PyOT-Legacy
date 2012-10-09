@@ -10,6 +10,7 @@ import copy
 import time
 import marshal
 import inflect
+import gc
 
 INFLECT = inflect.engine()
 
@@ -22,12 +23,9 @@ except:
 items = {}
 reverseItems = {}
 
-"""if config.itemCache:
-    ### Attribute stragegy
-    itemAttributes = {}"""
-
 ### Container class ###
 class Container(object):
+    # TODO: Kill this class.
     __slots__ = ('items')
     def __init__(self, size):
         self.items = deque(maxlen=size)
@@ -119,7 +117,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if self._itemBase[None] & 64:
+        if self._itemBase['a'] & 64:
             if not count or count < 0:
                 count = 1
             self.count = count
@@ -228,19 +226,19 @@ class Item(object):
     
     @property
     def solid(self):
-        return self._itemBase[None] & 1
+        return self._itemBase['a'] & 1
         
     @property
     def blockprojectile(self):
-        return self._itemBase[None] & 2
+        return self._itemBase['a'] & 2
         
     @property
     def blockpath(self):
-        return self._itemBase[None] & 4
+        return self._itemBase['a'] & 4
         
     @property
     def cid(self):
-        return self._itemBase[1]
+        return self._itemBase['cid']
     
     """
     # Changeable attributes. Ignore.
@@ -258,23 +256,23 @@ class Item(object):
     """    
     @property
     def stackable(self):
-        return self._itemBase[None] & 64
+        return self._itemBase['a'] & 64
         
     @property
     def ontop(self):
-        return self._itemBase[None] & 128
+        return self._itemBase['a'] & 128
         
     @property
     def hangable(self):
-        return self._itemBase[None] & 256
+        return self._itemBase['a'] & 256
         
     @property
     def rotatable(self):
-        return self._itemBase[None] & 512
+        return self._itemBase['a'] & 512
         
     @property
     def animation(self):
-        return self._itemBase[None] & 1024
+        return self._itemBase['a'] & 1024
         
     @property
     def type(self):
@@ -288,7 +286,7 @@ class Item(object):
             return self._itemBase[name]
         except:
             try:
-                return self._itemBase[None] & (1 << self.attributes.index(name))
+                return self._itemBase['a'] & (1 << self.attributes.index(name))
             except:
                 if not "__" in name:
                     return None
@@ -736,42 +734,46 @@ def loadItems():
     reverseLoadItems = [None] * (config.itemMaxClientId + 1)
 
     for item in (yield d1):
-        sid = item[0]
-        cid = item[1]
-        attr = {1:cid, None:item[6]}
+        sid = item['sid']
+        cid = item['cid']
 
-        if item[3]:
-            attr['type'] = item[3]
+        if not item['type']:
+            del item['type']
 
-        if item[2]:
-            attr['name'] = item[2]
+        if not item['name']:
+            del item['name']
                 
-        if item[5]:
-            attr['speed'] = item[5]
+        if not item['speed']:
+            del item['speed'] 
 
-        
         reverseLoadItems[cid] = sid
 
-        loadItems[sid] = attr
-        if item[4]:
-            for x in xrange(1, item[4]+1):
-                loadItems[sid+x] = attr
+        subs = item['subs']
+        del item['subs']
+        loadItems[sid] = item
+        if subs:
+            for x in xrange(1, subs+1):
+                loadItems[sid+x] = item
                 
         if sid in MONEY_MAP2:
             loadItems[sid]["currency"] = MONEY_MAP2[sid]
+            
 
     for data in (yield d2):
-        if data[1] == "fluidSource":
-            loadItems[data[0]]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data[2].upper())
-        elif data[1] == "weaponType":
-            loadItems[data[0]]["weaponType"] = data[2]
-            if data[2] not in ("ammunition", "wand"):
-                loadItems[data[0]]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
-        elif data[2]:
+        sid = data["sid"]
+        key = data['key']
+        value = data["value"]
+        if key == "fluidSource":
+            loadItems[sid]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % value.upper())
+        elif key== "weaponType":
+            loadItems[sid]["weaponType"] = value
+            if value not in ("ammunition", "wand"):
+                loadItems[sid]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
+        elif value:
             try:
-                loadItems[data[0]][data[1]] = int(data[2])
+                loadItems[sid]['key'] = int(value)
             except:
-                loadItems[data[0]][data[1]] = data[2]
+                loadItems[sid]['key'] = value
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%50s\n" % _txtColor("\t[DONE]", "blue")
@@ -785,6 +787,6 @@ def loadItems():
         with _open("data/cache/items.cache", "wb") as f:
             f.write(marshal.dumps((tuple(items), tuple(reverseItems)), 2))
             
-    
+    gc.collect()
     
     

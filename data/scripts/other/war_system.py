@@ -115,7 +115,7 @@ if config.enableWarSystem:
     @inlineCallbacks
     def warFrags(warId, guild1, guild2):
         entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s)))", (warId, guild2, warId, guild1))
-        returnValue(entry[0])
+        returnValue(entry[0].values())
     
     @inlineCallbacks
     def decideWinner(entry):
@@ -189,8 +189,8 @@ if config.enableWarSystem:
     @inlineCallbacks
     def loadGuildWars():
         for entry in (yield sql.runQuery("SELECT w.war_id, w.guild_id, w.guild_id2, w.started, w.duration, w.frags, w.stakes, w.status FROM guild_wars w WHERE (SELECT 1 FROM guilds g WHERE g.world_id = %s AND g.guild_id = w.guild_id) AND w.status IN (0, 2, 4)", config.worldId)):
-            warEntry = warEntry(entry[0], entry[1], entry[2], entry[3], entry[4], entry[5], entry[6])
-            warEntry.setStatus(entry[6])
+            warEntry = warEntry(entry['war_id'], entry['guild_id'], entry['guild_id2'], entry['started'], entry['duration'], entry['frags'], entry['stakes'])
+            warEntry.setStatus(entry['status'])
             
         checkPayments()
             

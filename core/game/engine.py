@@ -115,17 +115,17 @@ def loader(timer):
     def sync(d, timer):
         print "> > Loading global data...",
         for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
-            if x[2] == 'json':
-                globalStorage[x[0]] = otjson.loads(x[1])
-            elif x[2] == 'pickle':
-                globalStorage[x[0]] = pickle.loads(x[1])
+            if x['type'] == 'json':
+                globalStorage[x['key']] = otjson.loads(x['data'])
+            elif x['type'] == 'pickle':
+                globalStorage[x['key']] = pickle.loads(x['data'])
             else:
-                globalStorage[x[0]] = x[1]
+                globalStorage[x['key']] = x['data']
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading groups...",
         for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
-            groups[x[0]] = (x[1], otjson.loads(x[2]))
+            groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading guilds...",
@@ -138,7 +138,7 @@ def loader(timer):
         
         print "> > Loading house data...",
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
-            game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
+            game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
         print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
         # Load scripts
@@ -935,7 +935,7 @@ def getPlayerIDByName(name):
     except:
         d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            returnValue(d[0][0])
+            returnValue(d[0]['id'])
         else:
             returnValue(None)
 
@@ -1021,13 +1021,13 @@ def placeInDepot(name, depotId, items):
     else:
         result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
-            result = pickle.loads(result[0])
+            result = pickle.loads(result[0]['depot'])
             try:
                 __inPlace(result[depotId])
             except:
                 result[depotId] = items
             result = fastPickler(result)
-            sql.conn.runOperation("UPDATE `players` SET `depot` = %s" % result)
+            sql.conn.runOperation("UPDATE `players` SET `depot` = %s", result)
             returnValue(True)
         else:
             returnValue(False)
@@ -1043,7 +1043,6 @@ def loadPlayer(playerName):
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44], "guild_id":cd[45], "guild_rank":cd[46], "balance":cd[47]}
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
@@ -1062,7 +1061,6 @@ def loadPlayerById(playerId):
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44], "guild_id":cd[45], "guild_rank":cd[46], "balance":cd[47]}
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[cd['name']])

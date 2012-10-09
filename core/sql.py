@@ -21,12 +21,21 @@ adbapi.ConnectionPool.runOperationLastId = runOperationLastId
 # Connection function.
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
+        import MySQLdb.cursors
+        from MySQLdb.constants import FIELD_TYPE
+        from MySQLdb.converters import conversions
+        
+        # Patch.
+        conv = conversions.copy()
+        conv[FIELD_TYPE.LONG] = int # Get rid of the longs.
+        
         if config.sqlSocket:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
         else:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
     elif module == "mysql-ctypes":
-        return adbapi.ConnectionPool("MySQLdb", host=config.sqlHost, port=3306, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+        import MySQLdb.cursors
+        return adbapi.ConnectionPool("MySQLdb", host=config.sqlHost, port=3306, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
 
     elif module == "oursql":
         try:
@@ -35,23 +44,32 @@ def connect(module = config.sqlModule):
             print "Falling oursql back to MySQLdb"
             return connect("MySQLdb")
 
+        from MySQLdb.constants import FIELD_TYPE
+        from MySQLdb.converters import conversions
+        
+        # Patch.
+        conv = conversions.copy()
+        conv[FIELD_TYPE.LONG] = int
+        
         if config.sqlSocket:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, default_cursor=oursql.DictCursor)
         else:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, default_cursor=oursql.DictCursor)
 
     elif module == "pymysql": # This module is indentical, but uses a diffrent name
         try:
             import pymysql
+            import pymysql.cursors
         except ImportError:
             print "Falling pymysql back to MySQLdb"
             return connect("MySQLdb")          
 
         if config.sqlSocket:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
         else:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug)
+            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
     elif module == "sqlite3":
+        raise Exception("TODO: dictcursor for sqlite3 required!")
         import sqlite3
 
         # Implode our little hack to allow both sqlite3 and mysql to work together!

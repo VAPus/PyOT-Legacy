@@ -147,24 +147,28 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.exitWithError("Invalid username or password")
                     return
 
+            account = account[0]
+            
             # Ban check.
-            if game.ban.accountIsBanned(account[0]):
-                self.exitWithError("Your account is banned.\n %s" % game.ban.banAccounts[account[0]].message())
+            if game.ban.accountIsBanned(account['id']):
+                self.exitWithError("Your account is banned.\n %s" % game.ban.banAccounts[account['id']].message())
                 return 
             
-            if not len(account) >= 2 or not account[1]:
+            if not len(account) >= 2 or not account['language']:
                 language = config.defaultLanguage
             else:
-                language = account[1]
+                language = account['language']
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (account[0][0], characterName, config.worldId))
+            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (account['id'], characterName, config.worldId))
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
                 if not character or character == True:
                     self.exitWithError("Character can't be loaded")
                     return
-            if gamemaster and character[0][3] < 3:
+                
+            character = character[0]
+            if gamemaster and character['group_id'] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
                 return
 
@@ -173,8 +177,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if game.ban.playerIsBanned(character):
                     self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character.data["id"]].message())
                     return 
-            elif game.ban.playerIsBanned(character[0][0]):
-                self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character[0][0]].message())
+            elif game.ban.playerIsBanned(character['id']):
+                self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character['id']].message())
                 return 
             
             # If we "made" a new character in a script, character = the player.
@@ -182,12 +186,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
             if isinstance(character, game.player.Player):
                 player = character
                 game.player.allPlayers[player.name()] = player
-            elif character[0][1] in game.player.allPlayers:
-                player = game.player.allPlayers[character[0][1]]
+            elif character['name'] in game.player.allPlayers:
+                player = game.player.allPlayers[character['name']]
                 if player.client:
                     self.exitWithError("This character is already logged in!")
                     return
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character[0][0]))
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character['id']))
             if player:    
                 self.player = player
                 if self.player.data["health"] <= 0:
@@ -200,12 +204,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 
             else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
-                cd = character[0]
-                cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":language, "guild_id":cd[44], "guild_rank":cd[45], "balance":cd[
-46]}
-                yield deathlist.loadDeathList(cd['id'])
-                game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
-                self.player = game.player.allPlayers[cd['name']]
+                yield deathlist.loadDeathList(character['id'])
+                character["language"] = language
+                game.player.allPlayers[character['name']] = game.player.Player(self, character)
+                self.player = game.player.allPlayers[character['name']]
                 if self.player.data["health"] <= 0:
                     self.player.onSpawn()
 
@@ -224,7 +226,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     updateTile(self.player.position, tile)
                         
                 # Update last login
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character[0][0]))
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character['id']))
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()

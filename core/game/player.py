@@ -32,13 +32,23 @@ allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
 class Player(Creature):
     def __init__(self, client, data):
+        
+        # XXX: Hack.
+        # TODO: Rewrite this to save memory. And to simplefy lookups later on.
+        data["skills"] = {SKILL_FIST: data['fist'], SKILL_SWORD: data['sword'], SKILL_CLUB: data['club'], SKILL_AXE: data['axe'], SKILL_DISTANCE: data['distance'], SKILL_SHIELD: data['shield'], SKILL_FISH: data['fishing']}
+        data["skill_tries"] =  {SKILL_FIST: data['fist_tries'], SKILL_SWORD: data['sword_tries'], SKILL_CLUB: data['club_tries'], SKILL_AXE: data['axe_tries'], SKILL_DISTANCE: data['distance_tries'], SKILL_SHIELD: data['shield_tries'], SKILL_FISH: data['fishing_tries']}
+        
+        # Explicit. Decimal to int.
+        data["experience"] = int(data["experience"])
+        data["balance"] = int(data["balance"])
+        data["manaspent"] = int(data["manaspent"])
+        
         Creature.__init__(self, data, Position(int(data['posx']),
                                                int(data['posy']),
                                                int(data['posz']),
                                                data['instanceId']
                          ))
         self.client = client
-
         self.speed = 220
         self.modes = [0,0,0]
         self.gender = 0

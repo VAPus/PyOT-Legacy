@@ -448,3 +448,4 @@ def delayWalk(creature, **k):
     creature.lmessage("Ow no, your stuck!")
     callLater(10, lambda: creature.lmessage("You may walk again!"))
     
+    

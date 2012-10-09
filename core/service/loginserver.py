@@ -62,7 +62,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
 
             if account:
-                characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0][0]))
+                characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id']))
      
         if not username or not account:
             if config.anyAccountWillDo:
@@ -84,13 +84,13 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         pkg.uint8(0x64)
         pkg.uint8(len(characters))
         for character in characters:
-            pkg.string(character[0])
-            pkg.string(config.servers[character[1]][1])
-            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character[1]][0])))
+            pkg.string(character['name'])
+            pkg.string(config.servers[character['world_id']][1])
+            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character['world_id']][0])))
             pkg.uint16(config.gamePort)
 
         # Add premium days
-        pkg.uint16(account[0][1])
+        pkg.uint16(account[0]['premdays'])
         pkg.send(self) # Send
 
     def exitWithError(self, message, error = 0x0A):

@@ -82,11 +82,11 @@ class GuildRank(object):
 def load():
     # Guilds
     for entry in (yield sql.runQuery("SELECT guild_id, name, motd, balance FROM `guilds` WHERE world_id = %s", config.worldId)):
-        guild = Guild(int(entry[0]), entry[1], entry[2], entry[3])
-        guilds[int(entry[0])] = guild
-        guild_names[entry[1]] = guild
+        guild = Guild(int(entry['guild_id']), entry['name'], entry['motd'], entry['balance'])
+        guilds[int(entry['guild_id'])] = guild
+        guild_names[entry['name']] = guild
         
     # Ranks
     if guilds:
         for entry in (yield sql.runQuery("SELECT guild_id, rank_id, title, permissions FROM `guild_ranks` WHERE guild_id IN %s" % repr(tuple(guilds.keys())))):
-            guilds[int(entry[0])].ranks[entry[1]] = GuildRank(int(entry[0]), entry[1], entry[2], entry[3])
+            guilds[int(entry['guild_id'])].ranks[entry['rank_id']] = GuildRank(int(entry['guild_id']), entry['rank_id'], entry['title'], entry['permissions'])
