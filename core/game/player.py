@@ -2253,7 +2253,7 @@ class Player(Creature):
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
-                elif not dmg and atkRange:
+                elif not dmg and atkRange > 1:
                     # First, hitChance.
                     chance = min(ammo.maxHitChance, config.hitChance(self.getActiveSkill(SKILL_DISTANCE), weapon.hitChance))
                     
