@@ -22,17 +22,27 @@ adbapi.ConnectionPool.runOperationLastId = runOperationLastId
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
         import MySQLdb.cursors
-        from MySQLdb.constants import FIELD_TYPE
-        from MySQLdb.converters import conversions
-        
-        # Patch.
-        conv = conversions.copy()
-        conv[FIELD_TYPE.LONG] = int # Get rid of the longs.
-        
+        conv = None
+        try:
+            from MySQLdb.converters import conversions
+            from MySQLdb.constants import FIELD_TYPE
+            
+            # Patch.
+            conv = conversions.copy()
+            conv[FIELD_TYPE.LONG] = int # Get rid of the longs.
+        except:
+            pass # Moist / MysqlDB2 already do this.
+            
         if config.sqlSocket:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
+            if conv:
+                return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.SSDictCursor, conv=conv)
+            else:
+                return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.SSDictCursor)
         else:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
+            if conv:
+                return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.SSDictCursor, conv=conv)
+            else:
+                return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.SSDictCursor)
     elif module == "mysql-ctypes":
         import MySQLdb.cursors
         return adbapi.ConnectionPool("MySQLdb", host=config.sqlHost, port=3306, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=MySQLdb.cursors.DictCursor, conv=conv)
