@@ -18,7 +18,7 @@ gameMaxConnections = 100
 # SQL:
 sqlModule = "MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb, tho, slower), "pymysql" (Mysql using ctypes, slower on CPython), mysql-ctypes, or "sqlite3"
 sqlUsername = "root"
-sqlPassword = "testing"
+sqlPassword = ""
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 sqlDebug = False # Send debug messages to the console
