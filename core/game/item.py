@@ -737,6 +737,8 @@ def loadItems():
         sid = item['sid']
         cid = item['cid']
 
+        del item['sid']
+        
         if not item['type']:
             del item['type']
 
@@ -771,9 +773,9 @@ def loadItems():
                 loadItems[sid]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
         elif value:
             try:
-                loadItems[sid]['key'] = int(value)
+                loadItems[sid][key] = int(value)
             except:
-                loadItems[sid]['key'] = value
+                loadItems[sid][key] = value
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%50s\n" % _txtColor("\t[DONE]", "blue")

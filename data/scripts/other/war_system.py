@@ -189,7 +189,7 @@ if config.enableWarSystem:
     @inlineCallbacks
     def loadGuildWars():
         for entry in (yield sql.runQuery("SELECT w.war_id, w.guild_id, w.guild_id2, w.started, w.duration, w.frags, w.stakes, w.status FROM guild_wars w WHERE (SELECT 1 FROM guilds g WHERE g.world_id = %s AND g.guild_id = w.guild_id) AND w.status IN (0, 2, 4)", config.worldId)):
-            warEntry = warEntry(entry['war_id'], entry['guild_id'], entry['guild_id2'], entry['started'], entry['duration'], entry['frags'], entry['stakes'])
+            warEntry = WarEntry(entry['war_id'], entry['guild_id'], entry['guild_id2'], entry['started'], entry['duration'], entry['frags'], entry['stakes'])
             warEntry.setStatus(entry['status'])
             
         checkPayments()
