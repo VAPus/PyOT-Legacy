@@ -18,7 +18,7 @@ gameMaxConnections = 100
 # SQL:
 sqlModule = "MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb, tho, slower), "pymysql" (Mysql using ctypes, slower on CPython), mysql-ctypes, or "sqlite3"
 sqlUsername = "root"
-sqlPassword = ""
+sqlPassword = "testing"
 sqlDatabase = "ot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 sqlDebug = False # Send debug messages to the console
@@ -42,9 +42,9 @@ worldId = 0
 
 # Versions:
 versionMin = 860
-versionMax = 963
-versionError = "You must use a client between 8.6 and 9.63"
-supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963) # We support these main branches + compatible protocols to them
+versionMax = 970
+versionError = "You must use a client between 8.6 and 9.70"
+supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"
