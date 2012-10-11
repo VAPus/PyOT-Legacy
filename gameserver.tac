@@ -50,18 +50,11 @@ from twisted.internet import reactor
 #### Suggest reactor thread pool size ####
 reactor.suggestThreadPoolSize(config.suggestedGameServerThreadPoolSize)
 
-#### Initialize OTCrypto module ####
-try:
-    import otcrypto
-    otcrypto.setkeys(config.RSAKeys["n"], config.RSAKeys["e"], config.RSAKeys["d"], config.RSAKeys["p"], config.RSAKeys["q"])
-except:
-    pass
-
 #### Import the LoginServer ####
 from twisted.application import internet, service
 from service.gameserver import GameFactory
 import time
-import game.engine
+import game.loading
 
 startTime = time.time()
 
@@ -88,7 +81,7 @@ if config.letGameServerRunTheLoginServer:
 
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
-reactor.callLater(0, game.engine.loader, startTime)
+reactor.callLater(0, game.loading.loader, startTime)
 
     
             

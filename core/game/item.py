@@ -762,7 +762,7 @@ def loadItems():
                 loadItems[sid][key] = value
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
-    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    print "%45s\n" % "\t[DONE]"
             
     # Replace the existing items
     items = loadItems
