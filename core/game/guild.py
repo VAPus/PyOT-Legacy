@@ -31,26 +31,26 @@ class Guild(object):
     # Creature alike money interface.
     def setMoney(self, amount):
         self.balance = amount
-        sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (amount, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %sd WHERE guild_id = %s", (amount, self.id))
         
     def getMoney(self):
         return self.balance
     
     def removeMoney(self, amount):
         self.balance -= amount
-        sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (self.balance, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", (self.balance, self.id))
         
     def addMoney(self, amount):
         self.balance += amount
-        sql.runOperation("UPDATE guilds SET balance = %d WHERE guild_id = %d", (self.balance, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", (self.balance, self.id))
         
     def setMotd(self, motd):
         self.motd = motd
-        sql.runOperation("UPDATE guilds SET motd = %s WHERE guild_id = %d", (motd, self.id))
+        sql.runOperation("UPDATE guilds SET motd = %s WHERE guild_id = %s", (motd, self.id))
         
     def setName(self, motd):
         self.name = name
-        sql.runOperation("UPDATE guilds SET name = %s WHERE guild_id = %d", (name, self.id))
+        sql.runOperation("UPDATE guilds SET name = %s WHERE guild_id = %s", (name, self.id))
         
     def rank(self, rankId):
         return self.ranks[rankId]
@@ -82,7 +82,7 @@ class GuildRank(object):
 def load():
     # Guilds
     for entry in (yield sql.runQuery("SELECT guild_id, name, motd, balance FROM `guilds` WHERE world_id = %s", config.worldId)):
-        guild = Guild(int(entry['guild_id']), entry['name'], entry['motd'], entry['balance'])
+        guild = Guild(int(entry['guild_id']), entry['name'], entry['motd'], int(entry['balance']))
         guilds[int(entry['guild_id'])] = guild
         guild_names[entry['name']] = guild
         

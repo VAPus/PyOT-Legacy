@@ -25135,3 +25135,5 @@ CREATE TABLE IF NOT EXISTS `bans` (
 
 ALTER TABLE `bans` ADD `ban_by` INT( 11 ) unsigned NULL DEFAULT NULL AFTER `ban_type` ,
 ADD INDEX ( `ban_by` ) 
+
+ALTER TABLE `guilds` CHANGE `balance` `balance` DECIMAL( 65, 0 ) UNSIGNED NOT NULL 

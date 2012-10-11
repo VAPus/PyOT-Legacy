@@ -9,7 +9,7 @@ if config.enableWarSystem:
     GUILD_WAR_OVER = 5
     
     class WarEntry(object):
-        def __init__(self, warId, guild1, guild2, started, duration, frags, stakes, status):
+        def __init__(self, warId, guild1, guild2, started, duration, frags, stakes):
             self.warId = warId
             self.guild1 = guild1
             self.guild2 = guild2
@@ -17,17 +17,22 @@ if config.enableWarSystem:
             self.duration = duration
             self.frags = frags
             self.stakes = stakes
-            self.status = status
+            self.status = -1
             
-            self.guild1_frags, self.guild2_frags = warFrags(warId, guild1, guild2)
+            def _(res):
+                self.guild1_frags, self.guild2_frags = res
+                
+            warFrags(warId, guild1, guild2).addCallback(_)
             
-            if self.status == GUILD_WAR_ACTIVE:
-                self.start()
                 
         def start(self):
             # When to cancel war.
-            callLater((started + duration) - time.time(), cancelWar, self)
-            
+            length = (self.started + self.duration) - time.time()
+            if length > 0:
+                callLater(length, cancelWar, self)
+            else:
+                # War might be over already.
+                cancelWar(self)
             
         def setStatus(self, status):
             global wars, warObjects, warInvites
@@ -53,14 +58,16 @@ if config.enableWarSystem:
             if status == GUILD_WAR_ACTIVE:
                 if not self.started:
                     self.started = time.time()
-                if status != self.status:
-                    sql.runOperation("UPDATE guild_wars SET started = %s WHERE war_id = %s", (self.stated, warId))
+                if oldStatus != -1 and status != oldStatus:
+                    sql.runOperation("UPDATE guild_wars SET started = %s WHERE war_id = %s", (self.started, warId))
                     
                 wars[self.guild1][0].append(self.guild2)
                 wars[self.guild1][1].append(self)
 
                 wars[self.guild2][0].append(self.guild1)
                 wars[self.guild2][1].append(self)
+                
+                self.start()
                     
             elif status == GUILD_WAR_INVITE:
                 wars[self.guild1][2].append(self)
@@ -114,12 +121,12 @@ if config.enableWarSystem:
 
     @inlineCallbacks
     def warFrags(warId, guild1, guild2):
-        entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.victim_id AND d.guild = %s)))", (warId, guild2, warId, guild1))
+        entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s)))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s))))", (warId, guild2, warId, guild1))
         returnValue(entry[0].values())
     
     @inlineCallbacks
     def decideWinner(entry):
-        guild1_frags, guild2_frags = yield warFrags(entry.warid, entry.guild1, entry.guild2)
+        guild1_frags, guild2_frags = yield warFrags(entry.warId, entry.guild1, entry.guild2)
         guild1 = getGuildById(entry.guild1)
         guild2 = getGuildById(entry.guild2)
         
