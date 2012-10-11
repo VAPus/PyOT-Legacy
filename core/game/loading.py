@@ -27,7 +27,7 @@ import platform
 import os
 import game.deathlist
 import game.ban
-
+import game.position
 import config
 import game.item
 import game.house, game.guild
@@ -250,8 +250,8 @@ def loader(timer):
     __builtin__.MultiCondition = game.creature.MultiCondition
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
-    __builtin__.Position = game.map.Position
-    __builtin__.StackPosition = game.map.StackPosition
+    __builtin__.Position = game.position.Position
+    __builtin__.StackPosition = game.position.StackPosition
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     __builtin__.getGuildByName = game.guild.getGuildByName

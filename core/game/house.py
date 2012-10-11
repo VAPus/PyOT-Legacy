@@ -22,12 +22,19 @@ class House(object):
         self.town = town
         self.rent = rent
         self.size = size
+        self.save = False
         if data:
-            self.data = pickle.loads(data)
+            try:
+                self.data = pickle.loads(data)
+            except:
+                print "[WARNING] Broken house data. House ID %d" % self.id
+                self.data = {"items":{}, "subowners": [], "guests": [], "doors":{}}
+                self.save = True
+                
         else:
             self.data = {"items":{}, "subowners": [], "guests": [], "doors":{}}
 
-        self.save = False
+        
 
     # Doors
     def getDoorAccess(self, doorId):

@@ -9,7 +9,7 @@ import game.scriptsystem
 from packet import TibiaPacket
 import sql
 import game.player
-from game.map import getTile,removeCreature, Position
+from game.map import getTile,removeCreature
 from game.engine import updateTile
 import struct
 import time

@@ -1,5 +1,5 @@
 from game import enum, engine
-from game.map import placeCreature, removeCreature, getTile, Position
+from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import config
 from collections import deque
