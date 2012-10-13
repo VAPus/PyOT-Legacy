@@ -16,6 +16,8 @@ import collections
 # Build class.
 from game.creature_talking import CreatureTalking
 from game.creature_movement import CreatureMovement
+from game.creature_attacks import CreatureAttacks
+
 # Unique ids.
 def __uid():
     idsTaken = 1
@@ -29,7 +31,7 @@ uniqueId = __uid().next
 allCreatures = {}
 allCreaturesObject = allCreatures.viewvalues()
 
-class Creature(CreatureTalking, CreatureMovement):
+class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
 
     def __init__(self, data, position, cid=None):
         self.data = data
@@ -321,155 +323,6 @@ class Creature(CreatureTalking, CreatureMovement):
             stream.addTileCreature(self.position, stackpos, self, player, True)
             self.data["name"] = originalName
             stream.send(player.client)
-
-    def hitEffects(self):
-        if self.isPlayer() or self.base.blood == enum.FLUID_BLOOD:
-            return enum.COLOR_RED, enum.EFFECT_DRAWBLOOD
-        elif self.base.blood == enum.FLUID_SLIME:
-            return enum.COLOR_LIGHTGREEN, enum.EFFECT_HITBYPOISON
-        elif self.base.blood == enum.FLUID_ENERGY:
-            return enum.COLOR_PURPLE, enum.EFFECT_PURPLEENERGY
-        elif self.base.blood == enum.FLUID_UNDEAD:
-            return enum.COLOR_GREY, enum.EFFECT_HITAREA
-        elif self.base.blood == enum.FLUID_FIRE:
-            return enum.COLOR_ORANGE, enum.EFFECT_DRAWBLOOD
-
-    def damageToBlock(self, dmg, type):
-        # Overrided to creatures.
-        return dmg
-
-    def onHit(self, by, dmg, type, effect=None):
-        
-        if not type == enum.DISTANCE:
-            if not by.ignoreBlock and by.doBlock:
-                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-
-        if type == enum.ICE:
-            textColor = enum.COLOR_TEAL
-            magicEffect = enum.EFFECT_ICEATTACK
-
-        elif type == enum.FIRE:
-            textColor = enum.COLOR_ORANGE
-            magicEffect = enum.EFFECT_HITBYFIRE
-
-        elif type == enum.EARTH:
-            textColor = enum.COLOR_LIGHTGREEN
-            magicEffect = enum.EFFECT_HITBYPOSION
-
-        elif type == enum.ENERGY:
-            textColor = enum.COLOR_PURPLE
-            magicEffect = enum.EFFECT_ENERGYHIT
-
-        elif type == enum.HOLY:
-            textColor = enum.COLOR_YELLOW
-            magicEffect = enum.EFFECT_HOLYDAMAGE
-
-        elif type == enum.DEATH:
-            textColor = enum.COLOR_DARKRED
-            magicEffect = enum.EFFECT_SMALLCLOUDS
-
-        elif type == enum.DROWN:
-            textColor = enum.COLOR_LIGHTBLUE
-            magicEffect = enum.EFFECT_ICEATTACK
-
-        elif type == enum.DISTANCE:
-            textColor, magicEffect = enum.COLOR_RED, None
-            if not by.ignoreBlock and by.doBlock:
-                dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
-        elif type == enum.LIFEDRAIN:
-            textColor = enum.COLOR_TEAL
-            magicEffect = enum.EFFECT_ICEATTACK
-
-        else: ### type == enum.MELEE:
-            textColor, magicEffect = self.hitEffects()
-        if effect:
-            magicEffect = effect
-
-        # pvpDamageFactor.
-        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
-            dmg = int(dmg * config.pvpDamageFactor)
-            
-        dmg = [dmg]
-        textColor = [textColor]
-        magicEffect = [magicEffect]
-        type = [type]
-
-        process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
-        if process == False:
-            return
-
-        dmg = dmg[0]
-        textColor = textColor[0]
-        magicEffect = magicEffect[0]
-        type = type[0]
-
-        dmg = max(-self.data["health"], dmg)
-        
-        if dmg:
-            self.lastDamagers.appendleft(by)
-            by.lastPassedDamage = time.time()
-            
-            if magicEffect:
-                self.magicEffect(magicEffect)
-            tile = game.map.getTile(self.position)
-            for item in tile.getItems():
-                if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
-                    tile.removeItem(item)
-
-            splash = game.item.Item(enum.SMALLSPLASH)
-
-            if self.isPlayer():
-                splash.fluidSource = enum.FLUID_BLOOD
-            else:
-                splash.fluidSource = self.base.blood
-            if splash.fluidSource in (enum.FLUID_BLOOD, enum.FLUID_SLIME):
-                tile.placeItem(splash)
-
-                # Start decay
-                splash.decay(self.position)
-
-            updateTile(self.position, tile)
-
-            if by and by.isPlayer():
-                by.message(_lp(by, "%(who)s loses %(amount)d hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
-
-            if self.isPlayer():
-                if by:
-                    self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
-                else:
-                    self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
-
-            elif not self.target and self.data["health"] < 1:
-                self.follow(by) # If I'm a creature, set my target
-
-            self.modifyHealth(dmg)
-
-            if by and self.data["health"] < 1:
-                by.target = None
-                by.targetMode = 0
-                if by.isPlayer():
-                    by.cancelTarget()
-
-            return True
-        else:
-            return False
-
-    def onHeal(self, by, amount):
-        if self.data["healthmax"] != self.data["health"]:
-            if by and by.isPlayer() and by != self:
-                by.message(_lp(by, "%(who)s gain %(amount)d hitpoint.", "%(who)s gain %(amount)d hitpoints.", amount) % {"who": self.name().capitalize(), "amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-
-            if self.isPlayer():
-                if by is self:
-                    self.message(_lp(self, "You healed yourself for %(amount)d hitpoint.", "You healed yourself for %(amount)d hitpoints.", amount)  % {"amount": amount}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-                elif by is not None:
-                    self.message(_lp(self, "You gain %(amount)d hitpoint due to healing by %(who)s.", "You gain %(amount)d hitpoints due to healing by %(who)s.", amount)  % {"amount": amount, "who": by.name().capitalize()}, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-                else:
-                    self.message(_lp(self, "You gain %d hitpoint.", "You gain %d hitpoints.", amount) % amount, MSG_HEALED, value = amount, color = COLOR_GREEN, pos=self.position)
-             
-                self.modifyHealth(amount)
-        else:
-            return False
 
     def onSpawn(self):
         pass # To be overrided

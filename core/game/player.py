@@ -22,17 +22,17 @@ import language
 
 # Build class.
 from game.creature_talking import PlayerTalking
+from game.creature_attacks import PlayerAttacks
 
 try:
     import cPickle as pickle
 except:
     import pickle
 
-global anyPlayer
 allPlayers = {}
 allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
-class Player(Creature, PlayerTalking):
+class Player(Creature, PlayerTalking, PlayerAttacks):
     def __init__(self, client, data):
         
         # XXX: Hack.
@@ -1682,52 +1682,6 @@ class Player(Creature, PlayerTalking):
             import data.map.info
             self.teleport(Position(*data.map.info.towns[self.data['town_id']][1]))
 
-    # Damage calculation:
-    def damageToBlock(self, dmg, type):
-        if dmg > 0:
-            return int(dmg)
-        
-        if type == enum.MELEE or type == enum.PHYSICAL:
-            # Armor and defence
-            armor = 0
-            defence = 0
-            extradef = 0
-
-            for item in self.inventory:
-                if item:
-                    armor += item.armor or 0
-                    extradef += item.extradef or 0
-                    block = (item.absorbPercentPhysical or 0) + (item.absorbPercentAll or 0)
-                    if block:
-                        dmg += (-dmg * block / 100.0)
-
-            if self.inventory[enum.SLOT_LEFT]:
-                defence = self.inventory[enum.SLOT_LEFT].defence
-            elif self.inventory[enum.SLOT_RIGHT]:
-                defence = self.inventory[enum.SLOT_RIGHT].defence
-
-            if not defence:
-                defence = 0
-                
-            defence += extradef
-            defRate = 1
-            if self.modes[1] == enum.OFFENSIVE:
-                defRate = 0.5
-            elif self.modes[1] == enum.BALANCED:
-                defRate = 0.75
-
-            if random.randint(1, 100) <= defence * defRate:
-                self.lmessage("You blocked an attack!")
-                
-            # Apply some shielding effects
-            dmg  = int((dmg + random.uniform(armor*0.475, (armor*0.95)-1)) + ((-dmg * armor) / 100.0))
-            if dmg > 0:
-                return 0
-            else:
-                return dmg
-
-        return dmg
-
     # Loading:
     def __buildInventoryCache(self, container):
         for item in container.container:
@@ -1987,181 +1941,6 @@ class Player(Creature, PlayerTalking):
             return 0
         
     # Stuff from protocol:
-    def attackTarget(self, dmg = None):
-        if dmg:
-            assert dmg < 0, "Damage must be negative"
-            
-        atkRange = 1
-        weapon = self.inventory[SLOT_RIGHT]
-        ammo = None
-        ok = True
-        if weapon and weapon.range:
-            atkRange = weapon.range
-            # This is probably a slot consuming weapon.
-            ammo = self.inventory[SLOT_AMMO]
-            if weapon.ammoType == "bolt" and (not ammo or ammo.ammoType != "bolt" or ammo.count <= 0):
-                self.cancelMessage("You are out of bolts.")
-                ok = False
-            elif weapon.ammoType == "arrow" and (not ammo or ammo.ammoType != "arrow" or ammo.count <= 0):
-                self.cancelMessage("You are out of arrows.")
-                ok = False
-            
-        if ok and self.target and self.target.isAttackable(self) and self.inRange(self.target.position, atkRange, atkRange):
-            if not self.target.data["health"]:
-                self.target = None
-            else:
-                atkType = MELEE
-                factor = 1
-                if self.modes[1] == enum.BALANCED:
-                    factor = 0.75
-                elif self.modes[1] == enum.DEFENSIVE:
-                    factor = 0.5
-
-                if not self.inventory[5]:
-                    skillType = enum.SKILL_FIST
-                    if dmg is None:
-                        dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
-
-                elif not dmg and atkRange > 1:
-                    # First, hitChance.
-                    chance = min(ammo.maxHitChance, config.hitChance(self.getActiveSkill(SKILL_DISTANCE), weapon.hitChance))
-                    
-                    self.modifyItem(ammo, Position(0xFFFF, SLOT_AMMO+1), -1)
-                    
-                    if chance < random.randint(1,100):
-                        self.message("You missed!")
-                        self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
-                        return
-                    
-                    minDmg = config.minDistanceDamage(self.data["level"])
-                    maxDmg = config.distanceDamage(weapon.attack + ammo.attack, self.getActiveSkill(SKILL_DISTANCE), factor)
-                    
-                    dmg = -random.randint(round(minDmg), round(maxDmg))
-                    
-                    skillType = SKILL_DISTANCE
-                    atkType = DISTANCE
-                    
-                    # Critical hit
-                    if config.criticalHitRate > random.randint(1, 100):
-                        dmg = dmg * config.criticalHitMultiplier
-                        self.criticalHit()
-                        
-                else:
-                    skillType = self.inventory[5].weaponSkillType
-                    
-                    if dmg is None:
-                        dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
-
-                        # Critical hit
-                        if config.criticalHitRate > random.randint(1, 100):
-                            dmg = dmg * config.criticalHitMultiplier
-                            self.criticalHit()
-
-                targetIsPlayer = self.target.isPlayer() # onHit might remove this.
-                target = self.target
-                
-                if dmg:
-                    """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
-                            self.cancelTarget()
-                            self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
-                    else:
-                        self.target.onHit(self, dmg, enum.MELEE)
-                        self.skillAttempt(skillType)"""
-                    print "calling onhit"
-                    target.onHit(self, dmg, atkType)
-                    self.skillAttempt(skillType)
-                
-                if targetIsPlayer:
-                    self.lastDmgPlayer = time.time()
-                    # If target do not have a green skull.
-                    if target.getSkull(self) != SKULL_GREEN:
-                        # If he is unmarked.
-                        if config.whiteSkull and target.getSkull(self) not in (SKULL_ORANGE, SKULL_YELLOW) and target.getSkull(self) not in SKULL_JUSTIFIED:
-                            self.setSkull(SKULL_WHITE)
-                        elif config.yellowSkull and (target.getSkull(self) == SKULL_ORANGE or target.getSkull() in SKULL_JUSTIFIED):
-                            # Allow him to fight back.
-                            if self.getSkull(target) == SKULL_NONE:
-                                self.setSkull(SKULL_YELLOW, target, config.loginBlock)
-                        if config.loginBlock:
-                            # PZ block.
-                            self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-                            self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
-
-        if self.target:
-            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
-
-    def criticalHit(self):
-        self.message(_l(self, "You strike a critical hit!"), MSG_STATUS_CONSOLE_RED)
-
-    def cancelTarget(self, streamX=None):
-        if not streamX:
-            stream = self.packet()
-        else:
-            stream = streamX
-        if self.target:
-            self.target.scripts["onNextStep"] = filter(lambda a: a != self.followCallback, self.target.scripts["onNextStep"])
-            """try:
-                self.targetChecker.cancel()
-            except:
-                pass"""
-            #self.walkPattern  =deque()
-        stream.uint8(0xA3)
-
-        stream.uint32(0)
-        
-        if not streamX:
-            stream.send(self.client)
-
-    def setAttackTarget(self, cid):
-        if self.targetMode == 1 and self.target:
-            self.targetMode = 0
-            self.target = None
-            return
-
-        if time.time() - self.lastStairHop < config.stairHopDelay:
-            self.cancelTarget()
-            self.message("You can't attack so fast after changing level or teleporting.")
-            return
-        
-        if cid in allCreatures:
-            if allCreatures[cid].isAttackable(self):
-                target = allCreatures[cid]
-                if target.isPlayer() and self.modes[2]:
-                    self.cancelTarget()
-                    return self.unmarkedPlayer()
-                ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
-                if ret == False:
-                   self.cancelTarget()
-                   return
-                elif ret != None:
-                    self.target = ret
-                else:
-                    self.target = target
-
-                self.targetMode = 1
-                if not target.target and isinstance(target, game.monster.Monster):
-                    target.target = self
-                    target.targetMode = 1
-            else:
-                self.cancelTarget()
-                return
-        else:
-            self.cancelTarget()
-            return self.notPossible()
-
-        if not self.target:
-            self.cancelTarget()
-            return self.notPossible()
-
-
-        if self.modes[1] == enum.CHASE:
-            print "did"
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
-            self.target.scripts["onNextStep"].append(self.followCallback)
-
-        if not self.targetChecker or not self.targetChecker.active():
-            self.attackTarget()
-
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
