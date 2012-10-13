@@ -27,12 +27,10 @@ def __uid():
 
 uniqueId = __uid().next
 
-
 allCreatures = {}
 allCreaturesObject = allCreatures.viewvalues()
 
 class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
-
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0

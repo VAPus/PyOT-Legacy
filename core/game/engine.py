@@ -974,5 +974,3 @@ def _N():
     else:
         yield defer.maybeDeferred()
     returnValue(otjson.dumps(e))
-    
-    
