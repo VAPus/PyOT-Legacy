@@ -34,6 +34,8 @@ import game.house, game.guild
 import language
 import game.enum
 import game.player, game.creature, game.npc, game.monster, game.spell, game.party
+import game.conditions
+
 try:
     import cPickle as pickle
 except:
@@ -245,9 +247,9 @@ def loader(timer):
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getTile = game.map.getTile
-    __builtin__.Condition = game.creature.Condition
-    __builtin__.Boost = game.creature.Boost
-    __builtin__.MultiCondition = game.creature.MultiCondition
+    __builtin__.Condition = game.conditions.Condition
+    __builtin__.Boost = game.conditions.Boost
+    __builtin__.MultiCondition = game.conditions.MultiCondition
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getHouseId = game.map.getHouseId
     __builtin__.Position = game.position.Position
