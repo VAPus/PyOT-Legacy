@@ -125,6 +125,56 @@ class PlayerTalking(object):
         stream.message(self, message, msgType, color, value, pos)
         stream.send(self.client)
         
+    def windowMessage(self, text):
+        stream = self.packet(0x15)
+        stream.string(text)
+        stream.send(self.client)
+
+    def cancelMessage(self, message):
+        if self.raiseMessages:
+            raise MsgCancel(message)
+        self.message(message, MSG_STATUS_SMALL)
+
+    def notPossible(self):
+        if self.raiseMessages:
+            raise MsgNotPossible
+        self.cancelMessage(_l(self, "Sorry, not possible."))
+
+    def cantUseObjectThatFast(self):
+        if self.raiseMessages:
+            raise MsgCantUseObjectThatFast
+        self.cancelMessage(_l(self, "You cannot use objects that fast."))
+        
+    def notPickupable(self):
+        self.cancelMessage(_l(self, "You cannot take this object."))
+
+    def tooHeavy(self):
+        raise Exception()
+        self.cancelMessage(_l(self, "This object is too heavy for you to carry."))
+
+    def outOfRange(self):
+        self.cancelMessage(_l(self, "Destination is out of range."))
+
+    def notEnoughRoom(self):
+        self.cancelMessage(_l(self, "There is not enough room."))
+
+    def exhausted(self):
+        self.cancelMessage(_l(self, "You are exhausted."))
+
+    def needMagicItem(self):
+        self.cancelMessage(_l(self, "You need a magic item to cast this spell."))
+
+    def notEnough(self, word):
+        self.cancelMessage(_l(self, "You do not have enough %s." % _l(self, word)))
+
+    def onlyOnCreatures(self):
+        self.cancelMessage(_l(self, "You can only use it on creatures."))
+
+    def unmarkedPlayer(self):
+        if self.raiseMessages:
+            raise MsgUnmarkedPlayer
+        self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
+        
     # Channel system
     def openChannels(self):
         channels = game.chat.getChannels(self)

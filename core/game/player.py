@@ -247,7 +247,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
             self._packet.uint8(type)
         return self._packet
 
-    def ip(self):
+    def getIP(self):
         if self.client:
             return self.client.transport.getPeer().host
 
@@ -1083,56 +1083,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
 
         self.cancelWalk(self.direction)
 
-    def windowMessage(self, text):
-        stream = self.packet(0x15)
-        stream.string(text)
-        stream.send(self.client)
-
-    def cancelMessage(self, message):
-        if self.raiseMessages:
-            raise MsgCancel(message)
-        self.message(message, MSG_STATUS_SMALL)
-
-    def notPossible(self):
-        if self.raiseMessages:
-            raise MsgNotPossible
-        self.cancelMessage(_l(self, "Sorry, not possible."))
-
-    def cantUseObjectThatFast(self):
-        if self.raiseMessages:
-            raise MsgCantUseObjectThatFast
-        self.cancelMessage(_l(self, "You cannot use objects that fast."))
-        
-    def notPickupable(self):
-        self.cancelMessage(_l(self, "You cannot take this object."))
-
-    def tooHeavy(self):
-        raise Exception()
-        self.cancelMessage(_l(self, "This object is too heavy for you to carry."))
-
-    def outOfRange(self):
-        self.cancelMessage(_l(self, "Destination is out of range."))
-
-    def notEnoughRoom(self):
-        self.cancelMessage(_l(self, "There is not enough room."))
-
-    def exhausted(self):
-        self.cancelMessage(_l(self, "You are exhausted."))
-
-    def needMagicItem(self):
-        self.cancelMessage(_l(self, "You need a magic item to cast this spell."))
-
-    def notEnough(self, word):
-        self.cancelMessage(_l(self, "You do not have enough %s." % _l(self, word)))
-
-    def onlyOnCreatures(self):
-        self.cancelMessage(_l(self, "You can only use it on creatures."))
-
-    def unmarkedPlayer(self):
-        if self.raiseMessages:
-            raise MsgUnmarkedPlayer
-        self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
-        
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
             # Replace it in structure
@@ -2335,10 +2285,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
                 spells.append(spell)
                 
         return spells
-    
-    # Networking
-    def getIP(self):
-        return self.client.transport.getPeer().host
 
     # Market
     def openMarket(self):
