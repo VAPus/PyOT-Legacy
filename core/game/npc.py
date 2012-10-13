@@ -1,4 +1,4 @@
-from game.creature import Creature, CreatureBase, uniqueId
+from game.creature import Creature, uniqueId
 from game.monster import Monster, MonsterBrain
 import game.engine, game.map, game.scriptsystem
 from packet import TibiaPacket
@@ -214,7 +214,7 @@ class NPC(Creature):
             self.base._onSaid[self.activeSaid][1](self, player)
         except:
             pass
-class NPCBase(CreatureBase):
+class NPCBase(object):
     def __init__(self, brain, data):
         self.data = data
         self.voiceslist = []

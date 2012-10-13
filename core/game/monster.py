@@ -1,4 +1,4 @@
-from creature import Creature, CreatureBase, uniqueId
+from creature import Creature, uniqueId
 import engine, map, scriptsystem
 from packet import TibiaPacket
 import copy, random, time
@@ -379,7 +379,7 @@ class Monster(Creature):
                 
         return True
         
-class MonsterBase(CreatureBase):
+class MonsterBase(object):
     def __init__(self, data, brain):
         self.data = data
         self.voiceslist = []

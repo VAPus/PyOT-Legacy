@@ -6,7 +6,7 @@ from collections import deque
 import game.scriptsystem
 from game.item import Item
 from twisted.internet import reactor, defer
-from game.creature import Creature, CreatureBase, uniqueId, allCreatures
+from game.creature import Creature, uniqueId, allCreatures
 import time
 import game.party
 import game.resource
@@ -20,17 +20,19 @@ import otjson
 import datetime
 import language
 
+# Build class.
+from game.creature_talking import PlayerTalking
+
 try:
     import cPickle as pickle
 except:
     import pickle
 
 global anyPlayer
-anyPlayer = CreatureBase()
 allPlayers = {}
 allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
-class Player(Creature):
+class Player(Creature, PlayerTalking):
     def __init__(self, client, data):
         
         # XXX: Hack.
@@ -52,7 +54,6 @@ class Player(Creature):
         self.speed = 220
         self.modes = [0,0,0]
         self.gender = 0
-        self.base = anyPlayer
         self.knownCreatures = set()
         self.openContainers = {}
         self.lastOpenContainerId = 0
@@ -759,7 +760,7 @@ class Player(Creature):
                 self.data["maglevel"] = 0
             self.refreshStatus()
 
-        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=game.enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
+        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
         exp = int(exp)
@@ -984,28 +985,6 @@ class Player(Creature):
         stream.string(desc)
         stream.send(self.client)
 
-    def message(self, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
-        stream = self.packet()
-        stream.message(self, message, msgType, color, value, pos)
-        stream.send(self.client)
-
-    def lmessage(self, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
-        self.message(self.l(message), msgType, color, value, pos)
-        
-    def lcmessage(self, context, message, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
-        self.message(self.lc(context, message), msgType, color, value, pos)
-    
-    def lcpmessage(self, context, singular, plural, n, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
-        self.message(self.lcp(context, singular, plural, n), msgType, color, value, pos)
-    
-    def lpmessage(self, singular, plural, n, msgType=game.enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
-        self.message(self.lp(singular, plural, n), msgType, color, value, pos)
-        
-    def orangeStatusMessage(self, message, msgType=game.enum.MSG_STATUS_CONSOLE_ORANGE, color=0, value=0, pos=None):
-        stream = self.packet()
-        stream.message(self, message, msgType, color, value, pos)
-        stream.send(self.client)
-
     def outfitWindow(self):
         stream = self.packet(0xC8)
 
@@ -1115,7 +1094,6 @@ class Player(Creature):
         self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
-        raise Exception()
         if self.raiseMessages:
             raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
@@ -1511,151 +1489,6 @@ class Player(Creature):
         else:
             stream.addInventoryItem(slot, self.inventory[slot-1])
         stream.send(self.client)
-    # Channel system
-    def openChannels(self):
-        channels = game.chat.getChannels(self)
-        
-        # Add guild chat.
-        if self.guild():
-            channels[CHANNEL_GUILD] = self.guild().chatChannel
-            
-        # Add party channel.
-        if self.party():
-            channels[CHANNEL_PARTY] = self.party().chatChannel
-            
-        channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
-        if type(channels2) is dict:
-            channels = channels2
-
-        with self.packet() as stream:
-            stream.openChannels(channels)
-
-    def openChannel(self, id):
-
-        if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
-            if id == CHANNEL_GUILD:
-                # Guild channel.
-                channel  = self.guild().chatChannel
-            elif id == CHANNEL_PARTY:
-                # Party channel.
-                channel = self.party().chatChannel
-            else:
-                channel = game.chat.getChannel(id)
-
-            if not channel:
-                return self.cancelMessage(_l(self, "Channel not found."))
-            
-            stream = self.packet()
-            stream.openChannel(channel)
-            stream.send(self.client)
-
-            channel.addMember(self)
-
-    def openPrivateChannel(self, between):
-        # Self open
-        if not self.isChannelOpen(between):
-            self._openChannels[between.name()] = [0xFFFF, between]
-            if between.isPlayer():
-                stream = self.packet(0xAD)
-            else:
-                stream = self.packet(0xB2)
-                stream.uint16(0xFFFF)
-
-            stream.string(between.name())
-            stream.send(self.client)
-
-        # Notify between if required.
-        if not between.isChannelOpen(self):
-            between.openPrivateChannel(self)
-
-        return 0xFFFF
-
-    def closePrivateChannel(self, between):
-        if between.name() in self._openChannels:
-            betweenObj = self._openChannels[between.name()]
-            stream = self.packet(0xB3)
-            stream.uint16(betweenObj[0])
-            stream.send(self.client)
-
-    def closeChannel(self, id):
-        channel = game.chat.getChannel(id)
-        channel.removeMember(self)
-
-        game.scriptsystem.get("leaveChannel").runDefer(self, None, channelId=id)
-
-    def isChannelOpen(self, between):
-        try:
-            return self._openChannels[between.name()]
-        except:
-            return False
-
-    def channelMessage(self, text, channelType=game.enum.MSG_CHANNEL, channelId=0):
-        if channelId == CHANNEL_GUILD:
-            channel = self.guild().chatChannel
-        elif channelId == CHANNEL_PARTY:
-            channel = self.party().chatChannel
-        else:
-            channel = game.chat.getChannel(channelId)
-        try:
-            members = channel.members
-        except:
-            members = []
-
-        members2 = game.scriptsystem.get("getChannelMembers").runSync(channelId, self, None, channelId=channelId, text=text, type=channelType, members=members)
-        if not members and type(members2) != list:
-            return False
-
-        elif type(members2) == list:
-            members = members2
-
-        if not members:
-            return False # No members
-            
-        # At to the channel archives:
-        
-        messageId = channel.addMessage(self, text, channelType)
-        
-        for player in members:
-            stream = player.packet(0xAA)
-            stream.uint32(messageId)
-            stream.string(self.data["name"])
-            if self.isPlayer():
-                stream.uint16(self.data["level"])
-            else:
-                stream.uint16(0)
-            stream.uint8(stream.enum(channelType))
-            if channelType in (MSG_CHANNEL_MANAGEMENT, MSG_CHANNEL, MSG_CHANNEL_HIGHLIGHT):
-                stream.uint16(channelId)
-
-            stream.string(text)
-            stream.send(player.client)
-
-        
-        return True
-
-    def privateChannelMessage(self, text, receiver, channelType=game.enum.MSG_CHANNEL):
-        player = game.engine.getPlayer(receiver)
-        if player:
-            stream = player.packet(0xAA)
-            stream.uint32(1)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"])
-            stream.uint8(stream.enum(channelType))
-            stream.string(text)
-            stream.send(player.client)
-
-            return True
-            
-        return False
-        
-    def isPrivate(self, name):
-        try:
-            return self.openChannels[name]
-        except:
-            pass
-
-    def notifyPrivateSay(self, sayer, text):
-        pass # Not supported yet
 
     # Death stuff
     def sendReloginWindow(self, percent=0):
@@ -1814,8 +1647,8 @@ class Player(Creature):
 
         if not self.alive and self.data["health"] < 1:
 
-            splash = game.item.Item(game.enum.FULLSPLASH)
-            splash.fluidSource = game.enum.FLUID_BLOOD
+            splash = game.item.Item(enum.FULLSPLASH)
+            splash.fluidSource = enum.FLUID_BLOOD
 
 
             tile.placeItem(corpse)
@@ -1854,7 +1687,7 @@ class Player(Creature):
         if dmg > 0:
             return int(dmg)
         
-        if type == game.enum.MELEE or type == game.enum.PHYSICAL:
+        if type == enum.MELEE or type == enum.PHYSICAL:
             # Armor and defence
             armor = 0
             defence = 0
@@ -1868,19 +1701,19 @@ class Player(Creature):
                     if block:
                         dmg += (-dmg * block / 100.0)
 
-            if self.inventory[game.enum.SLOT_LEFT]:
-                defence = self.inventory[game.enum.SLOT_LEFT].defence
-            elif self.inventory[game.enum.SLOT_RIGHT]:
-                defence = self.inventory[game.enum.SLOT_RIGHT].defence
+            if self.inventory[enum.SLOT_LEFT]:
+                defence = self.inventory[enum.SLOT_LEFT].defence
+            elif self.inventory[enum.SLOT_RIGHT]:
+                defence = self.inventory[enum.SLOT_RIGHT].defence
 
             if not defence:
                 defence = 0
                 
             defence += extradef
             defRate = 1
-            if self.modes[1] == game.enum.OFFENSIVE:
+            if self.modes[1] == enum.OFFENSIVE:
                 defRate = 0.5
-            elif self.modes[1] == game.enum.BALANCED:
+            elif self.modes[1] == enum.BALANCED:
                 defRate = 0.75
 
             if random.randint(1, 100) <= defence * defRate:
@@ -2075,7 +1908,7 @@ class Player(Creature):
 
             addBack = removedMoney - amount
             if addBack: # Add some money back
-                for x in game.enum.MONEY_MAP:
+                for x in enum.MONEY_MAP:
                     if addBack >= x[1]:
                         coins = int(addBack / x[1])
                         addBack = addBack % x[1]
@@ -2093,7 +1926,7 @@ class Player(Creature):
             return 0
 
     def addMoney(self, amount):
-        for x in game.enum.MONEY_MAP:
+        for x in enum.MONEY_MAP:
             if amount >= x[1]:
                 coins = int(amount / x[1])
                 amount = amount % x[1]
@@ -2152,71 +1985,12 @@ class Player(Creature):
             return self._getDepotItemCount(depot)
         else:
             return 0
+        
     # Stuff from protocol:
-    def handleSay(self, channelType, channelId, reciever, text):
-        if len(text) > config.maxLengthOfSay:
-            self.message(_l(self, "Message too long"))
-            return
-
-        splits = text.split(" ")
-        mode = channelType
-        if channelId == 1:
-            if splits[0] == "#y":
-                mode = game.enum._MSG_SPEAK_YELL
-                del splits[0]
-            elif splits[0] == "#w":
-                mode = game.enum._MSG_SPEAK_WHISPER
-                del splits[0]
-
-        doRegex = True
-
-        if len(splits) > 1:
-            d = game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, text=' '.join(splits[1:]))
-
-            if d != None:
-                doRegex = False
-            if not d and d != None:
-                return
-        
-        
-        d = game.scriptsystem.get("talkaction").runSync(text, self, text=text)
-
-        if d != None:
-            doRegex = False
-        if not d and d != None:
-            return
-            
-        if doRegex:
-            d = game.scriptsystem.get("talkactionRegex").runSync(text, self, text=text)
-
-            if not d and d != None:
-                return
-                
-        if channelType in (game.enum._MSG_SPEAK_SAY, game.enum._MSG_SPEAK_YELL, game.enum._MSG_SPEAK_WHISPER):
-            if mode == game.enum._MSG_SPEAK_SAY:
-                self.say(text)
-
-            elif mode == game.enum._MSG_SPEAK_YELL:
-                self.yell(text)
-
-            elif mode == game.enum._MSG_SPEAK_WHISPER:
-                self.whisper(text)
-
-        elif channelType == game.enum._MSG_CHANNEL:
-            self.channelMessage(text, MSG_CHANNEL, channelId)
-
-        #elif channelType == game.enum.MSG_PRIVATE_TO:
-        else:
-            self.privateChannelMessage(text, reciever, MSG_PRIVATE_FROM)
-
-        for creature in game.engine.getCreatures(self.position):
-            creature.playerSay(self, text, channelType, channelId or reciever)
-
     def attackTarget(self, dmg = None):
         if dmg:
             assert dmg < 0, "Damage must be negative"
             
-        print "attackTarget!"
         atkRange = 1
         weapon = self.inventory[SLOT_RIGHT]
         ammo = None
@@ -2232,19 +2006,19 @@ class Player(Creature):
                 self.cancelMessage("You are out of arrows.")
                 ok = False
             
-        print "Ok...", ok
         if ok and self.target and self.target.isAttackable(self) and self.inRange(self.target.position, atkRange, atkRange):
             if not self.target.data["health"]:
                 self.target = None
             else:
+                atkType = MELEE
                 factor = 1
-                if self.modes[1] == game.enum.BALANCED:
+                if self.modes[1] == enum.BALANCED:
                     factor = 0.75
-                elif self.modes[1] == game.enum.DEFENSIVE:
+                elif self.modes[1] == enum.DEFENSIVE:
                     factor = 0.5
 
                 if not self.inventory[5]:
-                    skillType = game.enum.SKILL_FIST
+                    skillType = enum.SKILL_FIST
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
@@ -2264,7 +2038,6 @@ class Player(Creature):
                     
                     dmg = -random.randint(round(minDmg), round(maxDmg))
                     
-                    
                     skillType = SKILL_DISTANCE
                     atkType = DISTANCE
                     
@@ -2275,7 +2048,7 @@ class Player(Creature):
                         
                 else:
                     skillType = self.inventory[5].weaponSkillType
-                    atkType = MELEE
+                    
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
 
@@ -2292,7 +2065,7 @@ class Player(Creature):
                             self.cancelTarget()
                             self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
                     else:
-                        self.target.onHit(self, dmg, game.enum.MELEE)
+                        self.target.onHit(self, dmg, enum.MELEE)
                         self.skillAttempt(skillType)"""
                     print "calling onhit"
                     target.onHit(self, dmg, atkType)
@@ -2381,7 +2154,7 @@ class Player(Creature):
             return self.notPossible()
 
 
-        if self.modes[1] == game.enum.CHASE:
+        if self.modes[1] == enum.CHASE:
             print "did"
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)

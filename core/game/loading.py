@@ -290,6 +290,10 @@ def loader(timer):
     __builtin__.accountIsBanned = game.ban.accountIsBanned
     __builtin__.addBan = game.ban.addBan
     
+    # Creature and Player class. Mainly for test and savings.
+    __builtin__.Creature = game.creature.Creature
+    __builtin__.Player = game.player.Player
+    
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban')
         monster = game.monster

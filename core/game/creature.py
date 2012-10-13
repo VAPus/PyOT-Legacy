@@ -3,8 +3,7 @@ from twisted.internet import reactor
 from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
-import threading
-import game.enum as enum
+import enum as enum
 import config
 import time
 import copy
@@ -15,7 +14,10 @@ import math
 import collections
 import data.map.info
 
-# Unique ids, thread safe too
+# Build class.
+from game.creature_talking import CreatureTalking
+
+# Unique ids.
 def __uid():
     idsTaken = 1
     while True:
@@ -23,43 +25,15 @@ def __uid():
         yield idsTaken
 
 __uniqueId = __uid().next
-__uniqueLock = threading.Lock()
+
 def uniqueId():
-    __uniqueLock.acquire()
     id = __uniqueId()
-    __uniqueLock.release()
     return id
 
 allCreatures = {}
 allCreaturesObject = allCreatures.viewvalues()
 
-class CreatureBase(object):
-    def __init__(self):
-        self.scripts = {"onFollow":[], "onTargetLost":[]}
-
-    def regOnFollow(self, function):
-        self.scripts["onFollow"].append(function)
-
-    def unregOnFollow(self, function):
-        self.scripts["onFollow"].remove(function)
-
-    def onFollow(self, target):
-        pass
-        #for func in self.scripts["onFollow"]:
-        #    game.scriptsystem.scriptPool.callInThread(func, self, target)
-
-    def regOnTargetLost(self, function):
-        self.scripts["onTargetLost"].append(function)
-
-    def unregOnTargetLost(self, function):
-        self.scripts["onTargetLost"].remove(function)
-
-    def onTargetLost(self, target):
-        pass
-        #for func in self.scripts["onTargetLost"]:
-        #    game.scriptsystem.scriptPool.callInThread(func, self, target)
-
-class Creature(object):
+class Creature(CreatureTalking):
 
     def __init__(self, data, position, cid=None):
         self.data = data
@@ -611,16 +585,16 @@ class Creature(object):
             stream.send(player.client)
 
     def hitEffects(self):
-        if self.isPlayer() or self.base.blood == game.enum.FLUID_BLOOD:
-            return game.enum.COLOR_RED, game.enum.EFFECT_DRAWBLOOD
-        elif self.base.blood == game.enum.FLUID_SLIME:
-            return game.enum.COLOR_LIGHTGREEN, game.enum.EFFECT_HITBYPOISON
-        elif self.base.blood == game.enum.FLUID_ENERGY:
-            return game.enum.COLOR_PURPLE, game.enum.EFFECT_PURPLEENERGY
-        elif self.base.blood == game.enum.FLUID_UNDEAD:
-            return game.enum.COLOR_GREY, game.enum.EFFECT_HITAREA
-        elif self.base.blood == game.enum.FLUID_FIRE:
-            return game.enum.COLOR_ORANGE, game.enum.EFFECT_DRAWBLOOD
+        if self.isPlayer() or self.base.blood == enum.FLUID_BLOOD:
+            return enum.COLOR_RED, enum.EFFECT_DRAWBLOOD
+        elif self.base.blood == enum.FLUID_SLIME:
+            return enum.COLOR_LIGHTGREEN, enum.EFFECT_HITBYPOISON
+        elif self.base.blood == enum.FLUID_ENERGY:
+            return enum.COLOR_PURPLE, enum.EFFECT_PURPLEENERGY
+        elif self.base.blood == enum.FLUID_UNDEAD:
+            return enum.COLOR_GREY, enum.EFFECT_HITAREA
+        elif self.base.blood == enum.FLUID_FIRE:
+            return enum.COLOR_ORANGE, enum.EFFECT_DRAWBLOOD
 
     def damageToBlock(self, dmg, type):
         # Overrided to creatures.
@@ -628,47 +602,47 @@ class Creature(object):
 
     def onHit(self, by, dmg, type, effect=None):
         
-        if not type == game.enum.DISTANCE:
+        if not type == enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
 
-        if type == game.enum.ICE:
-            textColor = game.enum.COLOR_TEAL
-            magicEffect = game.enum.EFFECT_ICEATTACK
+        if type == enum.ICE:
+            textColor = enum.COLOR_TEAL
+            magicEffect = enum.EFFECT_ICEATTACK
 
-        elif type == game.enum.FIRE:
-            textColor = game.enum.COLOR_ORANGE
-            magicEffect = game.enum.EFFECT_HITBYFIRE
+        elif type == enum.FIRE:
+            textColor = enum.COLOR_ORANGE
+            magicEffect = enum.EFFECT_HITBYFIRE
 
-        elif type == game.enum.EARTH:
-            textColor = game.enum.COLOR_LIGHTGREEN
-            magicEffect = game.enum.EFFECT_HITBYPOSION
+        elif type == enum.EARTH:
+            textColor = enum.COLOR_LIGHTGREEN
+            magicEffect = enum.EFFECT_HITBYPOSION
 
-        elif type == game.enum.ENERGY:
-            textColor = game.enum.COLOR_PURPLE
-            magicEffect = game.enum.EFFECT_ENERGYHIT
+        elif type == enum.ENERGY:
+            textColor = enum.COLOR_PURPLE
+            magicEffect = enum.EFFECT_ENERGYHIT
 
-        elif type == game.enum.HOLY:
-            textColor = game.enum.COLOR_YELLOW
-            magicEffect = game.enum.EFFECT_HOLYDAMAGE
+        elif type == enum.HOLY:
+            textColor = enum.COLOR_YELLOW
+            magicEffect = enum.EFFECT_HOLYDAMAGE
 
-        elif type == game.enum.DEATH:
-            textColor = game.enum.COLOR_DARKRED
-            magicEffect = game.enum.EFFECT_SMALLCLOUDS
+        elif type == enum.DEATH:
+            textColor = enum.COLOR_DARKRED
+            magicEffect = enum.EFFECT_SMALLCLOUDS
 
-        elif type == game.enum.DROWN:
-            textColor = game.enum.COLOR_LIGHTBLUE
-            magicEffect = game.enum.EFFECT_ICEATTACK
+        elif type == enum.DROWN:
+            textColor = enum.COLOR_LIGHTBLUE
+            magicEffect = enum.EFFECT_ICEATTACK
 
-        elif type == game.enum.DISTANCE:
-            textColor, magicEffect = game.enum.COLOR_RED, None
+        elif type == enum.DISTANCE:
+            textColor, magicEffect = enum.COLOR_RED, None
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
-        elif type == game.enum.LIFEDRAIN:
-            textColor = game.enum.COLOR_TEAL
-            magicEffect = game.enum.EFFECT_ICEATTACK
+        elif type == enum.LIFEDRAIN:
+            textColor = enum.COLOR_TEAL
+            magicEffect = enum.EFFECT_ICEATTACK
 
-        else: ### type == game.enum.MELEE:
+        else: ### type == enum.MELEE:
             textColor, magicEffect = self.hitEffects()
         if effect:
             magicEffect = effect
@@ -704,13 +678,13 @@ class Creature(object):
                 if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                     tile.removeItem(item)
 
-            splash = game.item.Item(game.enum.SMALLSPLASH)
+            splash = game.item.Item(enum.SMALLSPLASH)
 
             if self.isPlayer():
-                splash.fluidSource = game.enum.FLUID_BLOOD
+                splash.fluidSource = enum.FLUID_BLOOD
             else:
                 splash.fluidSource = self.base.blood
-            if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
+            if splash.fluidSource in (enum.FLUID_BLOOD, enum.FLUID_SLIME):
                 tile.placeItem(splash)
 
                 # Start decay
@@ -914,85 +888,6 @@ class Creature(object):
 
         return self.turn(direction)
 
-    def say(self, message, messageType=None):
-        if not messageType:
-            messageType = self.defaultSpeakType
-
-        for spectator in getSpectators(self.position, config.sayRange):
-            stream = spectator.packet(0xAA)
-            stream.uint32(0)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
-            stream.position(self.position)
-            stream.string(message)
-            stream.send(spectator)
-
-    def yell(self, message, messageType=None):
-        if not messageType:
-            messageType = self.defaultYellType
-
-        for spectator in getSpectators(self.position, config.yellRange):
-            stream = spectator.packet(0xAA)
-            stream.uint32(0)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
-            stream.position(self.position)
-            stream.string(message.upper())
-            stream.send(spectator)
-
-    def whisper(self, message, messageType=enum.MSG_SPEAK_WHISPER):
-        group = getSpectators(self.position, config.whisperRange)
-        listeners = getSpectators(self.position, config.sayRange) - group
-
-        for spectator in group:
-            stream = spectator.packet(0xAA)
-            stream.uint32(0)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
-            stream.position(self.position)
-            stream.string(message)
-            stream.send(spectator)
-
-        for spectator in listeners:
-            stream = spectator.packet(0xAA)
-            stream.uint32(0)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(stream.enum(messageType))
-            stream.position(self.position)
-            stream.string(config.whisperNoise)
-            stream.send(spectator)
-
-    def broadcast(self, message, messageType=enum.MSG_GAMEMASTER_BROADCAST):
-        import game.players
-        for player in game.player.allPlayersObject:
-            stream = player.packet(0xAA)
-            stream.uint32(0)
-            stream.string(self.data["name"])
-            stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(stream.enum(messageType))
-            stream.position(self.position)
-            stream.string(message)
-            stream.send(player.client)
-
-    def sayPrivate(self, message, to, messageType=enum.MSG_PRIVATE_FROM):
-        if not to.isPlayer(): return
-
-        stream = to.packet(0xAA)
-        stream.uint32(0)
-        stream.string(self.data["name"])
-        stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(stream.enum(messageType))
-        stream.position(self.position)
-        stream.string(message)
-        stream.send(to.client)
-
     def stopAction(self):
         ret = False
         try:
@@ -1138,9 +1033,6 @@ class Creature(object):
         self.targetMode = 2
         game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
         self.target.scripts["onNextStep"].append(self.__followCallback)
-
-    def playerSay(self, player, say, type, channel):
-        pass # Override me
 
     def cancelTarget(self):
         self.target = None
@@ -1431,22 +1323,6 @@ class Creature(object):
     #####################
     ### Compatibility ###
     #####################
-
-    def message(self, message, msgType=None, color=0, value=0, pos=None):
-        pass
-
-    def lmessage(self, message, msgType=None, color=0, value=0, pos=None):
-        pass
-
-    def lcmessage(self, context, message, msgType=None, color=0, value=0, pos=None):
-        pass
-    
-    def lcpmessage(self, context, singular, plural, n, msgType=None, color=0, value=0, pos=None):
-        pass
-    
-    def lpmessage(self, singular, plural, n, msgType=None, color=0, value=0, pos=None):
-        pass
-    
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
         if groupCooldown == None: groupCooldown = cooldown
         t = time.time()  + cooldown
@@ -1711,7 +1587,7 @@ class Boost(Condition):
 
             # Hack
             if ptype == "speed":
-                self.type = game.enum.CONDITION_HASTE
+                self.type = enum.CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
             else:
                 if inStruct == 0:
