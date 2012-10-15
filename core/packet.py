@@ -75,12 +75,12 @@ class TibiaPacketReader(object):
     def position(self, instance=None):
         self.pos += 5
         x,y,z = unpack("<HHB", self.data[self.pos - 5:self.pos]) 
-        return game.map.Position(x, y, z, instance)
+        return Position(x, y, z, instance)
         
     def stackPosition(self, instance=None):
         self.pos += 6
         x,y,z, stackPos = unpack("<HHBB", self.data[self.pos - 6:self.pos]) 
-        return game.map.StackPosition(x, y, z, stackPos, instance)
+        return StackPosition(x, y, z, stackPos, instance)
         
 class TibiaPacket(object):
     __slots__ = ('data', 'stream')

@@ -12,6 +12,7 @@ import game.item
 import config
 import game.scriptsystem
 from packet import TibiaPacket
+from inspect import isfunction
 
 npcs = {}
 brainFeatures = ({},{})
@@ -23,8 +24,6 @@ class ClassAction(object):
         on.classActions.append(self)
         self.action()
         
-    def action(self):
-        pass
 
 def Conversation(words, open, close=None):
     class Conv(ClassAction):
@@ -52,7 +51,7 @@ class NPC(Creature):
         self.activeModule = None
         self.activeSaid = None
         self.respawn = True
-        
+        self._defaulTalk = None
         # Replace handle say function with a speak tree parser.
         if self.base.speakTreeFunc:
             self.handleSpeak = self.handleSpeakTree
@@ -180,14 +179,23 @@ class NPC(Creature):
                 
             except:
                 self.activeModule = None
-        else:
-            pass # Get some ideas for this
-
+        elif self.base._defaultTalk:
+            self.activeModule = self.base._defaultTalk(self, player)
+            self.activeSaid = said
+            try:
+                self.activeModule.send(None)
+                self.activeModule.send(said)
+            except StopIteration:
+                self.activeModule = None
+            
     def handleSpeakTree(self, player, said):
         self.activeModule = self.base.speakTreeFunc(self, player)
         self.activeSaid = said
-        self.activeModule.send(None)
-        self.activeModule.send(said)
+        try:
+            self.activeModule.send(None)
+            self.activeModule.send(said)
+        except StopIteration:
+            self.activeModule = None
             
     def isAttackable(self, by):
         return self.base.attackable
@@ -312,12 +320,16 @@ class NPCBase(object):
         self.actions.append(action)
 
     def module(self, action):
-        if isinstance(action, type):
+        if isfunction(action):
+            # Universal talk action.
+            self._defaultTalk = action
+            
+        elif isinstance(action, type):
             actionClass = action(self)
             self.actions.append(actionClass)
             return actionClass
             
-        else:
+        elif isinstance(action, str):
             self.actions.append(action)
             return classActions[action](self)
 
