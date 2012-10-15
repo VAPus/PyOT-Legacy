@@ -1734,7 +1734,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
         extras.append(self.data["id"])
 
         if self.saveData or extraQuery or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s, p.`balance`"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.position.x, self.position.y, self.position.z, self.position.instanceId]+extras, self.data["balance"]
+            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s, p.`balance` = %s"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.position.x, self.position.y, self.position.z, self.position.instanceId, self.data["balance"]]+extras
 
     def save(self, force=False):
         if self.doSave:
