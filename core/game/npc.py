@@ -171,6 +171,7 @@ class NPC(Creature):
                     if self.forSale and player.openTrade == self: # Resend my items
                         self.sendGoods(player, self.forSale)
     def handleSpeak(self, player, said):
+        said = said.strip()
         if said in self.base._onSaid:
             self.activeModule = self.base._onSaid[said][0](self, player)
             self.activeSaid = said
@@ -179,7 +180,7 @@ class NPC(Creature):
                 
             except:
                 self.activeModule = None
-        elif self.base._defaultTalk:
+        else:
             self.activeModule = self.base._defaultTalk(self, player)
             self.activeSaid = said
             try:
@@ -245,6 +246,11 @@ class NPCBase(object):
         self.speakTreeFunc = None
         self.speakTreeGreet = None
         self.speakTreeFarewell = None
+        
+        
+        # Default interation.
+        self._defaultTalk = lambda npc, player: npc.sayTo(player, "Sorry, can I help you with something?")
+        self._onSaid["name"] = lambda npc, player: npc.sayTo(player, "My name is %s" % npc.name())
 
     def spawn(self, position, place=True, spawnDelay=0.1, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
@@ -340,6 +346,13 @@ class NPCBase(object):
         self.speakFarewell = farewell
         
     def onSaid(self, what, open, close=None):
+        if isinstance(open, str):
+            open = lambda npc, player: npc.sayTo(player, open)
+            
+            if what == '*':
+                self._defaultTalk = open
+                return
+            
         if type(what) == tuple:
             for x in what:
                 self._onSaid[x] = (open, close)
