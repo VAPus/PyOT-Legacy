@@ -811,13 +811,16 @@ def moveItem(player, fromPosition, toPosition, count=0):
     
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
-        return player.notPossible()
+        player.notPossible()
+        return False
     
     elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
-        return player.notPickable()
+        player.notPickable()
+        return False
                     
     elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
-        return player.notPossible()
+        player.notPossible()
+        return False
     
     if destItem and destItem.inContainer: # Recursive check.
         container = destItem.inContainer
@@ -835,16 +838,17 @@ def moveItem(player, fromPosition, toPosition, count=0):
             if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
                 pass
             else:
-                return player.notPossible()
+                player.notPossible()
+                return False
         
     if player.freeCapasity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
         return False
     
     if fromPosition.x == 0xFFFF and fromPosition.y < 64 and game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1)) == False:
-        return
+        return False
     elif toPosition.x == 0xFFFF and toPosition.y < 64 and game.scriptsystem.get("equip").runSync(player, thing, slot = (toPosition.y-1)) == False:
-        return
+        return False
     
     # Special case when both items are the same and stackable.
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
@@ -853,29 +857,30 @@ def moveItem(player, fromPosition, toPosition, count=0):
             newCount = min(100, destItem.count + count) - destItem.count
             player.modifyItem(destItem, toPosition, newCount)
             player.modifyItem(thing, fromPosition, -count)
-            return
+            return True
         else:
             newItem = _newItem
         
     # remove from fromPosition.
-    elif count and thing.stackable:
+    elif count and thing.stackable and count != thing.stackable:
         newItem = thing.copy()
         newItem.count = count
         
         player.modifyItem(thing, fromPosition, -count)
         
     else:
-        newItem = thing.copy() # Easy enough.
+        newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:
         if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
-            return
+            return False
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-            return
+            return False
         
         player.itemToContainer(destItem, newItem)
         
-    player.removeItem(fromPosition, thing)
+    if thing.count:
+        player.removeItem(fromPosition, thing)
 
     if toMap:
         # Place to ground.
@@ -883,35 +888,34 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
         for item in thisTile.getItems():
             if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
-                return
+                return False
             if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                return
+                return False
             
         toPosition.getTile().placeItem(newItem)
         updateTile(toPosition, toPosition.getTile())
-        
-    if not destItem or not destItem.containerSize:
-        if toPosition.x == 0xFFFF and toPosition.y < 64:
-            print "OW NO", destItem
-            # Inventory.
-            player.itemToInventory(newItem, toPosition.y)
-            
-        else:
-            container = player.getContainer(toPosition.y-64)
-            
-            if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
-                return
-            if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                return
-            
-            player.itemToContainer(container, newItem)
+    else:
+        if not destItem or not destItem.containerSize:
+            if toPosition.y < 64:
+                # Inventory.
+                player.itemToInventory(newItem, toPosition.y-1)
+                
+            else:
+                container = player.getContainer(toPosition.y-64)
+                
+                if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
+                    return False
+                if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+                    return False
+                
+                player.itemToContainer(container, newItem)
     
-    if (destItem and not destItem.containerSize) and toPosition.x == 0xFFFF:
-        # Move destItem.
-        if thing.inContainer:
-            player.itemToContainer(thing.inContainer, destItem)
         else:
-            player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
+            # Move destItem.
+            if thing.inContainer:
+                player.itemToContainer(thing.inContainer, destItem)
+            else:
+                player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
         
     # Update everything. Lazy.
     player.refreshInventory()

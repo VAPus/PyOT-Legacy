@@ -34,7 +34,6 @@ allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
 class Player(Creature, PlayerTalking, PlayerAttacks):
     def __init__(self, client, data):
-        
         # XXX: Hack.
         # TODO: Rewrite this to save memory. And to simplefy lookups later on.
         data["skills"] = {SKILL_FIST: data['fist'], SKILL_SWORD: data['sword'], SKILL_CLUB: data['club'], SKILL_AXE: data['axe'], SKILL_DISTANCE: data['distance'], SKILL_SHIELD: data['shield'], SKILL_FISH: data['fishing']}
@@ -417,7 +416,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
         if position:
             if position.x != 0xFFFF:
                 if isinstance(position, StackPosition):
-                    print "findItem - stackpos"
                     thing = position.getThing()
                     if sid and thing and thing.itemId != sid:
                         raise Exception("Got request for a item at %s, but spritId mismatches (should be: %d, is: %s)" % (position, sid, thing.itemId))
@@ -590,7 +588,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
     def removeItem(self, position, thing=None):
         position = thing.vertifyPosition(self, position)
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!")
+            raise Exception("BUG: Item position cannot be vertified! %s")
 
         # Option 1, from the map:
         if position.x != 0xFFFF:
@@ -643,7 +641,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
     def removeCache(self, item):
         # Update cached data
         try:
-            print "Remove from cache ", item
             try:
                 del item.inContainer
                 del item.decayCreature
@@ -957,7 +954,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
 
             self.modes[1] = chase
             self.modes[2] = secure
-            print "Modes", self.modes
+
         game.scriptsystem.get('modeChange').runDefer(self, end, attack=attack, chase=chase, secure=secure)
 
 
@@ -1089,7 +1086,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
             # Replace it in structure
             for i in self.openContainers.items():
                 if i[1] == container:
-                    print "found"
                     self.openContainers[i[0]] = container
                     break
 
@@ -1196,7 +1192,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
 
 
     def closeContainerId(self, openId):
-        print "ID = ", openId
         try:
             container = self.openContainers[openId]
 
@@ -1265,7 +1260,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
         return True
 
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
-        print "Item to container!!!"
         stream = streamX
         update = False
 
@@ -1348,7 +1342,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
                 stream.addContainerItem(container.openIndex, item)
 
             self.addCache(item, container)
-            print "Adding to cache ay!"
 
         
         
@@ -1420,25 +1413,25 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
                 return False
             slot = slot[0]
 
-        if self.inventory[slot-1] and stack and item.stackable and item.itemId == self.inventory[slot-1].itemId and self.inventory[slot-1].count+item.count <= 100:
-            self.inventory[slot-1].count += item.count
+        if self.inventory[slot] and stack and item.stackable and item.itemId == self.inventory[slot].itemId and self.inventory[slot].count+item.count <= 100:
+            self.inventory[slot].count += item.count
         else:
-            self.inventory[slot-1] = item
+            self.inventory[slot] = item
 
         item.decayCreature = self
-        item.decayPosition = Position(0xFFFF, slot-1, 0)
+        item.decayPosition = Position(0xFFFF, slot+1, 0)
         stream = self.packet()
-        stream.addInventoryItem(slot, self.inventory[slot-1])
+        stream.addInventoryItem(slot+1, self.inventory[slot])
         stream.send(self.client)
 
         return True
 
     def updateInventory(self, slot):
         stream = self.packet()
-        if not self.inventory[slot-1] or (self.inventory[slot-1].stackable and not self.inventory[slot-1].count):
-            stream.removeInventoryItem(slot)
+        if not self.inventory[slot] or (self.inventory[slot].stackable and not self.inventory[slot].count):
+            stream.removeInventoryItem(slot+1)
         else:
-            stream.addInventoryItem(slot, self.inventory[slot-1])
+            stream.addInventoryItem(slot+1, self.inventory[slot])
         stream.send(self.client)
 
     # Death stuff
@@ -1457,8 +1450,6 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
         elif self.data["level"] < config.loseCutoff:
             lose = config.loseConstant
         else:
-            print config.loseFormula(self.data["level"])
-            print self.data["experience"]
             lose = config.loseFormula(self.data["level"]) / self.data["experience"]
             
         if withBlessings and self.blessings:
@@ -1482,6 +1473,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
             container = 10
 
         return (container, container / 10.0)
+    
     def onDeath(self):
         lastDmgIsPlayer = self.lastDamagers[0].isPlayer()
         deathData = {}
@@ -1493,7 +1485,8 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
             
         deathData["loseRate"] = loseRate
         deathData["itemLoseRate"] = itemLoseRate
-        corpse = game.item.Item(3058)
+        deathData["unjust"] = False
+        corpse = Item(3058)
         
         lastDamagerSkull = self.getSkull(self.lastDamagers[0])
         if lastDmgIsPlayer:
@@ -2430,7 +2423,7 @@ class Player(Creature, PlayerTalking, PlayerAttacks):
             
     # Skull stuff
     def getSkull(self, creature=None):
-        if creature:
+        if creature and creature.isPlayer():
             # Green skull to members of the same party.
             myParty = self.party()
             if myParty and creature.party() == myParty:

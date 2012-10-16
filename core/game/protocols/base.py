@@ -570,9 +570,12 @@ class BaseProtocol(object):
         try:
             self._handle(player, packet)
         except:
-            print "\n\n[UNHANDLED CORE EXCEPTION!]"
-            traceback.print_exc()
-            print "==============================\n"
+            if IS_IN_TEST:
+                raise
+            else:
+                print "\n\n[UNHANDLED CORE EXCEPTION!]"
+                traceback.print_exc()
+                print "==============================\n"
 
             
     def _handle(self, player, packet):
@@ -934,15 +937,15 @@ class BaseProtocol(object):
                 for thing2 in game.map.getTile(position).things:
                     if thing2.cid == clientId:
                         thing = thing2
-                        break
-                    
+                        break       
         if thing:
-            if isinstance(thing, game.item.Item):
+            if isinstance(thing, Item):
                 def afterScript():
                     extra = ""
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+                    print "lookAt send"
                     player.message(thing.description(player, position) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():

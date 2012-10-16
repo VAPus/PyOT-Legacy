@@ -102,7 +102,7 @@ class CreatureTalking(object):
     def playerSay(self, player, say, type, channel):
         pass # Override me
         
-class PlayerTalking(object):
+class PlayerTalking(CreatureTalking):
     def message(self, message, msgType=enum.MSG_INFO_DESCR, color=0, value=0, pos=None):
         stream = self.packet()
         stream.message(self, message, msgType, color, value, pos)

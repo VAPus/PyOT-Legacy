@@ -152,7 +152,7 @@ class CreatureAttacks(object):
             return False
             
             
-class PlayerAttacks(object):
+class PlayerAttacks(CreatureAttacks):
     # Damage calculation:
     def damageToBlock(self, dmg, type):
         if dmg > 0:
@@ -279,7 +279,6 @@ class PlayerAttacks(object):
                     else:
                         self.target.onHit(self, dmg, enum.MELEE)
                         self.skillAttempt(skillType)"""
-                    print "calling onhit"
                     target.onHit(self, dmg, atkType)
                     self.skillAttempt(skillType)
                 

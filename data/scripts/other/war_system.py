@@ -343,7 +343,7 @@ if config.enableWarSystem:
     @register("death", 'player')
     def fragCounter(creature, creature2, deathData, **k):
         # If creature is in war with creature2.
-        if creature2.isPlayer():
+        if creature.isPlayer() and creature2.isPlayer():
             guildId = creature.data["guild_id"]
             guildId2 = creature2.data["guild_id"]
             if guildId and guildId2 and guildId in wars:

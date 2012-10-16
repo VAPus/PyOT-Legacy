@@ -29,11 +29,10 @@ class Item(object):
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
-            self._itemBase = items[itemId]
+            items[itemId]
         except (KeyError, IndexError):
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
-            self._itemBase = items[itemId]
             
         self.itemId = itemId
         self.actions = actions
@@ -42,14 +41,14 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if self._itemBase['a'] & 64:
+        if items[itemId]['a'] & 64:
             if not count or count < 0:
                 count = 1
             self.count = count
             
         # Extend items such as containers
         try:
-            self.container = deque(maxlen=self._itemBase["containerSize"])
+            self.container = deque(maxlen=items[itemId]["containerSize"])
         except KeyError:
             pass
 
@@ -119,6 +118,7 @@ class Item(object):
             return pos
             
         elif not self in tile.things:
+            print "OWOWOWOW", self, tile.things
             return False # Not on this tile
             
         elif isinstance(pos, StackPosition):
@@ -151,19 +151,19 @@ class Item(object):
     
     @property
     def solid(self):
-        return self._itemBase['a'] & 1
+        return items[self.itemId]['a'] & 1
         
     @property
     def blockprojectile(self):
-        return self._itemBase['a'] & 2
+        return items[self.itemId]['a'] & 2
         
     @property
     def blockpath(self):
-        return self._itemBase['a'] & 4
+        return items[self.itemId]['a'] & 4
         
     @property
     def cid(self):
-        return self._itemBase['cid']
+        return items[self.itemId]['cid']
     
     """
     # Changeable attributes. Ignore.
@@ -181,37 +181,37 @@ class Item(object):
     """    
     @property
     def stackable(self):
-        return self._itemBase['a'] & 64
+        return items[self.itemId]['a'] & 64
         
     @property
     def ontop(self):
-        return self._itemBase['a'] & 128
+        return items[self.itemId]['a'] & 128
         
     @property
     def hangable(self):
-        return self._itemBase['a'] & 256
+        return items[self.itemId]['a'] & 256
         
     @property
     def rotatable(self):
-        return self._itemBase['a'] & 512
+        return items[self.itemId]['a'] & 512
         
     @property
     def animation(self):
-        return self._itemBase['a'] & 1024
+        return items[self.itemId]['a'] & 1024
         
     @property
     def type(self):
         try:
-            return self._itemBase["type"]
+            return items[self.itemId]["type"]
         except KeyError:
             return False
             
     def __getattr__(self, name):
         try:
-            return self._itemBase[name]
+            return items[self.itemId][name]
         except:
             try:
-                return self._itemBase['a'] & (1 << self.attributes.index(name))
+                return items[self.itemId]['a'] & (1 << self.attributes.index(name))
             except:
                 if not "__" in name:
                     return None
@@ -419,33 +419,35 @@ class Item(object):
                 pass
             
     def __getstate__(self):
-        params = self.__dict__.copy()
-        del params["_itemBase"]
-        try:
-            del params["decayCreature"]
-            del params["inContainer"] # This only exists if inPlayer exists.
-        except:
-            pass
-            
-        try:
-            del params["openIndex"]
-        except:
-            pass
+        params = self.__dict__
+        for x in ("decayCreature", "inContainer", "openIndex", "parent", "inTrade", "executeDecay"):
+            if x in self.__dict__:
+                params = self.__dict__.copy() 
+                try:
+                    del params["decayCreature"]
+                    del params["inContainer"] # This only exists if inPlayer exists.
+                except:
+                    pass
+                    
+                try:
+                    del params["openIndex"]
+                except:
+                    pass
 
-        try:
-            del params["parent"]
-        except:
-            pass
-        
-        try:
-            del params["inTrade"]
-        except:
-            pass
-            
-        try:
-            del params["executeDecay"]
-        except:
-            pass
+                try:
+                    del params["parent"]
+                except:
+                    pass
+                
+                try:
+                    del params["inTrade"]
+                except:
+                    pass
+                    
+                try:
+                    del params["executeDecay"]
+                except:
+                    pass
             
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
@@ -461,7 +463,6 @@ class Item(object):
         else:
             self.__dict__ = state
             
-        self._itemBase = items[self.itemId]
 
     def copy(self):
         newItem = copy.deepcopy(self)

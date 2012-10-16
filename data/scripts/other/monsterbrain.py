@@ -9,7 +9,6 @@ def defaultBrainFeaturePriority(monster):
                 
             # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or not monster.target.client:
-                monster.base.onTargetLost(monster.target)
                 monster.intervals = {} # Zero them out
                 if monster.master:
                     monster.target = monster.master
@@ -141,8 +140,6 @@ def defaultBrainFeature(monster):
                 if monster.master.target != monster.target and monster.master.target != monster:
                     monster.target = monster.master.target
                     monster.targetMode = 1
-                    # Call the scripts
-                    monster.base.onFollow(monster.target)
                     
                     # When we reach our destination, can we target check
                     def __walkComplete(x):
@@ -180,8 +177,6 @@ def defaultBrainFeature(monster):
                 # Follow the master
                 monster.target = monster.master
                 monster.targetMode = 2
-                # Call the scripts
-                monster.base.onFollow(monster.target)
 
                 # When we reach our destination, can we target check
                 def __walkComplete(x):

@@ -318,9 +318,6 @@ class Monster(Creature):
             self.target = None
             self.targetMode = 0
             return
-                        
-        # Call the scripts
-        self.base.onFollow(self.target)
                     
         # When we reach our destination, can we target check
         def __walkComplete(x):

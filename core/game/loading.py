@@ -47,7 +47,7 @@ except:
     from StringIO import StringIO
     
 MERCURIAL_REV = 0
-IS_IN_TEST = False
+__builtin__.IS_IN_TEST = False
 
 # COLORS
 import platform
