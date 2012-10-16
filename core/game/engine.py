@@ -396,7 +396,7 @@ def transformItem(item, transformTo, pos):
         raise Exception("BUG: Can't vertify position")
  
     tile = game.map.getTile(pos)
-    if not isinstance(pos, game.map.StackPosition):
+    if not isinstance(pos, StackPosition):
         pos = pos.setStackpos(tile.findStackpos(item))
 
     tile.removeItem(item)
@@ -433,10 +433,10 @@ def teleportItem(item, fromPos, toPos):
     
     
     """
-    if fromPos[0] != 0xFFFF:
+    if fromPos.x != 0xFFFF:
         try:
-            tile = game.map.getTile(fromPos)
-            if not isinstance(fromPos, game.map.StackPosition):
+            tile = fromPos.getTile()
+            if not isinstance(fromPos, StackPosition):
                 fromPos = fromPos.setStackpos(tile.findStackpos(item))
                 
             tile.removeItem(item)
@@ -447,7 +447,7 @@ def teleportItem(item, fromPos, toPos):
         except:
             pass
               
-    newTile = game.map.getTile(toPos)
+    newTile = toPos.getTile()
     if item.decayPosition:
             item.decayPosition = toPos
     toStackPos = newTile.placeItem(item)
@@ -473,7 +473,7 @@ def placeItem(item, position):
     
     """
     
-    stackpos = game.map.getTile(position).placeItem(item)
+    stackpos = position.getTile().placeItem(item)
     for spectator in getSpectators(position):
         stream = spectator.packet()
         stream.addTileItem(position, stackpos, item)
@@ -481,8 +481,8 @@ def placeItem(item, position):
     return stackpos
 
 def relocate(fromPos, toPos):
-    tile = game.map.getTile(fromPos)
-    toPos = game.map.getTile(toPos)
+    tile = fromPos.getTile()
+    toPos = toPos.getTile()
     items = []
     for item in tile.getItems():
         if not item.movable: continue

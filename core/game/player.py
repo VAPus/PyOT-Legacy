@@ -32,7 +32,7 @@ except:
 allPlayers = {}
 allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
-class Player(Creature, PlayerTalking, PlayerAttacks):
+class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def __init__(self, client, data):
         # XXX: Hack.
         # TODO: Rewrite this to save memory. And to simplefy lookups later on.
