@@ -26,4 +26,4 @@ class TestItem(FrameworkTestGame):
         
         self.assertTrue(moveItem(self.player, Position(0xFFFF, SLOT_RIGHT+1, 0), self.player.position))
         
-        self.assertEqual(self.player.inventory[SLOT_RIGHT], None)>>>>>>> other
+        self.assertEqual(self.player.inventory[SLOT_RIGHT], None)
