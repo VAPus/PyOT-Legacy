@@ -2375,7 +2375,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
     def setLanguage(self, lang):
-        if lang != 'en_EN'
+        if lang != 'en_EN':
             C = "%s\x04%s"
             try:
                 self.l = language.LANGUAGES[lang].gettext
