@@ -1,0 +1,30 @@
+Here are some random TODOs for people.
+
+
+Monster:
+ - [everywhere] Fix random move (it makes things bug, need a bit of investegation, so lots of learning for anyone who want to do this one hehe)
+ - Make em starter.
+
+Guild:
+ - Make control scripts
+ - Make guild class or extend Player class
+ - SQL part
+
+Scripts:
+ - Add more scripts.
+
+Scriptsystem:
+ - Per creature scripts (would be easier to bind things here rather then to use if creature in someSet for all events, since those will only fire on the actual creatures, and therefore reduce overhead)
+
+Documentation:
+ - Document more functions
+ - Write a page on how to make Monsters
+ - Write a page on how to make Spells
+ - Write a page on how to make NPCs
+ - Finish more of tfsToPyOT
+
+Somethings that could be fun:
+ - Write tests
+
+Tools:
+ - Fix the script convertor to use the new form of registering.
