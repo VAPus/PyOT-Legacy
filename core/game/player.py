@@ -1248,14 +1248,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if ret == False and not self.inventory[9]:
             if self.addCache(item) != False:
                 self.inventory[9] = item
+                item.setPosition(Position(0xFFFF, 10, 0), self)
                 stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[9])
                 stream.send(self.client)
                 return True
         if ret == False and placeOnGround:
-            tile = game.map.getTile(self.position)
-            tile.placeItem(item)
-            game.engine.updateTile(self.position, tile)
+            item.place(self.position)
             return True
         elif ret == False:
             return False
@@ -1291,9 +1290,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         if update:
                             ret = self.modifyCache(itemX, itemX.count - Tcount)
                             if ret == False:
-                                tile = game.map.getTile(self.position)
-                                tile.placeItem(item)
-                                game.engine.updateTile(self.position, tile)
+                                item.place(self.position)
                                 self.tooHeavy()
                                 return
 
