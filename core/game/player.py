@@ -2375,15 +2375,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
     def setLanguage(self, lang):
-        C = "%s\x04%s"
-        try:
-            self.l = language.LANGUAGES[lang].gettext
-            self.lp = language.LANGUAGES[lang].ngettext
-            self.lc = lambda context, message: self.l(C % (context, message))
-            self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
-        except:
-            print "WARNING: Language %s not loaded, falling back to defaults" % lang
-            pass
+        if lang != 'en_EN'
+            C = "%s\x04%s"
+            try:
+                self.l = language.LANGUAGES[lang].gettext
+                self.lp = language.LANGUAGES[lang].ngettext
+                self.lc = lambda context, message: self.l(C % (context, message))
+                self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
+            except:
+                print "WARNING: Language %s not loaded, falling back to defaults" % lang
+            
 
         self.data["language"] = lang
         
