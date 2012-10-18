@@ -103,10 +103,10 @@ class CreatureAttacks(object):
             else:
                 splash.fluidSource = self.base.blood
             if splash.fluidSource in (enum.FLUID_BLOOD, enum.FLUID_SLIME):
-                tile.placeItem(splash)
+                splash.place(self.position)
 
                 # Start decay
-                splash.decay(self.position)
+                splash.decay()
 
             updateTile(self.position, tile)
 

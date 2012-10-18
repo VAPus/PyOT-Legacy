@@ -585,8 +585,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             self.removeItem(position, thing)
 
-    def removeItem(self, position, thing=None):
-        position = thing.vertifyPosition(self, position)
+    def removeItem(self, position, thing):
+        position = thing.vertifyPosition()
         if not position:
             raise Exception("BUG: Item position cannot be vertified! %s")
 
@@ -1327,13 +1327,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             else:
                 info = container.placeItem(item)
 
-            item.decayCreature = self
-
-            if item.decayPosition:
-                item.decayPosition = (0xFFFF, 65)
-
             if info == None:
                 return False # Not possible
+
+            item.setPosition(Position(0xFFFF, 65, 0), self)
 
             if recursive and info and info.openIndex != None:
                 stream.addContainerItem(info.openIndex, item)

@@ -377,7 +377,7 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo, pos):
+def transformItem(item, transformTo):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
@@ -391,7 +391,7 @@ def transformItem(item, transformTo, pos):
     
     
     """
-    pos = item.vertifyPosition(None, pos)
+    """pos = item.vertifyPosition()
     if not pos:
         raise Exception("BUG: Can't vertify position")
  
@@ -413,7 +413,9 @@ def transformItem(item, transformTo, pos):
         if transformTo:
             stream.addTileItem(pos, newStackpos, item)
             
-        stream.send(spectator)
+        stream.send(spectator)"""
+
+    return item.transform(transformTo)
 
 def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
@@ -892,8 +894,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                 return False
             
-        toPosition.getTile().placeItem(newItem)
-        updateTile(toPosition, toPosition.getTile())
+        newItem.place(toPosition)
     else:
         if not destItem or not destItem.containerSize:
             if toPosition.y < 64:

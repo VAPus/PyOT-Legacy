@@ -36,7 +36,8 @@ class Item(object):
             
         self.itemId = itemId
         self.actions = actions
-        
+        self.position = None
+
         if kwargs:
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
@@ -83,7 +84,9 @@ class Item(object):
             except:
                 return None
 
-    def vertifyPosition(self, creature, pos):
+    def vertifyPosition(self):
+        pos = self.position
+        creature = self.creature
         if pos.x == 0xFFFF:
             if not creature:
                 raise Exception("Cannot vertify Position inside inventory when creature == None!")
@@ -227,7 +230,8 @@ class Item(object):
             
         return _l(player, INFLECT.a(self.name))
     
-    def description(self, player=None, position=None):
+    def description(self, player=None):
+        position = self.position
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
@@ -341,8 +345,25 @@ class Item(object):
             return game.enum.SLOT_RIGHT,
         else:
             return ()
+  
+    def place(self, position, creature=None):
+        if creature:
+            creature.placeItem(position, self)
+        else:
+            tile = position.getTile()
+            stackpos = tile.placeItem(self)
+            position = position.setStackpos(stackpos)
+            self.setPosition(position)
+            updateTile(position, tile)
+          
+    def setPosition(self, position, creature=None):
+        self.position = position
+        if creature:
+            self.creature = creature
+        if self.creature and position.x != 0xFFFF:
+            del self.creature
 
-    def decay(self, position, to=None, duration=None, callback=None, creature=None):
+    def decay(self, to=None, duration=None, callback=None):
         if to == None:
             to = self.decayTo
         
@@ -359,27 +380,23 @@ class Item(object):
         except:
             pass
 
-        position = self.vertifyPosition(creature, position)
+        position = self.vertifyPosition()
         if not position:
             raise Exception("BUG: Item position cannot be vertified!") 
         
         # Store position:
-        self.decayPosition = position
-        if position.x == 0xFFFF:
-            self.decayCreature = creature
-            
         def executeDecay():
             try:
-                if self.decayCreature:
+                if self.creature:
                     # Remove cache
-                    self.decayCreature.removeCache(self)
+                    self.creature.removeCache(self)
                     
                     # Change itemId
                     if to:
                         self.itemid = to
                     
                         # Add cache
-                        self.decayCreature.addCache(self)
+                        self.creature.addCache(self)
                     
                         # We can assume the bag is open. And the inventory is always visible.
                         if position.y < 64:
@@ -390,16 +407,14 @@ class Item(object):
                             self.decayCreature.updateAllContainers()
                             
                     else:
-                        self.decayCreature.removeItem(position, self)
+                        self.creature.removeItem(self)
                         
                 else:
-                    self.transform(self.decayTo, self.decayPosition)
+                    self.transform(self.decayTo)
                 
                 # Hack for chained decay
                 if self.itemId and self.decayTo != None:
-                    self.decay(self.decayPosition, callback=callback, creature=creature)
-                else:
-                    del self.decayPosition
+                    self.decay(self.decayTo, callback=callback)
                     
                 if self.itemId and callback:
                     callback(self)
@@ -420,7 +435,7 @@ class Item(object):
             
     def __getstate__(self):
         params = self.__dict__
-        for x in ("decayCreature", "inContainer", "openIndex", "parent", "inTrade", "executeDecay"):
+        for x in ("creature", "inContainer", "openIndex", "parent", "inTrade", "executeDecay"):
             if x in self.__dict__:
                 params = self.__dict__.copy() 
                 try:
@@ -472,8 +487,8 @@ class Item(object):
             pass
         return newItem
         
-    def transform(self, toId, position):
-        position = self.vertifyPosition(self.decayCreature, position)
+    def transform(self, toId):
+        position = self.vertifyPosition()
         if not position:
             raise Exception("BUG: Item position cannot be vertified!")
         
@@ -504,9 +519,9 @@ class Item(object):
             self.itemId = toId
             self.refresh(position)
 
-    def refresh(self, position):
-        position = self.vertifyPosition(self.decayCreature, position)
-        creature = self.decayCreature
+    def refresh(self):
+        position = self.vertifyPosition()
+        creature = self.creature
 
         if not position:
             raise Exception("BUG: Item position cannot be vertified!")
