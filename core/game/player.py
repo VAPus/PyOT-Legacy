@@ -585,21 +585,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             self.removeItem(position, thing)
 
-    def removeItem(self, position, thing):
+    def removeItem(self, thing):
         position = thing.vertifyPosition()
+        print "Removing", position
         if not position:
             raise Exception("BUG: Item position cannot be vertified! %s")
 
         # Option 1, from the map:
         if position.x != 0xFFFF:
             tile = position.getTile()
-            if type(position) != StackPosition:
-                if thing:
-                    tile.removeItem(thing)
-                else:
-                    raise Exception("Require a StackPosition, or thing option set.")
-            else:
-                del tile.things[position.stackpos]
+            tile.removeItem(thing)
             game.engine.updateTile(position, tile)
 
         # Option 2, the inventory
@@ -616,7 +611,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 bag = self.openContainers[position.y - 64]
             except:
                 return
-
+            assert bag == thing.inContainer
             try:
                 self.inventoryCache[bag.itemId].index(bag)
                 currItem = bag.container[position.z]
@@ -631,6 +626,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.removeContainerItem(position.y - 64, position.z)
                 if update:
                     self.refreshStatus(stream)
+        try:
+            del thing.creature
+        except:
+            pass
+        thing.position = None
 
     def getContainer(self, openId):
         try:
@@ -645,8 +645,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 del item.inContainer
             except:
                 pass
-
-            del item.creature
+            try:
+                del item.creature
+            except:
+                pass
             item.position = None
             
             self.inventoryCache[item.itemId].remove(item)
@@ -1331,8 +1333,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             if info == None:
                 return False # Not possible
 
-            item.setPosition(Position(0xFFFF, 65, 0), self)
-            item.inContainer = info
+            item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info), self)
+            item.inContainer = container if isinstance(info, int) else info
 
             if recursive and info and info.openIndex != None:
                 stream.addContainerItem(info.openIndex, item)
@@ -1420,6 +1422,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             self.inventory[slot] = item
 
+        self.addCache(item)
         item.setPosition(Position(0xFFFF, slot+1, 0), self)
         stream = self.packet()
         stream.addInventoryItem(slot+1, self.inventory[slot])
@@ -1632,9 +1635,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         for item in container.container:
             weight = item.weight
 
-            item.inContainer = container # Funny call to simplefy lookups
+            item.inContainer = container
             item.creature = self
-            item.position = Position(0xFFFF, SLOT_BAG+1, 0)
+            item.position = Position(0xFFFF, DYNAMIC_CONTAINER, 0)
             if weight:
                 self.inventoryWeight += weight * (item.count or 1)
             try:

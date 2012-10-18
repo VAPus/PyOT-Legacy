@@ -837,7 +837,8 @@ class BaseProtocol(object):
         stack = True
         fromPosition = fromPosition.setStackpos(fromStackPos)
         thing = player.findItem(fromPosition)
-        
+        if not thing.position:
+            thing.position = fromPosition
         isCreature = False
         if clientId < 100:
             isCreature = True
@@ -945,8 +946,8 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    print "lookAt send"
-                    player.message(thing.description(player, position) + extra)
+                    print thing.position
+                    player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():
                     if player == thing:

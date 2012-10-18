@@ -100,12 +100,15 @@ class Item(object):
                     return False # We cant assume that inventory items move
                     
             else:
-                container = creature.getContainer(pos.y-64)
+                container = self.inContainer
                 if not container:
                     print creature.openContainers
-                    print pos.y - 64
                     return False
-                    
+                else:
+                    for con in creature.openContainers:
+                        if creature.openContainers[con] == container:
+                            pos.y = con+64
+                            break
                 if container.container[pos.z] == self:
                     return pos
                 else:
@@ -439,7 +442,7 @@ class Item(object):
             if x in self.__dict__:
                 params = self.__dict__.copy() 
                 try:
-                    del params["decayCreature"]
+                    del params["creature"]
                     del params["inContainer"] # This only exists if inPlayer exists.
                 except:
                     pass

@@ -448,6 +448,8 @@ def delayWalk(creature, **k):
 @register("talkaction", "newinventory")
 @access("DEVELOPER")
 def newInventory(creature, **k):
+    creature.inventoryWeight = 0
+    creature.inventoryCache = {}
     purse = Item(1987)
     purse.name = "Purse"
     purse.addAction('purse')
@@ -458,6 +460,9 @@ def newInventory(creature, **k):
     for item in creature.inventory:
         if not item:
             continue
+        
+        item.creature = creature
+        item.position = Position(0xFFFF, creature.inventory.index(item)+1, 0)
         weight = item.weight
         if weight:
             creature.inventoryWeight += weight * (item.count or 1)

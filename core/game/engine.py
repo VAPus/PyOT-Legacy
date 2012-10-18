@@ -879,13 +879,16 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
+        try:
+            player.removeItem(thing)
+        except:
+            pass
         player.itemToContainer(destItem, newItem)
-        
-    #try:
-    if True:
-        player.removeItem(fromPosition, thing)
-    #except:
-    #    pass
+    else:    
+        try:
+            player.removeItem(thing)
+        except:
+            pass
     
     if toMap:
         # Place to ground.
