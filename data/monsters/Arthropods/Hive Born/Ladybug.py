@@ -1,0 +1,10 @@
+ladybug = game.monster.genMonster("Ladybug", (448, 15272), "a ladybug")
+ladybug.setHealth(255)
+ladybug.bloodType(color="slime")
+ladybug.setDefense(armor=10, fire=1.05, earth=0.95, energy=1, ice=1.05, holy=1, death=1, physical=1.05, drown=1)
+ladybug.setExperience(70)
+ladybug.setSpeed(150) #incorrect
+ladybug.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+ladybug.walkAround(energy=0, fire=0, poison=0)
+ladybug.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+ladybug.regMelee(5)
