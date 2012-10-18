@@ -881,9 +881,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
         player.itemToContainer(destItem, newItem)
         
-    if thing.count:
+    try:
         player.removeItem(fromPosition, thing)
-
+    except:
+        pass
+    
     if toMap:
         # Place to ground.
         thisTile = toPosition.getTile()

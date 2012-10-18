@@ -406,11 +406,8 @@ def openMarket(creature, **k):
     creature.openMarket()
 
 
-@register("talkaction", "spanish")
-@access("DEVELOPER")
-def setLang(creature, **k):
-    creature.setLanguage("es_ES")
-    
+
+
 @register("talkaction", "forward!")
 @access("DEVELOPER")
 def moveForward(creature, **k):
