@@ -643,10 +643,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         try:
             try:
                 del item.inContainer
-                del item.decayCreature
             except:
                 pass
 
+            del item.creature
+            item.position = None
+            
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
             weight = item.weight
@@ -668,7 +670,6 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.inventoryWeight -= weight * (item.count or 1)
                 return False
         try:
-            print "Add to cache ",item
             self.inventoryCache[item.itemId].append(item)
             self.inventoryCache[item.itemId][0] += item.count or 1
         except:
@@ -676,7 +677,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if container:
             item.inContainer = container
-        item.decayCreature = self
+        item.creature = self
 
         # Save
         self.saveInventory = True
@@ -1331,6 +1332,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 return False # Not possible
 
             item.setPosition(Position(0xFFFF, 65, 0), self)
+            item.inContainer = info
 
             if recursive and info and info.openIndex != None:
                 stream.addContainerItem(info.openIndex, item)
@@ -1356,6 +1358,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # Means, right hand, left hand, ammo or bag. Stackable only
         if not self.inventory[4]:
             self.inventory[4] = item
+            item.setPosition(Position(0xFFFF, 5, 0), self)
             stream = self.packet()
             stream.addInventoryItem(5, self.inventory[4])
             stream.send(self.client)
@@ -1370,6 +1373,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if item.count:
             if not self.inventory[5]:
                 self.inventory[5] = item
+                item.setPosition(Position(0xFFFF, 6, 0), self)
                 stream = self.packet()
                 stream.addInventoryItem(6, self.inventory[5])
                 stream.send(self.client)
@@ -1385,6 +1389,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if item.count:
             if not self.inventory[9]:
                 self.inventory[9] = item
+                item.setPosition(Position(0xFFFF, 10, 0), self)
                 stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[0])
                 stream.send(self.client)
@@ -1415,8 +1420,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             self.inventory[slot] = item
 
-        item.decayCreature = self
-        item.decayPosition = Position(0xFFFF, slot+1, 0)
+        item.setPosition(Position(0xFFFF, slot+1, 0), self)
         stream = self.packet()
         stream.addInventoryItem(slot+1, self.inventory[slot])
         stream.send(self.client)
@@ -1629,8 +1633,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             weight = item.weight
 
             item.inContainer = container # Funny call to simplefy lookups
-            item.decayCreature = self
-
+            item.creature = self
+            item.position = Position(0xFFFF, SLOT_BAG+1, 0)
             if weight:
                 self.inventoryWeight += weight * (item.count or 1)
             try:
@@ -1650,13 +1654,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             purse = Item(1987)
             purse.name = "Purse"
             purse.addAction('purse')
+            purse.position = Position(0xFFFF, 11, 0)
+            purse.creature = self
             self.inventory = [None, None, None, None, None, None, None, None, None, None, purse] # Last item XXX is purse.
 
         # Generate the inventory cache
         for item in self.inventory:
             if isinstance(item, game.item.Item):
                 weight = item.weight
-                item.decayCreature = self
+                item.creature = self
+                item.position = Position(0xFFFF, self.inventory.index(item)+1, 0)
                 if weight:
                     self.inventoryWeight += weight * (item.count or 1)
                 try:

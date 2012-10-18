@@ -881,10 +881,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
         player.itemToContainer(destItem, newItem)
         
-    try:
+    #try:
+    if True:
         player.removeItem(fromPosition, thing)
-    except:
-        pass
+    #except:
+    #    pass
     
     if toMap:
         # Place to ground.
