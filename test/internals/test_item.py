@@ -19,4 +19,13 @@ class TestItem(FrameworkTestGame):
         item.transform(2148, position)
         item.transform(0, position)
         
+    def test_move(self):
+        item = Item(7449)
         
+        self.player.itemToInventory(item, SLOT_RIGHT)
+        
+        self.assertEqual(self.player.inventory[SLOT_RIGHT], item)
+        
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, SLOT_RIGHT+1, 0), self.player.position))
+        
+        self.assertEqual(self.player.inventory[SLOT_RIGHT], None)
