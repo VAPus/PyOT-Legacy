@@ -13,7 +13,7 @@ def openHorizontalDoor(creature, thing, position, **k):
     newPos = position.copy()
     newPos.y += 1
     
-    thing.transform(thing.itemId-1, position)
+    thing.transform(thing.itemId-1)
     relocate(position, newPos)
 
 @register('use', openVertical)
@@ -21,7 +21,7 @@ def openVerticalDoor(creature, thing, position, **k):
     newPos = position.copy()
     newPos.x += 1
     
-    thing.transform(thing.itemId-1, position)
+    thing.transform(thing.itemId-1)
     relocate(position, newPos)
 
 

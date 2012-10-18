@@ -5,7 +5,7 @@ doors = 1223, 1225, 1241, 1243, 1255, 1257, 3542, 3551, 5105, 5114, 5123, 5132, 
 @register('use', doors)
 def openDoor(creature, thing, position, **k):
     if not thing.actionIds():
-        thing.transform(thing.itemId+1, position)
+        thing.transform(thing.itemId+1)
         return
 
     canEnter = True
@@ -16,4 +16,4 @@ def openDoor(creature, thing, position, **k):
     if not canEnter:
         creature.lmessage("The door is sealed against unwanted intruders.")
     
-    thing.transform(thing.itemId+1, position)
+    thing.transform(thing.itemId+1)

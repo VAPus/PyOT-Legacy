@@ -72,7 +72,7 @@ def onUse(creature, thing, position, **k):
 
 
     creature.say(sound, 'MSG_SPEAK_MONSTER_SAY')
-    thing.transform(usedDolls[thing.itemId], position)
+    thing.transform(usedDolls[thing.itemId])
 
-    thing.decay(position)
+    thing.decay()
 

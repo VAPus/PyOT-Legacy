@@ -21,5 +21,5 @@ def onUse(creature, thing, position, **k):
         creature.addItem(Item(PRESENT_RED[randomChance], count))
     
     magicEffect(position, EFFECT_GIFT_WRAPS)
-    creature.removeItem(position)
+    creature.removeItem(thing)
     return True

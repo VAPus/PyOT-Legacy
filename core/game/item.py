@@ -35,8 +35,8 @@ class Item(object):
             itemId = 100
             
         self.itemId = itemId
-        self.actions = actions
-        self.position = None
+        if actions:
+            self.actions = actions
 
         if kwargs:
             for k in kwargs:

@@ -23,5 +23,5 @@ def openLocker(creature, thing, **k):
     depot = Item(2594)
     depot.depotId = thing.depotId
     thing.containerSize = 3
-    thing.container.items = [depot, Item(2334)]
+    thing.container = [depot, Item(2334)]
     

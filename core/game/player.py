@@ -568,7 +568,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.send(self.client)
             return newItem
 
-    def modifyItem(self, thing, position, mod):
+    def modifyItem(self, thing, mod):
         if thing.count <= 0:
             thing.count = 1
 
@@ -581,9 +581,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             pass
 
         if thing.count > 0:
-            thing.refresh(position)
+            thing.refresh()
         else:
-            self.removeItem(position, thing)
+            self.removeItem(thing)
 
     def removeItem(self, thing):
         position = thing.vertifyPosition()
@@ -1595,12 +1595,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             splash = game.item.Item(enum.FULLSPLASH)
             splash.fluidSource = enum.FLUID_BLOOD
 
+            corpse.place(self.position)
+            splash.place(self.position)
 
-            tile.placeItem(corpse)
-            tile.placeItem(splash)
-
-            splash.decay(self.position)
-            corpse.decay(self.position)
+            splash.decay()
+            corpse.decay()
 
             try:
                 tile.removeCreature(self)

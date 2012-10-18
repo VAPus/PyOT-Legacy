@@ -34,7 +34,7 @@ def onSendParcelOrLetter(creature, position, thing, onThing, **k):
             
     elif onId == ITEM_PARCEL:
         found = None
-        for item in onThing.container.items:
+        for item in onThing.container:
             if item.itemId == ITEM_LABEL:
                 found = item
                 break

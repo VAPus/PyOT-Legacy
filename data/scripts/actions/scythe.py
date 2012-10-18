@@ -8,12 +8,12 @@ ITEM_BUNCH_SUGAR_CANE = 5467
 @register("useWith", 2550)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == ITEM_PRE_WHEAT:
-        onThing.transform(ITEM_WHEAT, onPosition)
-        placeItem(Item(ITEM_BUNCH_WHEAT, 1), onPosition)
+        onThing.transform(ITEM_WHEAT)
+        Item(ITEM_BUNCH_WHEAT, 1).place(onPosition)
     elif onThing.itemId == ITEM_PRE_SUGAR_CANE:
-        onThing.transform(ITEM_SUGAR_CANE, onPosition)
-        placeItem(Item(ITEM_BUNCH_SUGAR_CANE, 1), onPosition)
+        onThing.transform(ITEM_SUGAR_CANE)
+        Item(ITEM_BUNCH_SUGAR_CANE, 1).place(onPosition)
     else:
         return False
-    onThing.decay(onPosition)
+    onThing.decay()
     return True

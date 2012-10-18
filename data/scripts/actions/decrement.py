@@ -3,9 +3,5 @@ decrease = 1480, 1635, 1637, 1639, 1641, 1787, 1789, 1791, 1793, 1874, 1876, 194
             9893, 9896, 9899, 9902, 9905
 
 @register('use', decrease)
-def onUse(creature, thing, position, **k):
-    if position[0] == 0xFFFF:
-        thing.itemId -= 1
-        thing.refresh(position)
-    else:
-        engine.transformItem(thing, thing.itemId-1, position)
+def onUse(creature, thing, **k):
+    thing.transform(thing.itemId-1)

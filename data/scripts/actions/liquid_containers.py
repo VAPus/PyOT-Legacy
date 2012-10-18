@@ -1,3 +1,5 @@
+"""
+XXX: Broken.
 containers = 2005
 
 @register('useWith', containers)
@@ -8,4 +10,4 @@ def onUse(creature, thing, position, onThing, **k):
         thing.type = onThing.type
     creature.removeItem(position)
     creature.addItem(thing)
-    
+"""
