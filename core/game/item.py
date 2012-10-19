@@ -604,9 +604,7 @@ class Item(object):
                     
     def __repr__(self):
         # Remove actions:
-        r = self.__dict__.copy()
-        del r["actions"]
-        return "<Item (%s) at %s>" % (r, hex(id(self)))
+        return "<Item (%s) at %s>" % (self.__dict__, hex(id(self)))
     
     ##### Container stuff ####
     def placeItem(self, item):
@@ -666,6 +664,11 @@ class Item(object):
                     
     def findSlot(self, item):
         return self.container.index(item)
+    
+    def move(self, newPosition):
+        if not self.creature:
+            raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")
+        moveItem(self.creature, self.position, newPosition)
             
 def cid(itemid):
     try:

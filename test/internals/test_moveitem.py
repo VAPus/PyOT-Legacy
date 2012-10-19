@@ -28,7 +28,7 @@ class TestMoveItem(FrameworkTestGame):
         # Is it there?
         found = False
         for _item in newPosition.getTile().getItems():
-            if _item == item:
+            if _item.itemId == item.itemId:
                 found = True
                 
         self.assertTrue(found)
@@ -82,3 +82,43 @@ class TestMoveItem(FrameworkTestGame):
         
         # Correct count?
         self.assertEqual(item.count, 100)
+        
+    def test_move_ground(self):
+        # Make some gold.
+        item = Item(2148, 10)
+        item.place(self.player.position)
+        
+        self.assertEqual(self.player.position, item.position)
+        
+        # Move.
+        self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH), 10))
+
+        things = self.player.position.getTile().things
+        self.assertNotIn(item, things)
+        
+        ok = False
+        for thing in self.player.positionInDirection(SOUTH).getTile().things:
+            if thing.itemId == item.itemId:
+                ok = True
+                
+        self.assertTrue(ok)
+        
+    def test_move_ground_no_count(self):
+        # Make some gold.
+        item = Item(2148, 10)
+        item.place(self.player.position)
+        
+        self.assertEqual(self.player.position, item.position)
+        
+        # Move.
+        self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH)))
+
+        things = self.player.position.getTile().things
+        self.assertNotIn(item, things)
+        
+        ok = False
+        for thing in self.player.positionInDirection(SOUTH).getTile().things:
+            if thing.itemId == item.itemId:
+                ok = True
+                
+        self.assertTrue(ok)

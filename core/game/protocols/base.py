@@ -844,7 +844,10 @@ class BaseProtocol(object):
             isCreature = True
         if not isCreature:
             # Remove item:
-            oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
+            oldItem = player.findItemWithPlacement(fromPosition)
+            if not thing.position:
+                thing.position = fromPosition
+                
             if toPosition.x == 0xFFFF:
                 currItem = player.findItemWithPlacement(toPosition)
             else:
@@ -946,7 +949,6 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    print thing.position
                     player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():
