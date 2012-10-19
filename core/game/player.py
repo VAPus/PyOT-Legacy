@@ -2384,7 +2384,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
             except:
                 print "WARNING: Language %s not loaded, falling back to defaults" % lang
-            
+        else:
+            self.l = Creature.l
+            self.lp = Creature.lp
+            self.lc = Creature.lc
+            self.lcp = Creature.lcp
 
         self.data["language"] = lang
         
