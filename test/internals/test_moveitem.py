@@ -55,3 +55,29 @@ class TestMoveItem(FrameworkTestGame):
         
         # Correct count?
         self.assertEqual(item.count, 50)
+        
+    def test_stack(self):
+        """ Reverse of the above. """
+        
+        # Make some gold
+        item = Item(2148, 50)
+        item2 = Item(2148, 50)
+        stack = self.player.position.getTile().placeItem(item2)
+        groundPosition = self.player.position.setStackpos(stack)
+        
+        # Place to inventory.
+        self.player.itemToInventory(item, SLOT_AMMO)
+        
+        # Move stack from ground to inventory.
+        position = Position(0xFFFF, SLOT_AMMO+1, 0)
+        
+        self.assertTrue(moveItem(self.player, groundPosition, position, 50))
+        
+        # Is it still there?
+        self.assertEqual(self.player.inventory[SLOT_AMMO], item)
+        
+        # And not on the ground?
+        self.assertFalse(item2 in self.player.position.getTile().things)
+        
+        # Correct count?
+        self.assertEqual(item.count, 100)
