@@ -1,10 +1,8 @@
-@register("talkactionFirstWord", "language")
-@access("DEVELOPER")
-
+@register("talkactionFirstWord", "/lang")
+@register("talkactionFirstWord", "/language")
 def setLang(creature, text):
 	languages = { "norwegian": "nb_NO", "spanish": "es_ES", "english": "en_EN", "polish": "pl_PL" }
-	# can't change to english atm, needs a fix
-	text.strip()
+	text = text.strip().lower()
 
 	if text in languages:
 		creature.setLanguage(languages[text])

@@ -180,20 +180,6 @@ def npcSpawn(creature, text):
         creature.lmessage("NPC named '%s' can't be spawned!" % text)
     return False
     
-
-@register("talkaction", 'saveme')
-@access("SAVEME")
-def saveMe(creature, text):
-    creature.save()
-    return False
-    
-
-@register("talkaction", 'saveall')
-@access("SAVEALL")
-def saveAll(creature, text):
-    engine.saveAll()
-    return False
-
 @register('talkactionFirstWord', 'depot')
 @access("SPAWN")
 def spawnDepot(creature, text):
