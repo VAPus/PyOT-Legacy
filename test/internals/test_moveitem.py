@@ -62,7 +62,8 @@ class TestMoveItem(FrameworkTestGame):
         # Make some gold
         item = Item(2148, 50)
         item2 = Item(2148, 50)
-        stack = self.player.position.getTile().placeItem(item2)
+        item2.place(self.player.position)
+        stack = self.player.position.getTile().things.index(item2)
         groundPosition = self.player.position.setStackpos(stack)
         
         # Place to inventory.
