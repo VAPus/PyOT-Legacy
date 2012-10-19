@@ -857,18 +857,18 @@ def moveItem(player, fromPosition, toPosition, count=0):
         _newItem = game.scriptsystem.get("stack", thing, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if not newItem:
             newCount = min(100, destItem.count + count) - destItem.count
-            player.modifyItem(destItem, toPosition, newCount)
-            player.modifyItem(thing, fromPosition, -count)
+            player.modifyItem(destItem, newCount)
+            player.modifyItem(thing, -count)
             return True
         else:
             newItem = _newItem
         
     # remove from fromPosition.
-    elif count and thing.stackable and count != thing.stackable:
+    elif count and thing.stackable:
         newItem = thing.copy()
         newItem.count = count
         
-        player.modifyItem(thing, fromPosition, -count)
+        player.modifyItem(thing, -count)
         
     else:
         newItem = thing # Easy enough.
@@ -879,16 +879,13 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
-        try:
+        if not thing.stackable:
             player.removeItem(thing)
-        except:
-            pass
+            
         player.itemToContainer(destItem, newItem)
     else:    
-        try:
+        if not thing.stackable:
             player.removeItem(thing)
-        except:
-            pass
     
     if toMap:
         # Place to ground.
