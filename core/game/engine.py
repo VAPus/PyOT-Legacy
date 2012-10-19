@@ -852,8 +852,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
     
     # Special case when both items are the same and stackable.
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        _newItem = game.scriptsystem.get("stack", thing, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
-        if not newItem:
+        _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
+        if not _newItem:
             newCount = min(100, destItem.count + count) - destItem.count
             player.modifyItem(destItem, toPosition, newCount)
             player.modifyItem(thing, fromPosition, -count)
@@ -880,7 +880,6 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.itemToContainer(destItem, newItem)
         
     if not thing.stackable:
-        print "This xxx", thing
         player.removeItem(fromPosition, thing)
     
     if toMap:
