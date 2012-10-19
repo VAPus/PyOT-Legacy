@@ -569,68 +569,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return newItem
 
     def modifyItem(self, thing, mod):
-        if thing.count <= 0:
-            thing.count = 1
-
-            # Silently ignore for now.
-            #raise Exception("BUG: Item have a count below 0, %s" % thing.count)
-
-        try:
-            thing.count += mod
-        except:
-            pass
-
-        if thing.count > 0:
-            thing.refresh()
-        else:
-            self.removeItem(thing)
+        thing.modify(mod)
 
     def removeItem(self, thing):
-        position = thing.vertifyPosition()
-        print "Removing", position
-        if not position:
-            raise Exception("BUG: Item position cannot be vertified! %s")
-
-        # Option 1, from the map:
-        if position.x != 0xFFFF:
-            tile = position.getTile()
-            tile.removeItem(thing)
-            game.engine.updateTile(position, tile)
-
-        # Option 2, the inventory
-        elif position.y < 64:
-            if self.removeCache(self.inventory[position.y-1]):
-                self.refreshStatus()
-            self.inventory[position.y-1] = None
-            self.updateInventory(position.y)
-
-        # Option 3, the bags, if there is one ofcource
-        elif self.inventory[2]:
-            update = False
-            try:
-                bag = self.openContainers[position.y - 64]
-            except:
-                return
-            assert bag == thing.inContainer
-            try:
-                self.inventoryCache[bag.itemId].index(bag)
-                currItem = bag.container[position.z]
-                if currItem:
-                    if self.removeCache(currItem):
-                        update = True
-            except:
-                pass
-
-            del bag.container[position.z]
-            with self.packet() as stream:
-                stream.removeContainerItem(position.y - 64, position.z)
-                if update:
-                    self.refreshStatus(stream)
-        try:
-            del thing.creature
-        except:
-            pass
-        thing.position = None
+        return thing.remove()
 
     def getContainer(self, openId):
         try:

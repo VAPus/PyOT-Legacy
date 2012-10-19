@@ -319,6 +319,26 @@ class Item(object):
     def reduceCount(self, count):
         self.count -= count
             
+    def modify(self, mod):
+        count = self.count
+        if count == None and mod < 0:
+            self.remove()
+        
+        
+        if count <= 0:
+            count = 1
+
+        try:
+            count += mod
+        except:
+            pass
+
+        if count > 0:
+            self.count = count
+            self.refresh()
+        else:
+            self.remove()
+            
     def slots(self):
         slot = self.slotType
 
@@ -410,7 +430,7 @@ class Item(object):
                             self.decayCreature.updateAllContainers()
                             
                     else:
-                        self.creature.removeItem(self)
+                        self.remove()
                         
                 else:
                     self.transform(self.decayTo)
@@ -603,7 +623,6 @@ class Item(object):
                     stream.send(creature.client)
                     
     def __repr__(self):
-        # Remove actions:
         return "<Item (%s) at %s>" % (self.__dict__, hex(id(self)))
     
     ##### Container stuff ####
@@ -669,6 +688,54 @@ class Item(object):
         if not self.creature:
             raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")
         moveItem(self.creature, self.position, newPosition)
+        
+    def remove(self):
+        position = self.vertifyPosition()
+        print "Removing", position
+        if not position:
+            raise Exception("BUG: Item position cannot be vertified! %s")
+
+        # Option 1, from the map:
+        if position.x != 0xFFFF:
+            tile = position.getTile()
+            tile.removeItem(self)
+            updateTile(position, tile)
+
+        # Option 2, the inventory
+        elif position.y < 64:
+            creature = self.creature
+            if creature.removeCache(self):
+                creature.refreshStatus()
+            creature.inventory[position.y-1] = None
+            creature.updateInventory(position.y)
+
+        # Option 3, the bags, if there is one ofcource
+        elif self.creature.inventory[2]:
+            update = False
+            try:
+                bag = self.creature.openContainers[position.y - 64]
+            except:
+                return
+            assert bag == self.inContainer
+            try:
+                self.creature.inventoryCache[bag.itemId].index(bag)
+                currItem = bag.container[position.z]
+                if currItem:
+                    if self.creature.removeCache(currItem):
+                        update = True
+            except:
+                pass
+
+            del bag.container[position.z]
+            with self.creature.packet() as stream:
+                stream.removeContainerItem(position.y - 64, position.z)
+                if update:
+                    self.creature.refreshStatus(stream)
+        try:
+            del thing.creature
+        except:
+            pass
+        self.position = None
             
 def cid(itemid):
     try:
