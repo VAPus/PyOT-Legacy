@@ -862,7 +862,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             newItem = _newItem
         
     # remove from fromPosition.
-    elif count and thing.stackable and count != thing.count:
+    elif count and thing.stackable:
         newItem = thing.copy()
         newItem.count = count
         
@@ -879,7 +879,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
         player.itemToContainer(destItem, newItem)
         
-    if not thing.stackable or count == thing.count:
+    if not thing.stackable:
+        print "This xxx", thing
         player.removeItem(fromPosition, thing)
     
     if toMap:
