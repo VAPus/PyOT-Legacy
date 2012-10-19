@@ -1928,6 +1928,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Quest system
     def beginQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         if not quests:
             quests = {}
@@ -1940,6 +1943,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def progressQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1
         self.setStorage('__quests', quests)
@@ -1948,6 +1954,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def progressQuestMission(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][0] += 1
         self.setStorage('__quests', quests)
@@ -1956,6 +1965,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def finishQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1 # Finish the last step
         quests[questIdentifier][2] = True
@@ -1994,22 +2006,26 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
     def questLine(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         questObj = game.resource.getQuest(questIdentifier)
         stream = self.packet(0xF1)
         stream.uint16(game.resource.reverseQuests[questIdentifier]+1)
 
         stream.uint8(questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2])
-        print questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2]
         for i in xrange(quests[questIdentifier][0]):
-            for x in xrange(questObj.missions[i][1], questObj.missions[i][2]):
-                print x
+            for x in xrange(questObj.missions[i][1], questObj.missions[i][1]+questObj.missions[i][2]):
                 stream.string(questObj.missions[i][0] + (' (completed)' if quests[questIdentifier][1] > x else ''))
                 stream.string(questObj.descriptions[x])
 
         stream.send(self.client)
 
     def questProgress(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][1]
@@ -2017,6 +2033,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return 0
 
     def questStarted(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             quests[questIdentifier]
@@ -2025,6 +2044,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return False
 
     def questCompleted(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][2]
@@ -2387,7 +2409,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
             except:
                 print "WARNING: Language %s not loaded, falling back to defaults" % lang
-            
+        else:
+            self.l = Creature.l
+            self.lp = Creature.lp
+            self.lc = Creature.lc
+            self.lcp = Creature.lcp
 
         self.data["language"] = lang
         
