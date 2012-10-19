@@ -36,7 +36,7 @@ class Item(object):
             
         self.itemId = itemId
         self.actions = actions
-        
+		
         if kwargs:
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
@@ -83,10 +83,10 @@ class Item(object):
             except:
                 return None
 
-    def vertifyPosition(self, creature, pos):
+    def verifyPosition(self, creature, pos):
         if pos.x == 0xFFFF:
             if not creature:
-                raise Exception("Cannot vertify Position inside inventory when creature == None!")
+                raise Exception("Cannot verify Position inside inventory when creature == None!")
             
             if pos.y < 64:
                 if creature.inventory[pos.y-1] == self:
@@ -285,8 +285,7 @@ class Item(object):
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:
-                extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight + self.containerWeight()) / 100)
-                
+                extra += _l(player, "\nIt weighs %.2f oz.") % ((float(self.weight if self.weight else 0) + self.containerWeight()) / 100)
             elif self.weight:
                 if self.count:
                     extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.count) * float(self.weight) / 100)
@@ -359,7 +358,7 @@ class Item(object):
         except:
             pass
 
-        position = self.vertifyPosition(creature, position)
+        position = self.verifyPosition(creature, position)
         if not position:
             raise Exception("BUG: Item position cannot be vertified!") 
         
@@ -473,7 +472,7 @@ class Item(object):
         return newItem
         
     def transform(self, toId, position):
-        position = self.vertifyPosition(self.decayCreature, position)
+        position = self.verifyPosition(self.decayCreature, position)
         if not position:
             raise Exception("BUG: Item position cannot be vertified!")
         
@@ -505,7 +504,7 @@ class Item(object):
             self.refresh(position)
 
     def refresh(self, position):
-        position = self.vertifyPosition(self.decayCreature, position)
+        position = self.verifyPosition(self.decayCreature, position)
         creature = self.decayCreature
 
         if not position:
