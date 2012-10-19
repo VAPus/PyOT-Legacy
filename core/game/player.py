@@ -586,7 +586,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.removeItem(position, thing)
 
     def removeItem(self, position, thing=None):
-        position = thing.vertifyPosition(self, position)
+        position = thing.verifyPosition(self, position)
         if not position:
             raise Exception("BUG: Item position cannot be vertified! %s")
 

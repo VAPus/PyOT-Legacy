@@ -391,7 +391,7 @@ def transformItem(item, transformTo, pos):
     
     
     """
-    pos = item.vertifyPosition(None, pos)
+    pos = item.verifyPosition(None, pos)
     if not pos:
         raise Exception("BUG: Can't vertify position")
  
