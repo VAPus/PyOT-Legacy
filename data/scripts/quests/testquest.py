@@ -34,27 +34,25 @@ q.description("You like forkfeeding, right?")
 @register("talkaction", "missions quest")
 def letsRoll(creature, **k):
     creature.say("Shit has just got serious, so I'll better check my questlog.")
-    creature.beginQuest(qname) 
+    creature.beginQuest(q) 
     return False
 
 @register("lookAt", "creature")
 def annoyingQuest(creature, thing, **k):
-	p = creature
-	qname = "The hunger games"
-	
-	if not p.questStarted(qname) or p.questCompleted(qname):
+	p = creature # Just to shorten things up
+	if not p.questStarted(q) or p.questCompleted(q):
 		return True
 	
-	if p == thing and p.questProgress(qname) == 0:
+	if p == thing and p.questProgress(q) == 0:
 		p.say("I've just looked at myself. Mission accomplished!")
-		p.progressQuest(qname)	# sets the mission as 'completed'
-		p.progressQuestMission(qname)	# advances to next mission
-	elif thing.name() == "Wolf" and p.questProgress(qname) == 1:
+		p.progressQuest(q)	# sets the mission as 'completed'
+		p.progressQuestMission(q)	# advances to next mission
+	elif thing.name() == "Wolf" and p.questProgress(q) == 1:
 		p.say("I did it! I can do anything!")
-		p.progressQuest(qname)
-		p.progressQuestMission(qname)
-	elif thing.name() == "Scorpion" and p.questProgress(qname) == 2:
+		p.progressQuest(q)
+		p.progressQuestMission(q)
+	elif thing.name() == "Scorpion" and p.questProgress(q) == 2:
 		p.say("A hero like me is always there to save the day!")
-		p.progressQuest(qname)
-		p.finishQuest(qname)
+		p.progressQuest(q)
+		p.finishQuest(q)
 	return True
