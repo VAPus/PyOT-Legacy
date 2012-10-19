@@ -1925,6 +1925,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Quest system
     def beginQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         if not quests:
             quests = {}
@@ -1937,6 +1940,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def progressQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1
         self.setStorage('__quests', quests)
@@ -1945,6 +1951,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def progressQuestMission(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][0] += 1
         self.setStorage('__quests', quests)
@@ -1953,6 +1962,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.tutorial(3)
 
     def finishQuest(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1 # Finish the last step
         quests[questIdentifier][2] = True
@@ -1991,6 +2003,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
     def questLine(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         questObj = game.resource.getQuest(questIdentifier)
         stream = self.packet(0xF1)
@@ -2005,6 +2020,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
     def questProgress(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][1]
@@ -2012,6 +2030,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return 0
 
     def questStarted(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             quests[questIdentifier]
@@ -2020,6 +2041,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return False
 
     def questCompleted(self, questIdentifier):
+        if isinstance(questIdentifier, game.resource.Quest):
+            questIdentifier = questIdentifier.name
+            
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][2]
