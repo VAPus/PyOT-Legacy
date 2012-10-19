@@ -1997,10 +1997,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.uint16(game.resource.reverseQuests[questIdentifier]+1)
 
         stream.uint8(questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2])
-        print questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2]
         for i in xrange(quests[questIdentifier][0]):
-            for x in xrange(questObj.missions[i][1], questObj.missions[i][2]):
-                print x
+            for x in xrange(questObj.missions[i][1], questObj.missions[i][1]+questObj.missions[i][2]):
                 stream.string(questObj.missions[i][0] + (' (completed)' if quests[questIdentifier][1] > x else ''))
                 stream.string(questObj.descriptions[x])
 
