@@ -455,37 +455,40 @@ class Item(object):
                 self.executeDecay.cancel()
             except:
                 pass
-            
-    def __getstate__(self):
-        params = self.__dict__
-        for x in ("creature", "inContainer", "openIndex", "parent", "inTrade", "executeDecay"):
-            if x in self.__dict__:
-                params = self.__dict__.copy() 
-                try:
-                    del params["creature"]
-                    del params["inContainer"] # This only exists if inPlayer exists.
-                except:
-                    pass
+    
+    def cleanParams(self):
+        params = self.__dict__.copy()
+        
+        try:
+            del params["position"]
+            del params["creature"]
+            del params["inContainer"] # This only exists if inPlayer exists.
+        except:
+            pass
                     
-                try:
-                    del params["openIndex"]
-                except:
-                    pass
+        try:
+            del params["openIndex"]
+        except:
+            pass
 
-                try:
-                    del params["parent"]
-                except:
-                    pass
+        try:
+            del params["parent"]
+        except:
+            pass
                 
-                try:
-                    del params["inTrade"]
-                except:
-                    pass
+        try:
+            del params["inTrade"]
+        except:
+            pass
                     
-                try:
-                    del params["executeDecay"]
-                except:
-                    pass
+        try:
+            del params["executeDecay"]
+        except:
+            pass
+        
+        return params
+    def __getstate__(self):
+        params = self.cleanParams()
             
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
@@ -503,7 +506,9 @@ class Item(object):
             
 
     def copy(self):
-        newItem = copy.deepcopy(self)
+        newItem = Item(self.itemId)
+        newItem.__dict__ = self.cleanParams()
+        
         try:
             del newItem.tileStacked
         except:
