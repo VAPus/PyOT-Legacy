@@ -18,5 +18,6 @@ class TestMoveItem(FrameworkTestGame):
 
         # Reset
         self.player.setLanguage('en_EN')
-        self.assertEqual(self.player.l, Creature.l)
-        self.assertEqual(self.player.lp, Creature.lp)
+        
+        self.assertEqual(self.player.l("Hello world"), "Hello world")
+        
