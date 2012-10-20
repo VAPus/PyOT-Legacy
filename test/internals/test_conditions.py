@@ -25,4 +25,4 @@ class TestCondition(FrameworkTestGame):
 
         condition2 = condition.copy()
 
-        self.assertEqual(condition, condition2)
+        self.assertEqual(condition.type, condition2.type)
