@@ -793,6 +793,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
         return False
     if thing.stackable and not count:
         count = thing.count
+
+    # Hack.
+    if fromPosition.x == 0xFFFF and not thing.creature:
+        thing.creature = player
         
     # Some vertifications.
     if thing.stackable and count and count > thing.count:

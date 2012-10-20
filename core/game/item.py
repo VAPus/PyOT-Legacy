@@ -728,12 +728,13 @@ class Item(object):
             creature.updateInventory(position.y)
 
         # Option 3, the bags, if there is one ofcource
-        elif self.inContainer and self.creature.inventory[2]:
+        elif self.inContainer:
             update = False
             try:
                 bag = self.creature.openContainers[position.y - 64]
             except:
-                return
+                # Might bug.
+                bag = self.inContainer
             assert bag == self.inContainer
             creature = self.creature
             try:
