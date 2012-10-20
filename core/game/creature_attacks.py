@@ -281,7 +281,9 @@ class PlayerAttacks(CreatureAttacks):
                         self.skillAttempt(skillType)"""
                     target.onHit(self, dmg, atkType)
                     self.skillAttempt(skillType)
-                
+                else:
+                    target.magicEffect(EFFECT_BLOCKHIT)
+                    
                 if targetIsPlayer:
                     self.lastDmgPlayer = time.time()
                     # If target do not have a green skull.
