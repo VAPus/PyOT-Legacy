@@ -197,11 +197,11 @@ The events are:
                 return
                 
             if onThing.itemId in lockedDoors:
-                transformItem(onThing, onThing.itemId+2, onPosition)
+                onThing.transform(onThing.itemId+2)
             elif onThing.itemId-2 in lockedDoors:
-                transformItem(onThing, onThing.itemId-2, onPosition)
+                onThing.transform(onThing.itemId-2)
             else:
-                transformItem(onThing, onThing.itemId-1, onPosition)
+                onThing.transform(onThing.itemId-1)
 
         
         

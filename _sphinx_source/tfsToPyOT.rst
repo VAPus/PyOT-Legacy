@@ -200,13 +200,13 @@ First some important class (type) names:
 
     Equal to::
 
-        Player.inventory[slot-1]
+        Player.inventory[slot]
 
 .. function:: getPlayerWeapon(cid[, ignoreAmmo = false])
 
     Equal to::
 
-        Player.inventory[SLOT_RIGHT-1]
+        Player.inventory[SLOT_RIGHT]
 
 .. function:: getPlayerItemById(cid, deepSearch, itemId[, subType = -1])
 
@@ -372,7 +372,9 @@ First some important class (type) names:
 
 .. function:: getThingPosition(uid)
 
-    You can't do this, just grab the position from arguments or the one you used to get the item.
+    Equal to::
+
+        thing.position
 
 .. function:: getTileItemById(pos, itemId[, subType = -1])
 
@@ -403,11 +405,13 @@ First some important class (type) names:
 
 .. function:: doRemoveItem(uid[, count = -1])
 
-    Not possible to equal this, it depends on the items position, but:
-
     You may do something like this::
 
-        Player.modifyItem(Item, Position, count)
+        item.modify(count)
+
+        or
+
+        item.remove()
 
 .. function:: doPlayerFeed(cid, food)
 
@@ -427,7 +431,7 @@ First some important class (type) names:
 
     Something like this::
 
-        Item.transform(newId, Position)
+        Item.transform(newId)
 
 .. function:: doCreatureSay(uid, text[, type = SPEAK _SAY[, ghost = false[, cid = 0[, pos]]]])
 
@@ -559,7 +563,7 @@ First some important class (type) names:
 
     Equal to::
         
-        Item.decay(position)
+        Item.decay()
 
 .. function:: doCreateItem(itemid[, type/count], pos)
 
@@ -645,7 +649,7 @@ First some important class (type) names:
 
     Equal to::
 
-        Player.modifyItem(Item, Position, count)
+        Player.findItemById(itemid).modify(count) # or .remove()
 
 .. function:: doPlayerAddExperience(cid, amount)
 
