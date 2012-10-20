@@ -1,3 +1,4 @@
+import copy
 depots = (2594, 2592)
 
 @registerFirst('use', 2594) # We got to register it first so we call it before container open
@@ -18,7 +19,7 @@ def openDepot(creature, thing, **k):
 @register('close', 2594)
 def closeDepot(creature, thing, **k):
     if thing.depotId:
-        creature.depot[thing.depotId] = thing.container[:]
+        creature.depot[thing.depotId] = copy.deepcopy(thing.container)
         thing.container = []
         thing.owners = []
 
