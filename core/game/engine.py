@@ -555,7 +555,7 @@ def saveAll(force=False):
                     house.save = True # Force save
                 if house.save:
                     log.msg("Saving house ", houseId)
-                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
+                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data) if house.data else '', houseId))
                     house.save = False
                     commited = True
                 else:
