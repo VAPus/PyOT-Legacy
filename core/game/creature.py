@@ -368,6 +368,8 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         # We are on ground level and we can't see underground
         # We're on a diffrent instanceLevel
         # Or We are undergorund and we may only see 2 floors
+        if position.x == 0xFFFF:
+            return True # Assume True
         if (self.position.instanceId != position.instanceId) or (self.position.z <= 7 and position.z > 7) or (self.position.z >= 8 and abs(self.position.z-position.z) > 2):
             return False
 
@@ -397,6 +399,8 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         return xSteps+ySteps
 
     def inRange(self, position, x, y, z=0):
+        if position.x == 0xFFFF:
+            return True
         return ( position.instanceId == self.position.instanceId and abs(self.position.x-position.x) <= x and abs(self.position.y-position.y) <= y and abs(self.position.z-position.z) <= z )
 
     def positionInDirection(self, direction):

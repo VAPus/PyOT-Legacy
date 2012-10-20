@@ -545,7 +545,7 @@ def saveAll(force=False):
                                     lastItem.count = min(100, lCount + ic)
                                     ic -= lastItem.count - lCount
                                     item.count = ic
-                            if ic:
+                            if ic or ic == None:
                                 _items.append(item)
                                 lastItem = item
                     items[tile.position] = _items
@@ -767,7 +767,7 @@ def loadPlayerById(playerId):
 def moveItem(player, fromPosition, toPosition, count=0):
     if fromPosition == toPosition:
         return True
-        
+    print "Move item"
     # TODO, script events.
     
     # Analyse a little.
@@ -904,7 +904,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
     
-    if thing.openIndex and not player.inRange(toPosition, 1, 1):
+    if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
     
     # Update everything. Lazy.
