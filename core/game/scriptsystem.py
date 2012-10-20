@@ -362,44 +362,33 @@ class ThingScripts(object):
         return _handleResult
         
     def _run(self, thing, creature, end, returnVal, **kwargs):
-        deferList = []
+        ok = None
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
-        
+                ok = func(creature=creature, thing=thing, **kwargs)
+                if ok is False:
+                    break
+                    
         thingId = thing.thingId()
+        
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
-        
+                ok = func(creature=creature, thing=thing, **kwargs)
+                if ok is False:
+                    break
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
-            
+                    ok = func(creature=creature, thing=thing, **kwargs)
+                    if ok is False:
+                        break
         if returnVal:
-            # This is actually blocking code, but is rarely used.
-            ok = Value()
-            d = defer.gatherResults(deferList)
-            d.addCallback(self.makeResult(ok))
-            d.addErrback(log.err)
-            while True:
-                try:
-                    ok.value
-                    break
-                except:
-                    time.sleep(0.001)
             if end:
                 end()
                 
-            return ok.value if type(ok.value) != bool else None
+            return ok if ok != True else None
         elif end:
-            d = defer.gatherResults(deferList)
-            d.addCallback(self.handleCallback(end))
-            d.addErrback(log.err)
-        else:
-            d = defer.DeferredList(deferList)
-            d.addErrback(log.err)
+            end()
             
     @defer.inlineCallbacks
     def _runDefer(self, thing, creature, end, returnVal, **kwargs):

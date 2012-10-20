@@ -29,8 +29,6 @@ def onSendParcelOrLetter(creature, position, thing, onThing, **k):
             onThing.itemId = ITEM_LETTER # Convert the item back to it's original Id
             creature.lmessage("Did you spell it right?", onPos=position)
             return
-        else:
-            returnValue(False) # (equal to return False in other, regular scripts)
             
     elif onId == ITEM_PARCEL:
         found = None
@@ -55,8 +53,6 @@ def onSendParcelOrLetter(creature, position, thing, onThing, **k):
             onThing.itemId = ITEM_PARCEL # Convert the item back to it's original Id
             creature.lmessage("Did you spell it right?", onPos=position)
             return
-        else:
-            returnValue(False) # (equal to return False in other, regular scripts)
+
     else:
         creature.lmessage("It's not a package or letter.")
-        returnValue(False)
