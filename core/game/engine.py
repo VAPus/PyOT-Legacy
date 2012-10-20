@@ -795,6 +795,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         count = thing.count
     if destItem and destItem == thing.inContainer:
         return False
+    if thing.openIndex != None:
+        player.closeContainer(thing)
 
     # Hack.
     if fromPosition.x == 0xFFFF and not thing.creature:
