@@ -137,8 +137,10 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(ok)
 
     def test_move_ammo_bag_ground(self):
-        # Make some gold
-        item = Item(2148, 100)
+        self.player.toggleRaiseMessages()
+
+        # Make some arrows
+        item = Item(2544, 100)
 
         # Make a bag.
         bag = Item(1987)
@@ -156,12 +158,15 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertTrue(moveItem(self.player, position, bagPosition, 100))
 
+        self.assertFalse(config.ammoSlotOnlyForAmmo)
+
         # Move to ground.
         self.assertTrue(moveItem(self.player, Position(0xFFFF, bag.openIndex+64,0), self.player.position))
 
         # Is it still there?
         self.assertEqual(self.player.inventory[SLOT_AMMO], None)
 
+        self.player.toggleRaiseMessages()
 
     def test_move_to_self(self):
         # Make a gold coin 

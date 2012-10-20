@@ -750,10 +750,14 @@ class Item(object):
                 pass
 
             del bag.container[position.z]
-            with creature.packet() as stream:
-                stream.removeContainerItem(position.y - 64, position.z)
-                if update:
-                    creature.refreshStatus(stream)
+            index = position.y
+            if index == DYNAMIC_CONTAINER:
+                index = bag.openIndex
+            if index != None and index < DYNAMIC_CONTAINER:
+                with creature.packet() as stream:
+                    stream.removeContainerItem(index, position.z)
+                    if update:
+                        creature.refreshStatus(stream)
         try:
             del thing.creature
         except:
