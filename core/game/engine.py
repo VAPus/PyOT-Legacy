@@ -833,7 +833,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
     slots = thing.slots()
     
     # Can it be placed there?
-    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (SLOT_PURSE, SLOT_BACKPACK):
+    if not destItem and toPosition.x == 0xFFFF and toPosition.y < 64:
         if (toPosition.y-1) not in slots:
             if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
                 pass
