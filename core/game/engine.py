@@ -816,9 +816,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
             container = container.inContainer
             
     slots = thing.slots()
-    
+    print slots
     # Can it be placed there?
-    if not destItem and toPosition.x == 0xFFFF and toPosition.y < 64:
+    if (not destItem or not destItem.container) and toPosition.x == 0xFFFF and toPosition.y < 64:
         if (toPosition.y-1) not in slots:
             if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
                 pass

@@ -10,7 +10,11 @@ import socket
 class LoginProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
-        print packet.uint8()
+        try:
+            packet.uint8()
+        except:
+            return
+
         packet.pos += 2
         #packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
