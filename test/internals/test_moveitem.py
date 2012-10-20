@@ -135,3 +135,30 @@ class TestMoveItem(FrameworkTestGame):
                 ok = True
                 
         self.assertTrue(ok)
+
+    def test_move_ammo_bag_ground(self):
+        # Make some gold
+        item = Item(2148, 100)
+
+        # Make a bag.
+        bag = Item(1987)
+
+        # Place to inventory.
+        self.player.itemToInventory(item, SLOT_AMMO)
+        self.player.itemToInventory(bag, SLOT_BACKPACK)
+
+        # Open bag.
+        self.player.openContainer(bag)
+
+        # Move to bag.
+        position = Position(0xFFFF, SLOT_AMMO+1, 0)
+        bagPosition = Position(0xFFFF, SLOT_BACKPACK+1, 0)
+
+        self.assertTrue(moveItem(self.player, position, bagPosition, 100))
+
+        # Move to ground.
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, bag.openIndex+64,0), self.player.position))
+
+        # Is it still there?
+        self.assertEqual(self.player.inventory[SLOT_AMMO], None)
+

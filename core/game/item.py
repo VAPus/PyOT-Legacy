@@ -728,27 +728,28 @@ class Item(object):
             creature.updateInventory(position.y)
 
         # Option 3, the bags, if there is one ofcource
-        elif self.creature.inventory[2]:
+        elif self.inContainer and self.creature.inventory[2]:
             update = False
             try:
                 bag = self.creature.openContainers[position.y - 64]
             except:
                 return
             assert bag == self.inContainer
+            creature = self.creature
             try:
-                self.creature.inventoryCache[bag.itemId].index(bag)
+                creature.inventoryCache[bag.itemId].index(bag)
                 currItem = bag.container[position.z]
                 if currItem:
-                    if self.creature.removeCache(currItem):
+                    if creature.removeCache(currItem):
                         update = True
             except:
                 pass
 
             del bag.container[position.z]
-            with self.creature.packet() as stream:
+            with creature.packet() as stream:
                 stream.removeContainerItem(position.y - 64, position.z)
                 if update:
-                    self.creature.refreshStatus(stream)
+                    creature.refreshStatus(stream)
         try:
             del thing.creature
         except:
