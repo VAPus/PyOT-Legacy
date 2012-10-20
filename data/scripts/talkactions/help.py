@@ -96,36 +96,6 @@ def speedsetter(creature, text):
         creature.lmessage("Invalid speed!")
     return False
 
-@register("talkactionFirstWord", 'i')
-@access("CREATEITEM")
-def makeitem(creature, text):
-    #try:
-    if True:    
-        count = 1
-        if ' ' in text:
-            count = int(text.split(" ")[1])
-        text = int(text.split(" ")[0])
-        if text >= 1000:
-            while count:
-                rcount = min(100, count)
-                newitem = game.item.Item(text, rcount)
-                if newitem.pickable:
-                    creature.addItem(newitem)
-                else:
-                    tile = creature.position.getTile()
-                    tile.placeItem(newitem)
-                    updateTile(creature.position, tile)
-                count -= rcount
-        else:
-            raise
-    #except:
-    #    creature.message("Invalid Item!")
-         
-    return False
-
-
-
-
 # Reimport tester
 @register("talkaction", 'reload')
 @access("RELOAD")
