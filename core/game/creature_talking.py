@@ -149,7 +149,6 @@ class PlayerTalking(CreatureTalking):
         self.cancelMessage(_l(self, "You cannot take this object."))
 
     def tooHeavy(self):
-        raise Exception()
         self.cancelMessage(_l(self, "This object is too heavy for you to carry."))
 
     def outOfRange(self):
