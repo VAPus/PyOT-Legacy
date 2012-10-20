@@ -1585,6 +1585,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.inventoryCache[item.itemId] = [item.count or 1, item]
 
             if item.container:
+                try:
+                    item.container.remove(item)
+                except:
+                    pass
                 self.__buildInventoryCache(item)
 
     def unpickleInventory(self, inventoryData):
@@ -1614,6 +1618,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     self.inventoryCache[item.itemId] = [item.count or 1, item]
 
                 if item.container:
+                    try:
+                        item.container.remove(item)
+                    except:
+                        pass
                     self.__buildInventoryCache(item)
 
     # Saving

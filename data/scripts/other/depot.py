@@ -15,6 +15,8 @@ def openDepot(creature, thing, **k):
         thing.owners = [creature]
         if thing.depotId in creature.depot:
             thing.container = creature.depot[thing.depotId]
+            for item in thing.container:
+                item.inContainer = thing
 
 @register('close', 2594)
 def closeDepot(creature, thing, **k):

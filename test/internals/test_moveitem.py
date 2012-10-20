@@ -162,3 +162,22 @@ class TestMoveItem(FrameworkTestGame):
         # Is it still there?
         self.assertEqual(self.player.inventory[SLOT_AMMO], None)
 
+
+    def test_move_to_self(self):
+        # Make a gold coin 
+        item = Item(2148, 1)
+
+        # Make a bag.
+        bag = Item(1987)
+
+        # Place to inventory
+        self.player.itemToInventory(bag, SLOT_BACKPACK)
+
+        # Item to bag.
+        self.player.itemToContainer(bag, item)
+
+        # Open bag.
+        self.player.openContainer(bag)
+
+        # Move to bag.
+        self.assertFalse(moveItem(self.player, Position(0xFFFF, bag.openIndex+64, 0), Position(0xFFFF, SLOT_BACKPACK+1, 0))) 

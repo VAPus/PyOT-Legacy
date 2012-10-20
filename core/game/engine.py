@@ -793,6 +793,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         return False
     if thing.stackable and not count:
         count = thing.count
+    if destItem and destItem == thing.inContainer:
+        return False
 
     # Hack.
     if fromPosition.x == 0xFFFF and not thing.creature:
@@ -820,7 +822,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             container = container.inContainer
             
     slots = thing.slots()
-    print slots
+    
     # Can it be placed there?
     if (not destItem or not destItem.container) and toPosition.x == 0xFFFF and toPosition.y < 64:
         if (toPosition.y-1) not in slots:

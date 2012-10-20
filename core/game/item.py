@@ -124,12 +124,15 @@ class Item(object):
                     return False # Not found
 
         tile = pos.getTile()
-        
-        if isinstance(pos, StackPosition) and tile.things[pos.stackpos] == self:
-            return pos
-            
-        elif not self in tile.things:
-            print "OWOWOWOW", self, tile.things
+
+        # Might fail. Since we might move to position with creature, and the creature move. Not to worry.        
+        try:
+            if isinstance(pos, StackPosition) and tile.things[pos.stackpos] == self:
+                return pos
+        except:
+            pass
+
+        if not self in tile.things:
             return False # Not on this tile
             
         elif isinstance(pos, StackPosition):
