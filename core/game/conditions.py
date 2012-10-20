@@ -1,3 +1,5 @@
+import copy
+
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
