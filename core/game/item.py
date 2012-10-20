@@ -44,6 +44,9 @@ class Item(object):
         if items[itemId]['a'] & 64:
             if not count or count < 0:
                 count = 1
+            elif not isinstance(count, int):
+                raise Exception("Supplied count to Item() is not a number.")
+
             self.count = count
             
         # Extend items such as containers
