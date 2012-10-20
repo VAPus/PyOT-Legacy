@@ -21,7 +21,7 @@ class TestCondition(FrameworkTestGame):
         self.assertEqual(self.player.getCondition(CONDITION_FIRE), condition)
 
     def test_copycondition(self):
-        condition = Condition(CONDITION_FIRE, length=10, damage=1)condition = Condition(CONDITION_FIRE, length=10, damage=1)
+        condition = Condition(CONDITION_FIRE, length=10, damage=1)
 
         condition2 = condition.copy()
 

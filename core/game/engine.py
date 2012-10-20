@@ -916,7 +916,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 player.itemToContainer(thing.inContainer, destItem)
             else:
                 player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
-        
+    
+    if thing.openIndex and not player.inRange(toPosition, 1, 1):
+        player.closeContainer(thing)
+    
     # Update everything. Lazy.
     player.refreshInventory()
     player.updateAllContainers()
