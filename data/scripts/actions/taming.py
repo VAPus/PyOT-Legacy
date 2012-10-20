@@ -64,7 +64,7 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
                 creature.say(mount["successMsg"], 'MSG_SPEAK_MONSTER_SAY')
                 onThing.despawn()
                 magicEffect(onPosition, EFFECT_POFF)
-                creature.modifyItem(thing, position, -1)
+                creature.modifyItem(thing, -1)
                 return True
         
     # NPC Mount
@@ -78,7 +78,7 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
                 creature.orangeStatusMessage(mount["successMsg"])
                 creature.say(mount["successMsg"], 'MSG_SPEAK_MONSTER_SAY')
                 magicEffect(onPosition, EFFECT_MAGIC_GREEN)
-                creature.modifyItem(thing, position, -1)
+                creature.modifyItem(thing, -1)
                 return True
     
     return

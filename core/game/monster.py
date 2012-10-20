@@ -220,13 +220,13 @@ class Monster(Creature):
         splash.fluidSource = self.base.blood
         
         if corpse:
-            tile.placeItem(corpse)
-        tile.placeItem(splash)
+            corpse.place(self.position)
+        splash.place(self.position)
         
         # Start decay
         if corpse:
-            corpse.decay(self.position)
-        splash.decay(self.position)
+            corpse.decay()
+        splash.decay()
         
         # Remove me. This also refresh the tile.
         self.remove()

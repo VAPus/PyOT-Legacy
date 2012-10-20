@@ -837,13 +837,17 @@ class BaseProtocol(object):
         stack = True
         fromPosition = fromPosition.setStackpos(fromStackPos)
         thing = player.findItem(fromPosition)
-        
+        if not thing.position:
+            thing.position = fromPosition
         isCreature = False
         if clientId < 100:
             isCreature = True
         if not isCreature:
             # Remove item:
-            oldItem = player.findItemWithPlacement(fromPosition.setStackpos(fromStackPos))
+            oldItem = player.findItemWithPlacement(fromPosition)
+            if not thing.position:
+                thing.position = fromPosition
+                
             if toPosition.x == 0xFFFF:
                 currItem = player.findItemWithPlacement(toPosition)
             else:
@@ -882,10 +886,13 @@ class BaseProtocol(object):
                     if toPosition.x == 0xFFFF and toPosition.y >= 64 and not player.getContainer(toPosition.y-64):
                         player.notPossible()
                         return
-                    
-            moveItem(player, fromPosition, toPosition, count)
+            if player.canSee(fromPosition) and player.canSee(toPosition):
+                moveItem(player, fromPosition, toPosition, count)
             
         else:
+            if not player.canSee(toPosition):
+                return
+            
             if game.map.getTile(toPosition).creatures():
                 player.notEnoughRoom()
                 return
@@ -919,6 +926,9 @@ class BaseProtocol(object):
         
         stackPosition = position.setStackpos(stackpos)
         
+        if not player.canSee(position):
+            return
+        
         if position.x == 0xFFFF:
             thing = player.findItem(stackPosition)
         elif stackpos == 0 and clientId == 99:
@@ -945,8 +955,7 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
-                    print "lookAt send"
-                    player.message(thing.description(player, position) + extra)
+                    player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():
                     if player == thing:
@@ -1007,6 +1016,9 @@ class BaseProtocol(object):
         thing = player.findItem(stackPosition)
         end = None
 
+        if not thing.position:
+            thing.position = stackPosition
+            
         if config.useDelay and player.lastUsedObject + config.useDelay > time.time():
             player.cantUseObjectThatFast()
             return
@@ -1057,11 +1069,21 @@ class BaseProtocol(object):
         else:
             thing = position.getTile().topCreature()
             
+        if not thing:
+            return
+        if not thing.position:
+            thing.position = stackPosition1
+            
         if onClientId != 99:
             onThing = player.findItem(stackPosition2)
         else:
             onThing = game.map.getTile(onPosition).topCreature()
         
+        if not onThing:
+            return
+        if not onThing.position:
+            onThing.position = stackPosition2
+            
         if config.useDelay and player.lastUsedObject + config.useDelay > time.time():
             player.cantUseObjectThatFast()
             return
@@ -1089,7 +1111,7 @@ class BaseProtocol(object):
                     yield sleep(0.5)
                     scount += 1
 
-            if position.x == 0xFFFF or player.inRange(position, 1, 1):
+            if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.inRange(onPosition, 1, 1)):
                 end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
                 game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:

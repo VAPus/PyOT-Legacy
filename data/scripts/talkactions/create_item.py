@@ -10,13 +10,12 @@ def makeitem(creature, text):
         if text >= 1000:
             while count:
                 rcount = min(100, count)
-                newitem = game.item.Item(text, rcount)
+                newitem = Item(text, rcount)
                 if newitem.pickable:
                     creature.addItem(newitem)
                 else:
-                    tile = creature.position.getTile()
-                    tile.placeItem(newitem)
-                    updateTile(creature.position, tile)
+                    newitem.place(creature.position)
+
                 count -= rcount
         else:
             raise
@@ -31,13 +30,12 @@ def makeitem(creature, text):
 @register("talkactionFirstWord", '/in')
 @access("CREATEITEM")
 def createItemByName(creature, text):
-	itemid = game.item.idByName(text.split(",")[0].strip())
-	if not itemid:
-		creature.message("No such item.")
-	else:
-		count = text.split(",")[1].strip() if "," in text else 1
-		item = game.item.Item(itemid, int(count))
-		creature.addItem(item)
-		creature.magicEffect(EFFECT_MAGIC_GREEN)
-	return False
-		
+    itemid = game.item.idByName(text.split(",")[0].strip())
+    if not itemid:
+        creature.message("No such item.")
+    else:
+        count = text.split(",")[1].strip() if "," in text else 1
+        item = Item(itemid, int(count))
+        creature.addItem(item)
+        creature.magicEffect(EFFECT_MAGIC_GREEN)
+    return False

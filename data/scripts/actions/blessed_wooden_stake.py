@@ -17,5 +17,5 @@ def useWith(creature, thing, onThing, onPosition, **k):
     else:
         magicEffect(onPosition, EFFECT_BLOCKHIT)
 
-    onThing.transform(onThing.itemId + 1, onPosition)
+    onThing.transform(onThing.itemId + 1)
 

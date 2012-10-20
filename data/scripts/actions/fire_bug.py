@@ -10,7 +10,7 @@ def onUse(creature, position, onThing, onPosition, **k):
             magicEffect(position, EFFECT_EXPLOSIONAREA)
             creature.removeItem(position)
 
-        onThing.transform(5465, onPosition)
+        onThing.transform(5465)
 
     else:
         return False

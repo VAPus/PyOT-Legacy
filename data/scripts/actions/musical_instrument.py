@@ -20,15 +20,15 @@ def onUse(creature, thing, position, **k):
     elif thing.itemId == didgeridoo and chance == 1:
         magicEffect(position, EFFECT_SOUND_BLUE)
     elif thing.itemId == partyTrumpet:
-        thing.transform(usedPartyTrumpet, position)
+        thing.transform(usedPartyTrumpet)
         creature.say("TOOOOOOT!", 'MSG_SPEAK_MONSTER_SAY')
         magicEffect(position, EFFECT_SOUND_BLUE)
-        thing.decay(position)
+        thing.decay()
     elif thing.itemId == cornucopia:
         for i in range(0, 10):
             creature.addItem(game.item.Item(2681))
 
-        thing.transform(0, position)
+        thing.transform(0)
         creature.magicEffect(EFFECT_SOUND_YELLOW, position)
 
     elif thing.itemId == woodenWhistle:

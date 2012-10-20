@@ -5,12 +5,12 @@ SPIDER_WEB = {7538, 7539}
 @register("useWith", (2420, 2442))
 def onUseWith(onThing, onPosition, **k):
     if onThing.itemId in JUNGLE_GRASS_REMOVE:
-        onThing.transform(0, onPosition)
-        onThing.decay(onPosition)
+        onThing.transform(0)
+        onThing.decay()
     elif onThing.itemId in JUNGLE_GRASS_TRANSFORM:
-        onThing.transform(onThing.itemId - 1, onPosition)
-        onThing.decay(onPosition)
+        onThing.transform(onThing.itemId - 1)
+        onThing.decay()
     elif onThing.itemId in SPIDER_WEB:
-        onThing.transform(onThing.itemId + 6, onPosition)
-        onThing.decay(onPosition)
+        onThing.transform(onThing.itemId + 6)
+        onThing.decay()
         

@@ -35,8 +35,10 @@ class Item(object):
             itemId = 100
             
         self.itemId = itemId
-        self.actions = actions
-		
+
+        if actions:
+            self.actions = actions
+
         if kwargs:
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
@@ -86,7 +88,10 @@ class Item(object):
             except:
                 return None
 
-    def verifyPosition(self, creature, pos):
+    def verifyPosition(self):
+        pos = self.position
+        creature = self.creature
+
         if pos.x == 0xFFFF:
             if not creature:
                 raise Exception("Cannot verify Position inside inventory when creature == None!")
@@ -100,12 +105,15 @@ class Item(object):
                     return False # We cant assume that inventory items move
                     
             else:
-                container = creature.getContainer(pos.y-64)
+                container = self.inContainer
                 if not container:
                     print creature.openContainers
-                    print pos.y - 64
                     return False
-                    
+                else:
+                    for con in creature.openContainers:
+                        if creature.openContainers[con] == container:
+                            pos.y = con+64
+                            break
                 if container.container[pos.z] == self:
                     return pos
                 else:
@@ -230,7 +238,8 @@ class Item(object):
             
         return _l(player, INFLECT.a(self.name))
     
-    def description(self, player=None, position=None):
+    def description(self, player=None):
+        position = self.position
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         #TODO: charges, showcharges, showattributes
@@ -314,6 +323,26 @@ class Item(object):
     def reduceCount(self, count):
         self.count -= count
             
+    def modify(self, mod):
+        count = self.count
+        if count == None and mod < 0:
+            self.remove()
+        
+        
+        if count <= 0:
+            count = 1
+
+        try:
+            count += mod
+        except:
+            pass
+
+        if count > 0:
+            self.count = count
+            self.refresh()
+        else:
+            self.remove()
+            
     def slots(self):
         slot = self.slotType
 
@@ -343,8 +372,25 @@ class Item(object):
             return game.enum.SLOT_RIGHT,
         else:
             return ()
+  
+    def place(self, position, creature=None):
+        if creature:
+            creature.placeItem(position, self)
+        else:
+            tile = position.getTile()
+            stackpos = tile.placeItem(self)
+            position = position.setStackpos(stackpos)
+            self.setPosition(position)
+            updateTile(position, tile)
+          
+    def setPosition(self, position, creature=None):
+        self.position = position
+        if creature:
+            self.creature = creature
+        if self.creature and position.x != 0xFFFF:
+            del self.creature
 
-    def decay(self, position, to=None, duration=None, callback=None, creature=None):
+    def decay(self, to=None, duration=None, callback=None):
         if to == None:
             to = self.decayTo
         
@@ -361,27 +407,25 @@ class Item(object):
         except:
             pass
 
-        position = self.verifyPosition(creature, position)
+
+        position = self.verifyPosition()
+
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!") 
+            raise Exception("BUG: Item position cannot be verified!") 
         
         # Store position:
-        self.decayPosition = position
-        if position.x == 0xFFFF:
-            self.decayCreature = creature
-            
         def executeDecay():
             try:
-                if self.decayCreature:
+                if self.creature:
                     # Remove cache
-                    self.decayCreature.removeCache(self)
+                    self.creature.removeCache(self)
                     
                     # Change itemId
                     if to:
                         self.itemid = to
                     
                         # Add cache
-                        self.decayCreature.addCache(self)
+                        self.creature.addCache(self)
                     
                         # We can assume the bag is open. And the inventory is always visible.
                         if position.y < 64:
@@ -392,16 +436,14 @@ class Item(object):
                             self.decayCreature.updateAllContainers()
                             
                     else:
-                        self.decayCreature.removeItem(position, self)
+                        self.remove()
                         
                 else:
-                    self.transform(self.decayTo, self.decayPosition)
+                    self.transform(self.decayTo)
                 
                 # Hack for chained decay
                 if self.itemId and self.decayTo != None:
-                    self.decay(self.decayPosition, callback=callback, creature=creature)
-                else:
-                    del self.decayPosition
+                    self.decay(self.decayTo, callback=callback)
                     
                 if self.itemId and callback:
                     callback(self)
@@ -419,37 +461,40 @@ class Item(object):
                 self.executeDecay.cancel()
             except:
                 pass
-            
-    def __getstate__(self):
-        params = self.__dict__
-        for x in ("decayCreature", "inContainer", "openIndex", "parent", "inTrade", "executeDecay"):
-            if x in self.__dict__:
-                params = self.__dict__.copy() 
-                try:
-                    del params["decayCreature"]
-                    del params["inContainer"] # This only exists if inPlayer exists.
-                except:
-                    pass
+    
+    def cleanParams(self):
+        params = self.__dict__.copy()
+        
+        try:
+            del params["position"]
+            del params["creature"]
+            del params["inContainer"] # This only exists if inPlayer exists.
+        except:
+            pass
                     
-                try:
-                    del params["openIndex"]
-                except:
-                    pass
+        try:
+            del params["openIndex"]
+        except:
+            pass
 
-                try:
-                    del params["parent"]
-                except:
-                    pass
+        try:
+            del params["parent"]
+        except:
+            pass
                 
-                try:
-                    del params["inTrade"]
-                except:
-                    pass
+        try:
+            del params["inTrade"]
+        except:
+            pass
                     
-                try:
-                    del params["executeDecay"]
-                except:
-                    pass
+        try:
+            del params["executeDecay"]
+        except:
+            pass
+        
+        return params
+    def __getstate__(self):
+        params = self.cleanParams()
             
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
@@ -467,17 +512,20 @@ class Item(object):
             
 
     def copy(self):
-        newItem = copy.deepcopy(self)
+        newItem = Item(self.itemId)
+        newItem.__dict__ = self.cleanParams()
+        
         try:
             del newItem.tileStacked
         except:
             pass
         return newItem
         
-    def transform(self, toId, position):
-        position = self.verifyPosition(self.decayCreature, position)
+    def transform(self, toId):
+        position = self.verifyPosition()
+
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!")
+            raise Exception("BUG: Item position cannot be verified!")
         
         if position.x != 0xFFFF:
             tile = position.getTile()
@@ -506,12 +554,13 @@ class Item(object):
             self.itemId = toId
             self.refresh(position)
 
-    def refresh(self, position):
-        position = self.verifyPosition(self.decayCreature, position)
-        creature = self.decayCreature
+    def refresh(self):
+        position = self.verifyPosition()
+        creature = self.creature
+
 
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!")
+            raise Exception("BUG: Item position cannot be verified!")
 
         if position.x != 0xFFFF:
             tile = position.getTile()
@@ -587,10 +636,7 @@ class Item(object):
                     stream.send(creature.client)
                     
     def __repr__(self):
-        # Remove actions:
-        r = self.__dict__.copy()
-        del r["actions"]
-        return "<Item (%s) at %s>" % (r, hex(id(self)))
+        return "<Item (%s) at %s>" % (self.__dict__, hex(id(self)))
     
     ##### Container stuff ####
     def placeItem(self, item):
@@ -650,6 +696,64 @@ class Item(object):
                     
     def findSlot(self, item):
         return self.container.index(item)
+    
+    def move(self, newPosition):
+        if self.position.x != 0xFFFF and newPosition.x != 0xFFFF:
+            # HACK. Find a player.
+            player = game.player.allPlayersObject[0]
+            moveItem(player, self.position, newPosition)
+        elif not self.creature:
+            raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")
+        else:
+            moveItem(self.creature, self.position, newPosition)
+        
+    def remove(self):
+        position = self.verifyPosition()
+        print "Removing", position
+        if not position:
+            raise Exception("BUG: Item position cannot be verified! %s")
+
+        # Option 1, from the map:
+        if position.x != 0xFFFF:
+            tile = position.getTile()
+            tile.removeItem(self)
+            updateTile(position, tile)
+
+        # Option 2, the inventory
+        elif position.y < 64:
+            creature = self.creature
+            if creature.removeCache(self):
+                creature.refreshStatus()
+            creature.inventory[position.y-1] = None
+            creature.updateInventory(position.y)
+
+        # Option 3, the bags, if there is one ofcource
+        elif self.creature.inventory[2]:
+            update = False
+            try:
+                bag = self.creature.openContainers[position.y - 64]
+            except:
+                return
+            assert bag == self.inContainer
+            try:
+                self.creature.inventoryCache[bag.itemId].index(bag)
+                currItem = bag.container[position.z]
+                if currItem:
+                    if self.creature.removeCache(currItem):
+                        update = True
+            except:
+                pass
+
+            del bag.container[position.z]
+            with self.creature.packet() as stream:
+                stream.removeContainerItem(position.y - 64, position.z)
+                if update:
+                    self.creature.refreshStatus(stream)
+        try:
+            del thing.creature
+        except:
+            pass
+        self.position = None
             
 def cid(itemid):
     try:

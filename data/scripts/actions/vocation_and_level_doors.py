@@ -4,7 +4,7 @@ doors = 1227, 1229, 1245, 1247, 1259, 1261, 3540, 3549, 5103, 5112, 5121, 5130, 
 @register('use', doors)
 def openDoor(creature, thing, position, **k):
     if not thing.actionIds():
-        thing.transform(thing.itemId+1, position)
+        thing.transform(thing.itemId+1)
         return
 
     canEnter = True
@@ -21,4 +21,4 @@ def openDoor(creature, thing, position, **k):
     if not canEnter:
         creature.lmessage("Only the worthy may pass.")
     
-    thing.transform(thing.itemId+1, position)
+    thing.transform(thing.itemId+1)

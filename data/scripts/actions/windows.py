@@ -6,10 +6,10 @@ closeWindows = 6438, 6439, 6442, 6443, 6446, 6447, 6452, 6453, 6456, 6457, 6460,
             
 @register('use', openWindows)
 def openWindow(creature, thing, position, **k):
-    thing.transform(thing.itemId+2, position)
+    thing.transform(thing.itemId+2)
     
 @register('use', closeWindows)
 def closeWindow(creature, thing, position, **k):
-    thing.transform(thing.itemId-2, position)
+    thing.transform(thing.itemId-2)
 
 

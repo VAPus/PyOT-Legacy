@@ -182,6 +182,24 @@ class FrameworkTestGame(FrameworkTest):
         
         if recreate:
             self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
+            
+        # Cleanup.
+        tile = getTile(Position(1000, 1000, 7))
+        for thing in tile.things[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
+                
+        # Cleanup.
+        tile = getTile(Position(1000, 1001, 7))
+        for thing in tile.things[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
+                
+        # Cleanup.
+        tile = getTile(Position(1000, 999, 7))
+        for thing in tile.things[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
 
     def virtualPlayer(self, id, name):
         # Setup a virtual player.

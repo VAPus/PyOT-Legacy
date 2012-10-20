@@ -16,7 +16,7 @@ def onUse(creature, thing, position, **k):
     elif not getHouseByPos(position):
         creature.cancelMessage("You may construct this only inside a house.")
     elif thing.itemId in CONSTRUCTIONS:
-        thing.transform(CONSTRUCTIONS[thing.itemId], position)
+        thing.transform(CONSTRUCTIONS[thing.itemId])
         magicEffect(position, EFFECT_POFF)
     else:
         return

@@ -47,7 +47,7 @@ def onUse(creature, thing, position, onThing, onPosition, **k):
             except:
                 pass
 
-            onThing.transform(onThing.itemId+9, position)
+            onThing.transform(onThing.itemId+9)
             creature.skillAttempt(SKILL_FISH)
     elif onThing.itemId == iceHoleFish:
         if thing.itemId == mechanicalFishingRod:
@@ -68,7 +68,7 @@ def onUse(creature, thing, position, onThing, onPosition, **k):
         except:
             pass
 
-        onThing.transform(onThing.itemId+1, position)
+        onThing.transform(onThing.itemId+1)
         creature.skillAttempt(SKILL_FISH, 2)
 
     onThing.decay(onPosition)

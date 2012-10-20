@@ -2,6 +2,6 @@
 def onUse(creature, thing, position, **k):
     rolled = random.randint(1,6)
     creature.say("%s rolled a %d" % (creature.name(), rolled),'MSG_SPEAK_MONSTER_SAY')
-    thing.transform(5791 + rolled, position)
+    thing.transform(5791 + rolled)
     
-    creature.magicEffect(EFFECT_CRAPS, position)
+    magicEffect(position, EFFECT_CRAPS)

@@ -7,10 +7,10 @@ KNIFE = 2566
 @register("useWith", (2566, 2096))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if thing.itemId == PUMPKINHEAD_LIGHT_OFF and onThing.itemId == CANDLE:
-        thing.transform(PUMPKINHEAD_LIGHT_ON, position)
+        thing.transform(PUMPKINHEAD_LIGHT_ON)
         creature.removeItem(onPosition)
     elif thing.itemId == KNIFE and onThing.itemId == PUMPKIN:
-        onThing.transform(PUMPKINHEAD_LIGHT_OFF, onPosition)
+        onThing.transform(PUMPKINHEAD_LIGHT_OFF)
     else:
         return False
     

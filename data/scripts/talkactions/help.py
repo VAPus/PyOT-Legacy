@@ -29,9 +29,9 @@ def up(creature, text):
     up = creature.position.copy()
     up.z -= 1
     try:
-            creature.teleport(up)
+        creature.teleport(up)
     except:
-            creature.notPossible()
+        creature.notPossible()
     return False
 
 @register("talkaction", '/down')
@@ -40,9 +40,9 @@ def down(creature, text):
     up = creature.position.copy()
     up.z += 1
     try:
-            creature.teleport(up)
+        creature.teleport(up)
     except:
-            creature.notPossible()
+        creature.notPossible()
     return False
 
 @register("talkactionFirstWord", 'set')
@@ -404,6 +404,8 @@ def delayWalk(creature, **k):
 @register("talkaction", "newinventory")
 @access("DEVELOPER")
 def newInventory(creature, **k):
+    creature.inventoryWeight = 0
+    creature.inventoryCache = {}
     purse = Item(1987)
     purse.name = "Purse"
     purse.addAction('purse')
@@ -414,6 +416,9 @@ def newInventory(creature, **k):
     for item in creature.inventory:
         if not item:
             continue
+        
+        item.creature = creature
+        item.position = Position(0xFFFF, creature.inventory.index(item)+1, 0)
         weight = item.weight
         if weight:
             creature.inventoryWeight += weight * (item.count or 1)

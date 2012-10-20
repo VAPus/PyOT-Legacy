@@ -33,13 +33,13 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         
         if developed:
             magicEffect(onPosition, effect_renew)
-            onThing.transform(developed[0], onPosition)
+            onThing.transform(developed[0])
             creature.lmessage("You have renewed the %s !" % (developed[1]))
             creature.modifyItem(thing, position, -1)
             
         else:
             magicEffect(onPosition, effect_broke)
-            creature.modifyItem(onThing, onPosition, -1)
+            creature.modifyItem(onThing, -1)
             creature.modifyItem(thing, position, -1)
             creature.lmessage("Your Rusty Remover has broken.")
             return
