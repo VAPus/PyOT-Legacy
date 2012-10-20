@@ -1,4 +1,4 @@
-@register("talkactionFirstWord", 'i')
+@register("talkactionFirstWord", '/i')
 @access("CREATEITEM")
 def makeitem(creature, text):
     #try:
