@@ -2352,10 +2352,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             except:
                 print "WARNING: Language %s not loaded, falling back to defaults" % lang
         else:
-            self.l = Creature.l
-            self.lp = Creature.lp
-            self.lc = Creature.lc
-            self.lcp = Creature.lcp
+            self.l = lambda message: message
+            self.lp = lambda s,p,n: s if n != 1 else p
+            self.lc = lambda c, m: m
+            self.lcp = lambda c, s, p, n: s if n != 1 else p
 
         self.data["language"] = lang
         

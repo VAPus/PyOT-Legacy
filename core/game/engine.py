@@ -386,35 +386,7 @@ def transformItem(item, transformTo):
     :param transformTo: New itemID. Leave to 0 or None to delete the item.
     :type transformTo: int or None.
     
-    :param pos: Position of the item.
-    :type pos: List of tuple.
-    
-    
     """
-    """pos = item.vertifyPosition()
-    if not pos:
-        raise Exception("BUG: Can't vertify position")
- 
-    tile = game.map.getTile(pos)
-    if not isinstance(pos, StackPosition):
-        pos = pos.setStackpos(tile.findStackpos(item))
-
-    tile.removeItem(item)
-    if item.tileStacked:
-        item = item.copy()
-        
-    item.itemId = transformTo
-    if transformTo:
-        newStackpos = tile.placeItem(item)
-
-    for spectator in getSpectators(pos):
-        stream = spectator.packet()
-        stream.removeTileItem(pos, pos.stackpos)
-        if transformTo:
-            stream.addTileItem(pos, newStackpos, item)
-            
-        stream.send(spectator)"""
-
     return item.transform(transformTo)
 
 def teleportItem(item, fromPos, toPos):
@@ -846,7 +818,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
     slots = thing.slots()
     
     # Can it be placed there?
-    if toPosition.x == 0xFFFF and toPosition.y < 64 and (toPosition.y-1) not in (SLOT_PURSE, SLOT_BACKPACK):
+    if not destItem and toPosition.x == 0xFFFF and toPosition.y < 64:
         if (toPosition.y-1) not in slots:
             if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
                 pass
@@ -931,7 +903,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 player.itemToContainer(thing.inContainer, destItem)
             else:
                 player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
-        
+    
+    if thing.openIndex and not player.inRange(toPosition, 1, 1):
+        player.closeContainer(thing)
+    
     # Update everything. Lazy.
     player.refreshInventory()
     player.updateAllContainers()

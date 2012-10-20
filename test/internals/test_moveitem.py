@@ -83,12 +83,11 @@ class TestMoveItem(FrameworkTestGame):
         # Correct count?
         self.assertEqual(item.count, 100)
         
+
     def test_move_ground(self):
         # Make some gold.
         item = Item(2148, 10)
         item.place(self.player.position)
-        
-        self.assertEqual(self.player.position, item.position)
         
         # Move.
         self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH), 10))
@@ -102,6 +101,20 @@ class TestMoveItem(FrameworkTestGame):
                 ok = True
                 
         self.assertTrue(ok)
+        
+    def test_closebag(self):
+        # Make a bag.
+        item = Item(1987)
+        self.player.itemToInventory(item, SLOT_BACKPACK)
+
+        # Open bag.
+        self.player.openContainer(item)
+        
+        # Move to ground.
+        newPosition = self.player.position.copy()
+        newPosition.x += 2
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, SLOT_BACKPACK+1, 0), newPosition))
+        self.assertFalse(item.openIndex)
         
     def test_move_ground_no_count(self):
         # Make some gold.

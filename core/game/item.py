@@ -35,6 +35,7 @@ class Item(object):
             itemId = 100
             
         self.itemId = itemId
+
         if actions:
             self.actions = actions
 
@@ -45,6 +46,9 @@ class Item(object):
         if items[itemId]['a'] & 64:
             if not count or count < 0:
                 count = 1
+            elif not isinstance(count, int):
+                raise Exception("Supplied count to Item() is not a number.")
+
             self.count = count
             
         # Extend items such as containers
@@ -84,12 +88,13 @@ class Item(object):
             except:
                 return None
 
-    def vertifyPosition(self):
+    def verifyPosition(self):
         pos = self.position
         creature = self.creature
+
         if pos.x == 0xFFFF:
             if not creature:
-                raise Exception("Cannot vertify Position inside inventory when creature == None!")
+                raise Exception("Cannot verify Position inside inventory when creature == None!")
             
             if pos.y < 64:
                 if creature.inventory[pos.y-1] == self:
@@ -292,8 +297,7 @@ class Item(object):
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:
-                extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight + self.containerWeight()) / 100)
-                
+                extra += _l(player, "\nIt weighs %.2f oz.") % ((float(self.weight if self.weight else 0) + self.containerWeight()) / 100)
             elif self.weight:
                 if self.count:
                     extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.count) * float(self.weight) / 100)
@@ -403,9 +407,11 @@ class Item(object):
         except:
             pass
 
-        position = self.vertifyPosition()
+
+        position = self.verifyPosition()
+
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!") 
+            raise Exception("BUG: Item position cannot be verified!") 
         
         # Store position:
         def executeDecay():
@@ -516,9 +522,10 @@ class Item(object):
         return newItem
         
     def transform(self, toId):
-        position = self.vertifyPosition()
+        position = self.verifyPosition()
+
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!")
+            raise Exception("BUG: Item position cannot be verified!")
         
         if position.x != 0xFFFF:
             tile = position.getTile()
@@ -548,11 +555,12 @@ class Item(object):
             self.refresh(position)
 
     def refresh(self):
-        position = self.vertifyPosition()
+        position = self.verifyPosition()
         creature = self.creature
 
+
         if not position:
-            raise Exception("BUG: Item position cannot be vertified!")
+            raise Exception("BUG: Item position cannot be verified!")
 
         if position.x != 0xFFFF:
             tile = position.getTile()
@@ -695,10 +703,10 @@ class Item(object):
         moveItem(self.creature, self.position, newPosition)
         
     def remove(self):
-        position = self.vertifyPosition()
+        position = self.verifyPosition()
         print "Removing", position
         if not position:
-            raise Exception("BUG: Item position cannot be vertified! %s")
+            raise Exception("BUG: Item position cannot be verified! %s")
 
         # Option 1, from the map:
         if position.x != 0xFFFF:

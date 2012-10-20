@@ -29,9 +29,9 @@ def up(creature, text):
     up = creature.position.copy()
     up.z -= 1
     try:
-            creature.teleport(up)
+        creature.teleport(up)
     except:
-            creature.notPossible()
+        creature.notPossible()
     return False
 
 @register("talkaction", '/down')
@@ -40,9 +40,9 @@ def down(creature, text):
     up = creature.position.copy()
     up.z += 1
     try:
-            creature.teleport(up)
+        creature.teleport(up)
     except:
-            creature.notPossible()
+        creature.notPossible()
     return False
 
 @register("talkactionFirstWord", 'set')
@@ -95,33 +95,6 @@ def speedsetter(creature, text):
     except:
         creature.lmessage("Invalid speed!")
     return False
-
-@register("talkactionFirstWord", 'i')
-@access("CREATEITEM")
-def makeitem(creature, text):
-    try:   
-        count = 1
-        if ' ' in text:
-            count = int(text.split(" ")[1])
-        text = int(text.split(" ")[0])
-        if text >= 1000:
-            while count:
-                rcount = min(100, count)
-                newitem = Item(text, rcount)
-                if newitem.pickable:
-                    creature.addItem(newitem)
-                else:
-                    newitem.place(creature.position)
-                count -= rcount
-        else:
-            raise
-    except:
-        creature.message("Invalid Item!")
-         
-    return False
-
-
-
 
 # Reimport tester
 @register("talkaction", 'reload')
@@ -177,20 +150,6 @@ def npcSpawn(creature, text):
         creature.lmessage("NPC named '%s' can't be spawned!" % text)
     return False
     
-
-@register("talkaction", 'saveme')
-@access("SAVEME")
-def saveMe(creature, text):
-    creature.save()
-    return False
-    
-
-@register("talkaction", 'saveall')
-@access("SAVEALL")
-def saveAll(creature, text):
-    engine.saveAll()
-    return False
-
 @register('talkactionFirstWord', 'depot')
 @access("SPAWN")
 def spawnDepot(creature, text):
