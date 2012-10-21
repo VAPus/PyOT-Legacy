@@ -186,3 +186,21 @@ class TestMoveItem(FrameworkTestGame):
 
         # Move to bag.
         self.assertFalse(moveItem(self.player, Position(0xFFFF, bag.openIndex+64, 0), Position(0xFFFF, SLOT_BACKPACK+1, 0))) 
+
+    def test_dual_handed(self):
+        # Make a dual handed sword
+        item = Item(7449)
+
+        self.assertEqual(item.slotType, "two-handed")
+
+        # Place it.
+        self.player.itemToInventory(item, SLOT_RIGHT)
+
+        # Make a shield
+        item = Item(2509)
+        
+        # Place it.
+        item.place(self.player.position)
+
+        # Move it. Shouldn't work.
+        self.assertFalse(moveItem(self.player, item.position, Position(0xFFFF, SLOT_LEFT-1, 0)))

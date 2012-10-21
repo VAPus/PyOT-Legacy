@@ -833,7 +833,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 player.notPossible()
                 return False
-        
+
+    if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and self.player.inventory[SLOT_RIGHT] and self.player.inventory[SLOT_RIGHT].slotType == "two-handed":
+        player.notPossible()
+        return False
+
+    elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and self.player.inventory[SLOT_LEFT]:
+        player.notPossible()
+        return False
+
     if toPosition.x == 0xFFFF and player.freeCapasity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
         return False
