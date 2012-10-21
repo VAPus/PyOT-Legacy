@@ -3,7 +3,7 @@ import base
 
 provide = [950]
 
-def vertify(): return True
+def verify(): return True
 
 
 class Packet(base.BasePacket):

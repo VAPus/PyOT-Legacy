@@ -39,14 +39,14 @@ def container(creature, thing, position, index, **k):
 
         # Opened from ground, close it on next step :)
         if ok and position.x != 0xFFFF:
-            def _vertifyClose(who):
+            def _verifyClose(who):
                 if thing.openIndex != None:
                     if not who.inRange(position, 1, 1):
                         who.closeContainer(thing)
                     else:
-                        who.scripts["onNextStep"].append(_vertifyClose)
+                        who.scripts["onNextStep"].append(_verifyClose)
                     
-            creature.scripts["onNextStep"].insert(0, _vertifyClose)
+            creature.scripts["onNextStep"].insert(0, _verifyClose)
     else:
         creature.closeContainer(thing)
 

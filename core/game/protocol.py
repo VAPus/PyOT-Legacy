@@ -24,7 +24,7 @@ def loadProtocol(version):
     protocol = __import__('game.protocols.%d' % version, globals(), locals())
     protocol = sys.modules['game.protocols.%d' % version]
             
-    protocol.vertify()
+    protocol.verify()
     protocolsUsed[version] = protocol.Protocol()
     for x in protocol.provide:
         protocolsUsed[x] = protocolsUsed[version]

@@ -8,7 +8,7 @@ from struct import pack
 p860 = sys.modules["game.protocols.860"]
 provide = [871]
 
-def vertify(): return True
+def verify(): return True
 
 class Packet(base.BasePacket):
     maxOutfits = 25
@@ -172,8 +172,8 @@ class Packet(base.BasePacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.data["capasity"] - player.inventoryWeight) # TODO: Free Capasity
-        #self.uint32(player.data["capasity"] * 100) # TODO: Cap
+        self.uint32(player.data["capacity"] - player.inventoryWeight) # TODO: Free Capacity
+        #self.uint32(player.data["capacity"] * 100) # TODO: Cap
         self.uint64(player.data["experience"]) # TODO: Virtual cap? Experience
             
         if player.data["level"] > 0xFFFF:

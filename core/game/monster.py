@@ -354,8 +354,8 @@ class Monster(Creature):
         return True
         
         
-    def vertifyMove(self, tile):
-        """ This function vertify if the tile is walkable in a regular state (pathfinder etc)
+    def verifyMove(self, tile):
+        """ This function verify if the tile is walkable in a regular state (pathfinder etc)
             This function handle things like PZ.
         """
         

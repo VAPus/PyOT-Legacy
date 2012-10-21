@@ -3,7 +3,7 @@ import sys
 
 provide = []
 
-def vertify(): return True
+def verify(): return True
 
 class Packet(sys.modules["game.protocols.861"].Packet):
     maxKnownCreatures = 1300

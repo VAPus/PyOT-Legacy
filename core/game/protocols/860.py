@@ -9,7 +9,7 @@ from struct import pack
 
 provide = []
 
-def vertify():
+def verify():
     """if config.allowMounts:
         log.msg("Protocol 860 doesn't allow mounts")
         return False"""
@@ -150,8 +150,8 @@ class Packet(base.BasePacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.data["capasity"] - player.inventoryWeight) # TODO: Free Capasity
-        #self.uint32(player.data["capasity"] * 100) # TODO: Cap
+        self.uint32(player.data["capacity"] - player.inventoryWeight) # TODO: Free Capacity
+        #self.uint32(player.data["capacity"] * 100) # TODO: Cap
         if player.data["experience"] <= 0x7FFFFFFF:
             self.uint32(player.data["experience"]) # TODO: Virtual cap? Experience
         else:

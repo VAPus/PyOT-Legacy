@@ -11,7 +11,7 @@ class Vocation(object):
         self.soulticks = soulticks
         self.calcMaxHP = lambda x: x*5 + 145
         self.calcMaxMana = lambda x: x*5 - 5
-        self.calcMaxCapasity = lambda x: x*10 + 390
+        self.calcMaxCapacity = lambda x: x*10 + 390
         self.soul = 100
         self.mlevel = 3
         self.meleeSkill = 2
@@ -29,11 +29,11 @@ class Vocation(object):
     def manaFormula(self, formula):
         self.calcMaxMana = formula   
         
-    def maxCapasity(self, x):
-        return self.calcMaxCapasity(x)
+    def maxCapacity(self, x):
+        return self.calcMaxCapacity(x)
         
-    def capasityFormula(self, formula):
-        self.calcMaxCapasity = formula   
+    def capacityFormula(self, formula):
+        self.calcMaxCapacity = formula   
 
     def maxSoul(self, soul):
         self.soul = soul

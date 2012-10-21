@@ -662,7 +662,7 @@ def register(type, *argc):
         # Step 1, check if it has **f
         hasKeyword = bool(iargs[2])
         
-        # Step 2, vertify parameters
+        # Step 2, verify parameters
         if object.parameters and not hasKeyword:
             if len(object.parameters) > 4:
                 raise InvalidScriptFunctionArgument("Function lakes the **k argument")
@@ -698,7 +698,7 @@ def registerFirst(type, *argc):
         # Step 1, check if it has **f
         hasKeyword = bool(iargs[2])
         
-        # Step 2, vertify parameters
+        # Step 2, verify parameters
         if object.parameters and not hasKeyword:
             if len(object.parameters) > 4:
                 raise InvalidScriptFunctionArgument("Function lakes the **k argument")
