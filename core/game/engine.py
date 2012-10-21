@@ -852,24 +852,26 @@ def moveItem(player, fromPosition, toPosition, count=0):
         return False
     
     # Special case when both items are the same and stackable.
+    stacked = False
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
         _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
-        if not _newItem:
+        if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
             player.modifyItem(destItem, newCount)
             player.modifyItem(thing, -count)
             return True
-        else:
+        elif isinstance(_newItem, Item):
             newItem = _newItem
+            stacked = True
         
     # remove from fromPosition.
-    elif count and thing.stackable:
+    if not stacked and count and thing.stackable:
         newItem = thing.copy()
         newItem.count = count
         
         player.modifyItem(thing, -count)
         
-    else:
+    elif not stacked:
         newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:

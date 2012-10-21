@@ -1226,6 +1226,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for bag in bags:
                 for itemX in container.container:
                     if itemX.itemId == item.itemId and itemX.count < 100:
+                        _newItem = game.scriptsystem.get("stack").runSync(item, self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
+                        if _newItem == False:
+                            return self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
+                        elif isinstance(_newItem, Item):
+                            self.itemToContainer(container, _newItem)
+                            continue
+
                         total = itemX.count + count
                         Tcount = min(total, 100)
                         count = total - Tcount
