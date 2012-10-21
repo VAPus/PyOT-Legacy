@@ -48,7 +48,7 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
 serverStart = time.time() - config.tibiaTimeOffset
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem"]
 
 # Just a inner funny call
 def looper(function, time):
