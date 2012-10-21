@@ -67,7 +67,7 @@ class Client(proto_helpers.StringTransport):
             data = pack("<H", len(packet.data))+packet.data
         else:
             data = packet.data
-        self.client._packet = packet
+        self.client._packets.append(packet)
         self.client._data = pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data
         if kwargs:
             return p.TibiaPacketReader(packet.data)
@@ -77,8 +77,8 @@ class Client(proto_helpers.StringTransport):
     def write(self, data):
         # From server. Never use directly on the test side!
         self._data = data
-        self._packet = packet.TibiaPacketReader(data)
-        self._packet.pos += 8
+        self._packets.append(packet.TibiaPacketReader(data))
+        self._packets[-1].pos += 8
         
         proto_helpers.StringTransport.write(self, data)
         
@@ -100,7 +100,9 @@ class FrameworkTest(unittest.TestCase):
     
     def initializeClient(self):
         self.tr = Client()
+        self.tr._packets = []
         self.client = self.server.buildProtocol(self.tr)
+        self.client._packets = []
         self.tr.client = self.client
         self.client.makeConnection(self.tr)
     
