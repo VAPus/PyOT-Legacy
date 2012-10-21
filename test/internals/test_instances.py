@@ -17,7 +17,7 @@ class TestInstances(FrameworkTestGame):
         
         self.assertIn(instanceId, game.map.knownMap)
         
-    def test_cansee(self):
+    def test_can_notsee(self):
         # Make a item
         item  = Item(7449)
         
@@ -29,7 +29,7 @@ class TestInstances(FrameworkTestGame):
         
         self.assertFalse(self.player.canSee(position))
         
-    def test_cansee_reverse(self):
+    def test_can_notsee_reverse(self):
         # Make a item
         item  = Item(7449)
         
@@ -41,3 +41,17 @@ class TestInstances(FrameworkTestGame):
         
         self.player.setInstance(instanceId)
         self.assertFalse(self.player.canSee(position))
+        
+    def test_cansee(self):
+        # Make a item
+        item  = Item(7449)
+        
+        # Place on a instance.
+        instanceId = game.map.newInstance()
+        position = Position(1000,1001,7,instanceId)
+        
+        item.place(position)
+        
+        self.player.setInstance(instanceId)
+        
+        self.assertTrue(self.player.canSee(position))
