@@ -130,7 +130,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
             # Check if there is a username (and a password)
             username = packet.string()
-            characterName = packet.string()
+
+            # Some weird thing with 9.7.
+            try:
+                characterName = packet.string()
+            except:
+                self.exitWithError("Try again.")
+                return
+
             password = packet.string()
 
             if (not username and not config.anyAccountWillDo) or not characterName:
