@@ -121,19 +121,17 @@ class CreatureMovement(object):
 
     def turnAgainst(self, position):
         # First north/south
-        margin = 0
         if position.y > self.position.y:
-            direction = 2
-            margin = position.y - self.position.y
+            direction = SOUTH
+            
         elif position.y < self.position.y:
-            direction = 0
-            margin = self.position.y - position.y
+            direction = NORTH
+            
+        if position.x > self.position.x:
+            direction = EAST
 
-        if position.x > self.position.x and (position.x - self.position.x > margin):
-            direction = 1
-
-        elif position.x < self.position.x and (self.position.x - position.x > margin):
-            direction = 3
+        elif position.x < self.position.x:
+            direction = WEST
 
         return self.turn(direction)
     

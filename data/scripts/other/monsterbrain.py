@@ -84,6 +84,9 @@ def defaultBrainFeaturePriority(monster):
                         if not summon.alive:
                             monster.activeSummons.remove(summon)"""
 
+                # Turn against our target.
+                monster.turnAgainst(monster.target.position)
+
                 # Attack attacks
                 for id, spell in enumerate(monster.base.spellAttacks):
                     key = "a%d"%id
