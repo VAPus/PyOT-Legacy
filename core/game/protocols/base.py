@@ -877,8 +877,8 @@ class BaseProtocol(object):
                     scount = 0
                     player.walkPattern = deque(walkPattern)
                     game.engine.autoWalkCreature(player, lambda: walking.pop())
-                    while walking and scount < 20:
-                        yield sleep(0.5)
+                    while walking and scount < 100:
+                        yield sleep(0.1)
                         scount += 1
 
                     # Vertify, we might have been stopped on the run
@@ -896,13 +896,14 @@ class BaseProtocol(object):
             if not player.canSee(toPosition):
                 return
             
-            if game.map.getTile(toPosition).creatures():
+            if toPosition.getTile().topCreature():
                 player.notEnoughRoom()
                 return
                 
             creature = game.map.getTile(fromPosition).getThing(fromStackPos)
-            
-            if not creature or not creature.isPushable(player):
+            if not creature or not isinstance(creature, Creature):
+                return
+            if not creature.isPushable(player):
                 player.message("Creature can't be pushed")
                 return
                 
@@ -1045,8 +1046,8 @@ class BaseProtocol(object):
                 scount = 0
                 player.walkPattern = deque(walkPattern)
                 game.engine.autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 20:
-                    yield sleep(0.5)
+                while walking and scount < 100:
+                    yield sleep(0.1)
                     scount += 1
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
@@ -1111,8 +1112,8 @@ class BaseProtocol(object):
                 scount = 0
                 player.walkPattern = deque(walkPattern)
                 game.engine.autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 20:
-                    yield sleep(0.5)
+                while walking and scount < 100:
+                    yield sleep(0.1)
                     scount += 1
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
@@ -1434,8 +1435,8 @@ class BaseProtocol(object):
                 scount = 0
                 player.walkPattern = deque(walkPattern)
                 game.engine.autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 20:
-                    yield sleep(0.5)
+                while walking and scount < 100:
+                    yield sleep(0.1)
                     scount += 1
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
