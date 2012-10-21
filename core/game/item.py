@@ -703,7 +703,11 @@ class Item(object):
     def move(self, newPosition):
         if self.position.x != 0xFFFF and newPosition.x != 0xFFFF:
             # HACK. Find a player.
-            player = game.player.allPlayersObject[0]
+            player = None
+            for p in game.player.allPlayersObject:
+                player = p
+                break
+
             moveItem(player, self.position, newPosition)
         elif not self.creature:
             raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")

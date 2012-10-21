@@ -16,6 +16,19 @@ class TestInstances(FrameworkTestGame):
         Position(1000,1000,7, instanceId).getTile() # Loads.
         
         self.assertIn(instanceId, game.map.knownMap)
+    
+    def test_item_on_instance(self):
+        # Make a item
+        item  = Item(7449)
+        
+        # Place on a instance.
+        instanceId = game.map.newInstance()
+        position = Position(1000,1001,7,instanceId)
+        
+        item.place(position)
+        
+        self.assertIn(item, position.getTile().things)
+        self.assertNotIn(item, Position(1000, 1001, 7).getTile().things)
         
     def test_can_notsee(self):
         # Make a item
@@ -55,3 +68,25 @@ class TestInstances(FrameworkTestGame):
         self.player.setInstance(instanceId)
         
         self.assertTrue(self.player.canSee(position))
+        
+    def test_move_across_instances(self):
+        # Make a item
+        item  = Item(7449)
+        
+        # Place on a instance.
+        instanceId = game.map.newInstance()
+        position = Position(1000,1001,7)
+        iPosition = Position(1000,1001,7,instanceId)
+        
+        item.place(position)
+        
+        self.player.setInstance(instanceId)
+        
+        self.assertFalse(self.player.canSee(position))
+        
+        item.move(iPosition)
+        
+        self.assertTrue(self.player.canSee(iPosition))
+        
+        self.assertIn(item, iPosition.getTile().things)
+        self.assertNotIn(item, position.getTile().things)
