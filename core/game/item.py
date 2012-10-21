@@ -144,7 +144,7 @@ class Item(object):
         return pos            
         
     def actionIds(self):
-        return self.actions or []
+        return self.actions or ['item']
     
     def hasAction(self, name):
         if name == "item":
