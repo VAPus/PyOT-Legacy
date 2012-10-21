@@ -810,7 +810,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         # Teleport to the same position within instance
         newPosition = self.position.copy()
         newPosition.instanceId = instanceId
-        self.teleport(instanceId)
+        self.teleport(newPosition)
 
     ###################
     ### Walkability ###

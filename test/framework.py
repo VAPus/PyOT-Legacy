@@ -202,6 +202,16 @@ class FrameworkTestGame(FrameworkTest):
         for thing in tile.things[:]:
             if isinstance(thing, Item) and not thing.fromMap:
                 tile.removeItem(thing)
+                
+        # Clear instances.
+        for instance in game.map.instances.copy():
+            if instance != None:
+                del game.map.instances[instance]
+                # Might not be set if we never load anything.
+                try:
+                    del game.map.knownMap[instance]
+                except:
+                    pass
 
     def virtualPlayer(self, id, name):
         # Setup a virtual player.
