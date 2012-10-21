@@ -175,10 +175,14 @@ class BasePacket(TibiaPacket):
                     
                     self.creature(creature, known, removeKnown, player)
                 else:
-                    if player.client.version >= 953:
-                        self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
+                    # Bugged?
+                    if creature.creatureType != 0 and creature.brainEvent:
+	                if player.client.version >= 953:
+                            self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
+                        else:
+                            self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
                     else:
-                        self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+                        self.creature(creature, True, creature.cid, player) # Not optimal!
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.beginThink(creature, False)
                     
@@ -241,7 +245,6 @@ class BasePacket(TibiaPacket):
         self.uint8(creature.lightColor) # Light
         self.uint16(int(creature.speed)) # Speed
         self.uint8(creature.getSkull(player)) # Skull
-        print creature, creature.getShield(player)
         self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
             self.uint8(creature.getEmblem(player)) # Emblem

@@ -49,11 +49,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
         IN_TEST = False
+
         if packetType == 0xFF:
             # Special case for tests.
             IN_TEST = True
             
-        if packetType and not self.ready:
+        if packetType == 0x0A and not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
             version = packet.uint16() # Version int
