@@ -285,6 +285,8 @@ class Monster(Creature):
         if not targets:
             targets = engine.getPlayers(self.position) # Get all creaturse in range
             if not targets:
+                self.target = None
+                self.targetMode = 0
                 return
                 
         target = None
@@ -294,7 +296,7 @@ class Monster(Creature):
             # Can we target him, same floor
             if player.isAttackable(self) and self.canTarget(player.position):
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
-                if not path: continue
+                if not path and self.distanceStepsTo(player.position) > 1: continue
                 # Calc x+y distance, diagonal is honored too.
                 dist = len(path) 
                 if dist < bestDist:
