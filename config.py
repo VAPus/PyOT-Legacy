@@ -6,8 +6,10 @@ loginPort = 7171
 gameInterface = '' # Leave blank to accept connections on any hostname
 gamePort = 7172
 
+enableExtensionProtocol = True # Only works if loginserver and gameserver run on the same IP.
+
 # Server ips, for the loginserver
-servers = {0 : ('127.0.0.1', "PyOT dev server")} # WORLD_ID -> (ip, name)
+servers = {0 : ('188.40.110.66', "PyOT dev server")} # WORLD_ID -> (ip, name)
 
 # IPs allowed to use the execute protocol (usually things like web servers). ONLY trusted hosts, they can remove system files from this!
 executeProtocolIps = ('127.0.0.1',)

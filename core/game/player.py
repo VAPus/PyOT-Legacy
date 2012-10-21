@@ -32,6 +32,9 @@ except:
 allPlayers = {}
 allPlayersObject = allPlayers.viewvalues() # Quick speedup
 
+if config.enableExtensionProtocol:
+    from service.extserver import IPS as MEDIA_IPS
+    
 class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def __init__(self, client, data):
         # XXX: Hack.
@@ -2460,3 +2463,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         
     def modifyBalance(self, modBalance):
         self.data["balance"] += modBalance
+        
+    def media(self):
+        if not config.enableExtensionProtocol:
+            raise Exception("ExtensionPorotocol is not enabled")
+            
+        ip = self.getIP()
+        if ip in MEDIA_IPS:
+            return MEDIA_IPS[ip]
+        else:
+            return None

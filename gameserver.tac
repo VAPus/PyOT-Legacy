@@ -77,7 +77,12 @@ if config.letGameServerRunTheLoginServer:
     tcpService = internet.TCPServer(config.loginPort, loginFactory, interface=config.loginInterface)
     tcpService.setServiceParent(topService)
 
-
+# (optional) built in extension server.
+if config.enableExtensionProtocol:
+    from service.extserver import ExtFactory
+    extFactory = ExtFactory()
+    tcpService = internet.TCPServer(config.loginPort + 10000, extFactory, interface=config.loginInterface)
+    tcpService.setServiceParent(topService)
 
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't

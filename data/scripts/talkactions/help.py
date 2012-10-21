@@ -430,3 +430,12 @@ def newInventory(creature, **k):
     
     creature.refreshInventory()
     return False
+
+@register("talkaction", "pm")
+@access("DEVELOPER")
+def playTest(creature, **k):
+    media = creature.media()
+
+    media.play('data/music/test.wav')
+    creature.say("Takes a while, uncompressed wav!")
+    return False
