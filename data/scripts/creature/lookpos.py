@@ -11,10 +11,9 @@ def givePosition(creature, thing, **pos):
 @register('talkaction', '/showpos')
 @access("KICK")
 def showToggle(creature, text):
-	active = creature.getStorage("showpos")
 	show = 'enabled'
 
-	if active == 'enabled':
+	if creature.getStorage("showpos") == 'enabled':
 		show = 'disabled'
 	
 	creature.setStorage("showpos", show)

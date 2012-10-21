@@ -139,73 +139,72 @@ class Monster(Creature):
                 
             # Callback to remove owner after config.privateLootFor seconds
             callLater(config.privateLootFor, _clear_private_loot)
-            
             if self.lastDamagers[0] != self.master:
-                try:
-                    maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
-                    drops = []
-                    for loot in self.base.lootTable:
-                        if config.lootDropRate*loot[1]*100 > random.randint(0, 10000):
-                            if len(drops)+1 == maxSize:
-                                if config.stockLootInBagsIfNeeded:
-                                    drops.insert(0, (config.stockLootBagId, None))
-                                    maxSize += item.items[config.stockLootBagId]["containerSize"]
-                                else:
-                                    drops.append(loot)
-                                    break
-                            else:        
-                                drops.append(loot)
-                                
-                        elif len(loot) == 4:
-                            drops.append((loot[0], None, loot[4]))
-                            
-                    ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
-                    if type(ret) == list:
-                        drops = ret
+				maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+				drops = []
+				for loot in self.base.lootTable:
+					if config.lootDropRate*loot[1]*100 > random.randint(0, 10000): # [7363, 28.5, 4]
+						if len(drops)+1 == maxSize:
+							if config.stockLootInBagsIfNeeded:
+								drops.insert(0, (config.stockLootBagId, None))
+								maxSize += item.items[config.stockLootBagId]["containerSize"]
+							else:
+								drops.append(loot)
+								print drops
+								break
+						else:        
+							drops.append(loot)
+							
+					elif len(loot) == 4:
+						drops.append((loot[0], None, loot[4]))
+				print drops     
+				ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
+				if type(ret) == list:
+					drops = ret
 
-                    for loot in drops:
-                        lenLoot = len(loot)
-                        ret = 0
-                        if lenLoot == 2:
-                            ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
-                            lootMsg.append(ritem.name())
-                            ret = corpse.placeItemRecursive(ritem)
-                                
-                        elif lenLoot == 3:
-                            count = random.randint(1, loot[2]) * config.lootMaxRate
-                            if count > 100:
-                                while count:
-                                    depCount = min(count, 100)
-                                    ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                                    lootMsg.append(ritem.name())
-                                    ret = corpse.placeItemRecursive(ritem)
-                                    count -= depCount
-                            else:
-                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                                lootMsg.append(ritem.name())
-                                ret = corpse.placeItemRecursive(ritem)
-                                    
-                        elif lenLoot == 4:
-                            count = random.randint(loot[4], loot[2]) * config.lootMaxRate
-                            if count > 100:
-                                while count:
-                                    depCount = min(count, 100)
-                                    ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
-                                    lootMsg.append(ritem.name())
-                                    ret = corpse.placeItemRecursive(ritem)
-                                    count -= depCount
-                                        
-                            else:
-                                ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
-                                lootMsg.append(ritem.name())
-                                ret = corpse.placeItemRecursive(ritem)
-                                    
+				for loot in drops:
 
-                        if ret == None:
-                            log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
-                            break
-                except:
-                    pass
+					lenLoot = len(loot)
+					ret = 0
+					if lenLoot == 2:
+						ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
+						lootMsg.append(ritem.name)
+						ret = corpse.placeItemRecursive(ritem)
+							
+					elif lenLoot == 3:
+						count = random.randint(1, loot[2]) * config.lootMaxRate
+						if count > 100:
+							while count:
+								depCount = min(count, 100)
+								ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+								lootMsg.append(ritem.name())
+								ret = corpse.placeItemRecursive(ritem)
+								count -= depCount
+						else:
+							ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+							lootMsg.append(ritem.name())
+							ret = corpse.placeItemRecursive(ritem)
+								
+					elif lenLoot == 4:
+						count = random.randint(loot[4], loot[2]) * config.lootMaxRate
+						if count > 100:
+							while count:
+								depCount = min(count, 100)
+								ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
+								lootMsg.append(ritem.name())
+								ret = corpse.placeItemRecursive(ritem)
+								count -= depCount
+									
+						else:
+							ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
+							lootMsg.append(ritem.name())
+							ret = corpse.placeItemRecursive(ritem)
+								
+
+					if ret == None:
+						log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
+						break
+
         else:
             corpse = None
             
