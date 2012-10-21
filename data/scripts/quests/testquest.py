@@ -39,20 +39,20 @@ def letsRoll(creature, **k):
 
 @register("lookAt", "creature")
 def annoyingQuest(creature, thing, **k):
-	p = creature # Just to shorten things up
-	if not p.questStarted(q) or p.questCompleted(q):
+	player = creature # more natural?
+	if not player.questStarted(q) or player.questCompleted(q):
 		return True
 	
-	if p == thing and p.questProgress(q) == 0:
-		p.say("I've just looked at myself. Mission accomplished!")
-		p.progressQuest(q)	# sets the mission as 'completed'
-		p.progressQuestMission(q)	# advances to next mission
-	elif thing.name() == "Wolf" and p.questProgress(q) == 1:
-		p.say("I did it! I can do anything!")
-		p.progressQuest(q)
-		p.progressQuestMission(q)
-	elif thing.name() == "Scorpion" and p.questProgress(q) == 2:
-		p.say("A hero like me is always there to save the day!")
-		p.progressQuest(q)
-		p.finishQuest(q)
+	if player == thing and player.questProgress(q) == 0:
+		player.say("I've just looked at myself. Mission accomplished!")
+		player.progressQuest(q)	# sets the mission as 'completed'
+		player.progressQuestMission(q)	# advances to next mission
+	elif thing.name() == "Wolf" and player.questProgress(q) == 1:
+		player.say("I did it! I can do anything!")
+		player.progressQuest(q)
+		player.progressQuestMission(q)
+	elif thing.name() == "Scorpion" and player.questProgress(q) == 2:
+		player.say("A hero like me is always there to save the day!")
+		player.progressQuest(q)
+		player.finishQuest(q)
 	return True

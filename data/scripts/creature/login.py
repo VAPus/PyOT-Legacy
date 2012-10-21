@@ -11,5 +11,4 @@ def onLogin(creature):
 	# ... and we can keep checking for flags of priviledged users.
 	if creature.hasGroupFlag("SPEED"):
 		creature.setSpeed(1500)
-		print "User (%s) with \"SPEED\" access logged in, accelerating.." % creature.name()
 	return True
