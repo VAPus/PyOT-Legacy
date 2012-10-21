@@ -384,8 +384,8 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
         self.uint16(player.data["healthmax"])
-        self.uint32(player.freeCapasity())
-        self.uint32(player.data["capasity"] * 100)
+        self.uint32(player.freeCapacity())
+        self.uint32(player.data["capacity"] * 100)
         self.uint64(player.data["experience"])
         if player.data["level"] > 0xFFFF:
             self.uint16(0xFFFF)
@@ -1159,10 +1159,10 @@ class BaseProtocol(object):
         clientId = packet.uint16()
         count = packet.uint8()
         amount = packet.uint8()
-        ignoreCapasity = packet.uint8()
+        ignoreCapacity = packet.uint8()
         withBackpack = packet.uint8()
         
-        player.openTrade.buy(player, sid(clientId), count, amount, ignoreCapasity, withBackpack)
+        player.openTrade.buy(player, sid(clientId), count, amount, ignoreCapacity, withBackpack)
         
     def handlePlayerSale(self, player, packet):
         from game.item import sid

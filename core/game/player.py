@@ -408,8 +408,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def getVocationId(self):
         return self.data["vocation"]
 
-    def freeCapasity(self):
-        return max(self.data["capasity"] - self.inventoryWeight, 0)
+    def freeCapacity(self):
+        return max(self.data["capacity"] - self.inventoryWeight, 0)
 
     def findItem(self, position, sid=None):
         # Option 1, from the map:
@@ -666,7 +666,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
                 self.data["healthmax"] = vocation.maxHP(level)
                 self.data["manamax"] = vocation.maxMana(level)
-                self.data["capasity"] = vocation.maxCapasity(level) * 100
+                self.data["capacity"] = vocation.maxCapacity(level) * 100
 
                 if self.data["manamax"] < config.minMana:
                     self.data["manamax"] = config.minMana
@@ -1260,7 +1260,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if count:
             # Add item
-            if self.freeCapasity() - ((item.weight or 0) * (item.count or 1)) < 0:
+            if self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0:
                 self.tooHeavy()
                 return False
 
@@ -2424,7 +2424,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
             
             if self.skullTimeout and not self._checkSkulls:
-                self._checkSkulls = callLater(self.skullTimeout - time.time(), self.vertifySkulls)
+                self._checkSkulls = callLater(self.skullTimeout - time.time(), self.verifySkulls)
                 
         return self.skull
     

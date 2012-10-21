@@ -842,7 +842,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.notPossible()
         return False
 
-    if toPosition.x == 0xFFFF and player.freeCapasity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
+    if toPosition.x == 0xFFFF and player.freeCapacity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
         return False
     

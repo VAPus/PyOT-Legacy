@@ -171,7 +171,7 @@ def teleportOrWalkDirectionDown(creature, thing, position, **k):
     
 if not config.monsterStairHops:
     @register("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp)
-    def vertifyRampWalk(creature, **k):
+    def verifyRampWalk(creature, **k):
         # Check if we can walk on ramps
         if not creature.isPlayer():
             return False

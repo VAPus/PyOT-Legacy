@@ -128,7 +128,7 @@ class NPC(Creature):
         if not streamX:    
             stream.send(to.client) 
         
-    def buy(self, player, itemId, subtype, amount, ignoreCapasity=True, withBackpack=False):
+    def buy(self, player, itemId, subtype, amount, ignoreCapacity=True, withBackpack=False):
         
         for offer in self.base.offers:
             if offer[0] == itemId and offer[3] == subtype:

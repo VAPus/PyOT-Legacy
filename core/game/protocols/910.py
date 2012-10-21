@@ -3,7 +3,7 @@ import base
 
 provide = []
 
-def vertify(): return True
+def verify(): return True
 
 class Packet(base.BasePacket): pass
 class Protocol(base.BaseProtocol): pass

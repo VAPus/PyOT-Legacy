@@ -137,8 +137,8 @@ class CreatureMovement(object):
 
         return self.turn(direction)
     
-    def vertifyMove(self, tile):
-        """ This function vertify if the tile is walkable in a regular state (pathfinder etc) """
+    def verifyMove(self, tile):
+        """ This function verify if the tile is walkable in a regular state (pathfinder etc) """
         return True
 
     def clearMove(self, direction, failback):

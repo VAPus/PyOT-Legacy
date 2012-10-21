@@ -556,7 +556,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         return self.emblem
     
     # Skulls
-    def vertifySkulls(self):
+    def verifySkulls(self):
         _time = time.time()
         if config.resetSkulls:
             """# TODO, something for red and black too.
@@ -580,9 +580,9 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                 stream.send(creature.client)
                 
         if self.trackSkulls:
-            self._checkSkulls = callLater(5, self.vertifySkulls)
+            self._checkSkulls = callLater(5, self.verifySkulls)
         elif self.skull:
-            self._checkSkulls = callLater(self.skullTimeout - _time, self.vertifySkulls)
+            self._checkSkulls = callLater(self.skullTimeout - _time, self.verifySkulls)
         else:
             self._checkSkulls = None
             
@@ -621,7 +621,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             stream.send(creature.client)
             
         if not self._checkSkulls:
-            self._checkSkulls = callLater(0, self.vertifySkulls)
+            self._checkSkulls = callLater(0, self.verifySkulls)
             
     def getSkull(self, creature=None):
         return self.skull # TODO

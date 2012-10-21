@@ -553,7 +553,7 @@ class Item(object):
 
     # Attribute writer function. Needs to be a function so it can call itself in case of a list.
     def writeAttribute(self, name, value):
-        # Only toplevel attributes got a name, since we're called from a list too, we need to vertify this one.
+        # Only toplevel attributes got a name, since we're called from a list too, we need to verify this one.
         if name != None:
             string = chr(name)
         else:

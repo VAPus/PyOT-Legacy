@@ -606,7 +606,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         skip = True
                         skip_remaining = True
                         break
-                    # otherwise it should be ",", we don't need to vertify this.
+                    # otherwise it should be ",", we don't need to verify this.
                 if items:
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:

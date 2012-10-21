@@ -235,7 +235,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             # Call the login script
             game.scriptsystem.get("login").runSync(self.player)
             
-            # If we got a waiting list, now is a good time to vertify the list
+            # If we got a waiting list, now is a good time to verify the list
             if lastChecks:
                 checkTime = time.time()
                 for entry in lastChecks:
