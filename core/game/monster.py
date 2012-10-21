@@ -300,14 +300,15 @@ class Monster(Creature):
             # Can we target him, same floor
             if player.isAttackable(self) and self.canTarget(player.position):
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
-                if not path and self.distanceStepsTo(player.position) > 1: continue
+                print self, path
+                if not path and self.distanceStepsTo(player.position) > 0: continue
                 # Calc x+y distance, diagonal is honored too.
                 dist = len(path) 
                 if dist < bestDist:
                     # If it's smaller then the previous value
                     bestDist = dist
                     target = player
-                    
+        
         if _target == target:
             return # We already have this target
         elif target:
