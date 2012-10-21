@@ -750,8 +750,8 @@ class Item(object):
                 pass
 
             del bag.container[position.z]
-            index = position.y
-            if index == DYNAMIC_CONTAINER:
+            index = position.y-64
+            if index == DYNAMIC_CONTAINER-64:
                 index = bag.openIndex
             if index != None and index < DYNAMIC_CONTAINER:
                 with creature.packet() as stream:

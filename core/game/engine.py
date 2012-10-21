@@ -767,7 +767,7 @@ def loadPlayerById(playerId):
 def moveItem(player, fromPosition, toPosition, count=0):
     if fromPosition == toPosition:
         return True
-    print "Move item"
+
     # TODO, script events.
     
     # Analyse a little.
@@ -834,11 +834,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 player.notPossible()
                 return False
 
-    if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and self.player.inventory[SLOT_RIGHT] and self.player.inventory[SLOT_RIGHT].slotType == "two-handed":
+    if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and player.inventory[SLOT_RIGHT] and player.inventory[SLOT_RIGHT].slotType == "two-handed":
         player.notPossible()
         return False
 
-    elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and self.player.inventory[SLOT_LEFT]:
+    elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and player.inventory[SLOT_LEFT]:
         player.notPossible()
         return False
 
@@ -853,7 +853,6 @@ def moveItem(player, fromPosition, toPosition, count=0):
     
     # Special case when both items are the same and stackable.
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        print "This path"
         _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if not _newItem:
             newCount = min(100, destItem.count + count) - destItem.count
@@ -915,11 +914,14 @@ def moveItem(player, fromPosition, toPosition, count=0):
     
         else:
             # Move destItem.
-            if thing.inContainer:
+            if thing.inContainer and thing.inContainer != destItem:
                 player.itemToContainer(thing.inContainer, destItem)
+            elif player.inventory[SLOT_BACKPACK]:
+                if player.inventory[SLOT_BACKPACK] != destItem:
+                    player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
             else:
-                player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
-    
+                print "XXX: In case of bug, do something here?"
+
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
     
