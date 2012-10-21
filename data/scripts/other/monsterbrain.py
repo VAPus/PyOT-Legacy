@@ -156,7 +156,7 @@ def defaultBrainFeature(monster):
                     engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-                    def __followCallback(who, direction):
+                    def __followCallback(who):
                         if monster.target == who:
                             # Steps below is the old way of doing it, slow and ugly!
                             """monster.stopAction()
@@ -196,7 +196,7 @@ def defaultBrainFeature(monster):
                 engine.autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
-                def __followCallback(who, direction):
+                def __followCallback(who):
                     if monster.target == who:
                         # Steps below is the old way of doing it, slow and ugly!
                         """monster.stopAction()

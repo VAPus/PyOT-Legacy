@@ -144,6 +144,7 @@ class Tile(object):
             self._modpack(PACK_FLAGS, -flag)
             
     def placeCreature(self, creature):
+        assert isinstance(creature, Creature)
         pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
         self.things.insert(pos, creature)
         self._modpack(PACK_CREATURES, 1)
@@ -154,10 +155,12 @@ class Tile(object):
         return pos
         
     def removeCreature(self,creature):
+        assert isinstance(creature, Creature)
         self.things.remove(creature)
         self._modpack(PACK_CREATURES, -1)
         
     def placeItem(self, item):
+        assert isinstance(item, Item)
         if item.ontop:
             pos = self._depack(PACK_ITEMS)
             self._modpack(PACK_ITEMS, 1)
@@ -188,9 +191,12 @@ class Tile(object):
             try:
                 yield self.things[n]
             except:
-                print "XXX: Hack applied"
-                self._modpack(PACK_ITEMS, -1)
-                return
+                if n > self._depack(PACK_ITEMS)-1:
+                    print "XXX: Hack applied"
+                    self._modpack(PACK_ITEMS, -1)
+                    return
+                else:
+                    raise
             
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())

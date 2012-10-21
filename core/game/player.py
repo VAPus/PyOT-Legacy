@@ -860,14 +860,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if groupCooldown == None: groupCooldown = cooldown
 
         stream = self.packet()
-        stream.cooldownIcon(icon, cooldown)
-
-        stream.cooldownGroup(group, groupCooldown)
+        if cooldown > 0:
+            stream.cooldownIcon(icon, cooldown)
+        if groupCooldown > 0:
+            stream.cooldownGroup(group, groupCooldown)
 
         stream.send(self.client)
-        t = time.time()  + cooldown
-        self.cooldowns[icon] = t
-        self.cooldowns[group << 8] = t
+        t = time.time()
+        self.cooldowns[icon] = t + cooldown
+        self.cooldowns[group << 8] = t + groupCooldown
 
     def cooldownIcon(self, icon, cooldown):
         self.cooldowns[icon] = time.time() + cooldown

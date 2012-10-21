@@ -583,7 +583,7 @@ class BaseProtocol(object):
             
     def _handle(self, player, packet):
         packetType = packet.uint8()
-
+        
         if packetType == 0x14: # Logout
             try:
                 if player.prepareLogout():
@@ -1084,6 +1084,7 @@ class BaseProtocol(object):
         
         if not onThing:
             return
+
         if not onThing.position:
             onThing.position = stackPosition2
             
@@ -1114,12 +1115,12 @@ class BaseProtocol(object):
                     yield sleep(0.5)
                     scount += 1
 
-            if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.inRange(onPosition, 1, 1)):
+            if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
                 end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
                 game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
-
+            
     def handleAttack(self, player, packet):
         # HACK?
         # If we're in protected zone
@@ -1409,6 +1410,11 @@ class BaseProtocol(object):
             else:
                 player.message("Using one of %d %s..." % (count, thing.rawName()))
         
+        if not thing: return
+
+        if not thing.position:
+            thing.position = stackPosition
+
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
                 walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
@@ -1433,7 +1439,7 @@ class BaseProtocol(object):
                     scount += 1
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition)
+                game.scriptsystem.get('useWith').runSync(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
 
         
     def handleInviteToParty(self, player, packet):

@@ -557,12 +557,23 @@ class Rune(Spell):
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def runeCallback(thing, creature, position, onPosition, onThing, strength=None, **k):
+            print "runeCallback"
             target = creature
             if self.targetType == TARGET_TARGET:
                 target = onThing
-                if not target:
-                    creature.onlyOnCreatures()
-                    return False
+                if not isinstance(target, Creature):
+                    if not isinstance(target, Creature):
+                        print onThing, onThing.position, onThing.position.getTile().getCreatureCount()
+                        try:
+                            target = onThing.position.getTile().topCreature()
+                            print target
+                        except:
+                            raise                    
+                    if not target:
+                        creature.onlyOnCreatures()
+                        return False
+
+            print target
                     
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
@@ -603,7 +614,7 @@ class Rune(Spell):
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                         
                 else:
-                    creature.modifyItem(thing, position, -self.count)  
+                    thing.modify(-self.count)  
                     
                     # Integrate mana seeker
                     try:

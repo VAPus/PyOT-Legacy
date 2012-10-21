@@ -295,6 +295,7 @@ def loader(timer):
     # Creature and Player class. Mainly for test and savings.
     __builtin__.Creature = game.creature.Creature
     __builtin__.Player = game.player.Player
+    __builtin__.Monster = game.monster.Monster
     
     class Globalizer(object):
         __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban')

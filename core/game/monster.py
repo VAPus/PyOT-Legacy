@@ -60,6 +60,10 @@ class Monster(Creature):
         self.master = creature
         self.respawn = False
 
+        # Reset target.
+        self.target = None
+        self.targetMode = 0
+
     def setRespawn(self, state):
         self.respawn = state
     
