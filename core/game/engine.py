@@ -801,6 +801,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
     # Hack.
     if fromPosition.x == 0xFFFF and not thing.creature:
         thing.creature = player
+
+    if not thing.position:
+        thing.position = fromPosition
         
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
