@@ -93,10 +93,10 @@ class Item(object):
         creature = self.creature
 
         if pos.x == 0xFFFF:
-            if not creature:
-                raise Exception("Cannot verify Position inside inventory when creature == None!")
+            if not creature and not self.inContainer:
+                raise Exception("Cannot verify Position inside inventory when creature == None and inContainer == None!")
             
-            if pos.y < 64:
+            if creature and pos.y < 64:
                 if creature.inventory[pos.y-1] == self:
                     return pos
                 elif creature.inventory[pos.y] == self:
@@ -107,9 +107,8 @@ class Item(object):
             else:
                 container = self.inContainer
                 if not container:
-                    print creature.openContainers
                     return False
-                else:
+                elif creature:
                     for con in creature.openContainers:
                         if creature.openContainers[con] == container:
                             pos.y = con+64
@@ -645,11 +644,13 @@ class Item(object):
     def placeItem(self, item):
         if len(self.container) < self.container.maxlen:
             self.container.appendleft(item)
+            item.inContainer = self
             return 0
 
     def placeItemRecursive(self, item):
         if len(self.container) < self.container.maxlen:
             self.container.appendleft(item)
+            item.inContainer = self
             return 0
         else:
             for itemX in self.container:
@@ -669,6 +670,9 @@ class Item(object):
         return weight
         
     def removeItem(self, item):
+        if item.inContainer == self:
+           del item.inContainer
+
         return self.container.remove(item)
         
     def getThing(self, pos):
@@ -758,10 +762,24 @@ class Item(object):
             if index == DYNAMIC_CONTAINER-64:
                 index = bag.openIndex
             if index != None and index < DYNAMIC_CONTAINER:
-                with creature.packet() as stream:
-                    stream.removeContainerItem(index, position.z)
-                    if update:
-                        creature.refreshStatus(stream)
+                if not creature:
+                    # Ground bag, possibly open by many.
+                    for creature in bag.openCreatures[:]:
+                        if creature.alive:
+                            with creature.packet() as stream:
+                                for containerId in creature.openContainers:
+                                    if creature.openContainers[containerId] == bag:
+                                        break
+                                stream.removeContainerItem(containerId, position.z)
+                                if update:
+                                    creature.refreshStatus(stream)
+                        else:
+                            self.openCreatures.remove(creature)
+                else:
+                    with creature.packet() as stream:
+                        stream.removeContainerItem(index, position.z)
+                        if update:
+                            creature.refreshStatus(stream)
         try:
             del thing.creature
         except:

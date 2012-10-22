@@ -1111,9 +1111,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return True
 
     def closeContainer(self, container):
+        if container.openCreatures:
+            container.openCreatures.remove(self)
+            if not container.openCreatures:
+                del container.openCreatures
+
         if container.openIndex == None:
             return False
-
+        
         def end():
             try:
                 stream = self.packet(0x6F)
