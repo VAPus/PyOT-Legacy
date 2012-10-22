@@ -468,9 +468,18 @@ class Item(object):
         params = self.__dict__.copy()
         
         try:
-            del params["position"]
             del params["creature"]
-            del params["inContainer"] # This only exists if inPlayer exists.
+        except:
+            pass
+
+        try:
+            del params["openCreatures"]
+        except:
+            pass
+
+        try:
+            del params["position"]
+            del params["inContainer"]
         except:
             pass
                     
@@ -607,35 +616,42 @@ class Item(object):
             # Option 3, the bags, if there is one ofcource
             else:
                 update = False
+                creatures = self.openCreatures
+                if not creatures:
+                    creatures = [creature] 
                 try:
                     bag = creature.openContainers[position.y - 64]
                 except:
-                    return
-                
-                try:
-                    creature.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container[position.z]
-                    if currItem:
-                        if creature.removeCache(currItem):
-                            update = True
+                    bag = self.inContainer
+
+              
+                for creature in creatures:
+                    try:
+                        creature.inventoryCache[bag.itemId].index(bag)
+                        if self.creature:
+                            currItem = bag.container[position.z]
+                            if currItem:
+                                if creature.removeCache(currItem):
+                                    update = True
                     
-                    ret = creature.addCache(self, bag)
-                    if ret == False:
-                        del bag.container[position.z]
-                    elif ret == True:    
-                        update = True
+                            ret = creature.addCache(self, bag)
+                            if ret == False:
+                                del bag.container[position.z]
+                            elif ret == True:    
+                                update = True
+                                bag.container[position.z] = self
+                    
+                        index = creature.openContainers.index(bag)    
+                        stream = creature.packet()
+                        stream.updateContainerItem(index, position.z, self)
+                        if update:
+                            creature.refreshStatus(stream)
+                        stream.send(creature.client)
+                    except:  
                         bag.container[position.z] = self
-                        
-                    stream = creature.packet()
-                    stream.updateContainerItem(position.y - 64, position.z, self)
-                    if update:
-                        creature.refreshStatus(stream)
-                    stream.send(creature.client)
-                except:  
-                    bag.container[position.z] = self
-                    stream = creature.packet()
-                    stream.updateContainerItem(position.y - 64, position.z, self)
-                    stream.send(creature.client)
+                        stream = creature.packet()
+                        stream.updateContainerItem(creature.openContainers.index(bag), position.z, self)
+                        stream.send(creature.client)
                     
     def __repr__(self):
         return "<Item (%s) at %s>" % (self.__dict__, hex(id(self)))

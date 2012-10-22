@@ -917,7 +917,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 
                 player.itemToContainer(container, newItem)
     
-        else:
+        elif not destItem.containerSize:
             # Move destItem.
             if thing.inContainer and thing.inContainer != destItem:
                 player.itemToContainer(thing.inContainer, destItem)
@@ -931,9 +931,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.closeContainer(thing)
     
     # Update everything. Lazy.
-    player.refreshInventory()
-    player.updateAllContainers()
-    player.refreshStatus()
+    #player.refreshInventory()
+    #player.updateAllContainers()
+    #player.refreshStatus()
     
     # Done.
     return True
