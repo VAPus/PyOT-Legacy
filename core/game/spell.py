@@ -505,8 +505,8 @@ class Spell(object):
                     if creatures:
                         targetGenerators.append(creatures)
                         
-                for generator in targetGenerator:
-                    for creature in generator:
+                for generator in targetGenerators:
+                    for targ in generator:
                         if self._targetEffect:
                             targ.magicEffect(self._targetEffect)
                         
