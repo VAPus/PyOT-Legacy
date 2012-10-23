@@ -810,7 +810,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
 
     def tempAddSkillLevel(self, skill, level):
-        self.skills[skill] = self.skills[skill] + levels
+        self.skills[skill] = self.skills[skill] + level
         self.refreshSkills()
         self.saveSkills = True
 

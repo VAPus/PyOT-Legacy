@@ -118,8 +118,10 @@ class Boost(Condition):
         self.tickEvent = None
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
+        elif isinstance(type, int):
+            self.type = '_'+str(type)
         else:
-            self.type = '_'.join(type)
+            self.type = '_'.join(map(str, type))
         self.ptype = [type] if not isinstance(type, list) else type
         self.effectArgs = argc
         self.effectKwargs = kwargs
@@ -136,12 +138,16 @@ class Boost(Condition):
         pid = 0
         for ptype in self.ptype:
             # Apply
-            try:
-                pvalue = getattr(self.creature, ptype)
-                inStruct = 0
-            except:
-                pvalue = self.creature.data[ptype]
-                inStruct = 1
+            if isinstance(ptype, int):
+                # Skill.
+                pvalue = self.creature.getActiveSkill(ptype)
+            else:
+                try:
+                    pvalue = getattr(self.creature, ptype)
+                    inStruct = 0
+                except:
+                    pvalue = self.creature.data[ptype]
+                    inStruct = 1
 
             if isinstance(self.mod[pid], int):
                 if self.percent:
@@ -155,6 +161,9 @@ class Boost(Condition):
             if ptype == "speed":
                 self.type = enum.CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
+            elif isinstance(ptype, int):
+                #  Skills.
+                self.creature.tempAddSkillLevel(ptype, int(pvalue - self.creature.getActiveSkill(ptype)))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)
@@ -169,12 +178,16 @@ class Boost(Condition):
         pid = 0
         for ptype in self.ptype:
             # Apply
-            try:
-                pvalue = getattr(self.creature, ptype)
-                inStruct = 0
-            except:
-                pvalue = self.creature.data[ptype]
-                inStruct = 1
+            if isinstance(ptype, int):
+                # Skill.
+                pvalue = self.creature.getActiveSkill(ptype)
+            else:
+                try:
+                    pvalue = getattr(self.creature, ptype)
+                    inStruct = 0
+                except:
+                    pvalue = self.creature.data[ptype]
+                    inStruct = 1
 
             if isinstance(self.mod[pid], int):
                 if self.percent:
@@ -187,6 +200,9 @@ class Boost(Condition):
             # Hack
             if ptype == "speed":
                 self.creature.setSpeed(pvalue)
+            elif isinstance(ptype, int):
+                #  Skills.
+                self.creature.tempAddSkillLevel(ptype, -(int(pvalue - self.creature.getActiveSkill(ptype))))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)
