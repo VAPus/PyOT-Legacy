@@ -1,10 +1,10 @@
 import game.map
 
 # A cache, this can probably get pretty big, but right now it's not something I'll think about
-AStarRouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
+RouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
     
 def clear():
-    AStarRouteCache = {}
+    RouteCache = {}
     
 # FIXME: Not make this a global...
 CACHE_CURRENT = config.pathfinderCache
@@ -14,7 +14,7 @@ class Node(object):
         self.x = x
         self.y = y
         self.cost = 0
-        self.distance = 0
+        #self.distance = 0
         self.parent = None
         self.state = True
         self.tileTried = False
@@ -170,7 +170,7 @@ class AStar(object):
         # Make node locals to speed things up
         x = node.x
         y = node.y
-        cost = node.cost
+        #cost = node.cost
         
         # Make locals to speed things up
         #_nodes = self.nodes
@@ -184,32 +184,32 @@ class AStar(object):
         n = _getNode(x, y - 1)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = cost + 10
-            n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.cost = 10
+            #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = NORTH
             _openNodes.add(n)   
 
         n = _getNode(x - 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = cost + 10
-            n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.cost = 10
+            #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = WEST
             _openNodes.add(n)   
 
         n = _getNode(x + 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = cost + 10
-            n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.cost = 10
+            #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = EAST
             _openNodes.add(n)  
             
         n = _getNode(x, y + 1)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = cost + 10
-            n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+            n.cost = 10
+            #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = SOUTH
             _openNodes.add(n)
             
@@ -217,32 +217,32 @@ class AStar(object):
             n = _getNode(x - 1, y - 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = cost + (15 * config.diagonalWalkCost)
-                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.cost = (15 * config.diagonalWalkCost)
+                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = NORTHWEST
                 _openNodes.add(n)   
 
             n = _getNode(x - 1, y + 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = cost + (15 * config.diagonalWalkCost)
-                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.cost = (15 * config.diagonalWalkCost)
+                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = SOUTHWEST
                 _openNodes.add(n)   
 
             n = _getNode(x + 1, y - 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = cost + (15 * config.diagonalWalkCost)
-                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.cost = (15 * config.diagonalWalkCost)
+                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = NORTHEAST
                 _openNodes.add(n)  
                 
             n = _getNode(x + 1, y + 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = cost + (15 * config.diagonalWalkCost)
-                n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                n.cost = (15 * config.diagonalWalkCost)
+                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = SOUTHEAST
                 _openNodes.add(n)            
             
@@ -250,17 +250,33 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=Non
     cachePoint = (xStart, yStart, xGoal, yGoal, zStart)
     if config.pathfinderCache:
         try:
-            return AStarRouteCache[cachePoint]
+            return RouteCache[cachePoint]
         except:
             pass
     
+    if abs(xStart-xGoal) < 2 and abs(yStart-yGoal) < 2:
+       pattern = []
+       if xStart > xGoal:
+           pattern.append(WEST)
+       elif xStart < xGoal:
+           pattern.append(EAST)
+       if yStart > yGoal:
+           pattern.append(NORTH)
+       elif yStart < yGoal:
+           pattern.append(SOUTH)
+       
+       if config.pathfinderCache:
+           RouteCache[cachePoint] = pattern
+       return pattern
+
     aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId)
+    
     if aStar.found:
         if CACHE_CURRENT:
-            AStarRouteCache[cachePoint] = aStar.result
+            RouteCache[cachePoint] = aStar.result
         return aStar.result
     else:
         if CACHE_CURRENT:
-            AStarRouteCache[cachePoint] = None
+            RouteCache[cachePoint] = None
         return None
     
