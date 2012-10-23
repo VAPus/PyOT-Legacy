@@ -748,11 +748,12 @@ class Item(object):
 
         # Option 2, the inventory
         elif position.y < 64:
+            print "Remove2"
             creature = self.creature
             if creature.removeCache(self):
                 creature.refreshStatus()
             creature.inventory[position.y-1] = None
-            creature.updateInventory(position.y)
+            creature.updateInventory(position.y-1)
 
         # Option 3, the bags, if there is one ofcource
         elif self.inContainer:
@@ -766,10 +767,8 @@ class Item(object):
             creature = self.creature
             try:
                 creature.inventoryCache[bag.itemId].index(bag)
-                currItem = bag.container[position.z]
-                if currItem:
-                    if creature.removeCache(currItem):
-                        update = True
+                if creature.removeCache(self):
+                    update = True
             except:
                 pass
 

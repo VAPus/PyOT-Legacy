@@ -191,12 +191,13 @@ class Tile(object):
             try:
                 yield self.things[n]
             except:
-                if n > self._depack(PACK_ITEMS)-1:
-                    print "XXX: Hack applied"
-                    self._modpack(PACK_ITEMS, -1)
-                    return
-                else:
-                    raise
+                ontops = 0
+                for i in self.things:
+                    if isinstance(i, Item) and i.ontop:
+                        ontops += 1
+                self._modpack(PACK_ITEMS, ontops-self._depack(PACK_ITEMS))
+                print "XXX: Hack applied"
+                    
             
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())

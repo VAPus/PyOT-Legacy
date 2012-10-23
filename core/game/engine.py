@@ -446,7 +446,7 @@ def placeItem(item, position):
     :returns: Stack position of item.
     
     """
-    
+    print "placeItem"
     stackpos = position.getTile().placeItem(item)
     for spectator in getSpectators(position):
         stream = spectator.packet()
@@ -798,6 +798,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if thing.openIndex != None:
         player.closeContainer(thing)
 
+    itemContainer = None
+    if destItem:
+        itemContainer = thing.inContainer
     # Hack.
     if fromPosition.x == 0xFFFF and not thing.creature:
         thing.creature = player
@@ -884,13 +887,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
             return False
         
         if not thing.stackable:
-            player.removeItem(thing)
+            thing.remove()
+        print "itemToContainer1"
         player.itemToContainer(destItem, newItem)
     else:    
         if not thing.stackable:
-            player.removeItem(thing)
+            thing.remove()
     
     if toMap:
+        print "toMap called"
         # Place to ground.
         thisTile = toPosition.getTile()
         
@@ -914,15 +919,21 @@ def moveItem(player, fromPosition, toPosition, count=0):
                     return False
                 if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                     return False
-                
+                print "itemToContainer2"
                 player.itemToContainer(container, newItem)
-    
+
+            if destItem and itemContainer:
+                player.itemToContainer(itemContainer, destItem)    
         elif not destItem.containerSize:
             # Move destItem.
+            print "destItem no container branch"
             if thing.inContainer and thing.inContainer != destItem:
+                print "itemToContainer3"
                 player.itemToContainer(thing.inContainer, destItem)
             elif player.inventory[SLOT_BACKPACK]:
+                print "destItem backpack branch"
                 if player.inventory[SLOT_BACKPACK] != destItem:
+                    print "itemToContainer4"
                     player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
             else:
                 print "XXX: In case of bug, do something here?"
