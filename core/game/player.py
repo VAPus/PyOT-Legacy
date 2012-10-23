@@ -584,6 +584,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return
 
     def removeCache(self, item):
+        print "removeCache"
         # Update cached data
         try:
             try:
@@ -595,7 +596,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             except:
                 pass
             item.position = None
-            
+            print "Modifying weight, removecache"
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
             weight = item.weight
@@ -1374,10 +1375,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if self.inventory[slot] and stack and item.stackable and item.itemId == self.inventory[slot].itemId and self.inventory[slot].count+item.count <= 100:
             self.inventory[slot].count += item.count
+            self.modifyCache(self.inventory[slot], item.count)
         else:
+            if self.inventory[slot]:
+                self.removeCache(self.inventory[slot])
             self.inventory[slot] = item
-
-        self.addCache(item)
+            self.addCache(item)
         item.setPosition(Position(0xFFFF, slot+1, 0), self)
         stream = self.packet()
         stream.addInventoryItem(slot+1, self.inventory[slot])
