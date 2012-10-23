@@ -33,3 +33,15 @@ class TestPlayer(FrameworkTestGame):
         """ A bug reported here: http://vapus.net/forum/pyot-opentibia-server-287/debug-serious-bugs-thread-2925-100/#post31523 """
         # This should NOT raise.
         self.player.cancelTarget(None)
+
+    def test_losetarget(self):
+        """ A test for this bug (#75): http://vapus.net/forum/project.php?issueid=75 """
+        target = self.setupPlayer()
+
+        self.player.target = target
+        self.player.targetMode = 2
+
+        self.player.teleport(Position(1015, 1000, 7), force=True)
+
+        self.assertEqual(self.player.target, None)
+        self.assertEqual(self.player.targetMode, 0)

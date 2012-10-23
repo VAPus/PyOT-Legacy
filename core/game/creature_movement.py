@@ -96,6 +96,8 @@ class CreatureMovement(object):
         # Stairhop delay
         if self.isPlayer():
             self.lastStairHop = time.time()
+            if self.target and not self.canSee(self.target.position):
+                self.cancelTarget()
             
     def turn(self, direction):
         assert direction < 4
@@ -382,6 +384,9 @@ class CreatureMovement(object):
         # Stairhop delay
         if level and self.isPlayer():
             self.lastStairHop = time.time()
-            
+
+        if self.isPlayer() and self.target and not self.canSee(self.target.position):
+            self.cancelTarget()
+           
         if callback: reactor.callLater(0, callback)
         return True
