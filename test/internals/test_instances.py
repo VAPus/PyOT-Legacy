@@ -90,3 +90,24 @@ class TestInstances(FrameworkTestGame):
         
         self.assertIn(item, iPosition.getTile().things)
         self.assertNotIn(item, position.getTile().things)
+
+    def test_monster_spawn_pos(self):
+        # Instance.
+        instanceId = game.map.newInstance()
+        position = Position(1000,1001,7,instanceId)
+        
+        self.player.setInstance(instanceId)
+
+        # A wolf.
+        baseWolf = getMonster("Wolf")
+        
+        wolf = baseWolf.spawn(position, spawnDelay=0)
+
+        self.assertIn(wolf, list(position.getTile().creatures()))
+
+        self.assertTrue(self.player.canSee(wolf.position))
+
+        # Cleanup.
+        wolf.despawn()
+
+        
