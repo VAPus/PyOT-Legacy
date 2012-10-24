@@ -1575,6 +1575,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.send(spectator)
 
     def onSpawn(self):
+        if self.clientId() not in allCreatures:
+            allCreatures[self.clientId()] = self
+
         if self.data["health"] <= 0 or not self.alive:
             if self.getSkull() == SKULL_BLACK:
                 self.data["health"] = config.blackSkullRecoverHealth if config.blackSkullRecoverHealth != -1 else self.data["healthmax"]

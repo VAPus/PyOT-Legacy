@@ -1,4 +1,4 @@
-from creature import Creature, uniqueId
+from creature import Creature, uniqueId, allCreatures
 import engine, map, scriptsystem
 from packet import TibiaPacket
 import copy, random, time
@@ -445,7 +445,10 @@ class MonsterBase(object):
             if not monster.alive:
                 monster.data = monster.base.data.copy()
                 monster.alive = True
-                
+            
+            if not monster.clientId() in allCreatures:
+                allCreatures[monster.clientId()] = monster
+
             if place:
                 # Vertify that there are no spectators if check = True
                 if check and engine.hasSpectators(position): 
