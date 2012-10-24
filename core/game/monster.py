@@ -5,6 +5,7 @@ import copy, random, time
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 from twisted.python import log
+from pprint import pprint
 import enum
 import errors
 import item
@@ -115,7 +116,9 @@ class Monster(Creature):
         if self.master:
             self.master.activeSummons.remove(self)
         
-        
+
+		
+        pprint(vars(self))
         self.turnOffBrain()
         
         # Remove summons
@@ -257,6 +260,9 @@ class Monster(Creature):
                     if self.base.experience >= self.lastDamagers[0].data["level"]:
                         self.lastDamagers[0].soulGain()
         
+        # We don't need lastDamagers anymore, probably not the right place to do this
+        self.lastDamagers = None
+        self.lastDamagers = deque(maxlen=config.trackHits)
         # Begin respawn
         if self.respawn:
             self.position = self.spawnPosition
@@ -264,7 +270,7 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self, check=True)
+                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, monster=self, check=True)
                 else:
                     return
             else:
@@ -427,6 +433,7 @@ class MonsterBase(object):
         
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
+     
         if not self.prepared:
             self.prepare()
             

@@ -3,10 +3,10 @@
 # I think it's better to show the position in default window, instead of merging it with description and looking for it in server log.
 def givePosition(creature, thing, **pos):
 	if creature.getStorage("showpos") == 'enabled':
-		# not a pretty output, but w/e
-		creature.message('Position:  %s' % str(pos['position']), MSG_STATUS_CONSOLE_ORANGE)
+		obj = pos['position']
+		# it might look preetier, but wouldn't be as functional.
+		creature.message('Position: /goto %s, %s, %s' % (obj.x, obj.y, obj.z), MSG_STATUS_CONSOLE_ORANGE)
 	return True
-
 
 @register('talkaction', '/showpos')
 @access("KICK")

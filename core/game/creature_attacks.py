@@ -298,7 +298,8 @@ class PlayerAttacks(CreatureAttacks):
                 if config.loginBlock:
                     # PZ block.
                     self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-                    self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
+                    if targetIsPlayer:
+                        self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
@@ -332,6 +333,7 @@ class PlayerAttacks(CreatureAttacks):
             return
 
         if time.time() - self.lastStairHop < config.stairHopDelay:
+            print 'attack canceled: ', 1
             self.cancelTarget()
             self.message("You can't attack so fast after changing level or teleporting.")
             return
@@ -340,10 +342,12 @@ class PlayerAttacks(CreatureAttacks):
             if game.creature.allCreatures[cid].isAttackable(self):
                 target = game.creature.allCreatures[cid]
                 if target.isPlayer() and self.modes[2]:
+                    print 'attack canceled: ', 2
                     self.cancelTarget()
                     return self.unmarkedPlayer()
                 ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
                 if ret == False:
+                   print 'attack canceled: ', 3
                    self.cancelTarget()
                    return
                 elif ret != None:
@@ -356,13 +360,16 @@ class PlayerAttacks(CreatureAttacks):
                     target.target = self
                     target.targetMode = 1
             else:
+                print 'attack canceled: ', 4
                 self.cancelTarget()
                 return
         else:
+            print 'attack canceled: ', 5
             self.cancelTarget()
             return self.notPossible()
 
         if not self.target:
+            print 'attack canceled: ', 6
             self.cancelTarget()
             return self.notPossible()
 
