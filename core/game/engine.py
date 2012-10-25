@@ -807,6 +807,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
 
     if not thing.position:
         thing.position = fromPosition
+    if destItem and not destItem.position:
+        destitem.position = toPosition
         
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
