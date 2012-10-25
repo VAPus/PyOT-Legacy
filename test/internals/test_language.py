@@ -1,6 +1,6 @@
 from test.framework import FrameworkTestGame
 
-class TestMoveItem(FrameworkTestGame):
+class TestLanguage(FrameworkTestGame):
     def init(self):
         self.overrideConfig("defaultLanguage", 'en_EN')
         self.overrideConfig("enableTranslations", True)

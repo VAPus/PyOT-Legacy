@@ -204,3 +204,99 @@ class TestMoveItem(FrameworkTestGame):
 
         # Move it. Shouldn't work.
         self.assertFalse(moveItem(self.player, item.position, Position(0xFFFF, SLOT_LEFT-1, 0)))
+
+    def test_courpse_to_corpse_stack(self):
+        """ Bug #78 """
+        # Set meat to 100%.
+        wolf = getMonster("Wolf")
+        if not wolf.prepared:
+            wolf.prepare()
+
+        for loot in wolf.lootTable:
+           if loot[0] == 2666:
+               loot[1] = 100.0
+
+        # Spawn and kill two wolfs
+        position1 = self.player.positionInDirection(NORTH)
+        position2 = self.player.positionInDirection(SOUTH)
+
+        wolf1 = wolf.spawn(position1, spawnDelay=0)
+        wolf2 = wolf.spawn(position2, spawnDelay=0)
+
+        wolf1.modifyHealth(-1000)
+        wolf2.modifyHealth(-1000)
+
+        # Get the corpses.
+        corpse1 = position1.getTile().findItem(wolf.data["corpse"])
+        corpse2 = position2.getTile().findItem(wolf.data["corpse"])
+
+        # Open corpses.
+        self.player.use(corpse1)
+        self.player.use(corpse2)
+
+        # Find meat and move from corpse1 to corpse2.
+        for index in xrange(len(corpse1.container)):
+            if corpse1.container[index].itemId == 2666:
+                break
+
+        # Move
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, 3)))
+
+        # Find new meat.
+        for item in corpse2.container:
+            if item.itemId == 2666:
+                self.assertGreater(item.count, 1)
+                break
+
+        self.assertEqual(item.itemId, 2666)
+
+    def test_courpse_to_corpse_specific_stack(self):
+        """ Bug #78 """
+
+        # Set meat to 100%.
+        wolf = getMonster("Wolf")
+        if not wolf.prepared:
+            wolf.prepare()
+
+        for loot in wolf.lootTable:
+           if loot[0] == 2666:
+               loot[1] = 100.0
+
+        # Spawn and kill two wolfs
+        position1 = self.player.positionInDirection(NORTH)
+        position2 = self.player.positionInDirection(SOUTH)
+
+        wolf1 = wolf.spawn(position1, spawnDelay=0)
+        wolf2 = wolf.spawn(position2, spawnDelay=0)
+
+        wolf1.modifyHealth(-1000)
+        wolf2.modifyHealth(-1000)
+
+        # Get the corpses.
+        corpse1 = position1.getTile().findItem(wolf.data["corpse"])
+        corpse2 = position2.getTile().findItem(wolf.data["corpse"])
+
+        # Open corpses.
+        self.player.use(corpse1)
+        self.player.use(corpse2)
+
+        # Find meat and move from corpse1 to corpse2.
+        for index in xrange(len(corpse1.container)):
+            if corpse1.container[index].itemId == 2666:
+                break
+
+        for index2 in xrange(len(corpse2.container)):
+            if corpse2.container[index].itemId == 2666:
+                break
+
+        # Move
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, index2)))
+
+        # Find new meat.
+        for item in corpse2.container:
+            if item.itemId == 2666:
+                self.assertGreater(item.count, 1)
+                break
+
+        self.assertEqual(item.itemId, 2666)
+
