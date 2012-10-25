@@ -135,14 +135,15 @@ class Monster(Creature):
             corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
             
             # Set owner.
-            corpse.owners = [self.lastDamagers[0]]
+            if self.lastDamagers:
+                corpse.owners = [self.lastDamagers[0]]
             
-            def _clear_private_loot():
-                del corpse.owners
+                def _clear_private_loot():
+                    del corpse.owners
                 
-            # Callback to remove owner after config.privateLootFor seconds
-            callLater(config.privateLootFor, _clear_private_loot)
-            if self.lastDamagers[0] != self.master:
+                # Callback to remove owner after config.privateLootFor seconds
+                callLater(config.privateLootFor, _clear_private_loot)
+            if not self.lastDamagers or self.lastDamagers[0] != self.master:
 				maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
 				drops = []
 				for loot in self.base.lootTable:
@@ -161,7 +162,7 @@ class Monster(Creature):
 					elif len(loot) == 4:
 						drops.append((loot[0], None, loot[4]))
 				print drops     
-				ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0], loot=drops, maxSize=maxSize)
+				ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0] if self.lastDamagers else None, loot=drops, maxSize=maxSize)
 				if type(ret) == list:
 					drops = ret
 
@@ -211,7 +212,7 @@ class Monster(Creature):
         else:
             corpse = None
             
-        scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse)
+        scriptsystem.get("death").runSync(self, self.lastDamagers[0] if self.lastDamagers else None, corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
             return
@@ -237,7 +238,7 @@ class Monster(Creature):
         # Remove me. This also refresh the tile.
         self.remove()
 
-        if self.lastDamagers[0] and self.lastDamagers[0].isPlayer() and self.lastDamagers[0] != self.master:
+        if self.lastDamagers and self.lastDamagers[0].isPlayer() and self.lastDamagers[0] != self.master:
             if lootMsg:
                 self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:

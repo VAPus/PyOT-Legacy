@@ -618,13 +618,16 @@ class Item(object):
                 update = False
                 creatures = self.openCreatures
                 if not creatures:
-                    creatures = [creature] 
+                    if creature:
+                        creatures = [creature]
+                    else:
+                        creatures = self.inContainer.openCreatures or [self.inContainer.creature]
                 try:
                     bag = creature.openContainers[position.y - 64]
                 except:
                     bag = self.inContainer
 
-              
+                
                 for creature in creatures:
                     try:
                         creature.inventoryCache[bag.itemId].index(bag)
@@ -640,17 +643,19 @@ class Item(object):
                             elif ret == True:    
                                 update = True
                                 bag.container[position.z] = self
-                    
-                        index = creature.openContainers.index(bag)    
+                        for index in creature.openContainers:
+                            if creature.openContainers[index] == bag: break
                         stream = creature.packet()
                         stream.updateContainerItem(index, position.z, self)
                         if update:
                             creature.refreshStatus(stream)
                         stream.send(creature.client)
-                    except:  
+                    except:
+                        for index in creature.openContainers:
+                            if creature.openContainers[index] == bag: break
                         bag.container[position.z] = self
                         stream = creature.packet()
-                        stream.updateContainerItem(creature.openContainers.index(bag), position.z, self)
+                        stream.updateContainerItem(index, position.z, self)
                         stream.send(creature.client)
                     
     def __repr__(self):

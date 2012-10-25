@@ -824,8 +824,8 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     ####################
     ### Internal Use ###
     ####################
-    def use(self, position, thing):
-        game.scriptsystem.get('use').runSync(thing, self, None, position=position, index=0)
+    def use(self, thing, index=None):
+        game.scriptsystem.get('use').runSync(thing, self, None, position=thing.position, index=index)
 
     #####################
     ### Hidden health ###

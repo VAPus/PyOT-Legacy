@@ -8,7 +8,7 @@ def container(creature, thing, position, index, **k):
     if thing.openIndex == None:
         # Open a bag inside a bag?
         open = True
-        bagFound = creature.getContainer(index)    
+        bagFound = creature.getContainer(index)
             
         if bagFound:
             print "ok --", index
