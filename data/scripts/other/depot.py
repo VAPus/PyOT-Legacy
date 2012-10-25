@@ -1,7 +1,7 @@
 import copy
-depots = (2594, 2592)
-
-@registerFirst('use', 2594) # We got to register it first so we call it before container open
+lockers = (2589, 2590, 2591, 2592)
+depot_id = 2594
+@registerFirst('use', depot_id) # We got to register it first so we call it before container open
 def openDepot(creature, thing, **k):
     if not thing.depotId:
         # Aga, no locker id.
@@ -18,16 +18,16 @@ def openDepot(creature, thing, **k):
             for item in thing.container:
                 item.inContainer = thing
 
-@register('close', 2594)
+@register('close', depot_id)
 def closeDepot(creature, thing, **k):
     if thing.depotId:
         creature.depot[thing.depotId] = copy.deepcopy(thing.container)
         thing.container = []
         thing.owners = []
 
-@registerFirst('use', 2592)
+@registerFirst('use', lockers)
 def openLocker(creature, thing, **k):
-    depot = Item(2594)
+    depot = Item(depot_id)
     depot.depotId = thing.depotId
     thing.containerSize = 3
     thing.container = [depot, Item(2334)]

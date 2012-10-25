@@ -118,7 +118,7 @@ class Monster(Creature):
         
 
 		
-        pprint(vars(self))
+        #pprint(vars(self))
         self.turnOffBrain()
         
         # Remove summons

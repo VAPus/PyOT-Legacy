@@ -111,9 +111,11 @@ class CreatureAttacks(object):
             updateTile(self.position, tile)
 
             if by and by.isPlayer():
+                by.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                 by.message(_lp(by, "%(who)s loses %(amount)d hitpoint due to your attack.", "%(who)s loses %(amount)d hitpoints due to your attack.", -dmg) % {"who": self.name().capitalize(), "amount": -dmg}, MSG_DAMAGE_DEALT, value = -1 * dmg, color = textColor, pos=self.position)
-
+                
             if self.isPlayer():
+                self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
                 if by:
                     self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
                 else:
