@@ -795,7 +795,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         count = thing.count
     if destItem and destItem == thing.inContainer:
         return False
-    if thing.openIndex != None:
+    if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
 
     itemContainer = None
