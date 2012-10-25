@@ -170,7 +170,7 @@ class AStar(object):
         # Make node locals to speed things up
         x = node.x
         y = node.y
-        #cost = node.cost
+        cost = node.cost
         
         # Make locals to speed things up
         #_nodes = self.nodes
@@ -184,7 +184,7 @@ class AStar(object):
         n = _getNode(x, y - 1)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = 10
+            n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = NORTH
             _openNodes.add(n)   
@@ -192,7 +192,7 @@ class AStar(object):
         n = _getNode(x - 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = 10
+            n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = WEST
             _openNodes.add(n)   
@@ -200,7 +200,7 @@ class AStar(object):
         n = _getNode(x + 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = 10
+            n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = EAST
             _openNodes.add(n)  
@@ -208,7 +208,7 @@ class AStar(object):
         n = _getNode(x, y + 1)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
-            n.cost = 10
+            n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = SOUTH
             _openNodes.add(n)
@@ -217,7 +217,7 @@ class AStar(object):
             n = _getNode(x - 1, y - 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = (15 * config.diagonalWalkCost)
+                n.cost = cost + (10 * config.diagonalWalkCost)
                 #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = NORTHWEST
                 _openNodes.add(n)   
@@ -225,7 +225,7 @@ class AStar(object):
             n = _getNode(x - 1, y + 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = (15 * config.diagonalWalkCost)
+                n.cost = cost + (10 * config.diagonalWalkCost)
                 #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = SOUTHWEST
                 _openNodes.add(n)   
@@ -233,7 +233,7 @@ class AStar(object):
             n = _getNode(x + 1, y - 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = (15 * config.diagonalWalkCost)
+                n.cost = cost + (10 * config.diagonalWalkCost)
                 #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = NORTHEAST
                 _openNodes.add(n)  
@@ -241,7 +241,7 @@ class AStar(object):
             n = _getNode(x + 1, y + 1)
             if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                 n.parent = node
-                n.cost = (15 * config.diagonalWalkCost)
+                n.cost = cost + (10 * config.diagonalWalkCost)
                 #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
                 n.step = SOUTHEAST
                 _openNodes.add(n)            
