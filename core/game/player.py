@@ -2316,7 +2316,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint16(entry.counter)
             stream.uint16(entry.amount)
             stream.uint32(entry.price)
-            stream.string("NAME")
+            stream.string(entry.playerName)
 
         saleOffers = self.market.getSaleOffers(itemId)
 
@@ -2326,7 +2326,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint16(entry.counter)
             stream.uint16(entry.amount)
             stream.uint32(entry.price)
-            stream.string("NAME")
+            stream.string(entry.playerName)
 
         stream.send(self.client)
 

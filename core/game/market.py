@@ -1,16 +1,26 @@
 Markets = {}
 
 class Offer(object):
-    def __init__(self, playerId, itemId, price, expire, amount, counter):
+    def __init__(self, playerId, itemId, price, expire, amount, counter, type=0):
+        self.id = 0
         self.playerId = playerId
         self.itemId = itemId
         self.price = price
         self.expire = expire
         self.amount = amount
         self.counter = counter
+        self.playerName = ""
+        self.type = type
 
+    @inlineCallbacks
+    def insert(self):
+        self.id = yield sql.runOperationLastId("INSERT INTO market_offers")
+    
     def save(self):
-        pass # SQL, TODO
+        if not self.id:
+            self.insert()
+        else:
+            sql.runOperation("UPDATE market_offers SET ... WHERE `id` = %s", (self.id))
 
     def player(self):
         return loadPlayerById(self.playerId)
@@ -74,22 +84,32 @@ class Market(object):
     def save(self):
         pass # SQL, TODO
 
-#@inlineCallbacks
+@inlineCallbacks
 def load():
-    # SQL, TODO.
-    newMarket()
-
-def newMarket():
     global Markets
-    market = Market(0)
+    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as ``player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0 AND mo.`created` > %s", (config.worldId, time.time() + config.marketOfferExpire))):
+        if not entry["market_id"] in Markets:
+            Markets[entry["market_id"]] = Market(0)
+
+        offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["id"] & 0xFFFF, entry["type"])
+
+        offer.id = entry["id"]
+
+        if entry["anonymous"]:
+            offer.playerName = "Anonymous"
+        else:
+            offer.playerName = entry["player_name"]
+
+        if entry["type"] == MARKET_OFFER_SALE:
+            Markets[entry["market_id"]].addSaleOffer(offer)
+        else:
+            Markets[entry["market_id"]].addBuyOffer(offer)
+
+def newMarket(id):
+    global Markets
+    market = Market(id)
     
-    # SQL, todo. Insert and get insert id, thats the market.id.
-
-    Markets[0] = market
-
-    # XXX:
-    offer = Offer(1, 7449, 1000, time.time(), 1, 1)
-    market.addSaleOffer(offer)
+    Markets[id] = market
 
     return market
 
