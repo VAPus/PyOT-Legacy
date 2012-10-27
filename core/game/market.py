@@ -36,19 +36,19 @@ class Offer(object):
     @inlineCallbacks
     def expireOffer(self):
         player = yield self.player()
-        if type == MARKET_OFFER_BUY:
-            player.modifyBalance(offer.price * offer.amount)
+        if self.type == MARKET_OFFER_BUY:
+            player.modifyBalance(self.price * self.amount)
         else:
-            item = Item(offer.itemId)
-            count = offer.amount
+            item = Item(self.itemId)
+            count = self.amount
             depot = player.getDepot(player.marketDepotId)
             if item.stackable:
                 while count > 0:
-                    depot.append(Item(offer.itemId, min(100, count)))
+                    depot.append(Item(self.itemId, min(100, count)))
                     count -= min(100, count)
             else:
                 while count > 0:
-                    depot.append(Item(offer.itemId))
+                    depot.append(Item(self.itemId))
                     count -= 1
 
 class Market(object):
@@ -116,9 +116,6 @@ class Market(object):
 
     
     def removeOffer(self, offer):
-        type = offer.type
-
-        offer.type = 0
         try:
             self._saleOffers.remove(offer)
             self.items[offer.itemId] -= offer.amount
@@ -126,6 +123,7 @@ class Market(object):
             self._buyOffers.remove(offer)
 
         offer.expireOffer()
+        offer.type = 0
         if offer.expireCallback:
             offer.expireCallback.cancel()
             offer.expireCallback = None    
