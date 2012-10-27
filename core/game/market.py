@@ -12,6 +12,12 @@ class Offer(object):
         self.playerName = ""
         self.type = type
         self.marketId = 0
+        self.expireCallback = None
+        expireIn = expire - time.time()
+        if expireIn <= 0:
+            print "Expired offer"
+        else:
+            self.expireCallback = callLater(expireIn, self.expireOffer)
 
     @inlineCallbacks
     def insert(self):
@@ -26,6 +32,24 @@ class Offer(object):
 
     def player(self):
         return loadPlayerById(self.playerId)
+
+    @inlineCallbacks
+    def expireOffer(self):
+        player = yield self.player()
+        if type == MARKET_OFFER_BUY:
+            player.modifyBalance(offer.price * offer.amount)
+        else:
+            item = Item(offer.itemId)
+            count = offer.amount
+            depot = player.getDepot(player.marketDepotId)
+            if item.stackable:
+                while count > 0:
+                    depot.append(Item(offer.itemId, min(100, count)))
+                    count -= min(100, count)
+            else:
+                while count > 0:
+                    depot.append(Item(offer.itemId))
+                    count -= 1
 
 class Market(object):
     def __init__(self, id):
@@ -90,7 +114,7 @@ class Market(object):
             if entry.expire == expire and entry.counter == counter:
                 return entry
 
-    @inlineCallbacks
+    
     def removeOffer(self, offer):
         type = offer.type
 
@@ -101,23 +125,10 @@ class Market(object):
         except:
             self._buyOffers.remove(offer)
 
-        player = yield offer.player()
-
-        if type == MARKET_OFFER_BUY:
-            player.modifyBalance(offer.price * offer.amount)
-        else:
-            item = Item(offer.itemId)
-            count = offer.amount
-            depot = player.getDepot(player.marketDepotId)
-            if item.stackable:
-                while count > 0:
-                    depot.append(Item(offer.itemId, min(100, count)))
-                    count -= min(100, count)
-            else:
-                while count > 0:
-                    depot.append(Item(offer.itemId))
-                    count -= 1
-                
+        offer.expireOffer()
+        if offer.expireCallback:
+            offer.expireCallback.cancel()
+            offer.expireCallback = None    
         offer.save()
 
 
@@ -134,7 +145,9 @@ class Market(object):
 @inlineCallbacks
 def load():
     global Markets
-    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0 AND mo.`created` > %s", (config.worldId, time.time() - config.marketOfferExpire))):
+    expired = time.time() - config.marketOfferExpire
+
+    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))):
         if not entry["market_id"] in Markets:
             Markets[entry["market_id"]] = Market(entry["market_id"])
 
@@ -148,8 +161,14 @@ def load():
         else:
             offer.playerName = entry["player_name"]
 
-        if entry["type"] == MARKET_OFFER_SALE:
+        if entry["created"] < expired:
+            offer.expire()
+            offer.type = 0
+            offer.save()
+
+        elif entry["type"] == MARKET_OFFER_SALE:
             Markets[entry["market_id"]].addSaleOffer(offer)
+
         else:
             Markets[entry["market_id"]].addBuyOffer(offer)
 
