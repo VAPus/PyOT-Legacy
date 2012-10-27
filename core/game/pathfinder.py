@@ -99,12 +99,12 @@ class AStar(object):
         # Make a result
         n = currentNode
         prev = self.startNode
-        _result = []
+        _result = [n.step]
 
         prev = n
         n = n.parent
         if not n:
-            self.result = []
+            self.result = _result
             return
             
         while n.parent != None:
@@ -116,7 +116,7 @@ class AStar(object):
                 break
         _result.reverse()
         
-        if config.findDiagonalPaths:
+        """if config.findDiagonalPaths:
             if n.y > prev.y and n.x > prev.x:
                 _result.append(SOUTHEAST)
             elif n.y < prev.y and n.x > prev.x:
@@ -142,7 +142,7 @@ class AStar(object):
             elif n.x > prev.x:
                 _result.append(EAST)
             else:
-                _result.append(WEST)
+                _result.append(WEST)"""
         self.result = _result
     
     def getNode(self, x, y):
@@ -172,6 +172,11 @@ class AStar(object):
         y = node.y
         cost = node.cost
         
+        diagonalSouth = False
+        diagonalNorth = False
+        diagonalWest = False
+        diagonalEast = False
+
         # Make locals to speed things up
         #_nodes = self.nodes
         _closedNodes = self.closedNodes
@@ -189,6 +194,9 @@ class AStar(object):
             n.step = NORTH
             _openNodes.add(n)   
 
+        if not n.state:
+            diagonalNorth = True
+
         n = _getNode(x - 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
@@ -196,6 +204,9 @@ class AStar(object):
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
             n.step = WEST
             _openNodes.add(n)   
+
+        if not n.state:
+            diagonalWest = True
 
         n = _getNode(x + 1, y)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
@@ -205,6 +216,9 @@ class AStar(object):
             n.step = EAST
             _openNodes.add(n)  
             
+        if not n.state:
+            diagonalEast = True
+
         n = _getNode(x, y + 1)
         if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + 10) < cost):
             n.parent = node
@@ -213,38 +227,43 @@ class AStar(object):
             n.step = SOUTH
             _openNodes.add(n)
             
+        if not n.state:
+            diagonalWest = True
+
         if config.findDiagonalPaths:
-            n = _getNode(x - 1, y - 1)
-            if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
-                n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
-                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
-                n.step = NORTHWEST
-                _openNodes.add(n)   
+            if diagonalNorth and diagonalWest:
+                n = _getNode(x - 1, y - 1)
+                if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                    n.parent = node
+                    n.cost = cost + (10 * config.diagonalWalkCost)
+                    #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                    n.step = NORTHWEST
+                    _openNodes.add(n)
 
-            n = _getNode(x - 1, y + 1)
-            if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
-                n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
-                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
-                n.step = SOUTHWEST
-                _openNodes.add(n)   
-
-            n = _getNode(x + 1, y - 1)
-            if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
-                n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
-                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
-                n.step = NORTHEAST
-                _openNodes.add(n)  
-                
-            n = _getNode(x + 1, y + 1)
-            if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
-                n.parent = node
-                n.cost = cost + (10 * config.diagonalWalkCost)
-                #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
-                n.step = SOUTHEAST
-                _openNodes.add(n)            
+            if diagonalSouth and diagonalWest:
+                n = _getNode(x - 1, y + 1)
+                if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                    n.parent = node
+                    n.cost = cost + (10 * config.diagonalWalkCost)
+                    #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                    n.step = SOUTHWEST
+                    _openNodes.add(n)   
+            if diagonalNorth and diagonalEast:
+                n = _getNode(x + 1, y - 1)
+                if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                    n.parent = node
+                    n.cost = cost + (10 * config.diagonalWalkCost)
+                    #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                    n.step = NORTHEAST
+                    _openNodes.add(n)  
+            if diagonalSouth and diagonalEast:    
+                n = _getNode(x + 1, y + 1)
+                if n not in _closedNodes and n.verify(self.z, self.instanceId, self.checkCreature) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                    n.parent = node
+                    n.cost = cost + (10 * config.diagonalWalkCost)
+                    #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
+                    n.step = SOUTHEAST
+                    _openNodes.add(n)            
             
 def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
     cachePoint = (xStart, yStart, xGoal, yGoal, zStart)

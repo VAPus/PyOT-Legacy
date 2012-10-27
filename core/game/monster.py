@@ -5,7 +5,6 @@ import copy, random, time
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 from twisted.python import log
-from pprint import pprint
 import enum
 import errors
 import item
@@ -115,10 +114,7 @@ class Monster(Creature):
         # Remove master summons
         if self.master:
             self.master.activeSummons.remove(self)
-        
 
-		
-        #pprint(vars(self))
         self.turnOffBrain()
         
         # Remove summons
@@ -154,14 +150,14 @@ class Monster(Creature):
 								maxSize += item.items[config.stockLootBagId]["containerSize"]
 							else:
 								drops.append(loot)
-								print drops
+								
 								break
 						else:        
 							drops.append(loot)
 							
 					elif len(loot) == 4:
 						drops.append((loot[0], None, loot[4]))
-				print drops     
+				
 				ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0] if self.lastDamagers else None, loot=drops, maxSize=maxSize)
 				if type(ret) == list:
 					drops = ret
@@ -303,7 +299,7 @@ class Monster(Creature):
             # Can we target him, same floor
             if player.isAttackable(self) and self.canTarget(player.position):
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
-                print self, path
+                
                 if not path and self.distanceStepsTo(player.position) > 0: continue
                 # Calc x+y distance, diagonal is honored too.
                 dist = len(path) 
