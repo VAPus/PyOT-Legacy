@@ -1865,7 +1865,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     
     def _depotMarketCache(self, cache, items):
         for item in items:
-            # TODO: Check duration, charges etc.
+            if item.duration or (item.charges and item.charges != game.item.items[item.itemId]["charges"]):
+                continue
 
             if item.containerSize:
                 self._depotMarketCache(cache, item.container)
