@@ -765,6 +765,9 @@ class BaseProtocol(object):
         elif packetType == 0xF7:
             self.handleCancelOffer(player, packet)
 
+        elif packetType == 0xF8:
+            self.handleAcceptOffer(player, packet)
+
         elif packetType == 0xF9:
             self.handleDialog(player, packet)
             
@@ -1602,3 +1605,31 @@ class BaseProtocol(object):
                     stream.uint16(offer.amount)
                     stream.uint32(offer.price)
         
+    def handleAcceptOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        expire = packet.uint32()
+        counter = packet.uint16()
+        amount = packet.uint16()
+
+        offer = player.market.findOffer(expire, counter)
+        if not offer:
+            print "Offer not found"
+            print expire, expire-config.marketOfferExpire, counter
+            return
+        if offer.amount < amount:
+            print "Too much, reducing offer"
+            player.marketOffers(offer.itemId)
+            amount = offer.amount
+
+        if not offer.type:
+            player.marketOffers(offer.itemId)
+            return
+
+        if offer.type == MARKET_OFFER_BUY:
+            offer.handleBuy(player)
+
+        else:
+            offer.handleSale(player)
+
+        player.marketOffers(offer.itemId)

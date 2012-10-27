@@ -1,3 +1,5 @@
+import copy
+
 Markets = {}
 
 class Offer(object):
@@ -35,6 +37,9 @@ class Offer(object):
 
     @inlineCallbacks
     def expireOffer(self):
+        # Already expired?
+        if self.type == 0: return
+
         player = yield self.player()
         if self.type == MARKET_OFFER_BUY:
             player.modifyBalance(self.price * self.amount)
@@ -50,6 +55,91 @@ class Offer(object):
                 while count > 0:
                     depot.append(Item(self.itemId))
                     count -= 1
+
+    @inlineCallbacks
+    def handleBuy(self, seller, amount):
+        print "handleBuy"
+
+        # Verify item.
+        if not self.itemId in seller.depotMarketCache[seller.marketDepotId] or not seller.depotMarketCache[seller.marketDepotId][self.itemId] >= amount:
+            return
+
+        # Give seller money.
+        seller.modifyBalance(amount * self.price)
+
+        self.amount -= amount
+
+        if self.amount == 0:
+            self.type = 0
+
+        self.save()
+
+        # Take item.
+        item = Item(self.itemId)
+        depot = buyer.getDepot(player.marketDepotId)
+        tamount = amount
+        def takeItems(items):
+            global tamount
+            for item in copy.copy(items):
+                if item.itemId == self.itemId:
+                    orgCount = item.count
+                    item.count = max(0, item.count - tamount)
+                    tamount -= orgCount - item.count
+                    if tamount == 0:
+                        return
+                if item.container:
+                    takeItems(items)
+                    if tamount == 0:
+                        return
+
+        takeItems(depot)
+
+        # Give item
+        player = yield self.player()
+        depot = buyer.getDepot(player.marketDepotId)
+        if item.stackable:
+            while amount > 0:
+                depot.append(Item(self.itemId, min(100, amount)))
+                amount -= min(100, amount)
+        else:
+            while amount > 0:
+                depot.append(Item(self.itemId))
+                amount -= 1
+
+    @inlineCallbacks
+    def handleSell(self, buyer, amount):
+        print "handleSell"
+
+        # Verify money.
+        if not buyer.getBalance() >= amount * self.price:
+            return
+
+        # Take buyer money..
+        price = (amount * self.price)
+        buyer.modifyBalance(-price)
+
+        self.amount -= amount
+
+        if self.amount == 0:
+            self.type = 0
+
+        self.save()
+
+        # Give buyer item.
+        item = Item(self.itemId)
+        depot = buyer.getDepot(buyer.marketDepotId)
+        if item.stackable:
+            while amount > 0:
+                depot.append(Item(self.itemId, min(100, amount)))
+                amount -= min(100, amount)
+        else:
+            while amount > 0:
+                depot.append(Item(self.itemId))
+                amount -= 1
+
+        # Give seller money.
+        player = yield self.player()
+        player.modifyBalance(price)
 
 class Market(object):
     def __init__(self, id):
@@ -110,7 +200,7 @@ class Market(object):
             if entry.expire == expire and entry.counter == counter:
                 return entry
 
-        for entry in self._saleOffers:
+        for entry in self._buyOffers:
             if entry.expire == expire and entry.counter == counter:
                 return entry
 
