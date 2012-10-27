@@ -259,7 +259,10 @@ class PlayerAttacks(CreatureAttacks):
                     if config.criticalHitRate > random.randint(1, 100):
                         dmg = dmg * config.criticalHitMultiplier
                         self.criticalHit()
-                        
+                    # Charges.
+                    if self.inventory[5].charges:
+                        self.inventory[5].useCharge()
+
                 else:
                     skillType = self.inventory[5].weaponSkillType
                     
@@ -270,6 +273,10 @@ class PlayerAttacks(CreatureAttacks):
                         if config.criticalHitRate > random.randint(1, 100):
                             dmg = dmg * config.criticalHitMultiplier
                             self.criticalHit()
+
+                        # Use charge.
+                        if self.inventory[5].charges:
+                            self.inventory[5].useCharge()
 
                 targetIsPlayer = self.target.isPlayer() # onHit might remove this.
                 target = self.target

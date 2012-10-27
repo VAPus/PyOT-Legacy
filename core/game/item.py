@@ -240,6 +240,12 @@ class Item(object):
             
         return _l(player, INFLECT.a(self.name))
     
+    def useCharge(self):
+        self.charges -= 1
+
+        if self.charges <= 0:
+            self.remove()
+
     def description(self, player=None):
         position = self.position
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
