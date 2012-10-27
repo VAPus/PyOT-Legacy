@@ -288,7 +288,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         
         with self.packet(0x0A) as stream:
             stream.uint32(self.clientId()) # Cid
-            stream.uint16(config.drawingSpeed) # Drawing speed
+            stream.uint16(0) # Drawing delay.
             stream.uint8(1) # Rule violations?
 
             #stream.violation(0)
