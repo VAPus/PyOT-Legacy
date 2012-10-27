@@ -762,6 +762,9 @@ class BaseProtocol(object):
         elif packetType == 0xF6:
             self.handleCreateMarketOffer(player, packet)
 
+        elif packetType == 0xF7:
+            self.handleCancelOffer(player, packet)
+
         elif packetType == 0xF9:
             self.handleDialog(player, packet)
             
@@ -1535,10 +1538,14 @@ class BaseProtocol(object):
             pass
     
     def handleBrowseMarket(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
         id = packet.uint16()
 
         if id == 0xFFFE:
             print "Req own offers"
+            player.marketOwnOffers()
+
         elif id == 0xFFFF:
             print "Req own history"
         else:
@@ -1548,6 +1555,8 @@ class BaseProtocol(object):
             player.marketOffers(sid)
 
     def handleCreateMarketOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
         type = packet.uint8()
         id = packet.uint16()
         amount = packet.uint16()
@@ -1559,3 +1568,37 @@ class BaseProtocol(object):
             return
 
         player.createMarketOffer(type, sid, amount, price, anonymous)
+
+    @inlineCallbacks
+    def handleCancelOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        expire = packet.uint32()
+        counter = packet.uint16()
+
+        print expire, counter
+        
+        offer = player.market.findOffer(expire, counter)
+        if offer:
+            type = offer.type
+            yield player.market.removeOffer(offer)
+
+            with player.packet(0xF9) as stream:
+                stream.uint16(0xFFFE)
+                if type == MARKET_OFFER_BUY:
+                    stream.uint32(1)
+                    stream.uint32(offer.expire)
+                    stream.uint16(counter)
+                    stream.uint16(game.item.cid(offer.itemId))
+                    stream.uint16(offer.amount)
+                    stream.uint32(offer.price)
+                    stream.uint32(0)
+                else:
+                    stream.uint32(0)
+                    stream.uint32(1)
+                    stream.uint32(offer.expire)
+                    stream.uint32(offer.counter)
+                    stream.uint16(game.item.cid(offer.itemId))
+                    stream.uint16(offer.amount)
+                    stream.uint32(offer.price)
+        

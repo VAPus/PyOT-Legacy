@@ -2342,7 +2342,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.uint32(min(0xFFFFFFFF, self.getBalance()))
         # XXX: Some older than 9.7 version needed this.
         # stream.uint8(self.getVocation().clientId)
-        stream.uint8(market.saleOffers(self)) # Active offers
+        stream.uint8(len(market.saleOffers(self))) # Active offers
         
         if not self.marketDepotId in self.depotMarketCache:
             self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
@@ -2437,7 +2437,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             print "XXX: Can't afford it."
             return self.notPossible()
 
-        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, 0, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
+        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
         if anonymous:
             offer.playerName = "Anonymous"
         else:
@@ -2458,6 +2458,30 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if self.marketOpen:
             self.marketOffers(itemId)
             self.openMarket(self.market.id)
+
+    def marketOwnOffers(self):
+        with self.packet(0xF9) as stream:
+            stream.uint16(0xFFFE)
+            
+            buyOffers = self.market.buyOffers(self)
+            saleOffers = self.market.saleOffers(self)
+
+            stream.uint32(len(buyOffers))
+            for entry in buyOffers:
+                stream.uint32(entry.expire)
+                stream.uint16(entry.counter)
+                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.amount)
+                stream.uint32(entry.price)
+
+            stream.uint32(len(saleOffers))
+            for entry in saleOffers:
+                stream.uint32(entry.expire)
+                stream.uint16(entry.counter)
+                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.amount)
+                stream.uint32(entry.price)
+
 
     def setLanguage(self, lang):
         if lang != 'en_EN':

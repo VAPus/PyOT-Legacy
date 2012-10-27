@@ -1,14 +1,14 @@
 Markets = {}
 
 class Offer(object):
-    def __init__(self, playerId, itemId, price, expire, amount, counter, type=0):
+    def __init__(self, playerId, itemId, price, expire, amount, type=0):
         self.id = 0
         self.playerId = playerId
         self.itemId = itemId
         self.price = price
         self.expire = expire
         self.amount = amount
-        self.counter = counter
+        self.counter = 0
         self.playerName = ""
         self.type = type
         self.marketId = 0
@@ -16,7 +16,8 @@ class Offer(object):
     @inlineCallbacks
     def insert(self):
         self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,0,%s)", (config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, self.type))
-    
+        self.counter = self.id & 0xFFFF
+
     def save(self):
         if not self.id:
             self.insert()
@@ -49,25 +50,25 @@ class Market(object):
         self._buyOffers.append(offer)
 
     def buyOffers(self, player):
-        count = 0
+        entries = []
         for entry in self._buyOffers:
-            if entry.playerId == player.data["id"]:
-                count += 1
+            if entry.playerId == player.data["id"] and entry.type == MARKET_OFFER_BUY:
+                entries.append(entry)
 
-        return count
+        return entries
 
     def saleOffers(self, player):
-        count = 0
+        entries = []
         for entry in self._saleOffers:
-            if entry.playerId == player.data["id"]:
-                count += 1
+            if entry.playerId == player.data["id"] and entry.type == MARKET_OFFER_SALE:
+                entries.append(entry)
 
-        return count
+        return entries
 
     def getSaleOffers(self, itemId):
         entries = []
         for entry in self._saleOffers:
-            if entry.itemId == itemId:
+            if entry.itemId == itemId and entry.type == MARKET_OFFER_SALE:
                 entries.append(entry)
 
         return entries
@@ -75,10 +76,51 @@ class Market(object):
     def getBuyOffers(self, itemId):
         entries = []
         for entry in self._buyOffers:
-            if entry.itemId == itemId:
+            if entry.itemId == itemId and entry.type == MARKET_OFFER_BUY:
                 entries.append(entry)
 
         return entries
+
+    def findOffer(self, expire, counter):
+        for entry in self._saleOffers:
+            if entry.expire == expire and entry.counter == counter:
+                return entry
+
+        for entry in self._saleOffers:
+            if entry.expire == expire and entry.counter == counter:
+                return entry
+
+    @inlineCallbacks
+    def removeOffer(self, offer):
+        type = offer.type
+
+        offer.type = 0
+        try:
+            self._saleOffers.remove(offer)
+            self.items[offer.itemId] -= offer.amount
+        except:
+            self._buyOffers.remove(offer)
+
+        player = yield offer.player()
+
+        if type == MARKET_OFFER_BUY:
+            player.modifyBalance(offer.price * offer.amount)
+        else:
+            item = Item(offer.itemId)
+            count = offer.amount
+            depot = player.getDepot(player.marketDepotId)
+            if item.stackable:
+                while count > 0:
+                    depot.append(Item(offer.itemId, min(100, count)))
+                    count -= min(100, count)
+            else:
+                while count > 0:
+                    depot.append(Item(offer.itemId))
+                    count -= 1
+                
+        offer.save()
+
+
     def size(self):
         return len(self.items)
 
@@ -96,9 +138,10 @@ def load():
         if not entry["market_id"] in Markets:
             Markets[entry["market_id"]] = Market(entry["market_id"])
 
-        offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["id"] & 0xFFFF, entry["type"])
+        offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["type"])
 
         offer.id = entry["id"]
+        offer.counter = offer.id & 0xFFFF
 
         if entry["anonymous"]:
             offer.playerName = "Anonymous"
