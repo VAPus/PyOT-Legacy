@@ -91,6 +91,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         self.market = None
         self.depotMarketCache = {}
+        self.marketDepotId = 0
 
         """# Light stuff
         self.lightLevel = 0x7F
@@ -2316,16 +2317,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # stream.uint8(self.getVocation().clientId)
         stream.uint8(market.saleOffers(self)) # Active offers
         
-        if not marketId in self.depotMarketCache:
-            self.depotMarketCache[marketId] = self.getDepotMarketCache(marketId)
-        print self.depotMarketCache[marketId]
-        print self.getDepot(marketId)
-        print self.depot
-        print marketId
-        stream.uint16(len(self.depotMarketCache[marketId]))
-        for entry in self.depotMarketCache[marketId]:
+        if not self.marketDepotId in self.depotMarketCache:
+            self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
+        
+        stream.uint16(len(self.depotMarketCache[self.marketDepotId]))
+        for entry in self.depotMarketCache[self.marketDepotId]:
             stream.uint16(game.item.cid(entry))
-            stream.uint16(self.depotMarketCache[marketId][entry])
+            stream.uint16(self.depotMarketCache[self.marketDepotId][entry])
 
         """stream.uint16(market.size())
         for entry in market.getItems():
@@ -2396,6 +2394,24 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint8(0)
             stream.uint8(0)
 
+    def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
+        if not itemId in self.depotMarketCache[self.market.id] or amount > self.depotMarketCache[self.market.id][itemId]:
+            return self.notPossible()
+
+        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, 0, type=type)
+        if anonymous:
+            offer.playerName = "Anonymous"
+        else:
+            offer.playerName = self.name()
+
+        if type == 0:
+            self.market.addBuyOffer(offer)
+        else:
+            self.market.addSaleOffer(offer)
+
+        offer.save()
+
+        # TODO: Remove amount of itemId from the depot.
     def setLanguage(self, lang):
         if lang != 'en_EN':
             C = "%s\x04%s"

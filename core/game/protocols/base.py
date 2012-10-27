@@ -755,7 +755,10 @@ class BaseProtocol(object):
 
         elif packetType == 0xF5:
             self.handleBrowseMarket(player, packet)
-            
+        
+        elif packetType == 0xF6:
+            self.handleCreateMarketOffer(player, packet)
+
         elif packetType == 0xF9:
             self.handleDialog(player, packet)
             
@@ -1540,3 +1543,16 @@ class BaseProtocol(object):
             if not sid:
                 return # Server id not found.
             player.marketOffers(sid)
+
+    def handleCreateMarketOffer(self, player, packet):
+        type = packet.uint8()
+        id = packet.uint16()
+        amount = packet.uint16()
+        price = packet.uint32()
+        anonymous = packet.uint8()
+
+        sid = game.item.sid(id)
+        if not sid:
+            return
+
+        player.createMarketOffer(type, sid, amount, price, anonymous)
