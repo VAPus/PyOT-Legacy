@@ -1883,7 +1883,32 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             depotCache = {}
             self._depotMarketCache(depotCache, depot)
             return depotCache
-               
+
+    def _removeFromDepot(self, items, itemId, count):
+        _count = 0
+        for item in items[:]:
+            if item.itemId == itemId:
+                oldCount = item.count or 1
+                item.count = max(0, oldCount - count)
+                _count += oldCount - item.count
+                if not item.count:
+                    items.remove(item)
+                if _count == count:
+                    return _count
+            if item.container:
+                _count += self._removeFromDepot(item.container, itemId, count - _count)
+                if _count == count:
+                    return _count
+
+        return _count
+                
+    def removeFromDepot(self, depotId, itemId, count=1):
+        depot = self.getDepot(depotId) 
+        if not depot:
+            return 0
+
+        return self._removeFromDepot(depot, itemid, count)
+
     # Stuff from protocol:
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
@@ -2395,7 +2420,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint8(0)
 
     def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
-        if not itemId in self.depotMarketCache[self.market.id] or amount > self.depotMarketCache[self.market.id][itemId]:
+        if not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId]:
             return self.notPossible()
 
         offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, 0, type=type)
@@ -2411,7 +2436,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         offer.save()
 
-        # TODO: Remove amount of itemId from the depot.
+        self.removeFromDepot(self.marketDepotId, itemId, amount)
+        self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
+
+        self.marketOffers(itemId)
+
     def setLanguage(self, lang):
         if lang != 'en_EN':
             C = "%s\x04%s"
