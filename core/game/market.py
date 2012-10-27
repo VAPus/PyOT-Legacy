@@ -21,7 +21,7 @@ class Offer(object):
 
     @inlineCallbacks
     def insert(self):
-        self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,0,%s)", (config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, self.type))
+        self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, 1 if self.playerName == "Anonymous" else 0, self.type))
         self.counter = self.id & 0xFFFF
 
     def save(self):
@@ -136,9 +136,6 @@ class Market(object):
     def getItems(self):
         for itemId in self.items:
             yield (itemId, self.items[itemId])
-
-    def save(self):
-        pass # SQL, TODO
 
 @inlineCallbacks
 def load():
