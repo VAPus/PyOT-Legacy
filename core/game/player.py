@@ -88,7 +88,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.lastStairHop = 0
         
         self.lastUsedObject = 0
-        
+
+        self.market = None        
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -2278,98 +2279,88 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return spells
 
     # Market
-    def openMarket(self):
+    def openMarket(self, marketId=0):
         if not config.enableMarket or self.client.version < 944:
             return
+
+        market = getMarket(marketId)
+        self.market = market
+
         stream = self.packet(0xF6)
 
-        stream.uint32(self.getMoney())
-        stream.uint8(self.getVocation().clientId)
-        stream.uint8(1) # Active offers, TODO
-        """count = self.getDepotItemCount(0) # Should be the unique count
-        stream.uint16(count)
-        if count > 0:
-            def _(i):
-                for x in i:
-                    yield x
-                    if x.containerSize:
-                        for y in _(x):
-                            yield y
-
-            for item in _(self.getDepot(0)):
-                stream.uint16(item.cid)
-                stream.uint16(1) # Should be the total count"""
-        stream.uint16(1)
-        # Test data
-        stream.uint16(0x0bd2)
-        stream.uint16(0x0002)
+        stream.uint32(min(0xFFFFFFFF, self.getBalance()))
+        # XXX: Some older than 9.7 version needed this.
+        # stream.uint8(self.getVocation().clientId)
+        stream.uint8(market.saleOffers(self)) # Active offers
+        
+        stream.uint16(market.size())
+        for entry in market.getItems():
+            stream.uint16(game.item.cid(entry[0]))
+            stream.uint16(entry[1])
         stream.send(self.client)
         #self.marketDetails()
         #self.marketOffers() # Doesn't work
 
-    def marketDetails(self):
+    def marketOffers(self, itemId):
         if not config.enableMarket or self.client.version < 944:
             return
 
         stream = self.packet()
-        # Test data
-        for itemId in (2383, 2395, 7449): #
-            stream.uint8(0xF8)
-            # Lazy reasons:
-            item = Item(itemId)
+        stream.uint8(0xF9)
+        stream.uint16(game.item.cid(itemId))
+
+        buyOffers = self.market.getBuyOffers(itemId)
+        stream.uint32(len(buyOffers))
+        for entry in buyOffers:
+            stream.uint32(entry.expire)
+            stream.uint16(entry.counter)
+            stream.uint16(entry.amount)
+            stream.uint32(entry.price)
+            stream.string(entry.playerName)
+
+        saleOffers = self.market.getSaleOffers(itemId)
+
+        stream.uint32(len(saleOffers))
+        for entry in saleOffers:
+            stream.uint32(entry.expire)
+            stream.uint16(entry.counter)
+            stream.uint16(entry.amount)
+            stream.uint32(entry.price)
+            stream.string(entry.playerName)
+
+        stream.send(self.client)
+
+        self.marketDetails(itemId)
+    
+    def marketDetails(self, itemId):
+        # Lazy.
+        item = Item(itemId)
+        
+        with self.packet(0xF8) as stream:
             stream.uint16(item.cid)
-            stream.string(str(item.armor or "")) # Just use str casting, some values are ints or None.
-            stream.string("%s +%s" % (item.attack, item.extraAttack))
+            stream.string(str(item.armor or ""))
+            stream.string(str(item.attack or ""))
             stream.string(str(item.containerSize or ""))
-            stream.string("%s +%s" % (item.defence, item.extraDefence))
-            stream.string(item.__getattr__("description") or "")
-            stream.string("a very long time, just testing") # expire time
-            stream.string("some absorb here") # Absorb
-            stream.string("no required") # Min required level
-            stream.string("no required") # Min required magic level
-            stream.string("Professions here, etc knight")
-            stream.string("spell name here") # Rune spell name
-            stream.string("boosts")
-            stream.string("charges")
+            stream.string(str(item.defence or ""))
+            desc = ""
+            if "description" in game.item.items[itemId]:
+                desc =  game.item.items[itemId]["description"]
+
+            stream.string(desc)
+            stream.string(str(item.duration or "")) # XXX: Decay time.
+            stream.string("") # XXX: Absorbe Abilities.
+            stream.string("0") # XXX: Min required level.
+            stream.string("0") # XXX: Min required magic level.
+            stream.string("") # XXX: Vocation
+            stream.string("") # XXX: Rune spell name
+            stream.string("") # XXX: Bonus.
+            stream.string("") # XXX: Charges.
             stream.string(item.weaponType or "")
-            stream.string(str(item.weight))
-
-            stream.uint8(1) # Buy offers
-            # for offer:
-            stream.uint32(100)
-            stream.uint32(100)
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max
-            stream.uint8(1) # sales offers
-            # for offer:
-            stream.uint32(100)
-            stream.uint32(100)
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max
-        stream.send(self.client)
-
-    def marketOffers(self):
-        stream = self.packet()
-        for itemId in (2383,): #2395, 7449):
-            stream.uint8(0xF9)
-            # Lazy reasons
-            item = Item(itemId)
-            stream.uint16(item.cid)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint16(1)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint32(1)
-
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint16(1)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint32(1)
-
-        stream.send(self.client)
+            stream.string(str(item.weight or ""))
+            
+            # XXX Sale and buy statistics
+            stream.uint8(0)
+            stream.uint8(0)
 
     def setLanguage(self, lang):
         if lang != 'en_EN':

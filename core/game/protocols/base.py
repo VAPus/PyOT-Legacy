@@ -752,6 +752,9 @@ class BaseProtocol(object):
             
         elif packetType == 0xF1:
             self.handleQuestLine(player, packet)
+
+        elif packetType == 0xF5:
+            self.handleBrowseMarket(player, packet)
             
         elif packetType == 0xF9:
             self.handleDialog(player, packet)
@@ -1524,3 +1527,13 @@ class BaseProtocol(object):
     def handlePing(self, player):
         with player.packet(0x1E) as stream:
             pass
+    
+    def handleBrowseMarket(self, player, packet):
+        id = packet.uint16()
+
+        if id == 0xFFFE:
+            print "Req own offers"
+        elif id == 0xFFFF:
+            print "Req own history"
+        else:
+            player.marketOffers(id)

@@ -215,6 +215,7 @@ enableHotkey = True
 
 # Marketplace
 enableMarket = True # It works for 9.44+ only. Lower versions might not access it.
+marketOfferExpire = 7 * 3600 * 24 # How long shall a offer be listed?
 
 # Pathfinder
 # MIGHT BE BUGGY, NOT WELL TESTED!

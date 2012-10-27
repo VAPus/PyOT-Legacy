@@ -808,7 +808,7 @@ class Item(object):
             
 def cid(itemid):
     try:
-        return items[itemid][1]
+        return items[itemid]['cid']
     except:
         return None
 
