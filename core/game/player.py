@@ -89,7 +89,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         
         self.lastUsedObject = 0
 
-        self.market = None        
+        self.market = None
+        self.depotMarketCache = {}
+
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -1859,7 +1861,28 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return self._getDepotItemCount(depot)
         else:
             return 0
-        
+    
+    def _depotMarketCache(self, cache, items):
+        for item in items:
+            # TODO: Check duration, charges etc.
+
+            if item.containerSize:
+                self._depotMarketCache(cache, item.container)
+            else:
+                try:
+                    cache[item.itemId] += item.count or 1
+                except:
+                    cache[item.itemId] = item.count or 1
+
+    def getDepotMarketCache(self, depotId):
+        depot = self.getDepot(depotId)
+        if not depot:
+            return {}
+        else:
+            depotCache = {}
+            self._depotMarketCache(depotCache, depot)
+            return depotCache
+               
     # Stuff from protocol:
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
@@ -2293,10 +2316,21 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # stream.uint8(self.getVocation().clientId)
         stream.uint8(market.saleOffers(self)) # Active offers
         
-        stream.uint16(market.size())
+        if not marketId in self.depotMarketCache:
+            self.depotMarketCache[marketId] = self.getDepotMarketCache(marketId)
+        print self.depotMarketCache[marketId]
+        print self.getDepot(marketId)
+        print self.depot
+        print marketId
+        stream.uint16(len(self.depotMarketCache[marketId]))
+        for entry in self.depotMarketCache[marketId]:
+            stream.uint16(game.item.cid(entry))
+            stream.uint16(self.depotMarketCache[marketId][entry])
+
+        """stream.uint16(market.size())
         for entry in market.getItems():
             stream.uint16(game.item.cid(entry[0]))
-            stream.uint16(entry[1])
+            stream.uint16(entry[1])"""
         stream.send(self.client)
         #self.marketDetails()
         #self.marketOffers() # Doesn't work

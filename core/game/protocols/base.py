@@ -1536,4 +1536,7 @@ class BaseProtocol(object):
         elif id == 0xFFFF:
             print "Req own history"
         else:
-            player.marketOffers(id)
+            sid = game.item.sid(id)
+            if not sid:
+                return # Server id not found.
+            player.marketOffers(sid)

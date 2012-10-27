@@ -478,6 +478,11 @@ class Item(object):
             pass
 
         try:
+            del params["owners"]
+        except:
+            pass
+
+        try:
             del params["position"]
             del params["inContainer"]
         except:
