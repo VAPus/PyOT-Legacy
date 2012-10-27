@@ -64,6 +64,9 @@ class Offer(object):
         if not self.itemId in seller.depotMarketCache[seller.marketDepotId] or not seller.depotMarketCache[seller.marketDepotId][self.itemId] >= amount:
             return
 
+        # Statistics
+        Markets[self.marketId].buyTransaction(self.itemId, seller, amount, self.price)
+
         # Give seller money.
         seller.modifyBalance(amount * self.price)
 
@@ -76,7 +79,7 @@ class Offer(object):
 
         # Take item.
         item = Item(self.itemId)
-        depot = buyer.getDepot(player.marketDepotId)
+        depot = seller.getDepot(seller.marketDepotId)
         tamount = amount
         def takeItems(items):
             global tamount
@@ -96,7 +99,7 @@ class Offer(object):
 
         # Give item
         player = yield self.player()
-        depot = buyer.getDepot(player.marketDepotId)
+        depot = player.getDepot(player.marketDepotId)
         if item.stackable:
             while amount > 0:
                 depot.append(Item(self.itemId, min(100, amount)))
@@ -106,6 +109,7 @@ class Offer(object):
                 depot.append(Item(self.itemId))
                 amount -= 1
 
+        
     @inlineCallbacks
     def handleSell(self, buyer, amount):
         print "handleSell"
@@ -113,6 +117,8 @@ class Offer(object):
         # Verify money.
         if not buyer.getBalance() >= amount * self.price:
             return
+
+        Markets[self.marketId].buyTransaction(self.itemId, buyer, amount, self.price)
 
         # Take buyer money..
         price = (amount * self.price)
@@ -144,10 +150,17 @@ class Offer(object):
 class Market(object):
     def __init__(self, id):
         self.id = id
+
+        # Lookup cache.
         self.items = {} # itemId -> Count.
 
+        # Offers.
         self._saleOffers = []
         self._buyOffers = []
+
+        # Transaction statistics.
+        self.buyStatistics = {} # itemId -> [count, total price, lowest price, highest price]
+        self.saleStatistics = {}
 
     def addSaleOffer(self, offer):
         offer.marketId = self.id
@@ -226,6 +239,34 @@ class Market(object):
     def getItems(self):
         for itemId in self.items:
             yield (itemId, self.items[itemId])
+
+    def saleTransaction(self, itemId, who, count, price):
+        try:
+            transactions = self.saleStatistics[itemId]
+            transactions[0] += count
+            transactions[1] += price*count
+            if price < transactions[2]:
+                transactions[2] = price
+            if price > transactions[3]:
+                transactions[3] = price
+        except:
+            self.saleStatistics[itemId] = [count, price*count, price, price]
+
+        # Insert SQL.
+
+    def buyTransaction(self, itemId, who, count, price):
+        try:
+            transactions = self.buyStatistics[itemId]
+            transactions[0] += count
+            transactions[1] += price*count
+            if price < transactions[2]:
+                transactions[2] = price
+            if price > transactions[3]:
+                transactions[3] = price
+        except:
+            self.buyStatistics[itemId] = [count, price*count, price, price]
+
+        # Insert SQL.
 
 @inlineCallbacks
 def load():

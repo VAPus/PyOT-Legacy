@@ -2425,9 +2425,23 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.string(item.weaponType or "")
             stream.string(str(item.weight or ""))
             
-            # XXX Sale and buy statistics
-            stream.uint8(0)
-            stream.uint8(0)
+            if itemId in self.market.buyStatistics:
+                stream.uint8(1)
+                stream.uint32(self.market.buyStatistics[0])
+                stream.uint32(self.market.buyStatistics[1] / self.market.buyStatistics[0])
+                stream.uint32(self.market.buyStatistics[3])
+                stream.uint32(self.market.buyStatistics[2])
+            else:
+                stream.uint8(0)
+
+            if itemId in self.market.saleStatistics:
+                stream.uint8(1)
+                stream.uint32(self.market.saleStatistics[0])
+                stream.uint32(self.market.saleStatistics[1] / self.market.saleStatistics[0])
+                stream.uint32(self.market.saleStatistics[3])
+                stream.uint32(self.market.saleStatistics[2])
+            else:
+                stream.uint8(0)
 
     def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
         print type
