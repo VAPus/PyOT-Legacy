@@ -35,6 +35,7 @@ import language
 import game.enum
 import game.player, game.creature, game.npc, game.monster, game.spell, game.party
 import game.conditions
+import game.market
 
 try:
     import cPickle as pickle
@@ -154,6 +155,10 @@ def loader(timer):
         print "> > Loading bans...",
         yield game.ban.refresh()
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
+
+        print "> > Loading market...",
+        game.market.load()
+        print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading house data...",
         for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
@@ -292,13 +297,17 @@ def loader(timer):
     __builtin__.accountIsBanned = game.ban.accountIsBanned
     __builtin__.addBan = game.ban.addBan
     
+    # Market
+    __builtin__.getMarket = game.market.getMarket
+    __builtin__.newMarket = game.market.newMarket
+
     # Creature and Player class. Mainly for test and savings.
     __builtin__.Creature = game.creature.Creature
     __builtin__.Player = game.player.Player
     __builtin__.Monster = game.monster.Monster
     
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban')
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban', 'market')
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -318,7 +327,7 @@ def loader(timer):
         deathlist = game.deathlist
         ban = game.ban
         engine = sys.modules["game.engine"] # For consistancy
-        
+        market = game.market        
             
     __builtin__.game = Globalizer
     
