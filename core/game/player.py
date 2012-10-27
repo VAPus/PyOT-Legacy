@@ -19,6 +19,7 @@ import math
 import otjson
 import datetime
 import language
+import copy
 
 # Build class.
 from game.creature_talking import PlayerTalking
@@ -1887,7 +1888,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def _removeFromDepot(self, items, itemId, count):
         _count = 0
-        for item in items[:]:
+        for item in copy.copy(items):
             if item.itemId == itemId:
                 oldCount = item.count or 1
                 item.count = max(0, oldCount - count)
@@ -1908,7 +1909,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if not depot:
             return 0
 
-        return self._removeFromDepot(depot, itemid, count)
+        return self._removeFromDepot(depot, itemId, count)
 
     # Stuff from protocol:
     def followCallback(self, who):
@@ -2356,8 +2357,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint16(game.item.cid(entry[0]))
             stream.uint16(entry[1])"""
         stream.send(self.client)
+
+        self.marketOpen = True
+
         #self.marketDetails()
         #self.marketOffers() # Doesn't work
+
+    def closeMarket(self):
+        # TODO: Script events.
+        self.marketOpen = False
 
     def marketOffers(self, itemId):
         if not config.enableMarket or self.client.version < 944:
@@ -2365,6 +2373,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         stream = self.packet()
         stream.uint8(0xF9)
+        print "itemId - marketOffers - ", itemId
         stream.uint16(game.item.cid(itemId))
 
         buyOffers = self.market.getBuyOffers(itemId)
@@ -2421,10 +2430,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.uint8(0)
 
     def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
-        if not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId]:
+        print type
+        if type == 1 and (not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId]):
+            return self.notPossible()
+        elif type == 0 and self.getBalance() < amount*price:
+            print "XXX: Can't afford it."
             return self.notPossible()
 
-        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, 0, type=type)
+        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, 0, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
         if anonymous:
             offer.playerName = "Anonymous"
         else:
@@ -2436,11 +2449,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.market.addSaleOffer(offer)
 
         offer.save()
+        if type == 1:
+            self.removeFromDepot(self.marketDepotId, itemId, amount)
+            self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
+        elif type == 0:
+            self.modifyBalance(-(amount * price))
 
-        self.removeFromDepot(self.marketDepotId, itemId, amount)
-        self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
-
-        self.marketOffers(itemId)
+        if self.marketOpen:
+            self.marketOffers(itemId)
+            self.openMarket(self.market.id)
 
     def setLanguage(self, lang):
         if lang != 'en_EN':

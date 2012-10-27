@@ -92,9 +92,9 @@ class Market(object):
 @inlineCallbacks
 def load():
     global Markets
-    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0 AND mo.`created` > %s", (config.worldId, time.time() + config.marketOfferExpire))):
+    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0 AND mo.`created` > %s", (config.worldId, time.time() - config.marketOfferExpire))):
         if not entry["market_id"] in Markets:
-            Markets[entry["market_id"]] = Market(0)
+            Markets[entry["market_id"]] = Market(entry["market_id"])
 
         offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["id"] & 0xFFFF, entry["type"])
 

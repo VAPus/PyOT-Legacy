@@ -753,6 +753,9 @@ class BaseProtocol(object):
         elif packetType == 0xF1:
             self.handleQuestLine(player, packet)
 
+        elif packetType == 0xF4:
+            player.closeMarket()
+
         elif packetType == 0xF5:
             self.handleBrowseMarket(player, packet)
         
