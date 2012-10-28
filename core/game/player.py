@@ -2496,6 +2496,32 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.uint16(entry.amount)
                 stream.uint32(entry.price)
 
+    @inlineCallbacks
+    def marketHistory(self):
+        counter = 0
+        buyHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND h.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
+        saleHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND o.`player_id` = %s AND o.`market_id`", (self.data["id"], self.market.id))
+        with self.packet(0xF9) as stream:
+            stream.uint16(0xFFFF)
+
+            stream.uint32(len(buyHistory))
+            for entry in buyHistory:
+                stream.uint32(entry["time"])
+                stream.uint16(counter) # Relevant to something?
+                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["amount"])
+                stream.uint32(entry["price"])
+                stream.uint8(1) # XXX?
+                counter = (counter + 1) & 0xFFFF
+            counter = 0
+            for entry in saleHistory:
+                stream.uint32(entry["time"])
+                stream.uint16(counter) # Relevant to something?
+                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["amount"])
+                stream.uint32(entry["price"])
+                stream.uint8(1) # XXX?
+                counter = (counter + 1) & 0xFFFF
 
     def setLanguage(self, lang):
         if lang != 'en_EN':

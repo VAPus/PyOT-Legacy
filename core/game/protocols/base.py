@@ -177,7 +177,7 @@ class BasePacket(TibiaPacket):
                 else:
                     # Bugged?
                     if creature.creatureType != 0 and creature.brainEvent:
-	                if player.client.version >= 953:
+                        if player.client.version >= 953:
                             self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
                         else:
                             self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
@@ -1551,6 +1551,8 @@ class BaseProtocol(object):
 
         elif id == 0xFFFF:
             print "Req own history"
+            player.marketHistory()
+
         else:
             sid = game.item.sid(id)
             if not sid:
