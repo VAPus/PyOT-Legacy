@@ -108,7 +108,6 @@ class Offer(object):
             while amount > 0:
                 depot.append(Item(self.itemId))
                 amount -= 1
-
         
     @inlineCallbacks
     def handleSell(self, buyer, amount):
@@ -240,33 +239,35 @@ class Market(object):
         for itemId in self.items:
             yield (itemId, self.items[itemId])
 
-    def saleTransaction(self, itemId, who, count, price):
+    def saleTransaction(self, offer, who, count):
         try:
-            transactions = self.saleStatistics[itemId]
+            transactions = self.saleStatistics[offer.itemId]
             transactions[0] += count
-            transactions[1] += price*count
-            if price < transactions[2]:
-                transactions[2] = price
-            if price > transactions[3]:
-                transactions[3] = price
+            transactions[1] += offer.price*count
+            if offer.price < transactions[2]:
+                transactions[2] = offer.price
+            if offer.price > transactions[3]:
+                transactions[3] = offer.price
         except:
-            self.saleStatistics[itemId] = [count, price*count, price, price]
+            self.saleStatistics[offer.itemId] = [count, offer.price*count, offer.price, offer.price]
 
         # Insert SQL.
+        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", (offer.id, who.data["id"], count, time.time(), MARKET_OFFER_SALE))
 
-    def buyTransaction(self, itemId, who, count, price):
+    def buyTransaction(self, offer, who, count):
         try:
-            transactions = self.buyStatistics[itemId]
+            transactions = self.buyStatistics[offer.itemId]
             transactions[0] += count
-            transactions[1] += price*count
-            if price < transactions[2]:
-                transactions[2] = price
-            if price > transactions[3]:
-                transactions[3] = price
+            transactions[1] += offer.price*count
+            if offer.price < transactions[2]:
+                transactions[2] = offer.price
+            if offer.price > transactions[3]:
+                transactions[3] = offer.price
         except:
-            self.buyStatistics[itemId] = [count, price*count, price, price]
+            self.buyStatistics[offer.itemId] = [count, offer.price*count, offer.price, offer.price]
 
         # Insert SQL.
+        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", (offer.id, who.data["id"], count, time.time(), MARKET_OFFER_BUY))
 
 @inlineCallbacks
 def load():
@@ -297,6 +298,13 @@ def load():
 
         else:
             Markets[entry["market_id"]].addBuyOffer(offer)
+
+        # Statistics.
+        for history in (yield sql.runQuery("SELECT o.`item_id`, h.`type`, COUNT(h.`id`) as `count`, SUM(o.`price`) * COUNT(h.`amount`) as `total`, MAX(o.`price`) as `max`, MIN(o.`price`) as `min` FROM `market_history` h, `market_offers` o WHERE o.`id` = h.`offer_id` GROUP BY o.`item_id`")):
+            if history["type"] == MARKET_OFFER_BUY:
+                self.buyStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
+            else:
+                self.saleStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
 
 def newMarket(id):
     global Markets
