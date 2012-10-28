@@ -285,6 +285,8 @@ class Item(object):
                 morearm += _l(player, ", %+d magic level") % self.__getattr__('magiclevelpoints')
             if self.__getattr__('absorbPercentAll'):
                 morearm = _l(player, ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain') % {"all":self.__getattr__('absorbPercentAll')}
+
+            
             # Step one, names to dict with value
             bonuses = {}
             for bns in bonus:
@@ -299,9 +301,11 @@ class Item(object):
             if morearm:
                 if not self.armor and not self.defence:
                     morearm = morearm[2:]
-                description += "%s" % morearm
-            description += ")."
-
+                description += "protection %s" % morearm
+            if self.showcharges:
+                description += ") that has %d charges left." % self.charges
+            else:
+                description += ")."
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:

@@ -203,12 +203,13 @@ class PlayerAttacks(CreatureAttacks):
             attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
             absorb = 0
             for item in self.inventory:
-                if item and getattr(item, attrs[type]) > 0:
-                        absorb += (item.absorbPercentAll or 0) + getattr(item, attrs[type])
-            
-            print 'original dmg: ', dmg
+                if item and (getattr(item, attrs[type]) or item.absorbPercentAll):
+                    absorb += (item.absorbPercentAll or 0) + (getattr(item, attrs[type]) or 0)
+                    if item.charges:
+                        item.useCharge()
+
             dmg = dmg - int(dmg * absorb/100)
-            print 'after absorb: ', dmg
+
         return dmg
 
     def attackTarget(self, dmg = None):
