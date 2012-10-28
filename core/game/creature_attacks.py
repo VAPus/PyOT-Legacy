@@ -23,7 +23,7 @@ class CreatureAttacks(object):
         if not type == enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-
+        
         if type == enum.ICE:
             textColor = enum.COLOR_TEAL
             magicEffect = enum.EFFECT_ICEATTACK
@@ -159,7 +159,7 @@ class PlayerAttacks(CreatureAttacks):
     def damageToBlock(self, dmg, type):
         if dmg > 0:
             return int(dmg)
-        
+
         if type == enum.MELEE or type == enum.PHYSICAL:
             # Armor and defence
             armor = 0
@@ -198,7 +198,17 @@ class PlayerAttacks(CreatureAttacks):
                 return 0
             else:
                 return dmg
-
+        else:
+            # Damage types other than physical
+            attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
+            absorb = 0
+            for item in self.inventory:
+                if item: and getattr(item, attrs[type]) > 0 and item.absorbPercentAll > 0:
+                        absorb += getattr(item, attrs[type])
+            
+            print 'original dmg: ', dmg
+            dmg = dmg - int(dmg * absorb/100)
+            print 'after absorb: ', dmg
         return dmg
 
     def attackTarget(self, dmg = None):
