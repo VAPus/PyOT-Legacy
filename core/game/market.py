@@ -191,18 +191,18 @@ class Market(object):
 
         return entries
 
-    def getSaleOffers(self, itemId):
+    def getSaleOffers(self, itemId, exclude=None):
         entries = []
         for entry in self._saleOffers:
-            if entry.itemId == itemId and entry.type == MARKET_OFFER_SALE:
+            if entry.itemId == itemId and entry.type == MARKET_OFFER_SALE and (exclude is None or entry.playerId != exclude):
                 entries.append(entry)
 
         return entries
 
-    def getBuyOffers(self, itemId):
+    def getBuyOffers(self, itemId, exclude=None):
         entries = []
         for entry in self._buyOffers:
-            if entry.itemId == itemId and entry.type == MARKET_OFFER_BUY:
+            if entry.itemId == itemId and entry.type == MARKET_OFFER_BUY and (exclude is None or entry.playerId != exclude)::
                 entries.append(entry)
 
         return entries
