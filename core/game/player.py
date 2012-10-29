@@ -2414,14 +2414,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 desc =  game.item.items[itemId]["description"]
 
             stream.string(desc)
-            stream.string(str(item.duration or "")) # XXX: Decay time.
+            stream.string(str(item.duration or ""))
             stream.string("") # XXX: Absorbe Abilities.
-            stream.string("0") # XXX: Min required level.
-            stream.string("0") # XXX: Min required magic level.
+            stream.string("") # XXX: Min required level.
+            stream.string("") # XXX: Min required magic level.
             stream.string("") # XXX: Vocation
-            stream.string("") # XXX: Rune spell name
+            stream.string(str(item.runeSpellName or ""))
             stream.string("") # XXX: Bonus.
-            stream.string("") # XXX: Charges.
+            stream.string(str(item.charges or ""))
             stream.string(item.weaponType or "")
             stream.string(str(item.weight or ""))
             
