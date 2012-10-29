@@ -40,6 +40,9 @@ class Offer(object):
         # Already expired?
         if self.type == 0: return
 
+        # System offers?
+        if not self.playerId: return
+
         player = yield self.player()
         if self.type == MARKET_OFFER_BUY:
             player.modifyBalance(self.price * self.amount)
@@ -98,16 +101,18 @@ class Offer(object):
         takeItems(depot)
 
         # Give item
-        player = yield self.player()
-        depot = player.getDepot(player.marketDepotId)
-        if item.stackable:
-            while amount > 0:
-                depot.append(Item(self.itemId, min(100, amount)))
-                amount -= min(100, amount)
-        else:
-            while amount > 0:
-                depot.append(Item(self.itemId))
-                amount -= 1
+        # System offer. Then ignore it.
+        if self.playerId != 0:
+            player = yield self.player()
+            depot = player.getDepot(player.marketDepotId)
+            if item.stackable:
+                while amount > 0:
+                    depot.append(Item(self.itemId, min(100, amount)))
+                    amount -= min(100, amount)
+            else:
+                while amount > 0:
+                    depot.append(Item(self.itemId))
+                    amount -= 1
         
     @inlineCallbacks
     def handleSell(self, buyer, amount):
@@ -143,8 +148,10 @@ class Offer(object):
                 amount -= 1
 
         # Give seller money.
-        player = yield self.player()
-        player.modifyBalance(price)
+        # System, then ignore it.
+        if self.playerId != 0:
+            player = yield self.player()
+            player.modifyBalance(price)
 
 class Market(object):
     def __init__(self, id):
