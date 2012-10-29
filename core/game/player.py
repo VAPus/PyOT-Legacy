@@ -2444,13 +2444,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.uint8(0)
 
     def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
-        print type
-        if type == 1 and (not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId]):
+        fee = max(20, min(1000, (amount*price) / 100))
+
+        if type == 1 and (not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId] or self.getBalance() < fee):
             return self.notPossible()
-        elif type == 0 and self.getBalance() < amount*price:
+        elif type == 0 and self.getBalance() < (amount*price)+fee:
             print "XXX: Can't afford it."
             return self.notPossible()
 
+        
         offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
         if anonymous:
             offer.playerName = "Anonymous"
@@ -2468,6 +2470,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
         elif type == 0:
             self.modifyBalance(-(amount * price))
+
+        # Fees.
+        self.modifyBalance(-fee)
 
         if self.marketOpen:
             self.marketOffers(itemId)
