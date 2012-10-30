@@ -204,11 +204,11 @@ class PlayerAttacks(CreatureAttacks):
             absorb = 0
             for item in self.inventory:
                 if item:
-                    absorb += getattr(item, absorbPercentAll, 0) + getattr(item, attrs[type], 0)
+                    absorb += getattr(item, "absorbPercentAll", 0) + getattr(item, attrs[type], 0)
                     if item.charges and absorb > 0:
                         item.useCharge()
 
-            dmg -= int(dmg * absorb/100)
+            dmg -= int(dmg * absorb/100.0)
         return dmg
 
     def attackTarget(self, dmg = None):
@@ -322,7 +322,7 @@ class PlayerAttacks(CreatureAttacks):
                         if weapon.elementLifedrain:
                             target.onHit(self, -weapon.elementLifedrain, LIFEDRAIN)
                         
-                        self.skillAttempt(skillType)
+                    self.skillAttempt(skillType)
                 else:
                     target.magicEffect(EFFECT_BLOCKHIT)
                     
