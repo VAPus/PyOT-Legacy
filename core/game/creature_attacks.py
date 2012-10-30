@@ -302,7 +302,8 @@ class PlayerAttacks(CreatureAttacks):
                     target.onHit(self, dmg, atkType)
                     
                     if skillType != SKILL_FIST:
-                    # weapon elemental damage
+                        # weapon elemental damage
+                        # XXX: What about elemental arrows when skillType == SKILL_DISTANCE?
                         weapon = self.inventory[SLOT_RIGHT]
 
                         if weapon.elementFire:
