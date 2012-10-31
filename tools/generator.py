@@ -5,6 +5,7 @@ import config
 import MySQLdb
 import struct
 import io
+
 ### Load all solid and movable items
 topitems = set()
 movable = set()
@@ -136,20 +137,24 @@ class Map(object):
         self.waypoints = {}
         self.houses = {}
         self.flags = {}
-        
+        self.DICT_MODE = False
+
         # Level 7 always got to be filled up.
         self.area = {7:[]}
-        for x in xrange(0, xA+1):
-            self.area[7].append([])
-            for y in xrange(0, yA+1):
-                self.area[7][x].append([])
-                if ground == None:
-                    self.area[7][x][y] = None
-                elif isinstance(ground, int):
-                    self.area[7][x][y] = [Item(ground)]
-                else:
-                    self.area[7][x][y] = [ground]
+        if ground != None and not isinstance(ground, Item):
+            ground = Item(ground)
 
+        if ground != None:
+            for x in xrange(0, xA+1):
+                self.area[7].append([])
+                for y in xrange(0, yA+1):
+                    self.area[7][x].append([])
+                    if ground == None:
+                        self.area[7][x][y] = None
+                    else:
+                        self.area[7][x][y] = [ground]
+        else:
+            self.area[7] = []
 
     def author(self, name):
         self._author = name
@@ -525,7 +530,7 @@ class Tile(object):
         elif ground:
             self.area = [ground]
         else:
-            self.area = []
+            self.area = None
         
     def add(self, thing):
         self.area.append(thing)

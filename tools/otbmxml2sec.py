@@ -4,6 +4,7 @@
 from struct import unpack, unpack_from, Struct
 import sys
 import gc
+import io
 
 # Python 3
 try:
@@ -81,117 +82,45 @@ class Reader(object):
         
     def getData(self):
         return self.data[self.pos:]
-    
-
-class L(object):
-    __slots__ = ('value')
-    def __init__(self, val):
-        self.value = val
-        
-class Node(object):
-    __slots_ = ('data', 'nodes', 'begin', 'size')
-    def __init__(self, begin, size=None):
-        self.data = b""
-        self.nodes = []
-        self.begin = begin
-        self.size = size
-            
-
-    def parse(self):
-        otbm.pos = self.begin
-        byte = otbm.uint8()
-        nextIsEscaped = False
-        while otbm.pos < (self.begin + self.size):
-            if byte == 0xFE and not nextIsEscaped:
-                blockSize = self.sizer()
-                node = self.handleBlock(otbm.pos, blockSize)
-                otbm.pos += blockSize
-            elif byte == 0xFF and not nextIsEscaped:
-                level.value -= 1
-                if level.value < 0:
-                    print("DEBUG!")
-                break
-                
-            elif byte == 0xFD and not nextIsEscaped:
-                nextIsEscaped = True
-                
-            else:
-                nextIsEscaped = False 
-                self.data += chr(byte)
-                
-            byte = otbm.uint8()
-        self.data = Reader(self.data)
-
-    def sizer(self):
-        oldPos = otbm.pos
-        global subLevels
-        subLevels = 0
-        
-        def leveler():
-            global subLevels
-            subLevels += 1
-            byte = otbm.uint8()
-            nextIsEscaped = False
-            while byte != None:
-                if byte == 0xFE and not nextIsEscaped:
-                    leveler()
-
-                elif byte == 0xFF and not nextIsEscaped:
-                    subLevels -= 1
-                    if subLevels < 0:
-                        print("DEBUG!")
-                    break
-                    
-                elif byte == 0xFD and not nextIsEscaped:
-                    nextIsEscaped = True
-                    
-                else:
-                    nextIsEscaped = False 
-                    
-                byte = otbm.uint8()            
-        leveler()
-        size = otbm.pos - oldPos
-        otbm.pos = oldPos
-        return size
-    def handleBlock(self, begin, size):
-        level.value += 1
-        node = Node(begin, size)
-        self.nodes.append(node)
-        return node
-        
-    def next(self):
-        if self.nodes:
-            try:
-                del self.data
-            except:
-                pass
-            node = self.nodes.pop(0)
-            node.parse()
-            return node
-        else:
-            del self # It's rather safe to assume we don't be around anymore
-            return None
-
-
 dummyItems = {}
-def genItem(itemid, fallback):
+dummyTiles = {}
+def genItem(itemid):
     if not itemid in dummyItems:
-        dummyItems[itemid] = fallback
+        dummyItems[itemid] = Item(itemid)
     return dummyItems[itemid]
 
-otbmFile = open("map.otbm", 'rb')
-otbm = Reader(otbmFile.read())
+try:
+    with io.open("map.otbm", 'rb') as otbmFile:
+        data = otbmFile.read()
+except:
+    import glob
+    with io.open(glob.glob("*.otbm")[0], 'rb') as otbmFile:
+        data = otbmFile.read()
 
-level = L(1)
-root = Node(5, len(otbm.data)) # Begin on level 1
-root.parse()
-root.data.pos += 1
+nData = []
+nextEscape = False
+for byte in data:
+    if ord(byte) == 0xFD:
+        if not nextEscape:
+            nextEscape = True
+            continue
+    nData.append(byte)
+    nextEscape = False
 
-version = root.data.uint32()
-width = root.data.uint16()
-height = root.data.uint16()
-majorVersionItems = root.data.uint32()
-minorVersionItems = root.data.uint32()
+data = ''.join(nData)
+del nData
+
+otbm = Reader(data)
+otbm.pos += 6
+
+version = otbm.uint32()
+
+assert version == 2
+
+width = otbm.uint16()
+height = otbm.uint16()
+majorVersionItems = otbm.uint32()
+minorVersionItems = otbm.uint32()
 
 # Tiles
 tiles = (width * height) / 4 # This also count null tiles which we doesn't pass, bad
@@ -199,7 +128,7 @@ tiles = (width * height) / 4 # This also count null tiles which we doesn't pass,
 print("OTBM v%d, %dx%d" % (version, width, height)) 
 
 from generator import Map, Item, Tile, Spawn
-print ("--Generating the map layout with no filling (gad this takes alot of memory)")
+print ("--Generating the map layout with no filling")
 m = Map(width,height,None,15)
 at = m.addTo
 a = m.add
@@ -207,148 +136,174 @@ a = m.add
 print ("--Done generating the map layout")
 
 # Prepopulate map with a ground level of voids
-
-nodes = root.next()
-nodes.data.pos += 1
+assert otbm.uint8() == 0xFE
 description = ""
 spawns = ""
 houses = ""
 
 m.author("OTBMXML2sec generator")
-print ("--Beging parsing description, spawns, and houses")
+print ("--Begin parsing description, spawns, and houses")
 
-while nodes.data.peekUint8():
-    attr = nodes.data.uint8()
+while otbm.peekUint8() != 0xFE:
+    attr = otbm.uint8()
+
+    if attr == 2: continue # ???
     if attr == 1:
-        description += nodes.data.string()+"\n"
+        description += otbm.string()+"\n"
         
     elif attr == 11:
-        spawns = nodes.data.string()
+        spawns = otbm.string()
         print("--Using spawns: %s" % spawns)
     elif attr == 13:
-        houses = nodes.data.string()
+        houses = otbm.string()
         print("--Using houses: %s" % houses)
     else:
-        print("Unknown nodes data")
-        
+        print("Unknown nodes data %s" % hex(attr))
+        sys.exit()
+
 m.description(description)
 print (description)
-node = nodes.next()
 onTile = 0
 lastPrint = 0
 print("--Begin OTBM nodes")
 MAX_X = 0
 MAX_Y = 0
 MAX_Z = 0
-while node:
-    type = node.data.uint8()
+while otbm.uint8() == 0xFE:
+    type = otbm.uint8()
     if type == 4: # Tile area
-        baseX = node.data.uint16()
-        baseY = node.data.uint16()
-        baseZ = node.data.uint8()
+        baseX = otbm.uint16()
+        baseY = otbm.uint16()
+        baseZ = otbm.uint8()
         
-        tile = node.next()
-        while tile:
-            tileType = tile.data.uint8()
+        
+        while otbm.uint8() == 0xFE:
+            
+            tileType = otbm.uint8()
             if tileType == 5 or tileType == 14: # Tile
-                tileX = tile.data.uint8() + baseX
-                tileY = tile.data.uint8() + baseY
-                    
+                tileX = otbm.uint8() + baseX
+                tileY = otbm.uint8() + baseY
+                assert tileX <= width
+                assert tileY <= height
                 houseId = 0
                 if tileType == 14:
-                    houseId = tile.data.uint32()
+                    houseId = otbm.uint32()
                 _render_ = False
                 _itemG_ = None
                 flags = 0
                 
                 # Attributes
-                while tile.data.peekUint8():
-                    attr = tile.data.uint8()
-                    if attr == 3: # OTBM_ATTR_TILE_FLAGS
-                        flags = tile.data.uint32()
+                if otbm.peekUint8() < 0xFE:
+                    while otbm.peekUint8() < 0xFE:
+                        attr = otbm.uint8()
+                        if attr == 3: # OTBM_ATTR_TILE_FLAGS
+                            flags = otbm.uint32()
                         
-                    elif attr == 9: # ITEM, ground item
-                        _itemG_ = Item(tile.data.uint16())
-                        _render_ = True
+                        elif attr == 9: # ITEM, ground item
+                            _itemG_ = genItem(otbm.uint16())
+                            _render_ = True
                         
-                    else:
-                        print("Unknown tile attrubute")
+                        else:
+                            print("Unknown tile attribute %s" % hex(attr))
+                            sys.exit()
+                                   
+                if otbm.peekUint8() != 0xFE and _itemG_:
+                    try:
+                        _tile_ = dummyTiles[_itemG_]
+                    except:
+                        dummyTiles[_itemG_] = [_itemG_]
+                        _tile_ = dummyTiles[_itemG_]
+                else:
+                    if otbm.peekUint8() == 0xFE:
+                        otbm.pos += 1
+                    
+                    _tile_ = []
+                    if _itemG_:
+                        _tile_.append(_itemG_)
+                                
+                while otbm.peekUint8() != 0xFF:
+                    innerAttr = otbm.uint8()
+                    if innerAttr == 0xFE: continue # Hack
+                    if innerAttr == 6: # more items
+                        print otbm.pos
+                        itemId = otbm.uint16()
+                        peak = otbm.peekUint8()
                         
-                _tile_ = []
-                if _itemG_:
-                    _tile_.append(_itemG_)
-
-                
-                item = tile.next()
-                while item:
-                    if item.data.uint8() == 6: # more items
-                        itemId = item.data.uint16()
-                        currItem=Item(itemId)
+                        if peak != 0xFE:
+                            currItem = genItem(itemId)
+                        else:
+                            assert otbm.uint8() == 0xFE
+                            currItem=Item(itemId)
                         
                         # Unserialie attributes
-                        while item.data.peekUint8():
-                            attr = item.data.uint8()
+                        while otbm.peekUint8() != 0xFF:                            
+                            attr = otbm.uint8()
+                            print "Curr attr", attr                            
                             if attr == 10: # depotId
-                                currItem.attribute("depotId",item.data.uint16())
+                                currItem.attribute("depotId",otbm.uint16())
                                 safe = False
                             elif attr == 14: # houseDoorId
                                 safe = False
-                                currItem.attribute("doorId",item.data.uint8())
+                                currItem.attribute("doorId",otbm.uint8())
                                 
                                 currItem.action('houseDoor')
                             elif attr == 20: # Sleeperguid
-                                item.data.uint32() # TODO: care?
+                                otbm.uint32() # TODO: care?
                             elif attr == 21: # sleepstart
-                                item.data.uint32()
+                                otbm.uint32()
                             elif attr == 8: # Teleport destination
                                 safe = False
-                                currItem.attribute("teledest",[item.data.uint16(),item.data.uint16(),item.data.uint8()])
+                                currItem.attribute("teledest",[otbm.uint16(),otbm.uint16(),otbm.uint8()])
                             elif attr == 15: # Item count
                                 safe = False
-                                currItem.attribute("count",item.data.uint8())
+                                currItem.attribute("count",otbm.uint8())
                             elif attr == 4: # action id
                                 safe = False
-                                currItem.action(str(item.data.uint16()))
+                                currItem.action(str(otbm.uint16()))
                             elif attr == 5:
                                 safe = False
-                                currItem.action(str(item.data.uint16() + 0xFFFF))
+                                currItem.action(str(otbm.uint16() + 0xFFFF))
                             elif attr == 6:
                                 safe = False
-                                currItem.attribute("text",item.data.string())
+                                currItem.attribute("text",otbm.string())
                             elif attr == 18:
                                 safe = False
-                                currItem.attribute("written",item.data.uint32())
+                                currItem.attribute("written",otbm.uint32())
                             elif attr == 19:
                                 safe = False
-                                currItem.attribute("writtenBy",item.data.string())
+                                currItem.attribute("writtenBy",otbm.string())
                             elif attr == 7:
                                 safe = False
-                                currItem.attribute("description",item.data.string())
+                                currItem.attribute("description",otbm.string())
                             elif attr == 12:
-                                item.data.uint8()
+                                otbm.uint8()
                             elif attr == 22:
                                 safe = False
-                                currItem.attribute("count",item.data.uint8())
+                                currItem.attribute("count",otbm.uint8())
                             elif attr == 16:
-                                duration = item.data.uint32()
+                                duration = otbm.uint32()
                                 print("duration = %d" % duration)
                             elif attr == 17:
-                                decayState = item.data.uint8()
+                                decayState = otbm.uint8()
                                 print("TODO: decaystate = %d on %d" % (decayState, itemId))
                             elif attr == 23:
-                                item.data.uint32()
+                                otbm.uint32()
                                 break # All after this is container items
+                            
                             else:
-                                print("Unknown item attribute %d" % attr)
+                                print otbm.pos
+                                print("Unknown item attribute %d, %d, %d" % (attr, otbm.uint8(), otbm.uint16()))
+                                sys.exit()
                         _render_ = True
                         
-                        if not currItem.attributes and not currItem.actions:
-                            _tile_.append(genItem(itemId, currItem))
-                        else:
-                            _tile_.append(currItem)
+                        _tile_.append(currItem)
+                        assert otbm.uint8() == 0xFF
                     else:
-                        print("Unknown item header")
-                    item = tile.next()
+                        print otbm.pos
+                        print("Unknown item header %s" % (hex(innerAttr)))
+                        sys.exit()
+                    
+                assert otbm.uint8() == 0xFF   
             else:
                 print("Unknown tile node")
             if _render_:
@@ -362,43 +317,38 @@ while node:
             if onTile - lastPrint == 2000:
                 lastPrint += 2000
                 print("---%d/~%d done" % (lastPrint, tiles))
-            tile = node.next()
             
     elif type == 12: # Towns
-        town = node.next()
         
-        while town:
-            townType = town.data.uint8()
+        while otbm.uint8() == 0xFE:
+            townType = otbm.uint8()
             if townType == 13:
-                townId = town.data.uint32()
-                townName = town.data.string()
-                temple = [town.data.uint16(),town.data.uint16(),town.data.uint8()]
+                townId = otbm.uint32()
+                townName = otbm.string()
+                temple = [otbm.uint16(),otbm.uint16(),otbm.uint8()]
                 m.town(townId, townName, temple)
             else:
                 print("Unknown town node")
                 
-            town = node.next()
+            
             
             
     elif type == 15 and version >= 2: # Waypoints
-        waypoint = node.next()
         
-        while waypoint:
-            waypointType = waypoint.data.uint8()
+        while otbm.uint8() == 0xFE:
+            waypointType = otbm.uint8()
             if waypointType == 16:
-                name = waypoint.data.string()
-                cords = [waypoint.data.uint16(),waypoint.data.uint16(),waypoint.data.uint8()]
+                name = otbm.string()
+                cords = [otbm.uint16(),otbm.uint16(),otbm.uint8()]
                 m.waypoint(name, cords)
             else:
                 print("Unknown waypoint type")
-            waypoint = node.next()
-    del node
-    node = nodes.next()
+    
+    #print "assert", otbm.pos, otbm.peekUint8()
+    #assert otbm.uint8() == 0xFF    
 
 print("---Done with all OTBM nodes")
 
-del nodes
-del root
 del otbm
 
 ### Begin XML reading
@@ -472,16 +422,4 @@ if houses:
 
 gc.collect()
 m.compile()
-"""
-lef = len(_output_)
-le = lef / 100
-co = 1
-for i in xrange(le, lef, le):
-    _output_.insert(i, "print ('%d%% (%d/%d)')" % (co, i, lef))
-    co += 1
-    
-print("-- Writing genmap.py")
-with open("genmap.py", "wb") as f:
-    f.write("\n".join(_output_))
-"""
 print("-- Done!")
