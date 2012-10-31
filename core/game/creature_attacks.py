@@ -248,7 +248,8 @@ class PlayerAttacks(CreatureAttacks):
 
                 elif not dmg and atkRange > 1:
                     # First, hitChance.
-                    chance = min(ammo.maxHitChance, config.hitChance(self.getActiveSkill(SKILL_DISTANCE), weapon.hitChance))
+                    # 'or' values are pretty random, to be corrected.
+                    chance = min((ammo.maxHitChance or 1), config.hitChance(self.getActiveSkill(SKILL_DISTANCE), (weapon.hitChance or 5)))
                     
                     self.modifyItem(ammo, Position(0xFFFF, SLOT_AMMO+1), -1)
                     
