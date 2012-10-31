@@ -305,6 +305,8 @@ class PlayerAttacks(CreatureAttacks):
                         # weapon elemental damage
                         # XXX: What about elemental arrows when skillType == SKILL_DISTANCE?
                         weapon = self.inventory[SLOT_RIGHT]
+                        if skillType == SKILL_DISTANCE:
+                            weapon = self.inventory[SLOT_AMMO] # will that do? 
 
                         if weapon.elementFire:
                             target.onHit(self, -weapon.elementFire, enum.FIRE)
