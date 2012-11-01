@@ -882,8 +882,8 @@ def loadItems():
     
     
     # Make three new values while we are loading
-    loadItems = [None] * (config.itemMaxServerId + 1)
-    reverseLoadItems = [None] * (config.itemMaxClientId + 1)
+    loadItems = {}
+    reverseLoadItems = {}
 
     for item in (yield d1):
         sid = item['sid']
