@@ -249,9 +249,20 @@ class PlayerAttacks(CreatureAttacks):
                 elif not dmg and atkRange > 1:
                     # First, hitChance.
                     # 'or' values are pretty random, to be corrected.
-                    chance = min((ammo.maxHitChance or 1), config.hitChance(self.getActiveSkill(SKILL_DISTANCE), (weapon.hitChance or 5)))
+                    defaultMax = 75
+                    base = 1.25
+                    baseRange = 4
+                    if weapon.slotType == "two-handed":
+                        defaultMax = 90
+                        base = 1.25 * 1.2
+                        baseRange = 6
+
+                    distance = baseRange - self.distanceStepsTo(self.target.position)
+
+
+                    chance = min((ammo.maxHitChance or defaultMax), self.getActiveSkill(SKILL_DISTANCE) * (base ** distance) * (weapon.hitChance or 1))
                     
-                    self.modifyItem(ammo, Position(0xFFFF, SLOT_AMMO+1), -1)
+                    self.modifyItem(ammo, -1)
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
@@ -259,7 +270,7 @@ class PlayerAttacks(CreatureAttacks):
                         return
                     
                     minDmg = config.minDistanceDamage(self.data["level"])
-                    maxDmg = config.distanceDamage(weapon.attack + ammo.attack, self.getActiveSkill(SKILL_DISTANCE), factor)
+                    maxDmg = config.distanceDamage((weapon.attack or 0) + (ammo.attack or 0), self.getActiveSkill(SKILL_DISTANCE), factor)
                     
                     dmg = -random.randint(round(minDmg), round(maxDmg))
                     

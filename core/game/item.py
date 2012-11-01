@@ -92,6 +92,9 @@ class Item(object):
         pos = self.position
         creature = self.creature
 
+        if not pos:
+            return False
+
         if pos.x == 0xFFFF:
             if not creature and not self.inContainer:
                 raise Exception("Cannot verify Position inside inventory when creature == None and inContainer == None!")
@@ -622,6 +625,7 @@ class Item(object):
                     creature.refreshStatus()
                 
                 creature.updateInventory(position.y)
+                creature.updateInventory(position.y-1)
             
             # Option 3, the bags, if there is one ofcource
             else:
