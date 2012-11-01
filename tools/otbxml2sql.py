@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys
+import struct, sys, io
 
 # The reader class:
-class Reader:
+class Reader(object):
     def __init__(self, data):
         self.length = len(data)
         self.pos = 0
@@ -74,7 +74,7 @@ class Reader:
     def getData(self):
         return self.data[self.pos:]
     
-class Item:
+class Item(object):
     def __init__(self):
         self.type = 0
         self.flags = {}
@@ -84,22 +84,20 @@ class Item:
         self.alsoKnownAs = []
         self.junk = False
 
-class L:
-    def __init__(self, val):
-        self.value = val
-class Node:
-    def __init__(self, otb, level):
+class Node(object):
+    def __init__(self, otb):
+        global LEVEL
         self.data = b""
         self.nodes = []
         byte = otb.uint8()
         nextIsEscaped = False
         while byte != None:
             if byte == 0xFE and not nextIsEscaped:
-                node = self.handleBlock(otb, level)
+                node = self.handleBlock(otb)
 
             elif byte == 0xFF and not nextIsEscaped:
-                level.value -= 1
-                if level.value < 0:
+                LEVEL -= 1
+                if LEVEL < 0:
                     print "DEBUG!"
                 break
                 
@@ -112,9 +110,10 @@ class Node:
                 
             byte = otb.uint8()
         self.data = Reader(self.data)
-    def handleBlock(self, otb, level):
-        level.value += 1
-        node = Node(otb, level)
+    def handleBlock(self, otb):
+        global LEVEL
+        LEVEL += 1
+        node = Node(otb)
         self.nodes.append(node)
         return node
         
@@ -124,123 +123,12 @@ class Node:
         else:
             return None
             
-otbFile = open("items.otb")
-
-
-datFile = open("Tibia.dat")
-
-datInfo = {}
-dat = Reader(datFile.read())
-dat.pos += 4
-maxItemId = dat.uint16()
-reads = maxItemId - 100
-maxOutfitId = dat.uint16()
-effects = dat.uint16()
-distanceEffects = dat.uint16()
-
-print "Tibia.dat info:"
-print "Max Item Id: ", maxItemId
-print "Outfits: ", maxOutfitId
-print "Effects: ", effects
-print "Distance effects: ", distanceEffects
-onId = 100
-exit()
-for i in xrange(reads):
-    datInfo[onId] = {}
-    print ">>", onId
-    op = dat.uint8()
-    lastOp = 0
-    while op < 0xFF:
-        print hex(op)
-        if op == 0x00: # Ground
-            datInfo[onId]["speed"] = dat.uint16()
-            datInfo[onId]["ground"] = True
-        elif op == 0x01:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x02:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x03:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x04:
-            datInfo[onId]["useable"] = True
-            datInfo[onId]["container"] = True
-        elif op == 0x05:
-            datInfo[onId]["stackable"] = True
-        elif op == 0x06:
-            datInfo[onId]["useable"] = True
-        elif op == 0x07:
-            datInfo[onId]["useable"] = True
-        elif op == 0x09:
-            datInfo[onId]["readable"] = True
-            dat.uint16()
-        elif op == 0x08:
-            datInfo[onId]["readable"] = True
-            datInfo[onId]["writeable"] = True
-            dat.uint16()
-        elif op == 0x0C:
-            datInfo[onId]["solid"] = True
-        elif op == 0x0D:
-            datInfo[onId]["moveable"] = False
-        elif op == 0x0E:
-            datInfo[onId]["blockprojectile"] = True
-        elif op == 0x0F:
-            datInfo[onId]["blockpath"] = True
-        elif op == 0x10:
-            datInfo[onId]["pickable"] = True
-        elif op == 0x11:
-            datInfo[onId]["hangable"] = True
-        elif op == 0x12:
-            datInfo[onId]["horizontal"] = True
-        elif op == 0x13:
-            datInfo[onId]["vertical"] = True
-        elif op == 0x14:
-            datInfo[onId]["rotatable"] = True
-        elif op == 0x15:
-            dat.uint32()
-        elif op == 0x18:
-            dat.uint32()
-        elif op == 0x19:
-            datInfo[onId]["hasheight"] = True
-            dat.uint16()
-        elif op == 0x1C:
-            dat.uint16()
-        elif op == 0x1D:
-            dat.uint16()
-        elif op == 0x1B:
-            datInfo[onId]["animation"] = True
-        elif op == 0x1f:
-            datInfo[onId]["lookthrough"] = True
-        elif op == 0x20:
-            datInfo[onId]["bodyPart"] = dat.uint16() 
-        elif op in (0xa, 0xb,0x16,0x17,0x1A,0x1e):
-            # ignore
-            pass
-        else:
-            raise AttributeError("%s, lastOp %s at %d" % (hex(op), hex(lastOp), onId))
-        lastOp = op
-        op = dat.uint8()
-        
-        
-    height = dat.uint8()
-    weight = dat.uint8()
-    if height > 1 or weight > 1:
-        dat.uint8()
-        
-    f = dat.uint8()
-    x = dat.uint8()
-    y = dat.uint8()
-    z = dat.uint8()
-    a = dat.uint8()
-    skip = a * f * x * y * z * height * weight
-    print 
-    for _ in xrange(skip):
-        dat.uint16()
-    onId += 1
-
+otbFile = io.open("items.otb", 'rb')
 otb = Reader(otbFile.read())
 
 otb.pos += 5
-node = Node(otb, L(1)) # We use 1 here since we skip the "root"
+LEVEL = 1
+node = Node(otb) # We use 1 here since we skip the "root"
 
 node.data.uint8() # 0x00
 node.data.uint32() # 0x00
