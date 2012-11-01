@@ -2,14 +2,23 @@ import protocolbase
 from twisted.internet.defer import inlineCallbacks
 from twisted.python import log
 from packet import TibiaPacket
+import os
 import sql
 import otcrypto
 import config
 import socket
+import time
+import cPickle
+
+if os.path.exists('IP_CACHE') and os.path.getmtime('IP_CACHE') > time.time() - 1200:
+    IPS = cPickle.load(open('IP_CACHE', 'rb'))
+else:
+    IPS = {}
 
 class LoginProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
+        global IPS
         try:
             packet.uint8()
         except:
@@ -94,15 +103,22 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             if ':' in ip:
                 ip, port = ip.split(':')
                 port = int(port)
+            if ip in IPS:
+                ip = IPS[ip]
             if ip != 'auto':
+                _ip = ip
                 ip = socket.gethostbyname(ip)
+                IPS[_ip] = ip
             else:
-                if self.transport.getPeer()[0] == '127.0.0.1':
+                if self.transport.getPeer().host == '127.0.0.1':
                     ip = '127.0.0.1'
                 else:
                     import urllib2
                     ip = urllib2.urlopen("http://automation.whatismyip.com/n09230945.asp").read()
-                
+                    IPS['auto'] = ip
+                    # Save IPS here.
+                    cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
+
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
             pkg.raw(socket.inet_aton(ip))
