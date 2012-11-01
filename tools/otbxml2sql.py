@@ -3,6 +3,11 @@
 
 import struct, sys, io
 
+# UTF-8 hack
+import codecs
+UTF8Writer = codecs.getwriter('utf8')
+sys.stdout = UTF8Writer(sys.stdout)
+
 # The reader class:
 class Reader(object):
     def __init__(self, data):
@@ -185,8 +190,10 @@ while child:
         item.flags["lookthrough"] = 1
     if (flags & 16777216) == 16777216:
         item.flags["animation"] = 1
-    if (flags & 4194304) == 4194304:
-        item.flags["charges"] = 1
+    if (flags & 33554432) == 33554432:
+        item.flags["walkstack"] = 1
+    """if (flags & 4194304) == 4194304:
+        item.flags["charges"] = 1"""
     
     sub = child.next()
     while child.data.peekUint8():
@@ -197,13 +204,17 @@ while child:
                     
         elif attr is 0x11:
             item.cid = child.data.uint16()
-            
+        elif attr == 0x12:
+            item.attr["name"] = child.data.getXString(datalen)
+
         elif attr is 0x14:
             item.flags["speed"] = child.data.uint16()
             
-        elif attr is 0x37:
+        elif attr is 0x2B:
             item.flags["order"] = child.data.uint8()
-            
+
+        elif attr == 0x2C:
+            item.flags["wareid"] = child.data.uint16()            
         else:
             child.data.pos += datalen        
 
@@ -234,9 +245,8 @@ for xItem in dom.getElementsByTagName("item"):
      prep = {"name":xName, "plural":xPlural, "article":xArticle}
      for attr in xAttributes:
          key = attr.getAttribute("key")
-         if key == 'count':
-             key = 'turns'
-         elif key == "defense":
+         
+         if key == "defense":
              key = "defence"
              
          try:
@@ -248,14 +258,11 @@ for xItem in dom.getElementsByTagName("item"):
 
      elif xFromId and xToId:
          for x in range(int(xFromId), int(xToId)+1):
-             data[int(x)] = {"name":xName, "plural":xPlural, "article":xArticle}
+             data[int(x)] = {"name": xName, "plural":xPlural, "article":xArticle}
              for attr in xAttributes:
                  key = attr.getAttribute("key")
-                 if key == 'count':
-                     key = 'turns'
-                 elif key == "extradef":
-                     key = "defence"
-                 elif key == "defense":
+                 
+                 if key == "defense":
                      key = "defence"
                  try:
                     data[int(x)][key] = int(attr.getAttribute("value"))
@@ -285,6 +292,7 @@ print "CREATE TABLE `items` ( \n\
 `plural` VARCHAR( 32 ) NOT NULL DEFAULT '',\n\
 `speed` SMALLINT UNSIGNED NOT NULL, \n\
 `order` TINYINT UNSIGNED NOT NULL, \n\
+`wareid` SMALLINT UNSIGNED NOT NULL,\n\
 `solid` BOOL NOT NULL DEFAULT 0,\n\
 `blockprojectile` BOOL NOT NULL DEFAULT 0,\n\
 `blockpath` BOOL NOT NULL DEFAULT 0,\n\
@@ -303,6 +311,7 @@ print "CREATE TABLE `items` ( \n\
 `charges` BOOL NOT NULL DEFAULT 0,\n\
 `animation` BOOL NOT NULL DEFAULT 0,\n\
 `lookthrough` BOOL NOT NULL DEFAULT 0,\n\
+`walkstack` BOOL NOT NULL DEFAULT 0,\n\
 `custom` BOOL NOT NULL DEFAULT 0,\n\
 PRIMARY KEY ( `sid` )\n\
 ) ENGINE = MYISAM; \n\
@@ -317,18 +326,23 @@ for item in items:
     if item.sid in data:
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
+        if "name" in item.attr:
+            data[item.sid]["name"] = item.attr["name"]
         # Bugfix for TFS format
         #if not "article" in data[item.sid]:
         #    continue
 
-        print ("INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
+        # Hack
+        data[item.sid]["name"] = data[item.sid]["name"].decode("utf-8")
+        print (u"INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else ''))
 
         del data[item.sid]["name"]
         del data[item.sid]["plural"]
         del data[item.sid]["article"]
         
+
         if data[item.sid]:
-            output = "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
+            output = u"INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
             for key in data[item.sid]:
                output += "(%d, '%s', '%s'),\n" % (item.sid, key, data[item.sid][key])
             print (output[:-2]+";\n").encode('utf-8')
