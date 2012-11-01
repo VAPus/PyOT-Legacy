@@ -19,6 +19,7 @@ import math
 import otjson
 import datetime
 import language
+import copy
 
 # Build class.
 from game.creature_talking import PlayerTalking
@@ -88,7 +89,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.lastStairHop = 0
         
         self.lastUsedObject = 0
-        
+
+        self.market = None
+        self.depotMarketCache = {}
+        self.marketDepotId = 0
+
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -1858,7 +1863,54 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return self._getDepotItemCount(depot)
         else:
             return 0
-        
+    
+    def _depotMarketCache(self, cache, items):
+        for item in items:
+            if item.duration or (item.charges and item.charges != game.item.items[item.itemId]["charges"]):
+                continue
+
+            if item.containerSize:
+                self._depotMarketCache(cache, item.container)
+            else:
+                try:
+                    cache[item.itemId] += item.count or 1
+                except:
+                    cache[item.itemId] = item.count or 1
+
+    def getDepotMarketCache(self, depotId):
+        depot = self.getDepot(depotId)
+        if not depot:
+            return {}
+        else:
+            depotCache = {}
+            self._depotMarketCache(depotCache, depot)
+            return depotCache
+
+    def _removeFromDepot(self, items, itemId, count):
+        _count = 0
+        for item in copy.copy(items):
+            if item.itemId == itemId:
+                oldCount = item.count or 1
+                item.count = max(0, oldCount - count)
+                _count += oldCount - item.count
+                if not item.count:
+                    items.remove(item)
+                if _count == count:
+                    return _count
+            if item.container:
+                _count += self._removeFromDepot(item.container, itemId, count - _count)
+                if _count == count:
+                    return _count
+
+        return _count
+                
+    def removeFromDepot(self, depotId, itemId, count=1):
+        depot = self.getDepot(depotId) 
+        if not depot:
+            return 0
+
+        return self._removeFromDepot(depot, itemId, count)
+
     # Stuff from protocol:
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
@@ -2278,98 +2330,204 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return spells
 
     # Market
-    def openMarket(self):
+    def openMarket(self, marketId=0):
         if not config.enableMarket or self.client.version < 944:
             return
+
+        market = getMarket(marketId)
+        self.market = market
+
         stream = self.packet(0xF6)
 
-        stream.uint32(self.getMoney())
-        stream.uint8(self.getVocation().clientId)
-        stream.uint8(1) # Active offers, TODO
-        """count = self.getDepotItemCount(0) # Should be the unique count
-        stream.uint16(count)
-        if count > 0:
-            def _(i):
-                for x in i:
-                    yield x
-                    if x.containerSize:
-                        for y in _(x):
-                            yield y
+        stream.uint32(min(0xFFFFFFFF, self.getBalance()))
+        # XXX: Some older than 9.7 version needed this.
+        # stream.uint8(self.getVocation().clientId)
+        stream.uint8(len(market.saleOffers(self))) # Active offers
+        
+        if not self.marketDepotId in self.depotMarketCache:
+            self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
+        
+        stream.uint16(len(self.depotMarketCache[self.marketDepotId]))
+        for entry in self.depotMarketCache[self.marketDepotId]:
+            stream.uint16(game.item.cid(entry))
+            stream.uint16(self.depotMarketCache[self.marketDepotId][entry])
 
-            for item in _(self.getDepot(0)):
-                stream.uint16(item.cid)
-                stream.uint16(1) # Should be the total count"""
-        stream.uint16(1)
-        # Test data
-        stream.uint16(0x0bd2)
-        stream.uint16(0x0002)
+        """stream.uint16(market.size())
+        for entry in market.getItems():
+            stream.uint16(game.item.cid(entry[0]))
+            stream.uint16(entry[1])"""
         stream.send(self.client)
+
+        self.marketOpen = True
+
         #self.marketDetails()
         #self.marketOffers() # Doesn't work
 
-    def marketDetails(self):
+    def closeMarket(self):
+        # TODO: Script events.
+        self.marketOpen = False
+
+    def marketOffers(self, itemId):
         if not config.enableMarket or self.client.version < 944:
             return
 
         stream = self.packet()
-        # Test data
-        for itemId in (2383, 2395, 7449): #
-            stream.uint8(0xF8)
-            # Lazy reasons:
-            item = Item(itemId)
+        stream.uint8(0xF9)
+        print "itemId - marketOffers - ", itemId
+        stream.uint16(game.item.cid(itemId))
+
+        buyOffers = self.market.getBuyOffers(itemId, self.data["id"])
+        stream.uint32(len(buyOffers))
+        for entry in buyOffers:
+            stream.uint32(entry.expire)
+            stream.uint16(entry.counter)
+            stream.uint16(entry.amount)
+            stream.uint32(entry.price)
+            stream.string(entry.playerName)
+
+        saleOffers = self.market.getSaleOffers(itemId, self.data["id"])
+
+        stream.uint32(len(saleOffers))
+        for entry in saleOffers:
+            stream.uint32(entry.expire)
+            stream.uint16(entry.counter)
+            stream.uint16(entry.amount)
+            stream.uint32(entry.price)
+            stream.string(entry.playerName)
+
+        stream.send(self.client)
+
+        self.marketDetails(itemId)
+    
+    def marketDetails(self, itemId):
+        # Lazy.
+        item = Item(itemId)
+        
+        with self.packet(0xF8) as stream:
             stream.uint16(item.cid)
-            stream.string(str(item.armor or "")) # Just use str casting, some values are ints or None.
-            stream.string("%s +%s" % (item.attack, item.extraAttack))
+            stream.string(str(item.armor or ""))
+            stream.string(str(item.attack or ""))
             stream.string(str(item.containerSize or ""))
-            stream.string("%s +%s" % (item.defence, item.extraDefence))
-            stream.string(item.__getattr__("description") or "")
-            stream.string("a very long time, just testing") # expire time
-            stream.string("some absorb here") # Absorb
-            stream.string("no required") # Min required level
-            stream.string("no required") # Min required magic level
-            stream.string("Professions here, etc knight")
-            stream.string("spell name here") # Rune spell name
-            stream.string("boosts")
-            stream.string("charges")
+            stream.string(str(item.defence or ""))
+            desc = ""
+            if "description" in game.item.items[itemId]:
+                desc =  game.item.items[itemId]["description"]
+
+            stream.string(desc)
+            stream.string(str(item.duration or ""))
+            stream.string("") # XXX: Absorbe Abilities.
+            stream.string("") # XXX: Min required level.
+            stream.string("") # XXX: Min required magic level.
+            stream.string("") # XXX: Vocation
+            stream.string(str(item.runeSpellName or ""))
+            stream.string("") # XXX: Bonus.
+            stream.string(str(item.charges or ""))
             stream.string(item.weaponType or "")
-            stream.string(str(item.weight))
+            stream.string(str(item.weight or ""))
+            
+            if itemId in self.market.buyStatistics:
+                stream.uint8(1)
+                stream.uint32(self.market.buyStatistics[0])
+                stream.uint32(self.market.buyStatistics[1] / self.market.buyStatistics[0])
+                stream.uint32(self.market.buyStatistics[3])
+                stream.uint32(self.market.buyStatistics[2])
+            else:
+                stream.uint8(0)
 
-            stream.uint8(1) # Buy offers
-            # for offer:
-            stream.uint32(100)
-            stream.uint32(100)
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max
-            stream.uint8(1) # sales offers
-            # for offer:
-            stream.uint32(100)
-            stream.uint32(100)
-            stream.uint32(100) # Min
-            stream.uint32(1000) # Max
-        stream.send(self.client)
+            if itemId in self.market.saleStatistics:
+                stream.uint8(1)
+                stream.uint32(self.market.saleStatistics[0])
+                stream.uint32(self.market.saleStatistics[1] / self.market.saleStatistics[0])
+                stream.uint32(self.market.saleStatistics[3])
+                stream.uint32(self.market.saleStatistics[2])
+            else:
+                stream.uint8(0)
 
-    def marketOffers(self):
-        stream = self.packet()
-        for itemId in (2383,): #2395, 7449):
-            stream.uint8(0xF9)
-            # Lazy reasons
-            item = Item(itemId)
-            stream.uint16(item.cid)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint16(1)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint32(1)
+    def createMarketOffer(self, type, itemId, amount, price, anonymous=0):
+        fee = max(20, min(1000, (amount*price) / 100))
 
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint16(1)
-            stream.uint32(1)
-            stream.uint16(1)
-            stream.uint32(1)
+        if type == 1 and (not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId] or self.getBalance() < fee):
+            return self.notPossible()
+        elif type == 0 and self.getBalance() < (amount*price)+fee:
+            print "XXX: Can't afford it."
+            return self.notPossible()
 
-        stream.send(self.client)
+        
+        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
+        if anonymous:
+            offer.playerName = "Anonymous"
+        else:
+            offer.playerName = self.name()
+
+        if type == 0:
+            self.market.addBuyOffer(offer)
+        else:
+            self.market.addSaleOffer(offer)
+
+        offer.save()
+        if type == 1:
+            self.removeFromDepot(self.marketDepotId, itemId, amount)
+            self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
+        elif type == 0:
+            self.modifyBalance(-(amount * price))
+
+        # Fees.
+        self.modifyBalance(-fee)
+
+        if self.marketOpen:
+            self.marketOffers(itemId)
+            self.openMarket(self.market.id)
+
+    def marketOwnOffers(self):
+        with self.packet(0xF9) as stream:
+            stream.uint16(0xFFFE)
+            
+            buyOffers = self.market.buyOffers(self)
+            saleOffers = self.market.saleOffers(self)
+
+            stream.uint32(len(buyOffers))
+            for entry in buyOffers:
+                stream.uint32(entry.expire)
+                stream.uint16(entry.counter)
+                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.amount)
+                stream.uint32(entry.price)
+
+            stream.uint32(len(saleOffers))
+            for entry in saleOffers:
+                stream.uint32(entry.expire)
+                stream.uint16(entry.counter)
+                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.amount)
+                stream.uint32(entry.price)
+
+    @inlineCallbacks
+    def marketHistory(self):
+        counter = 0
+        buyHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND h.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
+        saleHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND o.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
+        with self.packet(0xF9) as stream:
+            stream.uint16(0xFFFF)
+
+            stream.uint32(len(buyHistory))
+            for entry in buyHistory:
+                stream.uint32(entry["time"])
+                stream.uint16(counter) # Relevant to something?
+                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["amount"])
+                stream.uint32(entry["price"])
+                stream.uint8(1) # XXX?
+                counter = (counter + 1) & 0xFFFF
+            counter = 0
+            stream.uint32(len(saleHistory))
+            for entry in saleHistory:
+                stream.uint32(entry["time"])
+                stream.uint16(counter) # Relevant to something?
+                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["amount"])
+                stream.uint32(entry["price"])
+                stream.uint8(1) # XXX?
+                counter = (counter + 1) & 0xFFFF
 
     def setLanguage(self, lang):
         if lang != 'en_EN':
