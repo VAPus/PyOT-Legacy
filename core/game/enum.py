@@ -68,6 +68,7 @@ SKILL_DISTANCE = 4
 SKILL_SHIELD = 5
 #: Skill ID for fishing.
 SKILL_FISH = 6
+SKILL_ROD = 6 # Hu? TFS hack.
 SKILL_LAST = SKILL_FISH
 
 #: For skill callback
