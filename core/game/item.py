@@ -92,6 +92,9 @@ class Item(object):
         pos = self.position
         creature = self.creature
 
+        if not pos:
+            return False
+
         if pos.x == 0xFFFF:
             if not creature and not self.inContainer:
                 raise Exception("Cannot verify Position inside inventory when creature == None and inContainer == None!")
@@ -285,6 +288,8 @@ class Item(object):
                 morearm += _l(player, ", %+d magic level") % self.__getattr__('magiclevelpoints')
             if self.__getattr__('absorbPercentAll'):
                 morearm = _l(player, ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain') % {"all":self.__getattr__('absorbPercentAll')}
+
+            
             # Step one, names to dict with value
             bonuses = {}
             for bns in bonus:
@@ -299,9 +304,11 @@ class Item(object):
             if morearm:
                 if not self.armor and not self.defence:
                     morearm = morearm[2:]
-                description += "%s" % morearm
-            description += ")."
-
+                description += "protection %s" % morearm
+            if self.showcharges:
+                description += ") that has %d charges left." % self.charges
+            else:
+                description += ")."
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:
@@ -623,6 +630,7 @@ class Item(object):
                     creature.refreshStatus()
                 
                 creature.updateInventory(position.y)
+                creature.updateInventory(position.y-1)
             
             # Option 3, the bags, if there is one ofcource
             else:
@@ -883,8 +891,8 @@ def loadItems():
     
     
     # Make three new values while we are loading
-    loadItems = [None] * (config.itemMaxServerId + 1)
-    reverseLoadItems = [None] * (config.itemMaxClientId + 1)
+    loadItems = {}
+    reverseLoadItems = {}
 
     for item in (yield d1):
         sid = item['sid']

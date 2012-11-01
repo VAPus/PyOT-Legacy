@@ -19,11 +19,11 @@ class CreatureAttacks(object):
         return dmg
 
     def onHit(self, by, dmg, type, effect=None):
-        
+
         if not type == enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-
+        
         if type == enum.ICE:
             textColor = enum.COLOR_TEAL
             magicEffect = enum.EFFECT_ICEATTACK
@@ -34,7 +34,7 @@ class CreatureAttacks(object):
 
         elif type == enum.EARTH:
             textColor = enum.COLOR_LIGHTGREEN
-            magicEffect = enum.EFFECT_HITBYPOSION
+            magicEffect = enum.EFFECT_HITBYPOISON
 
         elif type == enum.ENERGY:
             textColor = enum.COLOR_PURPLE
@@ -159,7 +159,7 @@ class PlayerAttacks(CreatureAttacks):
     def damageToBlock(self, dmg, type):
         if dmg > 0:
             return int(dmg)
-        
+
         if type == enum.MELEE or type == enum.PHYSICAL:
             # Armor and defence
             armor = 0
@@ -198,7 +198,17 @@ class PlayerAttacks(CreatureAttacks):
                 return 0
             else:
                 return dmg
+        else:
+            # Damage types other than physical
+            attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
+            absorb = 0
+            for item in self.inventory:
+                if item:
+                    absorb += getattr(item, "absorbPercentAll", 0) + getattr(item, attrs[type], 0)
+                    if item.charges and absorb > 0:
+                        item.useCharge()
 
+            dmg -= int(dmg * absorb/100.0)
         return dmg
 
     def attackTarget(self, dmg = None):
@@ -238,9 +248,21 @@ class PlayerAttacks(CreatureAttacks):
 
                 elif not dmg and atkRange > 1:
                     # First, hitChance.
-                    chance = min(ammo.maxHitChance, config.hitChance(self.getActiveSkill(SKILL_DISTANCE), weapon.hitChance))
+                    # 'or' values are pretty random, to be corrected.
+                    defaultMax = 75
+                    base = 1.25
+                    baseRange = 4
+                    if weapon.slotType == "two-handed":
+                        defaultMax = 90
+                        base = 1.25 * 1.2
+                        baseRange = 6
+
+                    distance = baseRange - self.distanceStepsTo(self.target.position)
+
+
+                    chance = min((ammo.maxHitChance or defaultMax), self.getActiveSkill(SKILL_DISTANCE) * (base ** distance) * (weapon.hitChance or 1))
                     
-                    self.modifyItem(ammo, Position(0xFFFF, SLOT_AMMO+1), -1)
+                    self.modifyItem(ammo, -1)
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
@@ -248,7 +270,7 @@ class PlayerAttacks(CreatureAttacks):
                         return
                     
                     minDmg = config.minDistanceDamage(self.data["level"])
-                    maxDmg = config.distanceDamage(weapon.attack + ammo.attack, self.getActiveSkill(SKILL_DISTANCE), factor)
+                    maxDmg = config.distanceDamage((weapon.attack or 0) + (ammo.attack or 0), self.getActiveSkill(SKILL_DISTANCE), factor)
                     
                     dmg = -random.randint(round(minDmg), round(maxDmg))
                     
@@ -265,7 +287,7 @@ class PlayerAttacks(CreatureAttacks):
 
                 else:
                     skillType = self.inventory[5].weaponSkillType
-                    
+
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
 
@@ -288,7 +310,33 @@ class PlayerAttacks(CreatureAttacks):
                     else:
                         self.target.onHit(self, dmg, enum.MELEE)
                         self.skillAttempt(skillType)"""
+                    
                     target.onHit(self, dmg, atkType)
+                    
+                    if skillType != SKILL_FIST:
+                        # weapon elemental damage
+                        # XXX: What about elemental arrows when skillType == SKILL_DISTANCE?
+                        weapon = self.inventory[SLOT_RIGHT]
+                        if skillType == SKILL_DISTANCE:
+                            weapon = self.inventory[SLOT_AMMO] # will that do? 
+
+                        if weapon.elementFire:
+                            target.onHit(self, -weapon.elementFire, enum.FIRE)
+                        if weapon.elementIce:
+                            target.onHit(self, -weapon.elementIce, enum.ICE)
+                        if weapon.elementEarth:
+                            target.onHit(self, -weapon.elementEarth, EARTH)                        
+                        if weapon.elementEnergy:
+                            target.onHit(self, -weapon.elementEnergy, ENERGY)
+                        if weapon.elementHoly:
+                            target.onHit(self, -weapon.elementHoly, HOLY)
+                        if weapon.elementDeath:
+                            target.onHit(self, -weapon.elementDeath, DEATH)
+                        if weapon.elementDrown:
+                            target.onHit(self, -weapon.elementDrown, DROWN)
+                        if weapon.elementLifedrain:
+                            target.onHit(self, -weapon.elementLifedrain, LIFEDRAIN)
+                        
                     self.skillAttempt(skillType)
                 else:
                     target.magicEffect(EFFECT_BLOCKHIT)
@@ -342,7 +390,6 @@ class PlayerAttacks(CreatureAttacks):
             return
 
         if time.time() - self.lastStairHop < config.stairHopDelay:
-            print 'attack canceled: ', 1
             self.cancelTarget()
             self.message("You can't attack so fast after changing level or teleporting.")
             return
@@ -351,12 +398,10 @@ class PlayerAttacks(CreatureAttacks):
             if game.creature.allCreatures[cid].isAttackable(self):
                 target = game.creature.allCreatures[cid]
                 if target.isPlayer() and self.modes[2]:
-                    print 'attack canceled: ', 2
                     self.cancelTarget()
                     return self.unmarkedPlayer()
                 ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
                 if ret == False:
-                   print 'attack canceled: ', 3
                    self.cancelTarget()
                    return
                 elif ret != None:
@@ -369,16 +414,13 @@ class PlayerAttacks(CreatureAttacks):
                     target.target = self
                     target.targetMode = 1
             else:
-                print 'attack canceled: ', 4
                 self.cancelTarget()
                 return
         else:
-            print 'attack canceled: ', 5
             self.cancelTarget()
             return self.notPossible()
 
         if not self.target:
-            print 'attack canceled: ', 6
             self.cancelTarget()
             return self.notPossible()
 

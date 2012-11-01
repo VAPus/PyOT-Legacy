@@ -4,7 +4,7 @@
 import struct, sys
 
 # The reader class:
-class Reader:
+class Reader(object):
     def __init__(self, data):
         self.length = len(data)
         self.pos = 0
@@ -187,8 +187,11 @@ while child:
         item.flags["lookthrough"] = 1
     if (flags & 16777216) == 16777216:
         item.flags["animation"] = 1
-    if (flags & 4194304) == 4194304:
-        item.flags["charges"] = 1
+    if (flags & 33554432) == 33554432:
+        item.flags["walkstack"] = 1
+
+    """if (flags & 4194304) == 4194304:
+        item.flags["charges"] = 1"""
     
     sub = child.next()
     while child.data.peekUint8():
@@ -200,11 +203,17 @@ while child:
         elif attr is 0x11:
             item.cid = child.data.uint16()
             
+        elif attr == 0x12:
+            item.attr["name"] = child.data.getXString(datalen)
+
         elif attr is 0x14:
             item.flags["speed"] = child.data.uint16()
-            
-        elif attr is 0x37:
+
+        elif attr is 0x2B:
             item.flags["order"] = child.data.uint8()
+
+        elif attr == 0x2C:
+            item.flags["wareid"] = child.data.uint16()
             
         else:
             child.data.pos += datalen        
@@ -244,7 +253,11 @@ for item in items:
     
     if "solid" in item.flags and "speed" in item.flags:
         del item.flags["speed"]
-        attr = ('`subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type, ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')
-        print ("INSERT INTO items (`sid`, `cid`, `type`, `name`, `article`, `plural`,%s%s) VALUES(%d, %d, %d,'<insert name here>','<insert article here>', 'insert plural here'%s%s);" % attr).encode("utf-8")
-        
-    
+    if "name" in item.attr:
+        name = item.attr["name"].replace("'", "\\'")
+    else:
+        name = "<insert name here>"
+        #continue
+    attr = ('`subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type, name, ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')
+
+    print ("INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s) VALUES(%d, %d, %d,'%s'%s%s);" % attr).encode("utf-8")    

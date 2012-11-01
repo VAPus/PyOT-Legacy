@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: latin-1 -*-
 
-import struct, sys
+import struct, sys, io
+
+# UTF-8 hack
+import codecs
+UTF8Writer = codecs.getwriter('utf8')
+sys.stdout = UTF8Writer(sys.stdout)
 
 # The reader class:
-class Reader:
+class Reader(object):
     def __init__(self, data):
         self.length = len(data)
         self.pos = 0
@@ -74,7 +79,7 @@ class Reader:
     def getData(self):
         return self.data[self.pos:]
     
-class Item:
+class Item(object):
     def __init__(self):
         self.type = 0
         self.flags = {}
@@ -84,22 +89,20 @@ class Item:
         self.alsoKnownAs = []
         self.junk = False
 
-class L:
-    def __init__(self, val):
-        self.value = val
-class Node:
-    def __init__(self, otb, level):
+class Node(object):
+    def __init__(self, otb):
+        global LEVEL
         self.data = b""
         self.nodes = []
         byte = otb.uint8()
         nextIsEscaped = False
         while byte != None:
             if byte == 0xFE and not nextIsEscaped:
-                node = self.handleBlock(otb, level)
+                node = self.handleBlock(otb)
 
             elif byte == 0xFF and not nextIsEscaped:
-                level.value -= 1
-                if level.value < 0:
+                LEVEL -= 1
+                if LEVEL < 0:
                     print "DEBUG!"
                 break
                 
@@ -112,9 +115,10 @@ class Node:
                 
             byte = otb.uint8()
         self.data = Reader(self.data)
-    def handleBlock(self, otb, level):
-        level.value += 1
-        node = Node(otb, level)
+    def handleBlock(self, otb):
+        global LEVEL
+        LEVEL += 1
+        node = Node(otb)
         self.nodes.append(node)
         return node
         
@@ -124,123 +128,12 @@ class Node:
         else:
             return None
             
-otbFile = open("items.otb")
-
-
-datFile = open("Tibia.dat")
-
-datInfo = {}
-dat = Reader(datFile.read())
-dat.pos += 4
-maxItemId = dat.uint16()
-reads = maxItemId - 100
-maxOutfitId = dat.uint16()
-effects = dat.uint16()
-distanceEffects = dat.uint16()
-
-print "Tibia.dat info:"
-print "Max Item Id: ", maxItemId
-print "Outfits: ", maxOutfitId
-print "Effects: ", effects
-print "Distance effects: ", distanceEffects
-onId = 100
-exit()
-for i in xrange(reads):
-    datInfo[onId] = {}
-    print ">>", onId
-    op = dat.uint8()
-    lastOp = 0
-    while op < 0xFF:
-        print hex(op)
-        if op == 0x00: # Ground
-            datInfo[onId]["speed"] = dat.uint16()
-            datInfo[onId]["ground"] = True
-        elif op == 0x01:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x02:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x03:
-            datInfo[onId]["ontop"] = True
-        elif op == 0x04:
-            datInfo[onId]["useable"] = True
-            datInfo[onId]["container"] = True
-        elif op == 0x05:
-            datInfo[onId]["stackable"] = True
-        elif op == 0x06:
-            datInfo[onId]["useable"] = True
-        elif op == 0x07:
-            datInfo[onId]["useable"] = True
-        elif op == 0x09:
-            datInfo[onId]["readable"] = True
-            dat.uint16()
-        elif op == 0x08:
-            datInfo[onId]["readable"] = True
-            datInfo[onId]["writeable"] = True
-            dat.uint16()
-        elif op == 0x0C:
-            datInfo[onId]["solid"] = True
-        elif op == 0x0D:
-            datInfo[onId]["moveable"] = False
-        elif op == 0x0E:
-            datInfo[onId]["blockprojectile"] = True
-        elif op == 0x0F:
-            datInfo[onId]["blockpath"] = True
-        elif op == 0x10:
-            datInfo[onId]["pickable"] = True
-        elif op == 0x11:
-            datInfo[onId]["hangable"] = True
-        elif op == 0x12:
-            datInfo[onId]["horizontal"] = True
-        elif op == 0x13:
-            datInfo[onId]["vertical"] = True
-        elif op == 0x14:
-            datInfo[onId]["rotatable"] = True
-        elif op == 0x15:
-            dat.uint32()
-        elif op == 0x18:
-            dat.uint32()
-        elif op == 0x19:
-            datInfo[onId]["hasheight"] = True
-            dat.uint16()
-        elif op == 0x1C:
-            dat.uint16()
-        elif op == 0x1D:
-            dat.uint16()
-        elif op == 0x1B:
-            datInfo[onId]["animation"] = True
-        elif op == 0x1f:
-            datInfo[onId]["lookthrough"] = True
-        elif op == 0x20:
-            datInfo[onId]["bodyPart"] = dat.uint16() 
-        elif op in (0xa, 0xb,0x16,0x17,0x1A,0x1e):
-            # ignore
-            pass
-        else:
-            raise AttributeError("%s, lastOp %s at %d" % (hex(op), hex(lastOp), onId))
-        lastOp = op
-        op = dat.uint8()
-        
-        
-    height = dat.uint8()
-    weight = dat.uint8()
-    if height > 1 or weight > 1:
-        dat.uint8()
-        
-    f = dat.uint8()
-    x = dat.uint8()
-    y = dat.uint8()
-    z = dat.uint8()
-    a = dat.uint8()
-    skip = a * f * x * y * z * height * weight
-    print 
-    for _ in xrange(skip):
-        dat.uint16()
-    onId += 1
-
+otbFile = io.open("items.otb", 'rb')
 otb = Reader(otbFile.read())
 
 otb.pos += 5
-node = Node(otb, L(1)) # We use 1 here since we skip the "root"
+LEVEL = 1
+node = Node(otb) # We use 1 here since we skip the "root"
 
 node.data.uint8() # 0x00
 node.data.uint32() # 0x00
@@ -297,8 +190,10 @@ while child:
         item.flags["lookthrough"] = 1
     if (flags & 16777216) == 16777216:
         item.flags["animation"] = 1
-    if (flags & 4194304) == 4194304:
-        item.flags["charges"] = 1
+    if (flags & 33554432) == 33554432:
+        item.flags["walkstack"] = 1
+    """if (flags & 4194304) == 4194304:
+        item.flags["charges"] = 1"""
     
     sub = child.next()
     while child.data.peekUint8():
@@ -309,13 +204,17 @@ while child:
                     
         elif attr is 0x11:
             item.cid = child.data.uint16()
-            
+        elif attr == 0x12:
+            item.attr["name"] = child.data.getXString(datalen)
+
         elif attr is 0x14:
             item.flags["speed"] = child.data.uint16()
             
-        elif attr is 0x37:
+        elif attr is 0x2B:
             item.flags["order"] = child.data.uint8()
-            
+
+        elif attr == 0x2C:
+            item.flags["wareid"] = child.data.uint16()            
         else:
             child.data.pos += datalen        
 
@@ -346,9 +245,8 @@ for xItem in dom.getElementsByTagName("item"):
      prep = {"name":xName, "plural":xPlural, "article":xArticle}
      for attr in xAttributes:
          key = attr.getAttribute("key")
-         if key == 'count':
-             key = 'turns'
-         elif key == "defense":
+         
+         if key == "defense":
              key = "defence"
              
          try:
@@ -360,14 +258,11 @@ for xItem in dom.getElementsByTagName("item"):
 
      elif xFromId and xToId:
          for x in range(int(xFromId), int(xToId)+1):
-             data[int(x)] = {"name":xName, "plural":xPlural, "article":xArticle}
+             data[int(x)] = {"name": xName, "plural":xPlural, "article":xArticle}
              for attr in xAttributes:
                  key = attr.getAttribute("key")
-                 if key == 'count':
-                     key = 'turns'
-                 elif key == "extradef":
-                     key = "defence"
-                 elif key == "defense":
+                 
+                 if key == "defense":
                      key = "defence"
                  try:
                     data[int(x)][key] = int(attr.getAttribute("value"))
@@ -397,6 +292,7 @@ print "CREATE TABLE `items` ( \n\
 `plural` VARCHAR( 32 ) NOT NULL DEFAULT '',\n\
 `speed` SMALLINT UNSIGNED NOT NULL, \n\
 `order` TINYINT UNSIGNED NOT NULL, \n\
+`wareid` SMALLINT UNSIGNED NOT NULL,\n\
 `solid` BOOL NOT NULL DEFAULT 0,\n\
 `blockprojectile` BOOL NOT NULL DEFAULT 0,\n\
 `blockpath` BOOL NOT NULL DEFAULT 0,\n\
@@ -415,6 +311,7 @@ print "CREATE TABLE `items` ( \n\
 `charges` BOOL NOT NULL DEFAULT 0,\n\
 `animation` BOOL NOT NULL DEFAULT 0,\n\
 `lookthrough` BOOL NOT NULL DEFAULT 0,\n\
+`walkstack` BOOL NOT NULL DEFAULT 0,\n\
 `custom` BOOL NOT NULL DEFAULT 0,\n\
 PRIMARY KEY ( `sid` )\n\
 ) ENGINE = MYISAM; \n\
@@ -429,18 +326,23 @@ for item in items:
     if item.sid in data:
         if "solid" in item.flags and "speed" in item.flags:
             del item.flags["speed"]
+        if "name" in item.attr:
+            data[item.sid]["name"] = item.attr["name"]
         # Bugfix for TFS format
         #if not "article" in data[item.sid]:
         #    continue
 
-        print ("INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else '')).encode("utf-8")
+        # Hack
+        data[item.sid]["name"] = data[item.sid]["name"].decode("utf-8")
+        print (u"INSERT INTO items (`sid`, `cid`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '',', `subs`' if item.alsoKnownAs else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.sid, item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", "+str(len(item.alsoKnownAs)) if item.alsoKnownAs else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else ''))
 
         del data[item.sid]["name"]
         del data[item.sid]["plural"]
         del data[item.sid]["article"]
         
+
         if data[item.sid]:
-            output = "INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
+            output = u"INSERT INTO item_attributes (`sid`, `key`, `value`) VALUES"
             for key in data[item.sid]:
                output += "(%d, '%s', '%s'),\n" % (item.sid, key, data[item.sid][key])
             print (output[:-2]+";\n").encode('utf-8')

@@ -600,7 +600,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 del item.creature
             except:
                 pass
-            item.position = None
+            
             print "Modifying weight, removecache"
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
