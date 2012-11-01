@@ -17,6 +17,7 @@ def writable(creature, thing, position, **k):
     creature.setWindowHandler(windowId, writeback)
     
 useScript = game.scriptsystem.get("use")
-for item in game.item.items:
-    if item and "writable" in item:
-        useScript.register(game.item.reverseItems[item['cid']], writable)
+_items = game.item.items
+for sid in _items:
+    if "writable" in _items[sid]:
+        useScript.register(sid, writable)
