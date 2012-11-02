@@ -748,21 +748,21 @@ def loadPlayer(playerName):
         
 @inlineCallbacks
 def loadPlayerById(playerId):
-    try:
-        # Quick look
-        for player in game.player.allPlayersObject:
-            if player.data["id"] == playerId:
-                returnValue(player)
-                return
-    except:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s, p.`world_id` = %s", (playerId, config.worldId))
-        if not character:
-            returnValue(None)
+    
+    # Quick look
+    for player in game.player.allPlayersObject:
+        if player.data["id"] == playerId:
+            returnValue(player)
             return
-        cd = character[0]
-        deathlist.loadDeathList(cd['id'])
-        game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
-        returnValue(game.player.allPlayers[cd['name']])
+    
+    character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
+    if not character:
+        returnValue(None)
+        return
+    cd = character[0]
+    deathlist.loadDeathList(cd['id'])
+    game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
+    returnValue(game.player.allPlayers[cd['name']])
 
 def moveItem(player, fromPosition, toPosition, count=0):
     if fromPosition == toPosition:

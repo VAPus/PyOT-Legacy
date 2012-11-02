@@ -177,7 +177,7 @@ class BasePacket(TibiaPacket):
                 else:
                     # Bugged?
                     if creature.creatureType != 0 and creature.brainEvent:
-	                if player.client.version >= 953:
+                        if player.client.version >= 953:
                             self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
                         else:
                             self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
@@ -752,7 +752,22 @@ class BaseProtocol(object):
             
         elif packetType == 0xF1:
             self.handleQuestLine(player, packet)
-            
+
+        elif packetType == 0xF4:
+            player.closeMarket()
+
+        elif packetType == 0xF5:
+            self.handleBrowseMarket(player, packet)
+        
+        elif packetType == 0xF6:
+            self.handleCreateMarketOffer(player, packet)
+
+        elif packetType == 0xF7:
+            self.handleCancelOffer(player, packet)
+
+        elif packetType == 0xF8:
+            self.handleAcceptOffer(player, packet)
+
         elif packetType == 0xF9:
             self.handleDialog(player, packet)
             
@@ -1524,3 +1539,80 @@ class BaseProtocol(object):
     def handlePing(self, player):
         with player.packet(0x1E) as stream:
             pass
+    
+    def handleBrowseMarket(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        id = packet.uint16()
+
+        if id == 0xFFFE:
+            print "Req own offers"
+            player.marketOwnOffers()
+
+        elif id == 0xFFFF:
+            print "Req own history"
+            player.marketHistory()
+
+        else:
+            sid = game.item.sid(id)
+            if not sid:
+                return # Server id not found.
+            player.marketOffers(sid)
+
+    def handleCreateMarketOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        type = packet.uint8()
+        id = packet.uint16()
+        amount = packet.uint16()
+        price = packet.uint32()
+        anonymous = packet.uint8()
+
+        sid = game.item.sid(id)
+        if not sid:
+            return
+
+        player.createMarketOffer(type, sid, amount, price, anonymous)
+
+    def handleCancelOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        expire = packet.uint32()
+        counter = packet.uint16()
+
+        print expire, counter
+        
+        offer = player.market.findOffer(expire, counter)
+        if offer:
+            type = offer.type
+            player.market.removeOffer(offer)
+        player.marketOwnOffers()
+        
+    def handleAcceptOffer(self, player, packet):
+        if not player.market or not player.marketOpen: return
+
+        expire = packet.uint32()
+        counter = packet.uint16()
+        amount = packet.uint16()
+
+        offer = player.market.findOffer(expire, counter)
+        if not offer:
+            print "Offer not found"
+            print expire, expire-config.marketOfferExpire, counter
+            return
+        if offer.amount < amount:
+            print "Too much, reducing offer"
+            player.marketOffers(offer.itemId)
+            amount = offer.amount
+
+        if not offer.type:
+            player.marketOffers(offer.itemId)
+            return
+
+        if offer.type == MARKET_OFFER_BUY:
+            offer.handleBuy(player, amount)
+
+        else:
+            offer.handleSell(player, amount)
+
+        player.marketOffers(offer.itemId)
