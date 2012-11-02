@@ -2427,19 +2427,19 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             
             if itemId in self.market.buyStatistics:
                 stream.uint8(1)
-                stream.uint32(self.market.buyStatistics[0])
-                stream.uint32(self.market.buyStatistics[1] / self.market.buyStatistics[0])
-                stream.uint32(self.market.buyStatistics[3])
-                stream.uint32(self.market.buyStatistics[2])
+                stream.uint32(self.market.buyStatistics[itemId][0])
+                stream.uint32(self.market.buyStatistics[itemId][1] / self.market.buyStatistics[itemId][0])
+                stream.uint32(self.market.buyStatistics[itemId][3])
+                stream.uint32(self.market.buyStatistics[itemId][2])
             else:
                 stream.uint8(0)
 
             if itemId in self.market.saleStatistics:
                 stream.uint8(1)
-                stream.uint32(self.market.saleStatistics[0])
-                stream.uint32(self.market.saleStatistics[1] / self.market.saleStatistics[0])
-                stream.uint32(self.market.saleStatistics[3])
-                stream.uint32(self.market.saleStatistics[2])
+                stream.uint32(self.market.saleStatistics[itemId][0])
+                stream.uint32(self.market.saleStatistics[itemId][1] / self.market.saleStatistics[itemId][0])
+                stream.uint32(self.market.saleStatistics[itemId][3])
+                stream.uint32(self.market.saleStatistics[itemId][2])
             else:
                 stream.uint8(0)
 
@@ -2453,7 +2453,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return self.notPossible()
 
         
-        offer = game.market.Offer(self.data["id"], itemId, price, time.time() + config.marketOfferExpire, amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
+        offer = game.market.Offer(self.data["id"], itemId, price, int(time.time() + config.marketOfferExpire), amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
         if anonymous:
             offer.playerName = "Anonymous"
         else:

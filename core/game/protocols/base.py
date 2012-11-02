@@ -1574,7 +1574,6 @@ class BaseProtocol(object):
 
         player.createMarketOffer(type, sid, amount, price, anonymous)
 
-    @inlineCallbacks
     def handleCancelOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
 
@@ -1586,26 +1585,8 @@ class BaseProtocol(object):
         offer = player.market.findOffer(expire, counter)
         if offer:
             type = offer.type
-            yield player.market.removeOffer(offer)
-
-            with player.packet(0xF9) as stream:
-                stream.uint16(0xFFFE)
-                if type == MARKET_OFFER_BUY:
-                    stream.uint32(1)
-                    stream.uint32(offer.expire)
-                    stream.uint16(counter)
-                    stream.uint16(game.item.cid(offer.itemId))
-                    stream.uint16(offer.amount)
-                    stream.uint32(offer.price)
-                    stream.uint32(0)
-                else:
-                    stream.uint32(0)
-                    stream.uint32(1)
-                    stream.uint32(offer.expire)
-                    stream.uint32(offer.counter)
-                    stream.uint16(game.item.cid(offer.itemId))
-                    stream.uint16(offer.amount)
-                    stream.uint32(offer.price)
+            player.market.removeOffer(offer)
+        player.marketOwnOffers()
         
     def handleAcceptOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
@@ -1629,9 +1610,9 @@ class BaseProtocol(object):
             return
 
         if offer.type == MARKET_OFFER_BUY:
-            offer.handleBuy(player)
+            offer.handleBuy(player, amount)
 
         else:
-            offer.handleSale(player)
+            offer.handleSell(player, amount)
 
         player.marketOffers(offer.itemId)

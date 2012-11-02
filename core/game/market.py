@@ -50,6 +50,12 @@ class Offer(object):
             item = Item(self.itemId)
             count = self.amount
             depot = player.getDepot(player.marketDepotId)
+            if player.depotMarketCache:
+                try:
+                    player.depotMarketCache[self.itemId] += self.amount
+                except:
+                    player.depotMarketCache[self.itemId] = self.amount
+
             if item.stackable:
                 while count > 0:
                     depot.append(Item(self.itemId, min(100, count)))
@@ -68,7 +74,7 @@ class Offer(object):
             return
 
         # Statistics
-        Markets[self.marketId].buyTransaction(self.itemId, seller, amount, self.price)
+        Markets[self.marketId].buyTransaction(self, seller, amount)
 
         # Give seller money.
         seller.modifyBalance(amount * self.price)
@@ -122,7 +128,7 @@ class Offer(object):
         if not buyer.getBalance() >= amount * self.price:
             return
 
-        Markets[self.marketId].buyTransaction(self.itemId, buyer, amount, self.price)
+        Markets[self.marketId].buyTransaction(self, buyer, amount)
 
         # Take buyer money..
         price = (amount * self.price)
@@ -284,7 +290,8 @@ def load():
     for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))):
         if not entry["market_id"] in Markets:
             Markets[entry["market_id"]] = Market(entry["market_id"])
-
+            
+        market = Markets[entry["market_id"]]
         offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["type"])
 
         offer.id = entry["id"]
@@ -301,17 +308,17 @@ def load():
             offer.save()
 
         elif entry["type"] == MARKET_OFFER_SALE:
-            Markets[entry["market_id"]].addSaleOffer(offer)
+            market.addSaleOffer(offer)
 
         else:
-            Markets[entry["market_id"]].addBuyOffer(offer)
+            market.addBuyOffer(offer)
 
         # Statistics.
         for history in (yield sql.runQuery("SELECT o.`item_id`, h.`type`, COUNT(h.`id`) as `count`, SUM(o.`price`) * COUNT(h.`amount`) as `total`, MAX(o.`price`) as `max`, MIN(o.`price`) as `min` FROM `market_history` h, `market_offers` o WHERE o.`id` = h.`offer_id` GROUP BY o.`item_id`")):
             if history["type"] == MARKET_OFFER_BUY:
-                self.buyStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
+                market.buyStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
             else:
-                self.saleStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
+                market.saleStatistics[history['item_id']] = [history['count'], history['total'], history['min'], history['max']]
 
 def newMarket(id):
     global Markets
