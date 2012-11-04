@@ -987,11 +987,10 @@ class BaseProtocol(object):
             player.notPossible()
 
     def handleLookAtTrade(self, player, packet):
-        from game.item import sid
         clientId = packet.uint16()
         count = packet.uint8()
         
-        item = game.item.Item(sid(clientId), count)
+        item = Item(clientId, count)
         player.message(item.description(player))
         del item
         
@@ -1173,7 +1172,6 @@ class BaseProtocol(object):
         player.openContainer(player.openContainers[openId], parent=parent, update=True)
         
     def handlePlayerBuy(self, player, packet):
-        from game.item import sid
         if not player.openTrade:
             return
             
@@ -1183,10 +1181,9 @@ class BaseProtocol(object):
         ignoreCapacity = packet.uint8()
         withBackpack = packet.uint8()
         
-        player.openTrade.buy(player, sid(clientId), count, amount, ignoreCapacity, withBackpack)
+        player.openTrade.buy(player, clientId, count, amount, ignoreCapacity, withBackpack)
         
     def handlePlayerSale(self, player, packet):
-        from game.item import sid
         if not player.openTrade:
             return
             
@@ -1195,7 +1192,7 @@ class BaseProtocol(object):
         amount = packet.uint8()
         ignoreEquipped = packet.uint8() 
         
-        player.openTrade.sell(player, sid(clientId), count, amount, ignoreEquipped)
+        player.openTrade.sell(player, clientId, count, amount, ignoreEquipped)
 
     def handleWriteBack(self, player, packet):
         windowId = packet.uint32()
@@ -1409,8 +1406,7 @@ class BaseProtocol(object):
         if not hotkey:
             thing = player.findItem(stackPosition)
         else:
-            itemId = game.item.sid(clientItemId)
-            thing = player.findItemById(itemId)
+            thing = player.findItemById(clientItemId)
             
             if not thing:
                 player.cancelMessage("You don't have any left of this item.")
@@ -1418,7 +1414,7 @@ class BaseProtocol(object):
                 return
                 
             # Also tell hotkey message
-            count = player.inventoryCache[itemId][0]
+            count = player.inventoryCache[clientItemId][0]
             
             if not thing.showCount:
                 player.message("Using one of %s..." % thing.rawName())
@@ -1554,10 +1550,7 @@ class BaseProtocol(object):
             player.marketHistory()
 
         else:
-            sid = game.item.sid(id)
-            if not sid:
-                return # Server id not found.
-            player.marketOffers(sid)
+            player.marketOffers(id)
 
     def handleCreateMarketOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
@@ -1568,8 +1561,7 @@ class BaseProtocol(object):
         price = packet.uint32()
         anonymous = packet.uint8()
 
-        sid = game.item.sid(id)
-        if not sid:
+        if not id:
             return
 
         player.createMarketOffer(type, sid, amount, price, anonymous)

@@ -20,8 +20,7 @@ try:
 except:
     _open = open # Less than 2.7
     
-items = {}
-reverseItems = {}
+items = None
             
 ### Item ###
 class Item(object):
@@ -179,7 +178,7 @@ class Item(object):
         
     @property
     def cid(self):
-        return items[self.itemId]['cid']
+        return self.itemId
     
     """
     # Changeable attributes. Ignore.
@@ -824,18 +823,6 @@ class Item(object):
         except:
             pass
         self.position = None
-            
-def cid(itemid):
-    try:
-        return items[itemid]['cid']
-    except:
-        return None
-
-def sid(itemid):
-    try:
-        return reverseItems[itemid]
-    except:
-        return None
 
 idByNameCache = {}
 def idByName(name):
@@ -850,11 +837,11 @@ def idByName(name):
     try:
         return idByNameCache[name]
     except KeyError:
-        for sid in xrange(1500, len(items)):
+        for id in xrange(1500, len(items)):
             try:
-                if items[sid]["name"].upper() == name:
-                    idByNameCache[name] = sid
-                    return sid
+                if items[id]["name"].upper() == name:
+                    idByNameCache[name] = id
+                    return id
             except:
                 pass
         
@@ -871,34 +858,30 @@ def attribute(itemId, attr):
 @inlineCallbacks
 def loadItems():
     global items
-    global reverseItems
-    #global itemAttributes
     
     print "> > Loading items...\n"
     
     if config.itemCache:
         try:
             with _open("data/cache/items.cache", "rb") as f:
-                items, reverseItems = marshal.loads(f.read())
+                items = marshal.loads(f.read())
             log.msg("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
             pass
         
-    # Async SQL (it's funny isn't it?)
-    d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
-    d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
+    # Async SQL
+    d1 = sql.conn.runQuery("SELECT cid as `id`,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
+    d2 = sql.conn.runQuery("SELECT (SELECT cid FROM items i WHERE i.sid = a.sid) as `id`, a.`key`, a.`value` FROM item_attributes a") # We'll be waiting, won't we?
     
     
     # Make three new values while we are loading
     loadItems = {}
-    reverseLoadItems = {}
 
     for item in (yield d1):
-        sid = item['sid']
-        cid = item['cid']
-
-        del item['sid']
+        id = item['id']
+        
+        del item['id']
         
         if not item['type']:
             del item['type']
@@ -907,49 +890,37 @@ def loadItems():
             del item['name']
                 
         if not item['speed']:
-            del item['speed'] 
+            del item['speed']
 
-        reverseLoadItems[cid] = sid
-
-        subs = item['subs']
-        del item['subs']
-        loadItems[sid] = item
-        if subs:
-            for x in xrange(1, subs+1):
-                loadItems[sid+x] = item
+        loadItems[id] = item
                 
-        if sid in MONEY_MAP2:
-            loadItems[sid]["currency"] = MONEY_MAP2[sid]
+        if id in MONEY_MAP2:
+            loadItems[id]["currency"] = MONEY_MAP2[id]
             
 
     for data in (yield d2):
-        sid = data["sid"]
+        id = data["id"]
         key = data['key']
         value = data["value"]
         if key == "fluidSource":
-            loadItems[sid]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % value.upper())
+            loadItems[id]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % value.upper())
         elif key== "weaponType":
-            loadItems[sid]["weaponType"] = value
+            loadItems[id]["weaponType"] = value
             if value not in ("ammunition", "wand"):
-                loadItems[sid]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
+                loadItems[id]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
         elif value:
             try:
-                loadItems[sid][key] = int(value)
+                loadItems[id][key] = int(value)
             except:
-                loadItems[sid][key] = value
+                loadItems[id][key] = value
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%45s\n" % "\t[DONE]"
             
     # Replace the existing items
     items = loadItems
-    reverseItems = reverseLoadItems
-    
+
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:
-            f.write(marshal.dumps((tuple(items), tuple(reverseItems)), 2))
-            
-    gc.collect()
-    
-    
+            f.write(marshal.dumps(items, 2))
