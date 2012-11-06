@@ -282,7 +282,10 @@ if id:
             break
 
 import copy
-print "CREATE TABLE `items` ( \n\
+
+if __name__ == "__main__":
+
+    print "CREATE TABLE `items` ( \n\
 `id` SMALLINT UNSIGNED NOT NULL,\n\
 `type` TINYINT UNSIGNED NOT NULL, \n\
 `name` VARCHAR( 32 ) NOT NULL,\n\
@@ -320,30 +323,27 @@ CREATE TABLE `item_attributes` ( \n\
 `custom` BOOL NOT NULL DEFAULT '0'\n\
 ) ENGINE = MYISAM ;"
 
-for item in items:
-    if item.sid in data:
-        if "solid" in item.flags and "speed" in item.flags:
-            del item.flags["speed"]
-        if "name" in item.attr:
-            data[item.sid]["name"] = item.attr["name"]
-        # Bugfix for TFS format
-        #if not "article" in data[item.sid]:
-        #    continue
+    for item in items:
+        if item.sid in data:
+            if "solid" in item.flags and "speed" in item.flags:
+                del item.flags["speed"]
+            if "name" in item.attr:
+                data[item.sid]["name"] = item.attr["name"]
+        
+            # Hack
+            data[item.sid]["name"] = data[item.sid]["name"].decode("utf-8")
+            print (u"INSERT INTO items (`id`, `type`, `name`%s%s%s) VALUES(%d, %d, '%s'%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else ''))
 
-        # Hack
-        data[item.sid]["name"] = data[item.sid]["name"].decode("utf-8")
-        print (u"INSERT INTO items (`id`, `type`, `name`%s%s%s%s) VALUES(%d, %d, %d, '%s'%s%s%s%s);" % (', `article`' if data[item.sid]["article"] else '', ', `plural`' if data[item.sid]["plural"] else '', ', `'+"`, `".join(item.flags.keys())+'`' if item.flags else '', item.cid, item.type,data[item.sid]["name"].replace("'", "\\'"), ", '"+data[item.sid]["article"]+"'" if data[item.sid]["article"] else '', ", '"+data[item.sid]["plural"].replace("'", "\\'")+"'" if data[item.sid]["plural"] else '', ", '"+"', '".join(map(str, item.flags.values()))+"'" if item.flags else ''))
-
-        del data[item.sid]["name"]
-        del data[item.sid]["plural"]
-        del data[item.sid]["article"]
+            del data[item.sid]["name"]
+            del data[item.sid]["plural"]
+            del data[item.sid]["article"]
         
 
-        if data[item.sid]:
-            output = u"INSERT INTO item_attributes (`id`, `key`, `value`) VALUES"
-            for key in data[item.sid]:
-               output += "(%d, '%s', '%s'),\n" % (item.cid, key, data[item.sid][key])
-            print (output[:-2]+";\n").encode('utf-8')
+            if data[item.sid]:
+                output = u"INSERT INTO item_attributes (`id`, `key`, `value`) VALUES"
+                for key in data[item.sid]:
+                    output += "(%d, '%s', '%s'),\n" % (item.cid, key, data[item.sid][key])
+                print (output[:-2]+";\n").encode('utf-8')
 
     #else:
     #    print("---WARNING, item with sid=%d not no data!" % item.sid)

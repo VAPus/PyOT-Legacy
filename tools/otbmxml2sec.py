@@ -4,6 +4,8 @@
 from struct import unpack, unpack_from, Struct
 import sys
 import gc
+import otbxml2sql as itemReader
+from generator import Map, Item, Tile, Spawn
 
 # Python 3
 try:
@@ -173,6 +175,12 @@ class Node(object):
             return None
 
 
+# Hack Item
+_Item = Item
+def Item(serverId):
+    clientId = itemReader.items[serverId].cid
+    return _Item(clientId)
+
 dummyItems = {}
 def genItem(itemid, fallback):
     if not itemid in dummyItems:
@@ -198,7 +206,6 @@ tiles = (width * height) / 4 # This also count null tiles which we doesn't pass,
 
 print("OTBM v%d, %dx%d" % (version, width, height)) 
 
-from generator import Map, Item, Tile, Spawn
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
 m = Map(width,height,None,15)
 at = m.addTo

@@ -10,13 +10,13 @@ topitems = set()
 movable = set()
 db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
 cursor = db.cursor()
-cursor.execute("SELECT sid FROM items WHERE ontop = 1")
+cursor.execute("SELECT `id` FROM items WHERE ontop = 1")
 for row in cursor.fetchall():
     topitems.add(row[0])
 cursor.close()
 
 cursor = db.cursor()
-cursor.execute("SELECT sid FROM items WHERE movable = 1")
+cursor.execute("SELECT `id` FROM items WHERE movable = 1")
 for row in cursor.fetchall():
     movable.add(row[0])
 cursor.close()
@@ -139,7 +139,7 @@ class Map(object):
         
         # Level 7 always got to be filled up.
         self.area = {7:[]}
-        for x in xrange(0, xA+1):
+        """for x in xrange(0, xA+1):
             self.area[7].append([])
             for y in xrange(0, yA+1):
                 self.area[7][x].append([])
@@ -148,7 +148,7 @@ class Map(object):
                 elif isinstance(ground, int):
                     self.area[7][x][y] = [Item(ground)]
                 else:
-                    self.area[7][x][y] = [ground]
+                    self.area[7][x][y] = [ground]"""
 
 
     def author(self, name):
