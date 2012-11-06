@@ -147,7 +147,7 @@ stringVersion = node.data.getXString(128)
 print "-- "
 print "-- OTB version %d.%d (Client: %s, build: %d)" % (majorVersion, minorVersion, stringVersion[12:16], buildVersion)
 
-items = []
+items = {}
 lastRealItem = None
 
 child = node.next()
@@ -219,7 +219,7 @@ while child:
             child.data.pos += datalen        
 
     if item.cid:
-        items.append(item)
+        items[item.sid] = item
         lastRealItem = item
     else:
         lastRealItem.alsoKnownAs.append(item.sid)
@@ -274,12 +274,6 @@ for xItem in dom.getElementsByTagName("item"):
 # Current suggested format:
 # sid, cid, name, refids, flags, description, weight, worth, slot, duration, decayTo, floorchange
 #id = raw_input("ID? ")
-id = 0
-if id:
-    for item in items:
-        if item.sid is id:
-            items = [item]
-            break
 
 import copy
 
@@ -322,9 +316,9 @@ CREATE TABLE `item_attributes` ( \n\
 `value` VARCHAR( 255 ) NOT NULL ,\n\
 `custom` BOOL NOT NULL DEFAULT '0'\n\
 ) ENGINE = MYISAM ;"
-
-    for item in items:
-        if item.sid in data:
+    taken = set()
+    for item in items.values():
+        if item.sid in data and not item.cid in taken:
             if "solid" in item.flags and "speed" in item.flags:
                 del item.flags["speed"]
             if "name" in item.attr:
@@ -337,7 +331,7 @@ CREATE TABLE `item_attributes` ( \n\
             del data[item.sid]["name"]
             del data[item.sid]["plural"]
             del data[item.sid]["article"]
-        
+            taken.add(item.cid)
 
             if data[item.sid]:
                 output = u"INSERT INTO item_attributes (`id`, `key`, `value`) VALUES"

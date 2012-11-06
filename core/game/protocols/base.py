@@ -834,7 +834,7 @@ class BaseProtocol(object):
             
     @inlineCallbacks
     def handleMoveItem(self, player, packet):
-        from game.item import Item, sid, items
+        from game.item import Item, items
         fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
@@ -938,7 +938,7 @@ class BaseProtocol(object):
                 game.engine.autoWalkCreatureTo(creature, toPosition)
             
     def handleLookAt(self, player, packet):
-        from game.item import sid, cid, items
+        from game.item import items
         position = packet.position(player.position.instanceId)
         
         clientId = packet.uint16()
@@ -1564,7 +1564,7 @@ class BaseProtocol(object):
         if not id:
             return
 
-        player.createMarketOffer(type, sid, amount, price, anonymous)
+        player.createMarketOffer(type, id, amount, price, anonymous)
 
     def handleCancelOffer(self, player, packet):
         if not player.market or not player.marketOpen: return

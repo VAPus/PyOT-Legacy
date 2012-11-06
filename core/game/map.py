@@ -186,18 +186,19 @@ class Tile(object):
             yield self.things[n]
         
     def topItems(self):
-        for n in xrange(self._depack(PACK_ITEMS)):
+        count = self._depack(PACK_ITEMS)
+        for n in xrange(count):
             
             try:
                 yield self.things[n]
-            except:
+            except IndexError:
                 ontops = 0
                 for i in self.things:
                     if isinstance(i, Item) and i.ontop:
                         ontops += 1
                 self._modpack(PACK_ITEMS, ontops-self._depack(PACK_ITEMS))
-                print "XXX: Hack applied"
-                    
+                print "XXX: Hack applied", self._depack(PACK_ITEMS), count, len(self.things)
+                return            
             
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())
