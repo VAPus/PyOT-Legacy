@@ -93,7 +93,10 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
 @register("use", laddersUp)
 def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
-        creature.move(creature.directionToPosition(position))
+        direction = creature.directionToPosition(position, True)
+        if direction != None:
+            creature.move(direction)
+
         creature.move(SOUTH, level=-1)
 
         """newPos = position.copy()
