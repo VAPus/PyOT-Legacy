@@ -93,20 +93,17 @@ def itemFloorChange(thing, position, onPosition, onThing, **k):
 @register("use", laddersUp)
 def floorup(creature, thing, position, **k):
     if creature.inRange(position, 1, 1, 0):
-        newPos = position.copy()
+        creature.move(creature.directionToPosition(position))
+        creature.move(SOUTH, level=-1)
+
+        """newPos = position.copy()
         crePos = creature.position.copy()
         newPos.z -= 1
         newPos.y += 1
         try:
             creature.teleport(newPos)
         except:
-            creature.notPossible()
-        if newPos.x > crePos.x:
-            creature.turn(1)
-        elif newPos.x < crePos.x:
-            creature.turn(3)
-        else:
-            creature.turn(2)
+            creature.notPossible()"""
 
 # Ladders down
 # Trapdoors, holes etc

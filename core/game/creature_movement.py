@@ -15,6 +15,7 @@ class CreatureMovement(object):
         """if not self.actionLock(self.teleport, position):
             return False"""
 
+        print "Teleportation", position
         # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position.copy()
 
@@ -37,40 +38,42 @@ class CreatureMovement(object):
                 stream.send(spectator)
             oldPosCreatures = game.engine.getCreatures(oldPosition)
         except:
+            raise
             pass # Just append creature
-
+        
         stackpos = placeCreature(self, position)
         if not stackpos:
             raise game.errors.ImpossibleMove()
-
+        
         removeCreature(self, oldPosition)
-        self.position = position
+        
         if self.creatureType == 0 and self.client:
-            stream = self.packet()
-            try:
+            print "Good"
+            with self.packet() as stream:
+                print oldPosition, oldStackpos, position
+                
                 stream.removeTileItem(oldPosition, oldStackpos)
-            except:
-                pass # Just append
-            stream.uint8(0x64)
-            stream.position(position)
-            stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
+                
+                stream.uint8(0x64)
+                stream.position(position)
+                stream.mapDescription(Position(position.x - 8, position.y - 6, position.z), 18, 14, self)
 
-            # If we're entering protected zone, fix icons
-            pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
-            pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
-            if pzStatus and not pzIcon:
-                self.setIcon(CONDITION_PROTECTIONZONE)
-                self.refreshConditions(stream)
-                self.cancelTarget()
-                self.target = None
-            elif not pzStatus and pzIcon:
-                self.removeIcon(CONDITION_PROTECTIONZONE)
-                self.refreshConditions(stream)
+                # If we're entering protected zone, fix icons
+                pzStatus = newTile.getFlags() & TILEFLAGS_PROTECTIONZONE
+                pzIcon = self.extraIcons & CONDITION_PROTECTIONZONE
+                if pzStatus and not pzIcon:
+                    self.setIcon(CONDITION_PROTECTIONZONE)
+                    self.refreshConditions(stream)
+                    self.cancelTarget()
+                    self.target = None
+                elif not pzStatus and pzIcon:
+                    self.removeIcon(CONDITION_PROTECTIONZONE)
+                    self.refreshConditions(stream)
 
-            #stream.magicEffect(position, 0x02)
+                #stream.magicEffect(position, 0x02)
+                print "Sending"
 
-            stream.send(self.client)
-
+        self.position = position        
         newPosCreatures = game.engine.getCreatures(position)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
@@ -121,7 +124,18 @@ class CreatureMovement(object):
                 stream.uint8(self.solid)
             stream.send(spectator)
 
-    def turnAgainst(self, position):
+    def directionToPosition(self, position, diagonal=False):
+        direction = None
+        if diagonal:
+            if position.y > self.position.y and position.x > self.position.x:
+                return SOUTHEAST
+            elif position.y > self.position.y and position.x < self.position.x:
+                return SOUTHWEST
+            elif position.y < self.position.y and position.x > self.position.x:
+                return NORTHEAST
+            elif position.y < self.position.y and position.x < self.position.x:
+                return NORTHWEST
+
         # First north/south
         if position.y > self.position.y:
             direction = SOUTH
@@ -135,7 +149,10 @@ class CreatureMovement(object):
         elif position.x < self.position.x:
             direction = WEST
 
-        return self.turn(direction)
+        return direction
+
+    def turnAgainst(self, position):
+        return self.turn(self.directionToPosition(position))
     
     def verifyMove(self, tile):
         """ This function verify if the tile is walkable in a regular state (pathfinder etc) """
@@ -153,7 +170,7 @@ class CreatureMovement(object):
 
         if not self.data["health"] or not self.canMove or not self.speed:
             return False
-            
+
         oldPosition = self.position.copy()
 
         # Recalculate position

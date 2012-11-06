@@ -101,7 +101,7 @@ class BasePacket(TibiaPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.data += pack(">H", (skip << 8) + 0xFF)
+            self.data += chr(skip) + "\xFF"
 
     def _helpGetTile(self,x,y,z,area,instanceId):
         iX = x / 32
@@ -132,13 +132,13 @@ class BasePacket(TibiaPacket):
 
                 if tile and tile.things:
                     if skip >= 0:
-                        self.data += pack(">H", (skip << 8) + 0xFF)
+                        self.data += chr(skip) + "\xFF"
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
                     skip += 1
                     if skip == 0xFF:
-                        self.data += pack(">H", (skip << 8) + 0xFF)
+                        self.data += "\xFF\xFF"
                         skip = -1
         return skip
 
