@@ -529,7 +529,7 @@ class Rune(Spell):
         self.shootEffect = None
         self.areaEffect = None
         
-        self.targetRange = 1
+        self.targetRange = 7
         
         self.targetArea = None
         

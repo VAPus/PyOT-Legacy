@@ -256,29 +256,22 @@ class PlayerAttacks(CreatureAttacks):
                         defaultMax = 90
                         base = 1.25 * 1.2
                         baseRange = 6
-                    # ok this is temporary. We should set shootType directly to number while loading the item, to save dictionary lookups now.
-                    # the numbers seem to be off, for example ANIMATION_SPEAR = 0 produces no animation at all.
-                    anitypes = { 'bolt': ANIMATION_BOLT, 'arrow': ANIMATION_ARROW, 'spear': ANIMATION_SPEAR,
-                                  'poisonarrow': 5, 'burstarrow': 6, 'throwingstar': 7, 'throwingknife': 8, 'smallstone': 9,
-                                  'powerbolt': 13, 'infernalbolt': 15, 'huntingspear': 16, 'enchantedspear': 17,
-                                  'assassinstar': 18, 'royalspear': 20, 'sniperarrow': 21, 'piecingbolt': 23 }
                     
                     distance = baseRange - self.distanceStepsTo(self.target.position)
                     chance = 50 # XXX: chance for spears, to be corrected
                   
                     if not weapon.breakChance:
                         chance = min((ammo.maxHitChance or defaultMax), self.getActiveSkill(SKILL_DISTANCE) * (base ** distance) * (ammo.hitChance or 1))
-                    
-                    
+
                     animation = ANIMATION_ROYALSPEAR
                     # spears
                     if weapon.breakChance:
-                        animation = anitypes[weapon.shootType]
+                        animation = weapon.shootType
                         if random.randint(1, 100) < weapon.breakChance:
                             self.modifyItem(weapon, -1)
                     # ammo
                     else:
-                        animation = anitypes[ammo.shootType]
+                        animation = ammo.shootType
                         self.modifyItem(ammo, -1)
                     # shoot effect
                     self.shoot(self.position, self.target.position, animation) # animation

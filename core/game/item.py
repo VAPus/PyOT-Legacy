@@ -932,6 +932,8 @@ def loadItems():
             loadItems[sid]["weaponType"] = value
             if value not in ("ammunition", "wand"):
                 loadItems[sid]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
+        elif key == 'shootType':
+            loadItems[sid]['shootType'] = getattr(game.enum, 'ANIMATION_%s' % value.upper())
         elif value:
             try:
                 loadItems[sid][key] = int(value)
