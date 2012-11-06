@@ -274,7 +274,7 @@ class PlayerAttacks(CreatureAttacks):
                         animation = ammo.shootType
                         self.modifyItem(ammo, -1)
                     # shoot effect
-                    self.shoot(self.position, self.target.position, animation) # animation
+                    self.shoot(self.position, self.target.position, animation + 1) # animation
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
