@@ -614,7 +614,7 @@ class Rune(Spell):
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                         
                 else:
-                    thing.modify(-self.count)  
+                    thing.modify(-1)  
                     
                     # Integrate mana seeker
                     try:
