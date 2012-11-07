@@ -223,17 +223,22 @@ if __name__ == "__main__":
                 del attribute.attrib["key"]
                 attribute.tag = key
 
-        if "fromid" in item.attrib and "toid" in item.attrib and item.get("fromid") != item.get("toid"):
-            orgId = int(item.attrib["fromid"])
+        if ("fromid" in item.attrib and "toid" in item.attrib and item.get("fromid") != item.get("toid")) or "-" in item.get("id", ""):
+            if "-" in item.get("id", ""):
+                orgId, toId = item.get("id").split("-")
+                orgId = int(orgId)
+                toId = int(toId)
+            else:
+                orgId = int(item.attrib["fromid"])
+                toId = int(item.attrib["toid"])
+                del item.attrib["fromid"]
+                del item.attrib["toid"]
+
             i = 0
-            toId = int(item.attrib["toid"])
             if toId - orgId > 100:
                 print "I think an item going from %d to %d is wrong...." % (orgId, toId)
 
             item.set("id", str(orgId))
-            
-            del item.attrib["fromid"]
-            del item.attrib["toid"]
 
             for id in xrange(orgId+1, toId+1):
                 # Split items.
@@ -274,6 +279,11 @@ if __name__ == "__main__":
 
     # Rewrite ids.
     for item in root.find("item"):
+        # First some name checking.
+        if "name" in items[int(item.get("id"))].attr and items[int(item.get("id"))]["name"] != item.get("name"):
+            print "WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[int(item.get("id"))]["name"])
+            item.set("name", items[int(item.get("id"))]["name"])
+
         id = items[int(item.get("id"))].cid
         item.set("id", str(id))
         ids.add(id)
