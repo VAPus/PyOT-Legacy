@@ -4,7 +4,7 @@
 from struct import unpack, unpack_from, Struct
 import sys
 import gc
-import otbxml2sql as itemReader
+import otbxml2xml as itemReader
 from generator import Map, Item, Tile, Spawn
 
 # Python 3

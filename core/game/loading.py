@@ -123,8 +123,8 @@ def loader(timer):
             sys.stdout.write("\x1b]2;PyOT\x07")      
             
     
-    # Begin loading items in the background
-    d = sys.modules["game.item"].loadItems()
+    # Begin loading items
+    sys.modules["game.item"].loadItems()
     
     # Reset online status
     print "> > Reseting players online status...",
@@ -132,9 +132,13 @@ def loader(timer):
     print "%40s\n" % _txtColor("\t[DONE]", "blue")
     
     @inlineCallbacks
-    def sync(d, timer):
+    def sync(timer):
+        globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")
+        groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
+        houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")
+
         print "> > Loading global data...",
-        for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
+        for x in (yield globalData):
             if x['type'] == 'json':
                 game.engine.globalStorage[x['key']] = otjson.loads(x['data'])
             elif x['type'] == 'pickle':
@@ -144,7 +148,7 @@ def loader(timer):
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading groups...",
-        for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
+        for x in (yield groupData):
             game.engine.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
         
@@ -153,7 +157,7 @@ def loader(timer):
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading bans...",
-        yield game.ban.refresh()
+        game.ban.refresh()
         print "%60s\n" % _txtColor("\t[DONE]", "blue")
 
         print "> > Loading market...",
@@ -161,7 +165,7 @@ def loader(timer):
         print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
         print "> > Loading house data...",
-        for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
+        for x in (yield houseData):
             game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
         print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
@@ -331,7 +335,8 @@ def loader(timer):
             
     __builtin__.game = Globalizer
     
-    d.addCallback(sync, timer)
+    # TODO: Inline/kill "sync"
+    d = sync(timer)
     
     # Load protocols
     print "> > Loading game protocols...",

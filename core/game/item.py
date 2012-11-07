@@ -11,6 +11,7 @@ import time
 import marshal
 import inflect
 import gc
+import xml.etree.cElementTree as ET
 
 INFLECT = inflect.engine()
 
@@ -24,12 +25,13 @@ items = None
             
 ### Item ###
 class Item(object):
-    attributes = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
+    attributes = ('solid','blockprojectile','blockpath','hasheight','usable','pickable','movable','stackable','fcd', 'fcn', 'fce', 'fcs', 'fcw','ontop','readable','rotatable','hangable', 'vertical', 'horizontal', 'cannotdecay', 'allowdistread', '_unused', 'clientcharges', 'lookthrough','animation','walkstack')
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
             items[itemId]
         except (KeyError, IndexError):
+            raise
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
             
@@ -42,7 +44,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if items[itemId]['a'] & 64:
+        if items[itemId]['flags'] & 128:
             if not count or count < 0:
                 count = 1
             elif not isinstance(count, int):
@@ -166,15 +168,15 @@ class Item(object):
     
     @property
     def solid(self):
-        return items[self.itemId]['a'] & 1
+        return items[self.itemId]['flags'] & 1
         
     @property
     def blockprojectile(self):
-        return items[self.itemId]['a'] & 2
+        return items[self.itemId]['flags'] & 2
         
     @property
     def blockpath(self):
-        return items[self.itemId]['a'] & 4
+        return items[self.itemId]['flags'] & 4
         
     @property
     def cid(self):
@@ -184,49 +186,49 @@ class Item(object):
     # Changeable attributes. Ignore.
     @property
     def usable(self):
-        return items[self.itemId][None] & 8
+        return items[self.itemId]['flags'] & 16
         
     @property
     def pickable(self):
-        return items[self.itemId][None] & 16
+        return items[self.itemId]['flags'] & 32
         
     @property
     def movable(self):
-        return items[self.itemId][None] & 32
+        return items[self.itemId]['flags'] & 64
     """    
     @property
     def stackable(self):
-        return items[self.itemId]['a'] & 64
+        return items[self.itemId]['flags'] & 128
         
     @property
     def ontop(self):
-        return items[self.itemId]['a'] & 128
+        return items[self.itemId]['flags'] & 8192
         
     @property
     def hangable(self):
-        return items[self.itemId]['a'] & 256
+        return items[self.itemId]['flags'] & 65536
         
     @property
     def rotatable(self):
-        return items[self.itemId]['a'] & 512
+        return items[self.itemId]['flags'] & 32768
         
     @property
     def animation(self):
-        return items[self.itemId]['a'] & 1024
+        return items[self.itemId]['flags'] & 16777216
         
     @property
     def type(self):
         try:
             return items[self.itemId]["type"]
         except KeyError:
-            return False
+            return 0
             
     def __getattr__(self, name):
         try:
             return items[self.itemId][name]
         except:
             try:
-                return items[self.itemId]['a'] & (1 << self.attributes.index(name))
+                return items[self.itemId]['flags'] & (1 << self.attributes.index(name))
             except:
                 if not "__" in name:
                     return None
@@ -837,13 +839,7 @@ def idByName(name):
     try:
         return idByNameCache[name]
     except KeyError:
-        for id in xrange(1500, len(items)):
-            try:
-                if items[id]["name"].upper() == name:
-                    idByNameCache[name] = id
-                    return id
-            except:
-                pass
+        pass
         
 def attribute(itemId, attr):
     check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
@@ -855,10 +851,10 @@ def attribute(itemId, attr):
     except:
         return
         
-@inlineCallbacks
 def loadItems():
     global items
-    
+    global idByNameCache
+
     print "> > Loading items...\n"
     
     if config.itemCache:
@@ -868,58 +864,60 @@ def loadItems():
             log.msg("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
-            pass
-        
-    # Async SQL
-    d1 = sql.conn.runQuery("SELECT `id`, IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
-    d2 = sql.conn.runQuery("SELECT `id`, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
-    
+            pass    
     
     # Make three new values while we are loading
     loadItems = {}
+    idNameCache = {}
+    tree = ET.parse("data/items.xml")
+    root = tree.getroot()
+    for item in root:
+        _item = item.attrib
 
-    for item in (yield d1):
-        id = item['id']
+        # Stupid elementtree thinks everything are strings....
+        # Would have used lxml, but what the heck, I can't benchmark the difference.
+        if not "flags" in _item:
+            _item["flags"] = 0
+        else:
+            _item["flags"] = int(_item["flags"])
+        if "speed" in _item:
+            _item["speed"] = int(_item["speed"])
+        if "type" in _item:
+            _item["type"] = int(_item["type"])
+
+        if len(item):
+            for attr in item:
+                key = attr.tag
+                val = attr.get("value")
+                if key == "fluidSource":
+                    val = getattr(game.enum, 'FLUID_%s' % val.upper())
+                elif key == "weaponType" and val not in ("ammunition", "wand"):
+                    _item["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % val.upper())
+                else:
+                    try:
+                        val = int(val)
+                    except:
+                        pass
+
+                _item[key] = val
+
+            # TODO: Add currency to items.xml....
         
-        del item['id']
+        id = int(_item["id"])
+        loadItems[id] = _item
+        try:
+            idNameCache[_item["name"].upper()] = id
+        except:
+            pass
+        del _item["id"]
         
-        if not item['type']:
-            del item['type']
-
-        if not item['name']:
-            del item['name']
-                
-        if not item['speed']:
-            del item['speed']
-
-        loadItems[id] = item
-                
-        if id in MONEY_MAP2:
-            loadItems[id]["currency"] = MONEY_MAP2[id]
-            
-
-    for data in (yield d2):
-        id = data["id"]
-        key = data['key']
-        value = data["value"]
-        if key == "fluidSource":
-            loadItems[id]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % value.upper())
-        elif key== "weaponType":
-            loadItems[id]["weaponType"] = value
-            if value not in ("ammunition", "wand"):
-                loadItems[id]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % value.upper())
-        elif value:
-            try:
-                loadItems[id][key] = int(value)
-            except:
-                loadItems[id][key] = value
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%45s\n" % "\t[DONE]"
-            
+
     # Replace the existing items
     items = loadItems
-
+    idByNameCache = idNameCache
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:

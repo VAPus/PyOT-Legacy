@@ -181,7 +181,6 @@ while child:
         lastRealItem = item
     else:
         lastRealItem.alsoKnownAs.append(item.sid)
-    
     child = node.next()
 print "-- Got a total of %d items!" % len(items)
 print "-- "
@@ -196,7 +195,8 @@ if __name__ == "__main__":
     tree = ET.parse("items.xml")
     root = tree.getroot()
     index = 0
-    for item in root:
+    ids = set()
+    for item in root.findall("item"):
         # Kill some data we don't use.
         try:
             del item.attrib["article"]
@@ -208,35 +208,59 @@ if __name__ == "__main__":
         except:
             pass
 
+        if len(item):
+            # Sub attributes.
+            for attribute in item:
+                key = attribute.get("key")
+                val = attribute.get("value")
+
+                if key in ("plural", "article", "cache", "blockprojectile", "type") or not key:
+                    item.remove(attribute)
+                    continue # We auto generate those.
+                if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
+                    val = items[int(val)].cid
+
+                del attribute.attrib["key"]
+                attribute.tag = key
+
         if "fromid" in item.attrib and "toid" in item.attrib and item.get("fromid") != item.get("toid"):
             orgId = int(item.attrib["fromid"])
-            for id in xrange(orgId, int(item.attrib["toid"])+1):
-                if (items[id].cid-(id-orgId)) != items[orgId].cid:
-                    # Split items.
-                    newItem = copy.deepcopy(item)
-                    toid = item.get("toid")
-                    item.set("fromid", str(items[orgId].cid))
-                    item.set("toid", str(items[id].cid-(id-orgId-1)))
+            i = 0
+            toId = int(item.attrib["toid"])
+            if toId - orgId > 100:
+                print "I think an item going from %d to %d is wrong...." % (orgId, toId)
 
-                    newItem.set("fromid", str(id))
-                    newItem.set("toid", str(toid))
+            item.set("id", str(orgId))
+            
+            del item.attrib["fromid"]
+            del item.attrib["toid"]
+
+            for id in xrange(orgId+1, toId+1):
+                # Split items.
+                newItem = copy.deepcopy(item)
+                
+                newItem.set("id", str(id))
+                root.insert(index+i, newItem)
                     
-                    root.insert(index+1, newItem)
-                    break
+                i += 1
+
+            index += i
                     
         elif "fromid" in item.attrib:
             # No toid. Rewrite.
             orgId = item.attrib["fromid"]
             del item.attrib["fromid"]
             item.set("id", orgId)
+
         if item.get("id"):
             id = int(item.get("id"))
-            if id > 20000 and id < 20050:
+            if id > 20000 and id < 20050 or id not in items:
                 item.clear()
                 root.remove(item)
                 continue
 
-            item.set("id", str(items[id].cid))
+            #item.set("id", str(items[id].cid))
+            #ids.add(items[id].cid)
 
             if items[id].type and items[id].type > 2: # I don't think we care for type 0 or type 1 or type 2 (aga container).
                 item.set("type", str(items[id].type))
@@ -244,22 +268,38 @@ if __name__ == "__main__":
                 item.set("speed", str(items[id].attr["speed"]))
             if items[id].flags:
                 item.set("flags", str(items[id].flags))
-        
+
+        assert "fromid" not in item.attrib
         index += 1
-        if len(item):
-            # Sub attributes.
-            for attribute in item:
-                key = attribute.get("key")
-                val = attribute.get("value")
-                attribute.clear()
-                if key in ("plural", "article", "cache"):
-                    item.remove(attribute)
-                    continue # We auto generate those.
-                attribute.tag = key
-                attribute.text = val
+
+    # Rewrite ids.
+    for item in root.find("item"):
+        id = items[int(item.get("id"))].cid
+        item.set("id", str(id))
+        ids.add(id)
+
+    for item in items.values():
+        if item.cid not in ids:
+            elm = ET.Element('item')
+            elm.set('id', str(item.cid))
+            if item.flags:
+                elm.set('flags', str(item.flags))
+            if item.type and item.type > 2:
+                elm.set('type', str(item.type))
+            if "speed" in item.attr and item.attr["speed"] > 0 and item.attr["speed"] != 100:
+                elm.set('speed', str(item.attr["speed"]))
+            if "name" in item.attr:
+                elm.set('name', item.attr["name"].decode('utf-8'))
+
+            ids.add(item.cid)
+
+            root.append(elm)
     tree.write("out.xml")
     
     data = parse("out.xml").toprettyxml(encoding="utf-8", newl="\n")
     with open("out.xml", 'w') as f:
-        f.write(data.replace("\t\t\n\t\t\n", "").replace("\t\n\t\n", "\n"))
-    
+        data = data.replace("\t\t\n\t\t\n", "").replace("\t\n\t\n", "\n").replace("\">\n\t\t</item>\n", "\"/>\n")
+        data = data.replace("/>\n\n", "/>\n").replace("\n\t\n", "\n")
+        f.write(data)
+
+        
