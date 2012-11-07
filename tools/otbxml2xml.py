@@ -212,16 +212,33 @@ if __name__ == "__main__":
             # Sub attributes.
             for attribute in item:
                 key = attribute.get("key")
+                if not key: continue
                 val = attribute.get("value")
 
-                if key in ("plural", "article", "cache", "blockprojectile", "type") or not key:
-                    item.remove(attribute)
+                if key in ("field",):
+                    fields = {}
+                    for attr in attribute:
+                        elm = ET.Element("field" + attr.get("key").capitalize())
+                        elm.set("value", attr.get("value"))
+                        item.append(elm)
+                        attr.clear()
+
+                    attribute.clear()
+                    attribute.set("value", val)
+
+                if key in ("plural", "article", "cache", "blockprojectile", "type"):
+                    attribute.clear()
+                    #item.remove(attribute)
                     continue # We auto generate those.
                 if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
-                    val = items[int(val)].cid
+                    attribute.set("value", str(items[int(val)].cid))
 
-                del attribute.attrib["key"]
+                try:
+                    del attribute.attrib["key"]
+                except:
+                    pass # Fields are reset so...
                 attribute.tag = key
+                
 
         if ("fromid" in item.attrib and "toid" in item.attrib and item.get("fromid") != item.get("toid")) or "-" in item.get("id", ""):
             if "-" in item.get("id", ""):
@@ -308,6 +325,7 @@ if __name__ == "__main__":
     
     data = parse("out.xml").toprettyxml(encoding="utf-8", newl="\n")
     with open("out.xml", 'w') as f:
+        data = data.replace("\t\t<attribute/>\n", "\t")
         data = data.replace("\t\t\n\t\t\n", "").replace("\t\n\t\n", "\n").replace("\">\n\t\t</item>\n", "\"/>\n")
         data = data.replace("/>\n\n", "/>\n").replace("\n\t\n", "\n")
         f.write(data)
