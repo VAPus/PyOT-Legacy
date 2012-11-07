@@ -23658,7 +23658,7 @@
 	<item id="15538" article="a" name="ramp">
 		<attribute key="floorchange" value="south" />
 	</item>
-	<item id="155389" article="a" name="ramp" />	
+	<item id="15389" article="a" name="ramp" />	
 	<item id="15545" article="a" name="fox tail">
 		<attribute key="weight" value="200" />
 		<attribute key="description" value="A hermit near Carlin might be able to tell you more about it." />
