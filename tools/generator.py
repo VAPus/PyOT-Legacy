@@ -83,9 +83,10 @@ db.close()
                 <uint16>valueLength
                 <string with length valueLength>value
             )
-            attributeType == b (
-                <bool>value
-            )
+
+            attributeType == T
+            attributeType == F
+  
             attributeType == l (
                 <uint8>listItems
                 <repeat this block for listItems times> -> value
@@ -392,9 +393,8 @@ class Map(object):
                     else:
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
-                        remove = trippelNull + '|'
                         for code in output[::-1]:
-                            if code == remove: count += 1
+                            if code[0:2] == "\x00\x00" and code[3] == '|': count += 1
                             else: break
                                 
                         if count:
@@ -559,17 +559,18 @@ class Item(object):
         else:
             string = ''
         
-        # Is the value a number?
-        if isinstance(value, int):
+        # Is the value a bool?
+        if isinstance(value, bool):
+            string += "T" if value else "F"
+
+        # A number?
+        elif isinstance(value, int):
             string += "i" + struct.pack("<i", value)
             
         # A string?
         elif isinstance(value, str):
             string += "s" + struct.pack("<i", len(value)) + value
             
-        # A bool?
-        elif isinstance(value, bool):
-            string += "b" + chr(value)
             
         # Or a list (actions etc)
         elif isinstance(value, list) or isinstance(value, tuple):
