@@ -30,7 +30,7 @@ class Item(object):
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
             items[itemId]
-        except (KeyError, IndexError):
+        except KeyError:
             raise
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
@@ -870,8 +870,8 @@ def loadItems():
     loadItems = {}
     idNameCache = {}
     tree = ET.parse("data/items.xml")
-    root = tree.getroot()
-    for item in root:
+    
+    for item in tree.getroot():
         _item = item.attrib
 
         # Stupid elementtree thinks everything are strings....
@@ -900,8 +900,7 @@ def loadItems():
                         pass
 
                 _item[key] = val
-
-            # TODO: Add currency to items.xml....
+                attr.clear()
         
         id = int(_item["id"])
         loadItems[id] = _item
@@ -910,7 +909,7 @@ def loadItems():
         except:
             pass
         del _item["id"]
-        
+        item.clear()        
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%45s\n" % "\t[DONE]"
@@ -918,6 +917,7 @@ def loadItems():
     # Replace the existing items
     items = loadItems
     idByNameCache = idNameCache
+
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:

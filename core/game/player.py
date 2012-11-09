@@ -1749,7 +1749,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         money = 0
         for item in self.inventory[2].getRecursive():
-            currency = item.currency
+            currency = item.worth
             if currency:
                 money += currency * item.count
 
@@ -1759,7 +1759,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         moneyItems = []
         money = 0
         for item, bag, pos in self.inventory[2].getRecursiveWithBag():
-            currency = item.currency
+            currency = item.worth
             if currency:
                 money += currency * item.count
                 moneyItems.append((item, bag, pos))
@@ -1769,12 +1769,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if money >= amount:
             removedMoney = 0
             for i in moneyItems[:-1]:
-                removedMoney += i[0].currency * i[0].count
+                removedMoney += i[0].worth * i[0].count
                 i[1].removeItem(i[0])
 
             last = moneyItems[-1]
             count = 0
-            currency = last[0].currency
+            currency = last[0].worth
             for i in xrange(last[0].count):
                 removedMoney += currency
                 count += 1
