@@ -529,7 +529,7 @@ class Rune(Spell):
         self.shootEffect = None
         self.areaEffect = None
         
-        self.targetRange = 1
+        self.targetRange = 7
         
         self.targetArea = None
         
@@ -614,7 +614,7 @@ class Rune(Spell):
                     creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
                         
                 else:
-                    thing.modify(-self.count)  
+                    thing.modify(-1)  
                     
                     # Integrate mana seeker
                     try:

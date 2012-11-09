@@ -23,7 +23,7 @@ class CreatureAttacks(object):
         if not type == enum.DISTANCE:
             if not by.ignoreBlock and by.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
-        
+
         if type == enum.ICE:
             textColor = enum.COLOR_TEAL
             magicEffect = enum.EFFECT_ICEATTACK
@@ -214,11 +214,12 @@ class PlayerAttacks(CreatureAttacks):
     def attackTarget(self, dmg = None):
         if dmg:
             assert dmg < 0, "Damage must be negative"
-            
+          
         atkRange = 1
         weapon = self.inventory[SLOT_RIGHT]
         ammo = None
         ok = True
+
         if weapon and weapon.range:
             atkRange = weapon.range
             # This is probably a slot consuming weapon.
@@ -248,7 +249,6 @@ class PlayerAttacks(CreatureAttacks):
 
                 elif not dmg and atkRange > 1:
                     # First, hitChance.
-                    # 'or' values are pretty random, to be corrected.
                     defaultMax = 75
                     base = 1.25
                     baseRange = 4
@@ -256,13 +256,25 @@ class PlayerAttacks(CreatureAttacks):
                         defaultMax = 90
                         base = 1.25 * 1.2
                         baseRange = 6
-
-                    distance = baseRange - self.distanceStepsTo(self.target.position)
-
-
-                    chance = min((ammo.maxHitChance or defaultMax), self.getActiveSkill(SKILL_DISTANCE) * (base ** distance) * (weapon.hitChance or 1))
                     
-                    self.modifyItem(ammo, -1)
+                    distance = baseRange - self.distanceStepsTo(self.target.position)
+                    chance = 50 # XXX: chance for spears, to be corrected
+                  
+                    if not weapon.breakChance:
+                        chance = min((ammo.maxHitChance or defaultMax), self.getActiveSkill(SKILL_DISTANCE) * (base ** distance) * (ammo.hitChance or 1))
+
+                    animation = ANIMATION_ROYALSPEAR
+                    # spears
+                    if weapon.breakChance:
+                        animation = weapon.shootType
+                        if random.randint(1, 100) < weapon.breakChance:
+                            self.modifyItem(weapon, -1)
+                    # ammo
+                    else:
+                        animation = ammo.shootType
+                        self.modifyItem(ammo, -1)
+                    # shoot effect
+                    self.shoot(self.position, self.target.position, animation + 1) # animation
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
@@ -270,7 +282,7 @@ class PlayerAttacks(CreatureAttacks):
                         return
                     
                     minDmg = config.minDistanceDamage(self.data["level"])
-                    maxDmg = config.distanceDamage((weapon.attack or 0) + (ammo.attack or 0), self.getActiveSkill(SKILL_DISTANCE), factor)
+                    maxDmg = config.distanceDamage((weapon.attack or 0) + (ammo.attack if ammo else 0), self.getActiveSkill(SKILL_DISTANCE), factor)
                     
                     dmg = -random.randint(round(minDmg), round(maxDmg))
                     
@@ -302,7 +314,7 @@ class PlayerAttacks(CreatureAttacks):
 
                 targetIsPlayer = self.target.isPlayer() # onHit might remove this.
                 target = self.target
-                
+
                 if dmg:
                     """if self.target.isPlayer() and (self.target.data["level"] <= config.protectionLevel and self.data["level"] <= config.protectionLevel):
                             self.cancelTarget()
@@ -317,25 +329,25 @@ class PlayerAttacks(CreatureAttacks):
                         # weapon elemental damage
                         # XXX: What about elemental arrows when skillType == SKILL_DISTANCE?
                         weapon = self.inventory[SLOT_RIGHT]
-                        if skillType == SKILL_DISTANCE:
-                            weapon = self.inventory[SLOT_AMMO] # will that do? 
+                        if skillType == SKILL_DISTANCE and not weapon.breakChance: # not a spear
+                            weapon = self.inventory[SLOT_AMMO]
 
                         if weapon.elementFire:
                             target.onHit(self, -weapon.elementFire, enum.FIRE)
                         if weapon.elementIce:
                             target.onHit(self, -weapon.elementIce, enum.ICE)
                         if weapon.elementEarth:
-                            target.onHit(self, -weapon.elementEarth, EARTH)                        
+                            target.onHit(self, -weapon.elementEarth, enum.EARTH)                        
                         if weapon.elementEnergy:
-                            target.onHit(self, -weapon.elementEnergy, ENERGY)
+                            target.onHit(self, -weapon.elementEnergy, enum.ENERGY)
                         if weapon.elementHoly:
-                            target.onHit(self, -weapon.elementHoly, HOLY)
+                            target.onHit(self, -weapon.elementHoly, enum.HOLY)
                         if weapon.elementDeath:
-                            target.onHit(self, -weapon.elementDeath, DEATH)
+                            target.onHit(self, -weapon.elementDeath, enum.DEATH)
                         if weapon.elementDrown:
-                            target.onHit(self, -weapon.elementDrown, DROWN)
+                            target.onHit(self, -weapon.elementDrown, enum.DROWN)
                         if weapon.elementLifedrain:
-                            target.onHit(self, -weapon.elementLifedrain, LIFEDRAIN)
+                            target.onHit(self, -weapon.elementLifedrain, enum.LIFEDRAIN)
                         
                     self.skillAttempt(skillType)
                 else:
