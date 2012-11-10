@@ -322,8 +322,7 @@ houseTiles = {}
 
 houseDoors = {}
 
-if config.stackTiles:
-    dummyTiles = {}
+dummyTiles = {}
     
 def loadTiles(x,y, instanceId):
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
@@ -409,6 +408,8 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 """
 
 def loadSectorMap(code, instanceId, baseX, baseY):
+    global dummyItems, dummyTiles
+
     thisSectorMap = [None, None, None, None,None, None, None, None,None, None, None, None,None, None, None, None]
     pos = 0
     codeLength = len(code)
@@ -439,8 +440,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_Tile = Tile
     l_HouseTile = HouseTile
     
-    # Also attempt to local the itemCache, pypy doesn't like this tho.
-    l_itemCache = dummyItems
     l_attributes = attributeIds
     
     # Spawn commands
@@ -587,12 +586,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         else:
                             pos += 4
                             try:
-                                l_items_append(l_itemCache[itemId])
+                                l_items_append(dummyItems[itemId])
                             except KeyError:
                                 item = l_Item(itemId)
                                 item.tileStacked = True
                                 item.fromMap = True
-                                l_itemCache[itemId] = item
+                                dummyItems[itemId] = item
                                 l_items_append(item)
 
                     else:
@@ -657,8 +656,28 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         houseId = 0
                         housePosition = None
                         l_ywork_append(tile)
+
+                    elif config.stackTiles:
+                        ok = False
+                        for i in items:
+                            if i.solid:
+                                ok = True
+                                break
+                        if ok:
+                            hash = tuple(items) # There must be a faster way...
+                            try:
+                                l_ywork_append(dummyTiles[hash])
+                            except:
+                                tile = l_Tile(items, flags)
+                                dummyTiles[hash] = tile
+                                l_ywork_append(tile)
+
+                        else:
+                            l_ywork_append(l_Tile(items, flags))
+
                     else:
                         l_ywork_append(l_Tile(items, flags))
+
                 elif not yRowGotItem:
                     l_ywork_append(None)
                     yRowGotItem = False
