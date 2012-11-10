@@ -395,9 +395,9 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
                 <uint16>valueLength
                 <string with length valueLength>value
             )
-            attributeType == b (
-                <bool>value
-            )
+            attributeType == T
+            attributeType == F
+
             attributeType == l (
                 <uint8>listItems
                 <repeat this block for listItems times> -> value
@@ -553,9 +553,10 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     valueLength = long_unpack(code[pos:pos+4])[0]
                                     pos += valueLength + 4
                                     value = code[pos-valueLength:pos]
-                                elif opCode == "b":
-                                    pos += 1
-                                    value = bool(ord(code[pos-1]))
+                                elif opCode == "T":
+                                    value = True
+                                elif opCode == "F":
+                                    value = False
                                 elif opCode == "l":
                                     value = []
                                     length = ord(code[pos])
@@ -571,9 +572,10 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                             valueLength = long_unpack(code[pos:pos+4])[0]
                                             pos += valueLength + 4
                                             item = code[pos-valueLength:pos]
-                                        elif opCode == "b":
-                                            pos += 1
-                                            item = bool(ord(code[pos-1]))
+                                        elif opCode == "T":
+                                            item = True
+                                        elif opCode == "F":
+                                            item = False
                                         value.append(item)
                                         
                                 attr[name] = value
