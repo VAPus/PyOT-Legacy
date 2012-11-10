@@ -286,49 +286,49 @@
 	</item>
 
 	<item flags="33554433" id="622" name="water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="728" name="lava">
-			<effect value="fire"/>
+		<effect value="fire"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="729" name="lava">
-			<effect value="fire"/>
+		<effect value="fire"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="730" name="lava">
-			<effect value="fire"/>
+		<effect value="fire"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="50331649" id="727" name="lava">
-			<effect value="fire"/>
+		<effect value="fire"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="33554432" id="799" name="snow" speed="200"/>
 	<item flags="33554432" id="800" name="ice"/>
 	<item id="838" name="tar">
-			<effect value="poff"/>
+		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="839" name="tar">
-			<effect value="poff"/>
+		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="840" name="tar">
-			<effect value="poff"/>
+		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="33554433" id="837" name="tar">
-			<effect value="poff"/>
+		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
 
@@ -696,27 +696,27 @@
 	<item id="1627" name="archway"/>
 	<item flags="8192" id="1624" name="archway"/>
 	<item flags="1" id="1628" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1629" name="closed door">
-				<transformUseTo value="1630"/>
+		<transformUseTo value="1630"/>
 	</item>
 
 	<item flags="8192" id="1630" name="open door">
-			<transformUseTo value="1629"/>
+		<transformUseTo value="1629"/>
 	</item>
 
 	<item flags="1" id="1631" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1632" name="closed door">
-				<transformUseTo value="1633"/>
+		<transformUseTo value="1633"/>
 	</item>
 
 	<item flags="8192" id="1633" name="open door">
-			<transformUseTo value="1632"/>
+		<transformUseTo value="1632"/>
 	</item>
 
 	<item id="1635" name="buttress"/>
@@ -724,202 +724,202 @@
 	<item id="1637" name="buttress"/>
 	<item flags="8192" id="1634" name="buttress"/>
 	<item flags="1" id="1638" name="closed door">
-				<transformUseTo value="1639"/>
+		<transformUseTo value="1639"/>
 	</item>
 
 	<item flags="8192" id="1639" name="open door">
-			<transformUseTo value="1638"/>
+		<transformUseTo value="1638"/>
 	</item>
 
 	<item flags="1" id="1640" name="closed door">
-				<transformUseTo value="1641"/>
+		<transformUseTo value="1641"/>
 	</item>
 
 	<item flags="8192" id="1641" name="open door">
-			<transformUseTo value="1640"/>
+		<transformUseTo value="1640"/>
 	</item>
 
 	<item flags="16777217" id="1642" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1643"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1643"/>
 	</item>
 
 	<item flags="16785408" id="1643" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1642"/>
 	</item>
 
 	<item flags="16777217" id="1644" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1645"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1645"/>
 	</item>
 
 	<item flags="8192" id="1645" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1644"/>
 	</item>
 
 	<item flags="1" id="1646" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1647"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1647"/>
 	</item>
 
 	<item flags="8192" id="1647" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1646"/>
 	</item>
 
 	<item flags="1" id="1648" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1649"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1649"/>
 	</item>
 
 	<item flags="8192" id="1649" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1648"/>
 	</item>
 
 	<item flags="1" id="1650" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1651" name="closed door">
-				<transformUseTo value="1652"/>
+		<transformUseTo value="1652"/>
 	</item>
 
 	<item flags="8192" id="1652" name="open door">
-			<transformUseTo value="1651"/>
+		<transformUseTo value="1651"/>
 	</item>
 
 	<item flags="1" id="1653" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1654" name="closed door">
-				<transformUseTo value="1655"/>
+		<transformUseTo value="1655"/>
 	</item>
 
 	<item flags="8192" id="1655" name="open door">
-			<transformUseTo value="1654"/>
+		<transformUseTo value="1654"/>
 	</item>
 
 	<item flags="1" id="1656" name="closed door">
-				<transformUseTo value="1657"/>
+		<transformUseTo value="1657"/>
 	</item>
 
 	<item flags="8192" id="1657" name="open door">
-			<transformUseTo value="1656"/>
+		<transformUseTo value="1656"/>
 	</item>
 
 	<item flags="1" id="1658" name="closed door">
-				<transformUseTo value="1659"/>
+		<transformUseTo value="1659"/>
 	</item>
 
 	<item flags="8192" id="1659" name="open door">
-			<transformUseTo value="1658"/>
+		<transformUseTo value="1658"/>
 	</item>
 
 	<item flags="16777217" id="1660" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1661"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1661"/>
 	</item>
 
 	<item flags="16785408" id="1661" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1660"/>
 	</item>
 
 	<item flags="16777217" id="1662" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1663"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1663"/>
 	</item>
 
 	<item flags="8192" id="1663" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1662"/>
 	</item>
 
 	<item flags="1" id="1664" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1665"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1665"/>
 	</item>
 
 	<item flags="8192" id="1665" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1664"/>
 	</item>
 
 	<item flags="1" id="1666" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1667"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1667"/>
 	</item>
 
 	<item flags="8192" id="1667" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1666"/>
 	</item>
 
 	<item flags="1" id="1668" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1669" name="closed door">
-				<transformUseTo value="1670"/>
+		<transformUseTo value="1670"/>
 	</item>
 
 	<item flags="8192" id="1670" name="open door">
-			<transformUseTo value="1669"/>
+		<transformUseTo value="1669"/>
 	</item>
 
 	<item flags="1" id="1671" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="1672" name="closed door">
-				<transformUseTo value="1673"/>
+		<transformUseTo value="1673"/>
 	</item>
 
 	<item flags="8192" id="1673" name="open door">
-			<transformUseTo value="1672"/>
+		<transformUseTo value="1672"/>
 	</item>
 
 	<item flags="16777217" id="1674" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1675"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1675"/>
 	</item>
 
 	<item flags="16785408" id="1675" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1674"/>
 	</item>
 
 	<item flags="16777217" id="1676" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1677"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1677"/>
 	</item>
 
 	<item flags="8192" id="1677" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1676"/>
 	</item>
 
 	<item flags="1" id="1678" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1679"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1679"/>
 	</item>
 
 	<item flags="8192" id="1679" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1678"/>
 	</item>
 
 	<item flags="1" id="1680" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1681"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1681"/>
 	</item>
 
 	<item flags="8192" id="1681" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1680"/>
 	</item>
 
@@ -964,7 +964,7 @@
 		<shootType value="smallstone"/>
 		<range value="4"/>
 		<breakChance value="3"/>
-		</item>
+	</item>
 
 	<item flags="96" id="1782" name="stone">
 		<weight value="3000"/>
@@ -1090,7 +1090,7 @@
 	<item flags="8192" id="1948" name="ladder"/>
 	<item flags="16785412" id="1949" name="magic forcefield">
 		<description value="You can see the other side through it."/>
-		</item>
+	</item>
 
 	<item flags="8204" id="1950" name="ramp">
 		<floorchange value="east"/>
@@ -1300,7 +1300,7 @@
 	<item flags="16777225" id="2110" name="coal basin"/>
 	<item flags="16777225" id="2115" name="stone coal basin"/>
 	<item flags="16777220" id="2118" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
 		<fieldTicks value="10000"/>
@@ -1309,7 +1309,7 @@
 	</item>
 
 	<item flags="16777220" id="2119" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldTicks value="10000"/>
 		<fieldCount value="7"/>
@@ -1317,12 +1317,12 @@
 	</item>
 
 	<item flags="16777216" id="2120" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 	</item>
 
 	<item flags="16777220" id="105" name="poison field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="poison"/>
 		<fieldTicks value="5000"/>
 		<fieldStart value="5"/>
@@ -1330,7 +1330,7 @@
 	</item>
 
 	<item flags="16777220" id="2122" name="energy field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="energy"/>
 		<fieldDamage value="30"/>
 		<fieldTicks value="10000"/>
@@ -1338,7 +1338,7 @@
 	</item>
 
 	<item flags="16777220" id="2123" name="fire field">
-			<decayTo value="2124"/>
+		<decayTo value="2124"/>
 		<duration value="120"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
@@ -1348,7 +1348,7 @@
 	</item>
 
 	<item flags="16777220" id="2124" name="fire field">
-			<decayTo value="2125"/>
+		<decayTo value="2125"/>
 		<duration value="120"/>
 		<field value="fire"/>
 		<fieldTicks value="10000"/>
@@ -1357,13 +1357,13 @@
 	</item>
 
 	<item flags="16777216" id="2125" name="fire field">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="fire"/>
 	</item>
 
 	<item flags="16777220" id="2126" name="energy field">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="energy"/>
 		<fieldDamage value="30"/>
@@ -1372,7 +1372,7 @@
 	</item>
 
 	<item flags="16777220" id="2121" name="poison field">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="poison"/>
 		<fieldTicks value="5000"/>
@@ -1381,20 +1381,20 @@
 	</item>
 
 	<item flags="16777219" id="2129" name="magic wall">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="20"/>
 		<blocksolid value="1"/>
 	</item>
 
 	<item flags="16777219" id="2129" name="magic wall"/>
 	<item flags="5" id="2130" name="rush wood">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="45"/>
 		<blocksolid value="1"/>
 	</item>
 
 	<item flags="16777220" id="2131" name="fire field">
-			<decayTo value="2132"/>
+		<decayTo value="2132"/>
 		<duration value="120"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
@@ -1404,7 +1404,7 @@
 	</item>
 
 	<item flags="16777220" id="2132" name="fire field">
-			<decayTo value="2133"/>
+		<decayTo value="2133"/>
 		<duration value="120"/>
 		<field value="fire"/>
 		<fieldTicks value="10000"/>
@@ -1413,13 +1413,13 @@
 	</item>
 
 	<item flags="16777216" id="2133" name="fire field">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="fire"/>
 	</item>
 
 	<item flags="16777220" id="2134" name="poison gas">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="poison"/>
 		<fieldTicks value="5000"/>
@@ -1428,7 +1428,7 @@
 	</item>
 
 	<item flags="16777220" id="2135" name="energy field">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="120"/>
 		<field value="energy"/>
 		<fieldDamage value="30"/>
@@ -1437,11 +1437,11 @@
 	</item>
 
 	<item flags="16777216" id="2136" name="smoke">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 	</item>
 
 	<item flags="16777220" id="2137" name="searing fire">
-			<decayTo value="2138"/>
+		<decayTo value="2138"/>
 		<duration value="10"/>
 		<replaceable value="0"/>
 		<field value="fire"/>
@@ -1449,7 +1449,7 @@
 	</item>
 
 	<item flags="16777220" id="2138" name="searing fire">
-			<decayTo value="2140"/>
+		<decayTo value="2140"/>
 		<duration value="10"/>
 		<replaceable value="0"/>
 		<field value="fire"/>
@@ -1457,7 +1457,7 @@
 	</item>
 
 	<item flags="4" id="2140" name="ashes">
-			<decayTo value="2137"/>
+		<decayTo value="2137"/>
 		<duration value="5"/>
 		<replaceable value="0"/>
 	</item>
@@ -1493,19 +1493,19 @@
 	<item id="2176" name="fence"/>
 	<item flags="1" id="2171" name="fence"/>
 	<item flags="1" id="2177" name="closed fence gate">
-			<transformUseTo value="2178"/>
+		<transformUseTo value="2178"/>
 	</item>
 
 	<item flags="8192" id="2178" name="open fence gate">
-			<transformUseTo value="2177"/>
+		<transformUseTo value="2177"/>
 	</item>
 
 	<item flags="1" id="2179" name="closed fence gate">
-			<transformUseTo value="2180"/>
+		<transformUseTo value="2180"/>
 	</item>
 
 	<item flags="8192" id="2180" name="open fence gate">
-			<transformUseTo value="2179"/>
+		<transformUseTo value="2179"/>
 	</item>
 
 	<item id="2182" name="fence"/>
@@ -1616,35 +1616,35 @@
 	<item id="2333" name="table"/>
 	<item flags="8201" id="2322" name="table"/>
 	<item flags="8201" id="2334" name="table">
-			<transformUseTo value="2335"/>
+		<transformUseTo value="2335"/>
 	</item>
 
 	<item flags="8192" id="2335" name="table">
-			<transformUseTo value="2334"/>
+		<transformUseTo value="2334"/>
 	</item>
 
 	<item flags="8201" id="2336" name="table">
-			<transformUseTo value="2337"/>
+		<transformUseTo value="2337"/>
 	</item>
 
 	<item flags="8192" id="2337" name="table">
-			<transformUseTo value="2336"/>
+		<transformUseTo value="2336"/>
 	</item>
 
 	<item flags="9" id="2338" name="table">
-			<transformUseTo value="2339"/>
+		<transformUseTo value="2339"/>
 	</item>
 
 	<item id="2339" name="table">
-				<transformUseTo value="2338"/>
+		<transformUseTo value="2338"/>
 	</item>
 
 	<item flags="9" id="2340" name="table">
-			<transformUseTo value="2341"/>
+		<transformUseTo value="2341"/>
 	</item>
 
 	<item id="2341" name="table">
-			<transformUseTo value="2340"/>
+		<transformUseTo value="2340"/>
 	</item>
 
 	<item id="2343" name="altar stone"/>
@@ -2022,90 +2022,90 @@
 	</item>
 
 	<item flags="9" id="2487" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="1762"/>
 		<femaleTransformTo value="7778"/>
 	</item>
 
 	<item flags="9" id="2488" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="1763"/>
 		<femaleTransformTo value="1763"/>
 	</item>
 
 	<item flags="9" id="2489" name="cot">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="1768"/>
 		<femaleTransformTo value="7783"/>
 	</item>
 
 	<item flags="9" id="2490" name="cot">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="1769"/>
 		<femaleTransformTo value="7784"/>
 	</item>
 
 	<item flags="9" id="2491" name="cot">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="1766"/>
 		<femaleTransformTo value="7781"/>
 	</item>
 
 	<item flags="9" id="2492" name="cot">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="1767"/>
 		<femaleTransformTo value="7782"/>
 	</item>
 
 	<item flags="9" id="2493" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="1764"/>
 		<femaleTransformTo value="7779"/>
 	</item>
 
 	<item flags="9" id="2494" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="1765"/>
 		<femaleTransformTo value="7780"/>
 	</item>
 
 	<item flags="9" id="2495" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="1754"/>
 	</item>
 
 	<item flags="9" id="695" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="1755"/>
 	</item>
 
 	<item flags="9" id="2497" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="1760"/>
 	</item>
 
 	<item flags="9" id="115" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="1761"/>
 	</item>
 
 	<item flags="9" id="2499" name="cot">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="1758"/>
 	</item>
 
 	<item flags="9" id="2500" name="cot">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="1759"/>
 	</item>
 
 	<item flags="9" id="2501" name="cot">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="1756"/>
 	</item>
 
 	<item flags="9" id="2502" name="cot">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="1757"/>
 	</item>
 
@@ -2136,7 +2136,7 @@
 	</item>
 
 	<item flags="1" id="2526" name="dustbin">
-			<allowpickupable value="1"/>
+		<allowpickupable value="1"/>
 	</item>
 
 	<item id="2528" name="big wine cask">
@@ -2302,95 +2302,55 @@
 		<weight value="1000"/>
 	</item>
 
-	<item id="2643" name="purple tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2642" name="purple tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2643" name="purple tapestry"/>
+	<item id="2642" name="purple tapestry"/>
 	<item flags="65632" id="2644" name="purple tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2646" name="green tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2645" name="green tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2646" name="green tapestry"/>
+	<item id="2645" name="green tapestry"/>
 	<item flags="65632" id="2647" name="green tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2649" name="yellow tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2648" name="yellow tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2649" name="yellow tapestry"/>
+	<item id="2648" name="yellow tapestry"/>
 	<item flags="65632" id="2650" name="yellow tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2652" name="orange tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2651" name="orange tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2652" name="orange tapestry"/>
+	<item id="2651" name="orange tapestry"/>
 	<item flags="65632" id="2653" name="orange tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2655" name="red tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2654" name="red tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2655" name="red tapestry"/>
+	<item id="2654" name="red tapestry"/>
 	<item flags="65632" id="2656" name="red tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2658" name="blue tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2657" name="blue tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2658" name="blue tapestry"/>
+	<item id="2657" name="blue tapestry"/>
 	<item flags="65632" id="2659" name="blue tapestry">
 		<weight value="1000"/>
 	</item>
 
 	<item flags="16777216" id="2660" name="cuckoo clock">
-		<forceSerialize value="1"/>
 		<transformUseTo value="2661"/>
 	</item>
 
 	<item flags="16777216" id="2661" name="cuckoo clock">
-		<forceSerialize value="1"/>
 		<transformUseTo value="2660"/>
 	</item>
 
 	<item flags="16777216" id="2662" name="cuckoo clock">
-		<forceSerialize value="1"/>
 		<transformUseTo value="2663"/>
 	</item>
 
 	<item flags="16777216" id="2663" name="cuckoo clock">
-		<forceSerialize value="1"/>
 		<transformUseTo value="2662"/>
 	</item>
 
@@ -2398,14 +2358,8 @@
 		<weight value="1500"/>
 	</item>
 
-	<item id="2666" name="white tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="2665" name="white tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="2666" name="white tapestry"/>
+	<item id="2665" name="white tapestry"/>
 	<item flags="65632" id="2667" name="white tapestry">
 		<weight value="1000"/>
 	</item>
@@ -3140,31 +3094,31 @@
 	</item>
 
 	<item flags="112" id="2967" name="purple key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2968" name="wooden key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2969" name="silver key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2970" name="copper key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2971" name="crystal key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2972" name="golden key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="112" id="2973" name="bone key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="96" id="2974" name="water pipe">
@@ -3230,7 +3184,7 @@
 		<weaponType value="distance"/>
 		<shootType value="snowball"/>
 		<range value="6"/>
-		</item>
+	</item>
 
 	<item flags="96" id="2993" name="teddy bear">
 		<weight value="590"/>
@@ -4064,264 +4018,264 @@
 	</item>
 
 	<item flags="224" id="3147" name="blank rune">
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3148" name="destroy field rune">
 		<runeSpellName value="adito grav"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3149" name="energy bomb rune">
 		<runeSpellName value="adevo mas vis"/>
-			<weight value="105"/>
+		<weight value="105"/>
 	</item>
 
 	<item id="3151" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3150" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3152" name="intense healing rune">
 		<runeSpellName value="adura gran"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3153" name="cure poison rune">
 		<runeSpellName value="adana pox"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3154" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3155" name="sudden death rune">
 		<runeSpellName value="adori gran mort"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3156" name="wild growth rune">
 		<runeSpellName value="adevo grav vita"/>
-			<weight value="105"/>
+		<weight value="105"/>
 	</item>
 
 	<item flags="240" id="3157" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3158" name="icicle rune">
 		<runeSpellName value="adori frigo"/>
-			<weight value="42"/>
+		<weight value="42"/>
 	</item>
 
 	<item flags="240" id="3159" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3160" name="ultimate healing rune">
 		<runeSpellName value="adura vita"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3161" name="avalanche rune">
 		<runeSpellName value="adori mas frigo"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item id="3163" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3162" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3164" name="energy field rune">
 		<runeSpellName value="adevo grav vis"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3165" name="paralyze rune">
 		<runeSpellName value="adana ani"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3166" name="energy wall rune">
 		<runeSpellName value="adevo mas grav vis"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item id="3168" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3169" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3170" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3171" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3167" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3172" name="poison field rune">
 		<runeSpellName value="adevo grav pox"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3173" name="poison bomb rune">
 		<runeSpellName value="adevo mas pox"/>
-			<weight value="105"/>
+		<weight value="105"/>
 	</item>
 
 	<item flags="240" id="3174" name="light magic missile rune">
 		<runeSpellName value="adori min vis"/>
-			<weight value="21"/>
+		<weight value="21"/>
 	</item>
 
 	<item flags="240" id="3175" name="stone shower rune">
 		<runeSpellName value="adori mas tera"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item flags="240" id="3176" name="poison wall rune">
 		<runeSpellName value="adevo mas grav pox"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item flags="240" id="3177" name="convince creature rune">
 		<runeSpellName value="adeta sio"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3178" name="chameleon rune">
 		<runeSpellName value="adevo ina"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item flags="240" id="3179" name="stalagmite rune">
 		<runeSpellName value="adori tera"/>
-			<weight value="21"/>
+		<weight value="21"/>
 	</item>
 
 	<item flags="240" id="3180" name="magic wall rune">
 		<runeSpellName value="adevo grav tera"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3181" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3182" name="holy missile rune">
 		<runeSpellName value="adori san"/>
-			<weight value="42"/>
+		<weight value="42"/>
 	</item>
 
 	<item id="3184" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3185" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3186" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item id="3187" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3183" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3188" name="fire field rune">
 		<runeSpellName value="adevo grav flam"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3189" name="fireball rune">
 		<runeSpellName value="adori flam"/>
-			<weight value="42"/>
+		<weight value="42"/>
 	</item>
 
 	<item flags="240" id="3190" name="fire wall rune">
 		<runeSpellName value="adevo mas grav flam"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item flags="240" id="3191" name="great fireball rune">
 		<runeSpellName value="adori mas flam"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item flags="240" id="3192" name="fire bomb rune">
 		<runeSpellName value="adevo mas flam"/>
-			<weight value="105"/>
+		<weight value="105"/>
 	</item>
 
 	<item id="3194" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3193" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3195" name="soulfire rune">
 		<runeSpellName value="adevo res flam"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3196" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3197" name="desintegrate rune">
 		<runeSpellName value="adito tera"/>
-			<weight value="70"/>
+		<weight value="70"/>
 	</item>
 
 	<item flags="240" id="3198" name="heavy magic missile rune">
 		<runeSpellName value="adori vis"/>
-			<weight value="21"/>
+		<weight value="21"/>
 	</item>
 
 	<item flags="240" id="3199" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3200" name="explosion rune">
 		<runeSpellName value="adevo mas hur"/>
-			<weight value="35"/>
+		<weight value="35"/>
 	</item>
 
 	<item flags="240" id="3201" name="spell rune">
-			<weight value="120"/>
+		<weight value="120"/>
 	</item>
 
 	<item flags="240" id="3202" name="thunderstorm rune">
 		<runeSpellName value="adori mas vis"/>
-			<weight value="52"/>
+		<weight value="52"/>
 	</item>
 
 	<item flags="240" id="3203" name="animate dead rune">
 		<runeSpellName value="adana mort"/>
-			<weight value="210"/>
+		<weight value="210"/>
 	</item>
 
 	<item id="3204" name="dead human"/>
@@ -4406,7 +4360,7 @@
 
 	<item flags="8201" id="3221" name="mailbox">
 		<description value="Royal Tibia Mail."/>
-		</item>
+	</item>
 
 	<item flags="96" id="3222" name="helmet ornament">
 		<description value="This item seems to be a single part of a bigger object."/>
@@ -4727,7 +4681,7 @@
 		<shootType value="spear"/>
 		<range value="3"/>
 		<breakChance value="3"/>
-		</item>
+	</item>
 
 	<item flags="112" id="3278" name="magic longsword">
 		<description value="It's the magic Cyclopmania Sword."/>
@@ -4811,7 +4765,7 @@
 		<shootType value="throwingstar"/>
 		<range value="4"/>
 		<breakChance value="10"/>
-		</item>
+	</item>
 
 	<item flags="112" id="3288" name="magic sword">
 		<description value="It's the Sword of Valor."/>
@@ -4899,7 +4853,7 @@
 		<shootType value="throwingknife"/>
 		<range value="4"/>
 		<breakChance value="7"/>
-		</item>
+	</item>
 
 	<item flags="112" id="3299" name="poison dagger">
 		<weight value="880"/>
@@ -5811,7 +5765,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="bolt"/>
-		</item>
+	</item>
 
 	<item flags="224" id="3447" name="arrow">
 		<weight value="70"/>
@@ -5821,7 +5775,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="arrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="3448" name="poison arrow">
 		<weight value="80"/>
@@ -5831,7 +5785,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="poisonarrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="3449" name="burst arrow">
 		<weight value="90"/>
@@ -5841,7 +5795,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="burstarrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="3450" name="power bolt">
 		<weight value="90"/>
@@ -5851,7 +5805,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="powerbolt"/>
-		</item>
+	</item>
 
 	<item flags="112" id="3451" name="pitchfork">
 		<weight value="2500"/>
@@ -6020,24 +5974,24 @@
 	</item>
 
 	<item id="3498" name="locker">
-			<containerSize value="3"/>
+		<containerSize value="3"/>
 	</item>
 
 	<item id="3499" name="locker">
-			<containerSize value="3"/>
+		<containerSize value="3"/>
 	</item>
 
 	<item id="3500" name="locker">
-			<containerSize value="3"/>
+		<containerSize value="3"/>
 	</item>
 
 	<item flags="9" id="3497" name="locker">
-			<containerSize value="3"/>
+		<containerSize value="3"/>
 	</item>
 
 	<item flags="8201" id="3501" name="mailbox">
 		<description value="Royal Tibia Mail."/>
-		</item>
+	</item>
 
 	<item id="3502" name="depot chest">
 		<containerSize value="30"/>
@@ -6045,7 +5999,7 @@
 
 	<item flags="108" id="140" name="parcel">
 		<weight value="1800"/>
-			<containerSize value="10"/>
+		<containerSize value="10"/>
 	</item>
 
 	<item flags="108" id="3504" name="stamped parcel">
@@ -9317,81 +9271,81 @@
 	<item flags="8195" id="1622" name="stone wall"/>
 	<item flags="1" id="1682" name="closed door">
 		<description value="It is locked."/>
-			</item>
+	</item>
 
 	<item flags="1" id="1683" name="closed door">
-				<transformUseTo value="1684"/>
+		<transformUseTo value="1684"/>
 	</item>
 
 	<item flags="8192" id="1684" name="open door">
-			<transformUseTo value="1683"/>
+		<transformUseTo value="1683"/>
 	</item>
 
 	<item flags="1" id="1685" name="closed door">
-				<transformUseTo value="1686"/>
+		<transformUseTo value="1686"/>
 	</item>
 
 	<item flags="8192" id="1686" name="open door">
-			<transformUseTo value="1685"/>
+		<transformUseTo value="1685"/>
 	</item>
 
 	<item flags="1" id="1687" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1688"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1688"/>
 	</item>
 
 	<item flags="8192" id="1688" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1687"/>
 	</item>
 
 	<item flags="16777217" id="1689" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1690"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1690"/>
 	</item>
 
 	<item flags="8192" id="1690" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1689"/>
 	</item>
 
 	<item flags="1" id="1691" name="closed door">
 		<description value="It is locked."/>
-			</item>
+	</item>
 
 	<item flags="1" id="1692" name="closed door">
-				<transformUseTo value="1693"/>
+		<transformUseTo value="1693"/>
 	</item>
 
 	<item flags="8192" id="1693" name="open door">
-			<transformUseTo value="1692"/>
+		<transformUseTo value="1692"/>
 	</item>
 
 	<item flags="1" id="1694" name="closed door">
-				<transformUseTo value="1695"/>
+		<transformUseTo value="1695"/>
 	</item>
 
 	<item flags="8192" id="1695" name="open door">
-			<transformUseTo value="1694"/>
+		<transformUseTo value="1694"/>
 	</item>
 
 	<item flags="1" id="1696" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="1697"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="1697"/>
 	</item>
 
 	<item flags="8192" id="1697" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1696"/>
 	</item>
 
 	<item flags="16777217" id="1698" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="1699"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="1699"/>
 	</item>
 
 	<item flags="16785408" id="1699" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="1698"/>
 	</item>
 
@@ -9766,46 +9720,46 @@
 	</item>
 
 	<item flags="9" id="2503" name="hammock">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="3840"/>
 		<femaleTransformTo value="7785"/>
 	</item>
 
 	<item flags="9" id="2504" name="hammock">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="3841"/>
 		<femaleTransformTo value="8077"/>
 	</item>
 
 	<item flags="9" id="2505" name="hammock">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="3842"/>
 		<femaleTransformTo value="7786"/>
 	</item>
 
 	<item flags="9" id="2506" name="hammock">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="3843"/>
 		<femaleTransformTo value="8078"/>
 	</item>
 
 	<item flags="16777225" id="2507" name="hammock">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="3836"/>
 	</item>
 
 	<item flags="16777225" id="703" name="hammock">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="3837"/>
 	</item>
 
 	<item flags="16777225" id="2509" name="hammock">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="3838"/>
 	</item>
 
 	<item flags="16777225" id="705" name="hammock">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="3839"/>
 	</item>
 
@@ -10162,7 +10116,7 @@
 		<shootType value="huntingspear"/>
 		<range value="3"/>
 		<breakChance value="6"/>
-		</item>
+	</item>
 
 	<item flags="112" id="3348" name="banana staff">
 		<weight value="5000"/>
@@ -11302,42 +11256,42 @@
 	<item flags="33554432" id="4584" name="rocks" speed="150"/>
 	<item id="4598" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4599" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4600" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4601" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4602" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="50331649" id="4597" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11345,7 +11299,7 @@
 	<item flags="50331649" id="4609" name="shallow water">
 		<decayTo value="4597"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11353,7 +11307,7 @@
 	<item flags="50331649" id="4610" name="shallow water">
 		<decayTo value="4598"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11361,7 +11315,7 @@
 	<item flags="50331649" id="4611" name="shallow water">
 		<decayTo value="4599"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11369,7 +11323,7 @@
 	<item flags="50331649" id="4612" name="shallow water">
 		<decayTo value="4600"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11377,7 +11331,7 @@
 	<item flags="50331649" id="4613" name="shallow water">
 		<decayTo value="4601"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11385,38 +11339,38 @@
 	<item flags="50331649" id="4614" name="shallow water">
 		<decayTo value="4602"/>
 		<duration value="60"/>
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="630" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="631" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="632" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="633" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="634" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item flags="50331648" id="629" name="shallow water" speed="200">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
@@ -11569,19 +11523,19 @@
 	</item>
 
 	<item id="4654" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4655" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="50331649" id="4653" name="shallow water" speed="1">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -11611,112 +11565,112 @@
 	<item id="4679" name="dirt"/>
 	<item flags="8396800" id="4656" name="dirt"/>
 	<item id="4681" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4682" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4683" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4684" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4685" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4686" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4687" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4688" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4689" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4690" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4691" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4692" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4693" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4694" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4695" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4696" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4697" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4698" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4699" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4700" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4701" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="33554433" id="4680" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
@@ -11757,37 +11711,37 @@
 	<item id="4737" name="snow"/>
 	<item flags="8192" id="4726" name="snow"/>
 	<item id="4739" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4740" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4741" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4742" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4743" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item id="4744" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
 	<item flags="50331649" id="4738" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
@@ -11852,32 +11806,32 @@
 	<item id="4808" name="dirt"/>
 	<item flags="8396800" id="4785" name="dirt"/>
 	<item id="4810" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="4811" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="4812" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="4813" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="4814" name="shallow water">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item flags="50331648" id="4809" name="shallow water" speed="170">
-			<effect value="bluebubble"/>
+		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
@@ -12117,27 +12071,27 @@
 	<item id="4910" name="ship cabin wall"/>
 	<item flags="8195" id="4904" name="ship cabin wall"/>
 	<item flags="1" id="4913" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5006" name="closed door">
-				<transformUseTo value="4914"/>
+		<transformUseTo value="4914"/>
 	</item>
 
 	<item flags="8192" id="4914" name="open door">
-			<transformUseTo value="5006"/>
+		<transformUseTo value="5006"/>
 	</item>
 
 	<item flags="1" id="4912" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5007" name="closed door">
-				<transformUseTo value="4911"/>
+		<transformUseTo value="4911"/>
 	</item>
 
 	<item flags="8192" id="4911" name="open door">
-			<transformUseTo value="5007"/>
+		<transformUseTo value="5007"/>
 	</item>
 
 	<item flags="8193" id="4917" name="ship railing"/>
@@ -12350,19 +12304,19 @@
 	</item>
 
 	<item flags="1" id="5082" name="closed door">
-				<transformUseTo value="5083"/>
+		<transformUseTo value="5083"/>
 	</item>
 
 	<item flags="8192" id="5083" name="open door">
-			<transformUseTo value="5082"/>
+		<transformUseTo value="5082"/>
 	</item>
 
 	<item flags="1" id="5084" name="closed door">
-				<transformUseTo value="5085"/>
+		<transformUseTo value="5085"/>
 	</item>
 
 	<item flags="8192" id="5085" name="open door">
-			<transformUseTo value="5084"/>
+		<transformUseTo value="5084"/>
 	</item>
 
 	<item flags="108" id="5086" name="monkey statue 'see' kit">
@@ -12399,211 +12353,211 @@
 	</item>
 
 	<item flags="1" id="5097" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5098" name="closed door">
-				<transformUseTo value="5099"/>
+		<transformUseTo value="5099"/>
 	</item>
 
 	<item flags="8192" id="5099" name="open door">
-			<transformUseTo value="5098"/>
+		<transformUseTo value="5098"/>
 	</item>
 
 	<item flags="1" id="5100" name="closed door">
-				<transformUseTo value="5101"/>
+		<transformUseTo value="5101"/>
 	</item>
 
 	<item flags="8192" id="5101" name="open door">
-			<transformUseTo value="5100"/>
+		<transformUseTo value="5100"/>
 	</item>
 
 	<item flags="1" id="5102" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5103"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5103"/>
 	</item>
 
 	<item flags="8192" id="5103" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5102"/>
 	</item>
 
 	<item flags="16777217" id="5104" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5105"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5105"/>
 	</item>
 
 	<item flags="8192" id="5105" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5104"/>
 	</item>
 
 	<item flags="1" id="5106" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5107" name="closed door">
-				<transformUseTo value="5108"/>
+		<transformUseTo value="5108"/>
 	</item>
 
 	<item flags="8192" id="5108" name="open door">
-			<transformUseTo value="5107"/>
+		<transformUseTo value="5107"/>
 	</item>
 
 	<item flags="1" id="5109" name="closed door">
-				<transformUseTo value="5110"/>
+		<transformUseTo value="5110"/>
 	</item>
 
 	<item flags="8192" id="5110" name="open door">
-			<transformUseTo value="5109"/>
+		<transformUseTo value="5109"/>
 	</item>
 
 	<item flags="1" id="5111" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5112"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5112"/>
 	</item>
 
 	<item flags="8192" id="5112" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5111"/>
 	</item>
 
 	<item flags="16777217" id="5113" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5114"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5114"/>
 	</item>
 
 	<item flags="16785408" id="5114" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5113"/>
 	</item>
 
 	<item flags="1" id="5115" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5116" name="closed door">
-				<transformUseTo value="5117"/>
+		<transformUseTo value="5117"/>
 	</item>
 
 	<item flags="8192" id="5117" name="open door">
-			<transformUseTo value="5116"/>
+		<transformUseTo value="5116"/>
 	</item>
 
 	<item flags="1" id="5118" name="closed door">
-				<transformUseTo value="5119"/>
+		<transformUseTo value="5119"/>
 	</item>
 
 	<item flags="8192" id="5119" name="open door">
-			<transformUseTo value="5118"/>
+		<transformUseTo value="5118"/>
 	</item>
 
 	<item flags="1" id="5120" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5121"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5121"/>
 	</item>
 
 	<item flags="8192" id="5121" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5120"/>
 	</item>
 
 	<item flags="16777217" id="5122" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5123"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5123"/>
 	</item>
 
 	<item flags="8192" id="5123" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5122"/>
 	</item>
 
 	<item flags="1" id="5124" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5125" name="closed door">
-				<transformUseTo value="5126"/>
+		<transformUseTo value="5126"/>
 	</item>
 
 	<item flags="8192" id="5126" name="open door">
-			<transformUseTo value="5125"/>
+		<transformUseTo value="5125"/>
 	</item>
 
 	<item flags="1" id="5127" name="closed door">
-				<transformUseTo value="5128"/>
+		<transformUseTo value="5128"/>
 	</item>
 
 	<item flags="8192" id="5128" name="open door">
-			<transformUseTo value="5127"/>
+		<transformUseTo value="5127"/>
 	</item>
 
 	<item flags="1" id="5129" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5130"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5130"/>
 	</item>
 
 	<item flags="8192" id="5130" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5129"/>
 	</item>
 
 	<item flags="16777217" id="5131" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5132"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5132"/>
 	</item>
 
 	<item flags="16785408" id="5132" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5131"/>
 	</item>
 
 	<item flags="1" id="5133" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5134" name="closed door">
-				<transformUseTo value="5135"/>
+		<transformUseTo value="5135"/>
 	</item>
 
 	<item flags="8192" id="5135" name="open door">
-			<transformUseTo value="5134"/>
+		<transformUseTo value="5134"/>
 	</item>
 
 	<item flags="1" id="5136" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5137" name="closed door">
-				<transformUseTo value="5138"/>
+		<transformUseTo value="5138"/>
 	</item>
 
 	<item flags="8192" id="5138" name="open door">
-			<transformUseTo value="5137"/>
+		<transformUseTo value="5137"/>
 	</item>
 
 	<item flags="1" id="5139" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5140" name="closed door">
-				<transformUseTo value="5141"/>
+		<transformUseTo value="5141"/>
 	</item>
 
 	<item flags="8192" id="5141" name="open door">
-			<transformUseTo value="5140"/>
+		<transformUseTo value="5140"/>
 	</item>
 
 	<item flags="1" id="5142" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5143" name="closed door">
-				<transformUseTo value="5144"/>
+		<transformUseTo value="5144"/>
 	</item>
 
 	<item flags="8192" id="5144" name="open door">
-			<transformUseTo value="5143"/>
+		<transformUseTo value="5143"/>
 	</item>
 
 	<item id="5146" name="framework wall"/>
@@ -12748,82 +12702,82 @@
 	<item id="5276" name="wooden wall window"/>
 	<item flags="8193" id="5275" name="wooden wall window"/>
 	<item flags="1" id="5277" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5278" name="closed door">
-				<transformUseTo value="5279"/>
+		<transformUseTo value="5279"/>
 	</item>
 
 	<item flags="8192" id="5279" name="open door">
-			<transformUseTo value="5278"/>
+		<transformUseTo value="5278"/>
 	</item>
 
 	<item flags="1" id="5280" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="5281" name="closed door">
-				<transformUseTo value="5282"/>
+		<transformUseTo value="5282"/>
 	</item>
 
 	<item flags="8192" id="5282" name="open door">
-			<transformUseTo value="5281"/>
+		<transformUseTo value="5281"/>
 	</item>
 
 	<item flags="1" id="5283" name="closed door">
-				<transformUseTo value="5284"/>
+		<transformUseTo value="5284"/>
 	</item>
 
 	<item flags="8192" id="5284" name="open door">
-			<transformUseTo value="5283"/>
+		<transformUseTo value="5283"/>
 	</item>
 
 	<item flags="1" id="5285" name="closed door">
-				<transformUseTo value="5286"/>
+		<transformUseTo value="5286"/>
 	</item>
 
 	<item flags="8192" id="5286" name="open door">
-			<transformUseTo value="5285"/>
+		<transformUseTo value="5285"/>
 	</item>
 
 	<item flags="16777217" id="5287" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5288"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5288"/>
 	</item>
 
 	<item flags="16785408" id="5288" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5287"/>
 	</item>
 
 	<item flags="16777217" id="5289" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="5290"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="5290"/>
 	</item>
 
 	<item flags="8192" id="5290" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5289"/>
 	</item>
 
 	<item flags="1" id="5291" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5292"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5292"/>
 	</item>
 
 	<item flags="8192" id="5292" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5291"/>
 	</item>
 
 	<item flags="1" id="5293" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="5294"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="5294"/>
 	</item>
 
 	<item flags="8192" id="5294" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="5293"/>
 	</item>
 
@@ -12835,10 +12789,10 @@
 	<item id="5295" name="wooden plank"/>
 	<item id="5301" name="wooden planks"/>
 	<item id="5303" name="white stone wall window">
-			</item>
+	</item>
 
 	<item flags="8193" id="5302" name="white stone wall window">
-			</item>
+	</item>
 
 	<item id="5305" name="white stone railing"/>
 	<item id="5306" name="white stone railing"/>
@@ -13069,45 +13023,45 @@
 	<item id="5494" name="straw mat"/>
 	<item flags="8192" id="5484" name="straw mat"/>
 	<item flags="1" id="5495" name="straw mat">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="5502"/>
 	</item>
 
 	<item flags="1" id="5496" name="straw mat">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="5503"/>
 	</item>
 
 	<item flags="1" id="5497" name="straw mat">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="5500"/>
 	</item>
 
 	<item flags="1" id="767" name="straw mat">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="5501"/>
 	</item>
 
 	<item flags="1" id="5499" name="straw mat">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="5498"/>
 		<femaleTransformTo value="7843"/>
 	</item>
 
 	<item flags="1" id="5500" name="straw mat">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="5499"/>
 		<femaleTransformTo value="5499"/>
 	</item>
 
 	<item flags="1" id="5501" name="straw mat">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="5496"/>
 		<femaleTransformTo value="7841"/>
 	</item>
 
 	<item flags="1" id="5502" name="straw mat">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="5497"/>
 		<femaleTransformTo value="7842"/>
 	</item>
@@ -13134,19 +13088,19 @@
 	</item>
 
 	<item flags="1" id="5514" name="closed door">
-				<transformUseTo value="5515"/>
+		<transformUseTo value="5515"/>
 	</item>
 
 	<item flags="8192" id="5515" name="open door">
-			<transformUseTo value="5514"/>
+		<transformUseTo value="5514"/>
 	</item>
 
 	<item flags="1" id="5516" name="closed door">
-				<transformUseTo value="5517"/>
+		<transformUseTo value="5517"/>
 	</item>
 
 	<item flags="8192" id="5517" name="open door">
-			<transformUseTo value="5516"/>
+		<transformUseTo value="5516"/>
 	</item>
 
 	<item id="5519" name="stone wall"/>
@@ -13398,14 +13352,8 @@
 	<item id="5611" name="catapult"/>
 	<item id="5612" name="catapult"/>
 	<item flags="8195" id="5597" name="catapult"/>
-	<item id="5614" name="pirate tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="5613" name="pirate tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="5614" name="pirate tapestry"/>
+	<item id="5613" name="pirate tapestry"/>
 	<item flags="65632" id="5615" name="pirate tapestry">
 		<weight value="1000"/>
 	</item>
@@ -13643,27 +13591,27 @@
 	</item>
 
 	<item flags="1" id="5732" name="closed bars">
-			<description value="They are locked."/>
+		<description value="They are locked."/>
 	</item>
 
 	<item flags="1" id="5733" name="closed bars">
-			<transformUseTo value="5734"/>
+		<transformUseTo value="5734"/>
 	</item>
 
 	<item flags="8192" id="5734" name="open bars">
-			<transformUseTo value="5733"/>
+		<transformUseTo value="5733"/>
 	</item>
 
 	<item flags="1" id="5735" name="closed bars">
-			<description value="They are locked."/>
+		<description value="They are locked."/>
 	</item>
 
 	<item flags="1" id="5736" name="closed bars">
-			<transformUseTo value="5737"/>
+		<transformUseTo value="5737"/>
 	</item>
 
 	<item flags="8192" id="5737" name="open bars">
-			<transformUseTo value="5736"/>
+		<transformUseTo value="5736"/>
 	</item>
 
 	<item flags="16777217" id="5738" name="shark"/>
@@ -13679,22 +13627,22 @@
 	<item flags="33554432" id="5743" name="wooden flooring" speed="503"/>
 	<item flags="16777217" id="5745" name="closed door">
 		<description value="The door seems to be sealed against unwanted intruders."/>
-				<transformUseTo value="5746"/>
+		<transformUseTo value="5746"/>
 	</item>
 
 	<item flags="8192" id="5746" name="open door">
 		<description value="The door seems to be sealed against unwanted intruders."/>
-			<transformUseTo value="5745"/>
+		<transformUseTo value="5745"/>
 	</item>
 
 	<item flags="8193" id="5747" name="rocks"/>
 	<item flags="16777217" id="5749" name="closed door">
 		<description value="The door seems to be sealed against unwanted intruders."/>
-			</item>
+	</item>
 
 	<item flags="16785408" id="5748" name="open door">
 		<description value="The door seems to be sealed against unwanted intruders."/>
-		</item>
+	</item>
 
 	<item id="5751" name="rocks"/>
 	<item id="5752" name="rocks"/>
@@ -14686,7 +14634,7 @@
 	</item>
 
 	<item id="6004" name="slain mummy">
-			<containerSize value="10"/>
+		<containerSize value="10"/>
 		<decayTo value="144"/>
 		<duration value="10"/>
 		<corpseType value="undead"/>
@@ -15591,82 +15539,82 @@
 	<item id="6190" name="branch"/>
 	<item flags="8193" id="6189" name="branch"/>
 	<item flags="1" id="6191" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6192" name="closed door">
-				<transformUseTo value="6193"/>
+		<transformUseTo value="6193"/>
 	</item>
 
 	<item flags="8192" id="6193" name="open door">
-			<transformUseTo value="6192"/>
+		<transformUseTo value="6192"/>
 	</item>
 
 	<item flags="1" id="6194" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6195" name="closed door">
-				<transformUseTo value="6196"/>
+		<transformUseTo value="6196"/>
 	</item>
 
 	<item flags="8192" id="6196" name="open door">
-			<transformUseTo value="6195"/>
+		<transformUseTo value="6195"/>
 	</item>
 
 	<item flags="1" id="6197" name="closed door">
-				<transformUseTo value="6198"/>
+		<transformUseTo value="6198"/>
 	</item>
 
 	<item flags="8192" id="6198" name="open door">
-			<transformUseTo value="6197"/>
+		<transformUseTo value="6197"/>
 	</item>
 
 	<item flags="1" id="6199" name="closed door">
-				<transformUseTo value="6200"/>
+		<transformUseTo value="6200"/>
 	</item>
 
 	<item flags="8192" id="6200" name="open door">
-			<transformUseTo value="6199"/>
+		<transformUseTo value="6199"/>
 	</item>
 
 	<item flags="16777217" id="6201" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6202"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6202"/>
 	</item>
 
 	<item flags="16785408" id="6202" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6201"/>
 	</item>
 
 	<item flags="16777217" id="6203" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6204"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6204"/>
 	</item>
 
 	<item flags="8192" id="6204" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6203"/>
 	</item>
 
 	<item flags="1" id="6205" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6206"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6206"/>
 	</item>
 
 	<item flags="8192" id="6206" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6205"/>
 	</item>
 
 	<item flags="1" id="6207" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6208"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6208"/>
 	</item>
 
 	<item flags="8192" id="6208" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6207"/>
 	</item>
 
@@ -15710,82 +15658,82 @@
 	<item id="6247" name="plant wall"/>
 	<item flags="139267" id="6237" name="plant wall"/>
 	<item flags="1" id="6248" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6249" name="closed door">
-				<transformUseTo value="6250"/>
+		<transformUseTo value="6250"/>
 	</item>
 
 	<item flags="8192" id="6250" name="open door">
-			<transformUseTo value="6249"/>
+		<transformUseTo value="6249"/>
 	</item>
 
 	<item flags="1" id="6251" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6252" name="closed door">
-				<transformUseTo value="6253"/>
+		<transformUseTo value="6253"/>
 	</item>
 
 	<item flags="8192" id="6253" name="open door">
-			<transformUseTo value="6252"/>
+		<transformUseTo value="6252"/>
 	</item>
 
 	<item flags="1" id="6254" name="closed door">
-				<transformUseTo value="6255"/>
+		<transformUseTo value="6255"/>
 	</item>
 
 	<item flags="8192" id="6255" name="open door">
-			<transformUseTo value="6254"/>
+		<transformUseTo value="6254"/>
 	</item>
 
 	<item flags="1" id="6256" name="closed door">
-				<transformUseTo value="6257"/>
+		<transformUseTo value="6257"/>
 	</item>
 
 	<item flags="8192" id="6257" name="open door">
-			<transformUseTo value="6256"/>
+		<transformUseTo value="6256"/>
 	</item>
 
 	<item flags="16777217" id="6258" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6259"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6259"/>
 	</item>
 
 	<item flags="16785408" id="6259" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6258"/>
 	</item>
 
 	<item flags="16777217" id="6260" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6261"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6261"/>
 	</item>
 
 	<item flags="8192" id="6261" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6260"/>
 	</item>
 
 	<item flags="1" id="6262" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6263"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6263"/>
 	</item>
 
 	<item flags="8192" id="6263" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6262"/>
 	</item>
 
 	<item flags="1" id="6264" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6265"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6265"/>
 	</item>
 
 	<item flags="8192" id="6265" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6264"/>
 	</item>
 
@@ -16409,76 +16357,76 @@
 	<item id="6433" name="blue tapestry"/>
 	<item id="6434" name="demon trophy"/>
 	<item id="6436" name="framework window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6435" name="framework window">
-			</item>
+	</item>
 
 	<item id="6438" name="framework window"/>
 	<item flags="8193" id="6437" name="framework window"/>
 	<item id="6440" name="brick window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6439" name="brick window">
-			</item>
+	</item>
 
 	<item id="6442" name="brick window"/>
 	<item flags="8193" id="6441" name="brick window"/>
 	<item id="6444" name="stone window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6443" name="stone window">
-			</item>
+	</item>
 
 	<item id="6446" name="stone window"/>
 	<item flags="8193" id="6445" name="stone window"/>
 	<item id="6448" name="marble window"/>
 	<item flags="8193" id="6447" name="marble window"/>
 	<item id="6450" name="tree window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6449" name="tree window">
-			</item>
+	</item>
 
 	<item id="6452" name="tree window"/>
 	<item flags="8193" id="6451" name="tree window"/>
 	<item id="6454" name="sandstone window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6453" name="sandstone window">
-			</item>
+	</item>
 
 	<item id="6456" name="sandstone window"/>
 	<item flags="8193" id="6455" name="sandstone window"/>
 	<item id="6458" name="bamboo window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6457" name="bamboo window">
-			</item>
+	</item>
 
 	<item id="6460" name="bamboo window"/>
 	<item flags="8193" id="6459" name="bamboo window"/>
 	<item id="6462" name="sandstone window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6461" name="sandstone window">
-			</item>
+	</item>
 
 	<item id="6464" name="sandstone window"/>
 	<item flags="8193" id="6463" name="sandstone window"/>
 	<item id="6466" name="stone window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6465" name="stone window">
-			</item>
+	</item>
 
 	<item id="6468" name="stone window"/>
 	<item flags="8193" id="6467" name="stone window"/>
 	<item id="6470" name="wooden window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6469" name="wooden window">
-			</item>
+	</item>
 
 	<item id="6472" name="wooden window"/>
 	<item flags="8193" id="6471" name="wooden window"/>
@@ -16620,14 +16568,8 @@
 		<weight value="200"/>
 	</item>
 
-	<item id="6524" name="skeleton decoration">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="6523" name="skeleton decoration">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="6524" name="skeleton decoration"/>
+	<item id="6523" name="skeleton decoration"/>
 	<item flags="65632" id="6525" name="skeleton decoration">
 		<weight value="1000"/>
 	</item>
@@ -16654,7 +16596,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="infernalbolt"/>
-		</item>
+	</item>
 
 	<item flags="96" id="3123" name="pair of old worn soft boots">
 		<description value="Someone specialised in shoes might be able to repair them for you."/>
@@ -17374,10 +17316,10 @@
 	<item id="6787" name="fur wall"/>
 	<item flags="8195" id="6776" name="fur wall"/>
 	<item id="6789" name="fur wall window">
-			</item>
+	</item>
 
 	<item flags="8193" id="6788" name="fur wall window">
-			</item>
+	</item>
 
 	<item id="6791" name="fur wall window"/>
 	<item flags="8193" id="6790" name="fur wall window"/>
@@ -17385,35 +17327,35 @@
 	<item id="6794" name="barbarian banner"/>
 	<item flags="8193" id="6793" name="barbarian banner"/>
 	<item flags="1" id="6795" name="closed door">
-				<transformUseTo value="6796"/>
+		<transformUseTo value="6796"/>
 	</item>
 
 	<item flags="8192" id="6796" name="open door">
-			<transformUseTo value="6795"/>
+		<transformUseTo value="6795"/>
 	</item>
 
 	<item flags="1" id="6797" name="closed door">
-				<transformUseTo value="6798"/>
+		<transformUseTo value="6798"/>
 	</item>
 
 	<item flags="8192" id="6798" name="open door">
-			<transformUseTo value="6797"/>
+		<transformUseTo value="6797"/>
 	</item>
 
 	<item flags="1" id="6799" name="closed door">
-				<transformUseTo value="6800"/>
+		<transformUseTo value="6800"/>
 	</item>
 
 	<item flags="8192" id="6800" name="open door">
-			<transformUseTo value="6799"/>
+		<transformUseTo value="6799"/>
 	</item>
 
 	<item flags="1" id="6801" name="closed door">
-				<transformUseTo value="6802"/>
+		<transformUseTo value="6802"/>
 	</item>
 
 	<item flags="8192" id="6802" name="open door">
-			<transformUseTo value="6801"/>
+		<transformUseTo value="6801"/>
 	</item>
 
 	<item flags="8192" id="6803" name="fur archway"/>
@@ -17504,82 +17446,82 @@
 	<item id="6890" name="tusks"/>
 	<item flags="1" id="6889" name="tusks"/>
 	<item flags="1" id="6891" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6892" name="closed door">
-				<transformUseTo value="6893"/>
+		<transformUseTo value="6893"/>
 	</item>
 
 	<item flags="8192" id="6893" name="open door">
-			<transformUseTo value="6892"/>
+		<transformUseTo value="6892"/>
 	</item>
 
 	<item flags="1" id="6894" name="closed door">
-				<transformUseTo value="6895"/>
+		<transformUseTo value="6895"/>
 	</item>
 
 	<item flags="8192" id="6895" name="open door">
-			<transformUseTo value="6894"/>
+		<transformUseTo value="6894"/>
 	</item>
 
 	<item flags="1" id="6896" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6897"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6897"/>
 	</item>
 
 	<item flags="8192" id="6897" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6896"/>
 	</item>
 
 	<item flags="16777217" id="6898" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6899"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6899"/>
 	</item>
 
 	<item flags="8192" id="6899" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6898"/>
 	</item>
 
 	<item flags="1" id="6900" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="6901" name="closed door">
-				<transformUseTo value="6902"/>
+		<transformUseTo value="6902"/>
 	</item>
 
 	<item flags="8192" id="6902" name="open door">
-			<transformUseTo value="6901"/>
+		<transformUseTo value="6901"/>
 	</item>
 
 	<item flags="1" id="6903" name="closed door">
-				<transformUseTo value="6904"/>
+		<transformUseTo value="6904"/>
 	</item>
 
 	<item flags="8192" id="6904" name="open door">
-			<transformUseTo value="6903"/>
+		<transformUseTo value="6903"/>
 	</item>
 
 	<item flags="1" id="6905" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="6906"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="6906"/>
 	</item>
 
 	<item flags="8192" id="6906" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6905"/>
 	</item>
 
 	<item flags="16777217" id="6907" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="6908"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="6908"/>
 	</item>
 
 	<item flags="16785408" id="6908" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="6907"/>
 	</item>
 
@@ -17735,98 +17677,98 @@
 	<item flags="8193" id="7023" name="snowy pine tree"/>
 	<item flags="8193" id="7024" name="tree"/>
 	<item id="7028" name="nordic wall window">
-			</item>
+	</item>
 
 	<item flags="8193" id="7027" name="nordic wall window">
-			</item>
+	</item>
 
 	<item id="7026" name="nordic wall window"/>
 	<item flags="8193" id="7025" name="nordic wall window"/>
 	<item id="7052" name="ice wall window">
-			</item>
+	</item>
 
 	<item flags="8193" id="7051" name="ice wall window">
-			</item>
+	</item>
 
 	<item id="7030" name="ice wall window"/>
 	<item flags="8193" id="7029" name="ice wall window"/>
 	<item flags="1" id="7033" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="7034" name="closed door">
-				<transformUseTo value="7035"/>
+		<transformUseTo value="7035"/>
 	</item>
 
 	<item flags="8192" id="7035" name="open door">
-			<transformUseTo value="7034"/>
+		<transformUseTo value="7034"/>
 	</item>
 
 	<item flags="1" id="7036" name="closed door">
-				<transformUseTo value="7037"/>
+		<transformUseTo value="7037"/>
 	</item>
 
 	<item flags="8192" id="7037" name="open door">
-			<transformUseTo value="7036"/>
+		<transformUseTo value="7036"/>
 	</item>
 
 	<item flags="1" id="7038" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="7039"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="7039"/>
 	</item>
 
 	<item flags="8192" id="7039" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7038"/>
 	</item>
 
 	<item flags="16777217" id="7040" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="7041"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="7041"/>
 	</item>
 
 	<item flags="8192" id="7041" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7040"/>
 	</item>
 
 	<item flags="1" id="7042" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="7043" name="closed door">
-				<transformUseTo value="7044"/>
+		<transformUseTo value="7044"/>
 	</item>
 
 	<item flags="8192" id="7044" name="open door">
-			<transformUseTo value="7043"/>
+		<transformUseTo value="7043"/>
 	</item>
 
 	<item flags="1" id="7045" name="closed door">
-				<transformUseTo value="7046"/>
+		<transformUseTo value="7046"/>
 	</item>
 
 	<item flags="8192" id="7046" name="open door">
-			<transformUseTo value="7045"/>
+		<transformUseTo value="7045"/>
 	</item>
 
 	<item flags="1" id="7047" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="7048"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="7048"/>
 	</item>
 
 	<item flags="8192" id="7048" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7047"/>
 	</item>
 
 	<item flags="16777217" id="7049" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="7050"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="7050"/>
 	</item>
 
 	<item flags="16785408" id="7050" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7049"/>
 	</item>
 
@@ -17837,19 +17779,19 @@
 	</item>
 
 	<item flags="1" id="7054" name="closed door">
-				<transformUseTo value="7055"/>
+		<transformUseTo value="7055"/>
 	</item>
 
 	<item flags="8192" id="7055" name="open door">
-			<transformUseTo value="7054"/>
+		<transformUseTo value="7054"/>
 	</item>
 
 	<item flags="1" id="7056" name="closed door">
-				<transformUseTo value="7057"/>
+		<transformUseTo value="7057"/>
 	</item>
 
 	<item flags="8192" id="7057" name="open door">
-			<transformUseTo value="7056"/>
+		<transformUseTo value="7056"/>
 	</item>
 
 	<item flags="8193" id="7058" name="skull pillar">
@@ -18588,7 +18530,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="piercingbolt"/>
-		</item>
+	</item>
 
 	<item flags="224" id="7364" name="sniper arrow">
 		<weight value="70"/>
@@ -18598,7 +18540,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="sniperarrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="7365" name="onyx arrow">
 		<weight value="70"/>
@@ -18608,7 +18550,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="onyxarrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="7366" name="viper star">
 		<weight value="200"/>
@@ -18617,7 +18559,7 @@
 		<shootType value="greenstar"/>
 		<range value="4"/>
 		<breakChance value="9"/>
-		</item>
+	</item>
 
 	<item flags="16777440" id="7367" name="enchanted spear">
 		<weight value="2000"/>
@@ -18626,7 +18568,7 @@
 		<shootType value="enchantedspear"/>
 		<range value="4"/>
 		<breakChance value="1"/>
-		</item>
+	</item>
 
 	<item flags="224" id="7368" name="assassin star">
 		<weight value="200"/>
@@ -18635,7 +18577,7 @@
 		<shootType value="redstar"/>
 		<range value="4"/>
 		<breakChance value="33"/>
-		</item>
+	</item>
 
 	<item flags="96" id="7369" name="golden goblet">
 		<weight value="3500"/>
@@ -18687,7 +18629,7 @@
 		<shootType value="royalspear"/>
 		<range value="3"/>
 		<breakChance value="3"/>
-		</item>
+	</item>
 
 	<item flags="112" id="7379" name="brutetamer's staff">
 		<description value="Barbarian women are said to use it for conjuring beasts."/>
@@ -19308,55 +19250,55 @@
 	</item>
 
 	<item id="7466" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7467" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7468" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7469" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7470" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7471" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7472" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item id="7473" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
 
 	<item flags="16777280" id="7465" name="searing fire">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="300"/>
 	</item>
@@ -19471,7 +19413,7 @@
 	</item>
 
 	<item flags="96" id="144" name="mummy disguise">
-			<weight value="1000"/>
+		<weight value="1000"/>
 		<containerSize value="10"/>
 		<decayTo value="4131"/>
 		<duration value="900"/>
@@ -20594,238 +20536,238 @@
 	</item>
 
 	<item flags="9" id="694" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="1754"/>
 	</item>
 
 	<item flags="9" id="696" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="1760"/>
 	</item>
 
 	<item flags="9" id="697" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="1761"/>
 	</item>
 
 	<item flags="9" id="698" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="1758"/>
 	</item>
 
 	<item flags="9" id="699" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="1759"/>
 	</item>
 
 	<item flags="9" id="700" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="1756"/>
 	</item>
 
 	<item flags="9" id="701" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="1757"/>
 	</item>
 
 	<item flags="16777225" id="702" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="3836"/>
 	</item>
 
 	<item flags="16777225" id="704" name="hammock">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="3838"/>
 	</item>
 
 	<item flags="9" id="706" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7811"/>
 	</item>
 
 	<item flags="9" id="707" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7812"/>
 	</item>
 
 	<item flags="9" id="708" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7813"/>
 	</item>
 
 	<item flags="9" id="709" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7814"/>
 	</item>
 
 	<item flags="9" id="710" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7815"/>
 	</item>
 
 	<item flags="9" id="711" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7816"/>
 	</item>
 
 	<item flags="9" id="712" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7817"/>
 	</item>
 
 	<item flags="9" id="713" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7818"/>
 	</item>
 
 	<item flags="9" id="714" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7819"/>
 	</item>
 
 	<item flags="9" id="715" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7820"/>
 	</item>
 
 	<item flags="9" id="716" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7821"/>
 	</item>
 
 	<item flags="9" id="717" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7822"/>
 	</item>
 
 	<item flags="9" id="718" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7811"/>
 	</item>
 
 	<item flags="9" id="719" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7812"/>
 	</item>
 
 	<item flags="9" id="720" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7813"/>
 	</item>
 
 	<item flags="9" id="721" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7814"/>
 	</item>
 
 	<item flags="9" id="722" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7815"/>
 	</item>
 
 	<item flags="9" id="723" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7816"/>
 	</item>
 
 	<item flags="9" id="724" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7817"/>
 	</item>
 
 	<item flags="9" id="725" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7818"/>
 	</item>
 
 	<item flags="9" id="726" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="7819"/>
 	</item>
 
 	<item flags="9" id="731" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="7820"/>
 	</item>
 
 	<item flags="9" id="732" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="7821"/>
 	</item>
 
 	<item flags="9" id="733" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="7822"/>
 	</item>
 
 	<item flags="9" id="734" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="7787"/>
 		<femaleTransformTo value="7799"/>
 	</item>
 
 	<item flags="9" id="735" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="7788"/>
 		<femaleTransformTo value="7800"/>
 	</item>
 
 	<item flags="9" id="736" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="7789"/>
 		<femaleTransformTo value="7801"/>
 	</item>
 
 	<item flags="9" id="737" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="7790"/>
 		<femaleTransformTo value="7802"/>
 	</item>
 
 	<item flags="9" id="738" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="7791"/>
 		<femaleTransformTo value="7803"/>
 	</item>
 
 	<item flags="9" id="739" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="7792"/>
 		<femaleTransformTo value="7804"/>
 	</item>
 
 	<item flags="9" id="740" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="7793"/>
 		<femaleTransformTo value="7805"/>
 	</item>
 
 	<item flags="9" id="741" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="7794"/>
 		<femaleTransformTo value="7806"/>
 	</item>
 
 	<item flags="9" id="742" name="bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="7795"/>
 		<femaleTransformTo value="7807"/>
 	</item>
 
 	<item flags="9" id="743" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="7796"/>
 		<femaleTransformTo value="7808"/>
 	</item>
 
 	<item flags="9" id="744" name="bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="7797"/>
 		<femaleTransformTo value="7809"/>
 	</item>
 
 	<item flags="9" id="745" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="7798"/>
 		<femaleTransformTo value="7810"/>
 	</item>
@@ -20852,7 +20794,7 @@
 		<maxHitChance value="90"/>
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
-			<shootType value="flasharrow"/>
+		<shootType value="flasharrow"/>
 	</item>
 
 	<item flags="224" id="762" name="shiver arrow">
@@ -20862,7 +20804,7 @@
 		<maxHitChance value="90"/>
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
-			<shootType value="shiverarrow"/>
+		<shootType value="shiverarrow"/>
 	</item>
 
 	<item flags="16777440" id="763" name="flaming arrow">
@@ -20872,21 +20814,21 @@
 		<maxHitChance value="90"/>
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
-			<shootType value="flammingarrow"/>
+		<shootType value="flammingarrow"/>
 	</item>
 
 	<item flags="1" id="764" name="straw mat">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="5502"/>
 	</item>
 
 	<item flags="1" id="765" name="straw mat">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="5503"/>
 	</item>
 
 	<item flags="1" id="766" name="straw mat">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="5500"/>
 	</item>
 
@@ -20933,7 +20875,7 @@
 		<maxHitChance value="90"/>
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
-			<shootType value="eartharrow"/>
+		<shootType value="eartharrow"/>
 	</item>
 
 	<item id="777" name="fiery archway"/>
@@ -21823,21 +21765,21 @@
 	</item>
 
 	<item flags="9" id="2496" name="bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 	</item>
 
 	<item flags="9" id="2498" name="bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="1761"/>
 	</item>
 
 	<item flags="16777225" id="2508" name="hammock">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="3837"/>
 	</item>
 
 	<item flags="16777225" id="2510" name="hammock">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="3839"/>
 	</item>
 
@@ -22561,82 +22503,82 @@
 	<item id="7710" name="stone pillar"/>
 	<item flags="8193" id="7708" name="stone pillar"/>
 	<item flags="1" id="7711" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="7712" name="closed door">
-				<transformUseTo value="7713"/>
+		<transformUseTo value="7713"/>
 	</item>
 
 	<item flags="8192" id="7713" name="open door">
-			<transformUseTo value="7712"/>
+		<transformUseTo value="7712"/>
 	</item>
 
 	<item flags="1" id="7714" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="7715" name="closed door">
-				<transformUseTo value="7716"/>
+		<transformUseTo value="7716"/>
 	</item>
 
 	<item flags="8192" id="7716" name="open door">
-			<transformUseTo value="7715"/>
+		<transformUseTo value="7715"/>
 	</item>
 
 	<item flags="1" id="7717" name="closed door">
-				<transformUseTo value="7718"/>
+		<transformUseTo value="7718"/>
 	</item>
 
 	<item flags="8192" id="7718" name="open door">
-			<transformUseTo value="7717"/>
+		<transformUseTo value="7717"/>
 	</item>
 
 	<item flags="1" id="7719" name="closed door">
-				<transformUseTo value="7720"/>
+		<transformUseTo value="7720"/>
 	</item>
 
 	<item flags="8192" id="7720" name="open door">
-			<transformUseTo value="7719"/>
+		<transformUseTo value="7719"/>
 	</item>
 
 	<item flags="16777217" id="7721" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="7722"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="7722"/>
 	</item>
 
 	<item flags="16785408" id="7722" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7721"/>
 	</item>
 
 	<item flags="16777217" id="7723" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="7724"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="7724"/>
 	</item>
 
 	<item flags="8192" id="7724" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7723"/>
 	</item>
 
 	<item flags="1" id="7725" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="7726"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="7726"/>
 	</item>
 
 	<item flags="8192" id="7726" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7725"/>
 	</item>
 
 	<item flags="1" id="7727" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="7728"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="7728"/>
 	</item>
 
 	<item flags="8192" id="7728" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="7727"/>
 	</item>
 
@@ -22919,7 +22861,7 @@
 
 	<item flags="33554432" id="7867" name="wooden floor"/>
 	<item flags="1" id="7868" name="closed door">
-			</item>
+	</item>
 
 	<item flags="8192" id="7869" name="open door"/>
 	<item flags="96" id="7369" name="golden trophy"/>
@@ -23096,7 +23038,7 @@
 	</item>
 
 	<item flags="1" id="7941" name="closed door">
-			</item>
+	</item>
 
 	<item id="7943" name="demon oak"/>
 	<item id="7944" name="demon oak"/>
@@ -24461,82 +24403,82 @@
 	<item id="8248" name="archway"/>
 	<item flags="8192" id="8243" name="archway"/>
 	<item flags="1" id="8249" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="8250" name="closed door">
-				<transformUseTo value="8251"/>
+		<transformUseTo value="8251"/>
 	</item>
 
 	<item flags="8192" id="8251" name="open door">
-			<transformUseTo value="8250"/>
+		<transformUseTo value="8250"/>
 	</item>
 
 	<item flags="1" id="8252" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="8253" name="closed door">
-				<transformUseTo value="8254"/>
+		<transformUseTo value="8254"/>
 	</item>
 
 	<item flags="8192" id="8254" name="open door">
-			<transformUseTo value="8253"/>
+		<transformUseTo value="8253"/>
 	</item>
 
 	<item flags="1" id="8255" name="closed door">
-				<transformUseTo value="8256"/>
+		<transformUseTo value="8256"/>
 	</item>
 
 	<item flags="8192" id="8256" name="open door">
-			<transformUseTo value="8255"/>
+		<transformUseTo value="8255"/>
 	</item>
 
 	<item flags="1" id="8257" name="closed door">
-				<transformUseTo value="8258"/>
+		<transformUseTo value="8258"/>
 	</item>
 
 	<item flags="8192" id="8258" name="open door">
-			<transformUseTo value="8257"/>
+		<transformUseTo value="8257"/>
 	</item>
 
 	<item flags="16777217" id="8259" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="8260"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="8260"/>
 	</item>
 
 	<item flags="16785408" id="8260" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8259"/>
 	</item>
 
 	<item flags="16777217" id="8261" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="8262"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="8262"/>
 	</item>
 
 	<item flags="8192" id="8262" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8261"/>
 	</item>
 
 	<item flags="1" id="8263" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="8264"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="8264"/>
 	</item>
 
 	<item flags="8192" id="8264" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8263"/>
 	</item>
 
 	<item flags="1" id="8265" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="8266"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="8266"/>
 	</item>
 
 	<item flags="8192" id="8266" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8265"/>
 	</item>
 
@@ -24628,82 +24570,82 @@
 	<item id="8350" name="iron wall"/>
 	<item flags="8195" id="8347" name="iron wall"/>
 	<item flags="1" id="8351" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="8352" name="closed door">
-				<transformUseTo value="8353"/>
+		<transformUseTo value="8353"/>
 	</item>
 
 	<item flags="8192" id="8353" name="open door">
-			<transformUseTo value="8352"/>
+		<transformUseTo value="8352"/>
 	</item>
 
 	<item flags="1" id="8354" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="8355" name="closed door">
-				<transformUseTo value="8356"/>
+		<transformUseTo value="8356"/>
 	</item>
 
 	<item flags="8192" id="8356" name="open door">
-			<transformUseTo value="8355"/>
+		<transformUseTo value="8355"/>
 	</item>
 
 	<item flags="1" id="8357" name="closed door">
-				<transformUseTo value="8358"/>
+		<transformUseTo value="8358"/>
 	</item>
 
 	<item flags="8192" id="8358" name="open door">
-			<transformUseTo value="8357"/>
+		<transformUseTo value="8357"/>
 	</item>
 
 	<item flags="1" id="8359" name="closed door">
-				<transformUseTo value="8360"/>
+		<transformUseTo value="8360"/>
 	</item>
 
 	<item flags="8192" id="8360" name="open door">
-			<transformUseTo value="8359"/>
+		<transformUseTo value="8359"/>
 	</item>
 
 	<item flags="16777217" id="8361" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="8362"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="8362"/>
 	</item>
 
 	<item flags="16785408" id="8362" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8361"/>
 	</item>
 
 	<item flags="16777217" id="8363" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="8364"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="8364"/>
 	</item>
 
 	<item flags="8192" id="8364" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8363"/>
 	</item>
 
 	<item flags="1" id="8365" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="8366"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="8366"/>
 	</item>
 
 	<item flags="8192" id="8366" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8365"/>
 	</item>
 
 	<item flags="1" id="8367" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="8368"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="8368"/>
 	</item>
 
 	<item flags="8192" id="8368" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="8367"/>
 	</item>
 
@@ -25103,7 +25045,7 @@
 	<item flags="8192" id="8710" name="old carpet"/>
 	<item id="8715" name="metal piece"/>
 	<item flags="33554433" id="8716" name="swamp">
-			<effect value="greenbubble"/>
+		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
 
@@ -25678,14 +25620,8 @@
 
 	<item id="8920" name="old carpet"/>
 	<item flags="8192" id="8919" name="old carpet"/>
-	<item id="8922" name="velvet tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
-	<item id="8921" name="velvet tapestry">
-		<forceSerialize value="1"/>
-	</item>
-
+	<item id="8922" name="velvet tapestry"/>
+	<item id="8921" name="velvet tapestry"/>
 	<item flags="65632" id="8923" name="velvet tapestry">
 		<weight value="1000"/>
 	</item>
@@ -25839,7 +25775,7 @@
 	</item>
 
 	<item flags="50331648" id="8969" name="lava" speed="150">
-			<effect value="fire"/>
+		<effect value="fire"/>
 	</item>
 
 	<item id="8971" name="strange apparatus"/>
@@ -26482,7 +26418,7 @@
 	</item>
 
 	<item flags="112" id="2967" name="pink key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="224" id="9114" name="wooden ties">
@@ -26604,7 +26540,7 @@
 	</item>
 
 	<item flags="112" id="2971" name="sky key">
-			<weight value="100"/>
+		<weight value="100"/>
 	</item>
 
 	<item flags="96" id="9173" name="love potion">
@@ -27041,90 +26977,90 @@
 	<item id="9344" name="stone wall"/>
 	<item flags="139267" id="9332" name="stone wall"/>
 	<item id="9348" name="framework window">
-			</item>
+	</item>
 
 	<item flags="8193" id="9347" name="framework window">
-			</item>
+	</item>
 
 	<item id="9350" name="framework window"/>
 	<item flags="8193" id="9349" name="framework window"/>
 	<item flags="1" id="9351" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9352" name="closed door">
-				<transformUseTo value="9353"/>
+		<transformUseTo value="9353"/>
 	</item>
 
 	<item flags="8192" id="9353" name="open door">
-			<transformUseTo value="9352"/>
+		<transformUseTo value="9352"/>
 	</item>
 
 	<item flags="1" id="9354" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9355" name="closed door">
-				<transformUseTo value="9356"/>
+		<transformUseTo value="9356"/>
 	</item>
 
 	<item flags="8192" id="9356" name="open door">
-			<transformUseTo value="9355"/>
+		<transformUseTo value="9355"/>
 	</item>
 
 	<item flags="1" id="9357" name="closed door">
-				<transformUseTo value="9358"/>
+		<transformUseTo value="9358"/>
 	</item>
 
 	<item flags="8192" id="9358" name="open door">
-			<transformUseTo value="9357"/>
+		<transformUseTo value="9357"/>
 	</item>
 
 	<item flags="1" id="9359" name="closed door">
-				<transformUseTo value="9360"/>
+		<transformUseTo value="9360"/>
 	</item>
 
 	<item flags="8192" id="9360" name="open door">
-			<transformUseTo value="9359"/>
+		<transformUseTo value="9359"/>
 	</item>
 
 	<item flags="16777217" id="9361" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9362"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9362"/>
 	</item>
 
 	<item flags="16785408" id="9362" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9361"/>
 	</item>
 
 	<item flags="16777217" id="9363" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9364"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9364"/>
 	</item>
 
 	<item flags="8192" id="9364" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9363"/>
 	</item>
 
 	<item flags="1" id="9365" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9366"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9366"/>
 	</item>
 
 	<item flags="8192" id="9366" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9365"/>
 	</item>
 
 	<item flags="1" id="9367" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9368"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9368"/>
 	</item>
 
 	<item flags="8192" id="9368" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9367"/>
 	</item>
 
@@ -27549,92 +27485,92 @@
 	<item id="9550" name="dark sand"/>
 	<item flags="8192" id="9539" name="dark sand"/>
 	<item flags="1" id="9551" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9552" name="closed door">
-				<transformUseTo value="9553"/>
+		<transformUseTo value="9553"/>
 	</item>
 
 	<item flags="8192" id="9553" name="open door">
-			<transformUseTo value="9552"/>
+		<transformUseTo value="9552"/>
 	</item>
 
 	<item flags="1" id="9554" name="closed door">
-				<transformUseTo value="9555"/>
+		<transformUseTo value="9555"/>
 	</item>
 
 	<item flags="8192" id="9555" name="open door">
-			<transformUseTo value="9554"/>
+		<transformUseTo value="9554"/>
 	</item>
 
 	<item flags="1" id="9556" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9557"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9557"/>
 	</item>
 
 	<item flags="8192" id="9557" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9556"/>
 	</item>
 
 	<item flags="16777217" id="9558" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9559"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9559"/>
 	</item>
 
 	<item flags="8192" id="9559" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9558"/>
 	</item>
 
 	<item flags="1" id="9560" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9561" name="closed door">
-				<transformUseTo value="9562"/>
+		<transformUseTo value="9562"/>
 	</item>
 
 	<item flags="8192" id="9562" name="open door">
-			<transformUseTo value="9561"/>
+		<transformUseTo value="9561"/>
 	</item>
 
 	<item flags="1" id="9563" name="closed door">
-				<transformUseTo value="9564"/>
+		<transformUseTo value="9564"/>
 	</item>
 
 	<item flags="8192" id="9564" name="open door">
-			<transformUseTo value="9563"/>
+		<transformUseTo value="9563"/>
 	</item>
 
 	<item flags="1" id="9565" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9566"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9566"/>
 	</item>
 
 	<item flags="8192" id="9566" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9565"/>
 	</item>
 
 	<item flags="16777217" id="9567" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9568"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9568"/>
 	</item>
 
 	<item flags="16785408" id="9568" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9567"/>
 	</item>
 
 	<item id="9570" name="limestone window"/>
 	<item flags="8193" id="9569" name="limestone window"/>
 	<item id="9572" name="limestone window">
-			</item>
+	</item>
 
 	<item flags="8193" id="9571" name="limestone window">
-			</item>
+	</item>
 
 	<item id="9574" name="limestone window"/>
 	<item flags="8193" id="9573" name="limestone window"/>
@@ -28240,70 +28176,70 @@
 	<item id="9857" name="stone floor"/>
 	<item flags="33554432" id="9848" name="stone floor"/>
 	<item flags="1" id="9858" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9859" name="closed door">
-				<transformUseTo value="9860"/>
+		<transformUseTo value="9860"/>
 	</item>
 
 	<item flags="8192" id="9860" name="open door">
-			<transformUseTo value="9859"/>
+		<transformUseTo value="9859"/>
 	</item>
 
 	<item id="9862" name="aquarius fungius"/>
 	<item flags="8193" id="9861" name="aquarius fungius"/>
 	<item flags="1" id="9863" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9864"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9864"/>
 	</item>
 
 	<item flags="8192" id="9864" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9863"/>
 	</item>
 
 	<item flags="16777217" id="9865" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9866"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9866"/>
 	</item>
 
 	<item flags="8192" id="9866" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9865"/>
 	</item>
 
 	<item flags="1" id="9867" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="9868" name="closed door">
-				<transformUseTo value="9869"/>
+		<transformUseTo value="9869"/>
 	</item>
 
 	<item flags="8192" id="9869" name="open door">
-			<transformUseTo value="9868"/>
+		<transformUseTo value="9868"/>
 	</item>
 
 	<item flags="8193" id="9870" name="big mushroom"/>
 	<item flags="8193" id="9871" name="tainted pland"/>
 	<item flags="1" id="9872" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="9873"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="9873"/>
 	</item>
 
 	<item flags="8192" id="9873" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9872"/>
 	</item>
 
 	<item flags="16777217" id="9874" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="9875"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="9875"/>
 	</item>
 
 	<item flags="16785408" id="9875" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="9874"/>
 	</item>
 
@@ -28553,7 +28489,7 @@
 	</item>
 
 	<item flags="16777216" id="10069" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
 		<fieldTicks value="10000"/>
@@ -28562,7 +28498,7 @@
 	</item>
 
 	<item flags="16777216" id="10070" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="10"/>
 		<fieldTicks value="10000"/>
@@ -28571,7 +28507,7 @@
 	</item>
 
 	<item flags="16777216" id="10071" name="fire field">
-			<replaceable value="0"/>
+		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="5"/>
 		<fieldTicks value="10000"/>
@@ -28734,12 +28670,12 @@
 
 	<item flags="33554432" id="10180" name="groud"/>
 	<item flags="16777222" id="10181" name="magic wall">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="20"/>
 	</item>
 
 	<item flags="4" id="10182" name="rush wood">
-			<decayTo value="0"/>
+		<decayTo value="0"/>
 		<duration value="45"/>
 	</item>
 
@@ -30504,66 +30440,66 @@
 	<item id="11123" name="corrupted wall"/>
 	<item flags="8195" id="11117" name="corrupted wall"/>
 	<item flags="1" id="11136" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="11137" name="closed door">
-				<transformUseTo value="11138"/>
+		<transformUseTo value="11138"/>
 	</item>
 
 	<item flags="8192" id="11138" name="open door">
-			<transformUseTo value="11137"/>
+		<transformUseTo value="11137"/>
 	</item>
 
 	<item flags="16777217" id="11139" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="11140"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="11140"/>
 	</item>
 
 	<item flags="8192" id="11140" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11139"/>
 	</item>
 
 	<item flags="16777217" id="11141" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="11142"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="11142"/>
 	</item>
 
 	<item flags="8192" id="11142" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11141"/>
 	</item>
 
 	<item flags="1" id="11143" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="11144" name="closed door">
-				<transformUseTo value="11145"/>
+		<transformUseTo value="11145"/>
 	</item>
 
 	<item flags="8192" id="11145" name="open door">
-			<transformUseTo value="11144"/>
+		<transformUseTo value="11144"/>
 	</item>
 
 	<item flags="16777217" id="11146" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="11147"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="11147"/>
 	</item>
 
 	<item flags="8192" id="11147" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11146"/>
 	</item>
 
 	<item flags="16777217" id="11148" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="11149"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="11149"/>
 	</item>
 
 	<item flags="8192" id="11149" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11148"/>
 	</item>
 
@@ -30614,15 +30550,15 @@
 	<item id="11231" name="roof"/>
 	<item flags="8396800" id="11221" name="roof"/>
 	<item flags="1" id="11232" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="11233" name="closed door">
-				<transformUseTo value="11234"/>
+		<transformUseTo value="11234"/>
 	</item>
 
 	<item flags="8192" id="11234" name="open door">
-			<transformUseTo value="11233"/>
+		<transformUseTo value="11233"/>
 	</item>
 
 	<item flags="65536" id="11235" name="wall torch">
@@ -30634,35 +30570,35 @@
 	</item>
 
 	<item flags="16777217" id="11237" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="11238"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="11238"/>
 	</item>
 
 	<item flags="8192" id="11238" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11237"/>
 	</item>
 
 	<item flags="16777217" id="11239" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="11240"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="11240"/>
 	</item>
 
 	<item flags="8192" id="11240" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11239"/>
 	</item>
 
 	<item flags="1" id="11241" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="1" id="11242" name="closed door">
-				<transformUseTo value="11243"/>
+		<transformUseTo value="11243"/>
 	</item>
 
 	<item flags="8192" id="11243" name="open door">
-			<transformUseTo value="11242"/>
+		<transformUseTo value="11242"/>
 	</item>
 
 	<item flags="65536" id="11244" name="wall torch">
@@ -30674,22 +30610,22 @@
 	</item>
 
 	<item flags="16777217" id="11246" name="gate of expertise">
-			<levelDoor value="1000"/>
-			<transformUseTo value="11247"/>
+		<levelDoor value="1000"/>
+		<transformUseTo value="11247"/>
 	</item>
 
 	<item flags="8192" id="11247" name="gate of expertise">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11246"/>
 	</item>
 
 	<item flags="16777217" id="11248" name="closed door">
-			<specialDoor value="1"/>
-			<transformUseTo value="11249"/>
+		<specialDoor value="1"/>
+		<transformUseTo value="11249"/>
 	</item>
 
 	<item flags="8192" id="11249" name="open door">
-			<closingDoor value="1"/>
+		<closingDoor value="1"/>
 		<transformUseTo value="11248"/>
 	</item>
 
@@ -31205,11 +31141,11 @@
 
 	<item flags="16777220" id="11553" name="magic portal">
 		<description value="You can see the other side through it."/>
-		</item>
+	</item>
 
 	<item flags="16777220" id="11554" name="magic portal">
 		<description value="You can see the other side through it."/>
-		</item>
+	</item>
 
 	<item id="11556" name="palisade"/>
 	<item id="11557" name="palisade"/>
@@ -31886,7 +31822,7 @@
 	<item id="11704" name="wooden wall"/>
 	<item flags="270339" id="10770" name="wooden wall"/>
 	<item flags="1" id="11705" name="closed door">
-				<transformUseTo value="11708"/>
+		<transformUseTo value="11708"/>
 	</item>
 
 	<item flags="8195" id="11706" name="wooden wall"/>
@@ -31895,7 +31831,7 @@
 	</item>
 
 	<item flags="8192" id="11708" name="open door">
-			<transformUseTo value="11705"/>
+		<transformUseTo value="11705"/>
 	</item>
 
 	<item flags="8204" id="11709" name="hand made stairs">
@@ -31907,12 +31843,12 @@
 	<item id="11713" name="lush grass"/>
 	<item flags="33554432" id="11711" name="lush grass" speed="150"/>
 	<item flags="1" id="11714" name="closed door">
-				<transformUseTo value="11716"/>
+		<transformUseTo value="11716"/>
 	</item>
 
 	<item flags="33554432" id="11715" name="lush grass" speed="150"/>
 	<item flags="8192" id="11716" name="open door">
-			<transformUseTo value="11714"/>
+		<transformUseTo value="11714"/>
 	</item>
 
 	<item id="11718" name="lush grass"/>
@@ -32259,19 +32195,19 @@
 	<item id="12031" name="clock"/>
 	<item flags="16777217" id="12024" name="clock"/>
 	<item flags="1" id="12033" name="closed door">
-				<transformUseTo value="12034"/>
+		<transformUseTo value="12034"/>
 	</item>
 
 	<item flags="8192" id="12034" name="open door">
-			<transformUseTo value="12033"/>
+		<transformUseTo value="12033"/>
 	</item>
 
 	<item flags="1" id="12035" name="closed door">
-				<transformUseTo value="12036"/>
+		<transformUseTo value="12036"/>
 	</item>
 
 	<item flags="8192" id="12036" name="open door">
-			<transformUseTo value="12035"/>
+		<transformUseTo value="12035"/>
 	</item>
 
 	<item flags="224" id="12039" name="panther head">
@@ -32519,10 +32455,10 @@
 	</item>
 
 	<item flags="1" id="12249" name="closed door">
-			</item>
+	</item>
 
 	<item flags="1" id="12250" name="closed door">
-			</item>
+	</item>
 
 	<item flags="96" id="12251" name="shapechanger">
 		<description value="It might do some funny things to you."/>
@@ -36084,7 +36020,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="tarsalarrow"/>
-		</item>
+	</item>
 
 	<item flags="224" id="14252" name="vortex bolt">
 		<weight value="80"/>
@@ -36094,7 +36030,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="vortexbolt"/>
-		</item>
+	</item>
 
 	<item flags="96" id="14258" name="depth galea">
 		<description value="Enables underwater exploration."/>
@@ -36388,19 +36324,19 @@
 	<item id="15887" name="stone"/>
 	<item flags="8195" id="15876" name="stone"/>
 	<item flags="1" id="15890" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="8192" id="15891" name="open door">
-			<transformUseTo value="15890"/>
+		<transformUseTo value="15890"/>
 	</item>
 
 	<item flags="1" id="15892" name="closed door">
-				<description value="It is locked."/>
+		<description value="It is locked."/>
 	</item>
 
 	<item flags="8192" id="15893" name="open door">
-			<transformUseTo value="15892"/>
+		<transformUseTo value="15892"/>
 	</item>
 
 	<item flags="8193" id="15894" name="strange idol"/>
@@ -36805,7 +36741,7 @@
 	<item id="11972" name="stone"/>
 	<item flags="139267" id="11971" name="stone"/>
 	<item flags="8192" id="13144" name="open door">
-			<transformUseTo value="15892"/>
+		<transformUseTo value="15892"/>
 	</item>
 
 	<item id="14771" name="crystal floor"/>
@@ -37397,66 +37333,66 @@
 	<item id="15505" name="small stream"/>
 	<item flags="16785408" id="15488" name="small stream"/>
 	<item flags="1" id="15506" name="simple bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<maleTransformTo value="18031"/>
 		<femaleTransformTo value="18035"/>
 	</item>
 
 	<item flags="1" id="15507" name="simple bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<maleTransformTo value="18032"/>
 		<femaleTransformTo value="18036"/>
 	</item>
 
 	<item flags="1" id="15508" name="simple bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<maleTransformTo value="18033"/>
 		<femaleTransformTo value="18037"/>
 	</item>
 
 	<item flags="1" id="15509" name="simple bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<maleTransformTo value="18034"/>
 		<femaleTransformTo value="18038"/>
 	</item>
 
 	<item flags="1" id="15510" name="simple bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="18027"/>
 	</item>
 
 	<item flags="1" id="15511" name="simple bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="18028"/>
 	</item>
 
 	<item flags="1" id="15512" name="simple bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="18029"/>
 	</item>
 
 	<item flags="1" id="15513" name="simple bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="18030"/>
 	</item>
 
 	<item flags="1" id="15514" name="simple bed">
-			<partnerDirection value="2"/>
+		<partnerDirection value="2"/>
 		<transformTo value="18027"/>
 	</item>
 
 	<item flags="1" id="15515" name="simple bed">
-			<partnerDirection value="0"/>
+		<partnerDirection value="0"/>
 		<transformTo value="18028"/>
 	</item>
 
 	<item flags="1" id="15516" name="simple bed">
-			<partnerDirection value="1"/>
+		<partnerDirection value="1"/>
 		<transformTo value="18029"/>
 	</item>
 
 	<item flags="1" id="15517" name="simple bed">
-			<partnerDirection value="3"/>
+		<partnerDirection value="3"/>
 		<transformTo value="18030"/>
 	</item>
 
@@ -37649,11 +37585,11 @@
 	<item id="15686" name="stone pillar"/>
 	<item flags="8195" id="15685" name="stone pillar"/>
 	<item flags="1" id="15687" name="closed door">
-				<transformUseTo value="15688"/>
+		<transformUseTo value="15688"/>
 	</item>
 
 	<item flags="8192" id="15688" name="open door">
-			<transformUseTo value="15687"/>
+		<transformUseTo value="15687"/>
 	</item>
 
 	<item flags="72" id="15689" name="shovel"/>
@@ -37779,7 +37715,7 @@
 		<ammoType value="bolt"/>
 		<shootType value="vortexbolt"/>
 		<maxHitChance value="90"/>
-		</item>
+	</item>
 
 	<item flags="224" id="15793" name="crystalline arrow">
 		<weight value="75"/>
@@ -37789,7 +37725,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="crystallinearrow"/>
-		</item>
+	</item>
 
 	<item flags="96" id="15794" name="fresh mushroom beer">
 		<weight value="200"/>
@@ -38321,7 +38257,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="prismaticbolt"/>
-		</item>
+	</item>
 
 	<item flags="224" id="16142" name="drill bolt">
 		<weight value="80"/>
@@ -38331,7 +38267,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="drillbolt"/>
-		</item>
+	</item>
 
 	<item flags="224" id="16143" name="envenomed arrow">
 		<weight value="70"/>
@@ -38342,7 +38278,7 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="arrow"/>
 		<shootType value="envenomedarrow"/>
-			<showattributes value="1"/>
+		<showattributes value="1"/>
 	</item>
 
 	<item id="16149" name="dead gnomevil">
@@ -38403,7 +38339,7 @@
 		<weaponType value="axe"/>
 		<extradef value="3"/>
 		<skillAxe value="1"/>
-			
+		
 	</item>
 
 	<item flags="112" id="16162" name="mycological mace">
@@ -38413,7 +38349,7 @@
 		<weaponType value="club"/>
 		<extradef value="3"/>
 		<skillClub value="1"/>
-			
+		
 	</item>
 	<item flags="96" id="16163" name="crystal crossbow">
 		<weight value="8400"/>
@@ -38468,7 +38404,7 @@
 		<weaponType value="sword"/>
 		<extradef value="3"/>
 		<skillSword value="1"/>
-			
+		
 	</item>
 
 	<item id="16176" name="dead crystal golem">

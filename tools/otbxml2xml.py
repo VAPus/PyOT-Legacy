@@ -226,7 +226,7 @@ if __name__ == "__main__":
                     attribute.clear()
                     attribute.set("value", val)
 
-                if key in ("plural", "article", "cache", "blockprojectile", "type", "ammoAction"):
+                if key in ("plural", "article", "cache", "blockprojectile", "type", "ammoAction", "forceSerialize"):
                     attribute.clear()
                     #item.remove(attribute)
                     continue # We auto generate those.
@@ -330,6 +330,8 @@ if __name__ == "__main__":
         data = data.replace("\t\t<attribute/>\n", "\t")
         data = data.replace("\t\t\n\t\t\n", "").replace("\t\n\t\n", "\n").replace("\">\n\t\t</item>\n", "\"/>\n")
         data = data.replace("/>\n\n", "/>\n").replace("\n\t\n", "\n")
+        data = data.replace("\t\t\t</item>", "\t</item>").replace("\t\t</item>", "\t</item>")
+        data = data.replace("\t\t\t", "\t\t").replace("\t\t\t", "\t\t") # We do this twice.
         f.write(data)
 
         
