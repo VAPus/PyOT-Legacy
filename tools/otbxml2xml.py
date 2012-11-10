@@ -226,7 +226,7 @@ if __name__ == "__main__":
                     attribute.clear()
                     attribute.set("value", val)
 
-                if key in ("plural", "article", "cache", "blockprojectile", "type"):
+                if key in ("plural", "article", "cache", "blockprojectile", "type", "ammoAction"):
                     attribute.clear()
                     #item.remove(attribute)
                     continue # We auto generate those.
@@ -295,14 +295,16 @@ if __name__ == "__main__":
         index += 1
 
     # Rewrite ids.
-    for item in root.find("item"):
+    for item in root.findall("item"):
         # First some name checking.
-        if "name" in items[int(item.get("id"))].attr and items[int(item.get("id"))]["name"] != item.get("name"):
-            print "WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[int(item.get("id"))]["name"])
-            item.set("name", items[int(item.get("id"))]["name"])
+        if "name" in items[int(item.get("id"))].attr and items[int(item.get("id"))].attr["name"] != item.get("name"):
+            print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[int(item.get("id"))].attr["name"].decode('utf-8')))
+            item.set("name", items[int(item.get("id"))].attr["name"].decode('utf-8'))
 
         id = items[int(item.get("id"))].cid
         item.set("id", str(id))
+        if id in ids:
+            print "WARNING: ItemId %d got two entries!" % (id)
         ids.add(id)
 
     for item in items.values():

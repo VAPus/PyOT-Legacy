@@ -230,7 +230,7 @@ class PlayerAttacks(CreatureAttacks):
             elif weapon.ammoType == "arrow" and (not ammo or ammo.ammoType != "arrow" or ammo.count <= 0):
                 self.cancelMessage("You are out of arrows.")
                 ok = False
-            
+        
         if ok and self.target and self.target.isAttackable(self) and self.inRange(self.target.position, atkRange, atkRange):
             if not self.target.data["health"]:
                 self.target = None
