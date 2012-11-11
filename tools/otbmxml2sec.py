@@ -6,6 +6,8 @@ import sys
 import gc
 import otbxml2xml as itemReader
 from generator import Map, Item, Tile, Spawn
+import time
+import io
 
 # Python 3
 try:
@@ -83,23 +85,19 @@ class Reader(object):
         
     def getData(self):
         return self.data[self.pos:]
-    
 
-class L(object):
-    __slots__ = ('value')
-    def __init__(self, val):
-        self.value = val
-        
+LEVEL = 1
+      
 class Node(object):
     __slots_ = ('data', 'nodes', 'begin', 'size')
     def __init__(self, begin, size=None):
         self.data = b""
         self.nodes = []
         self.begin = begin
-        self.size = size
-            
+        self.size = size            
 
     def parse(self):
+        global LEVEL
         otbm.pos = self.begin
         byte = otbm.uint8()
         nextIsEscaped = False
@@ -109,8 +107,8 @@ class Node(object):
                 node = self.handleBlock(otbm.pos, blockSize)
                 otbm.pos += blockSize
             elif byte == 0xFF and not nextIsEscaped:
-                level.value -= 1
-                if level.value < 0:
+                LEVEL -= 1
+                if LEVEL < 0:
                     print("DEBUG!")
                 break
                 
@@ -126,37 +124,34 @@ class Node(object):
 
     def sizer(self):
         oldPos = otbm.pos
-        global subLevels
-        subLevels = 0
+        subLevels = 1
         
-        def leveler():
-            global subLevels
-            subLevels += 1
-            byte = otbm.uint8()
-            nextIsEscaped = False
-            while byte != None:
-                if byte == 0xFE and not nextIsEscaped:
-                    leveler()
+        byte = otbm.uint8()
+        nextIsEscaped = False
+        while byte != None:
+            if byte == 0xFE and not nextIsEscaped:
+                subLevels += 1
 
-                elif byte == 0xFF and not nextIsEscaped:
-                    subLevels -= 1
-                    if subLevels < 0:
-                        print("DEBUG!")
+            elif byte == 0xFF and not nextIsEscaped:
+                subLevels -= 1
+                if subLevels == 0:
                     break
                     
-                elif byte == 0xFD and not nextIsEscaped:
-                    nextIsEscaped = True
+            elif byte == 0xFD and not nextIsEscaped:
+                nextIsEscaped = True
                     
-                else:
-                    nextIsEscaped = False 
+            else:
+                nextIsEscaped = False 
                     
-                byte = otbm.uint8()            
-        leveler()
+            byte = otbm.uint8()            
+
         size = otbm.pos - oldPos
         otbm.pos = oldPos
         return size
+
     def handleBlock(self, begin, size):
-        level.value += 1
+        global LEVEL
+        LEVEL += 1
         node = Node(begin, size)
         self.nodes.append(node)
         return node
@@ -171,11 +166,12 @@ class Node(object):
             node.parse()
             return node
         else:
-            del self # It's rather safe to assume we don't be around anymore
             return None
 
 
 # Hack Item
+START = time.time()
+
 _Item = Item
 def Item(serverId):
     try:
@@ -186,7 +182,7 @@ def Item(serverId):
     return _Item(clientId)
 
 dummyItems = {}
-def genItem(itemid, fallback):
+def genItem(itemid):
     try:
         clientId = itemReader.items[itemid].cid
     except:
@@ -194,13 +190,12 @@ def genItem(itemid, fallback):
         clientId = 100
 
     if not clientId in dummyItems:
-        dummyItems[clientId] = fallback
+        dummyItems[clientId] = Item(itemid)
     return dummyItems[clientId]
 
-otbmFile = open("map.otbm", 'rb')
+otbmFile = io.open("map.otbm", 'rb')
 otbm = Reader(otbmFile.read())
 
-level = L(1)
 root = Node(5, len(otbm.data)) # Begin on level 1
 root.parse()
 root.data.pos += 1
@@ -211,15 +206,11 @@ height = root.data.uint16()
 majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
-# Tiles
-tiles = (width * height) / 4 # This also count null tiles which we doesn't pass, bad
-
 print("OTBM v%d, %dx%d" % (version, width, height)) 
 
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
 m = Map(width,height,None,15)
 at = m.addTo
-a = m.add
 
 print ("--Done generating the map layout")
 
@@ -285,7 +276,7 @@ while node:
                         flags = tile.data.uint32()
                         
                     elif attr == 9: # ITEM, ground item
-                        _itemG_ = Item(tile.data.uint16())
+                        _itemG_ = genItem(tile.data.uint16())
                         _render_ = True
                         
                     else:
@@ -300,8 +291,12 @@ while node:
                 while item:
                     if item.data.uint8() == 6: # more items
                         itemId = item.data.uint16()
-                        currItem=Item(itemId)
-                        
+                        #currItem=Item(itemId)
+                        if not item.data.peekUint8():
+                            currItem = genItem(itemId)
+                        else:
+                            currItem = Item(itemId)
+
                         # Unserialie attributes
                         while item.data.peekUint8():
                             attr = item.data.uint8()
@@ -357,12 +352,10 @@ while node:
                                 break # All after this is container items
                             else:
                                 print("Unknown item attribute %d" % attr)
+                            
                         _render_ = True
                         
-                        if not currItem.attributes and not currItem.actions:
-                            _tile_.append(genItem(itemId, currItem))
-                        else:
-                            _tile_.append(currItem)
+                        _tile_.append(currItem)
                     else:
                         print("Unknown item header")
                     item = tile.next()
@@ -378,7 +371,7 @@ while node:
             onTile += 1
             if onTile - lastPrint == 2000:
                 lastPrint += 2000
-                print("---%d/~%d done" % (lastPrint, tiles))
+                print("---%d tiles done" % (lastPrint))
             tile = node.next()
             
     elif type == 12: # Towns
@@ -489,16 +482,7 @@ if houses:
 
 gc.collect()
 m.compile()
-"""
-lef = len(_output_)
-le = lef / 100
-co = 1
-for i in xrange(le, lef, le):
-    _output_.insert(i, "print ('%d%% (%d/%d)')" % (co, i, lef))
-    co += 1
-    
-print("-- Writing genmap.py")
-with open("genmap.py", "wb") as f:
-    f.write("\n".join(_output_))
-"""
+
 print("-- Done!")
+print("-- Took: %s" % (time.time() - START))
+raw_input()

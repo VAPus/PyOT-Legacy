@@ -138,8 +138,7 @@ class Map(object):
         self.houses = {}
         self.flags = {}
         
-        # Level 7 always got to be filled up.
-        self.area = {7:[]}
+        self.area = {}
         """for x in xrange(0, xA+1):
             self.area[7].append([])
             for y in xrange(0, yA+1):
@@ -178,49 +177,26 @@ class Map(object):
             yO = offsetY
             xO += 1
 
-    def _level(self, level, ground=None):
-        try:
-            self.area[level]
-        except:
-            self.area[level] = []
-            """for x in xrange(0, self.size[0]+1):
-                self.area[level].append([])
-                for y in xrange(0, self.size[1]+1):
-                    self.area[level][x].append([])
-                    if ground == None:
-                        self.area[level][x][y] = None
-                    elif isinstance(ground, int):
-                        self.area[level][x][y] = [Item(ground)]
-                    else:
-                        self.area[level][x][y] = [ground]
-            """
     def _ensureRange(self, x,y,z):
         try:
-            self.area[z][x][y]
+            self.area[x][y][z]
             return
         except:
-            self._level(z)
-            
-            lX = len(self.area[z]) - 1
-            diffX = x - lX
-            if diffX > 0:
-                for n in xrange(diffX):
-                    self.area[z].append(None)
-            
-            try:
-                lY = len(self.area[z][x]) -1
-            except:
-                self.area[z][x] = []
-                lY = -1
-                
-            diffY = y - lY
+            if not x in self.area:
+                areaX = {}
+                self.area[x] = areaX
+            else:
+                areaX = self.area[x]
 
-            if diffY > 0:
-                for n in xrange(diffY):
-                    if not isinstance(self.area[z][x], list):
-                        self.area[z][x] = []
-                    self.area[z][x].append(None) # Dealth with in addTo
-                
+            if not y in areaX:
+                areaY = {}
+                areaX[y] = areaY
+            else:
+                areaY = areaX[y]
+
+            if not z in areaY:
+                areaY[z] = []
+            
             if self.size[0] < x:
                 self.size[0] = x
                 
@@ -231,40 +207,13 @@ class Map(object):
         self._ensureRange(x,y,level)
         
         if type(thing) != list:
-            try:
-                self.area[level][x][y].append(thing)
-            except:
-                self.area[level][x][y] = [thing]
+            self.area[x][y][level].append(thing)
         else:
-            self.area[level][x][y] = thing
+            self.area[x][y][level] = thing
                 
-    def add(self, thing):
-        # Certain things like Tile() might want to add itself to a level beyond what we have generated so far
-        try:
-            if isinstance(thing, Tile):
-                self._ensureRange(thing.pos[0], thing.pos[1], thing.pos[2])
-                self.area[thing.pos[2]][thing.pos[0]][thing.pos[1]] = thing.area
-            else:
-                self._ensureRange(thing.x, thing.y, thing.level)
-                self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
-        except:
-            
-            self.size = (thing.x if thing.x > self.size[0] else self.size[0], thing.y if thing.y > self.size[1] else self.size[1])
-            while True:
-                try:
-                    self.area[thing.level][thing.x]
-                    break
-                except:
-                    self.area[thing.level].append([])
-            while True:
-                try:
-                    self.area[thing.level][thing.x][thing.y]
-                    break
-                except:
-                    self.area[thing.level][thing.x].append([])                
-            self.area[thing.level][thing.x][thing.y] = thing.area[thing.x][thing.y][thing.level]
-    def _levelsTo(self, x, y): # Rather heavy!
-        levels = []
+    def _levelsTo(self, x, y):
+        return list(self.area[x][y].keys())
+        """levels = []
         for level in list(self.area.keys()):
             try:
                 if self.area[level][x][y]: # Raise a error, then it's skipped
@@ -272,11 +221,11 @@ class Map(object):
             except:
                 pass
 
-        return levels
+        return levels"""
     def compile(self, areas=(32,32)):
         print("--Begin compilation")
-        areaX = 0
-        areaY = 0
+        areaXSize = 0
+        areaYSize = 0
         toX = int(self.size[0] / areas[0])
         toY = int(self.size[1] / areas[1])
         nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
@@ -284,27 +233,26 @@ class Map(object):
         trippelNull = chr(0) * 3
         HiFormat = struct.Struct("<Hi")
         
-        for xA in xrange(areaX, toX):
-            for yA in xrange(areaY, toY):
+        for xA in xrange(areaXSize, toX):
+            for yA in xrange(areaYSize, toY):
                 
                 sector = {}
                 extras = []
                 
                 for xS in xrange(0, areas[0]):
-                    for yS in xrange(0, areas[1]):
-                        for level in self._levelsTo((xA*areas[0])+xS, (yA*areas[1])+yS):
-                            if self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS] == None:
-                                continue
-                            
-                            if not level in sector:
-                                sector[level] = []
-                                for _x in xrange(areas[0]):
-                                    sector[level].append([])
-                                    for _y in xrange(areas[1]):
-                                        sector[level][_x].append([])
-                                        sector[level][_x][_y] = []
+                    xPos = (xA*areas[0])+xS
+                    areaX = self.area[xPos] if xPos in self.area else None
+                    if not areaX:
+                        continue
 
-                            if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
+                    for yS in xrange(0, areas[1]):
+                        yPos = (yA*areas[1])+yS
+                        areaY = areaX[yPos] if yPos in areaX else None
+                        if not areaY:
+                            continue
+
+                        for level in areaY:
+                            """if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
                                 # Reorder
                                 insert = 1
                                 for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS][1:]:
@@ -313,23 +261,41 @@ class Map(object):
                                             self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].remove(thing)
                                             self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].insert(insert, thing)
                                             insert += 1
-                                
-                            for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]:
-                                e,extras = thing.gen((xA*areas[0])+xS, (yA*areas[1])+yS,level,xS,yS, extras)
+                            """
+                            sectorY = None
+                            for thing in areaY[level]:
+                                e,extras = thing.gen(xPos, yPos,level,xS,yS, extras)
                                 if e:
-                                    sector[level][xS][yS].append(e)
+                                    if not sectorY:
+                                        if not level in sector:
+                                            sectorZ = {}
+                                            sector[level] = sectorZ
+                                        else:
+                                            sectorZ = sector[level]
+ 
+                                        if not xS in sectorZ:
+                                            sectorX = {}
+                                            sectorZ[xS] = sectorX
+                                        else:
+                                            sectorX = sectorZ[xS]
+
+                                        if not yS in sectorX:
+                                            sectorY = []
+                                            sectorX[yS] = sectorY
+                                        else:
+                                            sectorY = sectorX[yS]
+                                    sectorY.append(e)
 
                 # Begin by rebuilding ranges of tiles in x,y,z
                        
                 # Level 3, y compare:
                 def yComp(xCom, z, x):
                     output = []
-                    row = 0
                     nullRows = 0
                     
-                    for y in xCom:
+                    for row in xrange(areas[1]):
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
-
+                        y = xCom[row] if row in xCom else None
                         if y:
                             if nullRows:
                                 output.append(doubleNull + chr(nullRows))
@@ -349,8 +315,6 @@ class Map(object):
                         else:
                             nullRows += 1
                         
-
-                        row += 1
                     if nullRows:
                         output.append(doubleNull + chr(nullRows))
    
@@ -381,13 +345,11 @@ class Map(object):
                 # Level 2, X compare
                 def xComp(zCom, z):
                     output = []
-                    row = 0
-                    for x in zCom:
-                        t = yComp(x, z, row)
+                    for row in xrange(areas[0]):
+                        t = yComp(zCom[row] if row in zCom else {}, z, row)
                         if t:
                             output.append(t)
 
-                        row += 1
                     if not output:
                         return None
                     else:
@@ -407,6 +369,10 @@ class Map(object):
                         
                     #if not noRows >= areas[0]:
                     return ''.join(output)
+
+                if not sector:
+                    #print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    continue
                 
                 output = []
                 for zPos in sector:
@@ -425,7 +391,7 @@ class Map(object):
                     print("--Wrote %d.%d.sec\n" % (xA, yA))
                     
                 else: # A very big load of nothing
-                    print("--Skipped %d.%d.sec\n" % (xA, yA))
+                    #print("--Skipped %d.%d.sec\n" % (xA, yA))
                     continue
 
                     
@@ -581,6 +547,9 @@ class Item(object):
         return string
     
     def gen(self, x,y,z,rx,ry,extras):
+        if isinstance(self.id, str):
+            return self.id, extras
+
         code = struct.pack("<H", self.id)
 
         if self.actions:
@@ -599,6 +568,7 @@ class Item(object):
             code += ''.join(eta)
         else:
             code += "\x00"
+        self.id = code
         return code, extras
 
 
