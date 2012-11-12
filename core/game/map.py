@@ -108,14 +108,14 @@ class Tile(object):
         self.things = items
         
         if not count:
-            self.countNflags = 1
+            count = 1
             if len(items) > 1:
                 for item in self.things:
                     if item.ontop:
-                        self.countNflags += 1
+                        count += 1
   
-        else:
-            self.countNflags = count
+        
+        self.countNflags = count
 
         if flags:
             self._modpack(PACK_FLAGS, flags)

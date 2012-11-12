@@ -15,7 +15,7 @@ class CreatureMovement(object):
         """if not self.actionLock(self.teleport, position):
             return False"""
 
-        print "Teleportation", position
+        
         # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position.copy()
 
@@ -216,6 +216,9 @@ class CreatureMovement(object):
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
+        ok = True
+        for n in oldTile.things:
+            if isinstance(n, Item) and n.itemId not in (870, 4532): ok = False
 
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:

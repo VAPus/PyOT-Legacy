@@ -25,7 +25,11 @@ items = None
             
 ### Item ###
 class Item(object):
-    attributes = ('solid','blockprojectile','blockpath','hasheight','usable','pickable','movable','stackable','fcd', 'fcn', 'fce', 'fcs', 'fcw','ontop','readable','rotatable','hangable', 'vertical', 'horizontal', 'cannotdecay', 'allowdistread', '_unused', 'clientcharges', 'lookthrough','animation','walkstack')
+    attributes = {'solid':1, 'blockprojectile': 1 << 1, 'blockpath': 1 << 2, 'hasheight': 1 << 3, 'usable': 1 << 4, 'pickable': 1 << 5,
+                  'movable': 1 << 6, 'stackable': 1 << 7, 'fcd': 1 << 8, 'fcn': 1 << 9, 'fce': 1 << 10, 'fcs': 1 << 11, 'fcw': 1 << 12,
+                  'ontop': 1 << 13, 'readable': 1 << 14,'rotatable': 1 << 15, 'hangable': 1 << 16, 'vertical': 1 << 17, 'horizontal': 1 << 18,
+                  'cannotdecay': 1 << 19, 'allowdistread': 1 << 20, '_unused': 1 << 21, 'clientcharges': 1 << 22, 'lookthrough': 1 << 23,
+                  'animation': 1 << 24}
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
@@ -182,20 +186,6 @@ class Item(object):
     def cid(self):
         return self.itemId
     
-    """
-    # Changeable attributes. Ignore.
-    @property
-    def usable(self):
-        return items[self.itemId]['flags'] & 16
-        
-    @property
-    def pickable(self):
-        return items[self.itemId]['flags'] & 32
-        
-    @property
-    def movable(self):
-        return items[self.itemId]['flags'] & 64
-    """    
     @property
     def stackable(self):
         return items[self.itemId]['flags'] & 128
@@ -224,11 +214,12 @@ class Item(object):
             return 0
             
     def __getattr__(self, name):
+        _items = items[self.itemId]
         try:
-            return items[self.itemId][name]
+            return _items[name]
         except:
             try:
-                return items[self.itemId]['flags'] & (1 << self.attributes.index(name))
+                return _items['flags'] & self.attributes[name]
             except:
                 if not "__" in name:
                     return None
@@ -870,7 +861,7 @@ def loadItems():
     loadItems = {}
     idNameCache = {}
     tree = ET.parse("data/items.xml")
-    
+    flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}    
     for item in tree.getroot():
         _item = item.attrib
 
@@ -879,7 +870,11 @@ def loadItems():
         if not "flags" in _item:
             _item["flags"] = 0
         else:
-            _item["flags"] = int(_item["flags"])
+            flags = _item["flags"]
+            try:
+                _item["flags"] = flagTree[flags]
+            except KeyError:
+                _item["flags"] = int(flags)
         if "speed" in _item:
             _item["speed"] = int(_item["speed"])
         if "type" in _item:

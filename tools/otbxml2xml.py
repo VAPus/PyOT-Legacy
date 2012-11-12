@@ -152,7 +152,28 @@ while child:
     item = Item()
     item.type = child.data.uint8()
     item.flags = child.data.uint32()
-    
+
+    # FIX: It doesn't make sense to have walkstack on solid tiles...
+    """if item.flags >= (1<<25) and item.flags & 1 and item.flags & (1<<25):
+        item.flags -= 1 << 25"""
+
+    # Actually, stackability are script based. And guess what, they got a "walkstack items.xml feature!". Ignore this "9.7" feature.
+    if item.flags >= (1 << 25):
+        item.flags -= 1 << 25
+    if item.flags == 3:
+        item.flags = "b" # block item.
+    if item.flags == 1:
+        item.flags = "s" # Solid item.
+    if item.flags == 64:
+        item.flags = "m" # Moveable.
+    if item.flags == 96:
+        item.flags = "p" # They hang (pickable + movable) tightly togetter hehe.
+    if item.flags == 8192:
+        item.flags = "t" # Top item.
+    if item.flags == 8193:
+        item.flags = "ts" # Top solid.
+    if item.flags == 8195:
+        item.flags = "tb" # Top block item.
     sub = child.next()
     while child.data.peekUint8():
         attr = child.data.uint8()
@@ -181,6 +202,7 @@ while child:
         lastRealItem = item
     else:
         lastRealItem.alsoKnownAs.append(item.sid)
+        #items[item.sid] = lastRealItem
     child = node.next()
 print "-- Got a total of %d items!" % len(items)
 print "-- "
@@ -239,6 +261,21 @@ if __name__ == "__main__":
                     pass # Fields are reset so...
                 attribute.tag = key
                 
+        id = int(item.get("id").split("-")[0]) if item.get("id") else int(item.get("fromid"))
+        if id > 20000 and id < 20050: #or id not in items:
+            item.clear()
+            root.remove(item)
+            continue
+
+        #item.set("id", str(items[id].cid))
+        #ids.add(items[id].cid)
+
+        if items[id].type and items[id].type > 2: # I don't think we care for type 0 or type 1 or type 2 (aga containe$
+            item.set("type", str(items[id].type))
+        if "speed" in items[id].attr and items[id].attr["speed"] > 0 and items[id].attr["speed"] != 100:
+            item.set("speed", str(items[id].attr["speed"]))
+        if items[id].flags:
+            item.set("flags", str(items[id].flags))
 
         if ("fromid" in item.attrib and "toid" in item.attrib and item.get("fromid") != item.get("toid")) or "-" in item.get("id", ""):
             if "-" in item.get("id", ""):
@@ -251,7 +288,7 @@ if __name__ == "__main__":
                 del item.attrib["fromid"]
                 del item.attrib["toid"]
 
-            i = 0
+            i = 1
             if toId - orgId > 100:
                 print "I think an item going from %d to %d is wrong...." % (orgId, toId)
 
@@ -274,24 +311,6 @@ if __name__ == "__main__":
             del item.attrib["fromid"]
             item.set("id", orgId)
 
-        if item.get("id"):
-            id = int(item.get("id"))
-            if id > 20000 and id < 20050 or id not in items:
-                item.clear()
-                root.remove(item)
-                continue
-
-            #item.set("id", str(items[id].cid))
-            #ids.add(items[id].cid)
-
-            if items[id].type and items[id].type > 2: # I don't think we care for type 0 or type 1 or type 2 (aga container).
-                item.set("type", str(items[id].type))
-            if "speed" in items[id].attr and items[id].attr["speed"] > 0 and items[id].attr["speed"] != 100:
-                item.set("speed", str(items[id].attr["speed"]))
-            if items[id].flags:
-                item.set("flags", str(items[id].flags))
-
-        assert "fromid" not in item.attrib
         index += 1
 
     # Rewrite ids.
@@ -301,6 +320,9 @@ if __name__ == "__main__":
             print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[int(item.get("id"))].attr["name"].decode('utf-8')))
             item.set("name", items[int(item.get("id"))].attr["name"].decode('utf-8'))
 
+        flags = items[int(item.get("id"))].flags
+        if flags:
+            item.set("flags", str(flags))
         id = items[int(item.get("id"))].cid
         item.set("id", str(id))
         if id in ids:
@@ -324,7 +346,7 @@ if __name__ == "__main__":
 
             root.append(elm)
     tree.write("out.xml")
-    
+ 
     data = parse("out.xml").toprettyxml(encoding="utf-8", newl="\n")
     with open("out.xml", 'w') as f:
         data = data.replace("\t\t<attribute/>\n", "\t")
