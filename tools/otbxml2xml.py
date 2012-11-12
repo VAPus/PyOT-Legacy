@@ -214,6 +214,10 @@ print ""
 
 if __name__ == "__main__":
     import xml.etree.cElementTree as ET
+
+    def topId(element):
+        return int(element.get("id").split('-')[0])
+
     tree = ET.parse("items.xml")
     root = tree.getroot()
     index = 0
@@ -287,23 +291,32 @@ if __name__ == "__main__":
                 toId = int(item.attrib["toid"])
                 del item.attrib["fromid"]
                 del item.attrib["toid"]
-
+                item.set("id", "%s-%s" % (orgId, toId))
             i = 1
             if toId - orgId > 100:
                 print "I think an item going from %d to %d is wrong...." % (orgId, toId)
 
-            item.set("id", str(orgId))
+            #item.set("id", str(orgId))
+            ok = True
+            orgFlags = items[orgId].flags
+            orgCid = items[orgId].cid
 
+            # First check that name, cid (incremental) & flags is the same.
             for id in xrange(orgId+1, toId+1):
-                # Split items.
-                newItem = copy.deepcopy(item)
-                
-                newItem.set("id", str(id))
-                root.insert(index+i, newItem)
-                    
-                i += 1
+                if items[id].flags != orgFlags or items[id].cid != orgCid + (id - orgCid):
+                    ok = False
 
-            index += i
+            # If not, unroll it.
+            if not ok:
+                for id in xrange(orgId+1, toId+1):
+                    # Split items.
+                    newItem = copy.deepcopy(item)
+                
+                    newItem.set("id", str(id))
+                    root.insert(index+1, newItem)
+                    
+                    index += 1
+                item.set("id", str(orgId))
                     
         elif "fromid" in item.attrib:
             # No toid. Rewrite.
@@ -316,18 +329,28 @@ if __name__ == "__main__":
     # Rewrite ids.
     for item in root.findall("item"):
         # First some name checking.
-        if "name" in items[int(item.get("id"))].attr and items[int(item.get("id"))].attr["name"] != item.get("name"):
-            print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[int(item.get("id"))].attr["name"].decode('utf-8')))
-            item.set("name", items[int(item.get("id"))].attr["name"].decode('utf-8'))
+        if "name" in items[topId(item)].attr and items[topId(item)].attr["name"] != item.get("name"):
+            print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[topId(item)].attr["name"].decode('utf-8')))
+            item.set("name", items[topId(item)].attr["name"].decode('utf-8'))
 
-        flags = items[int(item.get("id"))].flags
+        flags = items[topId(item)].flags
         if flags:
             item.set("flags", str(flags))
-        id = items[int(item.get("id"))].cid
-        item.set("id", str(id))
-        if id in ids:
-            print "WARNING: ItemId %d got two entries!" % (id)
-        ids.add(id)
+
+        id = item.get("id")
+        if "-" in id:
+            start, end = map(int, id.split('-'))
+            item.set("id", "%s-%s" % (items[start].cid, items[end].cid))
+            for id in xrange(items[start].cid, items[end].cid+1):
+                ids.add(id)
+        else:
+            id = items[int(item.get("id"))].cid
+            item.set("id", str(id))
+            if id in ids:
+                print "WARNING: ItemId %d got two entries!" % (id)
+                if not len(item) and not item.get("flags"):
+                    print "Item got no special ids"
+            ids.add(id)
 
     for item in items.values():
         if item.cid not in ids:
@@ -345,6 +368,44 @@ if __name__ == "__main__":
             ids.add(item.cid)
 
             root.append(elm)
+
+    # Sort it.
+    container = root.findall("item")
+    data = []
+    for elem in container:
+        key = topId(elem)
+        data.append((key, elem))
+
+    data.sort()
+
+    # insert the last item from each tuple
+    container[:] = [item[-1] for item in data]
+
+    # Reapply ranges.
+    currElem = None
+    currId = 0
+    cuFlags = None
+    currName = ""
+    count = 0
+    i = 0
+    for elem in container:
+        id = elem.get("id")
+        if "-" in id: continue
+        
+        id = int(id)
+        if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags"):
+            count += 1
+            root.remove(elem)
+            continue
+        elif count:
+            currElem.set("id", "%s-%s" % (currId, currId+count))
+
+        currElem = elem
+        currId = id
+        currFlags = elem.get("flags")
+        currName = elem.get("name")
+        count = 0
+                
     tree.write("out.xml")
  
     data = parse("out.xml").toprettyxml(encoding="utf-8", newl="\n")

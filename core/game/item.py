@@ -898,13 +898,21 @@ def loadItems():
 
                 _item[key] = val
                 attr.clear()
-        
-        id = int(_item["id"])
-        loadItems[id] = _item
-        try:
-            idNameCache[_item["name"].upper()] = id
-        except:
-            pass
+
+             
+        id = _item["id"]
+        if "-" in id:
+            start, end = map(int, id.split('-'))
+            for id in xrange(start, end+1):
+                loadItems[id] = _item
+        else:        
+            id = int(id)    
+            loadItems[id] = _item
+            try:
+                # XXX: Ranged items are usually ground stuff witch we never reference by name.
+                idNameCache[_item["name"].upper()] = id
+            except:
+                pass
         del _item["id"]
         item.clear()        
 
