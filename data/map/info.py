@@ -7,4 +7,4 @@ ezo - pyOT map
 sectorSize = (32, 32)
 towns = {1: ('main', [1000, 1000, 7]), 2: ('Ezo Town', [1229, 1092, 6])}
 waypoints = {}
-levels = (1, 1)
+levels = (1, 15)

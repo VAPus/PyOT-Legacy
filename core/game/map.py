@@ -12,6 +12,7 @@ import struct
 import sys
 import itertools
 import gc
+import data.map.info as mapInfo
 
 ##### Position class ####
 def __uid():
@@ -20,13 +21,32 @@ def __uid():
         idsTaken += 1
         yield idsTaken
 instanceId = __uid().next
-        
+
+def packPos(x,y,z):
+    return ((1 << 24) * z) + ((1 << 10) * x) + y
+
+def unpackPos(sum):
+    z = sum >> 24
+    xSum = sum - (z << 24)
+    x = xSum >> 10
+    y = xSum - (x << 10)
+
+    return x,y,z
+
+def unpackPos(sum):
+    z = sum >> 24
+    x = sum >> 10 & 1024
+    y = sum & 1024
+
+    return x,y,z
+
 def getTile(pos):
     x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
-    iX = x >> 5
-    iY = y >> 5
-    pX = x & 31
-    pY = y & 31
+    sectorX, sectorY = mapInfo.sectorSize
+    iX = x // sectorX
+    iY = y // sectorY
+    pX = x % sectorX
+    pY = y % sectorY
 
     try:
         area = knownMap[instanceId]
@@ -35,22 +55,24 @@ def getTile(pos):
         area = knownMap[instanceId]
         
     sectorSum = (iX << 15) + iY
+    posSum = packPos(pX, pY, z)
     try:
-        return area[sectorSum][z][pX][pY]
+        return area[sectorSum][posSum]
     except KeyError:
         if loadTiles(x, y, instanceId):
             try:
-                return area[sectorSum][z][pX][pY]
+                return area[sectorSum][posSum]
             except:
                 return None
     except:
         return None
 
 def getTileConst(x,y,z,instanceId):
-    iX = x >> 5
-    iY = y >> 5
-    pX = x & 31
-    pY = y & 31
+    sectorX, sectorY = mapInfo.sectorSize
+    iX = x // sectorX
+    iY = y // sectorY
+    pX = x % sectorX
+    pY = y % sectorY
 
     try:
         area = knownMap[instanceId]
@@ -59,12 +81,13 @@ def getTileConst(x,y,z,instanceId):
         area = knownMap[instanceId]
         
     sectorSum = (iX << 15) + iY
+    posSum = packPos(pX,pY,z)
     try:
-        return area[sectorSum][z][pX][pY]
+        return area[sectorSum][posSum]
     except KeyError:
         if loadTiles(x, y, instanceId):
             try:
-                return area[sectorSum][z][pX][pY]
+                return area[sectorSum][posSum]
             except:
                 return None
     except:
@@ -108,12 +131,12 @@ class Tile(object):
         self.things = items
         
         if not count:
-            count = 1
             if len(items) > 1:
                 for item in self.things:
                     if item.ontop:
                         count += 1
-  
+            else:
+                count = 1
         
         self.countNflags = count
 
@@ -188,17 +211,7 @@ class Tile(object):
     def topItems(self):
         count = self._depack(PACK_ITEMS)
         for n in xrange(count):
-            
-            try:
-                yield self.things[n]
-            except IndexError:
-                ontops = 0
-                for i in self.things:
-                    if isinstance(i, Item) and i.ontop:
-                        ontops += 1
-                self._modpack(PACK_ITEMS, ontops-self._depack(PACK_ITEMS))
-                print "XXX: Hack applied", self._depack(PACK_ITEMS), count, len(self.things)
-                return            
+            yield self.things[n]
             
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())
@@ -311,7 +324,6 @@ class HouseTile(Tile):
             pass
     
 
-import data.map.info as mapInfo
 dummyItems = {} 
 
 knownMap = {None: {}} # InstanceId -> {z: [x -> [y]]}
@@ -335,10 +347,11 @@ def loadTiles(x,y, instanceId):
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
 
 # Format (Work in Progress)
+# Note: Max sector size in PyOt is 1024.
 """
     <uint8>floor_level
     floorLevel < 60
-        <loop>32x32
+        <loop>
 
         <uint16>itemId
         <uint8>attributeCount / other
@@ -410,7 +423,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 def loadSectorMap(code, instanceId, baseX, baseY):
     global dummyItems, dummyTiles
 
-    thisSectorMap = [None, None, None, None,None, None, None, None,None, None, None, None,None, None, None, None]
+    thisSectorMap = {}
     pos = 0
     codeLength = len(code)
     skip = False
@@ -455,6 +468,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         level = ord(code[pos])
         pos += 1
         
+        zSum = level << 24 
         if level == 60:
             centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
             
@@ -482,27 +496,16 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     
             continue
         
-        # An x level list for this floor
-        xlevel = []
-        
-        # Speedup call.
-        l_xlevel_append = xlevel.append
-        
-        # Loop over the 32 x rows
-        for xr in xrange(32):
+        # Loop over the mapInfo.sectorSize[0] x rows
+        for xr in xrange(mapInfo.sectorSize[0]):
             # The real X position
             xPosition = xr + baseX
-            
-            # An y level list
-            ywork = []
-            
-            # Speed up call
-            l_ywork_append = ywork.append
-            
+
+            xSum = (xr << 10) + zSum
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
-            while yr < 32:
+            while yr < mapInfo.sectorSize[1]:
                 # The real Y position
                 yPosition = yr + baseY
                 
@@ -516,7 +519,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 # We have no limit on the amount of items that a Tile might have. Loop until we hit a end.
                 while True:
                     # uint16 itemId / type
-                    # uint16 attrNr / count
+                    # uint8 attrNr / count
                     itemId, attrNr = l_unpack(code[pos:pos+3])
 
                     # Do we have a positive id? If not its a blank tile
@@ -597,12 +600,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     else:
                         pos += 4
                         if attrNr:
-                            for x in xrange(attrNr):
-                                l_ywork_append(None)
+                            #for x in xrange(attrNr):
+                            #    l_ywork_append(None)
                             yr += attrNr -1
-                        else:
-                            l_ywork_append(None)
-                        yRowGotItem = True
+                        #else:
+                        #    #l_ywork_append(None)
+                        #yRowGotItem = True
                         
                     
                         
@@ -655,7 +658,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     
                         houseId = 0
                         housePosition = None
-                        l_ywork_append(tile)
+                        thisSectorMap[xSum + yr] = tile
 
                     elif config.stackTiles:
                         ok = False
@@ -666,32 +669,33 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         if ok:
                             hash = tuple(items) # There must be a faster way...
                             try:
-                                l_ywork_append(dummyTiles[hash])
+                                thisSectorMap[xSum + yr] = dummyTiles[hash]
                             except:
                                 tile = l_Tile(items, flags)
                                 dummyTiles[hash] = tile
-                                l_ywork_append(tile)
+                                thisSectorMap[xSum + yr] = tile
 
                         else:
-                            l_ywork_append(l_Tile(items, flags))
+                            thisSectorMap[xSum + yr] = l_Tile(items, flags)
 
                     else:
-                        l_ywork_append(l_Tile(items, flags))
+                        thisSectorMap[xSum + yr] = l_Tile(items, flags)
 
-                elif not yRowGotItem:
-                    l_ywork_append(None)
-                    yRowGotItem = False
+                #elif not yRowGotItem:
+                #    pass #l_ywork_append(None)
+                #    #yRowGotItem = False
                 yr += 1
 
                 if skip:
                     skip = False
-                    break                
-            l_xlevel_append(ywork)
+                    break
+            #if ywork:                
+            #    areaZ[xr] = ywork #l_xlevel_append(ywork)
             if skip_remaining:
                 skip_remaining = False
                 break
                 
-        thisSectorMap[level] = xlevel
+        #thisSectorMap[level] = xlevel
            
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):

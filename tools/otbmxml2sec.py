@@ -14,13 +14,20 @@ try:
     xrange()
 except:
     xrange = range
-    
+
+# Config
+SECTOR_SIZE = (32, 32)
+#SECTOR_SIZE = (50000, 50000)    
 # The reader class:
 class Reader(object):
     __slots__ = ('pos', 'data')
     def __init__(self, data):
         self.pos = 0
         self.data = data
+
+    def byte(self):
+        self.pos += 1
+        return self.data[self.pos-1]
 
     # 8bit - 1byte, C type: char
     def uint8(self):
@@ -32,25 +39,15 @@ class Reader(object):
             return ord(self.data[self.pos])
         except:
             return None
-    def int8(self, format=Struct("<b")):
-        self.pos += 1
-        return format.unpack(self.data[self.pos-1:self.pos])[0]
-
     # 16bit - 2bytes, C type: short
-    def uint16(self, format=Struct("<H")):
+    def uint16(self):
         self.pos += 2
-        return format.unpack(self.data[self.pos-2:self.pos])[0]
-    def int16(self, format=Struct("<h")):
-        self.pos += 2
-        return format.unpack(self.data[self.pos-2:self.pos])[0]
-
+        return unpack("<H", self.data[self.pos-2:self.pos])[0]
+ 
     # 32bit - 4bytes, C type: int
-    def uint32(self, format=Struct("<I")):
+    def uint32(self):
         self.pos += 4
-        return format.unpack(self.data[self.pos-4:self.pos])[0]
-    def int32(self, format=Struct("<i")):
-        self.pos += 4
-        return format.unpack(self.data[self.pos-4:self.pos])[0]
+        return unpack("<I",self.data[self.pos-4:self.pos])[0]
 
     # 64bit - 8bytes, C type: long long
     def uint64(self):
@@ -94,33 +91,35 @@ class Node(object):
         self.data = b""
         self.nodes = []
         self.begin = begin
-        self.size = size            
+        self.size = size
+        self.index = 0
 
     def parse(self):
         global LEVEL
         otbm.pos = self.begin
-        byte = otbm.uint8()
+        byte = otbm.byte()
         nextIsEscaped = False
+        data = ""
         while otbm.pos < (self.begin + self.size):
-            if byte == 0xFE and not nextIsEscaped:
+            if byte == "\xFE" and not nextIsEscaped:
                 blockSize = self.sizer()
                 node = self.handleBlock(otbm.pos, blockSize)
                 otbm.pos += blockSize
-            elif byte == 0xFF and not nextIsEscaped:
+            elif byte == "\xFF" and not nextIsEscaped:
                 LEVEL -= 1
                 if LEVEL < 0:
                     print("DEBUG!")
                 break
                 
-            elif byte == 0xFD and not nextIsEscaped:
+            elif byte == "\xFD" and not nextIsEscaped:
                 nextIsEscaped = True
                 
             else:
                 nextIsEscaped = False 
-                self.data += chr(byte)
+                data += byte
                 
-            byte = otbm.uint8()
-        self.data = Reader(self.data)
+            byte = otbm.byte()
+        self.data = Reader(data)
 
     def sizer(self):
         oldPos = otbm.pos
@@ -157,15 +156,17 @@ class Node(object):
         return node
         
     def next(self):
-        if self.nodes:
+        if self.index < len(self.nodes):
             try:
                 del self.data
             except:
                 pass
-            node = self.nodes.pop(0)
+            node = self.nodes[self.index]
+            self.index += 1
             node.parse()
             return node
         else:
+            del self.nodes
             return None
 
 
@@ -481,7 +482,7 @@ if houses:
     print("---Done houses")
 
 gc.collect()
-m.compile()
+m.compile(SECTOR_SIZE)
 
 print("-- Done!")
 print("-- Took: %s" % (time.time() - START))

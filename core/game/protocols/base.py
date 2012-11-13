@@ -102,33 +102,14 @@ class BasePacket(TibiaPacket):
 
         if skip >= 0:
             self.data += chr(skip) + "\xFF"
-
-    def _helpGetTile(self,x,y,z,area,instanceId):
-        iX = x / 32
-        iY = y / 32
-        pX = x -iX * 32
-        pY = y -iY * 32
-                
-        sectorSum = (iX * 32768) + iY
-        try:
-            return area[sectorSum][z][pX][pY]
-        except KeyError:
-            if game.map.loadTiles(x, y, instanceId):
-                try:
-                    return area[sectorSum][z][pX][pY]
-                except:
-                    return None
-        except:
-            return None
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
-        area = game.map.knownMap[instanceId]
         
         for x in xrange(0, width):
             for y in xrange(0, height):
-                tile = self._helpGetTile(_x + x + offset, _y + y + offset, _z, area, instanceId)
+                tile = getTileConst(_x + x + offset, _y + y + offset, _z, instanceId)
 
                 if tile and tile.things:
                     if skip >= 0:

@@ -2,32 +2,47 @@ import copy
 import sys
 sys.path.append('../')
 import config
-import MySQLdb
 import struct
 import io
+import math
+import xml.etree.cElementTree as ET
 ### Load all solid and movable items
 topitems = set()
 movable = set()
-db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
-cursor = db.cursor()
-cursor.execute("SELECT `id` FROM items WHERE ontop = 1")
-for row in cursor.fetchall():
-    topitems.add(row[0])
-cursor.close()
 
-cursor = db.cursor()
-cursor.execute("SELECT `id` FROM items WHERE movable = 1")
-for row in cursor.fetchall():
-    movable.add(row[0])
-cursor.close()
+parse = ET.parse("../data/items.xml")
+root = parse.getroot()
+for item in root.findall("item"):
+    flags = item.get('flags', '')
+    if not flags: continue
 
-db.close()
+    id = item.get('id')
+    if '-' in id:
+        start, end = map(int, id.split('-'))
+        ids = set(range(start, end+1))
+    else:
+        ids = set((int(id),))
+
+    if 't' in flags:
+        topitems |= ids
+    if 'm' in flags:
+        movable |= ids
+    try:
+        flags = int(flags)
+    except:
+        continue
+
+    if flags & (1 << 13):
+        topitems |= ids
+    if flags & (1 << 6):
+        movable |= ids
+
     
 # Format (Work in Progress):
 """
     <uint8>floor_level
     floorLevel < 60
-        <loop>32x32
+        <loop>
 
         <uint16>itemId
         <uint8>attributeCount / other
@@ -226,8 +241,8 @@ class Map(object):
         print("--Begin compilation")
         areaXSize = 0
         areaYSize = 0
-        toX = int(self.size[0] / areas[0])
-        toY = int(self.size[1] / areas[1])
+        toX = int(math.ceil(self.size[0] / float(areas[0])))
+        toY = int(math.ceil(self.size[1] / float(areas[1])))
         nothingness = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
         doubleNull = chr(0) + chr(0)
         trippelNull = chr(0) * 3
@@ -241,12 +256,20 @@ class Map(object):
                 
                 for xS in xrange(0, areas[0]):
                     xPos = (xA*areas[0])+xS
+
+                    if xPos > self.size[0]:
+                        break
+
                     areaX = self.area[xPos] if xPos in self.area else None
                     if not areaX:
                         continue
-
+                    
                     for yS in xrange(0, areas[1]):
                         yPos = (yA*areas[1])+yS
+
+                        if yPos > self.size[1]:
+                            break
+
                         areaY = areaX[yPos] if yPos in areaX else None
                         if not areaY:
                             continue
@@ -298,8 +321,11 @@ class Map(object):
                         y = xCom[row] if row in xCom else None
                         if y:
                             if nullRows:
-                                output.append(doubleNull + chr(nullRows))
-                                nullRows = 0
+                                while nullRows > 0:
+                                    # Pack 255 at a time.
+                                    pack = min(255, nullRows)
+                                    output.append(doubleNull + chr(pack))
+                                    nullRows -= pack
                                 
                             if pos in self.houses:
                                 y.append(HiFormat.pack(50, self.houses[pos]))
@@ -315,17 +341,19 @@ class Map(object):
                         else:
                             nullRows += 1
                         
-                    if nullRows:
-                        output.append(doubleNull + chr(nullRows))
+                    if nullRows and output:
+                        while nullRows > 0:
+                            # Only pack 255 at a time.
+                            pack = min(255, nullRows)
+                            output.append(doubleNull + chr(pack))
+                            nullRows -= pack
    
                     if output:
                         # Apply skipping if necessary
-                        data = ';'.join(output)
-                        
                         # A walk in the park to remove the aditional 0 stuff here
                         count = 0
                         for code in output[::-1]:
-                            if code == trippelNull: count += 1
+                            if code[:2] == "\x00\x00": count += 1
                             else: break
       
                         if count:
@@ -334,9 +362,7 @@ class Map(object):
                             if not output:
                                 return "\x00\x00\x00|"
                             
-                            data = ';'.join(output) 
-                        else:    
-                            data = data
+                        data = ';'.join(output) 
 
                         return data + "|"
                     else:
