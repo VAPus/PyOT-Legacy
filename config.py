@@ -44,9 +44,9 @@ worldId = 0
 
 # Versions:
 versionMin = 860
-versionMax = 970
-versionError = "You must use a client between 8.6 and 9.70"
-supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970) # We support these main branches + compatible protocols to them
+versionMax = 971
+versionError = "You must use a client between 8.6 and 9.71"
+supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970, 971) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"

@@ -30,3 +30,5 @@ genMount("War Bear", 370, 10)
 genMount("Fire War Horse", 426, 10)
 genMount("Brown War Horse", 392, 10)
 genMount("Widow Queen", 368, 10)
+#Mechanical Bird unconfirmed name
+#Red Manta unconfirmed name
