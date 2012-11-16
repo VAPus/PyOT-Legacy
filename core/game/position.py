@@ -1,6 +1,6 @@
 class Position(object):
     __slots__ = ('x', 'y', 'z', 'instanceId')
-    def __init__(self, x, y, z=7, instanceId=None):
+    def __init__(self, x, y, z=7, instanceId=0):
         self.x = x
         self.y = y
         self.z = z
@@ -62,7 +62,8 @@ class Position(object):
             
     def __setstate__(self, data):
         self.x, self.y, self.z, self.instanceId = data
-
+        if self.instanceId is None:
+            self.instanceId = 0
     def __str__(self):
         if not self.instanceId:
             return "[%d, %d, %d]" % (self.x, self.y, self.z)
@@ -73,7 +74,7 @@ class Position(object):
         return StackPosition(self.x, self.y, self.z, x, self.instanceId)
 
 class MultiPosition(Position):
-    def __init__(self, instanceId=None, *argc):
+    def __init__(self, instanceId=0, *argc):
         self.positions = argc
         self.index = 0
         self.instanceId = instanceId
@@ -102,7 +103,7 @@ class MultiPosition(Position):
 class StackPosition(Position):
     __slots__ = ('stackpos',)
     
-    def __init__(self, x, y, z=7, stackpos=None, instanceId=None):
+    def __init__(self, x, y, z=7, stackpos=0, instanceId=0):
         self.x = x
         self.y = y
         self.z = z

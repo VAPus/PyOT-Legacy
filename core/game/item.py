@@ -833,10 +833,9 @@ def idByName(name):
         pass
         
 def attribute(itemId, attr):
-    check = ('solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation')
     try:
-        if attr in check:
-            return items[itemId][None] & check.index(attr)
+        if attr in Item.attributes:
+            return items[itemId]['flags'] & Item.attribute[attr]
             
         return items[itemId][attr]
     except:

@@ -23,7 +23,7 @@ def __uid():
 instanceId = __uid().next
 
 def packPos(x,y,z):
-    return ((1 << 24) * z) + ((1 << 10) * x) + y
+    return (z << 24) + (x << 10) + y
 
 def unpackPos(sum):
     z = sum >> 24
@@ -48,24 +48,22 @@ def getTile(pos):
     pX = x % sectorX
     pY = y % sectorY
 
-    try:
-        area = knownMap[instanceId]
-    except KeyError:
-        knownMap[instanceId] = {}
-        area = knownMap[instanceId]
-        
-    sectorSum = (iX << 15) + iY
+    sectorSum = (instanceId << 22) + (iX << 11) + iY
     posSum = packPos(pX, pY, z)
+    area = None
     try:
-        return area[sectorSum][posSum]
+        area = knownMap[sectorSum]
     except KeyError:
         if loadTiles(x, y, instanceId):
             try:
-                return area[sectorSum][posSum]
+                return knownMap[sectorSum][posSum]
             except:
                 return None
-    except:
-        return None
+    else:
+        try:
+            return area[posSum]
+        except:
+            return None
 
 def getTileConst(x,y,z,instanceId):
     sectorX, sectorY = mapInfo.sectorSize
@@ -73,25 +71,24 @@ def getTileConst(x,y,z,instanceId):
     iY = y // sectorY
     pX = x % sectorX
     pY = y % sectorY
+        
+    sectorSum = (instanceId << 22) + (iX << 11) + iY
+    posSum = packPos(pX,pY,z)
+    area = None
 
     try:
-        area = knownMap[instanceId]
-    except KeyError:
-        knownMap[instanceId] = {}
-        area = knownMap[instanceId]
-        
-    sectorSum = (iX << 15) + iY
-    posSum = packPos(pX,pY,z)
-    try:
-        return area[sectorSum][posSum]
+        area = knownMap[sectorSum]
     except KeyError:
         if loadTiles(x, y, instanceId):
             try:
-                return area[sectorSum][posSum]
+                return knownMap[sectorSum][posSum]
             except:
                 return None
-    except:
-        return None
+    else:
+        try:
+            return area[posSum]
+        except:
+            return None
         
 def getHouseId(pos):
     try:
@@ -111,135 +108,177 @@ def removeCreature(creature, pos):
     except:
         return False  
 
-DEFAULT_BASE = ''
 def newInstance(base=None):
     instance = instanceId()
     if base:
         instances[instance] = base + '/'
     else:
-        instances[instance] = DEFAULT_BASE
+        instances[instance] = ''
         
     return instance
-        
-PACK_ITEMS = 0 # top items
-PACK_CREATURES = 8
-PACK_FLAGS = 16
 
 class Tile(object):
-    __slots__ = ('things', 'countNflags')
-    def __init__(self, items, flags=0, count=0):
-        self.things = items
-        
-        if not count:
-            if len(items) > 1:
-                for item in self.things:
-                    if item.ontop:
-                        count += 1
-            else:
-                count = 1
-        
-        self.countNflags = count
+    __slots__ = ('things', 'ground', 'flags')
+    def __init__(self, ground, items=None, flags=0):
+        self.ground = ground
 
-        if flags:
-            self._modpack(PACK_FLAGS, flags)
-
-    def _depack(self, level):
-        return (self.countNflags >> level) & 255
+        self.things = items or None
         
-    def _modpack(self, level, mod):
-        self.countNflags += mod << level
+        self.flags = flags
 
     def getCreatureCount(self):
-        return self._depack(PACK_CREATURES)
+        if not self.things: return 0
+
+        count = 0
+        for thing in self.things:
+            if isinstance(thing, Creature):
+                count += 1
+
+        return count
     
     def getItemCount(self):
-        return len(self.things) - self._depack(PACK_CREATURES)
+        if not self.things: return 0
+
+        return len(self.things) - self.getCreatureCount()
         
+    def getTopItemCount(self):
+        if not self.things: return 0
+
+        count = 0
+        for thing in self.things:
+            if isinstance(thing, Item) and thing.ontop:
+                count += 1
+            else:
+                break
+
+        return count
+
+    def getBottomItemCount(self):
+        if not self.things: return 0
+
+        count = 0
+        for thing in self.things[::-1]:
+            if isinstance(thing, Item) and not thing.ontop:
+                count += 1
+            else:
+                break
+
+        return count
+
     def getFlags(self):
-        return self._depack(PACK_FLAGS)
+        return self.flags or 0
         
     def setFlag(self, flag):
-        if not self.getFlags() & flag:
-            self._modpack(PACK_FLAGS, flag)
+        flags = self.getFlags()
+        if not flags & flag:
+            self.flags = flags + flag
 
     def unsetFlag(self, flag):
         if self.getFlags() & flag:
-            self._modpack(PACK_FLAGS, -flag)
+            self.flags -= flag
             
     def placeCreature(self, creature):
         assert isinstance(creature, Creature)
-        pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
+        if not self.things:
+            self.things = [creature]
+            return 0
+
+        pos = len(self.things) - self.getBottomItemCount()
+        
         self.things.insert(pos, creature)
-        self._modpack(PACK_CREATURES, 1)
+
         if pos > 9:
             print self.things
             print pos, self.countNflags
             raise Exception("Item position > 9! Likely we need to deal with this ")
-        return pos
+        return pos+1
         
     def removeCreature(self,creature):
         assert isinstance(creature, Creature)
         self.things.remove(creature)
-        self._modpack(PACK_CREATURES, -1)
         
     def placeItem(self, item):
         assert isinstance(item, Item)
+        if not self.things:
+            self.things = [item]
+            return 0
+
         if item.ontop:
-            pos = self._depack(PACK_ITEMS)
-            self._modpack(PACK_ITEMS, 1)
+            pos = self.getTopItemCount()
+            self.things.insert(pos, item)
         else:
-            pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
-        self.things.insert(pos, item)
+            pos = len(self.things)
+            self.things.append(item)
         if pos > 9:
             print self.things
             print pos, self.countNflags
             raise Exception("Item position > 9! Likely we need to deal with this ")
-        return pos
+        return pos+1
     
     def placeItemEnd(self, item):
-        self.things.append(item)
-        return len(self.things)-1
+        if not self.things:
+            self.things = [item]
+            return 0
 
-    def ground(self):
-        return self.things[0]
+        self.things.append(item)
+        return len(self.things)
         
     def bottomItems(self):
-        x = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
-        for n in xrange(x, len(self.things)):
-            yield self.things[n]
+        if not self.things: return ()
+        bottomItems = self.getBottomItemCount()
+        if not bottomItems:
+            return ()
+
+        return self.things[len(self.things) - bottomItems:]
         
     def topItems(self):
-        count = self._depack(PACK_ITEMS)
-        for n in xrange(count):
-            yield self.things[n]
+        yield self.ground
+
+        if not self.things: return
+        for thing in self.things:
+            if isinstance(thing, Item) and thing.ontop:
+                yield thing
+            else:
+                break
             
     def getItems(self):
-        return itertools.chain(self.topItems(), self.bottomItems())
+        yield self.ground
+
+        if not self.things:
+            return
+
+        for thing in self.things:
+            if isinstance(thing, Item):
+                yield thing
  
     def creatures(self):
-        cc = self._depack(PACK_ITEMS)
-        cd = self._depack(PACK_CREATURES)
-        for n in xrange(cc, cc + cd):
-            try:
-                yield self.things[n]
-            except:
-                return
+        if not self.things:
+            return
+
+        for thing in self.things:
+            if isinstance(thing, Creature):
+                yield thing
                 
     def hasCreatures(self):
-        return self._depack(PACK_CREATURES)
+        if not self.things:
+            return False
+
+        for thing in self.things:
+            if isinstance(thing, Creature):
+                return True
         
     def topCreature(self):
-        cd = self._depack(PACK_CREATURES)
-        if cd:
-            cc = self._depack(PACK_ITEMS)
-            return self.things[cc]
+        if not self.things:
+            return None
+
+        for thing in self.things:
+            if isinstance(thing, Creature):
+                return thing
 
     def removeItem(self, item):
         item.stopDecay()
         self.things.remove(item)
-        if item.ontop:
-            self._modpack(PACK_ITEMS, -1)
-
+        
     def removeItemWithId(self, itemId):
         for i in self.getItems():
             if i.itemId == itemId:
@@ -247,8 +286,9 @@ class Tile(object):
                 
         
     def getThing(self, stackpos):
+        if stackpos == 0: return self.ground
         try:
-            return self.things[stackpos]
+            return self.things[stackpos-1]
         except:
             return None
     
@@ -261,7 +301,7 @@ class Tile(object):
                 return x
 
     def findStackpos(self, thing):
-        return self.things.index(thing)
+        return self.things.index(thing)+1
         
     def findClientItem(self, cid, stackpos=None):
         for x in self.bottomItems():
@@ -270,65 +310,16 @@ class Tile(object):
                     return (self.things.index(x), x)
                 return x
                 
-    def findCreatureStackpos(self, creature):
-        return self.things.index(creature)
-
-    def __getstate__(self):
-        return (self.things, self.countNflags)
-    
-    def __setstate__(self, saved):
-        self.things = saved[0]
-        self.countNflags = saved[1]
-        
 
 class HouseTile(Tile):
     __slots__ = ('houseId', 'position')
-    def __getstate__(self):
-        
-        # Remove all non-loaded things for the sake of the cache. 
-        items = []
-        cf = self.getFlags()
-        for i in self.things:
-            if i.fromMap:
-                items.append(i)
-                if i.ontop:
-                    cf += 1
-        
-        return (items, cf, self.houseId, self.position)
-    
-    def __setstate__(self, saved):
-        self.things = saved[0]      
-        self.countNflags = saved[1]  
-        self.houseId = saved[2]
-        self.position = saved[3]
-        
-        if self.houseId in houseTiles:
-            houseTiles[self.houseId].append(self)
-        else:
-            houseTiles[self.houseId] = [self]
-        
-        check = True    
-        for i in self.things:
-            if i.hasAction("houseDoor"):
-                if check and self.houseId in houseDoors:
-                    houseDoors[self.houseId].append(self.position)
-                    check = False
-                else:
-                    houseDoors[self.houseId] = [self.position]
-
-        try:
-            for item in game.house.houseData[self.houseId].data["items"][self.position]:
-                if item and item.itemId:
-                    self.placeItem(item)
-        except KeyError:
-            pass
     
 
 dummyItems = {} 
 
-knownMap = {None: {}} # InstanceId -> {z: [x -> [y]]}
+knownMap = {} # sectorSum -> {posSum}
 
-instances = {None: ''}
+instances = {0: ''}
 
 houseTiles = {}
 
@@ -420,6 +411,8 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
     }
 """
 
+IS_PYPY = sys.subversion[0] == 'PyPy'
+
 def loadSectorMap(code, instanceId, baseX, baseY):
     global dummyItems, dummyTiles
 
@@ -435,7 +428,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     # Avoid 1k calls to making the format :)
     # Pypy need a special treatment to avoid this.
     
-    if sys.subversion[0] == 'PyPy':
+    if IS_PYPY:
         ll_unpack = struct.unpack
         l_unpack = lambda data: ll_unpack("<HB", data)
         long_unpack = lambda data: ll_unpack("<i", data)
@@ -482,9 +475,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 creatureType = ord(code[pos])
                 nameLength = ord(code[pos+1])
                 name = code[pos+2:pos+nameLength+2]
-                pos += 2 + nameLength
-                spawnX, spawnY, spawnTime = creature_unpack(code[pos:pos+4])
-                pos += 4
+                pos += 6 + nameLength
+                spawnX, spawnY, spawnTime = creature_unpack(code[pos-4:pos])
+                
                 if creatureType == 61:
                     creature = l_getMonster(name)
                 else:
@@ -512,10 +505,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 # The items array and the flags for the Tile.
                 items = []
                 flags = 0
-                
-                # Speed up call
-                l_items_append = items.append
-                
+                ground = None
+
                 # We have no limit on the amount of items that a Tile might have. Loop until we hit a end.
                 while True:
                     # uint16 itemId / type
@@ -585,17 +576,28 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 1
                             item = l_Item(itemId, **attr)
                             item.fromMap = True
-                            l_items_append(item)
+                            if not ground:
+                                ground = item
+                            else:
+                                items.append(item)
                         else:
                             pos += 4
                             try:
-                                l_items_append(dummyItems[itemId])
+                                if not ground:
+                                    ground = dummyItems[itemId]
+                                else:
+                                    items.append(dummyItems[itemId])
                             except KeyError:
                                 item = l_Item(itemId)
                                 item.tileStacked = True
                                 item.fromMap = True
                                 dummyItems[itemId] = item
-                                l_items_append(item)
+                                if not ground:
+                                    ground = item
+                                else:
+                                    items.append(item)
+                                
+                                    
 
                     else:
                         pos += 4
@@ -619,7 +621,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         skip_remaining = True
                         break
                     # otherwise it should be ",", we don't need to verify this.
-                if items:
+                if ground:
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -630,7 +632,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         if config.protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
                             flags += TILEFLAGS_PROTECTIONZONE
                             
-                        tile = l_HouseTile(items, flags)
+                        tile = l_HouseTile(ground, items, flags)
                         tile.houseId = houseId
                         tile.position = housePosition
                         
@@ -661,25 +663,26 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         thisSectorMap[xSum + yr] = tile
 
                     elif config.stackTiles:
-                        ok = False
-                        for i in items:
-                            if i.solid:
-                                ok = True
-                                break
+                        ok = ground.solid
+                        if not ok:
+                            for i in items:
+                                if i.solid:
+                                    ok = True
+                                    break
                         if ok:
-                            hash = tuple(items) # There must be a faster way...
+                            hash = tuple(items) if items else ground # There must be a faster way...
                             try:
                                 thisSectorMap[xSum + yr] = dummyTiles[hash]
                             except:
-                                tile = l_Tile(items, flags)
+                                tile = l_Tile(ground, items, flags)
                                 dummyTiles[hash] = tile
                                 thisSectorMap[xSum + yr] = tile
 
                         else:
-                            thisSectorMap[xSum + yr] = l_Tile(items, flags)
+                            thisSectorMap[xSum + yr] = l_Tile(ground, items, flags)
 
                     else:
-                        thisSectorMap[xSum + yr] = l_Tile(items, flags)
+                        thisSectorMap[xSum + yr] = l_Tile(ground, items, flags)
 
                 #elif not yRowGotItem:
                 #    pass #l_ywork_append(None)
@@ -699,9 +702,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
            
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
-    sectorSum = (sectorX << 15) + sectorY
+    sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
     
-    if sectorSum in knownMap[instanceId]:
+    if sectorSum in knownMap:
         return False
           
     print "Loading %d.%d.sec" % (sectorX, sectorY)
@@ -710,10 +713,10 @@ def load(sectorX, sectorY, instanceId):
     # Attempt to load a sector file
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            knownMap[instanceId][sectorSum] = loadSectorMap(f.read(), instanceId, sectorX << 5, sectorY << 5)
+            knownMap[sectorSum] = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
     except IOError:
         # No? Mark it as empty
-        knownMap[instanceId][sectorSum] = None
+        knownMap[sectorSum] = None
         return False
         
     print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
@@ -721,9 +724,8 @@ def load(sectorX, sectorY, instanceId):
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[instanceId][sectorSum], instanceId=instanceId)
+    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[sectorSum], instanceId=instanceId)
     
-    gc.collect()
     return True
 
 # Map cleaner
@@ -757,8 +759,8 @@ def _unloadMap(sectorX, sectorY, instanceId):
     reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId):
-    sectorSum = (sectorX << 15) + sectorY
+    sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
     try:
-        del knownMap[instanceId][sectorSum]
+        del knownMap[sectorSum]
     except:
         pass

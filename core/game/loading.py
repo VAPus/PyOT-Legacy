@@ -182,7 +182,7 @@ def loader(timer):
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
                 x, y, junk = fileSec.split('/')[-1].split('.')
-                game.map.load(int(x),int(y), None)
+                game.map.load(int(x),int(y), 0)
             print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
             
         # Charge rent?

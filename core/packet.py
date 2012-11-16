@@ -170,7 +170,8 @@ class TibiaPacket(object):
             
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):
-        self.send(self.stream)
+        if not type:
+            self.send(self.stream)
         
     def __enter__(self):
         return self

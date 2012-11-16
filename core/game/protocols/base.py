@@ -17,8 +17,9 @@ import game.party
 from struct import pack, unpack
 import traceback
 
-# Probably not a good place, but
-from game.creature import Creature
+######################################
+############# BASE PACKET ############
+######################################
 
 class BasePacket(TibiaPacket):
     maxKnownCreatures = 1300
@@ -111,7 +112,7 @@ class BasePacket(TibiaPacket):
             for y in xrange(0, height):
                 tile = getTileConst(_x + x + offset, _y + y + offset, _z, instanceId)
 
-                if tile and tile.things:
+                if tile:
                     if skip >= 0:
                         self.data += chr(skip) + "\xFF"
                     skip = 0
@@ -546,219 +547,56 @@ class BasePacket(TibiaPacket):
         self.uint8(0x91)
         self.uint32(creatureId)
         self.uint8(shield)
+
+###########################################
+############## BASE PROTOCOL ##############
+###########################################
+
+OPHANDLERS = {}
+def packet(opcode):
+    global OPHANDLERS
+    def _(f):
+        OPHANDLERS[opcode] = f
+        return f
+
+    return _
         
 class BaseProtocol(object):
-    Packet = BasePacket
-    
+    Packet = BasePacket    
     def handle(self, player, packet):
-        try:
-            self._handle(player, packet)
-        except:
-            if IS_IN_TEST:
-                raise
-            else:
-                print "\n\n[UNHANDLED CORE EXCEPTION!]"
-                traceback.print_exc()
-                print "==============================\n"
-
-            
-    def _handle(self, player, packet):
         packetType = packet.uint8()
-        
-        if packetType == 0x14: # Logout
+
+        if packetType in OPHANDLERS:
             try:
-                if player.prepareLogout():
-                    player.client.transport.loseConnection()
+                 OPHANDLERS[packetType](self, player, packet)
             except:
-                pass # Sometimes the connection is already dead
-            
-        elif packetType == 0x1E: # Keep alive
-            player.pong()
-            
-        elif packetType == 0x1D:
-            self.handlePing(player)
-            
-        elif packetType == 0xA0: # Set modes
-            player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
-            
-        elif packetType in (0x6F, 0x70, 0x71, 0x72): # Turn packages
-            player.turn(packetType - 0x6F)
-            
-        elif packetType == 0x64: # movement with multiple steps
-            self.handleAutoWalk(player,packet)
-    
-        elif packetType == 0x69: # Stop autowalking
-            player.stopAutoWalk()
-            
-        elif packetType in (0x65, 0x66, 0x67, 0x68): # Movement
-            self.handleWalk(player,packetType - 0x65)
-        
-        elif packetType == 0x6A: # Northeast
-            self.handleWalk(player,7)
-            
-        elif packetType == 0x6B: # Southeast
-            self.handleWalk(player,5)
-
-        elif packetType == 0x6C: # Northwest
-            self.handleWalk(player,4)
-            
-        elif packetType == 0x6D: # Southwest
-            self.handleWalk(player,6)
-            
-        elif packetType == 0x96: # Say
-            self.handleSay(player,packet)
-            
-        elif packetType == 0x78: # Throw/move item
-            self.handleMoveItem(player,packet)
-        
-        elif packetType == 0x79: # Look at in trade window
-            self.handleLookAtTrade(player,packet)
-            
-        elif packetType == 0x7A: # Player brought from store
-            self.handlePlayerBuy(player,packet)
-            
-        elif packetType == 0x7B: # Player sold to store
-            self.handlePlayerSale(player,packet)
-            
-        elif packetType == 0x7C: # Player closed trade
-            self.handleCloseTradeNPC(player, packet)
-        
-        elif packetType == 0x7D: # Request trade
-            self.handleRequestTrade(player, packet)
-            
-        elif packetType == 0x7E: # Request trade
-            self.handleLookAtInTrade(player, packet)
-            
-        elif packetType == 0x7F: # Request trade
-            self.handleAcceptTrade(player, packet)
-            
-        elif packetType == 0x80: # Player close trade
-            self.handleCloseTrade(player, packet)
-            
-        elif packetType == 0x82:
-            self.handleUse(player,packet)
-
-        elif packetType == 0x83:
-            self.handleUseWith(player,packet)
-            
-        elif packetType == 0x84: # Hotkey usage etc
-            self.handleUseBattleWindow(player, packet)
-            
-        elif packetType == 0x85: # Rotate item
-            self.handleRotateItem(player,packet)
-            
-        elif packetType == 0x87: # Close container
-            player.closeContainerId(packet.uint8())
-            
-        elif packetType == 0x88: # Arrow up container
-            player.arrowUpContainer(packet.uint8())
-        
-        elif packetType == 0x89: # Text from textWindow
-            self.handleWriteBack(player,packet)
-
-        elif packetType == 0x8A: # Text from houseWindow
-            self.handleWriteBackForHouses(player, packet)
-            
-        elif packetType == 0x97: # Request channels
-            player.openChannels()
-
-        elif packetType == 0x98: # Open channel
-            player.openChannel(packet.uint16())
-            
-        elif packetType == 0x99: # Close channel
-            player.closeChannel(packet.uint16())
-            
-        elif packetType == 0x8C: # Look at
-            self.handleLookAt(player,packet)
-        
-        elif packetType == 0x9A: # Open private channel
-            player.openPrivateChannel(game.engine.getPlayer(packet.string()))
-            
-        elif packetType == 0xA1: # Attack
-            self.handleAttack(player,packet)
-
-        elif packetType == 0xA2: # Follow
-            self.handleFollow(player,packet)
-            
-        elif packetType == 0xA3: # Invite to party
-            self.handleInviteToParty(player, packet)
-            
-        elif packetType == 0xA4: # Join party
-            self.handleJoinParty(player, packet)
-            
-        elif packetType == 0xA5: # Revoke invite
-            self.handleRevokePartyInvite(player, packet)
-            
-        elif packetType == 0xA6: # Pass leadership
-            self.handlePassPartyLeadership(player, packet)
-            
-        elif packetType == 0xA7: # Leave party
-            player.leaveParty()
-            
-        elif packetType == 0xA8: # Share experience
-            self.handleShareExperience(player, packet)
-            
-        elif packetType == 0xC9:
-            self.handleUpdateTile(player,packet)
-            
-        elif packetType == 0xCA:
-            self.handleUpdateContainer(player,packet)
-            
-        elif packetType == 0xD2: # Request outfit
-            player.outfitWindow()
-            
-        elif packetType == 0xD3: # Set outfit
-            self.handleSetOutfit(player,packet)
-        
-        elif packetType == 0xD4 and config.allowMounts: # Set mount status
-            self.handleSetMounted(player,packet)
-
-        elif packetType == 0xDC: # Add VIP
-            self.handleAddVip(player,packet)
-            
-        elif packetType == 0xDD: # remove VIP
-            self.handleRemoveVip(player,packet)
-            
-        elif packetType == 0xBE: # Stop action
-            player.stopAction()
-            
-        elif packetType == 0xE7: # Thanks
-            self.handleThanks(player, packet)
-            
-        elif packetType == 0xE8:
-            self.handleDebugAssert(player, packet)
-        
-        elif packetType == 0xF0:
-            player.questLog()
-            
-        elif packetType == 0xF1:
-            self.handleQuestLine(player, packet)
-
-        elif packetType == 0xF4:
-            player.closeMarket()
-
-        elif packetType == 0xF5:
-            self.handleBrowseMarket(player, packet)
-        
-        elif packetType == 0xF6:
-            self.handleCreateMarketOffer(player, packet)
-
-        elif packetType == 0xF7:
-            self.handleCancelOffer(player, packet)
-
-        elif packetType == 0xF8:
-            self.handleAcceptOffer(player, packet)
-
-        elif packetType == 0xF9:
-            self.handleDialog(player, packet)
-            
+                if IS_IN_TEST:
+                    raise
+                else:
+                    print "\n\n[UNHANDLED CORE EXCEPTION!]"
+                    traceback.print_exc()
+                    print "==============================\n"
         else:
             log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()
-    
+
+ 
     def enum(self, key):
         return getattr(game.enum, key)
-        
+
+    @packet(0x14)
+    def handleLogout(self, player, packet):
+        try:
+            if player.prepareLogout():
+                player.client.transport.loseConnection()
+        except:
+            pass # Sometimes the connection is already dead
+    
+    @packet(0x1E)
+    def handleKeepAlive(self, player, packet):
+        player.pong()
+    
+    @packet(0x96)
     def handleSay(self, player, packet):
         channelType = packet.uint8()
         channelId = 0
@@ -772,7 +610,24 @@ class BaseProtocol(object):
         text = packet.string()
         
         player.handleSay(channelType, channelId, reciever, text)
-        
+
+    @packet(0x97)
+    def handleRequestChannels(self, player, packet):
+        player.openChannels()
+
+    @packet(0x98)
+    def handleOpenChannel(self, player, packet):
+        player.openChannel(packet.uint16())
+
+    @packet(0x99)
+    def handleCloseChannel(self, player, packet):
+        player.closeChannel(packet.uint16())
+
+    @packet(0x9A)
+    def handleOpenPrivateChannel(self, player, packeet):
+        player.openPrivateChannel(game.engine.getPlayer(packet.string()))
+
+    @packet(0x64)
     def handleAutoWalk(self, player, packet):
         if player.target:
             player.target = None
@@ -806,16 +661,69 @@ class BaseProtocol(object):
         player.walkPattern = walkPattern
         game.engine.autoWalkCreature(player)
 
+    @packet(0x65)
+    def handleWalkNorth(self, player, packet):
+        self.handleWalk(player, NORTH)
+
+    @packet(0x67)
+    def handleWalkSouth(self, player, packet):
+        self.handleWalk(player, SOUTH)
+
+    @packet(0x66)
+    def handleWalkEast(self, player, packet):
+        self.handleWalk(player, EAST)
+
+    @packet(0x68)
+    def handleWalkWest(self, player, packet):
+        self.handleWalk(player, WEST)
+    
+    @packet(0x69)
+    def handleStopAutoWalk(self, player, packet):
+        player.stopAutoWalk()
+
+    @packet(0x6A)
+    def handleWalkNorthEast(self, player, packet):
+        self.handleWalk(player, 7)
+
+    @packet(0x6B)
+    def handleWalkSouthEast(self, player, packet):
+        self.handleWalk(player, 5)
+
+    @packet(0x6C)
+    def handleWalkNorthWest(self, player, packet):
+        self.handleWalk(player, 4)
+
+    @packet(0x6D)
+    def handleWalkSouthWest(self, player, packet):
+        self.handleWalk(player, 6)
+
+    @packet(0x6F)
+    def handleTurn0(self, player, packet):
+        player.turn(0)
+
+    @packet(0x70)
+    def handleTurn1(self, player, packet):
+        player.turn(1)
+
+    @packet(0x71)
+    def handleTurn2(self, player, packet):
+        player.turn(2)
+
+    @packet(0x72)
+    def handleTurn3(self, player, packet):
+        player.turn(3)
+
     def handleWalk(self, player, direction):
         if player.target and player.modes[1] == game.enum.CHASE and player.targetMode > 0:
             player.cancelTarget()
-            
-        player.walkPattern = deque([direction])
+        
+        player.walkPattern = deque((direction,))
         game.engine.autoWalkCreature(player)
-            
+
+    @packet(0x78)
     @inlineCallbacks
     def handleMoveItem(self, player, packet):
-        from game.item import Item, items
+        from game.item import items
         fromPosition = packet.position(player.position.instanceId)
         fromMap = False
         toMap = False
@@ -917,7 +825,8 @@ class BaseProtocol(object):
             else:
                 print creature.position, toPosition
                 game.engine.autoWalkCreatureTo(creature, toPosition)
-            
+        
+    @packet(0x8C)    
     def handleLookAt(self, player, packet):
         from game.item import items
         position = packet.position(player.position.instanceId)
@@ -967,6 +876,7 @@ class BaseProtocol(object):
         else:
             player.notPossible()
 
+    @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
         clientId = packet.uint16()
         count = packet.uint8()
@@ -975,6 +885,7 @@ class BaseProtocol(object):
         player.message(item.description(player))
         del item
         
+    @packet(0x85)
     def handleRotateItem(self, player, packet):
         position = packet.position(player.position.instanceId) # Yes, we don't support backpack rotations
         clientId = packet.uint16()
@@ -986,7 +897,11 @@ class BaseProtocol(object):
                 game.engine.transformItem(item, item.rotateTo, position, stackpos)
             game.scriptsystem.get('rotate').runSync(item, player, end, position=position.setStackpos(stackpos))
             
-        
+    @packet(0xD2)
+    def handleRequestOutfit(self, player, packet):
+        player.outfitWindow()
+
+    @packet(0xD3)
     def handleSetOutfit(self, player, packet):
         if config.playerCanChangeColor:
             player.outfit = [packet.uint16(), packet.uint8(), packet.uint8(), packet.uint8(), packet.uint8()]
@@ -998,13 +913,16 @@ class BaseProtocol(object):
             player.mount = packet.uint16()
         player.refreshOutfit()
     
+    @packet(0xD4)
     def handleSetMounted(self, player, packet):
-        if player.mount:
-            mount = packet.uint8() != 0
-            player.changeMountStatus(mount)
-        else:
-            player.outfitWindow()
-            
+        if config.allowMounts:
+            if player.mount:
+                mount = packet.uint8() != 0
+                player.changeMountStatus(mount)
+            else:
+                player.outfitWindow()
+    
+    @packet(0x82)        
     @inlineCallbacks        
     def handleUse(self, player, packet):
         position = packet.position(player.position.instanceId)
@@ -1050,7 +968,8 @@ class BaseProtocol(object):
                 game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
-            
+
+    @packet(0x83)
     @inlineCallbacks
     def handleUseWith(self, player, packet):
         position = packet.position(player.position.instanceId)
@@ -1118,6 +1037,11 @@ class BaseProtocol(object):
                 if config.useDelay:
                     player.lastUsedObject = time.time()
             
+    @packet(0xA0)
+    def handleSetModes(self, player, packet):
+        player.setModes(packet.uint8(), packet.uint8(), packet.uint8())
+
+    @packet(0xA1)
     def handleAttack(self, player, packet):
         # HACK?
         # If we're in protected zone
@@ -1128,10 +1052,16 @@ class BaseProtocol(object):
             cid = packet.uint32()
             player.setAttackTarget(cid)
             
+    @packet(0xA2)
     def handleFollow(self, player, packet):
         cid = packet.uint32()
         player.setFollowTarget(cid)
         
+    @packet(0xBE)
+    def handleStop(self, player, packet):
+        player.stopAction()
+
+    @packet(0xC9)
     def handleUpdateTile(self, player, packet):
         pos = packet.position(player.position.instanceId)
         tile = getTile(pos)
@@ -1142,6 +1072,7 @@ class BaseProtocol(object):
         stream.uint8(0xFF)
         stream.send(player.client)
         
+    @packet(0xCA)
     def handleUpdateContainer(self, player, packet):
         openId = packet.uint8()
         
@@ -1152,6 +1083,7 @@ class BaseProtocol(object):
             pass
         player.openContainer(player.openContainers[openId], parent=parent, update=True)
         
+    @packet(0x7A)
     def handlePlayerBuy(self, player, packet):
         if not player.openTrade:
             return
@@ -1164,6 +1096,7 @@ class BaseProtocol(object):
         
         player.openTrade.buy(player, clientId, count, amount, ignoreCapacity, withBackpack)
         
+    @packet(0x7B)
     def handlePlayerSale(self, player, packet):
         if not player.openTrade:
             return
@@ -1175,6 +1108,15 @@ class BaseProtocol(object):
         
         player.openTrade.sell(player, clientId, count, amount, ignoreEquipped)
 
+    @packet(0x87)
+    def handleCloseContainer(self, player, packet):
+        player.closeContainerId(packet.uint8())
+
+    @packet(0x88)
+    def handleArrowUpContainer(self, player, packet):
+        player.arrowUpContainer(packet.uint8())
+
+    @packet(0x89)
     def handleWriteBack(self, player, packet):
         windowId = packet.uint32()
         text = packet.string()
@@ -1185,6 +1127,7 @@ class BaseProtocol(object):
         except:
             pass
         
+    @packet(0x8A)
     def handleWriteBackForHouses(self, player, packet):
         packet.pos += 1 # Skip doorId, no need in PyOT :)
         windowId = packet.uint32()
@@ -1196,6 +1139,7 @@ class BaseProtocol(object):
         except:
             pass
         
+    @packet(0xF9)
     def handleDialog(self, player, packet):
         windowId = packet.uint32()
         button = packet.uint8()
@@ -1206,16 +1150,24 @@ class BaseProtocol(object):
         except:
             pass
         
+    @packet(0xF0)
+    def handleOpenQuestLog(self, player, packet):
+        player.questLog()
+
+    @packet(0xF1)
     def handleQuestLine(self, player, packet):
         questId = packet.uint16()-1
         player.questLine(game.resource.getQuest(questId).name)
         
+    @packet(0xDC)
     def handleAddVip(self, player, packet):
         player.addVipByName(packet.string())
         
+    @packet(0xDD)
     def handleRemoveVip(self, player, packet):
         player.removeVip(packet.uint32())
         
+    @packet(0x7D)
     def handleRequestTrade(self, player, packet):
         position = packet.position(player.position.instanceId)
         itemId = packet.uint16()
@@ -1276,6 +1228,7 @@ class BaseProtocol(object):
             player.startedTrade = True
             player2.startedTrade = False
             
+    @packet(0x80)
     def handleCloseTrade(self, player, packet, c=False):
         player.closeTrade()
         if player.isTradingWith:
@@ -1299,12 +1252,14 @@ class BaseProtocol(object):
             player.isTradingWith = None
             player.tradeAccepted = False
             
+    @packet(0x7C)
     def handleCloseTradeNPC(self, player, packet):
         if player.openTrade:
             player.openTrade.farewell(player)
             player.closeTrade()
 
-            
+        
+    @packet(0x7E)    
     def handleLookAtInTrade(self, player, packet):
         counter = packet.uint8()
         stackpos = packet.uint8()
@@ -1328,7 +1283,8 @@ class BaseProtocol(object):
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description(player) + extra)
             game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
-            
+        
+    @packet(0x7F)    
     def handleAcceptTrade(self, player, packet):
         if player.isTradingWith.tradeAccepted:
             for item in player.isTradingWith.tradeItems:
@@ -1365,7 +1321,8 @@ class BaseProtocol(object):
         else:
             player.tradeAccepted = True
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
-            
+        
+    @packet(0x84)    
     @inlineCallbacks        
     def handleUseBattleWindow(self, player, packet):
         position = packet.position(player.position.instanceId)
@@ -1436,6 +1393,7 @@ class BaseProtocol(object):
                 game.scriptsystem.get('useWith').runSync(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
 
         
+    @packet(0xA3)
     def handleInviteToParty(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
         
@@ -1453,6 +1411,7 @@ class BaseProtocol(object):
         
         party.addInvite(creature)
         
+    @packet(0xA4)
     def handleJoinParty(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
 
@@ -1463,6 +1422,7 @@ class BaseProtocol(object):
         
         party.addMember(player)
         
+    @packet(0xA5)
     def handleRevokePartyInvite(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
         myParty = player.party()
@@ -1480,6 +1440,7 @@ class BaseProtocol(object):
         
         myParty.removeInvite(creature)        
         
+    @packet(0xA6)
     def handlePassPartyLeadership(self, player, packet):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
         
@@ -1494,6 +1455,11 @@ class BaseProtocol(object):
         
         party.changeLeader(creature)
         
+    @packet(0xA7)
+    def handleLeaveParty(self, player, packet):
+        player.leaveParty()
+
+    @packet(0xA8)
     def handleShareExperience(self, player, packet):
         # Grab the party
         party = player.party()
@@ -1502,6 +1468,7 @@ class BaseProtocol(object):
         
         party.toggleShareExperience()
         
+    @packet(0xE7)
     @inlineCallbacks
     def handleThanks(self, player, packet):
         messageId = packet.uint32()
@@ -1509,14 +1476,21 @@ class BaseProtocol(object):
         
         yield game.scriptsystem.get("thankYou").runDefer(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
 
+    @packet(0xE8)
     def handleDebugAssert(self, player, packet):
         logger.writeEntry("debugs", '\n'.join([packet.string(), packet.string(), packet.string(), packet.string()]), player.name(), "IP:%s" % player.getIP() )
         
         
-    def handlePing(self, player):
+    @packet(0x1D)
+    def handlePing(self, player, packet):
         with player.packet(0x1E) as stream:
             pass
     
+    @packet(0xF4)
+    def handleCloseMarket(self, player, packet):
+        player.closeMarket()
+
+    @packet(0xF5)
     def handleBrowseMarket(self, player, packet):
         if not player.market or not player.marketOpen: return
 
@@ -1533,6 +1507,7 @@ class BaseProtocol(object):
         else:
             player.marketOffers(id)
 
+    @packet(0xF6)
     def handleCreateMarketOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
 
@@ -1547,6 +1522,7 @@ class BaseProtocol(object):
 
         player.createMarketOffer(type, id, amount, price, anonymous)
 
+    @packet(0xF7)
     def handleCancelOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
 
@@ -1561,6 +1537,7 @@ class BaseProtocol(object):
             player.market.removeOffer(offer)
         player.marketOwnOffers()
         
+    @packet(0xF8)
     def handleAcceptOffer(self, player, packet):
         if not player.market or not player.marketOpen: return
 
