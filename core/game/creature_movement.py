@@ -30,7 +30,7 @@ class CreatureMovement(object):
                     raise game.errors.SolidTile()
 
         try:
-            oldStackpos = getTile(oldPosition).findCreatureStackpos(self)
+            oldStackpos = getTile(oldPosition).findStackpos(self)
             for spectator in getSpectators(oldPosition, ignore=(self,)):
                 stream = spectator.packet()
                 stream.removeTileItem(oldPosition, oldStackpos)
@@ -116,7 +116,7 @@ class CreatureMovement(object):
         for spectator in getSpectators(self.position):
             stream = spectator.packet(0x6B)
             stream.position(self.position)
-            stream.uint8(getTile(self.position).findCreatureStackpos(self))
+            stream.uint8(getTile(self.position).findStackpos(self))
             stream.uint16(0x63)
             stream.uint32(self.clientId())
             stream.uint8(direction)
@@ -216,16 +216,12 @@ class CreatureMovement(object):
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
-        ok = True
-        for n in oldTile.things:
-            if isinstance(n, Item) and n.itemId not in (870, 4532): ok = False
-
         val = game.scriptsystem.get("move").runSync(self)
         if val == False:
             return self.clearMove(direction, failback)
 
         try:
-            oldStackpos = oldTile.findCreatureStackpos(self)
+            oldStackpos = oldTile.findStackpos(self)
         except:
             return self.clearMove(direction, failback)
 
@@ -244,7 +240,7 @@ class CreatureMovement(object):
             self.lmessage("You are PZ blocked")
             return self.clearMove(direction, failback)
             
-        for thing in newTile.things:
+        for thing in newTile.getItems():
             if thing.solid:
                 if level and isinstance(thing, Creature):
                     continue
@@ -255,7 +251,7 @@ class CreatureMovement(object):
 
         _time = time.time()
         self.lastStep = _time
-        delay = self.stepDuration(newTile.getThing(0)) * (config.diagonalWalkCost if direction > 3 else 1)
+        delay = self.stepDuration(newTile.ground) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction = _time + delay
 
         newStackPos = newTile.placeCreature(self)

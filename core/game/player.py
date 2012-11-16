@@ -49,6 +49,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         data["manaspent"] = int(data["manaspent"])
         data["balance"] = int(data["balance"])
         
+        if not data['instanceId']:
+            data['instanceId'] = 0
         Creature.__init__(self, data, Position(int(data['posx']),
                                                int(data['posy']),
                                                int(data['posz']),

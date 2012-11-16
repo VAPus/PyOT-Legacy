@@ -180,7 +180,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def refreshConditions(self, streamX=None): pass
 
     def refresh(self):
-        stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+        stackpos = game.map.getTile(self.position).findStackpos(self)
         for player in self.knownBy:
             stream = player.packet()
             stream.removeTileItem(self.position, stackpos)
@@ -192,7 +192,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         self.alive = False
         try:
             tile = game.map.getTile(self.position)
-            stackpos = tile.findCreatureStackpos(self)
+            stackpos = tile.findStackpos(self)
             tile.removeCreature(self)
 
             for spectator in getSpectators(self.position):
@@ -312,7 +312,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
 
     def privRename(self, player, name):
         if player in self.knownBy:
-            stackpos = game.map.getTile(self.position).findCreatureStackpos(self)
+            stackpos = game.map.getTile(self.position).findStackpos(self)
             stream = player.packet()
             stream.removeTileItem(self.position, stackpos)
             originalName = self.data["name"]

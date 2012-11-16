@@ -27,7 +27,7 @@ class Node(object):
             self.tileTried = True
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                for thing in tile.things:
+                for thing in tile.getItems():
                     if isinstance(thing, game.creature.Creature):
                         if allowCreatures:
                             break
@@ -265,8 +265,8 @@ class AStar(object):
                     n.step = SOUTHEAST
                     _openNodes.add(n)            
             
-def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId=None):
-    cachePoint = (xStart, yStart, xGoal, yGoal, zStart)
+def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId):
+    cachePoint = (xStart, yStart, xGoal, yGoal, zStart, instanceId)
     if config.pathfinderCache:
         try:
             return RouteCache[cachePoint]
