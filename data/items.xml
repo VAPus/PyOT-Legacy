@@ -542,7 +542,7 @@
 	<item flags="ts" id="1932-1935" name="marble fountain"/>
 	<item flags="16785409" id="1936-1939" name="marble fountain"/>
 	<item flags="ts" id="1940" name="small basin"/>
-	<item flags="ts" id="7775" name="mill"/>
+	<item flags="ts" id="7775-7776" name="mill"/>
 	<item flags="16785409" id="1943-1946" name="mill"/>
 	<item flags="8204" id="1947" name="stairs">
 		<floorchange value="north"/>
@@ -868,8 +868,7 @@
 	<item flags="8201" id="2218-2221" name="sandstone"/>
 	<item flags="s" id="2222-2233" name="white stone railing"/>
 	<item flags="s" id="2234-2241" name="metal railing"/>
-	<item flags="8201" id="2302" name="big table"/>
-	<item flags="8201" id="2303-2313" name="big table"/>
+	<item flags="8201" id="2302-2313" name="big table"/>
 	<item flags="76" id="2314" name="big table"/>
 	<item flags="76" id="2315" name="square table"/>
 	<item flags="76" id="2316" name="small round table"/>
@@ -5444,16 +5443,11 @@
 		<fluidSource value="blood"/>
 	</item>
 
-	<item flags="m" id="426" name="dead minotaur">
+	<item flags="m" id="426-427" name="dead minotaur">
 		<weight value="60000"/>
 		<containerSize value="10"/>
 		<decayTo value="0"/>
 		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="427" name="dead minotaur">
-		<weight value="60000"/>
 		<corpseType value="blood"/>
 	</item>
 
@@ -6520,12 +6514,8 @@
 		<rotateTo value="2420"/>
 	</item>
 
-	<item flags="32844" id="2422" name="ivory chair">
+	<item flags="32844" id="2422-2424" name="ivory chair">
 		<rotateTo value="2424"/>
-	</item>
-
-	<item flags="32844" id="2423-2424" name="ivory chair">
-		<rotateTo value="2425"/>
 	</item>
 
 	<item flags="32844" id="2425" name="vory chair">
@@ -7208,8 +7198,6 @@
 		<fluidSource value="slime"/>
 	</item>
 
-	<item flags="m" id="426" name=""/>
-	<item flags="m" id="427" name=""/>
 	<item flags="m" id="451" name=""/>
 	<item flags="m" id="465-468" name=""/>
 	<item flags="m" id="471-474" name=""/>
@@ -7235,8 +7223,7 @@
 	<item flags="m" id="2555" name="sand"/>
 	<item flags="m" id="2557-2571" name=""/>
 	<item flags="m" id="2774" name=""/>
-	<item flags="m" id="3610-3611" name=""/>
-	<item flags="m" id="3611-3612" name=""/>
+	<item flags="m" id="3610-3612" name=""/>
 	<item id="4854-4862" name="red carpet"/>
 	<item flags="s" id="1770" name="mast"/>
 	<item flags="16785409" id="2117" name="lantern">
@@ -7249,7 +7236,7 @@
 	<item flags="t" id="4503-4506" name="rocks"/>
 	<item flags="8396800" id="4507-4510" name="rocks"/>
 	<item flags="t" id="4511-4514" name="rocks"/>
-	<item id="4515" name="grass" speed="150"/>
+	<item id="4515-4530" name="grass" speed="150"/>
 	<item flags="t" id="4531-4534" name="grass" speed="150"/>
 	<item flags="8396800" id="4535-4538" name="grass" speed="150"/>
 	<item flags="t" id="4539-4542" name="grass" speed="150"/>
@@ -7576,26 +7563,6 @@
 	</item>
 
 	<item flags="16785412" id="5022-5023" name="magic forcefield"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
-	<item flags="16785409" id="2117" name="wooden lamp"/>
 	<item id="5045" name="flat roof"/>
 	<item flags="65" id="5046" name="monkey statue">
 		<description value="The words 'See no evil' are engraved on it."/>
@@ -7963,9 +7930,6 @@
 	<item flags="16785409" id="5397" name="dry mangrove"/>
 	<item flags="16785409" id="5398" name="mangrove"/>
 	<item flags="ts" id="5399-5400" name="window"/>
-	<item flags="16785409" id="2117" name="bamboo lamp"/>
-	<item flags="16785409" id="2117" name="bamboo lamp"/>
-	<item flags="16785409" id="2117" name="bamboo lamp"/>
 	<item flags="16777216" id="9291" name="shallow water" speed="500"/>
 	<item flags="16777216" id="5405-5409" name="shallow water" speed="500"/>
 	<item flags="ts" id="5410-5411" name="stone"/>
@@ -10875,6 +10839,7 @@
 	<item flags="139267" id="6839" name="wooden wall"/>
 	<item flags="270339" id="6840" name="wooden wall"/>
 	<item flags="tb" id="6841" name="wooden pillar"/>
+	<item flags="tb" id="6842-6844" name="wooden wall"/>
 	<item flags="139267" id="6845" name="wooden wall"/>
 	<item flags="tb" id="6846" name="wooden wall"/>
 	<item flags="270339" id="6847" name="wooden wall"/>
@@ -11127,11 +11092,7 @@
 	</item>
 
 	<item flags="t" id="7060-7061" name="ice archway"/>
-	<item id="7062" name="rock" speed="150"/>
-	<item id="7063" name="rock" speed="150"/>
-	<item id="7064" name="rock" speed="150"/>
-	<item id="7065" name="rock" speed="150"/>
-	<item id="7066" name="rock" speed="150"/>
+	<item id="7062-7066" name="rock" speed="150"/>
 	<item flags="t" id="7067-7070" name="rock" speed="150"/>
 	<item flags="8396800" id="7071-7074" name="rock" speed="150"/>
 	<item flags="t" id="7075-7082" name="dark rock"/>
@@ -13824,11 +13785,7 @@
 		<weight value="10"/>
 	</item>
 
-	<item flags="ts" id="842-843" name="machine"/>
-	<item flags="ts" id="842" name="machine"/>
-	<item flags="ts" id="843-844" name="machine"/>
-	<item flags="ts" id="844-845" name="machine"/>
-	<item flags="ts" id="845" name="machine"/>
+	<item flags="ts" id="842-845" name="machine"/>
 	<item flags="s" id="850" name="globe"/>
 	<item id="851-854" name="picture"/>
 	<item flags="8204" id="855-856" name="stone stairs">
@@ -14022,8 +13979,6 @@
 		<duration value="1800"/>
 	</item>
 
-	<item flags="m" id="3610" name=""/>
-	<item flags="m" id="3612" name=""/>
 	<item flags="m" id="4393" name=""/>
 	<item flags="t" id="4411-4426" name="earth"/>
 	<item flags="b" id="4427" name="earth"/>
@@ -14181,7 +14136,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="b" id="100" name="void"/>
 	<item flags="4" id="369-370" name="trapdoor" speed="110">
 		<floorchange value="down"/>
 	</item>
@@ -14597,8 +14551,6 @@
 		<extradef value="1"/>
 	</item>
 
-	<item flags="ts" id="7775-7776" name="mill"/>
-	<item flags="ts" id="7776" name="mill"/>
 	<item flags="ts" id="7777-7784" name="brick wall"/>
 	<item flags="240" id="7785" name="bricklayers' kit">
 		<description value="Use it on destroyed brick walls to repair them."/>
@@ -14693,7 +14645,6 @@
 	</item>
 
 	<item flags="t" id="7869" name="open door"/>
-	<item flags="p" id="7369" name="golden trophy"/>
 	<item flags="p" id="7871" name="the famous Mina Losa painting">
 		<weight value="1000"/>
 	</item>
@@ -15762,40 +15713,6 @@
 		<weight value="5"/>
 	</item>
 
-	<item id="351-354" name="dirt" speed="120"/>
-	<item id="355" name="muddy floor" speed="200"/>
-	<item flags="b" id="101" name="earth"/>
-	<item flags="b" id="5711-5726" name="earth"/>
-	<item id="4515-4516" name="grass" speed="150"/>
-	<item id="4516-4517" name="grass" speed="150"/>
-	<item id="4517-4518" name="grass" speed="150"/>
-	<item id="4518-4519" name="grass" speed="150"/>
-	<item id="4519-4520" name="grass" speed="150"/>
-	<item id="4520-4521" name="grass" speed="150"/>
-	<item id="4521-4522" name="grass" speed="150"/>
-	<item id="4522-4523" name="grass" speed="150"/>
-	<item id="4523-4524" name="grass" speed="150"/>
-	<item id="4524-4525" name="grass" speed="150"/>
-	<item id="4525-4526" name="grass" speed="150"/>
-	<item id="4526-4527" name="grass" speed="150"/>
-	<item id="4527-4528" name="grass" speed="150"/>
-	<item id="4528-4529" name="grass" speed="150"/>
-	<item id="4529-4530" name="grass" speed="150"/>
-	<item id="4530" name="grass" speed="150"/>
-	<item id="231" name="sand" speed="160"/>
-	<item flags="s" id="248"/>
-	<item flags="tb" id="1283" name="framework wall"/>
-	<item flags="tb" id="6841" name="wooden wall"/>
-	<item flags="tb" id="6841" name="wooden wall"/>
-	<item flags="tb" id="6841" name="wooden wall"/>
-	<item flags="tb" id="6841" name="wooden wall"/>
-	<item flags="tb" id="6841-6844" name="wooden wall"/>
-	<item id="408" name="wooden floor"/>
-	<item id="7062" name="frozen mud" speed="150"/>
-	<item id="7063" name="frozen mud" speed="150"/>
-	<item id="7064" name="frozen mud" speed="150"/>
-	<item id="7065" name="frozen mud" speed="150"/>
-	<item id="7066" name="frozen mud" speed="150"/>
 	<item flags="p" id="906" name="present">
 		<weight value="1200"/>
 	</item>
@@ -17148,7 +17065,6 @@
 	<item flags="t" id="9116" name="ladder"/>
 	<item flags="16785409" id="9119" name="crucible"/>
 	<item id="9121" name="bellow"/>
-	<item id="9121" name="bellow"/>
 	<item flags="ts" id="9122" name="crucible"/>
 	<item flags="16785409" id="9123-9124" name="crucible"/>
 	<item id="9125-9126" name="lever">
@@ -17170,7 +17086,6 @@
 		<duration value="10"/>
 	</item>
 
-	<item flags="73" id="9132" name="frost cannon"/>
 	<item flags="p" id="9142" name="Grodrik's favourite axe">
 		<weight value="2500"/>
 	</item>
@@ -19780,8 +19695,7 @@
 	<item id="10965-10966" name="decorative spear's"/>
 	<item id="10967-10968" name="decorative shield"/>
 	<item flags="ts" id="10975-10976" name="statue"/>
-	<item flags="tb" id="10981-10982" name="corrupted wall"/>
-	<item flags="tb" id="10982-10983" name="corrupted wall"/>
+	<item flags="tb" id="10981-10983" name="corrupted wall"/>
 	<item flags="tb" id="10985-10990" name="corrupted wall"/>
 	<item flags="ts" id="10992" name="window"/>
 	<item flags="tb" id="10993-10996" name="corrupted wall"/>
@@ -19789,7 +19703,6 @@
 	<item flags="t" id="11003-11005" name="archway"/>
 	<item flags="tb" id="11006" name="stone wall"/>
 	<item flags="ts" id="11007-11008" name="pillar"/>
-	<item flags="32844" id="2422" name="chair"/>
 	<item flags="32780" id="11010-11013" name="chair"/>
 	<item flags="tb" id="11014-11015" name="stone wall"/>
 	<item flags="t" id="11016-11026" name="jade ornaments"/>
@@ -20022,7 +19935,6 @@
 	<item flags="16777216" id="11312" name="sign"/>
 	<item id="11313-11314" name="sign"/>
 	<item flags="16785408" id="11315" name="sign"/>
-	<item id="11318" name="sign"/>
 	<item flags="104" id="11328" name="marked crate">
 		<description value="This crate has been marked with lizard symbols. It is large enough for a grown person to fit in."/>
 		<weight value="8000"/>
@@ -20050,7 +19962,6 @@
 		<weight value="1000"/>
 	</item>
 
-	<item flags="8201" id="2302" name="table"/>
 	<item flags="16777217" id="11336" name="corrupted plantation"/>
 	<item flags="16785409" id="11337" name="corrupted plantation"/>
 	<item flags="112" id="11339" name="unworked sacred wood">
@@ -21153,9 +21064,7 @@
 	<item id="11965-11966" name="skull"/>
 	<item id="11967-11968" name="dark papyrus scroll"/>
 	<item flags="s" id="11969-11970" name="dark ornate tombstone"/>
-	<item flags="tb" id="11973-11974" name="stone"/>
-	<item flags="tb" id="11974-11976" name="stone"/>
-	<item flags="tb" id="11976-11981" name="stone"/>
+	<item flags="tb" id="11973-11981" name="stone"/>
 	<item flags="112" id="11982" name="dry piece of wood">
 		<description value="Use it on the cauldron slide to keep the fire burning."/>
 		<weight value="205"/>
@@ -22657,16 +22566,14 @@
 	<item flags="270339" id="13085-13086" name="moist wall"/>
 	<item flags="tb" id="13087" name="moist wall"/>
 	<item flags="tb" id="13089-13094" name="moist wall"/>
-	<item flags="tb" id="13094" name="moist wall"/>
 	<item flags="270339" id="13095" name="moist wall"/>
-	<item flags="tb" id="13096" name="moist wall"/>
+	<item flags="tb" id="13096-13103" name="moist wall"/>
 	<item flags="s" id="13104-13105" name="moist wall"/>
 	<item flags="tb" id="13106-13108" name="moist wall"/>
 	<item flags="139267" id="13109-13110" name="moist wall"/>
 	<item flags="270339" id="13111" name="moist wall"/>
 	<item flags="139267" id="13112-13114" name="moist wall"/>
 	<item flags="270339" id="13115-13118" name="moist wall"/>
-	<item flags="tb" id="13096-13103" name="moist wall"/>
 	<item flags="tb" id="13119-13121" name="moist wall"/>
 	<item flags="ts" id="13122-13124" name="stone pillar"/>
 	<item flags="t" id="13129-13134" name="archway"/>
@@ -23859,15 +23766,7 @@
 	</item>
 
 	<item flags="ts" id="15995-16006" name="window"/>
-	<item flags="tb" id="16015-16018" name="stone wall"/>
-	<item flags="tb" id="16018-16019" name="stone wall"/>
-	<item flags="tb" id="16019-16021" name="stone wall"/>
-	<item flags="tb" id="16021-16023" name="stone wall"/>
-	<item flags="tb" id="16034-16037" name="stone wall"/>
-	<item flags="tb" id="16025-16033" name="stone wall"/>
-	<item flags="tb" id="16023-16024" name="stone wall"/>
-	<item flags="tb" id="16024-16025" name="stone wall"/>
-	<item flags="tb" id="16033-16034" name="stone wall"/>
+	<item flags="tb" id="16015-16037" name="stone wall"/>
 	<item flags="tb" id="16042-16049" name="stone wall"/>
 	<item flags="ts" id="16050-16061" name="window"/>
 	<item id="16062" name="dead lost berserker">

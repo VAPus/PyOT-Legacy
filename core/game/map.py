@@ -411,7 +411,10 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
     }
 """
 
-IS_PYPY = sys.subversion[0] == 'PyPy'
+l_unpack = struct.Struct("<HB").unpack
+long_unpack = struct.Struct("<i").unpack
+creature_unpack = struct.Struct("<bbH").unpack
+spawn_unpack = struct.Struct("<HHBBB").unpack
 
 def loadSectorMap(code, instanceId, baseX, baseY):
     global dummyItems, dummyTiles
@@ -423,25 +426,11 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     skip_remaining = False
     houseId = 0
     housePosition = None
-    yRowGotItem = False
     
-    # Avoid 1k calls to making the format :)
-    # Pypy need a special treatment to avoid this.
-    
-    if IS_PYPY:
-        ll_unpack = struct.unpack
-        l_unpack = lambda data: ll_unpack("<HB", data)
-        long_unpack = lambda data: ll_unpack("<i", data)
-        spawn_unpack = lambda data: ll_unpack("<HHBBB", data)
-        creature_unpack  = lambda data: ll_unpack("<bbH", data)
-    else:
-        l_unpack = struct.Struct("<HB").unpack
-        long_unpack = struct.Struct("<i").unpack
-        creature_unpack = struct.Struct("<bbH").unpack
-        spawn_unpack = struct.Struct("<HHBBB").unpack
-    
+
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
+
     l_Item = game.item.Item
     l_Tile = Tile
     l_HouseTile = HouseTile
@@ -453,10 +442,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_getMonster = game.monster.getMonster
     
     # This is the Z loop (floor), we read the first byte
-    while True:
-        if pos >= codeLength:
-           return thisSectorMap
-           
+    while pos < codeLength:
         # First byte where we're at.
         level = ord(code[pos])
         pos += 1
@@ -491,17 +477,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         
         # Loop over the mapInfo.sectorSize[0] x rows
         for xr in xrange(mapInfo.sectorSize[0]):
-            # The real X position
-            xPosition = xr + baseX
 
             xSum = (xr << 10) + zSum
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
             while yr < mapInfo.sectorSize[1]:
-                # The real Y position
-                yPosition = yr + baseY
-                
                 # The items array and the flags for the Tile.
                 items = []
                 flags = 0
@@ -527,7 +508,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
-                            housePosition = (xPosition, yPosition, level)
+                            housePosition = (xr + baseX, yr + baseY, level)
                             pos += 5
                             
                         elif attrNr:
@@ -602,12 +583,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     else:
                         pos += 4
                         if attrNr:
-                            #for x in xrange(attrNr):
-                            #    l_ywork_append(None)
                             yr += attrNr -1
-                        #else:
-                        #    #l_ywork_append(None)
-                        #yRowGotItem = True
                         
                     
                         
@@ -683,23 +659,17 @@ def loadSectorMap(code, instanceId, baseX, baseY):
 
                     else:
                         thisSectorMap[xSum + yr] = l_Tile(ground, items, flags)
-
-                #elif not yRowGotItem:
-                #    pass #l_ywork_append(None)
-                #    #yRowGotItem = False
                 yr += 1
 
                 if skip:
                     skip = False
                     break
-            #if ywork:                
-            #    areaZ[xr] = ywork #l_xlevel_append(ywork)
+
             if skip_remaining:
                 skip_remaining = False
                 break
                 
-        #thisSectorMap[level] = xlevel
-           
+    return thisSectorMap           
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
     sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
@@ -707,13 +677,13 @@ def load(sectorX, sectorY, instanceId):
     if sectorSum in knownMap:
         return False
           
-    print "Loading %d.%d.sec" % (sectorX, sectorY)
     t = time.time()
     
     # Attempt to load a sector file
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
-            knownMap[sectorSum] = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
+            map = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
+            knownMap[sectorSum] = map
     except IOError:
         # No? Mark it as empty
         knownMap[sectorSum] = None
@@ -724,7 +694,7 @@ def load(sectorX, sectorY, instanceId):
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=knownMap[sectorSum], instanceId=instanceId)
+    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=map, instanceId=instanceId)
     
     return True
 

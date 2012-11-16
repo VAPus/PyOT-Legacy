@@ -348,8 +348,8 @@ if __name__ == "__main__":
             item.set("id", str(id))
             if id in ids:
                 print "WARNING: ItemId %d got two entries!" % (id)
-                if not len(item) and not item.get("flags"):
-                    print "Item got no special ids"
+                if not len(item):
+                    root.remove(item)
             ids.add(id)
 
     for item in items.values():

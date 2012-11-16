@@ -184,7 +184,7 @@ def loader(timer):
                 x, y, junk = fileSec.split('/')[-1].split('.')
                 game.map.load(int(x),int(y), 0)
             print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
-            
+        
         # Charge rent?
         def _charge(house):
             callLater(config.chargeRentEvery, game.engine.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
