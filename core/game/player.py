@@ -2096,12 +2096,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if result:
             stream = self.packet()
             for player in result:
-                online = bool(player[1] in allPlayers and allPlayers[player[1]].client)
-                stream.vip(player[0], player[1], online)
+                online = bool(player['name'] in allPlayers and allPlayers[player['name']].client)
+                stream.vip(player['id'], player['name'], online)
                 if online:
-                    pkg = allPlayers[player[1]].packet()
+                    pkg = allPlayers[player['name']].packet()
                     pkg.vipLogin(self.data["id"])
-                    pkg.send(allPlayers[player[1]].client)
+                    pkg.send(allPlayers[player['name']].client)
             stream.send(self.client)
 
     def addVip(self, playerId):

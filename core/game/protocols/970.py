@@ -15,6 +15,14 @@ class Packet(base.BasePacket):
     def magicEffect(self, pos, type):
         self.data += pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type)
    
+    def vip(self, playerId, playerName, online=False):
+        self.uint8(0xD2)
+        self.uint32(playerId)
+        self.string(playerName)
+        self.string("") # TODO, description
+        self.uint32(0) # TODO, icon
+        self.uint8(1) # TODO notify
+        self.uint8(online)
         
 class Protocol(base.BaseProtocol):
     Packet = Packet
