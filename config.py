@@ -19,9 +19,9 @@ gameMaxConnections = 100
 
 # SQL:
 sqlModule = "MySQLdb" # Can be "MySQLdb" (Mysql), "oursql" (a more Modern implant of MySQLdb, tho, slower), "pymysql" (Mysql using ctypes, slower on CPython), mysql-ctypes, or "sqlite3"
-sqlUsername = "root"
-sqlPassword = ""
-sqlDatabase = "ot" # Either a DB name, or file for sqlite3
+sqlUsername = "pyot"
+sqlPassword = "pyot"
+sqlDatabase = "pyot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 sqlDebug = False # Send debug messages to the console
 
@@ -267,10 +267,10 @@ maxLengthOfSay = 255 # maximum length of what the client might say
 debugItems = True # Print extra data about items
 
 checkAdler32 = False # Disable this might speed things up a bit
-loadEntierMap = False # Load all the sectors, useful for debug and benchmarking
+loadEntierMap = True # Load all the sectors, useful for debug and benchmarking
 
 # Disabled for now, breaks house support
-stackTiles = False # Sacrefice loading time for the sake of memory usage
+stackTiles = True # Sacrefice loading time for the sake of memory usage
 stackItems = True
 
 whisperRange = (1, 1)

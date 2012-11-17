@@ -33,11 +33,11 @@ class Item(object):
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         try:
-            items[itemId]
+            attr = items[itemId]
         except KeyError:
-            raise
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
+            attr = items[100]
             
         self.itemId = itemId
 
@@ -48,7 +48,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if items[itemId]['flags'] & 128:
+        if attr['flags'] & 128:
             if not count or count < 0:
                 count = 1
             elif not isinstance(count, int):
@@ -58,7 +58,7 @@ class Item(object):
             
         # Extend items such as containers
         try:
-            self.container = deque(maxlen=items[itemId]["containerSize"])
+            self.container = deque(maxlen=attr["containerSize"])
         except KeyError:
             pass
 

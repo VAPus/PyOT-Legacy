@@ -550,7 +550,7 @@ def saveAll(force=False):
                                 lastItem = item
                     items[tile.position] = _items
 
-                if items != house.data["items"]  or force:
+                if items != house.data["items"]:
                     house.data["items"] = items
                     house.save = True # Force save
                 if house.save:
