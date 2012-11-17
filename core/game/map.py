@@ -598,11 +598,14 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         break
                     # otherwise it should be ",", we don't need to verify this.
                 if ground:
+                    ySum = xSum + yr
+
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
                     elif not config.protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
                         flags -= TILEFLAGS_PROTECTIONZONE
+
                     if houseId:
                         # Fix flags if necessary, TODO: Move this to map maker!
                         if config.protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
@@ -636,7 +639,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     
                         houseId = 0
                         housePosition = None
-                        thisSectorMap[xSum + yr] = tile
+                        thisSectorMap[ySum] = tile
 
                     elif config.stackTiles:
                         ok = ground.solid
@@ -646,19 +649,19 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     ok = True
                                     break
                         if ok:
-                            hash = tuple(items) if items else ground # There must be a faster way...
+                            hash = ground, tuple(items) if items else 0
                             try:
-                                thisSectorMap[xSum + yr] = dummyTiles[hash]
+                                thisSectorMap[ySum] = dummyTiles[hash]
                             except:
                                 tile = l_Tile(ground, items, flags)
                                 dummyTiles[hash] = tile
-                                thisSectorMap[xSum + yr] = tile
+                                thisSectorMap[ySum] = tile
 
                         else:
-                            thisSectorMap[xSum + yr] = l_Tile(ground, items, flags)
+                            thisSectorMap[ySum] = l_Tile(ground, items, flags)
 
                     else:
-                        thisSectorMap[xSum + yr] = l_Tile(ground, items, flags)
+                        thisSectorMap[ySum] = l_Tile(ground, items, flags)
                 yr += 1
 
                 if skip:
