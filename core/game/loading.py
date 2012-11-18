@@ -181,7 +181,7 @@ def loader(timer):
             begin = time.time()
             files = glob.glob('data/map/*.sec')
             for fileSec in files:
-                x, y, junk = fileSec.split(os.pathsep)[-1].split('.')
+                x, y, junk = fileSec.split(os.sep)[-1].split('.')
                 game.map.load(int(x),int(y), 0)
             print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
         
