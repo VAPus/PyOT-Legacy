@@ -1,0 +1,11 @@
+enslaved_dwarf = game.monster.genMonster("Enslaved Dwarf", (494, 17407), "an enslaved dwarf")#mostly unkniown
+enslaved_dwarf.setHealth(4500, healthmax=4500)
+enslaved_dwarf.bloodType(color="blood")
+enslaved_dwarf.setDefense(armor=35, fire=0, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
+enslaved_dwarf.setExperience(3100)
+enslaved_dwarf.setSpeed(400)
+enslaved_dwarf.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+enslaved_dwarf.walkAround(energy=1, fire=0, poison=0)
+enslaved_dwarf.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+enslaved_dwarf.voices("Bark!")
+enslaved_dwarf.regMelee(400)
