@@ -542,8 +542,9 @@ class Item(object):
             pass
         return newItem
         
-    def transform(self, toId):
-        position = self.verifyPosition()
+    def transform(self, toId, position=None):
+        if not position:
+            position = self.verifyPosition()
 
         if not position:
             raise Exception("BUG: Item position cannot be verified!")
@@ -575,8 +576,10 @@ class Item(object):
             self.itemId = toId
             self.refresh(position)
 
-    def refresh(self):
-        position = self.verifyPosition()
+    def refresh(self, position=None):
+        if not position:
+            position = self.verifyPosition()
+
         creature = self.creature
 
 
@@ -750,8 +753,9 @@ class Item(object):
         else:
             moveItem(self.creature, self.position, newPosition)
         
-    def remove(self):
-        position = self.verifyPosition()
+    def remove(self, position=None):
+        if not position:
+            position = self.verifyPosition()
         print "Removing", position
         if not position:
             raise Exception("BUG: Item position cannot be verified! %s")
