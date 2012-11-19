@@ -388,6 +388,22 @@ class Map(object):
                         if count:
                             output = output[:len(output)-count]
                             
+                        # A second awalk to optimize (\x00\x00\x00|\x00\x00\x00| -> \x00\x00\0x02|)
+                        _output = []
+                        count = 0
+                        for code in output:
+                            if code[0:2] == "\x00\x00" and code[3] == '|': count += 1
+                            else:
+                                if count > 1:
+                                    _output.append("\x00\x00" + chr(count) + '|')
+                                elif count == 1:
+                                    _output.append("\x00\x00\x00|")
+                                count = 0
+                                _output.append(code)
+                        if count == 1:
+                            _output.append("\x00\x00\x00|")
+                        
+                        output = _output
                         if not output:
                             return None
                             

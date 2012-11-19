@@ -1,14 +1,21 @@
 # XXX: Loop over items instead and generate these id lists based on attributes.
 
-stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433
+#stairs = 410, 429, 411, 432, 4834, 1385, 1396, 4837, 4836, 3687, 3219, 3138, 8281, 5260, 5259, 9573, 9574, 3688, 5258, 9846, 3220, 459, 423, 4835, 8282, 8283, 433
 
-ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
-rampsDown = 8561, 6920, 6924, 8565, 6128, 479, 6921, 8563, 6917, 8559, 6127, 8566, 6923, 6919, 8562, 8377, 8560, 475, 8564, 6922, 480, 6918, 476, 429
+#ramps = 1390, 1388, 1394, 1392, 1398, 1404, 3685, 6915, 8378, 6911, 1400, 8374, 3681, 1402, 3683, 6913, 8376, 3679, 6909, 7542, 8372, 7925, 7924
+#rampsDown = 8561, 6920, 6924, 8565, 6128, 479, 6921, 8563, 6917, 8559, 6127, 8566, 6923, 6919, 8562, 8377, 8560, 475, 8564, 6922, 480, 6918, 476, 429
 
-laddersUp = 1386, 3678, 5543, 8599
-laddersDown = 369, 370, 408, 409, 427, 428, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606, 8281, 410
-trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972, 3137, 5731, 6173, 6174,
-sewers=430, 8580
+laddersUp = 1948
+#laddersDown = 369, 370, 408, 409, 427, 428, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8284, 8285, 8286, 8595, 8596, 9606, 8281, 410
+#trapsAndHoles = 462, 9625, 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 8250, 8251, 8252, 8253, 8254, 8255, 8256, 8323, 8380, 8567, 8585, 8972, 3137, 5731, 6173, 6174,
+sewers=435, 7750
+
+stairs = set()
+ladders = set()
+
+for itemId in game.item.items:
+    if 'floorchange' in game.item.items[itemId]:
+        stairs.add(itemId)
 
 # Stairs
 @register("walkOn", stairs)
@@ -17,6 +24,7 @@ def floorchange(creature, thing, position, **k):
     if not config.monsterStairHops and not creature.isPlayer():
         return
 
+    print thing, thing.floorchange
     # Note this is the correct direction
     if thing.floorchange == "north":
         creature.move(NORTH, level=-1)
@@ -35,9 +43,13 @@ def floorchange(creature, thing, position, **k):
         destPos = position.copy()
         destPos.z += 1
         destThing = destPos.getTile().getThing(1)
-
+        
+        if destThing.name == "ladder":
+            # Hack.
+            creature.move(SOUTH, level=1)
+            creature.move(NORTH)
         # Note: It's the reverse direction
-        if destThing.floorchange == "north":
+        elif destThing.floorchange == "north":
             creature.move(SOUTH, level=1)
             
         elif destThing.floorchange == "south":
@@ -50,7 +62,7 @@ def floorchange(creature, thing, position, **k):
             creature.move(WEST, level=1)
 
 @register('useWith', stairs)
-def itemFloorChange(thing, position, onPosition, onThing, **k):
+def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
     newPos = position.copy()
     if thing.floorchange == "north":
         newPos.y -= 1
@@ -110,69 +122,10 @@ def floorup(creature, thing, position, **k):
         except:
             creature.notPossible()"""
 
-# Ladders down
-# Trapdoors, holes etc
-@register("walkOn", laddersDown+trapsAndHoles)
-def floordown(creature, thing, position, **k):
-    if creature.inRange(position, 1, 1, 0):
-        newPos = position.copy()
-        newPos.z += 1
-        try:
-            creature.teleport(newPos)
-        except:
-            creature.notPossible()
             
-# Ramps
-@register("walkOn", ramps)            
-def teleportOrWalkDirection(creature, thing, position, **k):
-    # Check if we can do this
-    if not config.monsterStairHops and not creature.isPlayer():
-        return
-
-    if thing.floorchange == "north":
-        creature.move(NORTH, level=-1)
-        
-    elif thing.floorchange == "south":
-        creature.move(SOUTH, level=-1)
-        
-    elif thing.floorchange == "east":
-        creature.move(EAST, level=-1)
-        
-    elif thing.floorchange == "west":
-        creature.move(WEST, level=-1)
-
-@register("walkOn", rampsDown)
-def teleportOrWalkDirectionDown(creature, thing, position, **k):
-    # Check if we can do this
-    if not config.monsterStairHops and not creature.isPlayer():
-        return
-    
-    # Change the position to match the floorchange. Based on the bottom item if any.
-    pos = position.copy()
-    pos.z += 1
-    destTile = pos.getTile()
-    try:
-        destThing = destTile.getThing(1)
-        
-        # Note: It's the reverse direction
-        if destThing.floorchange == "north":
-            creature.move(SOUTH, level=1)
-            
-        elif destThing.floorchange == "south":
-            creature.move(NORTH, level=1)
-            
-        elif destThing.floorchange == "west":
-            creature.move(EAST, level=1)
-            
-        elif destThing.floorchange == "east":
-            creature.move(WEST, level=1)
-            
-    except:
-        raise
-        pass
-    
+# Ramps    
 if not config.monsterStairHops:
-    @register("preWalkOn", stairs+ramps+rampsDown+trapsAndHoles+laddersDown+laddersUp)
+    @register("preWalkOn", stairs)
     def verifyRampWalk(creature, **k):
         # Check if we can walk on ramps
         if not creature.isPlayer():
