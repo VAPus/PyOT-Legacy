@@ -849,7 +849,7 @@ def loadItems():
     global items
     global idByNameCache
 
-    print "> > Loading items...\n"
+    print "> > Loading items..."
     
     if config.itemCache:
         try:

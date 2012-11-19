@@ -131,113 +131,34 @@ def loader(timer):
     sql.conn.runOperation("UPDATE players SET online = 0")
     print "%40s\n" % _txtColor("\t[DONE]", "blue")
     
-    @inlineCallbacks
-    def sync(timer):
-        globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")
-        groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
-        houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")
+   
+    globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")
+    groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
+    houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")
 
-        print "> > Loading global data...",
-        for x in (yield globalData):
-            if x['type'] == 'json':
-                game.engine.globalStorage[x['key']] = otjson.loads(x['data'])
-            elif x['type'] == 'pickle':
-                game.engine.globalStorage[x['key']] = pickle.loads(x['data'])
-            else:
-                game.engine.globalStorage[x['key']] = x['data']
-        print "%50s\n" % _txtColor("\t[DONE]", "blue")
-        
-        print "> > Loading groups...",
-        for x in (yield groupData):
-            game.engine.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
-        
-        print "> > Loading guilds...",
-        game.guild.load()
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
-        
-        print "> > Loading bans...",
-        game.ban.refresh()
-        print "%60s\n" % _txtColor("\t[DONE]", "blue")
-
-        print "> > Loading market...",
-        game.market.load()
-        print "%55s\n" % _txtColor("\t[DONE]", "blue")
-        
-        print "> > Loading house data...",
-        for x in (yield houseData):
-            game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
-        print "%55s\n" % _txtColor("\t[DONE]", "blue")
-        
-        # Load scripts
-        print "> > Loading scripts...",
-        game.scriptsystem.importer()
-        game.scriptsystem.get("startup").runSync()
-        print "%55s\n" % _txtColor("\t[DONE]", "blue")
-        
-        # Load map (if configurated to do so)
-        if config.loadEntierMap:
-            print "> > Loading the entier map...",
-            begin = time.time()
-            files = glob.glob('data/map/*.sec')
-            for fileSec in files:
-                x, y, junk = fileSec.split(os.sep)[-1].split('.')
-                game.map.load(int(x),int(y), 0)
-            print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
-        
-        # Charge rent?
-        def _charge(house):
-            callLater(config.chargeRentEvery, game.engine.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
-            
-        for house in game.house.houseData.values():
-            if not house.rent or not house.owner: continue
-            
-            if house.paid < (timer - config.chargeRentEvery):
-                game.scriptsystem.get("chargeRent").runSync(None, house=house)
-                _charge(house)
-            else:
-                callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)
-        
-        
-        # Now we're online :)
-        print _txtColor("Message of the Day: %s" % config.motd, "red")
-        log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
-        
-        game.engine.IS_ONLINE = True
-        
-        print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")
-        
-    
-    # Loading languages
-    if config.enableTranslations:
-        print "> > Loading languages... ",
-        if language.LANGUAGES:
-            print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
-        else:
-            print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
-            
     # Globalize certain things
     print "> > Globalize data...",
-    __builtin__.enum = sys.modules["game.enum"]
-    
-    for i in dir(sys.modules["game.enum"]):
+    enum = sys.modules["game.enum"]
+    __builtin__.enum = enum
+
+    for i in dir(enum):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(sys.modules["game.enum"], i))
+            setattr(__builtin__, i, getattr(enum, i))
 
     for i in dir(sys.modules["game.errors"]):
         if not "__" in i:
             setattr(__builtin__, i, getattr(sys.modules["game.errors"], i))
-            
+
     for i in sys.modules["game.engine"].globalize:
         setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
-        
-    print "%55s\n" % _txtColor("\t[DONE]", "blue")    
-    
+
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+
     __builtin__.sql = sql.conn
     __builtin__.config = config
-    
+
     import game.pathfinder
-    
+
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.defer = defer
@@ -268,7 +189,7 @@ def loader(timer):
     __builtin__.getGuildById = game.guild.getGuildById
     __builtin__.getGuildByName = game.guild.getGuildByName
     __builtin__.logger = core.logger
-    
+
     # Resources
     __builtin__.genMonster = game.monster.genMonster
     __builtin__.genNPC = game.npc.genNPC
@@ -276,32 +197,32 @@ def loader(timer):
     __builtin__.genOutfit = game.resource.genOutfit
     __builtin__.genMount = game.resource.genMount
     __builtin__.regVocation = game.vocation.regVocation
-    
+
     # Grab them
     __builtin__.getNPC = game.npc.getNPC
     __builtin__.getMonster = game.monster.getMonster
-    
+
     # Used alot in monster and npcs
     __builtin__.chance = game.monster.chance
-    
+
     # We use this in the import system
     __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
-    
+
     # Access
     __builtin__.access = game.scriptsystem.access
-    
+
     # Pathfinder
     __builtin__.pathfinder = game.pathfinder
-    
+
     # Deathlist
     __builtin__.deathlist = game.deathlist
-    
+
     # Bans
     __builtin__.ipIsBanned = game.ban.ipIsBanned
     __builtin__.playerIsBanned = game.ban.playerIsBanned
     __builtin__.accountIsBanned = game.ban.accountIsBanned
     __builtin__.addBan = game.ban.addBan
-    
+
     # Market
     __builtin__.getMarket = game.market.getMarket
     __builtin__.newMarket = game.market.newMarket
@@ -310,9 +231,9 @@ def loader(timer):
     __builtin__.Creature = game.creature.Creature
     __builtin__.Player = game.player.Player
     __builtin__.Monster = game.monster.Monster
-    
+
     class Globalizer(object):
-        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat', 'deathlist', 'ban', 'market')
+        __slots__ = ()
         monster = game.monster
         npc = game.npc
         creature = game.creature
@@ -332,12 +253,79 @@ def loader(timer):
         deathlist = game.deathlist
         ban = game.ban
         engine = sys.modules["game.engine"] # For consistancy
-        market = game.market        
+        market = game.market
+
+    __builtin__.game = Globalizer()
+
+    print "> > Loading global data...",
+    for x in (yield globalData):
+        if x['type'] == 'json':
+            game.engine.globalStorage[x['key']] = otjson.loads(x['data'])
+        elif x['type'] == 'pickle':
+            game.engine.globalStorage[x['key']] = pickle.loads(x['data'])
+        else:
+            game.engine.globalStorage[x['key']] = x['data']
+    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+
+    print "> > Loading groups...",
+    for x in (yield groupData):
+        game.engine.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
+    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+
+    print "> > Loading guilds...",
+    game.guild.load()
+    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
+    print "> > Loading bans...",
+    game.ban.refresh()
+    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+
+    print "> > Loading market...",
+    game.market.load()
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+        
+    print "> > Loading house data...",
+    for x in (yield houseData):
+        game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+        
+    # Load scripts
+    print "> > Loading scripts...",
+    game.scriptsystem.importer()
+    game.scriptsystem.get("startup").runSync()
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+        
+    # Load map (if configurated to do so)
+    if config.loadEntierMap:
+        print "> > Loading the entier map...",
+        begin = time.time()
+        files = glob.glob('data/map/*.sec')
+        for fileSec in files:
+            x, y, junk = fileSec.split(os.sep)[-1].split('.')
+            game.map.load(int(x),int(y), 0)
+        print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
+        
+    # Charge rent?
+    def _charge(house):
+            callLater(config.chargeRentEvery, game.engine.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
             
-    __builtin__.game = Globalizer
+    for house in game.house.houseData.values():
+        if not house.rent or not house.owner: continue
+            
+        if house.paid < (timer - config.chargeRentEvery):
+            game.scriptsystem.get("chargeRent").runSync(None, house=house)
+            _charge(house)
+        else:
+            callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)    
     
-    # TODO: Inline/kill "sync"
-    d = sync(timer)
+    # Loading languages
+    if config.enableTranslations:
+        print "> > Loading languages... ",
+        if language.LANGUAGES:
+            print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
+        else:
+            print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
+                
     
     # Load protocols
     print "> > Loading game protocols...",
@@ -367,4 +355,10 @@ def loader(timer):
     
         reactor.callLater(60, game.engine.looper, pathfinder.clear, 60)
 
-    yield d
+    # Now we're online :)
+    print _txtColor("Message of the Day: %s" % config.motd, "red")
+    log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
+
+    game.engine.IS_ONLINE = True
+
+    print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")

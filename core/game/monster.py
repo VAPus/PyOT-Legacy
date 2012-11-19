@@ -508,11 +508,10 @@ class MonsterBase(object):
 
             if place and stackpos and stackpos < 10:
                 for player in engine.getPlayers(position):
-                    if player.client and player.canSee(monster.position):
-                        stream = player.packet()
-                        stream.addTileCreature(position, stackpos, monster, player)
+                    stream = player.packet()
+                    stream.addTileCreature(position, stackpos, monster, player)
                             
-                        stream.send(player.client) 
+                    stream.send(player.client) 
                         
             self.brain.beginThink(monster) # begin the heavy thought process!
             

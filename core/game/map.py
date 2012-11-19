@@ -181,7 +181,7 @@ class Tile(object):
         assert isinstance(creature, Creature)
         if not self.things:
             self.things = [creature]
-            return 0
+            return 1
 
         pos = len(self.things) - self.getBottomItemCount()
         
@@ -201,7 +201,7 @@ class Tile(object):
         assert isinstance(item, Item)
         if not self.things:
             self.things = [item]
-            return 0
+            return 1
 
         if item.ontop:
             pos = self.getTopItemCount()
@@ -218,7 +218,7 @@ class Tile(object):
     def placeItemEnd(self, item):
         if not self.things:
             self.things = [item]
-            return 0
+            return 1
 
         self.things.append(item)
         return len(self.things)
@@ -363,7 +363,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
             
         {
             ; -> go to next tile
-            | -> skip the remaining y tiles
+            | -> skip the remaining y tiles (if itemId = 0, and attrNr, skip attrNr x tiles)
             ! -> skip the remaining x and y tiles
             , -> more items
         }
@@ -508,7 +508,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
-                            housePosition = (xr + baseX, yr + baseY, level)
+                            housePosition = ((xr + baseX) >> 20) + ((yr + baseY) >> 4) + level
                             pos += 5
                             
                         elif attrNr:
@@ -591,6 +591,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     if v == ';': break
                     elif v == '|':
                         skip = True
+                        if attrNr:
+                            xr += attrNr -1
                         break
                     elif v == '!':
                         skip = True
