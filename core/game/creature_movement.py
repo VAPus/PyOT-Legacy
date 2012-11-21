@@ -124,6 +124,19 @@ class CreatureMovement(object):
                 stream.uint8(self.solid)
             stream.send(spectator)
 
+    def reverseDirection(self):
+        """ Used by pushing """
+
+        direction = self.direction
+        if direction == NORTH:
+            return SOUTH
+        elif direction == SOUTH:
+            return NORTH
+        elif direction == EAST:
+            return WEST
+        elif direction == WEST:
+            return EAST
+
     def directionToPosition(self, position, diagonal=False):
         direction = None
         if diagonal:
@@ -164,8 +177,8 @@ class CreatureMovement(object):
         if failback: reactor.callLater(0, failback)
         return False
         
-    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None):
-        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None, push=True):
+        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback, push):
             return
 
         if not self.data["health"] or not self.canMove or not self.speed:
@@ -206,7 +219,6 @@ class CreatureMovement(object):
         # New Tile
         newTile = getTile(position)
         
-
         if not newTile:
             return self.clearMove(direction, failback)
         
@@ -240,14 +252,30 @@ class CreatureMovement(object):
             self.lmessage("You are PZ blocked")
             return self.clearMove(direction, failback)
             
-        for thing in newTile.getItems():
-            if thing.solid:
-                if level and isinstance(thing, Creature):
-                    continue
+        if newTile.ground.solid:
+            self.notPossible()
+            return self.clearMove(direction, failback)
 
-                #self.turn(direction) # Fix me?
-                self.notPossible()
-                return self.clearMove(direction, failback)
+        if newTile.things:
+            for thing in newTile.things:
+                if thing.solid:
+                    if level and isinstance(thing, Creature):
+                        continue
+
+                    # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
+                    if push and isinstance(thing, Monster) and self.isMonster() and self.base.pushCreatures and thing.base.pushable:
+                        # Push stuff here.
+                        if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
+                            # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
+                            break
+                        elif self.base.hostile and thing.isAttackable():
+                            # We can attack the creature.
+                            self.target = thing
+                            self.targetMode = 1
+
+                    #self.turn(direction) # Fix me?
+                    self.notPossible()
+                    return self.clearMove(direction, failback)
 
         _time = time.time()
         self.lastStep = _time
