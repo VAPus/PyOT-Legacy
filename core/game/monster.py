@@ -371,16 +371,30 @@ class Monster(Creature):
         if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
             
-        for item in tile.getItems():
-            if self.base.ignoreFire and item.itemId in FIRE_FIELDS:
-                continue
-            elif self.base.ignorePoison and item.itemId in POISON_FIELDS:
-                continue
-            elif self.base.ignoreEnergy and item.itemId in ENERGY_FIELDS:
-                continue
-            elif item.blockpath:
-                return False
-                
+        if not tile.things:
+            return True
+
+        for thing in tile.things:
+            if isinstance(thing, Item):
+                field = thing.field
+                if self.base.ignoreFire and field == 'fire':
+                    continue
+                elif self.base.ignorePoison and field == 'poison':
+                    continue
+                elif self.base.ignoreEnergy and field == 'energy':
+                    continue
+                elif field:
+                    return False
+                elif thing.blockpath:
+                    return False
+
+            elif isinstance(thing, Creature):
+                ok = not thing.solid
+                if not ok and self.base.pushCreatures and isinstance(thing, Monster) and thing.base.pushable:
+                    continue    
+                if not ok:
+                    return False
+                       
         return True
         
 class MonsterBase(object):
