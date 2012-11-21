@@ -1,0 +1,11 @@
+armadile = game.monster.genMonster("Armadile", (487, 18378), "an armadile") #mostly unkniown
+armadile.setHealth(3800, healthmax=3800)
+armadile.bloodType(color="blood")
+armadile.setDefense(armor=30, fire=0.98, earth=0, energy=0.98, ice=0.85, holy=0.98, death=0.98, physical=0.98, drown=0.98)
+armadile.setExperience(2900)
+armadile.setSpeed(350)
+armadile.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+armadile.walkAround(energy=0, fire=1, poison=0)
+armadile.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+armadile.voices("Creak!")
+armadile.regMelee(400)
