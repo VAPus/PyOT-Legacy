@@ -174,6 +174,10 @@ playerWalkthrough = False # can also be modified in scripts
 creatureWalkthrough = False # can also be modified in scripts
 playerIsPushable = True
 
+# Instant regeneration.
+regenerationTresshold = 150 # 0 to disable.
+regenerationDelay = 10
+
 # Spawn
 tryToSpawnCreaturesNextToEachother = True # Try the sides of a spawn field if there is a creature on top of them
 tryToSpawnCreatureRegardlessOfCreatures = False # Try to spawn creatures on top of eachother, this and previous option doesn't stack.
