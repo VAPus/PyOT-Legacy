@@ -19,7 +19,7 @@ class Node(object):
         self.state = True
         self.tileTried = False
         
-    def verify(self, z, instanceId, checkCreature, allowCreatures=False):
+    def verify(self, z, instanceId, checkCreature):
         global CACHE_CURRENT # XXX: Fixme!
         if self.tileTried:
             return self.state
@@ -28,18 +28,11 @@ class Node(object):
             tile = game.map.getTileConst(self.x, self.y, z, instanceId)
             if tile:
                 for thing in tile.getItems():
-                    if isinstance(thing, game.creature.Creature):
-                        if allowCreatures:
-                            break
-                        else:
-                            CACHE_CURRENT = False
-                            self.state = False
-                            break
-                    elif thing.solid:
+                    if thing.solid:
                         self.state = False
                         break
-                if checkCreature and not checkCreature.verifyMove(tile):
-                    self.state = False
+                if checkCreature:
+                    self.state = checkCreature.verifyMove(tile)
             else:
                 self.state = False
                 
@@ -63,7 +56,7 @@ class AStar(object):
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
         
-        if not self.final.verify(zStart, instanceId, checkCreature, True):
+        if not self.final.verify(zStart, instanceId, checkCreature):
             self.result = []
             return
         
