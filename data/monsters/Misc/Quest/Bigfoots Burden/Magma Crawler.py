@@ -1,6 +1,6 @@
-Magma_Crawler = game.monster.genMonster("Magma Crawler", (492, 15991), "a magma crawler")
+Magma_Crawler = genMonster("Magma Crawler", (492, 15991), "a magma crawler")
 Magma_Crawler.setHealth(4800)
-Magma_Crawler.bloodType(color="blood")
+Magma_Crawler.bloodType("blood")
 Magma_Crawler.setDefense(armor=50, fire=0, earth=0, energy=0.9, ice=0.95, holy=1, death=0.75, physical=0.95, drown=1)
 Magma_Crawler.setExperience(2700)
 Magma_Crawler.setSpeed(500)

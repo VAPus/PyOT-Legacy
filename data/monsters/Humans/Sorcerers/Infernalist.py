@@ -1,7 +1,7 @@
 infernalist = genMonster("Infernalist", (130, 6080), "a infernalist")
 infernalist.setOutfit(78, 76, 94, 115) #needs 2 addons
 infernalist.setHealth(3650, healthmax=3650)
-infernalist.bloodType(color="blood")
+infernalist.bloodType("blood")
 infernalist.setDefense(armor=37, fire=0, earth=0.05, energy=0, ice=1.05, holy=0.8, death=0.9, physical=1.05, drown=1)
 infernalist.setExperience(4000)
 infernalist.setSpeed(260)

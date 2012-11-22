@@ -1,6 +1,6 @@
-Infected_Weeper = game.monster.genMonster("Infected Weeper", (489, 15906), "an infected weeper") #mostly unknown
+Infected_Weeper = genMonster("Infected Weeper", (489, 15906), "an infected weeper") #mostly unknown
 Infected_Weeper.setHealth(6800)
-Infected_Weeper.bloodType(color="blood")
+Infected_Weeper.bloodType("blood")
 Infected_Weeper.setDefense(armor=20, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 Infected_Weeper.setExperience(4800)
 Infected_Weeper.setSpeed(500)

@@ -1,6 +1,6 @@
 draken_spellweaver = genMonster("Draken Spellweaver", (340, 11317), "a draken spellweaver")
 draken_spellweaver.setHealth(5000, healthmax=5000)
-draken_spellweaver.bloodType(color="blood")
+draken_spellweaver.bloodType("blood")
 draken_spellweaver.setDefense(armor=26, fire=0, earth=0, energy=1.1, ice=1.1, holy=1.05, death=0.1, physical=1.1, drown=1)
 draken_spellweaver.setExperience(2600)
 draken_spellweaver.setSpeed(240)

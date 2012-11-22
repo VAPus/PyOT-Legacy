@@ -1,6 +1,6 @@
 yielothax = genMonster("Yielothax", (408, 13752), "a yielothax")
 yielothax.setHealth(1500)
-yielothax.bloodType(color="blood")
+yielothax.bloodType("blood")
 yielothax.setDefense(armor=20, fire=0.75, earth=0, energy=1.05, ice=1.05, holy=1, death=0.5, physical=1.1, drown=1)#
 yielothax.setExperience(1250)
 yielothax.setSpeed(300)#

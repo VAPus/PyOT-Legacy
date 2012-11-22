@@ -1,5 +1,5 @@
-Wiggler = game.monster.genMonster("Wiggler", (510, 16193), "a wiggler")
-Wiggler.bloodType(color="slime")
+Wiggler = genMonster("Wiggler", (510, 16193), "a wiggler")
+Wiggler.bloodType("slime")
 Wiggler.setDefense(armor=40, fire=1.05, earth=0, energy=0.95, ice=1, holy=1, death=0.9, physical=1, drown=1)
 Wiggler.setExperience(900)
 Wiggler.setSpeed(700)

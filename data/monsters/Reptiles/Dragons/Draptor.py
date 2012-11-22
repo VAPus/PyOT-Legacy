@@ -1,7 +1,7 @@
 #mostly unknown
 draptor = genMonster("Draptor", (8, 5980), "a draptor")
 draptor.setHealth(3000)
-draptor.bloodType(color="blood")
+draptor.bloodType("blood")
 draptor.setDefense(armor=2, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)#
 draptor.setExperience(2400)
 draptor.setSpeed(300)

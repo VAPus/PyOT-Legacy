@@ -1,6 +1,6 @@
-Lava_Golem = game.monster.genMonster("Lava Golem", (491, 15987), "a lava golem") #mostly unknown
+Lava_Golem = genMonster("Lava Golem", (491, 15987), "a lava golem") #mostly unknown
 Lava_Golem.setHealth(9000)
-Lava_Golem.bloodType(color="blood")
+Lava_Golem.bloodType("blood")
 Lava_Golem.setDefense(armor=80, fire=0, earth=0, energy=0.7, ice=1.05, holy=1, death=0.55, physical=0.7, drown=1)
 Lava_Golem.setExperience(6200)
 Lava_Golem.setSpeed(500)

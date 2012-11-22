@@ -1,6 +1,6 @@
-armadile = game.monster.genMonster("Armadile", (487, 18378), "an armadile")
+armadile = genMonster("Armadile", (487, 18378), "an armadile")
 armadile.setHealth(3800, healthmax=3800)
-armadile.bloodType(color="blood")
+armadile.bloodType("blood")
 armadile.setDefense(armor=30, fire=0.80, earth=0, energy=0.85, ice=0.85, holy=0.85, death=1, physical=0.95, drown=1)
 armadile.setExperience(2900)
 armadile.setSpeed(350)

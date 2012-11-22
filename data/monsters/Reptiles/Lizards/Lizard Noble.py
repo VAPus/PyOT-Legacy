@@ -1,7 +1,7 @@
 #unknown
 lizard_noble = genMonster("Lizard Noble", (115, 6041), "a lizard noble")
 lizard_noble.setHealth(5740, healthmax=5740)
-lizard_noble.bloodType(color="blood")
+lizard_noble.bloodType("blood")
 lizard_noble.setDefense(armor=29, fire=0.15, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 lizard_noble.setExperience(2000)
 lizard_noble.setSpeed(210)

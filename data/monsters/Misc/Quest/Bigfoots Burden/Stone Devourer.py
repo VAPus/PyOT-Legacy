@@ -1,6 +1,6 @@
-Stone_Devourer = game.monster.genMonster("Stone Devourer", (486, 15864), "a stone devourer")
+Stone_Devourer = genMonster("Stone Devourer", (486, 15864), "a stone devourer")
 Stone_Devourer.setHealth(4200)
-Stone_Devourer.bloodType(color="undead")
+Stone_Devourer.bloodType("undead")
 Stone_Devourer.setDefense(armor=65, fire=0, earth=0, energy=0.7, ice=0.7, holy=0.7, death=0.7, physical=0.9, drown=0.7)
 Stone_Devourer.setExperience(2900)
 Stone_Devourer.setSpeed(500)

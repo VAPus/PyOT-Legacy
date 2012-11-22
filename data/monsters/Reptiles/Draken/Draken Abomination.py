@@ -1,6 +1,6 @@
 draken_abomination = genMonster("Draken Abomination", (357, 12623), "a draken abomination")
 draken_abomination.setHealth(6250, healthmax=6250)
-draken_abomination.bloodType(color="blood")
+draken_abomination.bloodType("blood")
 draken_abomination.setDefense(armor=46, fire=0, earth=0, energy=1.05, ice=0.95, holy=1.05, death=0, physical=1, drown=1)
 draken_abomination.setExperience(3800)
 draken_abomination.setSpeed(220)

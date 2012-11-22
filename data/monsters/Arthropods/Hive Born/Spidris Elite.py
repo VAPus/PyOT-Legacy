@@ -1,6 +1,6 @@
-spidris_elite = game.monster.genMonster("Spidris Elite", (457, 15296), "a spidris elite")
+spidris_elite = genMonster("Spidris Elite", (457, 15296), "a spidris elite")
 spidris_elite.setHealth(5000)
-spidris_elite.bloodType(color="slime")
+spidris_elite.bloodType("slime")
 spidris_elite.setDefense(armor=50, fire=1, earth=1, energy=1, ice=1, holy=1.1, death=1, physical=1, drown=1)
 spidris_elite.setExperience(4000)
 spidris_elite.setSpeed(350) #incorrect

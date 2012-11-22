@@ -2,7 +2,7 @@
 dwarf_miner = genMonster("Dwarf Miner", (160, 5980), "a dwarf miner")#corpse
 dwarf_miner.setOutfit(95, 95, 95, 95)#
 dwarf_miner.setHealth(120)
-dwarf_miner.bloodType(color="blood")
+dwarf_miner.bloodType("blood")
 dwarf_miner.setDefense(armor=9, fire=1.05, earth=0.9, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
 dwarf_miner.setExperience(60)
 dwarf_miner.setSpeed(220)#

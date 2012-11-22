@@ -1,6 +1,6 @@
-kollos = game.monster.genMonster("Kollos", (458, 15354), "a kollos")
+kollos = genMonster("Kollos", (458, 15354), "a kollos")
 kollos.setHealth(3800)
-kollos.bloodType(color="slime")
+kollos.bloodType("slime")
 kollos.setDefense(armor=50, fire=0.7, earth=0, energy=0.95, ice=1.05, holy=1, death=1.05, physical=1, drown=1)
 kollos.setExperience(2400)
 kollos.setSpeed(300) #incorrect

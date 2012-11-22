@@ -1,7 +1,7 @@
 nightslayer = genMonster("Nightslayer", (152, 6080), "a nightslayer")
 nightslayer.setOutfit(95, 95, 95, 95)#?
 nightslayer.setHealth(400, healthmax=400)
-nightslayer.bloodType(color="blood")
+nightslayer.bloodType("blood")
 nightslayer.setDefense(armor=27, fire=1, earth=1, energy=1, ice=1.1, holy=1, death=1, physical=1, drown=1)#
 nightslayer.setExperience(250)
 nightslayer.setSpeed(250)#

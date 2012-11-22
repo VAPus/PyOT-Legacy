@@ -1,6 +1,6 @@
-Lost_Berserker = game.monster.genMonster("Lost Berserker", (496, 16062), "a lost berserker")
+Lost_Berserker = genMonster("Lost Berserker", (496, 16062), "a lost berserker")
 Lost_Berserker.setHealth(5900)
-Lost_Berserker.bloodType(color="blood")
+Lost_Berserker.bloodType("blood")
 Lost_Berserker.setDefense(armor=70, fire=0.9, earth=0, energy=0.85, ice=0.6, holy=1, death=0.85, physical=0.8, drown=1)
 Lost_Berserker.setExperience(4400)
 Lost_Berserker.setSpeed(300)

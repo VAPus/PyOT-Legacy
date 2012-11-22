@@ -1,7 +1,7 @@
 
 witch = genMonster("Witch", (54, 6081), "a witch")
 witch.setHealth(300)
-witch.bloodType(color="blood")
+witch.bloodType("blood")
 witch.setDefense(armor=8, fire=1, earth=0.8, energy=0, ice=1, holy=1, death=1.05, physical=1.05, drown=1)
 witch.setExperience(120)
 witch.setSpeed(180)

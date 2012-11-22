@@ -1,6 +1,6 @@
-Abyssador = game.monster.genMonster("Abyssador", (495, 16067), "an abyssador")
+Abyssador = genMonster("Abyssador", (495, 16067), "an abyssador")
 Abyssador.setHealth(350000)
-Abyssador.bloodType(color="blood")
+Abyssador.bloodType("blood")
 Abyssador.setDefense(armor=100, fire=0.85, earth=0, energy=0.85, ice=0.85, holy=1, death=0.85, physical=0.85, drown=0.85)
 Abyssador.setExperience(40000)
 Abyssador.setSpeed(800)

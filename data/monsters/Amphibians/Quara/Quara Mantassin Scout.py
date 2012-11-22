@@ -1,6 +1,6 @@
 quara_mantassin_scout = genMonster("Quara Mantassin Scout", (72, 6064), "a quara mantassin scout")
 quara_mantassin_scout.setHealth(220)
-quara_mantassin_scout.bloodType(color="blood")
+quara_mantassin_scout.bloodType("blood")
 quara_mantassin_scout.setDefense(armor=7, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
 quara_mantassin_scout.setExperience(100)
 quara_mantassin_scout.setSpeed(270)

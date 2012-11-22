@@ -1,6 +1,6 @@
 Parasite = genMonster("Parasite", (82, 6023), "a parasite")
 Parasite.setHealth(550, healthmax=550)
-Parasite.bloodType(color="slime")
+Parasite.bloodType("slime")
 Parasite.setDefense(armor=10, fire=1.1, earth=0, energy=0.9, ice=1.05, holy=1, death=1, physical=1, drown=1)
 Parasite.setExperience(0)
 Parasite.setSpeed(135)

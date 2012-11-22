@@ -1,6 +1,6 @@
-minion of Versperoth = game.monster.genMonster("Minion Of Versperoth ", (491, 15987), "a minion of versperoth ") #mostly unknown
+minion of Versperoth = genMonster("Minion Of Versperoth ", (491, 15987), "a minion of versperoth ") #mostly unknown
 minion of Versperoth.setHealth(9000)
-minion of Versperoth.bloodType(color="blood")
+minion of Versperoth.bloodType("blood")
 minion of Versperoth.setDefense(armor=80, fire=0, earth=0, energy=0.7, ice=1.05, holy=1, death=0.55, physical=0.7, drown=1)
 minion of Versperoth.setExperience(420)
 minion of Versperoth.setSpeed(500)

@@ -1,6 +1,6 @@
 lich = genMonster("Lich", (99, 6028), "a lich")
 lich.setHealth(880)
-lich.bloodType(color="undead")
+lich.bloodType("undead")
 lich.setDefense(armor=55, fire=1, earth=0, energy=0.2, ice=1, holy=1.2, death=0, physical=1, drown=1)
 lich.setExperience(900)
 lich.setSpeed(320)

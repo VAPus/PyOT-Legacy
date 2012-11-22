@@ -1,6 +1,6 @@
-manta_ray = game.monster.genMonster("Manta Ray", (449, 15276), "a manta ray")
+manta_ray = genMonster("Manta Ray", (449, 15276), "a manta ray")
 manta_ray.setHealth(680)
-manta_ray.bloodType(color="blood")
+manta_ray.bloodType("blood")
 manta_ray.setDefense(armor=15, fire=0, earth=0, energy=1.05, ice=1, holy=1, death=1, physical=1, drown=0)
 manta_ray.setExperience(125)
 manta_ray.setSpeed(250) #?

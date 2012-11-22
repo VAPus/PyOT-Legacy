@@ -1,6 +1,6 @@
 blistering_fire_elemental = genMonster("Blistering Fire Elemental", (242, 8964), "a blistering fire elemental")
 blistering_fire_elemental.setHealth(1500)
-blistering_fire_elemental.bloodType(color="blood")
+blistering_fire_elemental.bloodType("blood")
 blistering_fire_elemental.setDefense(armor=50, fire=0, earth=0.5, energy=0.8, ice=1.15, holy=0, death=0.6, physical=0.75, drown=1)
 blistering_fire_elemental.setExperience(1300)
 blistering_fire_elemental.setSpeed(230)

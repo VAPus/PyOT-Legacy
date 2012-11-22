@@ -1,6 +1,6 @@
-hive_overseer = game.monster.genMonster("Hive Overseer", (458, 15354), "a hive overseer")
+hive_overseer = genMonster("Hive Overseer", (458, 15354), "a hive overseer")
 hive_overseer.setHealth(7500, healthmax=7500)
-hive_overseer.bloodType(color="slime")
+hive_overseer.bloodType("slime")
 hive_overseer.setDefense(armor=75, fire=0.3, earth=0, energy=0.8, ice=1, holy=0.9, death=1, physical=0.4, drown=1)
 hive_overseer.setExperience(100) # XXX: Wrong, just to fix loading
 hive_overseer.setSpeed(100) # XXX: Wrong, just to fix loading

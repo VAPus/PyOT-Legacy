@@ -1,6 +1,6 @@
-swarmer_hatchling = game.monster.genMonster("Swarmer Hatchling", (460, 15385), "a swarmer hatchling")
+swarmer_hatchling = genMonster("Swarmer Hatchling", (460, 15385), "a swarmer hatchling")
 swarmer_hatchling.setHealth(5, healthmax=5)
-swarmer_hatchling.bloodType(color="slime")
+swarmer_hatchling.bloodType("slime")
 swarmer_hatchling.setDefense(armor=25, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=4)
 swarmer_hatchling.setExperience(0)
 swarmer_hatchling.setSpeed(250) #incorrect

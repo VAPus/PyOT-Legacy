@@ -1,6 +1,6 @@
 quara_hydromancer_scout = genMonster("Quara Hydromancer Scout", (47, 6066), "a quara hydromancer scout")
 quara_hydromancer_scout.setHealth(1100)
-quara_hydromancer_scout.bloodType(color="blood")
+quara_hydromancer_scout.bloodType("blood")
 quara_hydromancer_scout.setDefense(armor=33, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
 quara_hydromancer_scout.setExperience(800)
 quara_hydromancer_scout.setSpeed(280)

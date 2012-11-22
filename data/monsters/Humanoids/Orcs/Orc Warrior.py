@@ -1,7 +1,7 @@
 
 orc_warrior = genMonster("Orc Warrior", (7, 5979), "an orc warrior")
 orc_warrior.setHealth(125)
-orc_warrior.bloodType(color="blood")
+orc_warrior.bloodType("blood")
 orc_warrior.setDefense(armor=17, fire=1, earth=1.1, energy=0.7, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
 orc_warrior.setExperience(50)
 orc_warrior.setSpeed(190)

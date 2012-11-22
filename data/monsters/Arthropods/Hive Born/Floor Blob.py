@@ -1,6 +1,6 @@
-floor_blob = game.monster.genMonster("Floor Blob", (459, 5980), "a floor blob")
+floor_blob = genMonster("Floor Blob", (459, 5980), "a floor blob")
 floor_blob.setHealth(1, healthmax=1)
-floor_blob.bloodType(color="slime")
+floor_blob.bloodType("slime")
 floor_blob.setDefense(armor=10, fire=0, earth=0, energy=0, ice=0, holy=0, death=0, physical=0, drown=0)
 floor_blob.setExperience(0)
 floor_blob.setSpeed(200) #incorrect

@@ -1,7 +1,7 @@
 #mostly unknown
 clay_guardian = genMonster("Clay Guardian", (8, 5980), "a clay guardian")
 clay_guardian.setHealth(625)
-clay_guardian.bloodType(color="blood")
+clay_guardian.bloodType("blood")
 clay_guardian.setDefense(armor=46, fire=1, earth=0, energy=0.7, ice=0.65, holy=1, death=0.6, physical=0.75, drown=1)
 clay_guardian.setExperience(400)
 clay_guardian.setSpeed(250)

@@ -1,7 +1,7 @@
 
 medusa = genMonster("Medusa", (330, 10524), "a medusa")
 medusa.setHealth(4500)
-medusa.bloodType(color="blood")
+medusa.bloodType("blood")
 medusa.setDefense(armor=47, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=0)
 medusa.setExperience(4050)
 medusa.setSpeed(240)

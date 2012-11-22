@@ -1,6 +1,6 @@
 vampire_bride = genMonster("Vampire Bride", (312, 9660), "a vampire bride")
 vampire_bride.setHealth(1200)
-vampire_bride.bloodType(color="blood")
+vampire_bride.bloodType("blood")
 vampire_bride.setDefense(armor=60, fire=1.1, earth=0.8, energy=0.9, ice=0.8, holy=1.1, death=0, physical=1, drown=0.9)
 vampire_bride.setExperience(1050)
 vampire_bride.setSpeed(180)

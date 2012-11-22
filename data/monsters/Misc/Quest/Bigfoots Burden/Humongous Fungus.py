@@ -1,6 +1,6 @@
-humongous_fungus = game.monster.genMonster("Humongous Fungus", (488, 18382), "a humongous fungus")#mostly unkniown including corpse(may be right)
+humongous_fungus = genMonster("Humongous Fungus", (488, 18382), "a humongous fungus")#mostly unkniown including corpse(may be right)
 humongous_fungus.setHealth(3400, healthmax=3400)
-humongous_fungus.bloodType(color="blood")
+humongous_fungus.bloodType("blood")
 humongous_fungus.setDefense(armor=40, fire=0.95, earth=0, energy=0.85, ice=0.85, holy=0.95, death=0.65, physical=1, drown=1)
 humongous_fungus.setExperience(2600)
 humongous_fungus.setSpeed(500)

@@ -1,7 +1,7 @@
 #file is mostly wrong
 troll_guard = genMonster("Troll Guard", (281, 7926), "a troll guard")
 troll_guard.setHealth(60)
-troll_guard.bloodType(color="blood")
+troll_guard.bloodType("blood")
 troll_guard.setDefense(armor=10, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
 troll_guard.setExperience(25)
 troll_guard.setSpeed(120)

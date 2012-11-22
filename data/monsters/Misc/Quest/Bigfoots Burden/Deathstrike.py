@@ -1,6 +1,6 @@
-Deathstrike = game.monster.genMonster("Deathstrike", (500, 16091), "a Deathstrike") #mostly unknown
+Deathstrike = genMonster("Deathstrike", (500, 16091), "a Deathstrike") #mostly unknown
 Deathstrike.setHealth(250000)
-Deathstrike.bloodType(color="blood")
+Deathstrike.bloodType("blood")
 Deathstrike.setDefense(armor=100, fire=0.5, earth=0, energy=0.6, ice=0.6, holy=0.8, death=0.6, physical=0.75, drown=0.75)
 Deathstrike.setExperience(40000)
 Deathstrike.setSpeed(700)

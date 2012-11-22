@@ -1,6 +1,6 @@
-humorless_fungus = game.monster.genMonster("Humorless Fungus", (517, 18382), "a humorless fungus") #almost everything is unknown health, stance, etc...--corpse(may be right)
+humorless_fungus = genMonster("Humorless Fungus", (517, 18382), "a humorless fungus") #almost everything is unknown health, stance, etc...--corpse(may be right)
 humorless_fungus.setHealth(1000, healthmax=1000)
-humorless_fungus.bloodType(color="blood")
+humorless_fungus.bloodType("blood")
 humorless_fungus.setDefense(armor=25, fire=0.95, earth=0, energy=0.85, ice=0.85, holy=0.95, death=1, physical=1, drown=1)
 humorless_fungus.setExperience(0)
 humorless_fungus.setSpeed(400)

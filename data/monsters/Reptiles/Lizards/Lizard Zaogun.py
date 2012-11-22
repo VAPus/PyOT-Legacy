@@ -1,6 +1,6 @@
 lizard_zaogun = genMonster("Lizard Zaogun", (343, 11284), "a lizard zaogun")
 lizard_zaogun.setHealth(2955)
-lizard_zaogun.bloodType(color="blood")
+lizard_zaogun.bloodType("blood")
 lizard_zaogun.setDefense(armor=46, fire=0.55, earth=0, energy=0.8, ice=0.85, holy=1, death=0.9, physical=0.5, drown=1)
 lizard_zaogun.setExperience(1700)
 lizard_zaogun.setSpeed(420)

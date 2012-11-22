@@ -1,6 +1,6 @@
 demon = genMonster("Demon", (35, 5995), "a demon")
 demon.setHealth(8200)
-demon.bloodType(color="blood")
+demon.bloodType("blood")
 demon.setDefense(armor=48, fire=0, earth=0.6, energy=0.5, ice=1.12, holy=1.12, death=0.8, physical=0.75, drown=1)
 demon.setExperience(6000)
 demon.setSpeed(280)

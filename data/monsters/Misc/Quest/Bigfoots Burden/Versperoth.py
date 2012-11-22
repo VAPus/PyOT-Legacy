@@ -1,6 +1,6 @@
-Versperoth = game.monster.genMonster("Versperoth", (8, 5980), "a Versperoth") #rotworm queen look id, mostly unkown
+Versperoth = genMonster("Versperoth", (8, 5980), "a Versperoth") #rotworm queen look id, mostly unkown
 Versperoth.setHealth(125000)
-Versperoth.bloodType(color="blood")
+Versperoth.bloodType("blood")
 Versperoth.setDefense(armor=65, fire=0.5, earth=1.05, energy=0.55, ice=0.55, holy=0.6, death=0.45, physical=0.7, drown=0.7)
 Versperoth.setExperience(20000)
 Versperoth.setSpeed(0)

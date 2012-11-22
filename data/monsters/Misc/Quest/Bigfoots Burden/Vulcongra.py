@@ -1,6 +1,6 @@
-Vulcongra = game.monster.genMonster("Vulcongra", (509, 16185), "a vulcongra") #mostly unknown
+Vulcongra = genMonster("Vulcongra", (509, 16185), "a vulcongra") #mostly unknown
 Vulcongra.setHealth(1600)
-Vulcongra.bloodType(color="blood")
+Vulcongra.bloodType("blood")
 Vulcongra.setDefense(armor=45, fire=0, earth=0, energy=1, ice=1.15, holy=1, death=0.95 physical=1, drown=1.1)
 Vulcongra.setExperience(1100)
 Vulcongra.setSpeed(400)

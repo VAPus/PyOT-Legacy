@@ -1,6 +1,6 @@
 troll_legionnaire = genMonster("Troll Legionnaire", (53, 5998), "a troll legionnaire")
 troll_legionnaire.setHealth(210)
-troll_legionnaire.bloodType(color="blood")
+troll_legionnaire.bloodType("blood")
 troll_legionnaire.setDefense(armor=13, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 troll_legionnaire.setExperience(140)
 troll_legionnaire.setSpeed(190)

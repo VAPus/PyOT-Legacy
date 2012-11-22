@@ -1,7 +1,7 @@
 
 necromancer = genMonster("Necromancer", (9, 6080), "a necromancer")
 necromancer.setHealth(580, healthmax=580)
-necromancer.bloodType(color="blood")
+necromancer.bloodType("blood")
 necromancer.setDefense(armor=54, fire=1.05, earth=0, energy=0.8, ice=0.9, holy=1.05, death=0.5, physical=1.05, drown=1)
 necromancer.setExperience(580)
 necromancer.setSpeed(200)

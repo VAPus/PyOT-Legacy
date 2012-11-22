@@ -1,6 +1,6 @@
 vampire = genMonster("Vampire", (68, 6006), "a vampire")
 vampire.setHealth(475)
-vampire.bloodType(color="blood")
+vampire.bloodType("blood")
 vampire.setDefense(armor=37, fire=1.1, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=0.8, drown=0)
 vampire.setExperience(305)
 vampire.setSpeed(220)

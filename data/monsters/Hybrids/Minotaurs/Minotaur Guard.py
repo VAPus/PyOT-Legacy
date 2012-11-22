@@ -1,7 +1,7 @@
 
 minotaur_guard = genMonster("Minotaur Guard", (29, 5983), "a minotaur guard")
 minotaur_guard.setHealth(185)
-minotaur_guard.bloodType(color="blood")
+minotaur_guard.bloodType("blood")
 minotaur_guard.setDefense(armor=15, fire=0.8, earth=1, energy=1, ice=1.1, holy=0.9, death=1.1, physical=1, drown=1)
 minotaur_guard.setExperience(160)
 minotaur_guard.setSpeed(190)

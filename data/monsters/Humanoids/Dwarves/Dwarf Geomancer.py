@@ -1,6 +1,6 @@
 dwarf_geomancer = genMonster("Dwarf Geomancer", (66, 6015), "a dwarf geomancer")
 dwarf_geomancer.setHealth(380)
-dwarf_geomancer.bloodType(color="blood")
+dwarf_geomancer.bloodType("blood")
 dwarf_geomancer.setDefense(armor=15, fire=0.4, earth=0.8, energy=0.9, ice=1.05, holy=0.9, death=1.1, physical=1, drown=1)
 dwarf_geomancer.setExperience(265)
 dwarf_geomancer.setSpeed(200)

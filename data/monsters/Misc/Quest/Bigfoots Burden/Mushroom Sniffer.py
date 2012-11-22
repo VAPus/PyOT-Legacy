@@ -1,6 +1,6 @@
-Mushroom_Sniffer = game.monster.genMonster("Mushroom Sniffer", (60, 6000), "a mushroom sniffer")
+Mushroom_Sniffer = genMonster("Mushroom Sniffer", (60, 6000), "a mushroom sniffer")
 Mushroom_Sniffer.setHealth(250)
-Mushroom_Sniffer.bloodType(color="blood")
+Mushroom_Sniffer.bloodType("blood")
 Mushroom_Sniffer.setDefense(armor=15, fire=0.1, earth=0.1, energy=0.1, ice=0.1, holy=0.1, death=0.1, physical=0.1, drown=0.1)
 Mushroom_Sniffer.setExperience(0)
 Mushroom_Sniffer.setSpeed(100)

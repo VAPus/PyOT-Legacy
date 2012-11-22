@@ -1,6 +1,6 @@
 elder_mummy = genMonster("Elder Mummy", (65, 6004), "a eder mummy")
 elder_mummy.setHealth(850)
-elder_mummy.bloodType(color="undead")
+elder_mummy.bloodType("undead")
 elder_mummy.setDefense(armor=15, fire=1, earth=1, energy=1, ice=0.8, holy=1, death=1, physical=1, drown=1)#
 elder_mummy.setExperience(560)
 elder_mummy.setSpeed(250)#

@@ -1,6 +1,6 @@
 roaring_water_elemental = genMonster("Roaring Water Elemental", (11, 8965), "a roaring water elemental")
 roaring_water_elemental.setHealth(1750, healthmax=1750)
-roaring_water_elemental.bloodType(color="undead")
+roaring_water_elemental.bloodType("undead")
 roaring_water_elemental.setDefense(armor=50, fire=0, earth=0, energy=1, ice=0, holy=0.4, death=0.5, physical=0.3, drown=1)
 roaring_water_elemental.setExperience(1300)
 roaring_water_elemental.setSpeed(390)

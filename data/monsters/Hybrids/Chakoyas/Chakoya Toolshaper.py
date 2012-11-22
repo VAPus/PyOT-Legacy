@@ -1,6 +1,6 @@
 chakoya_toolshaper = genMonster("Chakoya Toolshaper", (259, 7320), "a chakoya toolshaper")#wrong looktype?
 chakoya_toolshaper.setHealth(80, healthmax=80)
-chakoya_toolshaper.bloodType(color="blood")
+chakoya_toolshaper.bloodType("blood")
 chakoya_toolshaper.setDefense(armor=7, fire=0.6, earth=1, energy=1.15, ice=0, holy=0.9, death=1.05, physical=1, drown=1)
 chakoya_toolshaper.setExperience(40)
 chakoya_toolshaper.setSpeed(270)

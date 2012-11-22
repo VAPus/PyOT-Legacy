@@ -1,7 +1,7 @@
 
 crocodile = genMonster("Crocodile", (119, 6046), "a crocodile")
 crocodile.setHealth(105)
-crocodile.bloodType(color="blood")
+crocodile.bloodType("blood")
 crocodile.setDefense(armor=9, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 crocodile.setExperience(40)
 crocodile.setSpeed(240)

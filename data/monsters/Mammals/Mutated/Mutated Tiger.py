@@ -1,7 +1,7 @@
 
 mutated_tiger = genMonster("Mutated Tiger", (318, 9913), "a mutated tiger")
 mutated_tiger.setHealth(1100)
-mutated_tiger.bloodType(color="blood")
+mutated_tiger.bloodType("blood")
 mutated_tiger.setDefense(armor=26, fire=0.8, earth=0.2, energy=0.8, ice=-0.8, holy=1, death=1.05, physical=1, drown=1)
 mutated_tiger.setExperience(750)
 mutated_tiger.setSpeed(245)

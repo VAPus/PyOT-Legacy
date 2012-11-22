@@ -1,6 +1,6 @@
-fish = game.monster.genMonster("Fish", (455, 2667), "a fish")
+fish = genMonster("Fish", (455, 2667), "a fish")
 fish.setHealth(25)
-fish.bloodType(color="blood")
+fish.bloodType("blood")
 fish.setDefense(armor=5, fire=0, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=0)
 fish.setExperience(0)
 fish.setSpeed(250) #?

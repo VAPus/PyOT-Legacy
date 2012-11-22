@@ -1,7 +1,7 @@
 
 orc_berserker = genMonster("Orc Berserker", (8, 5980), "an orc berserker")
 orc_berserker.setHealth(210)
-orc_berserker.bloodType(color="blood")
+orc_berserker.bloodType("blood")
 orc_berserker.setDefense(armor=13, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 orc_berserker.setExperience(195)
 orc_berserker.setSpeed(250)

@@ -1,7 +1,7 @@
 #still somewhat unknown
 furious_orc_berserker = genMonster("Durious Orc Berserker", (35, 5995), "a furious orc berserker")
 furious_orc_berserker.setHealth(2, healthmax=2)
-furious_orc_berserker.bloodType(color="blood")
+furious_orc_berserker.bloodType("blood")
 furious_orc_berserker.setDefense(-1)
 furious_orc_berserker.setExperience(0)
 furious_orc_berserker.setSpeed(200)

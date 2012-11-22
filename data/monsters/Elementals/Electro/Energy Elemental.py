@@ -1,6 +1,6 @@
 energy_elemental = genMonster("Energy Elemental", (293, 8966), "a energy elemental")
 energy_elemental.setHealth(500)
-energy_elemental.bloodType(color="undead")
+energy_elemental.bloodType("undead")
 energy_elemental.setDefense(armor=26, fire=0, earth=1.15, energy=0, ice=0, holy=0.95, death=0.95, physical=0.65, drown=1)
 energy_elemental.setExperience(550)
 energy_elemental.setSpeed(250)

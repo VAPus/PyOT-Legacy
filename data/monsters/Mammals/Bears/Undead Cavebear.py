@@ -1,6 +1,6 @@
 undead_cavebear = genMonster("Undead Cavebear", (384, 5995), "an undead cavebear")#unknown corpse
 undead_cavebear.setHealth(450)
-undead_cavebear.bloodType(color="undead")
+undead_cavebear.bloodType("undead")
 undead_cavebear.setDefense(armor=2, fire=1, earth=0, energy=1, ice=1, holy=1.01, death=0, physical=1, drown=1)
 undead_cavebear.setExperience(600)
 undead_cavebear.setSpeed(100)#unknown speed

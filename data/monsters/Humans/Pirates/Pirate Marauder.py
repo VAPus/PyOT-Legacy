@@ -1,6 +1,6 @@
 pirate_marauder = genMonster("Pirate Marauder ", (93, 6080), "a pirate marauder ")
 pirate_marauder.setHealth(210)
-pirate_marauder.bloodType(color="blood")
+pirate_marauder.bloodType("blood")
 pirate_marauder.setDefense(armor=9, fire=1.1, earth=0.9, energy=1.03, ice=1, holy=0.8, death=1.05, physical=1, drown=1)
 pirate_marauder.setExperience(125)
 pirate_marauder.setSpeed(230)

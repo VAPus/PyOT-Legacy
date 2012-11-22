@@ -1,6 +1,6 @@
 wyrm = genMonster("Wyrm", (291, 8941), "a wyrm")
 wyrm.setHealth(1825)
-wyrm.bloodType(color="blood")
+wyrm.bloodType("blood")
 wyrm.setDefense(armor=39, fire=0.8, earth=0.75, energy=0, ice=1.05, holy=1, death=1.05, physical=1, drown=1)
 wyrm.setExperience(1450)
 wyrm.setSpeed(300)

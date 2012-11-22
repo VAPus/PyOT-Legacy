@@ -1,6 +1,6 @@
 duskbringer = genMonster("Duskbringer", (300, 8955), "a duskbringer")
 duskbringer.setHealth(3000, healthmax=3000)
-duskbringer.bloodType(color="blood")
+duskbringer.bloodType("blood")
 duskbringer.setDefense(armor=59, fire=0.6, earth=0.2, energy=0.95, ice=1.1, holy=0.7, death=1.05, physical=1, drown=1)
 duskbringer.setExperience(2600)
 duskbringer.setSpeed(300)

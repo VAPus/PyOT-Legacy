@@ -1,6 +1,6 @@
 undead_prospector = genMonster("Undead Prospector", (18, 5976), "an undead prospector")
 undead_prospector.setHealth(100)
-undead_prospector.bloodType(color="blood")
+undead_prospector.bloodType("blood")
 undead_prospector.setDefense(armor=2, fire=1, earth=0.8, energy=0.7, ice=0.9, holy=1.25, death=0, physical=1, drown=0)
 undead_prospector.setExperience(85)
 undead_prospector.setSpeed(180)

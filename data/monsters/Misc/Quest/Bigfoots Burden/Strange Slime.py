@@ -1,6 +1,6 @@
 Strange_Slime = genMonster("Strange Slime", (35, 1496), "a strange slime")
 Strange_Slime.setHealth(15)
-Strange_Slime.bloodType(color="slime")
+Strange_Slime.bloodType("slime")
 Strange_Slime.setDefense(armor=10 fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)
 Strange_Slime.setExperience(0)
 Strange_Slime.setSpeed(120)

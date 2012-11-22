@@ -1,7 +1,7 @@
 
 priestess = genMonster("Priestess", (58, 6081), "a priestess")
 priestess.setHealth(390)
-priestess.bloodType(color="blood")
+priestess.bloodType("blood")
 priestess.setDefense(armor=32, fire=0.6, earth=0.3, energy=1, ice=1, holy=1.1, death=0.9, physical=1.1, drown=1)
 priestess.setExperience(420)
 priestess.setSpeed(220)

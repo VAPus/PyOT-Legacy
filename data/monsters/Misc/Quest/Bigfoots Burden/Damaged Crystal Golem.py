@@ -1,6 +1,6 @@
-damaged_crystal_golem = game.monster.genMonster("Damaged Crystal Golem", (508, 18466), "a damaged crystal golem")  #unknown blood, heal 10
+damaged_crystal_golem = genMonster("Damaged Crystal Golem", (508, 18466), "a damaged crystal golem")  #unknown blood, heal 10
 damaged_crystal_golem.setHealth(500, healthmax=500)
-damaged_crystal_golem.bloodType(color="blood")
+damaged_crystal_golem.bloodType("blood")
 damaged_crystal_golem.setDefense(armor=30, fire=0, earth=1, energy=1, ice=0, holy=1, death=1, physical=0.8, drown=1)
 damaged_crystal_golem.setExperience(0)
 damaged_crystal_golem.setSpeed(350)

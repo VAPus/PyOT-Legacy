@@ -1,6 +1,6 @@
 skeleton_warrior = genMonster("Skeleton Warrior", (298, 5972), "a skeleton warrior")
 skeleton_warrior.setHealth(65)
-skeleton_warrior.bloodType(color="undead")
+skeleton_warrior.bloodType("undead")
 skeleton_warrior.setDefense(armor=4, fire=1, earth=1, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=1)
 skeleton_warrior.setExperience(45)
 skeleton_warrior.setSpeed(180)

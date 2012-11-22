@@ -1,6 +1,6 @@
-weeper = game.monster.genMonster("Weeper", (489, 15906), "a weeper") #mostly unkown
+weeper = genMonster("Weeper", (489, 15906), "a weeper") #mostly unkown
 weeper.setHealth(6800)
-weeper.bloodType(color="blood")
+weeper.bloodType("blood")
 weeper.setDefense(armor=65, fire=0, earth=0, energy=1, ice=1.05, holy=1, death=0.7, physical=1, drown=1.05)
 weeper.setExperience(4800)
 weeper.setSpeed(450)
