@@ -265,6 +265,11 @@ class CreatureMovement(object):
                     # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
                     if push and isinstance(thing, Monster) and self.isMonster() and self.base.pushCreatures and thing.base.pushable:
                         # Push stuff here.
+
+                        # Clear up the creatures actions.
+                        thing.stopAction()
+                        thing.clearMove(direction, failback)
+
                         if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
                             # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
                             break
