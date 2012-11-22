@@ -1,6 +1,6 @@
 goblin = genMonster("Goblin", (61, 6002), "a goblin")
 goblin.setHealth(50)
-goblin.bloodType(color="blood")
+goblin.bloodType("blood")
 goblin.setDefense(armor=7, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.1, physical=1, drown=1)
 goblin.setExperience(25)
 goblin.setSpeed(200)

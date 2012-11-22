@@ -1,6 +1,6 @@
 banshee = genMonster("Banshee", (78, 6019), "a banshee")
 banshee.setHealth(1000)
-banshee.bloodType(color="blood")
+banshee.bloodType("blood")
 banshee.setDefense(26, fire=0, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)
 banshee.setExperience(900)
 banshee.setSpeed(220)

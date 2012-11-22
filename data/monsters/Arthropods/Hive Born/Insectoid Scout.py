@@ -1,7 +1,7 @@
 #mostly unknown
 insectoid_scout = genMonster("Insectoid Scout", (403, 5980), "an insectoid scout")
 insectoid_scout.setHealth(230)
-insectoid_scout.bloodType(color="slime")
+insectoid_scout.bloodType("slime")
 insectoid_scout.setDefense(armor=18, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 insectoid_scout.setExperience(150)
 insectoid_scout.setSpeed(250)

@@ -1,6 +1,6 @@
 overcharged_energy_element = genMonster("Overcharged Energy Elemental", (290, 8966), "a overcharged energy elemental")
 overcharged_energy_element.setHealth(1750)
-overcharged_energy_element.bloodType(color="undead")
+overcharged_energy_element.bloodType("undead")
 overcharged_energy_element.setDefense(armor=37, fire=0, earth=1.2, energy=0, ice=0, holy=0, death=0.8, physical=0.9, drown=1)
 overcharged_energy_element.setExperience(1300)
 overcharged_energy_element.setSpeed(300)

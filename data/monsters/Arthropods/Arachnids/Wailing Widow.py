@@ -1,6 +1,6 @@
 wailing_widow = genMonster("Wailing Widow", (347, 11310), "a wailing widow")
 wailing_widow.setHealth(850)
-wailing_widow.bloodType(color="slime")
+wailing_widow.bloodType("slime")
 wailing_widow.setDefense(armor=33, fire=1.1, earth=0, energy=1, ice=1, holy=0.9, death=0, physical=1, drown=1)
 wailing_widow.setExperience(450)
 wailing_widow.setSpeed(280)

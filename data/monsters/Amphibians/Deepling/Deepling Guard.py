@@ -1,6 +1,6 @@
 Deepling_Guard = genMonster("Deepling Guard", (442, 15175), "a deepling guard")
 Deepling_Guard.setHealth(1900, healthmax=1900 )
-Deepling_Guard.bloodType(color="blood")
+Deepling_Guard.bloodType("blood")
 Deepling_Guard.setDefense(armor=1, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=0.9, physical=1, drown=1)
 Deepling_Guard.setExperience(2100)
 Deepling_Guard.setSpeed(300) #unknown

@@ -2,7 +2,7 @@
 Firestarter = genMonster("Firestarter", (159, 5980), "a firestarter")
 Firestarter.setOutfit(95, 95, 95, 95)#wrong colors
 Firestarter.setHealth(180)
-Firestarter.bloodType(color="blood")
+Firestarter.bloodType("blood")
 Firestarter.setDefense(armor=15, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 Firestarter.setExperience(80)
 Firestarter.setSpeed(250)

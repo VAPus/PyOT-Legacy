@@ -1,6 +1,6 @@
 Deepling_Spellsinger = genMonster("Deepling Spellsinger", (443, 15209), "a deepling spellsinger")
 Deepling_Spellsinger.setHealth(850)
-Deepling_Spellsinger.bloodType(color="blood")
+Deepling_Spellsinger.bloodType("blood")
 Deepling_Spellsinger.setDefense(armor=1, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=0.5, physical=1, drown=0)
 Deepling_Spellsinger.setExperience(1000)
 Deepling_Spellsinger.setSpeed(250) ##?

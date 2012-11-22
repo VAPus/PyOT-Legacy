@@ -2,7 +2,7 @@
 dark_apprentice = genMonster("Dark Apprentice", (133, 3058), "a dark apprentice")
 dark_apprentice.setOutfit(78, 38, 95, 115) #needs addon
 dark_apprentice.setHealth(225, healthmax=225)
-dark_apprentice.bloodType(color="blood")
+dark_apprentice.bloodType("blood")
 dark_apprentice.setDefense(armor=16, fire=1, earth=1, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
 dark_apprentice.setExperience(100)
 dark_apprentice.setSpeed(220)

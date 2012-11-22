@@ -1,6 +1,6 @@
 dwarf = genMonster("Dwarf", (69, 6007), "a dwarf")
 dwarf.setHealth(90, healthmax=90)
-dwarf.bloodType(color="blood")
+dwarf.bloodType("blood")
 dwarf.setDefense(armor=8, fire=0.95, earth=0.9, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
 dwarf.setExperience(45)
 dwarf.setSpeed(170)

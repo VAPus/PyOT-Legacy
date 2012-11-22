@@ -1,6 +1,6 @@
 cyclops_smith = genMonster("Cyclops Smith", (277, 7740), "a cyclops smith")
 cyclops_smith.setHealth(435)
-cyclops_smith.bloodType(color="blood")
+cyclops_smith.bloodType("blood")
 cyclops_smith.setDefense(armor=30, fire=0.9, earth=1.1, energy=0.8, ice=1, holy=0.8, death=1.05, physical=1, drown=1)
 cyclops_smith.setExperience(255)
 cyclops_smith.setSpeed(220)

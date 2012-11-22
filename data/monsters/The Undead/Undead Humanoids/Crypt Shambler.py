@@ -1,6 +1,6 @@
 crypt_shambler = genMonster("Crypt Shambler", (100, 6029), "a crypt shambler")
 crypt_shambler.setHealth(330)
-crypt_shambler.bloodType(color="undead")
+crypt_shambler.bloodType("undead")
 crypt_shambler.setDefense(armor=33, fire=1, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)
 crypt_shambler.setExperience(195)
 crypt_shambler.setSpeed(180)

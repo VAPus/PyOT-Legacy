@@ -1,6 +1,6 @@
 zombie = genMonster("Zombie", (311, 9875), "a zombie")
 zombie.setHealth(500)
-zombie.bloodType(color="undead")
+zombie.bloodType("undead")
 zombie.setDefense(armor=22, fire=0.5, earth=0, energy=0, ice=0, holy=1, death=0, physical=1, drown=0)
 zombie.setExperience(280)
 zombie.setSpeed(180)#incorrect speed?

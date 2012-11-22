@@ -1,6 +1,6 @@
 dreadbeast = genMonster("Dreadbeast", (101, 6030), "a dreadbeast")
 dreadbeast.setHealth(795)
-dreadbeast.bloodType(color="undead")
+dreadbeast.bloodType("undead")
 dreadbeast.setDefense(armor=2, fire=0.45, earth=0, energy=0.85, ice=0.65, holy=1.5, death=0, physical=0.7, drown=0.25)
 dreadbeast.setExperience(250)
 dreadbeast.setSpeed(210)

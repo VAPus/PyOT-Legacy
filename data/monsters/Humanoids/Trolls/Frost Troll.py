@@ -1,7 +1,7 @@
 
 frost_troll = genMonster("Frost Troll", (53, 5998), "a frost troll")
 frost_troll.setHealth(55)
-frost_troll.bloodType(color="blood")
+frost_troll.bloodType("blood")
 frost_troll.setDefense(armor=6, fire=0.6, earth=1.1, energy=1.15, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
 frost_troll.setExperience(23)
 frost_troll.setSpeed(190)

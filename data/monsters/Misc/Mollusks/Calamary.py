@@ -1,6 +1,6 @@
-Calamary = game.monster.genMonster("Calamary", (8, 5980), "a calamary")
+Calamary = genMonster("Calamary", (8, 5980), "a calamary")
 Calamary.setHealth(75)
-Calamary.bloodType(color="blood") #?
+Calamary.bloodType("blood") #?
 Calamary.setDefense(armor=10, fire=0, earth=0, energy=0, ice=1, holy=1, death=1, physical=1, drown=0)
 Calamary.setExperience(0)
 Calamary.setSpeed(350) #incorrect

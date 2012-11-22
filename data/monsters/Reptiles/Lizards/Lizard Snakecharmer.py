@@ -1,6 +1,6 @@
 lizard_snakecharmer = genMonster("Lizard Snakecharmer", (115, 6041), "a lizard_snakecharmer")
 lizard_snakecharmer.setHealth(315, healthmax=None)
-lizard_snakecharmer.bloodType(color="blood")
+lizard_snakecharmer.bloodType("blood")
 lizard_snakecharmer.setDefense(armor=24, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 lizard_snakecharmer.setExperience(210)
 lizard_snakecharmer.setSpeed(200)

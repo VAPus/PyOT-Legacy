@@ -1,6 +1,6 @@
 frost_giant = genMonster("Frost Giant", (257, 7330), "a frost giant")
 frost_giant.setHealth(270)
-frost_giant.bloodType(color="blood")
+frost_giant.bloodType("blood")
 frost_giant.setDefense(armor=24, fire=1, earth=1, energy=1, ice=0, holy=1, death=1, physical=1, drown=1)
 frost_giant.setExperience(150)
 frost_giant.setSpeed(195)

@@ -1,6 +1,6 @@
-northern_pike = game.monster.genMonster("Northern Pike", (454, 0), "a northern pike")
+northern_pike = genMonster("Northern Pike", (454, 0), "a northern pike")
 northern_pike.setHealth(95, healthmax=95)
-northern_pike.bloodType(color="blood")
+northern_pike.bloodType("blood")
 northern_pike.setDefense(armor=5, fire=0, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=0)
 northern_pike.setExperience(0)
 northern_pike.setSpeed(250) #?

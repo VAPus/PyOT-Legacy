@@ -2,7 +2,7 @@
 doomsday_cultist = genMonster("Doomsday Cultist", (194, 6080), "a doomsday cultist")
 doomsday_cultist.setOutfit(95, 95, 95, 95) #need correct colors
 doomsday_cultist.setHealth(125)
-doomsday_cultist.bloodType(color="blood")
+doomsday_cultist.bloodType("blood")
 doomsday_cultist.setDefense(armor=9, fire=1, earth=0.8, energy=0.7, ice=0.9, holy=1.2, death=0, physical=1, drown=1)
 doomsday_cultist.setExperience(100)
 doomsday_cultist.setSpeed(250)

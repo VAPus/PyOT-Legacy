@@ -1,7 +1,7 @@
-crystalcrusher = game.monster.genMonster("Crystalcrusher", (511, 18487), "a crystalcrusher") #mostly unknown
+crystalcrusher = genMonster("Crystalcrusher", (511, 18487), "a crystalcrusher")
 crystalcrusher.setHealth(570, healthmax=570)
-crystalcrusher.bloodType(color="blood")
-crystalcrusher.setDefense(armor=20, fire=0.9, earth=0, energy=1.1, ice=1.02, holy=1.02, death=0.8, physical=1, drown=1)
+crystalcrusher.bloodType("blood")
+crystalcrusher.setDefense(armor=35, fire=0.9, earth=0, energy=1.05, ice=1.05, holy=1, death=0.85, physical=1, drown=1)
 crystalcrusher.setExperience(500)
 crystalcrusher.setSpeed(300)
 crystalcrusher.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)

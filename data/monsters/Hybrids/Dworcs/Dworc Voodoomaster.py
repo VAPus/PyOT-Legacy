@@ -1,6 +1,6 @@
 dworc_voodoomaster = genMonster("Dworc Voodoomaster", (214, 6055), "a dworc voodoomaster")
 dworc_voodoomaster.setHealth(80, healthmax=80)
-dworc_voodoomaster.bloodType(color="blood")
+dworc_voodoomaster.bloodType("blood")
 dworc_voodoomaster.setDefense(armor=2, fire=1.15, earth=0, energy=1, ice=1.1, holy=0.65, death=1.1, physical=1, drown=1)
 dworc_voodoomaster.setExperience(55)
 dworc_voodoomaster.setSpeed(240)

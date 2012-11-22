@@ -1,6 +1,6 @@
-Crawler = game.monster.genMonster("Crawler", (456, 15292), "a crawler")
+Crawler = genMonster("Crawler", (456, 15292), "a crawler")
 Crawler.setHealth(0, healthmax=None)
-Crawler.bloodType(color="slime")
+Crawler.bloodType("slime")
 Crawler.setDefense(armor=30, fire=1.1, earth=0, energy=1, ice=1.05, holy=1.05, death=1, physical=1, drown=1)
 Crawler.setExperience(1000)
 Crawler.setSpeed(250) #incorrect

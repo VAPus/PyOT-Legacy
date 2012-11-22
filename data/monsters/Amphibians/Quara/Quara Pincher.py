@@ -1,6 +1,6 @@
 quara_pincher = genMonster("Quara Pincher", (77, 6063), "a quara pincher")
 quara_pincher.setHealth(1800)
-quara_pincher.bloodType(color="blood")
+quara_pincher.bloodType("blood")
 quara_pincher.setDefense(armor=94, fire=0, earth=1.1, energy=1.25, ice=0, holy=1, death=1, physical=1, drown=0)
 quara_pincher.setExperience(1200)
 quara_pincher.setSpeed(540)

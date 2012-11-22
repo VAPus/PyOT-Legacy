@@ -1,6 +1,6 @@
 Deepling_Scout = genMonster("Deepling Scout", (413, 13839), "a deepling scout")
 Deepling_Scout.setHealth(240, healthmax=240)
-Deepling_Scout.bloodType(color="blood")
+Deepling_Scout.bloodType("blood")
 Deepling_Scout.setDefense(armor=1, fire=0, earth=1.2, energy=1.2, ice=0, holy=1, death=1.2, physical=1.2, drown=0)
 Deepling_Scout.setExperience(160)
 Deepling_Scout.setSpeed(250) #unknown

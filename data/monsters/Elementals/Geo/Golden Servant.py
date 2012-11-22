@@ -1,6 +1,6 @@
 golden_servant = genMonster("Golden Servant", (396, 5980), "a golden servant")
 golden_servant.setHealth(550)
-golden_servant.bloodType(color="blood")
+golden_servant.bloodType("blood")
 golden_servant.setDefense(armor=31, fire=0.85, earth=0.2, energy=0.75, ice=1.05, holy=0, death=1, physical=1, drown=1)
 golden_servant.setExperience(450)
 golden_servant.setSpeed(250)

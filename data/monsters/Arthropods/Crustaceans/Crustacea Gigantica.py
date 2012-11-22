@@ -1,6 +1,6 @@
 Crustacea_Gigantica = genMonster("Crustacea Gigantica", (8, 5980), "a crustacea gigantica") ##looktype corpse
 Crustacea_Gigantica.setHealth(1600, healthmax=1600)
-Crustacea_Gigantica.bloodType(color="blood")
+Crustacea_Gigantica.bloodType("blood")
 Crustacea_Gigantica.setDefense(armor=1, fire=1, earth=1, energy=1, ice=0, holy=1, death=1, physical=1, drown=1)
 Crustacea_Gigantica.setExperience(1800)
 Crustacea_Gigantica.setSpeed(300) ##?

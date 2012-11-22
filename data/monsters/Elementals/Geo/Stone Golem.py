@@ -1,6 +1,6 @@
 stone_golem = genMonster("Stone Golem", (67, 6005), "a stone golem")
 stone_golem.setHealth(270)
-stone_golem.bloodType(color="undead")
+stone_golem.bloodType("undead")
 stone_golem.setDefense(armor=33, fire=0.8, earth=0, energy=0.85, ice=1.1, holy=1, death=0.8, physical=0.8, drown=1)
 stone_golem.setExperience(160)
 stone_golem.setSpeed(180)

@@ -1,7 +1,7 @@
 #largely unknown
 weak_harbinger_of_darkness = genMonster("Weak Harbinger of Darkness", (244, 6336), "a weak harbinger of darkness")
 weak_harbinger_of_darkness.setHealth(10000)
-weak_harbinger_of_darkness.bloodType(color="blood")
+weak_harbinger_of_darkness.bloodType("blood")
 weak_harbinger_of_darkness.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 weak_harbinger_of_darkness.setExperience(0)
 weak_harbinger_of_darkness.setSpeed(400)

@@ -1,7 +1,7 @@
 #largely unknown
 eclipse_knight = genMonster("Eclipse Knight", (234, 6328), "an eclipse knight")
 eclipse_knight.setHealth(10000)
-eclipse_knight.bloodType(color="blood")
+eclipse_knight.bloodType("blood")
 eclipse_knight.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 eclipse_knight.setExperience(100)
 eclipse_knight.setSpeed(300)

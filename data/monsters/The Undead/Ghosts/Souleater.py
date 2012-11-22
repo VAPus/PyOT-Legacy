@@ -1,6 +1,6 @@
 souleater = genMonster("Souleater", (355, 12631), "a souleater")
 souleater.setHealth(1100)
-souleater.bloodType(color="undead")
+souleater.bloodType("undead")
 souleater.setDefense(armor=2, fire=1.1, earth=1, energy=1.1, ice=0.5, holy=1.1, death=0, physical=0.3, drown=1)
 souleater.setExperience(1300)
 souleater.setSpeed(250)

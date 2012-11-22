@@ -1,6 +1,6 @@
 draken_elite = genMonster("Draken Elite", (362, 12609), "a draken elite")
 draken_elite.setHealth(5550)
-draken_elite.bloodType(color="blood")
+draken_elite.bloodType("blood")
 draken_elite.setDefense(armor=64, fire=0, earth=0, energy=0.6, ice=1, holy=0.7, death=0.7, physical=1, drown=1)
 draken_elite.setExperience(4200)
 draken_elite.setSpeed(220)

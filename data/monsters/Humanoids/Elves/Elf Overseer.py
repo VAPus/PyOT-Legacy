@@ -2,7 +2,7 @@
 Elf_Overseer = genMonster("Elf Overseer", (159, 5980), "an elf overseer")
 Elf_Overseer.setOutfit(0, 150, 165, 10)
 Elf_Overseer.setHealth(500, healthmax=500)
-Elf_Overseer.bloodType(color="blood")
+Elf_Overseer.bloodType("blood")
 Elf_Overseer.setDefense(armor=18, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 Elf_Overseer.setExperience(290)
 Elf_Overseer.setSpeed(200)

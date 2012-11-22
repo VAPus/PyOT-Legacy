@@ -1,6 +1,6 @@
-jellyfish = game.monster.genMonster("Jellyfish", (452, 15284), "a jellyfish")
+jellyfish = genMonster("Jellyfish", (452, 15284), "a jellyfish")
 jellyfish.setHealth(55)
-jellyfish.bloodType(color="blood")
+jellyfish.bloodType("blood")
 jellyfish.setDefense(armor=5, fire=0, earth=0, energy=1.05, ice=1, holy=1, death=1, physical=1.05, drown=0)
 jellyfish.setExperience(0)
 jellyfish.setSpeed(250) #?

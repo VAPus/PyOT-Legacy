@@ -1,6 +1,6 @@
 muddy_earth_elemental = genMonster("Muddy Earth Elemental", (301, 8933), "a muddy earth elemental")
 muddy_earth_elemental.setHealth(650)
-muddy_earth_elemental.bloodType(color="undead")
+muddy_earth_elemental.bloodType("undead")
 muddy_earth_elemental.setDefense(armor=62, fire=1.15, earth=0, energy=0.85, ice=0.8, holy=0.5, death=0.6, physical=0.65, drown=1)
 muddy_earth_elemental.setExperience(450)
 muddy_earth_elemental.setSpeed(260)

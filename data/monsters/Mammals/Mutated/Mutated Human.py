@@ -1,7 +1,7 @@
 
 mutated_human = genMonster("Mutated Human", (323, 9107), "a mutated human")
 mutated_human.setHealth(240)
-mutated_human.bloodType(color="blood")
+mutated_human.bloodType("blood")
 mutated_human.setDefense(armor=15, fire=1, earth=0, energy=1, ice=0.8, holy=1.25, death=0, physical=1, drown=1)
 mutated_human.setExperience(150)
 mutated_human.setSpeed(240)

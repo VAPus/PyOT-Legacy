@@ -1,7 +1,7 @@
 adept_of_the_cult = genMonster("Adept of the Cult", (194, 6080), "an adept of the cult")
 adept_of_the_cult.setOutfit(114, 94, 94, 57)
 adept_of_the_cult.setHealth(430)
-adept_of_the_cult.bloodType(color="blood")
+adept_of_the_cult.bloodType("blood")
 adept_of_the_cult.setDefense(armor=35, fire=1, earth=0.6, energy=1.05, ice=0.8, holy=0.7, death=1.05, physical=1, drown=1)
 adept_of_the_cult.setExperience(400)
 adept_of_the_cult.setSpeed(210)

@@ -1,6 +1,6 @@
 hydra = genMonster("Hydra", (121, 6048), "a hydra")
 hydra.setHealth(2350)
-hydra.bloodType(color="blood")
+hydra.bloodType("blood")
 hydra.setDefense(armor=29, fire=1, earth=0, energy=1.1, ice=0.5, holy=0.7, death=1, physical=1.05, drown=1)
 hydra.setExperience(2100)
 hydra.setSpeed(260)

@@ -1,6 +1,6 @@
 dwarf_guard = genMonster("Dwarf Guard", (70, 6013), "a dwarf guard")
 dwarf_guard.setHealth(245)
-dwarf_guard.bloodType(color="blood")
+dwarf_guard.bloodType("blood")
 dwarf_guard.setDefense(armor=20, fire=1.05, earth=0.8, energy=1, ice=1, holy=1, death=1.05, physical=0.9, drown=1)
 dwarf_guard.setExperience(165)
 dwarf_guard.setSpeed(200)

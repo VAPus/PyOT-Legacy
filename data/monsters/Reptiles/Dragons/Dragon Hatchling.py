@@ -1,6 +1,6 @@
 dragon_hatchling = genMonster("Dragon Hatchling", (271, 7621), "a dragon hatchling")
 dragon_hatchling.setHealth(380)
-dragon_hatchling.bloodType(color="blood")
+dragon_hatchling.bloodType("blood")
 dragon_hatchling.setDefense(armor=25, fire=0, earth=0.25, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)
 dragon_hatchling.setExperience(185)
 dragon_hatchling.setSpeed(170)

@@ -1,6 +1,6 @@
 pirate_corsair = genMonster("Pirate Corsair", (98, 6080), "a pirate corsair")
 pirate_corsair.setHealth(675)
-pirate_corsair.bloodType(color="blood")
+pirate_corsair.bloodType("blood")
 pirate_corsair.setDefense(armor=22, fire=1.1, earth=0.8, energy=1, ice=0.95, holy=0.9, death=1.05, physical=1, drown=1)
 pirate_corsair.setExperience(350)
 pirate_corsair.setSpeed(230)

@@ -1,6 +1,6 @@
-lesser_swarmer = game.monster.genMonster("Lesser Swarmer", (460, 15385), "a lesser swarmer")
+lesser_swarmer = genMonster("Lesser Swarmer", (460, 15385), "a lesser swarmer")
 lesser_swarmer.setHealth(230, healthmax=230)
-lesser_swarmer.bloodType(color="slime")
+lesser_swarmer.bloodType("slime")
 lesser_swarmer.setDefense(armor=25, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 lesser_swarmer.setExperience(0)
 lesser_swarmer.setSpeed(250) #incorrect

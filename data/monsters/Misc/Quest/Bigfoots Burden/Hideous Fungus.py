@@ -1,9 +1,9 @@
-hideous_fungus = game.monster.genMonster("Hideous Fungus", (499, 17428), "a hideous fungus") #mostly unkniown including  blood
+hideous_fungus = genMonster("Hideous Fungus", (499, 17428), "a hideous fungus")
 hideous_fungus.setHealth(4600, healthmax=4600)
-hideous_fungus.bloodType(color="slime")
-hideous_fungus.setDefense(armor=25, fire=0.95, earth=0, energy=0.85, ice=0.85, holy=0.95, death=1, physical=1, drown=1)
+hideous_fungus.bloodType("slime")
+hideous_fungus.setDefense(armor=25, fire=0.95, earth=0, energy=0.85, ice=0.85, holy=0.95, death=0.65, physical=1, drown=1)
 hideous_fungus.setExperience(2900)
-hideous_fungus.setSpeed(speed)
+hideous_fungus.setSpeed(320)
 hideous_fungus.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=0)
 hideous_fungus.walkAround(energy=0, fire=0, poison=0)
 hideous_fungus.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)

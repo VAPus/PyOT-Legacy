@@ -1,6 +1,6 @@
-dragonling = game.monster.genMonster("Dragonling", (505, 18441), "a dragonling") #mostly unknown
+dragonling = genMonster("Dragonling", (505, 18441), "a dragonling") #mostly unknown
 dragonling.setHealth(2600, healthmax=2600)
-dragonling.bloodType(color="blood")
+dragonling.bloodType("blood")
 dragonling.setDefense(armor=20, fire=0, earth=1.02, energy=0.98, ice=0.98, holy=1, death=1, physical=1.02, drown=1)
 dragonling.setExperience(2200)
 dragonling.setSpeed(300) #unknown

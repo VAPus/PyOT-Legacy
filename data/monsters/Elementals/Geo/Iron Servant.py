@@ -1,6 +1,6 @@
 iron_servant = genMonster("Iron Servant", (395, 5980), "an iron servant")
 iron_servant.setHealth(350, healthmax=350)
-iron_servant.bloodType(color="blood")
+iron_servant.bloodType("blood")
 iron_servant.setDefense(armor=17, fire=0.75, earth=1.1, energy=0.75, ice=1, holy=0.8, death=1.1, physical=1, drown=1)
 iron_servant.setExperience(210)
 iron_servant.setSpeed(250)

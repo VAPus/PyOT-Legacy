@@ -2,7 +2,7 @@
 fury = genMonster("Fury", (149, 6081), "a fury")
 fury.setOutfit(94, 77, 96, 0) #needs addons
 fury.setHealth(4100, healthmax=4100)
-fury.bloodType(color="blood")
+fury.bloodType("blood")
 fury.setDefense(armor=37, fire=0, earth=1.1, energy=1.1, ice=0.7, holy=0.7, death=1.1, physical=1.1, drown=1)
 fury.setExperience(4000)
 fury.setSpeed(460)

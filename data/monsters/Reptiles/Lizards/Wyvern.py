@@ -1,7 +1,7 @@
 
 wyvern = genMonster("Wyvern", (239, 6302), "a wyvern")
 wyvern.setHealth(795)
-wyvern.bloodType(color="blood")
+wyvern.bloodType("blood")
 wyvern.setDefense(armor=20, fire=1, earth=0, energy=0.8, ice=0.9, holy=1, death=1, physical=1, drown=1)
 wyvern.setExperience(515)
 wyvern.setSpeed(200)

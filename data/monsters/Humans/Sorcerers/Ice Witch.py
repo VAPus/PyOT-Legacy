@@ -2,7 +2,7 @@
 ice_witch = genMonster("Ice Witch", (149, 6081), "an ice witch")
 ice_witch.setOutfit(0, 47, 105, 105)
 ice_witch.setHealth(650)
-ice_witch.bloodType(color="blood")
+ice_witch.bloodType("blood")
 ice_witch.setDefense(armor=77, fire=0.5, earth=1, energy=1, ice=0, holy=1, death=1, physical=1, drown=1)
 ice_witch.setExperience(580)
 ice_witch.setSpeed(188)

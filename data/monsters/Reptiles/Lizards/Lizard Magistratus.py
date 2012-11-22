@@ -1,7 +1,7 @@
 #mostly unknown
 lizard_magistratus = genMonster("Lizard Magistratus", (115, 6041), "a lizard magistratus")
 lizard_magistratus.setHealth(8000)
-lizard_magistratus.bloodType(color="blood")
+lizard_magistratus.bloodType("blood")
 lizard_magistratus.setDefense(armor=27, fire=0.15, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 lizard_magistratus.setExperience(200)
 lizard_magistratus.setSpeed(210)

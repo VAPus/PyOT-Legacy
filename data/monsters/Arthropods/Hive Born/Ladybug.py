@@ -1,6 +1,6 @@
-ladybug = game.monster.genMonster("Ladybug", (448, 15272), "a ladybug")
+ladybug = genMonster("Ladybug", (448, 15272), "a ladybug")
 ladybug.setHealth(255)
-ladybug.bloodType(color="slime")
+ladybug.bloodType("slime")
 ladybug.setDefense(armor=10, fire=1.05, earth=0.95, energy=1, ice=1.05, holy=1, death=1, physical=1.05, drown=1)
 ladybug.setExperience(70)
 ladybug.setSpeed(150) #incorrect

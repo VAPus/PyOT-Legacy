@@ -1,7 +1,7 @@
 #largely unknown
 gloombringer = genMonster("Gloombringer", (12, 5980), "a gloombringer")
 gloombringer.setHealth(10000)
-gloombringer.bloodType(color="blood")
+gloombringer.bloodType("blood")
 gloombringer.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 gloombringer.setExperience(0)
 gloombringer.setSpeed(300)

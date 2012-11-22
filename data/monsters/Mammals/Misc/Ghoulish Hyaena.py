@@ -1,6 +1,6 @@
 ghoulish_hyaena = genMonster("Ghoulish Hyaena", (94, 6026), "a ghoulish hyaena")
 ghoulish_hyaena.setHealth(400)
-ghoulish_hyaena.bloodType(color="blood")
+ghoulish_hyaena.bloodType("blood")
 ghoulish_hyaena.setDefense(armor=22, fire=1, earth=0.3, energy=1, ice=1, holy=1, death=0, physical=1, drown=1)
 ghoulish_hyaena.setExperience(195)
 ghoulish_hyaena.setSpeed(240)#unknown speed

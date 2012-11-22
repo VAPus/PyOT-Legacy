@@ -1,6 +1,6 @@
-waspoid = game.monster.genMonster("Waspoid", (8, 5980), "a waspoid")
+waspoid = genMonster("Waspoid", (8, 5980), "a waspoid")
 waspoid.setHealth(1100)
-waspoid.bloodType(color="slime")
+waspoid.bloodType("slime")
 waspoid.setDefense(armor=30, fire=1.1, earth=0, energy=0.75, ice=1, holy=1.05, death=0.95, physical=1.05, drown=1)
 waspoid.setExperience(830)
 waspoid.setSpeed(270) #incorrect

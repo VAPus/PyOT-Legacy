@@ -1,7 +1,7 @@
 
 mercury_blob = genMonster("Mercury Blob", (316, 9961), "a mercury blob")
 mercury_blob.setHealth(150)
-mercury_blob.bloodType(color="undead")
+mercury_blob.bloodType("undead")
 mercury_blob.setDefense(armor=2, fire=0.9, earth=0.35, energy=1, ice=0.85, holy=0.35, death=0, physical=0.9, drown=1)
 mercury_blob.setExperience(180)
 mercury_blob.setSpeed(210)

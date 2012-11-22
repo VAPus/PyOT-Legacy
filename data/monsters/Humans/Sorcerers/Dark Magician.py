@@ -2,7 +2,7 @@
 dark_magician = genMonster("Dark Magician", (133, 6080), "a dark magician")
 dark_magician.setOutfit(69, 66, 69, 66) #needs addons
 dark_magician.setHealth(325, healthmax=325)
-dark_magician.bloodType(color="blood")
+dark_magician.bloodType("blood")
 dark_magician.setDefense(armor=15, fire=0.9, earth=0.8, energy=0.8, ice=0.9, holy=0.8, death=1.05, physical=1, drown=1)
 dark_magician.setExperience(185)
 dark_magician.setSpeed(220)

@@ -1,6 +1,6 @@
-shark = game.monster.genMonster("Shark", (8, 5980), "a shark")
+shark = genMonster("Shark", (8, 5980), "a shark")
 shark.setHealth(1200, healthmax=1200)
-shark.bloodType(color="blood")
+shark.bloodType("blood")
 shark.setDefense(armor=15, fire=1, earth=0.8, energy=1.05, ice=1, holy=1, death=1, physical=1, drown=0)
 shark.setExperience(700)
 shark.setSpeed(300) #incorrect

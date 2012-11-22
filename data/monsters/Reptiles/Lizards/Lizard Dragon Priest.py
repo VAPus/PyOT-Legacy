@@ -1,6 +1,6 @@
 lizard_dragon_priest = genMonster("Lizard Dragon Priest", (339, 11280), "a lizard dragon priest")
 lizard_dragon_priest.setHealth(1450)
-lizard_dragon_priest.bloodType(color="blood")
+lizard_dragon_priest.bloodType("blood")
 lizard_dragon_priest.setDefense(armor=24, fire=0.15, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
 lizard_dragon_priest.setExperience(1320)
 lizard_dragon_priest.setSpeed(320)
