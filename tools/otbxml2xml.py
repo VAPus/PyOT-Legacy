@@ -388,12 +388,30 @@ if __name__ == "__main__":
     currName = ""
     count = 0
     i = 0
+    def _compareSub(elm1, elm2):
+        if len(elm1) == len(elm2) == 0:
+            return True
+        set1 = {}
+        set2 = {}
+
+        for _elm in elm1:
+            set1[_elm.tag] = _elm.get('value')
+        for _elm2 in elm2:
+            set2[_elm2.tag] = _elm2.get('value')
+
+        if len(set1) != len(set2):
+            return False
+
+        for name in set1:
+            if not name in set2 or set1[name] != set2[name]:
+                return False
+            
     for elem in container:
         id = elem.get("id")
         if "-" in id: continue
         
         id = int(id)
-        if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags"):
+        if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags") and _compareSub(currElem, elem):
             count += 1
             root.remove(elem)
             continue
@@ -418,3 +436,4 @@ if __name__ == "__main__":
         f.write(data)
 
         
+    
