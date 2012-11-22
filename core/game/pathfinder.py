@@ -56,7 +56,7 @@ class AStar(object):
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
         
-        if not self.final.verify(zStart, instanceId, checkCreature):
+        if not self.final.verify(zStart, instanceId, None):
             self.result = []
             return
         

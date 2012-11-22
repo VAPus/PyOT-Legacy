@@ -293,7 +293,7 @@ class Monster(Creature):
                 return
                 
         target = None
-
+        
         bestDist = 127
         for player in targets:
             # Can we target him, same floor
@@ -591,7 +591,7 @@ class MonsterBase(object):
         self.convinceable = convinceable
         self.pushable = pushable
         self.pushItems = pushItems
-        self.pushCreaturse = pushCreatures
+        self.pushCreatures = pushCreatures
         self.targetDistance = targetDistance
         self.runOnHealth = runOnHealth
         self.targetChange = targetChange

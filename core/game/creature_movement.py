@@ -268,7 +268,7 @@ class CreatureMovement(object):
                         if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
                             # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
                             break
-                        elif self.base.hostile and thing.isAttackable():
+                        elif self.base.hostile and thing.isAttackable(self):
                             # We can attack the creature.
                             self.target = thing
                             self.targetMode = 1
