@@ -58,19 +58,11 @@
 	<item id="408" name="wooden flooring"/>
 	<item id="409" name="white marble tile"/>
 	<item id="410" name="black marble tile"/>
-	<item flags="4" id="411" name="trapdoor">
+	<item flags="4" id="411-412" name="trapdoor">
 		<floorchange value="down"/>
 	</item>
 
-	<item flags="4" id="412" name="trapdoor">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="413" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="414" name="stairs">
+	<item flags="4" id="413-414" name="stairs">
 		<floorchange value="down"/>
 	</item>
 
@@ -78,12 +70,7 @@
 	<item id="416" name="stone tile"/>
 	<item id="417" name="tiled floor"/>
 	<item id="418" name="stone tile"/>
-	<item id="419" name="stone tile">
-		<description value="It seems to be a switch."/>
-		<walkStack value="0"/>
-	</item>
-
-	<item id="420" name="stone tile">
+	<item id="419-420" name="stone tile">
 		<description value="It seems to be a switch."/>
 		<walkStack value="0"/>
 	</item>
@@ -100,12 +87,7 @@
 	</item>
 
 	<item id="429" name="stone tile"/>
-	<item id="430" name="stone tile">
-		<description value="It seems to be a switch."/>
-		<walkStack value="0"/>
-	</item>
-
-	<item id="431" name="stone tile">
+	<item id="430-431" name="stone tile">
 		<description value="It seems to be a switch."/>
 		<walkStack value="0"/>
 	</item>
@@ -124,21 +106,12 @@
 
 	<item id="435" name="sewer grate"/>
 	<item id="436" name="stone floor"/>
-	<item flags="4" id="437" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="438" name="stairs">
+	<item flags="4" id="437-438" name="stairs">
 		<floorchange value="down"/>
 	</item>
 
 	<item flags="ts" id="439-450" name="wooden floor"/>
-	<item id="452" name="wooden floor">
-		<description value="It seems to be a switch."/>
-		<walkStack value="0"/>
-	</item>
-
-	<item id="453" name="wooden floor">
+	<item id="452-453" name="wooden floor">
 		<description value="It seems to be a switch."/>
 		<walkStack value="0"/>
 	</item>
@@ -185,20 +158,12 @@
 	</item>
 
 	<item id="596-599" name="strange carving"/>
-	<item flags="4" id="601" name="hole" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="600" name="hole" speed="150">
+	<item flags="4" id="600-601" name="hole" speed="150">
 		<floorchange value="down"/>
 	</item>
 
 	<item flags="t" id="602-603" name="ramp"/>
-	<item flags="4" id="604" name="hole" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="605" name="hole" speed="150">
+	<item flags="4" id="604-605" name="hole" speed="150">
 		<floorchange value="down"/>
 	</item>
 
@@ -233,22 +198,7 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16777217" id="727" name="lava">
-		<effect value="fire"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="728" name="lava">
-		<effect value="fire"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="729" name="lava">
-		<effect value="fire"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="730" name="lava">
+	<item flags="16777217" id="727-730" name="lava">
 		<effect value="fire"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -260,17 +210,7 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16777217" id="838" name="tar">
-		<effect value="poff"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="839" name="tar">
-		<effect value="poff"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="840" name="tar">
+	<item flags="16777217" id="838-840" name="tar">
 		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -338,19 +278,7 @@
 	<item flags="tb" id="1363-1364" name="white stone wall"/>
 	<item flags="t" id="1365-1372" name="archway"/>
 	<item flags="tb" id="1373-1398" name="ornamented wall"/>
-	<item flags="tb" id="1399" name="wall fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="tb" id="1400" name="wall fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="tb" id="1401" name="wall fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="tb" id="1402" name="wall fountain">
+	<item flags="tb" id="1399-1402" name="wall fountain">
 		<fluidSource value="water"/>
 	</item>
 
@@ -358,11 +286,7 @@
 	<item flags="tb" id="1409-1414" name="ornamented wall"/>
 	<item flags="tb" id="1415-1420" name="paravent"/>
 	<item flags="tb" id="1421-1438" name="ornamented wall"/>
-	<item flags="tb" id="1439" name="wall fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="tb" id="1440" name="wall fountain">
+	<item flags="tb" id="1439-1440" name="wall fountain">
 		<fluidSource value="water"/>
 	</item>
 
@@ -649,35 +573,11 @@
 	<item flags="ts" id="1822-1839" name="stone"/>
 	<item flags="ts" id="1840" name="mossy stone"/>
 	<item flags="ts" id="1841-1853" name="stone"/>
-	<item flags="16785409" id="1922" name="fountain">
+	<item flags="16785409" id="1922-1925" name="fountain">
 		<fluidSource value="water"/>
 	</item>
 
-	<item flags="16785409" id="1923" name="fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="1924" name="fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="1925" name="fountain">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="ts" id="1926" name="water basin">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="ts" id="1927" name="water basin">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="ts" id="1928" name="water basin">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="ts" id="1929" name="water basin">
+	<item flags="ts" id="1926-1929" name="water basin">
 		<fluidSource value="water"/>
 	</item>
 
@@ -749,15 +649,7 @@
 	</item>
 
 	<item flags="8201" id="1984" name="stone coffin"/>
-	<item flags="8201" id="1985" name="stone coffin">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="8201" id="1986" name="stone coffin">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="8201" id="1987" name="stone coffin">
+	<item flags="8201" id="1985-1987" name="stone coffin">
 		<containerSize value="10"/>
 	</item>
 
@@ -773,23 +665,7 @@
 
 	<item flags="8201" id="1995" name="sarcophagus"/>
 	<item id="1996-1997" name="campfire"/>
-	<item flags="16777220" id="1998" name="campfire">
-		<field value="fire"/>
-		<fieldDamage value="20"/>
-		<fieldTicks value="4000"/>
-		<fieldCount value="2"/>
-		<fieldDamage value="10"/>
-	</item>
-
-	<item flags="16777220" id="1999" name="campfire">
-		<field value="fire"/>
-		<fieldDamage value="20"/>
-		<fieldTicks value="4000"/>
-		<fieldCount value="2"/>
-		<fieldDamage value="10"/>
-	</item>
-
-	<item flags="16777220" id="2000" name="campfire">
+	<item flags="16777220" id="1998-2000" name="campfire">
 		<field value="fire"/>
 		<fieldDamage value="20"/>
 		<fieldTicks value="4000"/>
@@ -879,18 +755,10 @@
 	<item flags="16777225" id="2110-2113" name="coal basin"/>
 	<item flags="9" id="2114" name="coal basin"/>
 	<item flags="16777225" id="2115" name="stone coal basin"/>
-	<item flags="16777220" id="2118" name="fire field">
+	<item flags="16777220" id="2118-2119" name="fire field">
 		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
-		<fieldTicks value="10000"/>
-		<fieldCount value="7"/>
-		<fieldDamage value="10"/>
-	</item>
-
-	<item flags="16777220" id="2119" name="fire field">
-		<replaceable value="0"/>
-		<field value="fire"/>
 		<fieldTicks value="10000"/>
 		<fieldCount value="7"/>
 		<fieldDamage value="10"/>
@@ -966,7 +834,6 @@
 		<blocksolid value="1"/>
 	</item>
 
-	<item flags="16777219" id="2129" name="magic wall"/>
 	<item flags="5" id="2130" name="rush wood">
 		<decayTo value="0"/>
 		<duration value="45"/>
@@ -1293,19 +1160,7 @@
 	</item>
 
 	<item flags="12" id="2402-2417" name="sofa"/>
-	<item flags="s" id="2427" name="wardrobe">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="s" id="2428" name="wardrobe">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="s" id="2429" name="wardrobe">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="s" id="2430" name="wardrobe">
+	<item flags="s" id="2427-2430" name="wardrobe">
 		<containerSize value="6"/>
 	</item>
 
@@ -1329,27 +1184,7 @@
 		<containerSize value="10"/>
 	</item>
 
-	<item flags="9" id="2435" name="bookcase">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="9" id="2436" name="bookcase">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="9" id="2437" name="bookcase">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="9" id="2438" name="bookcase">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="9" id="2439" name="bookcase">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="9" id="2440" name="bookcase">
+	<item flags="9" id="2435-2440" name="bookcase">
 		<containerSize value="6"/>
 	</item>
 
@@ -1609,35 +1444,7 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="ts" id="2527" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2528" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2529" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2530" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2531" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2532" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2533" name="big wine cask">
-		<fluidSource value="wine"/>
-	</item>
-
-	<item flags="ts" id="2534" name="big wine cask">
+	<item flags="ts" id="2527-2534" name="big wine cask">
 		<fluidSource value="wine"/>
 	</item>
 
@@ -1696,20 +1503,12 @@
 	<item id="2608-2611" name="banner"/>
 	<item id="2612-2615" name="painting"/>
 	<item id="2616-2617" name="scarab ornament "/>
-	<item id="2618" name="picture">
-		<weight value="1000"/>
-	</item>
-
-	<item id="2619" name="picture">
+	<item id="2618-2619" name="picture">
 		<weight value="1000"/>
 	</item>
 
 	<item id="2620-2621" name="painting"/>
-	<item id="2622" name="picture">
-		<weight value="1000"/>
-	</item>
-
-	<item id="2623" name="picture">
+	<item id="2622-2623" name="picture">
 		<weight value="1000"/>
 	</item>
 
@@ -1729,50 +1528,36 @@
 		<weight value="1000"/>
 	</item>
 
-	<item flags="65632" id="2639" name="picture">
+	<item flags="65632" id="2639-2641" name="picture">
 		<weight value="1000"/>
 	</item>
 
-	<item flags="65632" id="2640" name="picture">
-		<weight value="1000"/>
-	</item>
-
-	<item flags="65632" id="2641" name="picture">
-		<weight value="1000"/>
-	</item>
-
-	<item id="2642" name="purple tapestry"/>
-	<item id="2643" name="purple tapestry"/>
+	<item id="2642-2643" name="purple tapestry"/>
 	<item flags="65632" id="2644" name="purple tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2645" name="green tapestry"/>
-	<item id="2646" name="green tapestry"/>
+	<item id="2645-2646" name="green tapestry"/>
 	<item flags="65632" id="2647" name="green tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2648" name="yellow tapestry"/>
-	<item id="2649" name="yellow tapestry"/>
+	<item id="2648-2649" name="yellow tapestry"/>
 	<item flags="65632" id="2650" name="yellow tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2651" name="orange tapestry"/>
-	<item id="2652" name="orange tapestry"/>
+	<item id="2651-2652" name="orange tapestry"/>
 	<item flags="65632" id="2653" name="orange tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2654" name="red tapestry"/>
-	<item id="2655" name="red tapestry"/>
+	<item id="2654-2655" name="red tapestry"/>
 	<item flags="65632" id="2656" name="red tapestry">
 		<weight value="1000"/>
 	</item>
 
-	<item id="2657" name="blue tapestry"/>
-	<item id="2658" name="blue tapestry"/>
+	<item id="2657-2658" name="blue tapestry"/>
 	<item flags="65632" id="2659" name="blue tapestry">
 		<weight value="1000"/>
 	</item>
@@ -1797,8 +1582,7 @@
 		<weight value="1500"/>
 	</item>
 
-	<item id="2665" name="white tapestry"/>
-	<item id="2666" name="white tapestry"/>
+	<item id="2665-2666" name="white tapestry"/>
 	<item flags="65632" id="2667" name="white tapestry">
 		<weight value="1000"/>
 	</item>
@@ -3271,11 +3055,7 @@
 		<weight value="40"/>
 	</item>
 
-	<item flags="p" id="3108" name="rubbish">
-		<weight value="10"/>
-	</item>
-
-	<item flags="p" id="3109" name="rubbish">
+	<item flags="p" id="3108-3109" name="rubbish">
 		<weight value="10"/>
 	</item>
 
@@ -3347,11 +3127,7 @@
 		<weight value="50"/>
 	</item>
 
-	<item flags="p" id="3127" name="rubbish">
-		<weight value="60"/>
-	</item>
-
-	<item flags="p" id="3128" name="rubbish">
+	<item flags="p" id="3127-3128" name="rubbish">
 		<weight value="60"/>
 	</item>
 
@@ -3370,35 +3146,11 @@
 	<item id="3132" name="animal skull"/>
 	<item id="3133" name="humanoid remains"/>
 	<item id="3134" name="smoke"/>
-	<item flags="p" id="3135" name="wooden trash">
+	<item flags="p" id="3135-3140" name="wooden trash">
 		<weight value="100"/>
 	</item>
 
-	<item flags="p" id="3136" name="wooden trash">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="3137" name="wooden trash">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="3138" name="wooden trash">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="3139" name="wooden trash">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="3140" name="wooden trash">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="3141" name="metal trash">
-		<weight value="300"/>
-	</item>
-
-	<item flags="p" id="3142" name="metal trash">
+	<item flags="p" id="3141-3142" name="metal trash">
 		<weight value="300"/>
 	</item>
 
@@ -3424,11 +3176,7 @@
 		<weight value="105"/>
 	</item>
 
-	<item flags="240" id="3150" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3151" name="spell rune">
+	<item flags="240" id="3150-3151" name="spell rune">
 		<weight value="120"/>
 	</item>
 
@@ -3479,11 +3227,7 @@
 		<weight value="52"/>
 	</item>
 
-	<item flags="240" id="3162" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3163" name="spell rune">
+	<item flags="240" id="3162-3163" name="spell rune">
 		<weight value="120"/>
 	</item>
 
@@ -3502,23 +3246,7 @@
 		<weight value="52"/>
 	</item>
 
-	<item flags="240" id="3167" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3168" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3169" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3170" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3171" name="spell rune">
+	<item flags="240" id="3167-3171" name="spell rune">
 		<weight value="120"/>
 	</item>
 
@@ -3576,23 +3304,7 @@
 		<weight value="42"/>
 	</item>
 
-	<item flags="240" id="3183" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3184" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3185" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3186" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3187" name="spell rune">
+	<item flags="240" id="3183-3187" name="spell rune">
 		<weight value="120"/>
 	</item>
 
@@ -3621,11 +3333,7 @@
 		<weight value="105"/>
 	</item>
 
-	<item flags="240" id="3193" name="spell rune">
-		<weight value="120"/>
-	</item>
-
-	<item flags="240" id="3194" name="spell rune">
+	<item flags="240" id="3193-3194" name="spell rune">
 		<weight value="120"/>
 	</item>
 
@@ -3913,11 +3621,6 @@
 
 	<item flags="p" id="3251" name="blood orb">
 		<weight value="150"/>
-	</item>
-
-	<item flags="p" id="3252" name="post horn">
-		<description value="It's property of the Postmaster's Guild and only rewarded to loyal members."/>
-		<weight value="1500"/>
 	</item>
 
 	<item flags="p" id="3253" name="backpack of holding">
@@ -5293,31 +4996,11 @@
 		<weight value="500"/>
 	</item>
 
-	<item flags="p" id="3474" name="bowl">
+	<item flags="p" id="3474-3476" name="bowl">
 		<weight value="1850"/>
 	</item>
 
-	<item flags="p" id="3475" name="bowl">
-		<weight value="1850"/>
-	</item>
-
-	<item flags="p" id="3476" name="bowl">
-		<weight value="1850"/>
-	</item>
-
-	<item flags="112" id="3477" name="ewer" type="12">
-		<weight value="1750"/>
-	</item>
-
-	<item flags="112" id="3478" name="ewer" type="12">
-		<weight value="1750"/>
-	</item>
-
-	<item flags="112" id="3479" name="ewer" type="12">
-		<weight value="1750"/>
-	</item>
-
-	<item flags="112" id="3480" name="ewer" type="12">
+	<item flags="112" id="3477-3480" name="ewer" type="12">
 		<weight value="1750"/>
 	</item>
 
@@ -5366,19 +5049,7 @@
 		<rotateTo value="3488"/>
 	</item>
 
-	<item flags="9" id="3497" name="locker">
-		<containerSize value="3"/>
-	</item>
-
-	<item flags="9" id="3498" name="locker">
-		<containerSize value="3"/>
-	</item>
-
-	<item flags="9" id="3499" name="locker">
-		<containerSize value="3"/>
-	</item>
-
-	<item flags="9" id="3500" name="locker">
+	<item flags="9" id="3497-3500" name="locker">
 		<containerSize value="3"/>
 	</item>
 
@@ -5404,11 +5075,6 @@
 		<weight value="50"/>
 		<writeable value="1"/>
 		<maxTextLen value="1999"/>
-	</item>
-
-	<item flags="p" id="3506" name="stamped letter">
-		<weight value="30"/>
-		<readable value="1"/>
 	</item>
 
 	<item flags="16480" id="3507" name="label">
@@ -5483,11 +5149,7 @@
 		<weight value="500"/>
 	</item>
 
-	<item flags="224" id="3547" name="tic-tac-toe token">
-		<weight value="500"/>
-	</item>
-
-	<item flags="224" id="3548" name="tic-tac-toe token">
+	<item flags="224" id="3547-3548" name="tic-tac-toe token">
 		<weight value="500"/>
 	</item>
 
@@ -5781,10 +5443,6 @@
 		<weight value="1250"/>
 	</item>
 
-	<item flags="224" id="3606" name="egg">
-		<weight value="30"/>
-	</item>
-
 	<item flags="224" id="3607" name="cheese">
 		<weight value="400"/>
 	</item>
@@ -5921,11 +5579,7 @@
 		<weight value="10"/>
 	</item>
 
-	<item flags="224" id="3729" name="some mushrooms">
-		<weight value="10"/>
-	</item>
-
-	<item flags="224" id="3730" name="some mushrooms">
+	<item flags="224" id="3729-3730" name="some mushrooms">
 		<weight value="10"/>
 	</item>
 
@@ -6044,13 +5698,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="3996" name="dead rat">
-		<weight value="2000"/>
-		<decayTo value="0"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
 	<item flags="p" id="3998" name="dead snake">
 		<weight value="1200"/>
 		<decayTo value="3999"/>
@@ -6132,13 +5779,6 @@
 	<item flags="p" id="4009" name="dead wolf">
 		<weight value="8000"/>
 		<decayTo value="4009"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="p" id="4009" name="dead wolf">
-		<weight value="4000"/>
-		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
 	</item>
@@ -6235,13 +5875,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="4022" name="dead dog">
-		<weight value="700"/>
-		<decayTo value="0"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
 	<item flags="p" id="4024" name="slain skeleton">
 		<weight value="40000"/>
 		<containerSize value="10"/>
@@ -6283,20 +5916,8 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="m" id="4031" name="dead bear">
+	<item flags="m" id="4031-4032" name="dead bear">
 		<decayTo value="4032"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4032" name="dead bear">
-		<decayTo value="4032"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4032" name="dead bear">
-		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
 	</item>
@@ -6308,11 +5929,6 @@
 	</item>
 
 	<item flags="p" id="4296" name="slain ghoul">
-		<weight value="60200"/>
-		<corpseType value="undead"/>
-	</item>
-
-	<item flags="p" id="4036" name="slain ghoul">
 		<weight value="60200"/>
 		<corpseType value="undead"/>
 	</item>
@@ -6408,18 +6024,12 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="4013" name="dead minotaur">
-		<weight value="67520"/>
-		<containerSize value="10"/>
-		<corpseType value="blood"/>
-	</item>
-
 	<item flags="m" id="168" name="dead minotaur">
 		<weight value="60000"/>
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="m" id="371" name="dead minotaur">
+	<item flags="m" id="371-372" name="dead minotaur">
 		<weight value="60000"/>
 		<corpseType value="blood"/>
 	</item>
@@ -6444,11 +6054,6 @@
 	<item flags="p" id="4274" name="dead minotaur">
 		<weight value="67520"/>
 		<containerSize value="10"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="372" name="dead minotaur">
-		<weight value="60000"/>
 		<corpseType value="blood"/>
 	</item>
 
@@ -6487,11 +6092,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="m" id="168" name="dead minotaur">
-		<weight value="60000"/>
-		<corpseType value="blood"/>
-	</item>
-
 	<item flags="m" id="4062" name="dead dragon lord">
 		<containerSize value="28"/>
 		<decayTo value="4063"/>
@@ -6503,13 +6103,6 @@
 	<item flags="m" id="4063" name="dead dragon">
 		<containerSize value="28"/>
 		<decayTo value="4064"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4064" name="dead dragon">
-		<containerSize value="10"/>
-		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
 	</item>
@@ -6552,21 +6145,9 @@
 		<fluidSource value="blood"/>
 	</item>
 
-	<item flags="m" id="4071" name="dead lion">
+	<item flags="m" id="4071-4072" name="dead lion">
 		<decayTo value="4072"/>
 		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4072" name="dead lion">
-		<decayTo value="4072"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4072" name="dead lion">
-		<decayTo value="0"/>
-		<duration value="900"/>
 		<corpseType value="blood"/>
 	</item>
 
@@ -6578,21 +6159,9 @@
 		<fluidSource value="blood"/>
 	</item>
 
-	<item flags="m" id="4075" name="dead bear">
+	<item flags="m" id="4075-4076" name="dead bear">
 		<decayTo value="4076"/>
 		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4076" name="dead bear">
-		<decayTo value="4076"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4076" name="dead bear">
-		<decayTo value="0"/>
-		<duration value="900"/>
 		<corpseType value="blood"/>
 	</item>
 
@@ -6734,22 +6303,9 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="m" id="4098" name="slain demon">
+	<item flags="m" id="4098-4099" name="slain demon">
 		<containerSize value="24"/>
 		<decayTo value="4099"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4099" name="slain demon">
-		<containerSize value="24"/>
-		<decayTo value="4099"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4099" name="slain demon">
-		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
 	</item>
@@ -6857,12 +6413,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="m" id="4114" name="dead behemoth">
-		<decayTo value="0"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
-	</item>
-
 	<item flags="p" id="4116" name="dead pig">
 		<weight value="1000"/>
 		<containerSize value="5"/>
@@ -6925,10 +6475,6 @@
 		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
-	</item>
-
-	<item flags="p" id="4123" name="dead goblin">
-		<weight value="4000"/>
 	</item>
 
 	<item flags="p" id="4125" name="dead spider">
@@ -7033,10 +6579,6 @@
 		<corpseType value="undead"/>
 	</item>
 
-	<item flags="p" id="4139" name="slain vampire">
-		<weight value="60000"/>
-	</item>
-
 	<item flags="p" id="4141" name="dead dwarf">
 		<weight value="60000"/>
 		<containerSize value="10"/>
@@ -7059,10 +6601,6 @@
 		<decayTo value="0"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
-	</item>
-
-	<item flags="p" id="4143" name="dead dwarf">
-		<weight value="60000"/>
 	</item>
 
 	<item flags="p" id="4145" name="dead rotworm">
@@ -7759,15 +7297,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="4243" name="dead human">
-		<weight value="60000"/>
-	</item>
-
-	<item flags="p" id="4244" name="dead human">
-		<weight value="60000"/>
-	</item>
-
-	<item flags="p" id="4245" name="dead human">
+	<item flags="p" id="4243-4245" name="dead human">
 		<weight value="60000"/>
 	</item>
 
@@ -7815,13 +7345,6 @@
 		<duration value="10"/>
 		<corpseType value="blood"/>
 		<fluidSource value="blood"/>
-	</item>
-
-	<item flags="p" id="4252" name="dead troll">
-		<weight value="25040"/>
-		<decayTo value="4178"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
 	</item>
 
 	<item flags="p" id="4178" name="dead troll">
@@ -7970,25 +7493,6 @@
 		<duration value="600"/>
 	</item>
 
-	<item flags="p" id="4274" name="dead minotaur">
-		<weight value="60000"/>
-		<containerSize value="10"/>
-		<decayTo value="4275"/>
-		<duration value="600"/>
-	</item>
-
-	<item flags="p" id="4275" name="dead minotaur">
-		<weight value="60000"/>
-		<decayTo value="4276"/>
-		<duration value="600"/>
-	</item>
-
-	<item flags="p" id="4276" name="dead minotaur">
-		<weight value="60000"/>
-		<decayTo value="0"/>
-		<duration value="600"/>
-	</item>
-
 	<item flags="p" id="4277" name="dead deer">
 		<weight value="25000"/>
 		<containerSize value="5"/>
@@ -8012,12 +7516,6 @@
 		<duration value="600"/>
 	</item>
 
-	<item flags="p" id="4280" name="dead deer">
-		<weight value="18000"/>
-		<decayTo value="0"/>
-		<duration value="600"/>
-	</item>
-
 	<item flags="p" id="4281" name="dead dog">
 		<weight value="1000"/>
 		<containerSize value="5"/>
@@ -8032,11 +7530,7 @@
 		<containerSize value="5"/>
 	</item>
 
-	<item flags="p" id="4283" name="dead dog">
-		<weight value="700"/>
-	</item>
-
-	<item flags="p" id="4284" name="dead dog">
+	<item flags="p" id="4283-4284" name="dead dog">
 		<weight value="700"/>
 	</item>
 
@@ -8068,11 +7562,6 @@
 		<decayTo value="4289"/>
 		<duration value="600"/>
 		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4289" name="dead dragon">
-		<decayTo value="0"/>
-		<duration value="600"/>
 	</item>
 
 	<item flags="p" id="4290" name="remains of a ghost">
@@ -8117,13 +7606,6 @@
 		<corpseType value="undead"/>
 	</item>
 
-	<item flags="p" id="4296" name="slain ghoul">
-		<weight value="60000"/>
-		<decayTo value="4297"/>
-		<duration value="600"/>
-		<corpseType value="undead"/>
-	</item>
-
 	<item flags="p" id="4297" name="slain ghoul">
 		<weight value="60000"/>
 		<decayTo value="0"/>
@@ -8152,13 +7634,6 @@
 		<containerSize value="5"/>
 		<decayTo value="4302"/>
 		<duration value="900"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="p" id="4302" name="dead rabbit">
-		<weight value="1000"/>
-		<decayTo value="4303"/>
-		<duration value="600"/>
 		<corpseType value="blood"/>
 	</item>
 
@@ -8219,11 +7694,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="4" id="482" name="ladder">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="483" name="ladder">
+	<item flags="4" id="482-483" name="ladder">
 		<floorchange value="down"/>
 	</item>
 
@@ -8258,22 +7729,13 @@
 		<walkStack value="0"/>
 	</item>
 
-	<item id="563" name="wooden tile">
-		<description value="It seems to be a switch."/>
-		<walkStack value="0"/>
-	</item>
-
-	<item id="564" name="wooden tile">
+	<item id="563-564" name="wooden tile">
 		<description value="It seems to be a switch."/>
 		<walkStack value="0"/>
 	</item>
 
 	<item flags="t" id="565" name="stone roof"/>
-	<item flags="4" id="566" name="stone stairway">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="567" name="stone stairway">
+	<item flags="4" id="566-567" name="stone stairway">
 		<floorchange value="down"/>
 	</item>
 
@@ -8510,19 +7972,7 @@
 	<item flags="tb" id="2092" name="statue"/>
 	<item flags="ts" id="2093" name="statue"/>
 	<item flags="ts" id="2094-2097" name="dried well"/>
-	<item flags="16785409" id="2098" name="poison well">
-		<fluidSource value="slime"/>
-	</item>
-
-	<item flags="16785409" id="2099" name="poison well">
-		<fluidSource value="slime"/>
-	</item>
-
-	<item flags="16785409" id="2100" name="poison well">
-		<fluidSource value="slime"/>
-	</item>
-
-	<item flags="16785409" id="2101" name="poison well">
+	<item flags="16785409" id="2098-2101" name="poison well">
 		<fluidSource value="slime"/>
 	</item>
 
@@ -8603,36 +8053,16 @@
 	</item>
 
 	<item flags="76" id="2426" name="small trunk"/>
-	<item flags="s" id="2455" name="bookcase">
+	<item flags="s" id="2455-2458" name="bookcase">
 		<containerSize value="10"/>
 	</item>
 
-	<item flags="s" id="2456" name="bookcase">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="s" id="2457" name="bookcase">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="s" id="2458" name="bookcase">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="s" id="2459" name="bamboo shelf">
-		<containerSize value="6"/>
-	</item>
-
-	<item flags="s" id="2460" name="bamboo shelf">
+	<item flags="s" id="2459-2460" name="bamboo shelf">
 		<containerSize value="6"/>
 	</item>
 
 	<item flags="s" id="2461-2462" name="bookcase"/>
-	<item flags="s" id="2463" name="bookcase">
-		<containerSize value="10"/>
-	</item>
-
-	<item flags="s" id="2464" name="bookcase">
+	<item flags="s" id="2463-2464" name="bookcase">
 		<containerSize value="10"/>
 	</item>
 
@@ -8904,11 +8334,7 @@
 		<slotType value="backpack"/>
 	</item>
 
-	<item flags="112" id="2883" name="cup" type="12">
-		<weight value="200"/>
-	</item>
-
-	<item flags="112" id="2884" name="cup" type="12">
+	<item flags="112" id="2883-2884" name="cup" type="12">
 		<weight value="200"/>
 	</item>
 
@@ -9754,42 +9180,7 @@
 	<item flags="t" id="4569-4583" name="mossy spots"/>
 	<item id="4584" name="rocks" speed="150"/>
 	<item flags="t" id="4585-4596" name="rocks" speed="150"/>
-	<item flags="16777217" id="4597" name="shallow water">
-		<description value="You see the silvery movement of fish."/>
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4598" name="shallow water">
-		<description value="You see the silvery movement of fish."/>
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4599" name="shallow water">
-		<description value="You see the silvery movement of fish."/>
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4600" name="shallow water">
-		<description value="You see the silvery movement of fish."/>
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4601" name="shallow water">
-		<description value="You see the silvery movement of fish."/>
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4602" name="shallow water">
+	<item flags="16777217" id="4597-4602" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
 		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
@@ -9844,197 +9235,31 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16777216" id="629" name="shallow water" speed="200">
+	<item flags="16777216" id="629-634" name="shallow water" speed="200">
 		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
-	<item flags="16777216" id="630" name="shallow water" speed="200">
-		<effect value="bluebubble"/>
+	<item flags="16777216" id="4621-4632" name="shallow water" speed="160">
 		<fluidSource value="water"/>
 	</item>
 
-	<item flags="16777216" id="631" name="shallow water" speed="200">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="632" name="shallow water" speed="200">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="633" name="shallow water" speed="200">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="634" name="shallow water" speed="200">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4621" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4622" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4623" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4624" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4625" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4626" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4627" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4628" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4629" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4630" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4631" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4632" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="4633" name="shallow water">
+	<item flags="16785409" id="4633-4640" name="shallow water">
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16785409" id="4634" name="shallow water">
+	<item flags="ts" id="4641-4644" name="shallow water">
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16785409" id="4635" name="shallow water">
+	<item flags="16785409" id="4645-4652" name="shallow water">
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
 
-	<item flags="16785409" id="4636" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4637" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4638" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4639" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4640" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="ts" id="4641" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="ts" id="4642" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="ts" id="4643" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="ts" id="4644" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4645" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4646" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4647" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4648" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4649" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4650" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4651" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16785409" id="4652" name="shallow water">
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4653" name="shallow water" speed="1">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4654" name="shallow water" speed="1">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4655" name="shallow water" speed="1">
+	<item flags="16777217" id="4653-4655" name="shallow water" speed="1">
 		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
@@ -10044,112 +9269,7 @@
 	<item flags="t" id="4664-4667" name="dirt"/>
 	<item flags="8396800" id="4668-4675" name="dirt"/>
 	<item flags="t" id="4676-4679" name="dirt"/>
-	<item flags="s" id="4680" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4681" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4682" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4683" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4684" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4685" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4686" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4687" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4688" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4689" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4690" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4691" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4692" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4693" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4694" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4695" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4696" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4697" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4698" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4699" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4700" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="s" id="4701" name="swamp">
+	<item flags="s" id="4680-4701" name="swamp">
 		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -10158,37 +9278,7 @@
 	<item flags="t" id="4726-4729" name="snow"/>
 	<item flags="8396800" id="4730-4733" name="snow"/>
 	<item flags="t" id="4734-4737" name="snow"/>
-	<item flags="16777217" id="4738" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4739" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4740" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4741" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4742" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4743" name="swamp">
-		<effect value="greenbubble"/>
-		<allowpickupable value="1"/>
-	</item>
-
-	<item flags="16777217" id="4744" name="swamp">
+	<item flags="16777217" id="4738-4744" name="swamp">
 		<effect value="greenbubble"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -10203,67 +9293,22 @@
 	<item flags="t" id="4793-4796" name="dirt"/>
 	<item flags="8396800" id="4797-4804" name="dirt"/>
 	<item flags="t" id="4805-4808" name="dirt"/>
-	<item flags="16777216" id="4809" name="shallow water" speed="170">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4810" name="shallow water" speed="170">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4811" name="shallow water" speed="170">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4812" name="shallow water" speed="170">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4813" name="shallow water" speed="170">
-		<effect value="bluebubble"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777216" id="4814" name="shallow water" speed="170">
+	<item flags="16777216" id="4809-4814" name="shallow water" speed="170">
 		<effect value="bluebubble"/>
 		<fluidSource value="water"/>
 	</item>
 
 	<item flags="tb" id="4815-4816" name="mountain"/>
-	<item flags="16785408" id="4817" name="shallow water">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785408" id="4818" name="shallow water">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785408" id="4819" name="shallow water">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785408" id="4820" name="shallow water">
+	<item flags="16785408" id="4817-4820" name="shallow water">
 		<fluidSource value="water"/>
 	</item>
 
 	<item id="4821-4822" name="dirt" speed="180"/>
-	<item flags="4" id="4823" name="stairs">
+	<item flags="4" id="4823-4826" name="stairs">
 		<floorchange value="down"/>
 	</item>
 
 	<item flags="4" id="859" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="4825" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="4826" name="stairs">
 		<floorchange value="down"/>
 	</item>
 
@@ -10406,26 +9451,13 @@
 		<weight value="1800"/>
 	</item>
 
-	<item flags="p" id="4868" name="botanist's container">
-		<weight value="2000"/>
-	</item>
-
-	<item flags="p" id="4869" name="botanist's container">
-		<weight value="2000"/>
-	</item>
-
-	<item flags="p" id="4870" name="botanist's container">
+	<item flags="p" id="4868-4870" name="botanist's container">
 		<weight value="2000"/>
 	</item>
 
 	<item flags="p" id="4871" name="explorer brooch">
 		<description value="It is the official badge of the explorer society."/>
 		<weight value="90"/>
-	</item>
-
-	<item flags="112" id="3456" name="pick">
-		<description value="It is a masterpiece of dwarvish smithery and made of especially hard steel."/>
-		<weight value="6000"/>
 	</item>
 
 	<item flags="ts" id="5676" name="hydra eggs"/>
@@ -10435,10 +9467,6 @@
 	<item flags="270339" id="4884" name="ship"/>
 	<item flags="tb" id="4885-4903" name="ship"/>
 	<item flags="tb" id="4904-4910" name="ship cabin wall"/>
-	<item flags="s" id="4913" name="closed door">
-		<description value="It is locked."/>
-	</item>
-
 	<item flags="s" id="5006" name="closed door">
 		<transformUseTo value="4914"/>
 	</item>
@@ -10447,7 +9475,7 @@
 		<transformUseTo value="5006"/>
 	</item>
 
-	<item flags="s" id="4912" name="closed door">
+	<item flags="s" id="4912-4913" name="closed door">
 		<description value="It is locked."/>
 	</item>
 
@@ -10482,15 +9510,7 @@
 	<item flags="s" id="4987-4988" name="cleat"/>
 	<item flags="16785409" id="4989" name="white flag"/>
 	<item flags="16785409" id="4990" name="pirate flag"/>
-	<item flags="p" id="4991" name="exotic butterfly">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="4992" name="exotic butterfly">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="4993" name="exotic butterfly">
+	<item flags="p" id="4991-4993" name="exotic butterfly">
 		<weight value="100"/>
 	</item>
 
@@ -10524,8 +9544,7 @@
 		<weight value="30"/>
 	</item>
 
-	<item flags="16785412" id="5022" name="magic forcefield"/>
-	<item flags="16785412" id="5023" name="magic forcefield"/>
+	<item flags="16785412" id="5022-5023" name="magic forcefield"/>
 	<item id="5045" name="flat roof"/>
 	<item flags="65" id="5046" name="monkey statue">
 		<description value="The words 'See no evil' are engraved on it."/>
@@ -10924,10 +9943,7 @@
 
 	<item id="5295-5300" name="wooden plank"/>
 	<item id="5301" name="wooden planks"/>
-	<item flags="ts" id="5302" name="white stone wall window">
-	</item>
-
-	<item flags="ts" id="5303" name="white stone wall window">
+	<item flags="ts" id="5302-5303" name="white stone wall window">
 	</item>
 
 	<item flags="s" id="5304-5306" name="white stone railing"/>
@@ -11300,8 +10316,7 @@
 	<item flags="t" id="5586-5594" name="brown carpet"/>
 	<item id="5595-5596" name="swords"/>
 	<item flags="tb" id="5597-5612" name="catapult"/>
-	<item id="5613" name="pirate tapestry"/>
-	<item id="5614" name="pirate tapestry"/>
+	<item id="5613-5614" name="pirate tapestry"/>
 	<item flags="65632" id="5615" name="pirate tapestry">
 		<weight value="1000"/>
 	</item>
@@ -11435,10 +10450,6 @@
 
 	<item flags="tb" id="5692-5703" name="ballista"/>
 	<item flags="16777217" id="5704-5705" name="shark"/>
-	<item flags="p" id="5090" name="treasure map">
-		<weight value="830"/>
-	</item>
-
 	<item flags="ts" id="5707-5709" name="rocks"/>
 	<item flags="112" id="5710" name="light shovel">
 		<weight value="1500"/>
@@ -11903,11 +10914,6 @@
 		<weight value="250"/>
 	</item>
 
-	<item flags="p" id="3351" name="steel helmet">
-		<description value="The words 'Ramsay the Reckless' are engraved inside. It appears to be cracked and broken."/>
-		<weight value="4600"/>
-	</item>
-
 	<item flags="224" id="5925" name="hardened bone">
 		<weight value="600"/>
 	</item>
@@ -12068,10 +11074,6 @@
 	<item flags="p" id="4831" name="old parchment">
 		<description value="It is covered with foreign symbols."/>
 		<weight value="200"/>
-	</item>
-
-	<item flags="p" id="5952" name="lottery ticket">
-		<weight value="120"/>
 	</item>
 
 	<item flags="16777312" id="5958" name="winning lottery ticket">
@@ -13152,10 +12154,6 @@
 		<containerSize value="1"/>
 	</item>
 
-	<item flags="p" id="2393" name="heart pillow">
-		<weight value="1700"/>
-	</item>
-
 	<item flags="p" id="6106" name="bottle of whisper beer">
 		<weight value="300"/>
 	</item>
@@ -13218,11 +12216,6 @@
 
 	<item flags="1048576" id="6121-6122" name="sign"/>
 	<item flags="ts" id="6123" name="piano"/>
-	<item flags="p" id="3121" name="damaged logbook">
-		<description value="It must be the one which the explorer society requested."/>
-		<weight value="1100"/>
-	</item>
-
 	<item flags="p" id="6125" name="tortoise egg from Nargor">
 		<description value="Handle with care and don't try to eat it."/>
 		<weight value="30"/>
@@ -13264,11 +12257,7 @@
 	<item flags="8396800" id="6152-6158" name="roof"/>
 	<item flags="s" id="6159-6170" name="grass"/>
 	<item id="6171" name="grass roof" speed="160"/>
-	<item flags="4" id="6172" name="hole" speed="160">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="6173" name="hole" speed="160">
+	<item flags="4" id="6172-6173" name="hole" speed="160">
 		<floorchange value="down"/>
 	</item>
 
@@ -14016,80 +13005,34 @@
 
 	<item id="6433" name="blue tapestry"/>
 	<item id="6434" name="demon trophy"/>
-	<item flags="ts" id="6435" name="framework window">
+	<item flags="ts" id="6435-6438" name="framework window">
 	</item>
 
-	<item flags="ts" id="6436" name="framework window">
+	<item flags="ts" id="6439-6442" name="brick window">
 	</item>
 
-	<item flags="ts" id="6437" name="framework window"/>
-	<item flags="ts" id="6438" name="framework window"/>
-	<item flags="ts" id="6439" name="brick window">
+	<item flags="ts" id="6443-6446" name="stone window">
 	</item>
 
-	<item flags="ts" id="6440" name="brick window">
+	<item flags="ts" id="6447-6448" name="marble window"/>
+	<item flags="ts" id="6449-6452" name="tree window">
 	</item>
 
-	<item flags="ts" id="6441" name="brick window"/>
-	<item flags="ts" id="6442" name="brick window"/>
-	<item flags="ts" id="6443" name="stone window">
+	<item flags="ts" id="6453-6456" name="sandstone window">
 	</item>
 
-	<item flags="ts" id="6444" name="stone window">
+	<item flags="ts" id="6457-6460" name="bamboo window">
 	</item>
 
-	<item flags="ts" id="6445" name="stone window"/>
-	<item flags="ts" id="6446" name="stone window"/>
-	<item flags="ts" id="6447" name="marble window"/>
-	<item flags="ts" id="6448" name="marble window"/>
-	<item flags="ts" id="6449" name="tree window">
+	<item flags="ts" id="6461-6464" name="sandstone window">
 	</item>
 
-	<item flags="ts" id="6450" name="tree window">
+	<item flags="ts" id="6465-6468" name="stone window">
 	</item>
 
-	<item flags="ts" id="6451" name="tree window"/>
-	<item flags="ts" id="6452" name="tree window"/>
-	<item flags="ts" id="6453" name="sandstone window">
+	<item flags="ts" id="6469-6472" name="wooden window">
 	</item>
 
-	<item flags="ts" id="6454" name="sandstone window">
-	</item>
-
-	<item flags="ts" id="6455" name="sandstone window"/>
-	<item flags="ts" id="6456" name="sandstone window"/>
-	<item flags="ts" id="6457" name="bamboo window">
-	</item>
-
-	<item flags="ts" id="6458" name="bamboo window">
-	</item>
-
-	<item flags="ts" id="6459" name="bamboo window"/>
-	<item flags="ts" id="6460" name="bamboo window"/>
-	<item flags="ts" id="6461" name="sandstone window">
-	</item>
-
-	<item flags="ts" id="6462" name="sandstone window">
-	</item>
-
-	<item flags="ts" id="6463" name="sandstone window"/>
-	<item flags="ts" id="6464" name="sandstone window"/>
-	<item flags="ts" id="6465" name="stone window">
-	</item>
-
-	<item flags="ts" id="6466" name="stone window">
-	</item>
-
-	<item flags="ts" id="6467" name="stone window"/>
-	<item flags="ts" id="6468" name="stone window"/>
-	<item flags="ts" id="6469" name="wooden window">
-	</item>
-
-	<item flags="ts" id="6470" name="wooden window">
-	</item>
-
-	<item flags="ts" id="6471" name="wooden window"/>
-	<item flags="ts" id="6472" name="wooden window"/>
 	<item id="6473-6474" name="planks"/>
 	<item flags="t" id="6475-6479" name="debris"/>
 	<item flags="8396800" id="6480-6483" name="debris"/>
@@ -14163,12 +13106,7 @@
 		<weight value="2500"/>
 	</item>
 
-	<item flags="p" id="6509" name="christmas present">
-		<weight value="600"/>
-		<containerSize value="5"/>
-	</item>
-
-	<item flags="p" id="6510" name="christmas present">
+	<item flags="p" id="6509-6510" name="christmas present">
 		<weight value="600"/>
 		<containerSize value="5"/>
 	</item>
@@ -14215,8 +13153,7 @@
 		<weight value="200"/>
 	</item>
 
-	<item id="6523" name="skeleton decoration"/>
-	<item id="6524" name="skeleton decoration"/>
+	<item id="6523-6524" name="skeleton decoration"/>
 	<item flags="65632" id="6525" name="skeleton decoration">
 		<weight value="1000"/>
 	</item>
@@ -14243,12 +13180,6 @@
 		<weaponType value="ammunition"/>
 		<ammoType value="bolt"/>
 		<shootType value="infernalbolt"/>
-	</item>
-
-	<item flags="p" id="3123" name="pair of old worn soft boots">
-		<description value="Someone specialised in shoes might be able to repair them for you."/>
-		<weight value="800"/>
-		<slotType value="feet"/>
 	</item>
 
 	<item flags="p" id="6531" name="santa hat">
@@ -14391,12 +13322,6 @@
 		<weight value="50"/>
 	</item>
 
-	<item flags="p" id="6572" name="party trumpet">
-		<duration value="2"/>
-		<decayTo value="6572"/>
-		<weight value="50"/>
-	</item>
-
 	<item flags="p" id="6574" name="bar of chocolate">
 		<weight value="10"/>
 	</item>
@@ -14447,102 +13372,7 @@
 
 	<item flags="t" id="6609" name="snow drift"/>
 	<item flags="t" id="6610-6626" name="snow"/>
-	<item flags="16785409" id="6627" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6628" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6629" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6630" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6631" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6632" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6633" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6634" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6635" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6636" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6637" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6638" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6639" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6640" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6641" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6642" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6643" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6644" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6645" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6646" name="shallow water">
+	<item flags="16785409" id="6627-6646" name="shallow water">
 		<allowpickupable value="1"/>
 		<fluidSource value="water"/>
 	</item>
@@ -14562,167 +13392,7 @@
 		<fluidSource value="water"/>
 	</item>
 
-	<item flags="16785409" id="6650" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6651" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6652" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6653" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6654" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6655" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6656" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6657" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6658" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6659" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6660" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6661" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6662" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6663" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6664" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6665" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6666" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6667" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6668" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6669" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6670" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6671" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6672" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6673" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6674" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6675" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6676" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6677" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6678" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6679" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6680" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6681" name="shallow water">
-		<allowpickupable value="1"/>
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16785409" id="6682" name="shallow water">
+	<item flags="16785409" id="6650-6682" name="shallow water">
 		<allowpickupable value="1"/>
 		<fluidSource value="water"/>
 	</item>
@@ -14969,22 +13639,11 @@
 	<item flags="ts" id="7020-7022" name="snowy dead tree"/>
 	<item flags="ts" id="7023" name="snowy pine tree"/>
 	<item flags="ts" id="7024" name="tree"/>
-	<item flags="ts" id="7027" name="nordic wall window">
+	<item flags="ts" id="7025-7028" name="nordic wall window"/>
+	<item flags="ts" id="7051-7052" name="ice wall window">
 	</item>
 
-	<item flags="ts" id="7028" name="nordic wall window">
-	</item>
-
-	<item flags="ts" id="7025" name="nordic wall window"/>
-	<item flags="ts" id="7026" name="nordic wall window"/>
-	<item flags="ts" id="7051" name="ice wall window">
-	</item>
-
-	<item flags="ts" id="7052" name="ice wall window">
-	</item>
-
-	<item flags="ts" id="7029" name="ice wall window"/>
-	<item flags="ts" id="7030" name="ice wall window"/>
+	<item flags="ts" id="7029-7030" name="ice wall window"/>
 	<item flags="s" id="7033" name="closed door">
 		<description value="It is locked."/>
 	</item>
@@ -15237,11 +13896,6 @@
 	<item flags="p" id="7245" name="piece of cactus">
 		<description value="It has been cut from the sun adorer cactus which said to have curing abilites."/>
 		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="7246" name="Nilsor's waterskin">
-		<description value="It is empty."/>
-		<weight value="700"/>
 	</item>
 
 	<item flags="p" id="124" name="easily inflammable sulphur">
@@ -16259,11 +14913,7 @@
 		<weight value="2000"/>
 	</item>
 
-	<item flags="p" id="7447" name="small ice statue">
-		<weight value="1000"/>
-	</item>
-
-	<item flags="p" id="7448" name="small ice statue">
+	<item flags="p" id="7447-7448" name="small ice statue">
 		<weight value="1000"/>
 	</item>
 
@@ -16479,11 +15129,6 @@
 		<slotType value="head"/>
 	</item>
 
-	<item flags="108" id="140" name="parcel">
-		<description value="It is the parcel for the watchtower on the Femor Hills."/>
-		<weight value="1800"/>
-	</item>
-
 	<item flags="p" id="141" name="cigar">
 		<weight value="120"/>
 	</item>
@@ -16496,14 +15141,6 @@
 		<weight value="1000"/>
 	</item>
 
-	<item flags="p" id="144" name="mummy disguise">
-		<weight value="1000"/>
-		<containerSize value="10"/>
-		<decayTo value="4131"/>
-		<duration value="900"/>
-		<corpseType value="undead"/>
-	</item>
-
 	<item flags="p" id="145" name="heavy package">
 		<weight value="60000"/>
 	</item>
@@ -16513,11 +15150,7 @@
 	<item flags="16785409" id="154-157" name="energy shrine"/>
 	<item flags="16785409" id="158-161" name="earth shrine"/>
 	<item flags="8200" id="162-165" name="coffin"/>
-	<item flags="4" id="166" name="coffin">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="167" name="coffin">
+	<item flags="4" id="166-167" name="coffin">
 		<floorchange value="down"/>
 	</item>
 
@@ -16556,16 +15189,6 @@
 		<weight value="200"/>
 	</item>
 
-	<item flags="p" id="173" name="parchment">
-		<description value="It says 'Roses are red, violets are blue, sugar is sweet and so are you.' Excellent!."/>
-		<weight value="200"/>
-	</item>
-
-	<item flags="p" id="174" name="parchment">
-		<description value="It says 'Roses are red, violets are blue, sugar is sweet, there's mud on my shoe.' You blew it."/>
-		<weight value="200"/>
-	</item>
-
 	<item flags="ts" id="180" name="remains of a spider egg">
 		<decayTo value="181"/>
 		<duration value="600"/>
@@ -16597,19 +15220,7 @@
 		<duration value="86400"/>
 	</item>
 
-	<item id="199" name="spider victim">
-		<description value="This poor guy has been wrapped up in spider silk."/>
-	</item>
-
-	<item id="200" name="spider victim">
-		<description value="This poor guy has been wrapped up in spider silk."/>
-	</item>
-
-	<item id="201" name="spider victim">
-		<description value="This poor guy has been wrapped up in spider silk."/>
-	</item>
-
-	<item id="202" name="spider victim">
+	<item id="199-202" name="spider victim">
 		<description value="This poor guy has been wrapped up in spider silk."/>
 	</item>
 
@@ -16755,11 +15366,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="224" id="281" name="giant shimmering pearl">
-		<weight value="80"/>
-	</item>
-
-	<item flags="224" id="282" name="giant shimmering pearl">
+	<item flags="224" id="281-282" name="giant shimmering pearl">
 		<weight value="80"/>
 	</item>
 
@@ -16839,28 +15446,7 @@
 		<duration value="86400"/>
 	</item>
 
-	<item flags="p" id="325" name="withered plant">
-		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
-		<weight value="150"/>
-		<decayTo value="330"/>
-		<duration value="172800"/>
-	</item>
-
-	<item flags="p" id="326" name="withered plant">
-		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
-		<weight value="150"/>
-		<decayTo value="330"/>
-		<duration value="172800"/>
-	</item>
-
-	<item flags="p" id="327" name="withered plant">
-		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
-		<weight value="150"/>
-		<decayTo value="330"/>
-		<duration value="172800"/>
-	</item>
-
-	<item flags="p" id="328" name="withered plant">
+	<item flags="p" id="325-328" name="withered plant">
 		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
 		<weight value="150"/>
 		<decayTo value="330"/>
@@ -16990,10 +15576,6 @@
 		<duration value="86400"/>
 	</item>
 
-	<item flags="p" id="5956" name="intelligence reports">
-		<weight value="120"/>
-	</item>
-
 	<item flags="112" id="349" name="signet ring">
 		<weight value="80"/>
 		<slotType value="ring"/>
@@ -17099,8 +15681,7 @@
 		<writeOnceItemId value="7726"/>
 	</item>
 
-	<item flags="p" id="643"/>
-	<item flags="p" id="644"/>
+	<item flags="p" id="643-644"/>
 	<item flags="p" id="645" name="blue legs">
 		<weight value="1800"/>
 		<armor value="8"/>
@@ -17133,7 +15714,7 @@
 		<weight value="4500"/>
 	</item>
 
-	<item flags="p" id="653" name="costume bag">
+	<item flags="p" id="653-655" name="costume bag">
 		<weight value="800"/>
 	</item>
 
@@ -17141,10 +15722,6 @@
 		<weight value="800"/>
 		<containerSize value="8"/>
 		<slotType value="backpack"/>
-	</item>
-
-	<item flags="p" id="655" name="costume bag">
-		<weight value="800"/>
 	</item>
 
 	<item id="656" name="dead cyclops smith">
@@ -18538,51 +17115,7 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item flags="16777220" id="880" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="881" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="882" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="883" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="884" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="885" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="886" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="887" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="888" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="889" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="890" name="shallow water" speed="160">
-		<fluidSource value="water"/>
-	</item>
-
-	<item flags="16777220" id="891" name="shallow water" speed="160">
+	<item flags="16777220" id="880-891" name="shallow water" speed="160">
 		<fluidSource value="water"/>
 	</item>
 
@@ -18639,16 +17172,6 @@
 
 	<item flags="p" id="6393" name="cream cake">
 		<weight value="500"/>
-	</item>
-
-	<item flags="p" id="908" name="shapeshifter ring">
-		<description value="It will only work for a few days after the challenge of Kurik has been won."/>
-		<weight value="80"/>
-	</item>
-
-	<item flags="p" id="908" name="shapeshifter ring">
-		<description value="It will only work for a few days after the challenge of Kurik has been won."/>
-		<weight value="80"/>
 	</item>
 
 	<item id="909" name="dead frost dragon hatchling">
@@ -18715,15 +17238,6 @@
 		<transformTo value="3839"/>
 	</item>
 
-	<item flags="p" id="3129" name="some special leaves">
-		<description value="They have an aromatic smell."/>
-		<weight value="80"/>
-	</item>
-
-	<item flags="p" id="3218" name="present">
-		<weight value="1200"/>
-	</item>
-
 	<item flags="224" id="3598" name="cookie">
 		<weight value="10"/>
 	</item>
@@ -18751,10 +17265,6 @@
 	<item flags="t" id="4745" name="grass"/>
 	<item flags="8200" id="4746" name="grass"/>
 	<item flags="tb" id="4747-4748" name="earth"/>
-	<item flags="4" id="4824" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
 	<item flags="m" id="4830" name=""/>
 	<item flags="m" id="4833" name=""/>
 	<item flags="m" id="4873" name=""/>
@@ -18781,10 +17291,6 @@
 		<transformUseTo value="6091"/>
 	</item>
 
-	<item flags="p" id="3506" name="secret letter">
-		<weight value="50"/>
-	</item>
-
 	<item flags="p" id="6119" name="poem scroll">
 		<description value="It contains a love poem, written by an unknown elven poet."/>
 		<weight value="120"/>
@@ -18797,10 +17303,6 @@
 
 	<item flags="m" id="6286-6287" name=""/>
 	<item flags="m" id="6351" name=""/>
-	<item flags="p" id="6393" name="cream cake">
-		<weight value="500"/>
-	</item>
-
 	<item flags="m" id="6554-6555" name=""/>
 	<item flags="m" id="6559" name=""/>
 	<item flags="m" id="6868" name=""/>
@@ -18810,11 +17312,7 @@
 		<weight value="180"/>
 	</item>
 
-	<item flags="4" id="7181" name="cave entrance">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7182" name="cave entrance">
+	<item flags="4" id="7181-7182" name="cave entrance">
 		<floorchange value="down"/>
 	</item>
 
@@ -18833,19 +17331,7 @@
 		<duration value="120"/>
 	</item>
 
-	<item flags="4" id="7476" name="cave entrance">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7477" name="cave entrance">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7478" name="cave entrance">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7479" name="cave entrance">
+	<item flags="4" id="7476-7479" name="cave entrance">
 		<floorchange value="down"/>
 	</item>
 
@@ -18855,28 +17341,12 @@
 	<item id="7503-7506" name="jagged stones"/>
 	<item flags="tb" id="7507-7508" name="ornamented stone pillar"/>
 	<item flags="t" id="7509-7514" name="archway"/>
-	<item id="7515" name="hole">
-		<floorchange value="down"/>
-	</item>
-
-	<item id="7516" name="hole">
-		<floorchange value="down"/>
-	</item>
-
-	<item id="7517" name="hole">
-		<floorchange value="down"/>
-	</item>
-
-	<item id="7518" name="hole">
+	<item id="7515-7518" name="hole">
 		<floorchange value="down"/>
 	</item>
 
 	<item flags="16777216" id="7519" name="something crawling"/>
-	<item id="7520" name="hole">
-		<floorchange value="down"/>
-	</item>
-
-	<item id="7521" name="hole">
+	<item id="7520-7521" name="hole">
 		<floorchange value="down"/>
 	</item>
 
@@ -18892,19 +17362,7 @@
 		<weight value="170"/>
 	</item>
 
-	<item flags="p" id="7528" name="piece of a broken amulet">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="7529" name="piece of a broken amulet">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="7530" name="piece of a broken amulet">
-		<weight value="100"/>
-	</item>
-
-	<item flags="p" id="7531" name="piece of a broken amulet">
+	<item flags="p" id="7528-7531" name="piece of a broken amulet">
 		<weight value="100"/>
 	</item>
 
@@ -18962,43 +17420,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="4" id="369" name="trapdoor" speed="110">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="370" name="trapdoor" speed="110">
-		<floorchange value="down"/>
-	</item>
-
-	<item id="386" name="rope spot" speed="120">
-		<description value="There is a hole in the ceiling."/>
-	</item>
-
-	<item flags="4" id="411" name="trapdoor">
-		<floorchange value="down"/>
-	</item>
-
 	<item flags="4" id="7767" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="413" name="trapdoor">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="414" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="428" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="432" name="trapdoor">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="433" name="stairs">
 		<floorchange value="down"/>
 	</item>
 
@@ -19286,35 +17708,7 @@
 		<transformUseTo value="7727"/>
 	</item>
 
-	<item flags="4" id="7729" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7730" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7731" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7732" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7733" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7734" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7735" name="ramp" speed="150">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7736" name="ramp" speed="150">
+	<item flags="4" id="7729-7736" name="ramp" speed="150">
 		<floorchange value="down"/>
 	</item>
 
@@ -19392,14 +17786,6 @@
 	</item>
 
 	<item id="7764" name="dirt"/>
-	<item flags="4" id="7767" name="stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="7768" name="trapdoor">
-		<floorchange value="down"/>
-	</item>
-
 	<item id="7769" name="wooden flooring"/>
 	<item id="7770" name="stone flooring"/>
 	<item flags="t" id="7771" name="ladder"/>
@@ -19636,18 +18022,9 @@
 		<duration value="20"/>
 	</item>
 
-	<item flags="p" id="227" name="valuable vase">
-		<weight value="1000"/>
-	</item>
-
 	<item flags="p" id="7933" name="invitation">
 		<description value="It is the invitation to the king's ball."/>
 		<weight value="10"/>
-	</item>
-
-	<item flags="112" id="2969" name="letter to Chantalle">
-		<weight value="10"/>
-		<description value="Carina from Venore tells Chantalle that the 'precious necklace' she loved so much is still for sale."/>
 	</item>
 
 	<item flags="p" id="7935" name="compromising letter">
@@ -19680,11 +18057,7 @@
 	<item flags="ts" id="7942-7944" name="demon oak"/>
 	<item flags="16785409" id="7945-7948" name="demon oak"/>
 	<item flags="ts" id="7949-7950" name="sorcerer statue"/>
-	<item flags="ts" id="7951" name="statue">
-		<description value="Nothing is written on it."/>
-	</item>
-
-	<item flags="ts" id="7952" name="statue">
+	<item flags="ts" id="7951-7952" name="statue">
 		<description value="Nothing is written on it."/>
 	</item>
 
@@ -19714,28 +18087,16 @@
 		<slotType value="body"/>
 	</item>
 
-	<item flags="s" id="7994" name="bricklayers' kit">
-		<weight value="1800"/>
-	</item>
-
-	<item flags="s" id="7995" name="bricklayers' kit">
+	<item flags="s" id="7994-7995" name="bricklayers' kit">
 		<weight value="1800"/>
 	</item>
 
 	<item flags="t" id="7996-8005" name="sparkling gems"/>
-	<item flags="ts" id="8006" name="sorcerer statue">
+	<item flags="ts" id="8006-8007" name="sorcerer statue">
 		<description value="Nothing is written on it."/>
 	</item>
 
-	<item flags="ts" id="8007" name="sorcerer statue">
-		<description value="Nothing is written on it."/>
-	</item>
-
-	<item flags="ts" id="8008" name="guardian statue">
-		<description value="Nothing is written on it."/>
-	</item>
-
-	<item flags="ts" id="8009" name="guardian statue">
+	<item flags="ts" id="8008-8009" name="guardian statue">
 		<description value="Nothing is written on it."/>
 	</item>
 
@@ -20438,11 +18799,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="3212" name="textbook">
-		<description value="It contains the script to a piece performed in the theatre of Carlin."/>
-		<weight value="1300"/>
-	</item>
-
 	<item flags="m" id="8118" name="remains of a wisp">
 		<decayTo value="0"/>
 		<duration value="60"/>
@@ -20622,11 +18978,7 @@
 	</item>
 
 	<item flags="t" id="8145" name="archway"/>
-	<item flags="p" id="8146" name="oracle figurine">
-		<weight value="800"/>
-	</item>
-
-	<item flags="p" id="8147" name="oracle figurine">
+	<item flags="p" id="8146-8147" name="oracle figurine">
 		<weight value="800"/>
 	</item>
 
@@ -20668,11 +19020,6 @@
 	<item flags="16480" id="8155" name="heavily bound book">
 		<description value="It contains the scribings of many knowledgeable Tibians."/>
 		<weight value="7800"/>
-	</item>
-
-	<item flags="16480" id="8156" name="abacus">
-		<description value="If you use it wisely, you may write yourself into the history books."/>
-		<weight value="1200"/>
 	</item>
 
 	<item flags="p" id="8157" name="norseman doll">
@@ -20751,18 +19098,6 @@
 
 	<item flags="p" id="906" name="present">
 		<weight value="1200"/>
-	</item>
-
-	<item flags="p" id="653" name="costume bag">
-		<weight value="800"/>
-	</item>
-
-	<item flags="p" id="654" name="costume bag">
-		<weight value="800"/>
-	</item>
-
-	<item flags="p" id="655" name="costume bag">
-		<weight value="800"/>
 	</item>
 
 	<item flags="112" id="110" name="special flask">
@@ -20851,11 +19186,6 @@
 
 	<item flags="224" id="8197" name="bulb of garlic">
 		<weight value="140"/>
-	</item>
-
-	<item flags="112" id="8198" name="baking tray">
-		<weight value="1200"/>
-		<description value="There is garlic cookie dough on it."/>
 	</item>
 
 	<item flags="224" id="8199" name="garlic cookie">
@@ -21217,11 +19547,6 @@
 		<transformUseTo value="8709"/>
 	</item>
 
-	<item id="8709" name="open trapdoor">
-		<floorchange value="down"/>
-		<transformUseTo value="8708"/>
-	</item>
-
 	<item flags="t" id="8710-8714" name="old carpet"/>
 	<item id="8715" name="metal piece"/>
 	<item flags="s" id="8716" name="swamp">
@@ -21293,27 +19618,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item flags="16480" id="8747" name="old piece of paper">
-		<weight value="200"/>
-	</item>
-
-	<item flags="16480" id="8748" name="old piece of paper">
-		<weight value="200"/>
-	</item>
-
-	<item flags="16480" id="8749" name="old piece of paper">
-		<weight value="200"/>
-	</item>
-
-	<item flags="16480" id="8750" name="old piece of paper">
-		<weight value="200"/>
-	</item>
-
-	<item flags="16480" id="8751" name="old piece of paper">
-		<weight value="200"/>
-	</item>
-
-	<item flags="16480" id="8752" name="old piece of paper">
+	<item flags="16480" id="8747-8752" name="old piece of paper">
 		<weight value="200"/>
 	</item>
 
@@ -21341,14 +19646,6 @@
 		<weight value="500"/>
 	</item>
 
-	<item flags="100" id="2983" name="flower bowl">
-		<weight value="1100"/>
-	</item>
-
-	<item flags="p" id="175" name="research notes">
-		<weight value="200"/>
-	</item>
-
 	<item flags="t" id="8765" name="archway"/>
 	<item id="8766-8769" name="drawbridge" speed="90"/>
 	<item flags="104" id="8772" name="food crate">
@@ -21370,10 +19667,6 @@
 
 	<item flags="ts" id="8776" name="large crystal">
 		<weight value="235"/>
-	</item>
-
-	<item flags="16777312" id="3094" name="ring">
-		<weight value="5"/>
 	</item>
 
 	<item flags="p" id="8778" name="jester doll">
@@ -21437,15 +19730,7 @@
 		<weight value="900"/>
 	</item>
 
-	<item flags="16777220" id="8823" name="ghost charm">
-		<weight value="900"/>
-	</item>
-
-	<item flags="16777220" id="8824" name="ghost charm">
-		<weight value="900"/>
-	</item>
-
-	<item flags="16777220" id="8825" name="ghost charm">
+	<item flags="16777220" id="8823-8825" name="ghost charm">
 		<weight value="900"/>
 	</item>
 
@@ -21577,93 +19862,31 @@
 		<corpseType value="venom"/>
 	</item>
 
-	<item flags="p" id="8894" name="rusty armor">
+	<item flags="p" id="8894-8896" name="rusty armor">
 		<description value="If you can remove the rust layer and dirt from the armor you will be able to see what it is."/>
 		<weight value="12000"/>
 	</item>
 
-	<item flags="p" id="8895" name="rusty armor">
-		<description value="If you can remove the rust layer and dirt from the armor you will be able to see what it is."/>
-		<weight value="12000"/>
-	</item>
-
-	<item flags="p" id="8896" name="rusty armor">
-		<description value="If you can remove the rust layer and dirt from the armor you will be able to see what it is."/>
-		<weight value="12000"/>
-	</item>
-
-	<item flags="p" id="8897" name="rusty legs">
+	<item flags="p" id="8897-8899" name="rusty legs">
 		<description value="If you can remove the rust layer and dirt from the legs you will be able to see what it is."/>
 		<weight value="7000"/>
 	</item>
 
-	<item flags="p" id="8898" name="rusty legs">
-		<description value="If you can remove the rust layer and dirt from the legs you will be able to see what it is."/>
-		<weight value="7000"/>
-	</item>
-
-	<item flags="p" id="8899" name="rusty legs">
-		<description value="If you can remove the rust layer and dirt from the legs you will be able to see what it is."/>
-		<weight value="7000"/>
-	</item>
-
-	<item flags="p" id="8900" name="rusty shield">
+	<item flags="p" id="8900-8902" name="rusty shield">
 		<description value="If you can remove the rust layer and dirt from the shields you will be able to see what it is."/>
 		<weight value="2800"/>
 		<defense value="1"/>
 		<weaponType value="shield"/>
 	</item>
 
-	<item flags="p" id="8901" name="rusty shield">
-		<description value="If you can remove the rust layer and dirt from the shields you will be able to see what it is."/>
-		<weight value="2800"/>
-		<defense value="1"/>
-		<weaponType value="shield"/>
-	</item>
-
-	<item flags="p" id="8902" name="rusty shield">
-		<description value="If you can remove the rust layer and dirt from the shields you will be able to see what it is."/>
-		<weight value="2800"/>
-		<defense value="1"/>
-		<weaponType value="shield"/>
-	</item>
-
-	<item flags="p" id="8903" name="rusty boots">
+	<item flags="p" id="8903-8905" name="rusty boots">
 		<description value="If you can remove the rust layer and dirt from the boots you will be able to see what it is."/>
 		<weight value="2800"/>
 		<armor value="1"/>
 		<slotType value="feet"/>
 	</item>
 
-	<item flags="p" id="8904" name="rusty boots">
-		<description value="If you can remove the rust layer and dirt from the boots you will be able to see what it is."/>
-		<weight value="2800"/>
-		<armor value="1"/>
-		<slotType value="feet"/>
-	</item>
-
-	<item flags="p" id="8905" name="rusty boots">
-		<description value="If you can remove the rust layer and dirt from the boots you will be able to see what it is."/>
-		<weight value="2800"/>
-		<armor value="1"/>
-		<slotType value="feet"/>
-	</item>
-
-	<item flags="p" id="8906" name="rusty helmet">
-		<description value="If you can remove the rust layer and dirt from the helmets you will be able to see what it is."/>
-		<weight value="2800"/>
-		<armor value="1"/>
-		<slotType value="head"/>
-	</item>
-
-	<item flags="p" id="8907" name="rusty helmet">
-		<description value="If you can remove the rust layer and dirt from the helmets you will be able to see what it is."/>
-		<weight value="2800"/>
-		<armor value="1"/>
-		<slotType value="head"/>
-	</item>
-
-	<item flags="p" id="8908" name="rusty helmet">
+	<item flags="p" id="8906-8908" name="rusty helmet">
 		<description value="If you can remove the rust layer and dirt from the helmets you will be able to see what it is."/>
 		<weight value="2800"/>
 		<armor value="1"/>
@@ -21729,8 +19952,7 @@
 	</item>
 
 	<item flags="t" id="8919-8920" name="old carpet"/>
-	<item id="8921" name="velvet tapestry"/>
-	<item id="8922" name="velvet tapestry"/>
+	<item id="8921-8922" name="velvet tapestry"/>
 	<item flags="65632" id="8923" name="velvet tapestry">
 		<weight value="1000"/>
 	</item>
@@ -22041,11 +20263,6 @@
 		<showduration value="1"/>
 	</item>
 
-	<item flags="p" id="3123" name="old worn firewalker boots">
-		<description value="They can be recharged with an enchanted ruby."/>
-		<weight value="950"/>
-	</item>
-
 	<item flags="m" id="9021" name="dead gozzler">
 		<containerSize value="10"/>
 		<decayTo value="9022"/>
@@ -22272,14 +20489,7 @@
 		<duration value="86400"/>
 	</item>
 
-	<item flags="p" id="9071" name="withered plant">
-		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
-		<weight value="150"/>
-		<decayTo value="330"/>
-		<duration value="172800"/>
-	</item>
-
-	<item flags="p" id="9072" name="withered plant">
+	<item flags="p" id="9071-9072" name="withered plant">
 		<description value="This plant urgently needs some water, else it will wither away and disappear completely."/>
 		<weight value="150"/>
 		<decayTo value="330"/>
@@ -22496,10 +20706,6 @@
 		<weight value="180"/>
 	</item>
 
-	<item flags="112" id="2967" name="pink key">
-		<weight value="100"/>
-	</item>
-
 	<item flags="224" id="9114" name="wooden ties">
 		<weight value="500"/>
 	</item>
@@ -22521,15 +20727,7 @@
 		<transformUseTo value="9125"/>
 	</item>
 
-	<item flags="p" id="9127" name="hat for Eclesius">
-		<weight value="110"/>
-	</item>
-
-	<item flags="p" id="9128" name="hat for Eclesius">
-		<weight value="110"/>
-	</item>
-
-	<item flags="p" id="9129" name="hat for Eclesius">
+	<item flags="p" id="9127-9129" name="hat for Eclesius">
 		<weight value="110"/>
 	</item>
 
@@ -22601,24 +20799,6 @@
 		<weight value="260"/>
 	</item>
 
-	<item flags="p" id="9149" name="flask with paint">
-		<weight value="180"/>
-	</item>
-
-	<item flags="p" id="9151" name="scum bag">
-		<weight value="800"/>
-		<containerSize value="8"/>
-		<slotType value="backpack"/>
-	</item>
-
-	<item flags="p" id="9170" name="antidote potion">
-		<weight value="265"/>
-	</item>
-
-	<item flags="112" id="2971" name="sky key">
-		<weight value="100"/>
-	</item>
-
 	<item flags="p" id="9173" name="love potion">
 		<description value="You better be careful with this or you might get unwanted results."/>
 		<weight value="180"/>
@@ -22665,17 +20845,7 @@
 		<weight value="1900"/>
 	</item>
 
-	<item flags="p" id="643" name="crumpled piece of paper">
-		<description value="It contains the formula for the memory potion Eclesius invented."/>
-		<weight value="110"/>
-	</item>
-
-	<item flags="p" id="9189" name="hand puppets">
-		<description value="They were awarded by Tibia RP."/>
-		<weight value="5"/>
-	</item>
-
-	<item flags="p" id="9190" name="hand puppets">
+	<item flags="p" id="9189-9190" name="hand puppets">
 		<description value="They were awarded by Tibia RP."/>
 		<weight value="5"/>
 	</item>
@@ -22865,10 +21035,6 @@
 		<weight value="400"/>
 	</item>
 
-	<item flags="p" id="9147" name="dark essence">
-		<weight value="260"/>
-	</item>
-
 	<item flags="p" id="9239" name="worm queen tooth">
 		<weight value="850"/>
 	</item>
@@ -23015,14 +21181,9 @@
 	<item flags="tb" id="9341-9342" name="stone wall"/>
 	<item flags="139267" id="9343" name="stone wall"/>
 	<item flags="270339" id="9344" name="stone wall"/>
-	<item flags="ts" id="9347" name="framework window">
+	<item flags="ts" id="9347-9350" name="framework window">
 	</item>
 
-	<item flags="ts" id="9348" name="framework window">
-	</item>
-
-	<item flags="ts" id="9349" name="framework window"/>
-	<item flags="ts" id="9350" name="framework window"/>
 	<item flags="s" id="9351" name="closed door">
 		<description value="It is locked."/>
 	</item>
@@ -23147,13 +21308,6 @@
 		<weaponType value="club"/>
 	</item>
 
-	<item flags="p" id="3537" name="shield of the white knight">
-		<description value="It seems a bit chunky, but what was good enough for a white knight should be good for everyone."/>
-		<weight value="500"/>
-		<defense value="8"/>
-		<weaponType value="shield"/>
-	</item>
-
 	<item flags="p" id="9378" name="musician's bow">
 		<description value="If you could only figure out how you are supposed to fire more arrows at once."/>
 		<weight value="1250"/>
@@ -23273,13 +21427,6 @@
 		<transformDeEquipTo value="9394"/>
 	</item>
 
-	<item flags="p" id="9394" name="claw of 'The Noxious Spawn'">
-		<description value="It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on."/>
-		<weight value="500"/>
-		<slotType value="ring"/>
-		<transformEquipTo value="9392"/>
-	</item>
-
 	<item flags="16777328" id="9396" name="incredible mumpiz slayer">
 		<description value="This magnificent weapon was forged to slay arch mumpiz demons with a single blow."/>
 		<weight value="4200"/>
@@ -23323,15 +21470,7 @@
 		<weaponType value="shield"/>
 	</item>
 
-	<item flags="m" id="9402" name="dead human">
-		<containerSize value="10"/>
-		<decayTo value="4240"/>
-		<duration value="10"/>
-		<corpseType value="blood"/>
-		<fluidSource value="blood"/>
-	</item>
-
-	<item flags="m" id="9403" name="dead human">
+	<item flags="m" id="9402-9403" name="dead human">
 		<containerSize value="10"/>
 		<decayTo value="4240"/>
 		<duration value="10"/>
@@ -23500,14 +21639,9 @@
 	</item>
 
 	<item flags="ts" id="9569-9570" name="limestone window"/>
-	<item flags="ts" id="9571" name="limestone window">
+	<item flags="ts" id="9571-9574" name="limestone window">
 	</item>
 
-	<item flags="ts" id="9572" name="limestone window">
-	</item>
-
-	<item flags="ts" id="9573" name="limestone window"/>
-	<item flags="ts" id="9574" name="limestone window"/>
 	<item id="9575-9581" name="pavement"/>
 	<item id="9582" name="remains of a water elemental">
 		<description value="Something is wobbling inside. Maybe with a fishing rod you could reach it."/>
@@ -23699,12 +21833,7 @@
 	</item>
 
 	<item flags="ts" id="9625" name="statue of Fafnar"/>
-	<item flags="p" id="9626" name="golden lightbearer's trophy">
-		<description value="You read: |PLAYERNAME| helped to keep the fire basins burning and is one of the lightbearers of |YEAR|"/>
-		<weight value="900"/>
-	</item>
-
-	<item flags="p" id="9627" name="golden lightbearer's trophy">
+	<item flags="p" id="9626-9627" name="golden lightbearer's trophy">
 		<description value="You read: |PLAYERNAME| helped to keep the fire basins burning and is one of the lightbearers of |YEAR|"/>
 		<weight value="900"/>
 	</item>
@@ -23944,12 +22073,7 @@
 	<item flags="s" id="9792-9793" name="serpent's statue"/>
 	<item flags="s" id="9794-9795" name="dragon statue"/>
 	<item flags="s" id="9796-9801" name="serpent decoration"/>
-	<item flags="16777312" id="9802" name="friendship amulet">
-		<description value="It shines as beautifully as a good friendship. This amulet was rewarded by Tibiafriends."/>
-		<weight value="520"/>
-	</item>
-
-	<item flags="16777312" id="9803" name="friendship amulet">
+	<item flags="16777312" id="9802-9803" name="friendship amulet">
 		<description value="It shines as beautifully as a good friendship. This amulet was rewarded by Tibiafriends."/>
 		<weight value="520"/>
 	</item>
@@ -24146,52 +22270,14 @@
 	</item>
 
 	<item flags="s" id="10058-10061" name="serpent decoration"/>
-	<item flags="tb" id="10062" name="lizard weapon rack">
+	<item flags="tb" id="10062-10067" name="lizard weapon rack">
 		<weight value="5500"/>
 	</item>
 
-	<item flags="tb" id="10063" name="lizard weapon rack">
-		<weight value="5500"/>
-	</item>
-
-	<item flags="tb" id="10064" name="lizard weapon rack">
-		<weight value="5500"/>
-	</item>
-
-	<item flags="tb" id="10065" name="lizard weapon rack">
-		<weight value="5500"/>
-	</item>
-
-	<item flags="tb" id="10066" name="lizard weapon rack">
-		<weight value="5500"/>
-	</item>
-
-	<item flags="tb" id="10067" name="lizard weapon rack">
-		<weight value="5500"/>
-	</item>
-
-	<item flags="16777216" id="10069" name="fire field">
+	<item flags="16777216" id="10069-10071" name="fire field">
 		<replaceable value="0"/>
 		<field value="fire"/>
 		<fieldDamage value="20"/>
-		<fieldTicks value="10000"/>
-		<fieldCount value="7"/>
-		<fieldDamage value="10"/>
-	</item>
-
-	<item flags="16777216" id="10070" name="fire field">
-		<replaceable value="0"/>
-		<field value="fire"/>
-		<fieldDamage value="10"/>
-		<fieldTicks value="10000"/>
-		<fieldCount value="7"/>
-		<fieldDamage value="10"/>
-	</item>
-
-	<item flags="16777216" id="10071" name="fire field">
-		<replaceable value="0"/>
-		<field value="fire"/>
-		<fieldDamage value="5"/>
 		<fieldTicks value="10000"/>
 		<fieldCount value="7"/>
 		<fieldDamage value="10"/>
@@ -24229,11 +22315,7 @@
 	<item flags="m" id="10134-10139" name="skull stone"/>
 	<item id="10140" name="demonic residue"/>
 	<item flags="s" id="10141-10144" name="gate"/>
-	<item flags="16777216" id="10145" name="glowing switch">
-		<walkStack value="0"/>
-	</item>
-
-	<item flags="16777216" id="10146" name="glowing switch">
+	<item flags="16777216" id="10145-10146" name="glowing switch">
 		<walkStack value="0"/>
 	</item>
 
@@ -24291,11 +22373,6 @@
 	<item flags="112" id="10183" name="flask of poison">
 		<description value="This poison is meant to weaken the enemy and should be used on the rice fields near Chaochai."/>
 		<weight value="180"/>
-	</item>
-
-	<item flags="16480" id="637" name="tactical map">
-		<description value="A map showing recent troop movements and tactical instructions of parts of the Emperor's army."/>
-		<weight value="200"/>
 	</item>
 
 	<item id="10185" name="swich"/>
@@ -24438,38 +22515,6 @@
 	<item flags="240" id="10218" name="corned fish">
 		<description value="This fish has been salted and already prepared as provision for soldiers."/>
 		<weight value="510"/>
-	</item>
-
-	<item flags="224" id="3579" name="salmon">
-		<weight value="440"/>
-	</item>
-
-	<item id="6046" name="dead killer caiman">
-		<containerSize value="10"/>
-		<decayTo value="4342"/>
-		<duration value="10"/>
-		<corpseType value="blood"/>
-		<fluidSource value="blood"/>
-	</item>
-
-	<item flags="m" id="4342" name="dead killer caiman">
-		<containerSize value="10"/>
-		<decayTo value="4343"/>
-		<duration value="300"/>
-		<corpseType value="blood"/>
-		<fluidSource value="blood"/>
-	</item>
-
-	<item flags="m" id="4343" name="dead killer caiman">
-		<decayTo value="4344"/>
-		<duration value="300"/>
-		<corpseType value="blood"/>
-	</item>
-
-	<item flags="m" id="4344" name="dead killer caiman">
-		<decayTo value="0"/>
-		<duration value="60"/>
-		<corpseType value="blood"/>
 	</item>
 
 	<item flags="p" id="10227" name="nightmare doll">
@@ -25429,22 +23474,6 @@
 		<extradef value="1"/>
 	</item>
 
-	<item flags="112" id="110" name="special flask">
-		<weight value="180"/>
-	</item>
-
-	<item flags="112" id="138" name="empty beer bottle">
-		<weight value="250"/>
-	</item>
-
-	<item flags="112" id="7243" name="empty jug">
-		<weight value="750"/>
-	</item>
-
-	<item flags="112" id="5938" name="Ceiron's waterskin">
-		<weight value="700"/>
-	</item>
-
 	<item flags="16777440" id="3215" name="phoenix egg">
 		<description value="It seems to be burning from inside."/>
 		<weight value="30"/>
@@ -25468,26 +23497,6 @@
 	<item flags="p" id="5924" name="damaged steel helmet">
 		<description value="The words 'Ramsay the Reckless' are engraved inside. It appears to be cracked and broken."/>
 		<weight value="4600"/>
-	</item>
-
-	<item flags="p" id="5945" name="coral comb">
-		<description value="It once belonged to a mermaid."/>
-		<weight value="450"/>
-	</item>
-
-	<item flags="p" id="6099" name="Brutus Bloodbeard's hat">
-		<weight value="1250"/>
-	</item>
-
-	<item flags="p" id="6100" name="the Lethal Lissy's shirt">
-		<weight value="2000"/>
-	</item>
-
-	<item flags="112" id="6101" name="Ron the Ripper's sabre">
-		<weight value="2500"/>
-		<defense value="10"/>
-		<attack value="12"/>
-		<weaponType value="sword"/>
 	</item>
 
 	<item flags="p" id="6105" name="Striker's favourite pillow">
@@ -25580,33 +23589,18 @@
 	<item flags="t" id="10781-10788" name="ground"/>
 	<item flags="8396800" id="10789-10792" name="ground"/>
 	<item flags="t" id="10793-10796" name="ground"/>
-	<item flags="p" id="10798" name="ferumbras doll">
+	<item flags="p" id="10798-10799" name="ferumbras doll">
 		<description value="It was awarded by Tibiopedia.pl."/>
 		<weight value="1700"/>
 	</item>
 
-	<item flags="p" id="10799" name="ferumbras doll">
-		<description value="It was awarded by Tibiopedia.pl."/>
-		<weight value="1700"/>
-	</item>
-
-	<item flags="16777312" id="10800" name="orc's jaw shredder">
-		<description value="There is no better way to get rid of top secret data. Awarded by TibiaSpy.com"/>
-		<weight value="2500"/>
-	</item>
-
-	<item flags="16777312" id="10801" name="orc's jaw shredder">
+	<item flags="16777312" id="10800-10801" name="orc's jaw shredder">
 		<description value="There is no better way to get rid of top secret data. Awarded by TibiaSpy.com"/>
 		<weight value="2500"/>
 	</item>
 
 	<item id="10803" name="branch"/>
-	<item flags="p" id="10817" name="bag of oriental spices">
-		<description value="Those spices were gathered all around the Tibian world."/>
-		<weight value="1508"/>
-	</item>
-
-	<item flags="p" id="10818" name="bag of oriental spices">
+	<item flags="p" id="10817-10818" name="bag of oriental spices">
 		<description value="Those spices were gathered all around the Tibian world."/>
 		<weight value="1508"/>
 	</item>
@@ -25682,10 +23676,6 @@
 
 	<item flags="16785409" id="11047" name="pillar"/>
 	<item flags="16785409" id="11048" name="lamp"/>
-	<item flags="16785409" id="11048" name="lamp">
-		<transformUseTo value="11050"/>
-	</item>
-
 	<item flags="ts" id="11050" name="lamp">
 		<transformUseTo value="11048"/>
 	</item>
@@ -26320,11 +24310,7 @@
 		<weight value="140"/>
 	</item>
 
-	<item flags="16777220" id="11553" name="magic portal">
-		<description value="You can see the other side through it."/>
-	</item>
-
-	<item flags="16777220" id="11554" name="magic portal">
+	<item flags="16777220" id="11553-11554" name="magic portal">
 		<description value="You can see the other side through it."/>
 	</item>
 
@@ -27058,11 +25044,7 @@
 	</item>
 
 	<item flags="76" id="11808" name="taboret"/>
-	<item flags="76" id="11809" name="wooden trunk">
-		<containerSize value="20"/>
-	</item>
-
-	<item flags="76" id="11810" name="wooden trunk">
+	<item flags="76" id="11809-11810" name="wooden trunk">
 		<containerSize value="20"/>
 	</item>
 
@@ -27156,22 +25138,12 @@
 		<weight value="150"/>
 	</item>
 
-	<item flags="16777312" id="12041" name="frozen heart">
+	<item flags="16777312" id="12041-12042" name="frozen heart">
 		<description value="The eternal love is awarded by TibiaTR.net."/>
 		<weight value="2000"/>
 	</item>
 
-	<item flags="16777312" id="12042" name="frozen heart">
-		<description value="The eternal love is awarded by TibiaTR.net."/>
-		<weight value="2000"/>
-	</item>
-
-	<item flags="16777312" id="12043" name="draken doll">
-		<description value="This doll seems to be the favourite doll of the emperor. It was rewarded by TibiaNation.net"/>
-		<weight value="1500"/>
-	</item>
-
-	<item flags="16777312" id="12044" name="draken doll">
+	<item flags="16777312" id="12043-12044" name="draken doll">
 		<description value="This doll seems to be the favourite doll of the emperor. It was rewarded by TibiaNation.net"/>
 		<weight value="1500"/>
 	</item>
@@ -27272,11 +25244,7 @@
 	</item>
 
 	<item id="12183-12185" name="broken wall"/>
-	<item flags="112" id="12186" name="net">
-		<weight value="98"/>
-	</item>
-
-	<item flags="112" id="12187" name="net">
+	<item flags="112" id="12186-12187" name="net">
 		<weight value="98"/>
 	</item>
 
@@ -27346,10 +25314,7 @@
 		<weight value="900"/>
 	</item>
 
-	<item flags="s" id="12249" name="closed door">
-	</item>
-
-	<item flags="s" id="12250" name="closed door">
+	<item flags="s" id="12249-12250" name="closed door">
 	</item>
 
 	<item flags="p" id="12251" name="shapechanger">
@@ -27607,12 +25572,6 @@
 		<duration value="10"/>
 		<corpseType value="blood"/>
 		<fluidSource value="blood"/>
-	</item>
-
-	<item flags="m" id="2141" name="dead midnight panther">
-		<decayTo value="0"/>
-		<duration value="600"/>
-		<corpseType value="blood"/>
 	</item>
 
 	<item flags="65632" id="12483" name="pharaoh banner">
@@ -27992,7 +25951,7 @@
 		<weight value="1100"/>
 	</item>
 
-	<item flags="p" id="12570" name="fan doll of Queen Eloise">
+	<item flags="p" id="12570-12571" name="fan doll of Queen Eloise">
 		<weight value="1560"/>
 	</item>
 
@@ -28022,10 +25981,6 @@
 	</item>
 
 	<item flags="16777312" id="12580" name="Meandi">
-		<weight value="600"/>
-	</item>
-
-	<item flags="p" id="12181" name="demon infant">
 		<weight value="600"/>
 	</item>
 
@@ -28522,16 +26477,6 @@
 	<item flags="t" id="12747-12762" name="large spider web"/>
 	<item flags="t" id="12765-12781" name="large spider web"/>
 	<item flags="ts" id="12782-12783" name="warning sign"/>
-	<item flags="112" id="12784" name="flask of wasp poison">
-		<description value="It's very toxic. Do not ever drink green liquids."/>
-		<weight value="180"/>
-	</item>
-
-	<item flags="112" id="12785" name="empty potion flask">
-		<description value="Return it to a magic store for deposit."/>
-		<weight value="180"/>
-	</item>
-
 	<item flags="p" id="12786" name="plague mask">
 		<description value="It seems to be a part of an outfit. If you own the outfit you might refine it by using the item."/>
 		<weight value="70"/>
@@ -28582,22 +26527,12 @@
 		<weight value="200"/>
 	</item>
 
-	<item flags="16777312" id="12809" name="The Epic Wisdom">
+	<item flags="16777312" id="12809-12810" name="The Epic Wisdom">
 		<description value="This hat was handcrafted by Uman the Wise and cursed by Zathroth the Destroyer."/>
 		<weight value="805"/>
 	</item>
 
-	<item flags="16777312" id="12810" name="The Epic Wisdom">
-		<description value="This hat was handcrafted by Uman the Wise and cursed by Zathroth the Destroyer."/>
-		<weight value="805"/>
-	</item>
-
-	<item flags="16777312" id="12811" name="Imortus">
-		<description value="It knows all secrets of all numbers.It was rewarded by the Exhiti.com."/>
-		<weight value="4690"/>
-	</item>
-
-	<item flags="16777312" id="12812" name="Imortus">
+	<item flags="16777312" id="12811-12812" name="Imortus">
 		<description value="It knows all secrets of all numbers.It was rewarded by the Exhiti.com."/>
 		<weight value="4690"/>
 	</item>
@@ -28805,10 +26740,6 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item flags="p" id="12571" name="fan doll of Queen Eloise">
-		<weight value="1560"/>
-	</item>
-
 	<item flags="p" id="107" name="special flask">
 		<description value="It contains the smell of a freshly slain slime."/>
 		<weight value="180"/>
@@ -28842,7 +26773,7 @@
 		<weight value="50"/>
 	</item>
 
-	<item flags="p" id="907" name="shapeshifter ring">
+	<item flags="p" id="907-908" name="shapeshifter ring">
 		<description value="It will only work for a few days after the challenge of Kurik has been won."/>
 		<weight value="80"/>
 	</item>
@@ -28901,10 +26832,6 @@
 	<item flags="p" id="6522" name="gingerbread recipe">
 		<description value="Use it to learn how to make Gingerbreadman in the christmas bakery."/>
 		<weight value="200"/>
-	</item>
-
-	<item flags="p" id="3241" name="ceremonial ankh">
-		<weight value="500"/>
 	</item>
 
 	<item flags="p" id="7372" name="ice cream cone">
@@ -28992,11 +26919,7 @@
 	<item flags="t" id="12926-12927" name="hive pillar"/>
 	<item flags="ts" id="12928-12930" name="hive pillar"/>
 	<item flags="s" id="12931-12934" name="hive structure"/>
-	<item flags="t" id="12935" name="mud">
-		<description value="There is a hole in the ceiling."/>
-	</item>
-
-	<item flags="t" id="12936" name="mud">
+	<item flags="t" id="12935-12936" name="mud">
 		<description value="There is a hole in the ceiling."/>
 	</item>
 
@@ -29927,11 +27850,7 @@
 		<description value="The identity of some deepling is written there."/>
 	</item>
 
-	<item flags="65632" id="14025" name="party lampions">
-		<weight value="1000"/>
-	</item>
-
-	<item flags="65632" id="14026" name="party lampions">
+	<item flags="65632" id="14025-14026" name="party lampions">
 		<weight value="1000"/>
 	</item>
 
@@ -30152,15 +28071,7 @@
 	<item flags="25174016" id="14123-14126" name="lava stream"/>
 	<item flags="16785408" id="14127-14130" name="lava stream"/>
 	<item flags="16777216" id="14131-14132" name="lava stream"/>
-	<item flags="16777216" id="14133" name="ramp" speed="140">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="16777216" id="14134" name="ramp" speed="140">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="16777216" id="14135" name="ramp" speed="140">
+	<item flags="16777216" id="14133-14135" name="ramp" speed="140">
 		<floorchange value="down"/>
 	</item>
 
@@ -30338,32 +28249,7 @@
 		<slotType value="backpack"/>
 	</item>
 
-	<item flags="82016" id="14675" name="tapestry of honour">
-		<weight value="800"/>
-		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
-	</item>
-
-	<item flags="82016" id="14676" name="tapestry of honour">
-		<weight value="800"/>
-		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
-	</item>
-
-	<item flags="82016" id="14677" name="tapestry of honour">
-		<weight value="800"/>
-		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
-	</item>
-
-	<item flags="82016" id="14678" name="tapestry of honour">
-		<weight value="800"/>
-		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
-	</item>
-
-	<item flags="82016" id="14679" name="tapestry of honour">
-		<weight value="800"/>
-		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
-	</item>
-
-	<item flags="82016" id="14680" name="tapestry of honour">
+	<item flags="82016" id="14675-14680" name="tapestry of honour">
 		<weight value="800"/>
 		<description value="It was awarded during the festivities of Tibia's 15th anniversary."/>
 	</item>
@@ -30395,60 +28281,31 @@
 		<description value="Paint is dripping from its tip."/>
 	</item>
 
-	<item flags="32864" id="14687" name="artist's easel">
+	<item flags="32864" id="14687-14688" name="artist's easel">
 		<weight value="1600"/>
 	</item>
 
-	<item flags="32864" id="14688" name="artist's easel">
-		<weight value="1600"/>
-	</item>
-
-	<item flags="32864" id="14689" name="artist's easel">
+	<item flags="32864" id="14689-14690" name="artist's easel">
 		<weight value="1600"/>
 		<description value="An empty canvas has been placed on it."/>
 	</item>
 
-	<item flags="32864" id="14690" name="artist's easel">
-		<weight value="1600"/>
-		<description value="An empty canvas has been placed on it."/>
-	</item>
-
-	<item flags="32864" id="14691" name="masterpiece of a muse">
+	<item flags="32864" id="14691-14692" name="masterpiece of a muse">
 		<weight value="1600"/>
 		<description value="It was painted in the style of Penciljack."/>
 	</item>
 
-	<item flags="32864" id="14692" name="masterpiece of a muse">
-		<weight value="1600"/>
-		<description value="It was painted in the style of Penciljack."/>
-	</item>
-
-	<item flags="32864" id="14693" name="painting of a muse">
+	<item flags="32864" id="14693-14694" name="painting of a muse">
 		<weight value="1600"/>
 		<description value="It was painted in the style of Penciljack. Unfortunately, there are some blue pixels in this piece."/>
 	</item>
 
-	<item flags="32864" id="14694" name="painting of a muse">
-		<weight value="1600"/>
-		<description value="It was painted in the style of Penciljack. Unfortunately, there are some blue pixels in this piece."/>
-	</item>
-
-	<item flags="32864" id="14695" name="masterpiece of a gozzler">
+	<item flags="32864" id="14695-14696" name="masterpiece of a gozzler">
 		<weight value="1600"/>
 		<description value="It was painted in the style of Lyxoph."/>
 	</item>
 
-	<item flags="32864" id="14696" name="masterpiece of a gozzler">
-		<weight value="1600"/>
-		<description value="It was painted in the style of Lyxoph."/>
-	</item>
-
-	<item flags="32864" id="14697" name="painting of a gozzler">
-		<weight value="1600"/>
-		<description value="It was painted in the style of Lyxoph. Unfortunately, there are some blue pixels in this piece."/>
-	</item>
-
-	<item flags="32864" id="14698" name="painting of a gozzler">
+	<item flags="32864" id="14697-14698" name="painting of a gozzler">
 		<weight value="1600"/>
 		<description value="It was painted in the style of Lyxoph. Unfortunately, there are some blue pixels in this piece."/>
 	</item>
@@ -30486,26 +28343,14 @@
 		<weight value="2000"/>
 	</item>
 
-	<item flags="16777312" id="14760" name="mathmaster shield">
+	<item flags="16777312" id="14760-14761" name="mathmaster shield">
 		<description value="It's an Emblem of Wisdom. Awarded by TibiaStat."/>
 		<defense value="0"/>
 		<weight value="314"/>
 		<weaponType value="shield"/>
 	</item>
 
-	<item flags="16777312" id="14761" name="mathmaster shield">
-		<description value="It's an Emblem of Wisdom. Awarded by TibiaStat."/>
-		<defense value="0"/>
-		<weight value="314"/>
-		<weaponType value="shield"/>
-	</item>
-
-	<item flags="16777312" id="14762" name="medusa skull">
-		<description value="You see a medusa skull. Her hair's snakes are still alive. Awarded only on TibiaPic.com."/>
-		<weight value="1000"/>
-	</item>
-
-	<item flags="16777312" id="14763" name="medusa skull">
+	<item flags="16777312" id="14762-14763" name="medusa skull">
 		<description value="You see a medusa skull. Her hair's snakes are still alive. Awarded only on TibiaPic.com."/>
 		<weight value="1000"/>
 	</item>
@@ -30520,12 +28365,7 @@
 		<description value="The mightiest. The only. God of all dwarfs. Awarded by Tibia Bariloche."/>
 	</item>
 
-	<item flags="65632" id="14766" name="majestic shield">
-		<weight value="15000"/>
-		<description value="This wonderful shield was designed for GuildStats.eu, to honour all guilds in Tibia."/>
-	</item>
-
-	<item flags="65632" id="14767" name="majestic shield">
+	<item flags="65632" id="14766-14767" name="majestic shield">
 		<weight value="15000"/>
 		<description value="This wonderful shield was designed for GuildStats.eu, to honour all guilds in Tibia."/>
 	</item>
@@ -31016,11 +28856,7 @@
 		<floorchange value="north"/>
 	</item>
 
-	<item flags="4" id="15145" name="corkscrew stairs">
-		<floorchange value="down"/>
-	</item>
-
-	<item flags="4" id="15146" name="corkscrew stairs">
+	<item flags="4" id="15145-15146" name="corkscrew stairs">
 		<floorchange value="down"/>
 	</item>
 
@@ -31308,61 +29144,17 @@
 		<weight value="130"/>
 	</item>
 
-	<item flags="112" id="15803" name="lonely crystal">
-		<weight value="280"/>
-	</item>
-
-	<item flags="112" id="15804" name="lonely crystal">
-		<weight value="280"/>
-	</item>
-
-	<item flags="112" id="15805" name="lonely crystal">
-		<weight value="280"/>
-	</item>
-
-	<item flags="112" id="15806" name="lonely crystal">
-		<weight value="280"/>
-	</item>
-
-	<item flags="112" id="15807" name="lonely crystal">
-		<weight value="280"/>
-	</item>
-
-	<item flags="112" id="15808" name="lonely crystal">
+	<item flags="112" id="15803-15808" name="lonely crystal">
 		<weight value="280"/>
 	</item>
 
 	<item flags="ts" id="15809-15815" name="large crystal"/>
 	<item flags="ts" id="15816" name="puffball mushroom"/>
-	<item flags="112" id="15817" name="gnomish spore gatherer">
+	<item flags="112" id="15817-15821" name="gnomish spore gatherer">
 		<weight value="800"/>
 	</item>
 
-	<item flags="112" id="15818" name="gnomish spore gatherer">
-		<weight value="800"/>
-	</item>
-
-	<item flags="112" id="15819" name="gnomish spore gatherer">
-		<weight value="800"/>
-	</item>
-
-	<item flags="112" id="15820" name="gnomish spore gatherer">
-		<weight value="800"/>
-	</item>
-
-	<item flags="112" id="15821" name="gnomish spore gatherer">
-		<weight value="800"/>
-	</item>
-
-	<item flags="ts" id="15822" name="strange stone">
-		<description value="as long as it is immersed that deep you won´t be able to get a whetstone."/>
-	</item>
-
-	<item flags="ts" id="15823" name="strange stone">
-		<description value="as long as it is immersed that deep you won´t be able to get a whetstone."/>
-	</item>
-
-	<item flags="ts" id="15824" name="strange stone">
+	<item flags="ts" id="15822-15824" name="strange stone">
 		<description value="as long as it is immersed that deep you won´t be able to get a whetstone."/>
 	</item>
 
@@ -32174,12 +29966,7 @@
 		<weight value="80"/>
 	</item>
 
-	<item flags="p" id="16262" name="dragon eye">
-		<description value="It belonged to the first dragon to roam the world and was adorned with Tibia-Market's purest gold."/>
-		<weight value="2800"/>
-	</item>
-
-	<item flags="p" id="16263" name="dragon eye">
+	<item flags="p" id="16262-16263" name="dragon eye">
 		<description value="It belonged to the first dragon to roam the world and was adorned with Tibia-Market's purest gold."/>
 		<weight value="2800"/>
 	</item>
@@ -32211,12 +29998,7 @@
 		<weight value="650"/>
 	</item>
 
-	<item flags="16777312" id="16275" name="noble sword">
-		<description value="This sword was forged with the enthusiasm and dreams of the Rookgaardians. Awarded by Rookie.pl."/>
-		<weight value="5000"/>
-	</item>
-
-	<item flags="16777312" id="16276" name="noble sword">
+	<item flags="16777312" id="16275-16276" name="noble sword">
 		<description value="This sword was forged with the enthusiasm and dreams of the Rookgaardians. Awarded by Rookie.pl."/>
 		<weight value="5000"/>
 	</item>
