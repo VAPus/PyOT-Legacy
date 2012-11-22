@@ -69,19 +69,9 @@ class CreatureAttacks(object):
         if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
-        dmg = [dmg]
-        textColor = [textColor]
-        magicEffect = [magicEffect]
-        type = [type]
-
         process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
-
-        dmg = dmg[0]
-        textColor = textColor[0]
-        magicEffect = magicEffect[0]
-        type = type[0]
 
         dmg = max(-self.data["health"], dmg)
         
