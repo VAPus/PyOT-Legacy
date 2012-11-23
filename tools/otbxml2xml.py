@@ -204,6 +204,7 @@ while child:
         lastRealItem.alsoKnownAs.append(item.sid)
         #items[item.sid] = lastRealItem
     child = node.next()
+print items[2019].cid, items[2016].cid
 print "-- Got a total of %d items!" % len(items)
 print "-- "
 print ""
@@ -348,8 +349,8 @@ if __name__ == "__main__":
             item.set("id", str(id))
             if id in ids:
                 print "WARNING: ItemId %d got two entries!" % (id)
-                if not len(item):
-                    root.remove(item)
+                
+                root.remove(item)
             ids.add(id)
 
     for item in items.values():
@@ -405,6 +406,7 @@ if __name__ == "__main__":
         for name in set1:
             if not name in set2 or set1[name] != set2[name]:
                 return False
+        return True
             
     for elem in container:
         id = elem.get("id")
@@ -437,3 +439,47 @@ if __name__ == "__main__":
 
         
     
+    # JSON
+    import json
+    items = []
+    for item in container:
+        attr = item.attrib
+        try:
+            attr['id'] = int(attr['id'])
+        except:
+            pass
+
+        try:
+            attr['flags'] = int(attr['flags'])
+        except:
+            pass
+
+        try:
+            attr['speed'] = int(attr['speed'])
+        except:
+            pass
+
+        try:
+            attr['type'] = int(attr['type'])
+        except:
+            pass
+
+        items.append(attr)
+
+        for sub in item:
+            if sub.tag == "attribute": continue
+
+            val = sub.get('value')
+
+            try:
+                val = int(val)
+            except:
+                pass
+
+            attr[sub.tag] = val
+
+    with open('out.json', 'w') as f:
+        data = json.dumps(items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
+        data = data.replace('        ', '\t').replace('\n\t', '\n') # Cut first tab.
+        data = data.replace('}\n{,', '},{') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
+        f.write(data)
