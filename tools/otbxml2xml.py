@@ -204,7 +204,7 @@ while child:
         lastRealItem.alsoKnownAs.append(item.sid)
         #items[item.sid] = lastRealItem
     child = node.next()
-print items[2019].cid, items[2016].cid
+
 print "-- Got a total of %d items!" % len(items)
 print "-- "
 print ""

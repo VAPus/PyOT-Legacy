@@ -278,6 +278,9 @@ class CreatureMovement(object):
                             self.target = thing
                             self.targetMode = 1
 
+                            # Deliver final blow.
+                            thing.onHit(self, -thing.data['healthmax'], PHYSICAL)
+
                     #self.turn(direction) # Fix me?
                     self.notPossible()
                     return self.clearMove(direction, failback)
