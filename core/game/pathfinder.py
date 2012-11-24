@@ -109,33 +109,6 @@ class AStar(object):
                 break
         _result.reverse()
         
-        """if config.findDiagonalPaths:
-            if n.y > prev.y and n.x > prev.x:
-                _result.append(SOUTHEAST)
-            elif n.y < prev.y and n.x > prev.x:
-                _result.append(NORTHEAST)
-            elif n.y > prev.y and n.x < prev.x:
-                _result.append(SOUTHWEST)
-            elif n.y < prev.y and n.x < prev.x:
-                _result.append(NORTHWEST)
-            elif n.y > prev.y:
-                _result.append(SOUTH)
-            elif n.y < prev.y:
-                _result.append(NORTH)
-            elif n.x > prev.x:
-                _result.append(EAST)
-            else:
-                _result.append(WEST)
-                
-        else:
-            if n.y > prev.y:
-                _result.append(SOUTH)
-            elif n.y < prev.y:
-                _result.append(NORTH)
-            elif n.x > prev.x:
-                _result.append(EAST)
-            else:
-                _result.append(WEST)"""
         self.result = _result
     
     def getNode(self, x, y):

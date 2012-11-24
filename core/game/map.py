@@ -651,7 +651,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     ok = True
                                     break
                         if ok:
-                            hash = ground, tuple(items) if items else 0
+                            # Constantify items on stacked tiles. This needs some workarounds w/transform. But prevents random bug.
+                            items = tuple(items) if items else None
+                            hash = ground, items
                             try:
                                 thisSectorMap[ySum] = dummyTiles[hash]
                             except:

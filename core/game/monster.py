@@ -140,7 +140,11 @@ class Monster(Creature):
                 # Callback to remove owner after config.privateLootFor seconds
                 callLater(config.privateLootFor, _clear_private_loot)
             if not self.lastDamagers or self.lastDamagers[0] != self.master:
-				maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+                                try:
+				    maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
+                                except:
+                                    print "[WARNING] Monster %s got a bad corpse" % lf.name()
+                                    maxSize = 0
 				drops = []
 				for loot in self.base.lootTable:
 					if config.lootDropRate*loot[1]*100 > random.randint(0, 10000): # [7363, 28.5, 4]
