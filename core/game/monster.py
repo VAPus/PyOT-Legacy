@@ -143,7 +143,7 @@ class Monster(Creature):
                                 try:
 				    maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                                 except:
-                                    print "[WARNING] Monster %s got a bad corpse" % lf.name()
+                                    print "[WARNING] Monster %s got a bad corpse" % self.name()
                                     maxSize = 0
 				drops = []
 				for loot in self.base.lootTable:

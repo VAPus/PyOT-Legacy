@@ -48,7 +48,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if attr['flags'] & 128:
+        if attr.get('flags', 0) & 128:
             if not count or count < 0:
                 count = 1
             elif not isinstance(count, int):
@@ -172,15 +172,15 @@ class Item(object):
     
     @property
     def solid(self):
-        return items[self.itemId]['flags'] & 1
+        return items[self.itemId].get('flags', 0) & 1
         
     @property
     def blockprojectile(self):
-        return items[self.itemId]['flags'] & 2
+        return items[self.itemId].get('flags', 0) & 2
         
     @property
     def blockpath(self):
-        return items[self.itemId]['flags'] & 4
+        return items[self.itemId].get('flags', 0) & 4
         
     @property
     def cid(self):
@@ -188,23 +188,23 @@ class Item(object):
     
     @property
     def stackable(self):
-        return items[self.itemId]['flags'] & 128
+        return items[self.itemId].get('flags', 0) & 128
         
     @property
     def ontop(self):
-        return items[self.itemId]['flags'] & 8192
+        return items[self.itemId].get('flags', 0) & 8192
         
     @property
     def hangable(self):
-        return items[self.itemId]['flags'] & 65536
+        return items[self.itemId].get('flags', 0) & 65536
         
     @property
     def rotatable(self):
-        return items[self.itemId]['flags'] & 32768
+        return items[self.itemId].get('flags', 0) & 32768
         
     @property
     def animation(self):
-        return items[self.itemId]['flags'] & 16777216
+        return items[self.itemId].get('flags', 0) & 16777216
         
     @property
     def type(self):
@@ -881,9 +881,7 @@ def loadItems():
 
         # Stupid elementtree thinks everything are strings....
         # Would have used lxml, but what the heck, I can't benchmark the difference.
-        if not "flags" in _item:
-            _item["flags"] = 0
-        else:
+        if "flags" in _item:
             flags = _item["flags"]
             try:
                 _item["flags"] = flagTree[flags]
