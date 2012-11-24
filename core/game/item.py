@@ -551,6 +551,11 @@ class Item(object):
         
         if position.x != 0xFFFF:
             tile = position.getTile()
+            # Is this a stacked tile?
+            if tile.getFlags() & TILEFLAGS_STACKED:
+                tile = tile.copy()
+                position.setTile(tile)
+
             stackPos = tile.findStackpos(self)
 
             tile.removeItem(self)
@@ -763,6 +768,12 @@ class Item(object):
         # Option 1, from the map:
         if position.x != 0xFFFF:
             tile = position.getTile()
+            # Is this a stacked tile?
+            if tile.getFlags() & TILEFLAGS_STACKED:
+                tile = tile.copy()
+                position.setTile(tile)
+
+
             tile.removeItem(self)
             updateTile(position, tile)
 

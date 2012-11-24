@@ -44,6 +44,9 @@ class Position(object):
     # Simplifiers
     def getTile(self):
         return getTile(self)
+
+    def setTile(self, tile):
+        return setTile(self, tile)
         
     def distanceTo(self, position):
         return abs(self.x-position.x)+abs(self.y-position.y)

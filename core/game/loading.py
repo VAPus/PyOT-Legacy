@@ -177,6 +177,7 @@ def loader(timer):
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
     __builtin__.getTile = game.map.getTile
+    __builtin__.setTile = game.map.setTile
     __builtin__.getTileConst = game.map.getTileConst
     __builtin__.Condition = game.conditions.Condition
     __builtin__.Boost = game.conditions.Boost

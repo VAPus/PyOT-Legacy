@@ -65,6 +65,33 @@ def getTile(pos):
         except:
             return None
 
+def setTile(pos, tile):
+    x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
+    sectorX, sectorY = mapInfo.sectorSize
+    iX = x // sectorX
+    iY = y // sectorY
+    pX = x % sectorX
+    pY = y % sectorY
+
+    sectorSum = (instanceId << 22) + (iX << 11) + iY
+    posSum = packPos(pX, pY, z)
+    area = None
+    try:
+        area = knownMap[sectorSum]
+    except KeyError:
+        if loadTiles(x, y, instanceId):
+            try:
+                knownMap[sectorSum][posSum] = tile
+                return True
+            except:
+                return False
+    else:
+        try:
+            area[posSum] = tile
+            return True
+        except:
+            return False
+
 def getTileConst(x,y,z,instanceId):
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
@@ -310,6 +337,19 @@ class Tile(object):
                     return (self.things.index(x), x)
                 return x
                 
+
+    def copy(self):
+        items = None
+        if self.items:
+            items = []
+            for item in self.items:
+                items.append(item.copy())
+
+        flags = self.flags
+        if flags & TILEFLAGS_STACKED:
+            flags -= TILEFLAGS_STACKED
+
+        return Tile(self.ground.copy(), items, flags)
 
 class HouseTile(Tile):
     __slots__ = ('houseId', 'position')
@@ -657,7 +697,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             try:
                                 thisSectorMap[ySum] = dummyTiles[hash]
                             except:
-                                tile = l_Tile(ground, items, flags)
+                                tile = l_Tile(ground, items, flags + TILEFLAGS_STACKED)
                                 dummyTiles[hash] = tile
                                 thisSectorMap[ySum] = tile
 
