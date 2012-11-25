@@ -444,10 +444,12 @@ if __name__ == "__main__":
     items = []
     for item in container:
         attr = item.attrib
+        
         try:
-            attr['id'] = int(attr['id'])
+            attr['__id'] = int(attr['id'])
         except:
-            pass
+            attr['__id'] = attr['id']
+        del attr['id']
 
         try:
             attr['flags'] = int(attr['flags'])
@@ -461,6 +463,12 @@ if __name__ == "__main__":
 
         try:
             attr['type'] = int(attr['type'])
+        except:
+            pass
+
+        try:
+            attr['_name'] = attr['name']
+            del attr['name']
         except:
             pass
 
@@ -481,5 +489,5 @@ if __name__ == "__main__":
     with open('out.json', 'w') as f:
         data = json.dumps(items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
         data = data.replace('        ', '\t').replace('\n\t', '\n') # Cut first tab.
-        data = data.replace('}\n{,', '},{') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
+        data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
         f.write(data)

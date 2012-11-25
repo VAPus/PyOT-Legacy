@@ -205,7 +205,6 @@ class Tile(object):
             self.flags -= flag
             
     def placeCreature(self, creature):
-        assert isinstance(creature, Creature)
         if not self.things:
             self.things = [creature]
             return 1
@@ -221,7 +220,6 @@ class Tile(object):
         return pos+1
         
     def removeCreature(self,creature):
-        assert isinstance(creature, Creature)
         self.things.remove(creature)
         
     def placeItem(self, item):

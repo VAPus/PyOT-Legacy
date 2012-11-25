@@ -176,6 +176,7 @@ def loader(timer):
     __builtin__.callLater = reactor.callLater
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
+    __builtin__.idByName = game.item.idByName
     __builtin__.getTile = game.map.getTile
     __builtin__.setTile = game.map.setTile
     __builtin__.getTileConst = game.map.getTileConst
@@ -232,6 +233,9 @@ def loader(timer):
     __builtin__.Creature = game.creature.Creature
     __builtin__.Player = game.player.Player
     __builtin__.Monster = game.monster.Monster
+
+    # JSON
+    __builtin__.json = otjson
 
     class Globalizer(object):
         __slots__ = ()

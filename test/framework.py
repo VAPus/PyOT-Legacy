@@ -187,25 +187,28 @@ class FrameworkTestGame(FrameworkTest):
             
         # Cleanup.
         tile = getTile(Position(1000, 1000, 7))
-        for thing in tile.things[:]:
-            if isinstance(thing, Item) and not thing.fromMap:
-                tile.removeItem(thing)
+        if tile.things:
+            for thing in tile.things[:]:
+                if isinstance(thing, Item) and not thing.fromMap:
+                    tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 1001, 7))
-        for thing in tile.things[:]:
-            if isinstance(thing, Item) and not thing.fromMap:
-                tile.removeItem(thing)
+        if tile.things:
+            for thing in tile.things[:]:
+                if isinstance(thing, Item) and not thing.fromMap:
+                    tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 999, 7))
-        for thing in tile.things[:]:
-            if isinstance(thing, Item) and not thing.fromMap:
-                tile.removeItem(thing)
+        if tile.things:
+            for thing in tile.things[:]:
+                if isinstance(thing, Item) and not thing.fromMap:
+                    tile.removeItem(thing)
                 
         # Clear instances.
         for instance in game.map.instances.copy():
-            if instance != None:
+            if instance != 0:
                 del game.map.instances[instance]
                 # Might not be set if we never load anything.
                 try:

@@ -809,16 +809,20 @@ class MonsterBrain(object):
                 def _():
                     if len(badDir) < 4:
                         self.walkRandomStep(monster, badDir)
-                monster.move(step, failback=_, stopIfLock=True)
+                monster.move(step, failback=_, stopIfLock=True, push=False)
             else:
-                monster.move(step, stopIfLock=True)
+                monster.move(step, stopIfLock=True, push=False)
                 
             return
         
 brain = MonsterBrain()
 def genMonster(name, look, description=""):
     # baseMonsters
-    baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look[0], "corpse":look[1], "name":name, "description":description or "a %s." % name}, brain)
+    if isinstance(look, tuple):
+        look, corpse = look
+    else:
+        corpse = idByName('dead %s' % name)
+    baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look, "corpse":corpse, "name":name, "description":description or "a %s." % name}, brain)
     """try:
         baseMonster.regCorpseAction(look[2])
     except:

@@ -816,7 +816,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         return False
     
     elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
-        player.notPickable()
+        player.notPickupable()
         return False
                     
     elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self

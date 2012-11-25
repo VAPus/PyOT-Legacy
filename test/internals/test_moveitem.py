@@ -286,11 +286,14 @@ class TestMoveItem(FrameworkTestGame):
                 break
 
         for index2 in xrange(len(corpse2.container)):
-            if corpse2.container[index].itemId == 2666:
+            if corpse2.container[index2].itemId == 2666:
                 break
 
         # Move
-        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, index2)))
+        try:
+            self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, index2)))
+        except:
+            self.fail("Corpse Indexes failed.")
 
         # Find new meat.
         for item in corpse2.container:

@@ -29,6 +29,7 @@ class CreatureMovement(object):
                 if i.solid:
                     raise game.errors.SolidTile()
 
+        oldStackpos = 0
         try:
             oldStackpos = getTile(oldPosition).findStackpos(self)
             for spectator in getSpectators(oldPosition, ignore=(self,)):
@@ -38,7 +39,6 @@ class CreatureMovement(object):
                 stream.send(spectator)
             oldPosCreatures = game.engine.getCreatures(oldPosition)
         except:
-            raise
             pass # Just append creature
         
         stackpos = placeCreature(self, position)
@@ -50,9 +50,8 @@ class CreatureMovement(object):
         if self.creatureType == 0 and self.client:
             print "Good"
             with self.packet() as stream:
-                print oldPosition, oldStackpos, position
-                
-                stream.removeTileItem(oldPosition, oldStackpos)
+                if oldStackpos: 
+                   stream.removeTileItem(oldPosition, oldStackpos)
                 
                 stream.uint8(0x64)
                 stream.position(position)

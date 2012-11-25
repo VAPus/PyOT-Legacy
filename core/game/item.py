@@ -12,6 +12,7 @@ import marshal
 import inflect
 import gc
 import xml.etree.cElementTree as ET
+import otjson as json
 
 INFLECT = inflect.engine()
 
@@ -874,7 +875,7 @@ def loadItems():
     # Make three new values while we are loading
     loadItems = {}
     idNameCache = {}
-    tree = ET.parse("data/items.xml")
+    """tree = ET.parse("data/items.xml")
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}    
     for item in tree.getroot():
         _item = item.attrib
@@ -927,6 +928,42 @@ def loadItems():
                 pass
         del _item["id"]
         item.clear()        
+    """
+
+    # JSON format.
+    jsonItems = json.loads(_open('data/items.json', 'r').read())
+    flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
+    for item in jsonItems:
+        flags = item.get('flags')
+        if flags and not isinstance(flags, int):
+            item['flags'] = flagTree[flags]
+
+        if 'shootType' in item:
+            item['shootType'] = getattr(game.enum, 'ANIMATION_%s' % item['shootType'].upper())
+
+        if 'fluidSource' in item:
+            item['fluidSource'] = getattr(game.enum, 'FLUID_%s' % item['fluidSource'].upper())
+
+        if 'weaponType' in item:
+            type = item['weaponType']
+            if type not in ("ammunition", "wand"):
+                item["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % type.upper())
+
+        id = item['id']
+        del item['id']
+        if isinstance(id, str):
+            start, end = map(int, id.split('-'))
+            for id in xrange(start, end+1):
+                loadItems[id] = item
+        else:
+            loadItems[id] = item
+            
+            try:
+                name = item["name"].upper()
+                if not name in idNameCache:
+                    idNameCache[name] = id
+            except:
+                pass
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%45s\n" % "\t[DONE]"
