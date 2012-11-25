@@ -104,7 +104,7 @@ class TestMoveItem(FrameworkTestGame):
         
     def test_closebag(self):
         # Make a bag.
-        item = Item(1987)
+        item = Item(2853)
         self.player.itemToInventory(item, SLOT_BACKPACK)
 
         # Open bag.
@@ -143,7 +143,7 @@ class TestMoveItem(FrameworkTestGame):
         item = Item(2544, 100)
 
         # Make a bag.
-        bag = Item(1987)
+        bag = Item(2853)
 
         # Place to inventory.
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -173,7 +173,7 @@ class TestMoveItem(FrameworkTestGame):
         item = Item(2148, 1)
 
         # Make a bag.
-        bag = Item(1987)
+        bag = Item(2853)
 
         # Place to inventory
         self.player.itemToInventory(bag, SLOT_BACKPACK)
