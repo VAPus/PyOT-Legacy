@@ -245,7 +245,7 @@ class Monster(Creature):
                 self.getLastDamager().message(_l(self.getLastDamager(), "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
                 
             # Experience split.
-            attackerParty = self.getLastDamager.party()
+            attackerParty = self.getLastDamager().party()
             if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
                 for member in attackerParty.members:
                     if member.data["stamina"] or config.noStaminaNoExp == False:

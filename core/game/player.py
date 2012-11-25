@@ -1458,7 +1458,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         deathData["unjust"] = False
         corpse = Item(HUMAN_CORPSE)
         
-        lastDamagerSkull = self.getSkull(lastAttaker)
+        lastDamagerSkull = self.getSkull(lastAttacker)
         if lastDmgIsPlayer:
             # Just or unjust?
             unjust = True

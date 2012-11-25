@@ -13,9 +13,11 @@ class Position(object):
         return (self.x != other.x or self.y != other.y or self.z != other.z or self.instanceId != other.instanceId)
         
     def copy(self):
+        """ Return a copy of this position. """
         return Position(self.x, self.y, self.z, self.instanceId)
     
     def inRange(self, other, x, y, z=0):
+        """ Is this position in x,y,z range from the other position? Returns True/False. """
         return ( self.instanceId == other.instanceId and abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y ) 
 
     # Support for the old behavior of list attributes.
@@ -43,15 +45,19 @@ class Position(object):
 
     # Simplifiers
     def getTile(self):
+        """ Returns the Tile of this position, similar to :func:`game.map.getTile` with this as the position. """
         return getTile(self)
 
     def setTile(self, tile):
+        """ Sets the tile of this position, similar to :func:`game.map.setTile` with this as the position. """
         return setTile(self, tile)
         
     def distanceTo(self, position):
+        "Return the absolute x,y distance to this other position."
         return abs(self.x-position.x)+abs(self.y-position.y)
     
     def roundPoint(self, steps):
+        """ Return a MultiPosition with all the steps away from this tile. """
         positions = []
         for x in xrange(-steps, steps+1):
             for y in xrange(-steps, steps+1):
@@ -73,8 +79,9 @@ class Position(object):
         else:
             return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
 
-    def setStackpos(self, x):
-        return StackPosition(self.x, self.y, self.z, x, self.instanceId)
+    def setStackpos(self, stack):
+        """ Return a StackPosition with `stack` as the stack position and this as the x,y,z,instance position. """
+        return StackPosition(self.x, self.y, self.z, stack, self.instanceId)
 
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):
@@ -84,20 +91,24 @@ class MultiPosition(Position):
     
     @property
     def x(self):
+        """ Return the current x point """
         return self.positions[self.index][0]
         
     @property
     def y(self):
+        """ Return the current y point """
         return self.positions[self.index][1]
         
     @property
     def z(self):
+        """ Return the current z point """
         return self.positions[self.index][2]
         
     def __iter__(self):
         return self
         
     def next(self):
+        """ Increase the index, change to that position in the position list. """
         self.index += 1
         if self.index >= len(self.positions):
             raise StopIteration
@@ -127,7 +138,9 @@ class StackPosition(Position):
             return "[%d, %d, %d - instance %d, stack - %d]" % (self.x, self.y, self.z, self.instanceId, self.stackpos)
 
     def getThing(self):
+        """ Return the thing on this StackPosition """
         return self.getTile().getThing(self.stackpos)
 
-    def setStackpos(self, x):
-        self.stackpos = x
+    def setStackpos(self, stack):
+        """ Change the stack position on this x,y,z position. """
+        self.stackpos = stack
