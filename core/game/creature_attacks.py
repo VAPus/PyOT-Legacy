@@ -76,7 +76,7 @@ class CreatureAttacks(object):
         dmg = max(-self.data["health"], dmg)
         
         if dmg:
-            self.lastDamagers.appendleft(by)
+            self.addDamager(by)
             by.lastPassedDamage = time.time()
             
             if magicEffect:
@@ -143,6 +143,14 @@ class CreatureAttacks(object):
         else:
             return False
             
+    def addDamager(self, creature):
+        self.lastDamagers.appendleft((creature, time.time()))
+    def addSupporter(self, creature):
+        self.lastSupporters.appendleft((creature, time.time()))
+    def getLastDamager(self):
+        return self.lastDamagers[0][0]
+    def getLastSupporter(self):
+        return self.lastDamagers[0][0]
             
 class PlayerAttacks(CreatureAttacks):
     # Damage calculation:

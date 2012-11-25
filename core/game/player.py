@@ -1444,7 +1444,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return (container, container / 10.0)
     
     def onDeath(self):
-        lastDmgIsPlayer = self.lastDamagers[0].isPlayer()
+        lastAttacker = self.getLastDamager()
+        lastDmgIsPlayer = lastAttacker.isPlayer()
         deathData = {}
         loseRate = self.losePrecent()
         itemLoseRate = self.itemLosePrecent()
@@ -1455,9 +1456,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         deathData["loseRate"] = loseRate
         deathData["itemLoseRate"] = itemLoseRate
         deathData["unjust"] = False
-        corpse = Item(3058)
+        corpse = Item(HUMAN_CORPSE)
         
-        lastDamagerSkull = self.getSkull(self.lastDamagers[0])
+        lastDamagerSkull = self.getSkull(lastAttaker)
         if lastDmgIsPlayer:
             # Just or unjust?
             unjust = True
@@ -1466,7 +1467,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 
             deathData["unjust"] = unjust
             
-        if game.scriptsystem.get("death").runSync(self, self.lastDamagers[0], corpse=corpse, deathData=deathData) == False:
+        if game.scriptsystem.get("death").runSync(self, lastAttacker, corpse=corpse, deathData=deathData) == False:
             return
         
         unjust = deathData["unjust"]
@@ -1507,23 +1508,23 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if lastDmgIsPlayer:
             # Was this revenge?
             if lastDamagerSkull == SKULL_ORANGE:
-                revengeEntry = death.findUnrevengeKill(self.lastDamagers[0].data["id"], self.data["id"])
+                revengeEntry = death.findUnrevengeKill(lastAttacker.data["id"], self.data["id"])
                 if not revengeEntry:
                     print "BUG: This was a revenge, but we can't find the revenge death entry..."
                 elif revengeEntry.revenged == True:
                     print "BUG: revenging a revenged kill."
                 else:
                     revengeEntry.revenge()
-            entry = deathlist.DeathEntry(self.lastDamagers[0].data["id"], self.data["id"], unjust)
+            entry = deathlist.DeathEntry(lastAttacker.data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
             
             # Resend attackers skull.
             # Trick to destroy cache:
-            self.lastDamagers[0].skull = 0
-            self.lastDamagers[0].refreshSkull()
+            lastAttacker.skull = 0
+            lastAttacker.refreshSkull()
             
             # PvP Experience.
-            self.lastDamagers[0].modifyExperience(config.pvpExpFormula(self.lastDamagers[0].data["level"], self.data["level"], self.data["experience"]))
+            lastAttacker.modifyExperience(config.pvpExpFormula(lastAttacker.data["level"], self.data["level"], self.data["experience"]))
          
         #if temp skull remove it on death
         if self.getSkull() in (SKULL_WHITE, SKULL_YELLOW, SKULL_GREEN):

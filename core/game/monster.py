@@ -132,14 +132,14 @@ class Monster(Creature):
             
             # Set owner.
             if self.lastDamagers:
-                corpse.owners = [self.lastDamagers[0]]
+                corpse.owners = [self.getLastDamager()]
             
                 def _clear_private_loot():
                     del corpse.owners
                 
                 # Callback to remove owner after config.privateLootFor seconds
                 callLater(config.privateLootFor, _clear_private_loot)
-            if not self.lastDamagers or self.lastDamagers[0] != self.master:
+            if not self.lastDamagers or self.getLastDamager() != self.master:
                                 try:
 				    maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                                 except:
@@ -162,7 +162,7 @@ class Monster(Creature):
 					elif len(loot) == 4:
 						drops.append((loot[0], None, loot[4]))
 				
-				ret = scriptsystem.get("loot").runSync(self, self.lastDamagers[0] if self.lastDamagers else None, loot=drops, maxSize=maxSize)
+				ret = scriptsystem.get("loot").runSync(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
 				if type(ret) == list:
 					drops = ret
 
@@ -212,7 +212,7 @@ class Monster(Creature):
         else:
             corpse = None
             
-        scriptsystem.get("death").runSync(self, self.lastDamagers[0] if self.lastDamagers else None, corpse=corpse)
+        scriptsystem.get("death").runSync(self, self.getLastDamager() if self.lastDamagers else None, corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
             return
@@ -238,14 +238,14 @@ class Monster(Creature):
         # Remove me. This also refresh the tile.
         self.remove()
 
-        if self.lastDamagers and self.lastDamagers[0].isPlayer() and self.lastDamagers[0] != self.master:
+        if self.lastDamagers and self.getLastDamager().isPlayer() and self.getLastDamager() != self.master:
             if lootMsg:
-                self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
+                self.getLastDamager().message(_l(self.getLastDamager(), "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
-                self.lastDamagers[0].message(_l(self.lastDamagers[0], "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
+                self.getLastDamager().message(_l(self.getLastDamager(), "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
                 
             # Experience split.
-            attackerParty = self.lastDamagers[0].party()
+            attackerParty = self.getLastDamager.party()
             if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
                 for member in attackerParty.members:
                     if member.data["stamina"] or config.noStaminaNoExp == False:
@@ -255,11 +255,11 @@ class Monster(Creature):
                         if exp >= member.data["level"]:
                             member.soulGain()
             else:
-                if self.lastDamagers[0].data["stamina"] or config.noStaminaNoExp == False:
-                    self.lastDamagers[0].modifyExperience(self.base.experience *self.lastDamagers[0].getExperienceRate())
+                if self.getLastDamager().data["stamina"] or config.noStaminaNoExp == False:
+                    self.getLastDamager().modifyExperience(self.base.experience *self.getLastDamager().getExperienceRate())
 
-                    if self.base.experience >= self.lastDamagers[0].data["level"]:
-                        self.lastDamagers[0].soulGain()
+                    if self.base.experience >= self.getLastDamager().data["level"]:
+                        self.getLastDamager().soulGain()
        
         # Begin respawn
         if self.respawn:

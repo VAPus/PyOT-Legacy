@@ -119,7 +119,6 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
             dmg = -random.randint(minDmg, maxDmg)
         
         target.onHit(caster, dmg, type)
-        target.lastDamager = caster
         
     return damageCallback
 
@@ -133,7 +132,7 @@ def element(type):
         dmg = random.randint(strength[0], strength[1])
  
         target.onHit(caster, dmg, type)
-        target.lastDamager = caster # Isn't this updated using onHit anyway?
+
     return elementDamageCallback
     
 def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=game.enum.CONDITION_PARALYZE):
@@ -151,11 +150,14 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=ga
         # Cure paralyzation if configurated to do so.
         if cure:
             target.loseCondition(cure)
+
+        target.addSupporter(caster)
         
     return healCallback
 	
 def cure(condition):
     def cureCallback(caster, target, strength=None):
+        target.addSupporter(caster)
         target.loseCondition(condition)
     return cureCallback
 
@@ -169,8 +171,14 @@ def mana(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
             maxDmg = round((caster.data["level"]/lvlMax)+(caster.data["maglevel"]*mlvlMax)+constantMax)
             minDmg = round((caster.data["level"]/lvlMin)+(caster.data["maglevel"]*mlvlMin)+constantMin)
         
+        mana = -random.randint(minDmg, maxDmg)
 
-        target.modifyMana(-random.randint(minDmg, maxDmg))
+        if mana < 0:
+            target.addDamager(caster)
+        elif mana > 0:
+            target.addSupporter(caster)
+
+        target.modifyMana(mana)
         
     return manaCallback
     
@@ -314,11 +322,21 @@ class Spell(object):
         if mana or health:
             def _effect(target, caster, **k):
                 # Target = actual target
+                added = False
                 if health:
                     if health < 0:
-                        target.lastDamager = caster
+                        target.addDamager(caster)
+                        added = True
+                    elif not added:
+                        target.addSupporter(caster)
                     target.modifyHealth(health)
                 if mana:
+                    if not added and mana < 0:
+                       target.addDamager(caster)
+                       added = True
+                    elif not added:
+                       target.addSupporter(caster)
+
                     target.modifyMana(mana)
                     
                 if soul:

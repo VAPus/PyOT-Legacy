@@ -53,6 +53,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         self.regenerate = None
         self.alive = True
         self.lastDamagers = deque(maxlen=config.trackHits)
+        self.lastSupporters = deque(maxlen=config.trackHits)
         self.solid = not config.creatureWalkthrough
         self.emblem = 0
         self.shield = 0
