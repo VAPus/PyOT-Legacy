@@ -23,9 +23,11 @@ def __uid():
 instanceId = __uid().next
 
 def packPos(x,y,z):
+    """ Returns a single numberic representation of this x,y,z position. """
     return (z << 24) + (x << 10) + y
 
 def unpackPos(sum):
+    """ Returns a tuple with the x,y,z position of this numberic representation. """
     z = sum >> 24
     xSum = sum - (z << 24)
     x = xSum >> 10
@@ -41,6 +43,7 @@ def unpackPos(sum):
     return x,y,z
 
 def getTile(pos):
+    """ Returns the Tile on this position. """
     x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
@@ -66,6 +69,7 @@ def getTile(pos):
             return None
 
 def setTile(pos, tile):
+    """ Set the tile on this position. """
     x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
@@ -93,6 +97,7 @@ def setTile(pos, tile):
             return False
 
 def getTileConst(x,y,z,instanceId):
+    """ Return the tile on this (unpacked) position. """
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
     iY = y // sectorY
@@ -118,24 +123,28 @@ def getTileConst(x,y,z,instanceId):
             return None
         
 def getHouseId(pos):
+    """ Returns the houseId on this position, or False if none """
     try:
         return getTile(pos).houseId
     except:
         return False
         
 def placeCreature(creature, pos):
+    """ Place a creature on this position. """
     try:
         return getTile(pos).placeCreature(creature)
     except:
         return False
         
 def removeCreature(creature, pos):
+    """ Remove the creature on this position. """
     try:
         return getTile(pos).removeCreature(creature)
     except:
         return False  
 
 def newInstance(base=None):
+    """ Returns a new instanceId """
     instance = instanceId()
     if base:
         instances[instance] = base + '/'
@@ -154,6 +163,7 @@ class Tile(object):
         self.flags = flags
 
     def getCreatureCount(self):
+        """ Returns the number of creatures on this tile. """
         if not self.things: return 0
 
         count = 0
@@ -164,11 +174,13 @@ class Tile(object):
         return count
     
     def getItemCount(self):
+        """ Returns the number of items (:class:`game.item.Item`) (minus the ground) on this tile. """
         if not self.things: return 0
 
         return len(self.things) - self.getCreatureCount()
         
     def getTopItemCount(self):
+        """ Return the number of ontop items (:class:`game.item.Item`) (minus the ground) on this tile. """
         if not self.things: return 0
 
         count = 0
@@ -181,6 +193,7 @@ class Tile(object):
         return count
 
     def getBottomItemCount(self):
+        """ Return the number of non-ontop items (:class:`game.item.Item`) (minus the ground) on this tile. """
         if not self.things: return 0
 
         count = 0
@@ -193,18 +206,23 @@ class Tile(object):
         return count
 
     def getFlags(self):
+        """ Return the tile flags """
         return self.flags or 0
         
     def setFlag(self, flag):
+        """ Set a flag on the tile """
         flags = self.getFlags()
         if not flags & flag:
             self.flags = flags + flag
 
     def unsetFlag(self, flag):
+        """ Unset a flag on the tile """
         if self.getFlags() & flag:
             self.flags -= flag
             
     def placeCreature(self, creature):
+        """ Place a Creature (subclass of :class:`game.creature.Creature`) on the tile. """
+ 
         if not self.things:
             self.things = [creature]
             return 1
@@ -220,9 +238,13 @@ class Tile(object):
         return pos+1
         
     def removeCreature(self,creature):
+        """ Remove a Creature (subclass of (:class:`game.creature.Creature`) on the tile. """
+ 
         self.things.remove(creature)
         
     def placeItem(self, item):
+        """ Place an Item (:class:`game.item.Item`) on the tile. This automatically deals with ontop etc. """
+ 
         assert isinstance(item, Item)
         if not self.things:
             self.things = [item]
@@ -241,6 +263,7 @@ class Tile(object):
         return pos+1
     
     def placeItemEnd(self, item):
+        """ Place an idea at the end of the item stack. This function should NOT usually be used with ontop items. """
         if not self.things:
             self.things = [item]
             return 1
@@ -249,6 +272,7 @@ class Tile(object):
         return len(self.things)
         
     def bottomItems(self):
+        """ Returns a list or tuple with bottom items. """
         if not self.things: return ()
         bottomItems = self.getBottomItemCount()
         if not bottomItems:
@@ -257,6 +281,7 @@ class Tile(object):
         return self.things[len(self.things) - bottomItems:]
         
     def topItems(self):
+        """ Returns an iterator over top items (including the ground). """
         yield self.ground
 
         if not self.things: return
@@ -267,6 +292,7 @@ class Tile(object):
                 break
             
     def getItems(self):
+        """ Returns an iterator over all items on this tile. """
         yield self.ground
 
         if not self.things:
@@ -277,6 +303,7 @@ class Tile(object):
                 yield thing
  
     def creatures(self):
+        """ Returns an iterator over all creatures on this tile. """
         if not self.things:
             return
 
@@ -285,6 +312,7 @@ class Tile(object):
                 yield thing
                 
     def hasCreatures(self):
+        """ Returns True if the tile holds any creatures (:class:`game.creature.Creature`). """
         if not self.things:
             return False
 
@@ -293,6 +321,7 @@ class Tile(object):
                 return True
         
     def topCreature(self):
+        """ Returns the top (first) creature (subclass of :class:`game.creature.Creature`) on the tile. """
         if not self.things:
             return None
 
@@ -301,16 +330,19 @@ class Tile(object):
                 return thing
 
     def removeItem(self, item):
+        """ Remove the `item` (:class:`game.item.Item`)  from the tile. """
         item.stopDecay()
         self.things.remove(item)
         
     def removeItemWithId(self, itemId):
+        """ Remove items with id equal `itemId` on this tile. """
         for i in self.getItems():
             if i.itemId == itemId:
                 self.removeItem(i)
                 
         
     def getThing(self, stackpos):
+        """ Returns the thing on this stack position. """
         if stackpos == 0: return self.ground
         try:
             return self.things[stackpos-1]
@@ -318,17 +350,21 @@ class Tile(object):
             return None
     
     def setThing(self, stackpos, item):
+        """ Set the item (can be either a creature or a item) to this stack position. stackpos is one less due to ground. """
         self.things[stackpos] = item
         
-    def findItem(self, sid):
+    def findItem(self, itemId):
+        """ returns the first item with id equal to `itemId` """
         for x in self.bottomItems():
-            if x.itemId == sid:
+            if x.itemId == itemId:
                 return x
 
     def findStackpos(self, thing):
+        """ Returns the stackposition of that `thing` on this tile. """
         return self.things.index(thing)+1
         
     def findClientItem(self, cid, stackpos=None):
+        """ (DON'T USE THIS) """
         for x in self.bottomItems():
             if x.cid == cid:
                 if stackpos:
@@ -337,6 +373,7 @@ class Tile(object):
                 
 
     def copy(self):
+        """ Returns a copy of this tile. Used internally for unstacking. """
         items = None
         if self.items:
             items = []
@@ -366,6 +403,7 @@ houseDoors = {}
 dummyTiles = {}
     
 def loadTiles(x,y, instanceId):
+    """ Load the sector witch holds this x,y position. Returns the result. """
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
     
@@ -455,6 +493,7 @@ creature_unpack = struct.Struct("<bbH").unpack
 spawn_unpack = struct.Struct("<HHBBB").unpack
 
 def loadSectorMap(code, instanceId, baseX, baseY):
+    """ Parse the `code` (sector data) starting at baseX,baseY. Returns the sector. """
     global dummyItems, dummyTiles
 
     thisSectorMap = {}
@@ -717,6 +756,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     return thisSectorMap           
 ### End New Map Format ###
 def load(sectorX, sectorY, instanceId):
+    """ Load sectorX.sectorY.sec. Returns True/False """
     sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
     
     if sectorSum in knownMap:
@@ -774,6 +814,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
     reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId):
+    """ Unload sectorX.sectorY, loaded into instanceId """
     sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
     try:
         del knownMap[sectorSum]

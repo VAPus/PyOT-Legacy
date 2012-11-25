@@ -13,7 +13,7 @@ class _TestDocumentation(FrameworkTestGame):
                 if not func.__doc__:
                     self.fail("%s.%s - Missing documentation" % (module.__name__, name))
                 else:
-                    self.assertGreater(len(func.__doc__), 20)
+                    self.assertGreater(len(func.__doc__), 10)
 
 class TestModules(_TestDocumentation):
     def test_engine(self):

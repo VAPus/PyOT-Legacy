@@ -30,6 +30,9 @@ class Condition(object):
                 self.effect = self.effectNone
 
     def start(self, creature):
+        """ Start the condition.
+        :param creature: The creature object that this condition should affect.
+        """
         self.creature = creature
         if self.creature.isPlayer():
             self.saveCondition = True
@@ -38,6 +41,7 @@ class Condition(object):
         self.tick()
 
     def stop(self):
+        """ Stops the condition."""
         try:
             self.tickEvent.cancel()
         except:
@@ -46,11 +50,15 @@ class Condition(object):
         self.finish()
 
     def init(self):
+        """ (For subclassing) Used to create your own custom initializer when subclassing Conditions."""
         pass
 
-    def callback(self): pass
+    def callback(self):
+        """ (For subclassing) Called when the Condition finishes when used in a subclassed Condition."""
+        pass
 
     def finish(self):
+        """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
         del self.creature.conditions[self.type]
         if self.creature.isPlayer():
             self.saveCondition = True
@@ -58,14 +66,17 @@ class Condition(object):
         self.callback()
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
+        """ The default effect handler when the condition is a poison type """
         self.creature.magicEffect(EFFECT_HITBYPOISON)
         self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
+        """ The default effect handler when the condition is a fire type """
         self.creature.magicEffect(EFFECT_HITBYFIRE)
         self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectRegenerateHealth(self, gainhp=None):
+        """ The default effect handler when the condition is a health regen type """
         if not gainhp:
             gainhp = self.creature.getVocation().health
             self.creature.onHeal(None, gainhp[0])
@@ -74,6 +85,7 @@ class Condition(object):
             self.creature.onHeal(None, gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
+        """ The default effect hander when the condition is a mana regen type """
         if not gainmana:
             gainmana = self.creature.getVocation().mana
             self.creature.modifyMana(gainmana[0])
@@ -82,9 +94,11 @@ class Condition(object):
             self.creature.modifyMana(gainmana)
 
     def effectNone(self):
+        """ Dummy function when no effect is used. """
         pass
     
     def tick(self):
+        """ Handles the ticks. Calls the effect, schedule the next tick or finishes if there are no next tick """
         if not self.creature:
             return
 
@@ -103,9 +117,11 @@ class Condition(object):
             self.finish()
 
     def copy(self):
+        """ Returns a copy of this Condition. """
         return copy.deepcopy(self)
 
     def __getstate__(self):
+        """ Returns a saveable version of the Condition, without the creature and tick event set. """
         d = self.__dict__.copy()
         d["creature"] = None
         del d["tickEvent"]
@@ -129,12 +145,20 @@ class Boost(Condition):
         self.percent = percent
 
     def add(self, type, mod):
+        """ Adds yet another variaible to boost.
+        :param type: The type (like speed, health, healthmax) to boost.
+        :param mod: How much to modify the type.
+        """
         self.ptype.append(type)
         self.mod.append(mod)
         return self
 
-    def tick(self): pass
+    def tick(self):
+        """ Handles the tick. Boost usually doesn't have any ticks. """
+        pass
+
     def init(self):
+        """ Initialize the Boost, this function sets the boosting."""
         pid = 0
         for ptype in self.ptype:
             # Apply
@@ -175,6 +199,7 @@ class Boost(Condition):
 
         self.creature.refreshStatus()
     def callback(self):
+        """ Called when the boost ends. Substracts the boosting. """
         pid = 0
         for ptype in self.ptype:
             # Apply
@@ -213,6 +238,7 @@ class Boost(Condition):
         self.creature.refreshStatus()
         
 def MultiCondition(type, subtype="", *argc):
+    """ Return one Condition where the callback have been set to call the next condition upon the finish of the first. """
     conditions = []
     for x in argc:
         conditions.append(Condition(type, subtype, **x))
