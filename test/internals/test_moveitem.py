@@ -12,7 +12,7 @@ class TestMoveItem(FrameworkTestGame):
         self.player.toggleRaiseMessages()
         
         # Make some gold
-        item = Item(2148, 10)
+        item = Item(3031, 10)
         
         # Place to inventory
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -39,7 +39,7 @@ class TestMoveItem(FrameworkTestGame):
         """ Issue #59 part 2. http://vapus.net/forum/project.php?issueid=59 """
         
         # Make some gold
-        item = Item(2148, 100)
+        item = Item(3031, 100)
         
         # Place to inventory.
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -60,10 +60,10 @@ class TestMoveItem(FrameworkTestGame):
         """ Reverse of the above. """
         
         # Make some gold
-        item = Item(2148, 50)
-        item2 = Item(2148, 50)
+        item = Item(3031, 50)
+        item2 = Item(3031, 50)
         item2.place(self.player.position)
-        stack = self.player.position.getTile().things.index(item2)
+        stack = self.player.position.getTile().findStackpos(item2)
         groundPosition = self.player.position.setStackpos(stack)
         
         # Place to inventory.
@@ -86,7 +86,7 @@ class TestMoveItem(FrameworkTestGame):
 
     def test_move_ground(self):
         # Make some gold.
-        item = Item(2148, 10)
+        item = Item(3031, 10)
         item.place(self.player.position)
         
         # Move.
@@ -118,7 +118,7 @@ class TestMoveItem(FrameworkTestGame):
         
     def test_move_ground_no_count(self):
         # Make some gold.
-        item = Item(2148, 10)
+        item = Item(3031, 10)
         item.place(self.player.position)
         
         self.assertEqual(self.player.position, item.position)
@@ -140,7 +140,7 @@ class TestMoveItem(FrameworkTestGame):
         self.player.toggleRaiseMessages()
 
         # Make some arrows
-        item = Item(2544, 100)
+        item = Item(763, 100)
 
         # Make a bag.
         bag = Item(2853)
@@ -170,7 +170,7 @@ class TestMoveItem(FrameworkTestGame):
 
     def test_move_to_self(self):
         # Make a gold coin 
-        item = Item(2148, 1)
+        item = Item(3031, 1)
 
         # Make a bag.
         bag = Item(2853)
@@ -213,7 +213,7 @@ class TestMoveItem(FrameworkTestGame):
             wolf.prepare()
 
         for loot in wolf.lootTable:
-           if loot[0] == 2666:
+           if loot[0] == idByName('meat'):
                loot[1] = 100.0
 
         # Spawn and kill two wolfs
@@ -236,7 +236,7 @@ class TestMoveItem(FrameworkTestGame):
 
         # Find meat and move from corpse1 to corpse2.
         for index in xrange(len(corpse1.container)):
-            if corpse1.container[index].itemId == 2666:
+            if corpse1.container[index].itemId == idByName('meat'):
                 break
 
         # Move
@@ -244,11 +244,11 @@ class TestMoveItem(FrameworkTestGame):
 
         # Find new meat.
         for item in corpse2.container:
-            if item.itemId == 2666:
+            if item.itemId == idByName('meat'):
                 self.assertGreater(item.count, 1)
                 break
 
-        self.assertEqual(item.itemId, 2666)
+        self.assertEqual(item.itemId, idByName('meat'))
 
     def test_courpse_to_corpse_specific_stack(self):
         """ Bug #78 """
@@ -259,7 +259,7 @@ class TestMoveItem(FrameworkTestGame):
             wolf.prepare()
 
         for loot in wolf.lootTable:
-           if loot[0] == 2666:
+           if loot[0] == idByName('meat'):
                loot[1] = 100.0
 
         # Spawn and kill two wolfs
@@ -282,11 +282,11 @@ class TestMoveItem(FrameworkTestGame):
 
         # Find meat and move from corpse1 to corpse2.
         for index in xrange(len(corpse1.container)):
-            if corpse1.container[index].itemId == 2666:
+            if corpse1.container[index].itemId == idByName('meat'):
                 break
 
         for index2 in xrange(len(corpse2.container)):
-            if corpse2.container[index2].itemId == 2666:
+            if corpse2.container[index2].itemId == idByName('meat'):
                 break
 
         # Move
@@ -297,9 +297,9 @@ class TestMoveItem(FrameworkTestGame):
 
         # Find new meat.
         for item in corpse2.container:
-            if item.itemId == 2666:
+            if item.itemId == idByName('meat'):
                 self.assertGreater(item.count, 1)
                 break
 
-        self.assertEqual(item.itemId, 2666)
+        self.assertEqual(item.itemId, idByName('meat'))
 
