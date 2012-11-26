@@ -408,7 +408,7 @@ if __name__ == "__main__":
                 return False
         return True
             
-    for elem in container:
+    for elem in container[:]:
         id = elem.get("id")
         if "-" in id: continue
         
@@ -416,6 +416,7 @@ if __name__ == "__main__":
         if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags") and _compareSub(currElem, elem):
             count += 1
             root.remove(elem)
+            container.remove(elem)
             continue
         elif count:
             currElem.set("id", "%s-%s" % (currId, currId+count))
@@ -467,7 +468,9 @@ if __name__ == "__main__":
             pass
 
         try:
-            attr['_name'] = attr['name']
+            name = attr['name']
+            if name:
+                attr['_name'] = name
             del attr['name']
         except:
             pass
@@ -490,4 +493,5 @@ if __name__ == "__main__":
         data = json.dumps(items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
         data = data.replace('        ', '\t').replace('\n\t', '\n') # Cut first tab.
         data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
+        data = data.replace('[\n{', '[{').replace('}\n]', '}]')
         f.write(data)
