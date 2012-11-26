@@ -931,9 +931,8 @@ def loadItems():
     """
 
     # JSON format.
-    jsonItems = json.loads(_open('data/items.json', 'r').read())
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
-    for item in jsonItems:
+    def _load(item):
         flags = item.get('flags')
         if flags and not isinstance(flags, int):
             item['flags'] = flagTree[flags]
@@ -951,7 +950,7 @@ def loadItems():
 
         id = item['id']
         del item['id']
-        if isinstance(id, str):
+        if not isinstance(id, int):
             start, end = map(int, id.split('-'))
             for id in xrange(start, end+1):
                 loadItems[id] = item
@@ -964,6 +963,7 @@ def loadItems():
                     idNameCache[name] = id
             except:
                 pass
+    json.loads(_open('data/items.json', 'r').read(), object_hook=_load)
 
     print "\n> > Items (%s) loaded..." % len(loadItems),
     print "%45s\n" % "\t[DONE]"
