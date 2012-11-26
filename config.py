@@ -282,9 +282,6 @@ whisperNoise = "pspspsps"
 sayRange = (9, 7)
 yellRange = (18, 14)
 
-# JSON Library
-jsonLibrary = "cjson" # cjson, ujson, json or simplejson
-
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)

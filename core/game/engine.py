@@ -69,6 +69,7 @@ def action(forced=False, delay=0):
     """
     
     def _decor(f):
+        " Wrapper function "
         def _new_f(creature, *args, **argw):
             if creature.action and forced:
                 try:
@@ -82,7 +83,7 @@ def action(forced=False, delay=0):
                 reactor.callLater(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
-
+        _new_f.__doc__ = f.__doc__
         return _new_f
     return _decor
 
@@ -94,16 +95,16 @@ def loopDecorator(time):
 
     """
     
-    def decor(f):
+    def _decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
                 reactor.callLater(time, new_f, *args, **kwargs)
         
-        def first(*args, **kwargs):
+        def _first(*args, **kwargs):
             reactor.callLater(0, new_f, *args, **kwargs)
-            
-        return first
-    return decor
+        _first.__doc__ = f.__doc__
+        return _first
+    return _decor
     
 # First order of buisness, the autoWalker
 @action(True)
@@ -163,6 +164,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     
 #@action()
 def handleAutoWalking(creature, callback=None, level=0):
+    """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
     if not creature.walkPattern:
         return
         
@@ -267,6 +269,7 @@ def getSpectators(pos, radius=(8,6), ignore=()):
     return players
 
 def hasSpectators(pos, radius=(8,6), ignore=()):
+    """ Returns True if anyone can see the position, otherwise False. """
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore: return True
         
@@ -455,6 +458,7 @@ def placeItem(item, position):
     return stackpos
 
 def relocate(fromPos, toPos):
+    """ Remove all movable items on fromPos tile, to toPos tile. """
     tile = fromPos.getTile()
     toPos = toPos.getTile()
     items = []
@@ -497,6 +501,7 @@ def explainPacket(packet):
 
 # Save system, async :)
 def saveAll(force=False):
+    """ Save everything, players, houses, global storage etc. """
     commited = False
     
     t = time.time()
@@ -639,12 +644,14 @@ def getPlayerIDByName(name):
             returnValue(None)
 
 def getPlayer(playerName):
+    """ Returns the player with name `playerName`, this function only works for already loaded players. """
     try:
         return game.player.allPlayers[playerName]
     except:
         return None
 
 def getCreatureByCreatureId(cid):
+    """ Returns the creature with this id. """
     for creature in game.creature.allCreaturesObject:
         if creature.cid == cid:
             return creature

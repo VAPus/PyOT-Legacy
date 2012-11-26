@@ -375,10 +375,11 @@ class Tile(object):
     def copy(self):
         """ Returns a copy of this tile. Used internally for unstacking. """
         items = None
-        if self.items:
+        if self.things:
             items = []
             for item in self.items:
-                items.append(item.copy())
+                if isinstance(item, Item):
+                    items.append(item.copy())
 
         flags = self.flags
         if flags & TILEFLAGS_STACKED:
