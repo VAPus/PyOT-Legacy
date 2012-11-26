@@ -68,8 +68,8 @@ def action(forced=False, delay=0):
     
     """
     
-    def decor(f):
-        def new_f(creature, *args, **argw):
+    def _decor(f):
+        def _new_f(creature, *args, **argw):
             if creature.action and forced:
                 try:
                     creature.action.cancel()
@@ -83,8 +83,8 @@ def action(forced=False, delay=0):
             else:
                 f(creature, *args, **argw)
 
-        return new_f
-    return decor
+        return _new_f
+    return _decor
 
 def loopDecorator(time):
     """Loop function decorator.
@@ -733,6 +733,7 @@ def placeInDepot(name, depotId, items):
             
 @inlineCallbacks
 def loadPlayer(playerName):
+    """ Load player with name `playerName`, return result. """
     try:
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
@@ -748,7 +749,7 @@ def loadPlayer(playerName):
         
 @inlineCallbacks
 def loadPlayerById(playerId):
-    
+    """ Load a player with id `playerId`. Return result. """
     # Quick look
     for player in game.player.allPlayersObject:
         if player.data["id"] == playerId:
@@ -765,6 +766,7 @@ def loadPlayerById(playerId):
     returnValue(game.player.allPlayers[cd['name']])
 
 def moveItem(player, fromPosition, toPosition, count=0):
+    """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
         return True
 
@@ -953,6 +955,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
     
 # Helper calls
 def summonCreature(name, position, master=None):
+    """ Summons a monster with `name` on position, set master to `master`. """
     import game.monster
     creature = game.monster.getMonster(name).spawn(position, spawnDelay=0)
     if master:
@@ -962,28 +965,34 @@ def summonCreature(name, position, master=None):
     return creature
     
 def magicEffect(pos, type):
+    """ Send a magic effect `type` on this position. """
     for spectator in getSpectators(pos):
         stream = spectator.packet()
         stream.magicEffect(pos, type)
         stream.send(spectator)
 
 def getHouseByPos(pos):
+    """ Return the House object on this position """
     return game.house.getHouseById(game.map.getHouseId(pos))
 
 # Speed pickler
 def fastPickler(obj):
+    """ Just a allias for pickle.dumps with protocol 2"""
     return pickle.dumps(obj, 2)
     
 # Protocol 0x00:
 class ReturnValueExit(Exception):
+    " A special exception used by :func:`game.engine.Return` "
     def __init__(self, value=""):
         self.value = value
         
 def Return(ret):
+    """ Used in exec protocolfunctions to end the function, and give a return value. """
     raise ReturnValueExit(ret)
      
 @inlineCallbacks
 def executeCode(code):
+    """ Used by execute protocol to run a piece of code """
     try:
         if "yield " in code:
             newcode = []

@@ -2,9 +2,10 @@ from test.framework import FrameworkTestGame
 
 class _TestDocumentation(FrameworkTestGame):
     def _test_module(self, module):
+        ignore = ["StringIO"]
         for name in dir(module):
             # Skip _ functions.
-            if name[0] == "_":
+            if name[0] == "_" or name in ignore:
                 continue
 
             # Is it a function. We don't care for variable documentation, really.
