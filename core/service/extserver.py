@@ -83,7 +83,7 @@ class extProtocol(protocolbase.TibiaProtocol):
             data = self.files[resource].read()
             p.string(resource)
             p.uint32(len(data))
-            p.data += data
+            p.raw(data)
             p.send(self)
     
     def _load(self, res):

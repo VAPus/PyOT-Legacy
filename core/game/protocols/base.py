@@ -52,11 +52,11 @@ class BasePacket(TibiaPacket):
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
-        self.data += pack("<HHB", position.x, position.y, position.z)
+        self.raw(pack("<HHB", position.x, position.y, position.z))
 
     # Magic Effect
     def magicEffect(self, pos, type):
-        self.data += pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type)
+        self.raw(pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type))
    
     # Shoot
     def shoot(self, fromPos, toPos, type):
@@ -69,7 +69,7 @@ class BasePacket(TibiaPacket):
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
         if isinstance(item, game.item.Item):
-            self.uint16(item.cid)
+            self.uint16(item.itemId)
                 
             if item.stackable:
                 self.uint8(item.count or 1)
@@ -102,7 +102,7 @@ class BasePacket(TibiaPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.data += "%s\xFF" % chr(skip)
+            self.raw("%s\xFF" % chr(skip))
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
@@ -114,28 +114,28 @@ class BasePacket(TibiaPacket):
 
                 if tile:
                     if skip >= 0:
-                        self.data += "%s\xFF" % chr(skip)
+                        self.raw("%s\xFF" % chr(skip))
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
                     skip += 1
                     if skip == 0xFF:
-                        self.data += "\xFF\xFF"
+                        self.raw("\xFF\xFF")
                         skip = -1
         return skip
 
     def tileDescription(self, tile, player):
-        self.data += "\x00\x00"
+        self.raw("\x00\x00")
         count = 0
         for item in tile.topItems():  
-            self.data += pack("<H", item.cid)
+            self.raw(pack("<H", item.itemId))
                     
             if item.stackable:
-                self.data += chr(item.count or 1)
+                self.raw(chr(item.count or 1))
             elif item.type in (11,12):
-                self.data += chr(item.fluidSource or 0)
+                self.raw(chr(item.fluidSource or 0))
             if item.animation:
-                self.data += chr(0xFE)
+                self.raw('\xFE')
             count += 1
             if count == 10:
                 return
@@ -162,9 +162,9 @@ class BasePacket(TibiaPacket):
                     # Bugged?
                     if creature.creatureType != 0 and creature.brainEvent:
                         if player.client.version >= 953:
-                            self.data += pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid)
+                            self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
                         else:
-                            self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+                            self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
                     else:
                         self.creature(creature, True, creature.cid, player) # Not optimal!
             if creature.creatureType != 0 and not creature.brainEvent:
@@ -175,14 +175,14 @@ class BasePacket(TibiaPacket):
                 return
                 
         for item in tile.bottomItems():
-            self.data += pack("<H", item.cid)
+            self.raw(pack("<H", item.itemId))
                     
             if item.stackable:
-                self.data += chr(item.count or 1)
+                self.raw(chr(item.count or 1))
             elif item.type in (11,12):
-                self.data += chr(item.fluidSource or 0)
+                self.raw(chr(item.fluidSource or 0))
             if item.animation:
-                self.data += chr(0xFE)
+                self.raw('\xFE')
             count += 1
             if count == 10:
                 return
@@ -366,7 +366,6 @@ class BasePacket(TibiaPacket):
         self.uint8(0x6C)
         self.position(pos)
         self.uint8(stackpos)
-        
     def status(self, player):
         self.uint8(0xA0)
         self.uint16(player.data["health"])
@@ -855,9 +854,9 @@ class BaseProtocol(object):
                 return
         else:
             thing = player.findItem(stackPosition)
-            if not thing or thing.cid != clientId:
+            if not thing or thing.itemId != clientId:
                 for thing2 in game.map.getTile(position).things:
-                    if thing2.cid == clientId:
+                    if thing2.itemId == clientId:
                         thing = thing2
                         break       
         if thing:
@@ -1282,7 +1281,7 @@ class BaseProtocol(object):
                 extra = ""
                 # TODO propper description handling
                 if config.debugItems:
-                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
+                    extra = "(ItemId: %d)" % thing.itemId
                 player.message(thing.description(player) + extra)
             game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
         

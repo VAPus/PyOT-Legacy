@@ -995,7 +995,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         stream.uint32(self.windowTextId)
 
-        stream.uint16(item.cid)
+        stream.uint16(item.itemId)
         if canWrite:
             stream.uint16(maxLen)
             stream.string(text)
@@ -1059,7 +1059,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     pass
                 stream.uint8(i[0])
 
-                stream.uint16(i[1].cid)
+                stream.uint16(i[1].itemId)
                 stream.string(i[1].rawName())
 
                 stream.uint8(i[1].containerSize)
@@ -1104,7 +1104,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
             stream.uint8(containerId)
 
-            stream.uint16(container.cid)
+            stream.uint16(container.itemId)
             stream.string(container.rawName())
 
             stream.uint8(container.containerSize)
@@ -2352,7 +2352,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         
         stream.uint16(len(self.depotMarketCache[self.marketDepotId]))
         for entry in self.depotMarketCache[self.marketDepotId]:
-            stream.uint16(game.item.cid(entry))
+            stream.uint16(entry)
             stream.uint16(self.depotMarketCache[self.marketDepotId][entry])
 
         """stream.uint16(market.size())
@@ -2377,7 +2377,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream = self.packet()
         stream.uint8(0xF9)
         print "itemId - marketOffers - ", itemId
-        stream.uint16(game.item.cid(itemId))
+        stream.uint16(itemId)
 
         buyOffers = self.market.getBuyOffers(itemId, self.data["id"])
         stream.uint32(len(buyOffers))
@@ -2407,7 +2407,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         item = Item(itemId)
         
         with self.packet(0xF8) as stream:
-            stream.uint16(item.cid)
+            stream.uint16(item.itemId)
             stream.string(str(item.armor or ""))
             stream.string(str(item.attack or ""))
             stream.string(str(item.containerSize or ""))
@@ -2492,7 +2492,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for entry in buyOffers:
                 stream.uint32(entry.expire)
                 stream.uint16(entry.counter)
-                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.itemId)
                 stream.uint16(entry.amount)
                 stream.uint32(entry.price)
 
@@ -2500,7 +2500,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for entry in saleOffers:
                 stream.uint32(entry.expire)
                 stream.uint16(entry.counter)
-                stream.uint16(game.item.cid(entry.itemId))
+                stream.uint16(entry.itemId)
                 stream.uint16(entry.amount)
                 stream.uint32(entry.price)
 
@@ -2516,7 +2516,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for entry in buyHistory:
                 stream.uint32(entry["time"])
                 stream.uint16(counter) # Relevant to something?
-                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["item_id"])
                 stream.uint16(entry["amount"])
                 stream.uint32(entry["price"])
                 stream.uint8(1) # XXX?
@@ -2526,7 +2526,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for entry in saleHistory:
                 stream.uint32(entry["time"])
                 stream.uint16(counter) # Relevant to something?
-                stream.uint16(game.item.cid(entry["item_id"]))
+                stream.uint16(entry["item_id"])
                 stream.uint16(entry["amount"])
                 stream.uint32(entry["price"])
                 stream.uint8(1) # XXX?

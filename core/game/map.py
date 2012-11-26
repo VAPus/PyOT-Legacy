@@ -208,10 +208,6 @@ class Tile(object):
         
         self.things.insert(pos, creature)
 
-        if pos > 9:
-            print self.things
-            print pos, self.countNflags
-            raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos+1
         
     def removeCreature(self,creature):
@@ -233,10 +229,6 @@ class Tile(object):
         else:
             pos = len(self.things)
             self.things.append(item)
-        if pos > 9:
-            print self.things
-            print pos, self.countNflags
-            raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos+1
     
     def placeItemEnd(self, item):
@@ -343,7 +335,7 @@ class Tile(object):
     def findClientItem(self, cid, stackpos=None):
         """ (DON'T USE THIS) """
         for x in self.bottomItems():
-            if x.cid == cid:
+            if x.itemId == cid:
                 if stackpos:
                     return (self.things.index(x), x)
                 return x

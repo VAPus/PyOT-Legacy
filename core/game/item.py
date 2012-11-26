@@ -171,47 +171,8 @@ class Item(object):
         self.actions.remove(name)
     
     @property
-    def solid(self):
-        return items[self.itemId].get('flags', 0) & 1
-        
-    @property
-    def blockprojectile(self):
-        return items[self.itemId].get('flags', 0) & 2
-        
-    @property
-    def blockpath(self):
-        return items[self.itemId].get('flags', 0) & 4
-        
-    @property
-    def cid(self):
-        return self.itemId
-    
-    @property
-    def stackable(self):
-        return items[self.itemId].get('flags', 0) & 128
-        
-    @property
-    def ontop(self):
-        return items[self.itemId].get('flags', 0) & 8192
-        
-    @property
-    def hangable(self):
-        return items[self.itemId].get('flags', 0) & 65536
-        
-    @property
-    def rotatable(self):
-        return items[self.itemId].get('flags', 0) & 32768
-        
-    @property
-    def animation(self):
-        return items[self.itemId].get('flags', 0) & 16777216
-        
-    @property
     def type(self):
-        try:
-            return items[self.itemId]["type"]
-        except KeyError:
-            return 0
+        return items[self.itemId].get("type", 0)
             
     def __getattr__(self, name):
         _items = items[self.itemId]

@@ -83,48 +83,40 @@ class TibiaPacketReader(object):
         return StackPosition(x, y, z, stackPos, instance)
         
 class TibiaPacket(object):
-    __slots__ = ('data', 'stream')
+    __slots__ = ('data', 'stream', 'raw')
     def __init__(self, header=None):
-        self.data = ""
+        self.data = [""]
         self.stream = None
-        
+        self.raw = self.data.append        
         if header:
             self.uint8(header)
             
     def clear(self):
-        self.data = ""
+        self.data = [""]
+        self.raw = self.data.append
         
     # 8bit - 1byte, C type: char
     def uint8(self, data):
-        self.data += chr(data)
+        self.raw(chr(data))
     def int8(self, data):
-        self.data += pack("<b", data)
+        self.raw(pack("<b", data))
         
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
-        self.data += pack("<H", data)
+        self.raw(pack("<H", data))
     def int16(self, data):
-        self.data += pack("<h", data)
+        self.raw(pack("<h", data))
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data):
-        self.data += pack("<I", data)
+        self.raw(pack("<I", data))
     def int32(self, data):
-        self.data += pack("<i", data)
+        self.raw(pack("<i", data))
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        self.data += pack("<Q", data)
+        self.raw(pack("<Q", data))
     def int64(self, data):
-        self.data += pack("<q", data)
-
-    # 32bit - 4bytes, C type: float
-    def float(self, data):
-        self.data += pack("<f", data)
-
-    # 64bit - 8bytes, C type: double
-    def double(self, data):
-        self.data += pack("<d", data)
-
+        self.raw(pack("<q", data))
         
     def string(self, string):
         # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
@@ -134,23 +126,23 @@ class TibiaPacket(object):
             pass # From client or translated source
             
         length = len(string)
-        self.data += pack("<H", length) + string
+        self.raw(pack("<H", length) + string)
         
     def put(self, string):
-        self.data += str(string)
+        self.raw(str(string))
         
-    def raw(self, data):
-        self.data += data
-
     #@inThread
     def send(self, stream):
         if not stream or not self.data: return
 
-        data = pack("<H", len(self.data))+self.data
+        length = sum(map(len, self.data))
+        self.data[0] = pack("<H", length)
+        #data = "%s%s" % (pack("<H", le(self.data)), ''.join(self.data))
 
         if stream.xtea:
-            data = otcrypto.encryptXTEA(data, stream.xtea)
-
+            data = otcrypto.encryptXTEA(self.data, stream.xtea, length+2)
+        else:
+            data = ''.join(self.data)
         stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
                 
     #@inThread
@@ -158,20 +150,24 @@ class TibiaPacket(object):
         if not list or not self.data:
             return # Noone to send to
         
-        data = pack("<H", len(self.data))+self.data
+        length = sum(map(len, self.data))
+        self.data[0] = pack("<H", length)
+
+        #data = "%s%s" % (pack("<H", len(self.data)), ''.join(self.data))
         for client in list:
             if not client:
                 continue
             
             if client.xtea:
-                data = otcrypto.encryptXTEA(data, client.xtea)
-
+                data = otcrypto.encryptXTEA(self.data, client.xtea, length+2)
+            else:
+                data = ''.join(self.data)
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
             
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):
         if not type:
             self.send(self.stream)
-        
+
     def __enter__(self):
         return self

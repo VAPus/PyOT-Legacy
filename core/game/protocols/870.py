@@ -64,7 +64,7 @@ class Packet(base.BasePacket):
     def item(self, item, count=None):
         import game.item
         if isinstance(item, game.item.Item):
-            cid = item.cid
+            cid = item.itemId
             if cid > 11703:
                 if item.solid:
                     self.uint16(100)
@@ -81,7 +81,7 @@ class Packet(base.BasePacket):
                     self.uint16(104)
                     
             else:    
-                self.uint16(item.cid)
+                self.uint16(cid)
 
                 if item.stackable:
                     self.uint8(item.count or 1)
@@ -102,7 +102,7 @@ class Packet(base.BasePacket):
             count += 1
             if count == 10:
                 return
-        
+        if not tile.things: return
         for creature in tile.creatures():
             known = False
             removeKnown = 0
@@ -120,7 +120,7 @@ class Packet(base.BasePacket):
                     
                     self.creature(creature, known, removeKnown, player)
                 else:
-                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
+                    self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.beginThink(creature, False)
                     

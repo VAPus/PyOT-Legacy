@@ -13,7 +13,7 @@ class Packet(base.BasePacket):
 
     # Magic Effect
     def magicEffect(self, pos, type):
-        self.data += pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type)
+        self.raw(pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type))
    
     def vip(self, playerId, playerName, online=False):
         self.uint8(0xD2)
