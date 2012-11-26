@@ -314,7 +314,7 @@ def testBoost(creature, **k):
 def walkRandomStep(creature, callback):
     wait = creature.lastAction - time.time()
     if wait > 0:
-        callLater(wait*1.5, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
+        callLater(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
         return
     steps = [0,1,2,3]
     
@@ -339,7 +339,7 @@ def playerAI(creature, **k):
             # Try targeting
             for pos in creature.position.roundPoint(1):
                 tile = pos.getTile()
-                if not tile:
+                if not tile or not tile.things:
                     continue
                 
                 for thing in tile.things:
@@ -348,8 +348,8 @@ def playerAI(creature, **k):
                         creature.targetMode = 1
                         creature.attackTarget()
                         break
-                    elif isinstance(thing, Item) and thing.itemId in (1386, 3678, 5543, 8599):
-                        creature.use(pos.setStackpos(tile.findStackpos(thing)), thing)
+                    elif isinstance(thing, Item) and thing.floorchange:
+                        creature.use(thing)
                         break
             
         walkRandomStep(creature, _playerAI)

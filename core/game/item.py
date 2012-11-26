@@ -33,9 +33,8 @@ class Item(object):
                   'animation': 1 << 24}
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
-        try:
-            attr = items[itemId]
-        except KeyError:
+        attr = items.get(itemId)
+        if not attr:
             print "ItemId %d doesn't exist!" % itemId
             itemId = 100
             attr = items[100]

@@ -64,7 +64,7 @@ class Position(object):
                 positions.append((x+self.x,y+self.y,self.z))
                 
         return MultiPosition(self.instanceId, *positions)
-        
+
     # For savings
     def __getstate__(self):
             return (self.x, self.y, self.z, self.instanceId)

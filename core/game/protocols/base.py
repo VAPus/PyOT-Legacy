@@ -102,7 +102,7 @@ class BasePacket(TibiaPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.data += chr(skip) + "\xFF"
+            self.data += "%s\xFF" % chr(skip)
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
@@ -114,7 +114,7 @@ class BasePacket(TibiaPacket):
 
                 if tile:
                     if skip >= 0:
-                        self.data += chr(skip) + "\xFF"
+                        self.data += "%s\xFF" % chr(skip)
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
@@ -139,7 +139,9 @@ class BasePacket(TibiaPacket):
             count += 1
             if count == 10:
                 return
-        
+
+        if not tile.things: return
+
         for creature in tile.creatures():
             known = False
             removeKnown = 0

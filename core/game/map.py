@@ -48,25 +48,16 @@ def getTile(pos):
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
     iY = y // sectorY
-    pX = x % sectorX
-    pY = y % sectorY
-
     sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = packPos(pX, pY, z)
+    posSum = (x,y,z)
     area = None
     try:
         area = knownMap[sectorSum]
     except KeyError:
-        if loadTiles(x, y, instanceId):
-            try:
-                return knownMap[sectorSum][posSum]
-            except:
-                return None
+        if loadTiles(x, y, instanceId, sectorSum):
+            return knownMap[sectorSum].get(posSum)
     else:
-        try:
-            return area[posSum]
-        except:
-            return None
+        return area.get(posSum)
 
 def setTile(pos, tile):
     """ Set the tile on this position. """
@@ -74,53 +65,39 @@ def setTile(pos, tile):
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
     iY = y // sectorY
-    pX = x % sectorX
-    pY = y % sectorY
 
     sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = packPos(pX, pY, z)
+    posSum = (x,y,z)
     area = None
     try:
         area = knownMap[sectorSum]
     except KeyError:
-        if loadTiles(x, y, instanceId):
-            try:
-                knownMap[sectorSum][posSum] = tile
-                return True
-            except:
-                return False
-    else:
-        try:
-            area[posSum] = tile
+        if loadTiles(x, y, instanceId,sectorSum):
+            knownMap[sectorSum][posSum] = tile
             return True
-        except:
+        else:
             return False
+    else:
+        area[posSum] = tile
+        return True
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
     sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
     iY = y // sectorY
-    pX = x % sectorX
-    pY = y % sectorY
         
     sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = packPos(pX,pY,z)
+    posSum = (x,y,z)
     area = None
 
     try:
         area = knownMap[sectorSum]
     except KeyError:
-        if loadTiles(x, y, instanceId):
-            try:
-                return knownMap[sectorSum][posSum]
-            except:
-                return None
+        if loadTiles(x, y, instanceId, sectorSum):
+            return knownMap[sectorSum].get(posSum)
     else:
-        try:
-            return area[posSum]
-        except:
-            return None
+        return area.get(posSum)
         
 def getHouseId(pos):
     """ Returns the houseId on this position, or False if none """
@@ -403,12 +380,13 @@ houseDoors = {}
 
 dummyTiles = {}
     
-def loadTiles(x,y, instanceId):
+def loadTiles(x,y, instanceId, sectorSum):
     """ Load the sector witch holds this x,y position. Returns the result. """
+    if sectorSum in knownMap: return None
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
     
-    return load(x // mapInfo.sectorSize[0], y // mapInfo.sectorSize[1], instanceId)
+    return load(x // mapInfo.sectorSize[0], y // mapInfo.sectorSize[1], instanceId, sectorSum)
 
 ### Start New Map Format ###
 
@@ -502,9 +480,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     codeLength = len(code)
     skip = False
     skip_remaining = False
-    houseId = 0
-    housePosition = None
-    
+    houseId = 0 
 
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -525,7 +501,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         level = ord(code[pos])
         pos += 1
         
-        zSum = level << 24 
         if level == 60:
             centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
             
@@ -555,8 +530,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         
         # Loop over the mapInfo.sectorSize[0] x rows
         for xr in xrange(mapInfo.sectorSize[0]):
-
-            xSum = (xr << 10) + zSum
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
@@ -586,7 +559,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
-                            housePosition = ((xr + baseX) >> 20) + ((yr + baseY) >> 4) + level
                             pos += 5
                             
                         elif attrNr:
@@ -678,8 +650,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         break
                     # otherwise it should be ",", we don't need to verify this.
                 if ground:
-                    ySum = xSum + yr
-
+                    ySum = (xr + baseX), (yr + baseY),level
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -693,17 +664,17 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             
                         tile = l_HouseTile(ground, items, flags)
                         tile.houseId = houseId
-                        tile.position = housePosition
+                        tile.position = ySum
                         
                         
                         # Find and cache doors
                         for i in tile.getItems():
                             if i.hasAction("houseDoor"):
                                 try:
-                                    houseDoors[houseId].append(housePosition)
+                                    houseDoors[houseId].append(ySum)
                                     break
                                 except:
-                                    houseDoors[houseId] = [housePosition]
+                                    houseDoors[houseId] = [ySum]
                                 
                         
                         if houseId in houseTiles:
@@ -712,13 +683,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             houseTiles[houseId] = [tile]
                             
                         try:
-                            for item in game.house.houseData[houseId].data["items"][housePosition]:
+                            for item in game.house.houseData[houseId].data["items"][ySum]:
                                 tile.placeItem(item)
                         except KeyError:
                             pass
     
                         houseId = 0
-                        housePosition = None
                         thisSectorMap[ySum] = tile
 
                     elif config.stackTiles:
@@ -756,12 +726,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 
     return thisSectorMap           
 ### End New Map Format ###
-def load(sectorX, sectorY, instanceId):
+def load(sectorX, sectorY, instanceId, sectorSum):
     """ Load sectorX.sectorY.sec. Returns True/False """
-    sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
-    
-    if sectorSum in knownMap:
-        return False
           
     t = time.time()
     

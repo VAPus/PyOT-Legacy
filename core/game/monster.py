@@ -52,6 +52,7 @@ class Monster(Creature):
         self.intervals = {}
         self.defaultSpeakType = MSG_SPEAK_MONSTER_SAY
         self.defaultYellType = MSG_SPEAK_MONSTER_YELL
+        self.lastRetarget = 0
 
     def actionIds(self):
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
@@ -284,6 +285,11 @@ class Monster(Creature):
         return self.base.attackable
 
     def targetCheck(self, targets=None):
+        _time = time.time()
+        if self.lastRetarget > _time - 7:
+            return
+        self.lastRetarget = _time
+
         if not self.target:
             # Null walkpatterns.
             self.walkPattern = None
@@ -444,15 +450,20 @@ class MonsterBase(object):
         
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
-     
-        if not self.prepared:
-            self.prepare()
-            
-        if not monster:
-            monster = Monster(self, position, None)
         if spawnDelay:
             return reactor.callLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
         else:
+            if place:
+                tile = position.getTile()
+                if not tile:
+                    log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
+                    return
+
+            if not monster:
+                monster = Monster(self, position, None)
+                if not self.prepared:
+                    self.prepare()
+
             if not monster.alive:
                 monster.data = monster.base.data.copy()
                 monster.alive = True
@@ -469,10 +480,6 @@ class MonsterBase(object):
                     reactor.callLater(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
                     return
                     
-                tile = map.getTile(position)
-                if not tile:
-                    log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
-                    return
                 elif tile.hasCreatures() and config.tryToSpawnCreaturesNextToEachother:
                     ok = False
                     for testx in (-1,0,1):

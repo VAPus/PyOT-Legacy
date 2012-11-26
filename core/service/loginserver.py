@@ -10,7 +10,7 @@ import socket
 import time
 import cPickle
 
-if os.path.exists('IP_CACHE') and os.path.getmtime('IP_CACHE') > time.time() - 1200:
+if os.path.exists('IP_CACHE') and os.path.getmtime('IP_CACHE') > time.time() - 2400:
     IPS = cPickle.load(open('IP_CACHE', 'rb'))
 else:
     IPS = {}
@@ -114,7 +114,11 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                     ip = '127.0.0.1'
                 else:
                     import urllib2
-                    ip = urllib2.urlopen("http://automation.whatismyip.com/n09230945.asp").read()
+                    try:
+                        ip = urllib2.urlopen("http://automation.whatismyip.com/n09230945.asp").read()
+                    except:
+                        ip = urllib2.urlopen("http://vapus.net/ip.php").read()
+
                     IPS['auto'] = ip
                     # Save IPS here.
                     cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)

@@ -24,7 +24,6 @@ def floorchange(creature, thing, position, **k):
     if not config.monsterStairHops and not creature.isPlayer():
         return
 
-    print thing, thing.floorchange
     # Note this is the correct direction
     if thing.floorchange == "north":
         creature.move(NORTH, level=-1)
