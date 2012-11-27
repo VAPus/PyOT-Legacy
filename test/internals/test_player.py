@@ -45,3 +45,13 @@ class TestPlayer(FrameworkTestGame):
 
         self.assertEqual(self.player.target, None)
         self.assertEqual(self.player.targetMode, 0)
+
+    def test_summon(self):
+        """ A test for bug #87 """
+        position = self.player.positionInDirection(NORTH)
+        summon = self.player.summon("Wolf", position)
+
+        self.assertTrue(summon)
+        self.assertIn(summon, self.player.activeSummons)
+        self.assertIn(summon, position.getTile().creatures())
+        self.assertEqual(summon.master, self.player)

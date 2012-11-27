@@ -63,10 +63,11 @@ class Client(proto_helpers.StringTransport):
         
 
         if self.client.xtea:
-            data = otcrypto.encryptXTEA(data, self.client.xtea)
-            data = pack("<H", len(packet.data))+packet.data
+            length = sum(map(len, packet.data))
+            packet.data[0] = length
+            data = otcrypto.encryptXTEA(packet.data, self.client.xtea, length)
         else:
-            data = packet.data
+            data = ''.join(packet.data)
         self.client._packets.append(packet)
         self.client._data = pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data
         if kwargs:
