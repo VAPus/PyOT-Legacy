@@ -17,9 +17,6 @@ globalScripts = {}
 class InvalidScriptFunctionArgument(Exception):
     pass
 
-class Value(object):
-    pass
-
 class Scripts(object):
     __slots__ = ('scripts', 'parameters')
     def __init__(self, parameters = ()):
@@ -27,7 +24,6 @@ class Scripts(object):
         self.parameters = parameters
         
     def register(self, callback, weakfunc=True):
-
         if weakfunc:
             func = weakref.proxy(callback, self.unregCallback)
         else:
@@ -55,10 +51,10 @@ class Scripts(object):
         ok = True
         for func in self.scripts:
             ok = func(creature=creature, **kwargs)
-            if not (ok if ok is not None else True):
+            if ok is False:
                 break
                 
-        if end and (ok if ok is not None else True):
+        if end and (ok or ok is None):
             end()
         else:
             return ok
@@ -78,10 +74,10 @@ class NCScripts(Scripts):
         ok = True
         for func in self.scripts:
             ok = func(**kwargs)
-            if not (ok if ok is not None else True):
+            if ok is False:
                 break
                 
-        if end and (ok if ok is not None else True):
+        if end and (ok or ok is None):
             end()
         else:
             return ok
@@ -143,10 +139,10 @@ class TriggerScripts(object):
             
         for func in self.scripts[trigger]:
             ok = func(creature=creature, **kwargs)
-            if not (ok if ok is not None else True):
+            if ok is False:
                 break
 
-        if end and (ok if ok is not None else True):
+        if end and (ok or ok is None):
             end()
         return ok
 
@@ -211,10 +207,10 @@ class RegexTriggerScripts(TriggerScripts):
                     args[arg] = kwargs[arg]
                           
                 ok = func(creature=creature, **args)
-                if not (ok if ok is not None else True):
+                if ok is False:
                     break
                              
-        if end and (ok if ok is not None else True):
+        if end and (ok or ok is None):
             end()
         return ok
 
@@ -546,11 +542,17 @@ def handleModule(name):
         
         return
         
-    if modules.paths:
-        for subModule in modules.paths:
-            handleModule("%s.%s" % (name, subModule))
+    paths = None
+    try:
+        paths = modules.paths
+    except AttributeError:
+        pass # Not a module.
+    else:
+        if paths:
+            for subModule in modules.paths:
+                handleModule("%s.%s" % (name, subModule))
 
-    modPool.append([name, modules])
+        modPool.append([name, modules])
 
 def importer():
     handleModule("scripts")
