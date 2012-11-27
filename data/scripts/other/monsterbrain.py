@@ -74,7 +74,6 @@ def defaultBrainFeaturePriority(monster):
                         if random.randint(0, 99) < summon[1]:
                             try:
                                 creature = monster.summon(summon[0], monster.positionInDirection(random.randint(0,3)))
-                                monster.activeSummons.append(creature)
                             except:
                                 print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])
                                 

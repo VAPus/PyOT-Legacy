@@ -878,7 +878,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         mon = game.monster.getMonster(monsterName).spawn(position, spawnDelay=0)
         mon.setMaster(self)
         mon.setRespawn(False)
-        
+        self.activeSummons.append(mon)    
         return mon
         
     def toggleRaiseMessages(self):
