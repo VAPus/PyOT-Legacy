@@ -48,7 +48,7 @@ jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
 serverStart = time.time() - config.tibiaTimeOffset
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail"]
 
 # Just a inner funny call
 def looper(function, time):
@@ -668,6 +668,19 @@ def townNameToId(name):
         if i.towns[id][0] == name:
             return id
 
+def townIdToName(id):
+    """ Returns the name of a down based on the id.
+
+    :rtype: str or None.
+
+    """
+
+    import data.map.info as i
+    try:
+        return i.towns[id][0]
+    except:
+        return None
+
 def townPosition(id):
     """ Returns the position of a town passed by id
     
@@ -1020,3 +1033,59 @@ def _N():
     else:
         yield defer.maybeDeferred()
     returnValue(otjson.dumps(e))
+
+def mail(toPlayer, package, message="", town=0, ignoreLimits=True):
+    """ Make a parcel, letter, if package is not already a parcel or letter. And send it. """
+    name = toPlayer if isinstance(toPlayer, str) else toPlayer.name()
+
+    if not isinstance(toPlayer, Player) and town == 0:
+        town = 1
+    elif town == 0:
+        town = toPlayer.data['town_id']
+
+    if isinstance(package, Item):
+        label = None
+        for item in package.container:
+            if item.itemId == ITEM_LABEL:
+                label = item
+                break
+
+        if not label or not label.text:
+            return False
+
+        lines = label.text.split("\n")
+        if lines < 2:
+            return False
+
+        town = townNameToId(lines[1])
+        if package.itemId != ITEM_PARCEL_STAMPED:
+            package.itemId = ITEM_PARCEL_STAMPED            
+        pack = package
+
+    elif isinstance(package, list):
+        # make parcel.
+        pack = Item(ITEM_PARCEL_STAMPED)
+        label = Item(ITEM_LABEL)
+        pack.placeItem(label)
+        for item in package:
+            pack.placeItem(item)
+
+        label.text = "%s\n%s\n%s" % (name, townIdToName(town), message)
+    else:
+        # Letter.
+        pack = Item(ITEM_LETTER_STAMPED)
+        pack.text =  "%s\n%s\n%s" % (name, townIdToName(town), message)
+
+    # Get mail depot
+    if isinstance(toPlayer, Player):
+        depot = toPlayer.getDepot(town)
+        #if not ignoreLimits:
+        #    return False
+
+        depot.append(pack)
+        toPlayer.setDepot(town, depot)
+    else:
+        return placeInDepot(toPlayer, town, pack)
+
+    return True
+
