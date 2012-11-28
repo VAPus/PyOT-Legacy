@@ -9,7 +9,7 @@ class CreatureMovement(object):
         if not ground.speed:
             return (100.0 / self.speed) #- 0.05
 
-        return (ground.speed / self.speed)# - 0.05
+        return (ground.speed / self.speed) #- 0.05
     
     def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
