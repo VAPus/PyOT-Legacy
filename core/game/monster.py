@@ -242,9 +242,9 @@ class Monster(Creature):
 
         if self.lastDamagers and self.getLastDamager().isPlayer() and self.getLastDamager() != self.master:
             if lootMsg:
-                self.getLastDamager().message(_l(self.getLastDamager(), "Loot of %(who)s: %(loot)s.") % {"who": self.data["name"], "loot": ', '.join(lootMsg)}, MSG_LOOT)
+                self.getLastDamager().message(_l(self.getLastDamager(), "loot of %(who)s: %(loot)s") % {"who": self.data["name"].lower(), "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
-                self.getLastDamager().message(_l(self.getLastDamager(), "Loot of %s: Nothing.") % (self.data["name"]), MSG_LOOT)
+                self.getLastDamager().message(_l(self.getLastDamager(), "loot of %s: nothing") % (self.data["name"]), MSG_LOOT)
                 
             # Experience split.
             attackerParty = self.getLastDamager().party()
