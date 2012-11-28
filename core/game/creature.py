@@ -803,6 +803,10 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def cooldownGroup(self, group, cooldown):
         self.cooldowns[group << 8] = time.time() + cooldown
 
+    def party(self):
+        " Returns a dummy party for creatures (aga None). "
+        return None
+
     ################
     ### Instance ###
     ################
