@@ -1,0 +1,12 @@
+#largely unknown
+eclipse_knight = genMonster("Eclipse Knight", (234, 6328), "an eclipse knight")
+eclipse_knight.setHealth(10000)
+eclipse_knight.bloodType("blood")
+eclipse_knight.setDefense(armor=1, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
+eclipse_knight.setExperience(100)
+eclipse_knight.setSpeed(300)
+eclipse_knight.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+eclipse_knight.walkAround(energy=0, fire=0, poison=0)
+eclipse_knight.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+eclipse_knight.voices("Yes, flee from me!")
+eclipse_knight.regMelee(5000)

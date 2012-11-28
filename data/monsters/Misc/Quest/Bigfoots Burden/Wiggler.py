@@ -1,0 +1,10 @@
+Wiggler = genMonster("Wiggler", (510, 16193), "a wiggler")
+Wiggler.bloodType("slime")
+Wiggler.setDefense(armor=40, fire=1.05, earth=0, energy=0.95, ice=1, holy=1, death=0.9, physical=1, drown=1)
+Wiggler.setExperience(900)
+Wiggler.setSpeed(700)
+Wiggler.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=359)
+Wiggler.walkAround(energy=0, fire=0, poison=0)
+Wiggler.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+Wiggler.voices("Zzzrp", "Crick! Crick!")
+Wiggler.regMelee(200) #+poison 25-27/turn
