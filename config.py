@@ -169,6 +169,13 @@ tibiaNightLight = 40 # Lowest light level
 allowMounts = True
 applyMountSpeedChange = True
 
+# Player walking speed.
+# 9.8 rules.
+playerBaseSpeed = 220.0 # Should have a .0 behind it! Or rather, should be a float number.
+playerSpeedLowIncrease = 2 # Increase per level up to playerSpeedLowCut
+playerSpeedLowCut = 175 # Level in witch HighIncrease will have an effect.
+playerSpeedHighIncrease = 1 # Player speed after
+
 # Game modes
 playerWalkthrough = False # can also be modified in scripts
 creatureWalkthrough = False # can also be modified in scripts
