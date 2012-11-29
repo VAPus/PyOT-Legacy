@@ -94,6 +94,9 @@ class Packet(base.BasePacket):
                 return
         if not tile.things: return        
         for creature in tile.creatures():
+            if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
+                continue
+
             known = False
             removeKnown = 0
             if player:
