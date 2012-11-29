@@ -126,6 +126,10 @@ def defaultBrainFeaturePriority(monster):
 
 
 def defaultBrainFeature(monster):
+        ret = defaultBrainFeaturePriority(monster)
+        if ret is not None:
+            return ret
+
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
             if not monster.target and monster.base.hostile and monster.data["health"] > monster.base.runOnHealth:
@@ -214,5 +218,4 @@ def defaultBrainFeature(monster):
                 monster.target.scripts["onNextStep"].append(__followCallback)
                 return True # Prevent random walking                
 
-game.monster.regBrainFeature("default", defaultBrainFeaturePriority, 0)
-game.monster.regBrainFeature("default", defaultBrainFeature, 1)
+game.monster.regBrainFeature("default", defaultBrainFeature)

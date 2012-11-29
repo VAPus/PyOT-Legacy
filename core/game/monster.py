@@ -12,7 +12,7 @@ import config
 import game.errors
 
 monsters = {}
-brainFeatures = ({},{})
+brainFeatures = {}
 
 def chance(procent):
     if procent == 100: return (lambda creature: True)
@@ -445,7 +445,7 @@ class MonsterBase(object):
         self.walkable = True
         self.walkPer = config.monsterWalkPer
         
-        self.brainFeatures = ["default"]
+        self.brainFeatures = "default"
         self.skull = 0
         
         self.corpseAction = []
@@ -761,19 +761,9 @@ class MonsterBrain(object):
             else:
                 monster.say(text)
                     
-        feature = monster.base.brainFeatures[0]
+        feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
-        ret = brainFeatures[0][feature](monster)
-        if ret == False:
-            monster.turnOffBrain()
-            return False
-        elif ret == True:
-            monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
-            return True
-
-        #for feature in monster.base.brainFeatures:
-        ret = brainFeatures[1][feature](monster)
-
+        ret = brainFeatures[feature](monster)
         if ret == False:
             monster.turnOffBrain()
             return False
@@ -845,13 +835,10 @@ def genMonster(name, look, description=""):
     return baseMonster
 
 def getMonster(name):
-    try:
-        return monsters[name]
-    except:
-        pass
+    return monsters.get(name))
         
-def regBrainFeature(name, function, priority=1):
-    if not name in brainFeatures[priority]:
-        brainFeatures[priority][name] = function
+def regBrainFeature(name, function):
+    if not name in brainFeatures:
+        brainFeatures[name] = function
     else:
         print "Warning, brain feature %s exists!" % name
