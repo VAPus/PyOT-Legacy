@@ -57,7 +57,6 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                                data['instanceId']
                          ))
         self.client = client
-        self.speed = 220
         self.modes = [0,0,0]
         self.gender = 0
         self.knownCreatures = set()
@@ -162,7 +161,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                                                      vocation.mlevel))
 
         self.setLevel(level, False)
-        self.speed = min(220.0 + (2 * data["level"]-1), 1500.0)
+        self.defaultSpeed()
 
         # Skills = active skills!
         self.skills = self.data["skills"].copy()
@@ -276,7 +275,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                     18, 14, self)
 
     def defaultSpeed(self):
-        self.speed = min(220.0 + (2 * self.data["level"]-1), 1500.0)
+        # Low:
+        lowLevel = max(self.data['level'], config.playerSpeedLowCut)
+        speed = config.playerBaseSpeed + (config.playerSpeedLowIncrease * lowLevel) 
+
+        # High
+        highLevel = self.data['level'] - lowLevel
+        speed += config.playerSpeedHighIncrease * highLevel
+
+        self.speed = min(speed, 1500.0)
 
     def sendFirstPacket(self):
         if not self.data["health"]:
