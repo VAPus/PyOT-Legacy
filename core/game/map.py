@@ -22,7 +22,7 @@ def __uid():
     while True:
         idsTaken += 1
         yield idsTaken
-instanceId = __uid().next
+newInstanceId = __uid().next
 
 def getTile(pos):
     """ Returns the Tile on this position. """
@@ -35,7 +35,7 @@ def getTile(pos):
     try:
         area = knownMap[sectorSum]
     except KeyError:
-        if loadTiles(x, y, instanceId, sectorSum):
+        if loadTiles(x, y, pos.instanceId, sectorSum):
             return knownMap[sectorSum].get(posSum)
     else:
         return area.get(posSum)
@@ -53,7 +53,7 @@ def setTile(pos, tile):
     try:
         area = knownMap[sectorSum]
     except KeyError:
-        if loadTiles(x, y, instanceId,sectorSum):
+        if loadTiles(x, y, pos.instanceId, sectorSum):
             knownMap[sectorSum][posSum] = tile
             return True
         else:
@@ -102,7 +102,7 @@ def removeCreature(creature, pos):
 
 def newInstance(base=None):
     """ Returns a new instanceId """
-    instance = instanceId()
+    instance = newInstanceId()
     if base:
         instances[instance] = base + '/'
     else:
