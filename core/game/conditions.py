@@ -26,6 +26,8 @@ class Condition(object):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana
+            elif type == CONDITION_DRUNK:
+                self.effect = self.effectDrunk
             else:
                 self.effect = self.effectNone
 
@@ -93,6 +95,10 @@ class Condition(object):
         else:
             self.creature.modifyMana(gainmana)
 
+    def effectDrunk(self):
+        " Drunk effect "
+        # Does drunkenness have any effect? Dunno.
+        self.creature.magicEffect(EFFECT_BUBBLES)
     def effectNone(self):
         """ Dummy function when no effect is used. """
         pass

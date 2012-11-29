@@ -185,6 +185,12 @@ class CreatureMovement(object):
 
         oldPosition = self.position.copy()
 
+        # Drunk?
+        if self.hasCondition(CONDITION_DRUNK):
+            directions = [0,1,2,3,4,5,6,7,direction] # Double the odds of getting the correct direction.
+            directions.remove(self.reverseDirection()) # From a reality perspective, you are rarely that drunk.
+            direction = random.choice([0,1,2,3,4,5,6,7,direction])
+
         # Recalculate position
         position = oldPosition.copy()
         if direction == 0:
