@@ -2649,6 +2649,3 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             return None
 
-    def isAttackable(self, creature):
-        if creature.isMonster() and creature.base.invisible:
-            
