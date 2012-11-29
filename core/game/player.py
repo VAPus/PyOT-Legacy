@@ -2648,3 +2648,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return MEDIA_IPS[ip]
         else:
             return None
+
+    def isAttackable(self, creature):
+        if creature.isMonster() and creature.base.invisible:
+            

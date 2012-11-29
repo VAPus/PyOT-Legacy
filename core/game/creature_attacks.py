@@ -443,3 +443,8 @@ class PlayerAttacks(CreatureAttacks):
         if not self.targetChecker or not self.targetChecker.active():
             self.attackTarget()
             
+    def isAttackable(self, creature):
+        if creature.isMonster() and not creature.base.invisible and self.hasCondition(CONDITION_INVISIBLE):
+            return False
+        return True
+
