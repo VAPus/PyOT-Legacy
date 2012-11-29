@@ -1028,11 +1028,10 @@ def _N():
             returnValue(otjson.dumps((yield _N())))
         else:
             exec(code)
-    except ReturnValueExit, e:
-        e = e.value
+    except ReturnValueExit as e:
+        returnValue(otjson.dumps(e.value))
     else:
         yield defer.maybeDeferred()
-    returnValue(otjson.dumps(e))
 
 def mail(toPlayer, package, message="", town=0, ignoreLimits=True):
     """ Make a parcel, letter, if package is not already a parcel or letter. And send it. """
