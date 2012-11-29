@@ -36,8 +36,23 @@ class Condition(object):
         :param creature: The creature object that this condition should affect.
         """
         self.creature = creature
+        if self.type == CONDITION_HASTE:
+            raise Exception("CONDITION_HASTE is a boost, not a condition.")
         if self.creature.isPlayer():
             self.saveCondition = True
+            if self.type == CONDITION_PARALYZE and self.creature.hasCondition(CONDITION_HASTE):
+                self.creature.removeCondition(CONDITION_HASTE)
+            
+        elif self.creature.isMonster():
+            if self.type == CONDITION_DRUNK and self.creature.base.drunk:
+                self.stop()
+            elif self.type == CONDITION_PARALYZE and self.creature.base.paralyze:
+                self.stop()
+            elif self.type == CONDITION_INVISIBLE and self.creature.base.invisible:
+                self.stop()
+
+        if self.type == CONDITION_PARALYZE:
+            creature.setSpeed(100)
 
         self.init()
         self.tick()
@@ -62,6 +77,8 @@ class Condition(object):
     def finish(self):
         """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
         del self.creature.conditions[self.type]
+        if self.type == CONDITION_PARALYZE:
+            self.defaultSpeed()
         if self.creature.isPlayer():
             self.saveCondition = True
         self.creature.refreshConditions()
@@ -98,7 +115,9 @@ class Condition(object):
     def effectDrunk(self):
         " Drunk effect "
         # Does drunkenness have any effect? Dunno.
+        # XXX: Drarwenring supression.
         self.creature.magicEffect(EFFECT_BUBBLES)
+
     def effectNone(self):
         """ Dummy function when no effect is used. """
         pass

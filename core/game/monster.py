@@ -102,6 +102,9 @@ class Monster(Creature):
         
         # What, no match?
         return dmg
+
+    def defaultSpeed(self):
+        self.speed = float(self.base.speed)
     
     def turnOffBrain(self):
         try:

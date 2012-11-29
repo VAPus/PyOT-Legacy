@@ -275,6 +275,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                             self.position.y - 6, self.position.z),
                                     18, 14, self)
 
+    def defaultSpeed(self):
+        self.speed = min(220.0 + (2 * self.data["level"]-1), 1500.0)
+
     def sendFirstPacket(self):
         if not self.data["health"]:
             self.onSpawn()
