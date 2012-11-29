@@ -11,6 +11,11 @@ class Position(object):
         
     def __ne__(self, other):
         return (self.x != other.x or self.y != other.y or self.z != other.z or self.instanceId != other.instanceId)
+
+    def __hash__(self):
+        """ Python3 requirement, override hash. """
+        # Just make it non hashable.
+        return None
         
     def copy(self):
         """ Return a copy of this position. """

@@ -579,10 +579,10 @@ def getTibiaTime():
     :rtype: tuple (hours, minutes, seconds).
     """
     
-    seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) / config.tibiaDayLength)
-    hours = int(float(seconds / 3600))
+    seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
+    hours = seconds // 3600
     seconds = seconds - (hours * 3600)
-    minutes = int(seconds / 60)
+    minutes = seconds // 60
     seconds = seconds % 60
     
     return (hours, minutes, seconds)
@@ -602,10 +602,10 @@ def getLightLevel():
         hoursleft = (abs(24 - tibiaTime[0]) + config.tibiaDayFullLightStart) % 24
 
         if hoursleft >= 12:
-            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft-12)
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft-12)
             return config.tibiaNightLight + lightChange            
         else:
-            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft)
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft)
             return config.tibiaFullDayLight - lightChange
         
 LIGHT_LEVEL = getLightLevel()
