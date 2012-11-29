@@ -14,6 +14,8 @@ import itertools
 import gc
 import data.map.info as mapInfo
 
+sectorX, sectorY = mapInfo.sectorSize
+
 ##### Position class ####
 def __uid():
     idsTaken = 1
@@ -22,34 +24,13 @@ def __uid():
         yield idsTaken
 instanceId = __uid().next
 
-def packPos(x,y,z):
-    """ Returns a single numberic representation of this x,y,z position. """
-    return (z << 24) + (x << 10) + y
-
-def unpackPos(sum):
-    """ Returns a tuple with the x,y,z position of this numberic representation. """
-    z = sum >> 24
-    xSum = sum - (z << 24)
-    x = xSum >> 10
-    y = xSum - (x << 10)
-
-    return x,y,z
-
-def unpackPos(sum):
-    z = sum >> 24
-    x = sum >> 10 & 1024
-    y = sum & 1024
-
-    return x,y,z
-
 def getTile(pos):
     """ Returns the Tile on this position. """
-    x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
-    sectorX, sectorY = mapInfo.sectorSize
+    x,y = pos.x, pos.y
     iX = x // sectorX
     iY = y // sectorY
-    sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = (x,y,z)
+    sectorSum = (pos.instanceId << 22) + (iX << 11) + iY
+    posSum = (x,y,pos.z)
     area = None
     try:
         area = knownMap[sectorSum]
@@ -61,13 +42,13 @@ def getTile(pos):
 
 def setTile(pos, tile):
     """ Set the tile on this position. """
-    x,y,z,instanceId = pos.x, pos.y, pos.z, pos.instanceId
-    sectorX, sectorY = mapInfo.sectorSize
+    x = pos.x
+    y = pos.y
     iX = x // sectorX
     iY = y // sectorY
 
-    sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = (x,y,z)
+    sectorSum = (pos.instanceId << 22) + (iX << 11) + iY
+    posSum = (x,y,pos.z)
     area = None
     try:
         area = knownMap[sectorSum]
@@ -83,7 +64,6 @@ def setTile(pos, tile):
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
-    sectorX, sectorY = mapInfo.sectorSize
     iX = x // sectorX
     iY = y // sectorY
         
