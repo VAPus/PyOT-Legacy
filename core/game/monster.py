@@ -835,7 +835,7 @@ def genMonster(name, look, description=""):
     return baseMonster
 
 def getMonster(name):
-    return monsters.get(name))
+    return monsters.get(name)
         
 def regBrainFeature(name, function):
     if not name in brainFeatures:
