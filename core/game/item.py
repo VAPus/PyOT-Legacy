@@ -175,15 +175,13 @@ class Item(object):
         return items[self.itemId].get("type", 0)
             
     def __getattr__(self, name):
-        _items = items[self.itemId]
-        try:
-            return _items[name]
-        except:
+        if not "__" in name:
+            _items = items[self.itemId]
             try:
                 return _items['flags'] & self.attributes[name]
             except:
-                if not "__" in name:
-                    return None
+                return _items.get(name)
+            
                        
         raise AttributeError, name
     

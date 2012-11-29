@@ -579,7 +579,7 @@ def getTibiaTime():
     :rtype: tuple (hours, minutes, seconds).
     """
     
-    seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
+    seconds = int((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
     hours = seconds // 3600
     seconds = seconds - (hours * 3600)
     minutes = seconds // 60

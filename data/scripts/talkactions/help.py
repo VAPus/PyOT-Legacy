@@ -314,7 +314,7 @@ def testBoost(creature, **k):
 def walkRandomStep(creature, callback):
     wait = creature.lastAction - time.time()
     if wait > 0:
-        callLater(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
+        callLater(wait*1.3, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
         return
     steps = [0,1,2,3]
     

@@ -85,13 +85,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 # Set the XTEA key
                 k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
                 sum = 0
-                a, b = [], []
+                self.xtea = {}
                 for x in xrange(32):
-                    a.append(sum + k[sum & 3] & 0xffffffff)
+                    self.xtea[x] = sum + k[sum & 3] & 0xffffffff
                     sum = (sum + 0x9E3779B9) & 0xffffffff
-                    b.append(sum + k[sum>>11 & 3] & 0xffffffff)
+                    self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
                     
-                self.xtea = tuple(a + b)
 
             ip = self.transport.getPeer().host
             

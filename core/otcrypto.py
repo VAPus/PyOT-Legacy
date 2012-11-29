@@ -24,9 +24,10 @@ def decryptXTEA(stream, k):
         for i in xrange(32):
             v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ (k[63-i]))) & 0xffffffff
             v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ (k[31-i]))) & 0xffffffff
-        buffer += pack("<2L", v0, v1)
+        buffer.append(v0)
+        buffer.append(v1)
 
-    return ''.join(buffer)
+    return pack("<%dL" % len(buffer), *buffer)
 
 def encryptXTEA(stream, k, length):
     buffer = []
@@ -41,7 +42,8 @@ def encryptXTEA(stream, k, length):
         for i in xrange(32):
             v0 = (v0 + (((v1<<4 ^ v1>>5) + v1) ^ (k[i]))) & 0xffffffff
             v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ (k[32 + i]))) & 0xffffffff
-        buffer.append(pack("<2L", v0, v1))
+        buffer.append(v0)
+        buffer.append(v1)
 
 
-    return ''.join(buffer)
+    return pack("<%dL" % len(buffer), *buffer)
