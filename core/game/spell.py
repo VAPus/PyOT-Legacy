@@ -525,6 +525,9 @@ class Spell(object):
                         
                 for generator in targetGenerators:
                     for targ in generator:
+                        if creature.isMonster() and not config.monsterAoEAffectMonsters and targ.isMonster():
+                            continue
+
                         if self._targetEffect:
                             targ.magicEffect(self._targetEffect)
                         
