@@ -29,17 +29,20 @@ class CreatureMovement(object):
                 if i.solid:
                     raise game.errors.SolidTile()
 
+        invisible = self.isMonster() and self.hasCondition(CONDITION_INVISIBLE)
+
         oldStackpos = 0
-        try:
-            oldStackpos = getTile(oldPosition).findStackpos(self)
-            for spectator in getSpectators(oldPosition, ignore=(self,)):
-                stream = spectator.packet()
-                stream.removeTileItem(oldPosition, oldStackpos)
-                stream.magicEffect(oldPosition, 0x02)
-                stream.send(spectator)
-            oldPosCreatures = game.engine.getCreatures(oldPosition)
-        except:
-            pass # Just append creature
+        if not invisible:
+            try:
+                oldStackpos = getTile(oldPosition).findStackpos(self)
+                for spectator in getSpectators(oldPosition, ignore=(self,)):
+                    stream = spectator.packet()
+                    stream.removeTileItem(oldPosition, oldStackpos)
+                    stream.magicEffect(oldPosition, 0x02)
+                    stream.send(spectator)
+                oldPosCreatures = game.engine.getCreatures(oldPosition)
+            except:
+                pass # Just append creature
         
         stackpos = placeCreature(self, position)
         if not stackpos:
@@ -83,11 +86,12 @@ class CreatureMovement(object):
             game.scriptsystem.get('appear').runSync(creature2, self)
 
 
-        for spectator in getSpectators(position, ignore=(self,)):
-            stream = spectator.packet()
-            stream.addTileCreature(position, stackpos, self, spectator.player)
-            stream.magicEffect(position, 0x02)
-            stream.send(spectator)
+        if not invisible:
+            for spectator in getSpectators(position, ignore=(self,)):
+                stream = spectator.packet()
+                stream.addTileCreature(position, stackpos, self, spectator.player)
+                stream.magicEffect(position, 0x02)
+                stream.send(spectator)
 
         if self.target and not self.canSee(self.target.position):
             self.cancelTarget()
@@ -373,10 +377,11 @@ class CreatureMovement(object):
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
+        invisible = self.isMonster() and self.hasCondition(CONDITION_INVISIBLE)
 
         for spectator in spectators:
             # Make packet
-            if not spectator.client:
+            if not spectator.client or invisible:
                 continue
 
             canSeeNew = spectator in newPosCreatures
