@@ -108,9 +108,9 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
         
-        for x in xrange(0, width):
-            for y in xrange(0, height):
-                tile = getTileConst(_x + x + offset, _y + y + offset, _z, instanceId)
+        for x in xrange(_x + offset, _x + width + offset):
+            for y in xrange(_y + offset, _y + height + offset):
+                tile = getTileConst(x, y, _z, instanceId)
 
                 if tile:
                     if skip >= 0:

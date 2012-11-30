@@ -1,5 +1,5 @@
 from struct import unpack, pack
-import otcrypto
+from otcrypto import encryptXTEA
 from zlib import adler32
 
 """
@@ -96,19 +96,19 @@ class TibiaPacket(object):
         self.raw = self.data.append
         
     # 8bit - 1byte, C type: char
-    def uint8(self, data):
+    def uint8(self, data, chr=chr):
         self.raw(chr(data))
-    def int8(self, data):
+    def int8(self, data, pack=pack):
         self.raw(pack("<b", data))
         
     # 16bit - 2bytes, C type: short
-    def uint16(self, data):
+    def uint16(self, data, pack=pack):
         self.raw(pack("<H", data))
-    def int16(self, data):
+    def int16(self, data, pack=pack):
         self.raw(pack("<h", data))
 
     # 32bit - 4bytes, C type: int
-    def uint32(self, data):
+    def uint32(self, data, pack=pack):
         self.raw(pack("<I", data))
     def int32(self, data):
         self.raw(pack("<i", data))
@@ -118,7 +118,7 @@ class TibiaPacket(object):
     def int64(self, data):
         self.raw(pack("<q", data))
         
-    def string(self, string):
+    def string(self, string, pack=pack):
         # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
         try:
             string = string.decode("utf-8").encode('iso8859-1')
@@ -131,20 +131,19 @@ class TibiaPacket(object):
     def put(self, string):
         self.raw(str(string))
         
-    #@inThread
-    def send(self, stream):
-        if not stream or not self.data: return
+    def send(self, stream, pack=pack, len=len, adler32=adler32, encryptXTEA=encryptXTEA, sum=sum, map=map):
+        if not stream or len(self.data) < 2: return
 
         length = sum(map(len, self.data))
         self.data[0] = pack("<H", length)
         #data = "%s%s" % (pack("<H", le(self.data)), ''.join(self.data))
 
         if stream.xtea:
-            data = otcrypto.encryptXTEA(self.data, stream.xtea, length+2)
+            data = encryptXTEA(self.data, stream.xtea, length+2)
         else:
             data = ''.join(self.data)
         stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
-                
+        
     #@inThread
     def sendto(self, list):
         if not list or not self.data:
@@ -159,7 +158,7 @@ class TibiaPacket(object):
                 continue
             
             if client.xtea:
-                data = otcrypto.encryptXTEA(self.data, client.xtea, length+2)
+                data = encryptXTEA(self.data, client.xtea, length+2)
             else:
                 data = ''.join(self.data)
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
