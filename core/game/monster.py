@@ -488,11 +488,13 @@ class MonsterBase(object):
                     ok = False
                     for testx in (-1,0,1):
                         position[0] += testx
-                        tile = map.getTile(position)
-                        if tile.hasCreatures():
+                        tile = position.getTile()
+                        if not tile:
+                            continue
+                        elif tile.hasCreatures():
                             for testy in (-1,0,1):
                                 position[0] += testy
-                                tile = map.getTile(position)
+                                tile = position.getTile()
                                 if not tile:
                                     continue
                                 

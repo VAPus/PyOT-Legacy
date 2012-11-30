@@ -307,7 +307,13 @@ def loader(timer):
         files = glob.glob('data/map/*.sec')
         for fileSec in files:
             x, y, junk = fileSec.split(os.sep)[-1].split('.')
-            game.map.load(int(x),int(y), 0)
+            x = int(x)
+            y = int(y)
+            iX = x // game.map.sectorX
+            iY = y // game.map.sectorY
+            sectorSum = (iX << 11) + iY
+            game.map.load(x,y, 0, sectorSum)
+
         print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
         
     # Charge rent?
