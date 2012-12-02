@@ -12,7 +12,7 @@ class TestMoveItem(FrameworkTestGame):
         self.player.toggleRaiseMessages()
         
         # Make some gold
-        item = Item(3031, 10)
+        item = Item(idByName('gold coin'), 10)
         
         # Place to inventory
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -39,7 +39,7 @@ class TestMoveItem(FrameworkTestGame):
         """ Issue #59 part 2. http://vapus.net/forum/project.php?issueid=59 """
         
         # Make some gold
-        item = Item(3031, 100)
+        item = Item(idByName('gold coin'), 100)
         
         # Place to inventory.
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -60,8 +60,8 @@ class TestMoveItem(FrameworkTestGame):
         """ Reverse of the above. """
         
         # Make some gold
-        item = Item(3031, 50)
-        item2 = Item(3031, 50)
+        item = Item(idByName('gold coin'), 50)
+        item2 = Item(idByName('gold coin'), 50)
         item2.place(self.player.position)
         stack = self.player.position.getTile().findStackpos(item2)
         groundPosition = self.player.position.setStackpos(stack)
@@ -86,7 +86,7 @@ class TestMoveItem(FrameworkTestGame):
 
     def test_move_ground(self):
         # Make some gold.
-        item = Item(3031, 10)
+        item = Item(idByName('gold coin'), 10)
         item.place(self.player.position)
         
         # Move.
@@ -104,7 +104,7 @@ class TestMoveItem(FrameworkTestGame):
         
     def test_closebag(self):
         # Make a bag.
-        item = Item(2853)
+        item = Item(idByName('bag'))
         self.player.itemToInventory(item, SLOT_BACKPACK)
 
         # Open bag.
@@ -118,7 +118,7 @@ class TestMoveItem(FrameworkTestGame):
         
     def test_move_ground_no_count(self):
         # Make some gold.
-        item = Item(3031, 10)
+        item = Item(idByName('gold coin'), 10)
         item.place(self.player.position)
         
         self.assertEqual(self.player.position, item.position)
@@ -140,10 +140,10 @@ class TestMoveItem(FrameworkTestGame):
         self.player.toggleRaiseMessages()
 
         # Make some arrows
-        item = Item(763, 100)
+        item = Item(idByName('crystal arrow'), 100)
 
         # Make a bag.
-        bag = Item(2853)
+        bag = Item(idByName('bag'))
 
         # Place to inventory.
         self.player.itemToInventory(item, SLOT_AMMO)
@@ -170,10 +170,10 @@ class TestMoveItem(FrameworkTestGame):
 
     def test_move_to_self(self):
         # Make a gold coin 
-        item = Item(3031, 1)
+        item = Item(idByName('gold coin'), 1)
 
         # Make a bag.
-        bag = Item(2853)
+        bag = Item(idByName('bag'))
 
         # Place to inventory
         self.player.itemToInventory(bag, SLOT_BACKPACK)

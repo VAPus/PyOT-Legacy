@@ -320,7 +320,7 @@ if __name__ == "__main__":
                     
                     index += 1
                 item.set("id", str(orgId))
-                    
+                item.set("cid", str(orgCid))                    
         elif "fromid" in item.attrib:
             # No toid. Rewrite.
             orgId = item.attrib["fromid"]

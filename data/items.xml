@@ -205,7 +205,7 @@
 
 	<item cid="799" id="670" name="snow" speed="200"/>
 	<item cid="800" id="671" name="ice"/>
-	<item cid="837-840" flags="s" id="708" name="tar">
+	<item cid="837" flags="s" id="708" name="tar">
 		<effect value="poff"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -226,39 +226,39 @@
 	<item cid="1112-1122" flags="tb" id="903-913" name="mountain"/>
 	<item cid="1123-1126" flags="t" id="914-917" name="archway"/>
 	<item cid="1127-1128" flags="b" id="918-919" name="mountain"/>
-	<item cid="1152-1155" id="920" name="flat roof" speed="160"/>
+	<item cid="1152" id="920" name="flat roof" speed="160"/>
 	<item cid="1153" flags="s" id="921-923" name="flat roof" speed="160"/>
 	<item cid="1156" flags="4" id="924" name="trapdoor" speed="160">
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="1157-1176" flags="s" id="925-944" name="tiled roof"/>
-	<item cid="1177-1196" flags="s" id="945-964" name="wooden roof"/>
+	<item cid="1157" flags="s" id="925-944" name="tiled roof"/>
+	<item cid="1177" flags="s" id="945-964" name="wooden roof"/>
 	<item cid="1210-1211" id="965-966" name="chess board"/>
 	<item cid="1212-1260" id="967-1015" name="mill board"/>
 	<item cid="1261-1269" id="1016-1024" name="tic-tac-toe board"/>
-	<item cid="1270-1280" flags="139267" id="1025" name="brick wall"/>
+	<item cid="1270" flags="139267" id="1025" name="brick wall"/>
 	<item cid="1271" flags="270339" id="1026" name="brick wall"/>
 	<item cid="1272" flags="tb" id="1027-1030" name="brick wall"/>
 	<item cid="1276" flags="139267" id="1031" name="brick wall"/>
 	<item cid="1277" flags="tb" id="1032" name="brick wall"/>
 	<item cid="1278" flags="270339" id="1033" name="brick wall"/>
 	<item cid="1279" flags="tb" id="1034-1035" name="brick wall"/>
-	<item cid="1281-1293" flags="139267" id="1036" name="framework wall"/>
+	<item cid="1281" flags="139267" id="1036" name="framework wall"/>
 	<item cid="1282" flags="270339" id="1037" name="framework wall"/>
 	<item cid="1283" flags="tb" id="1038-1041" name="framework wall"/>
 	<item cid="1287" flags="139267" id="1042" name="framework wall"/>
 	<item cid="1288" flags="tb" id="1043" name="framework wall"/>
 	<item cid="1289" flags="270339" id="1044" name="framework wall"/>
 	<item cid="1290" flags="tb" id="1045-1048" name="framework wall"/>
-	<item cid="1294-1304" flags="139267" id="1049" name="stone wall"/>
+	<item cid="1294" flags="139267" id="1049" name="stone wall"/>
 	<item cid="1295" flags="270339" id="1050" name="stone wall"/>
 	<item cid="1296" flags="tb" id="1051-1054" name="stone wall"/>
 	<item cid="1300" flags="139267" id="1055" name="stone wall"/>
 	<item cid="1301" flags="tb" id="1056" name="stone wall"/>
 	<item cid="1302" flags="270339" id="1057" name="stone wall"/>
 	<item cid="1303" flags="tb" id="1058-1059" name="stone wall"/>
-	<item cid="1305-1315" flags="139267" id="1060" name="sandstone wall"/>
+	<item cid="1305" flags="139267" id="1060" name="sandstone wall"/>
 	<item cid="1306" flags="270339" id="1061" name="sandstone wall"/>
 	<item cid="1307" flags="tb" id="1062-1065" name="sandstone wall"/>
 	<item cid="1311" flags="139267" id="1066" name="sandstone wall"/>
@@ -271,7 +271,7 @@
 	<item cid="1334-1338" flags="tb" id="1089-1093" name="metal wall"/>
 	<item cid="1340-1344" flags="tb" id="1095-1099" name="metal wall"/>
 	<item cid="1345-1355" flags="tb" id="1100-1110" name="sandstone wall"/>
-	<item cid="1356-1364" flags="139267" id="1111" name="white stone wall"/>
+	<item cid="1356" flags="139267" id="1111" name="white stone wall"/>
 	<item cid="1357" flags="270339" id="1112" name="white stone wall"/>
 	<item cid="1358" flags="tb" id="1113-1116" name="white stone wall"/>
 	<item cid="1362" flags="270339" id="1117" name="white stone wall"/>
@@ -290,7 +290,7 @@
 		<fluidSource value="water"/>
 	</item>
 
-	<item cid="1441-1449" flags="16785411" id="1196-1197" name="lava wall"/>
+	<item cid="1441" flags="16785411" id="1196-1197" name="lava wall"/>
 	<item cid="1443" flags="tb" id="1198" name="lava wall"/>
 	<item cid="1444" flags="16785411" id="1199-1204" name="lava wall"/>
 	<item cid="1624-1627" flags="t" id="1205-1208" name="archway"/>
@@ -546,7 +546,7 @@
 		<weight value="3000"/>
 	</item>
 
-	<item cid="1783-1839" flags="ts" id="1296-1307" name="stone"/>
+	<item cid="1783" flags="ts" id="1296-1307" name="stone"/>
 	<item cid="1795" flags="t" id="1308" name="stone"/>
 	<item cid="1796" flags="ts" id="1309-1310" name="stone"/>
 	<item cid="1798" flags="t" id="1311" name="stone"/>
@@ -582,10 +582,10 @@
 	</item>
 
 	<item cid="1930-1931" flags="ts" id="1368-1369" name="draw well"/>
-	<item cid="1932-1939" flags="ts" id="1370-1373" name="marble fountain"/>
+	<item cid="1932" flags="ts" id="1370-1373" name="marble fountain"/>
 	<item cid="1936" flags="16785409" id="1374-1377" name="marble fountain"/>
 	<item cid="1940" flags="ts" id="1378" name="small basin"/>
-	<item cid="7775-1946" flags="ts" id="1379-1380" name="mill"/>
+	<item cid="7775" flags="ts" id="1379-1380" name="mill"/>
 	<item cid="1943" flags="16785409" id="1381-1384" name="mill"/>
 	<item cid="1947" flags="8204" id="1385" name="stairs">
 		<floorchange value="north"/>
@@ -642,7 +642,7 @@
 
 	<item cid="1967" flags="8200" id="1405" name="ramp"/>
 	<item cid="134" flags="1056768" id="1406" name="grave"/>
-	<item cid="1980-1982" flags="1056769" id="1407-1408" name="gravestone"/>
+	<item cid="1980" flags="1056769" id="1407-1408" name="gravestone"/>
 	<item cid="1982" flags="1048576" id="1409" name="gravestone"/>
 	<item cid="1983" flags="8201" id="1410" name="stone coffin">
 		<containerSize value="10"/>
@@ -674,7 +674,7 @@
 	</item>
 
 	<item cid="2001" id="1426" name="unlit campfire"/>
-	<item cid="2002-2003" flags="s" id="1427" name="campfire"/>
+	<item cid="2002" flags="s" id="1427" name="campfire"/>
 	<item cid="2003" flags="16777217" id="1428" name="campfire"/>
 	<item cid="2012-2017" flags="1056769" id="1429-1434" name="sign"/>
 	<item cid="2018" flags="16785409" id="1435" name="dragon flag"/>
@@ -730,7 +730,7 @@
 	<item cid="2049" flags="ts" id="1466" name="pedestal"/>
 	<item cid="2050-2051" flags="ts" id="1467-1468" name="cobra statue"/>
 	<item cid="2052" flags="ts" id="1469" name="pedestal"/>
-	<item cid="2053-2058" flags="ts" id="1470-1471" name="cobra statue"/>
+	<item cid="2053" flags="ts" id="1470-1471" name="cobra statue"/>
 	<item cid="2055" flags="65536" id="1472-1475" name="cobra statue"/>
 	<item cid="2059" flags="32833" id="1476" name="knight statue">
 		<rotateTo value="1477"/>
@@ -752,7 +752,7 @@
 		<transformUseTo value="1479"/>
 	</item>
 
-	<item cid="2110-2114" flags="16777225" id="1481-1484" name="coal basin"/>
+	<item cid="2110" flags="16777225" id="1481-1484" name="coal basin"/>
 	<item cid="2114" flags="9" id="1485" name="coal basin"/>
 	<item cid="2115" flags="16777225" id="1486" name="stone coal basin"/>
 	<item cid="2118" flags="16777220" id="1487-1488" name="fire field">
@@ -918,7 +918,7 @@
 	<item cid="2152" flags="ts" id="1514" name="pillar"/>
 	<item cid="2153" flags="ts" id="1515" name="marble pillar"/>
 	<item cid="2154-2161" flags="s" id="1516-1523" name="wooden railing"/>
-	<item cid="2162-2170" flags="s" id="1524-1531" name="stone railing"/>
+	<item cid="2162" flags="s" id="1524-1531" name="stone railing"/>
 	<item cid="2170" flags="tb" id="1532" name="stone railing"/>
 	<item cid="2171-2176" flags="s" id="1533-1538" name="fence"/>
 	<item cid="2177" flags="s" id="1539" name="closed fence gate">
@@ -972,7 +972,7 @@
 	<item cid="2218-2221" flags="8201" id="1578-1581" name="sandstone"/>
 	<item cid="2222-2233" flags="s" id="1582-1593" name="white stone railing"/>
 	<item cid="2234-2241" flags="s" id="1594-1601" name="metal railing"/>
-	<item cid="2302-2314" flags="8201" id="1602-1613" name="big table"/>
+	<item cid="2302" flags="8201" id="1602-1613" name="big table"/>
 	<item cid="2314" flags="76" id="1614" name="big table"/>
 	<item cid="2315" flags="76" id="1615" name="square table"/>
 	<item cid="2316" flags="76" id="1616" name="small round table"/>
@@ -5098,7 +5098,7 @@
 		<weight value="200"/>
 	</item>
 
-	<item cid="3510-3514" flags="16777289" id="2601-2604" name="coal basin"/>
+	<item cid="3510" flags="16777289" id="2601-2604" name="coal basin"/>
 	<item cid="3514" flags="76" id="2605" name="coal basin"/>
 	<item cid="3515-3518" flags="8201" id="2606-2609" name="altar"/>
 	<item cid="3519-3522" flags="8201" id="2610-2613" name="sacrifical stone"/>
@@ -7801,7 +7801,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item cid="4304-4309" flags="s" id="3122-3127" name="dead dragon"/>
+	<item cid="4304" flags="s" id="3122-3127" name="dead dragon"/>
 	<item cid="4311" flags="m" id="3128" name="dead human">
 		<containerSize value="10"/>
 		<decayTo value="3129"/>
@@ -7863,7 +7863,7 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="486-498" id="3139" name="wooden floor"/>
+	<item cid="486" id="3139" name="wooden floor"/>
 	<item cid="487" flags="s" id="3140-3151" name="wooden floor"/>
 	<item cid="499-504" id="3152-3157" name="stone floor"/>
 	<item cid="505-515" id="3158-3168" name="strange carving"/>
@@ -7917,7 +7917,7 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="1129-1151" flags="16777217" id="3325" name="rock"/>
+	<item cid="1129" flags="16777217" id="3325" name="rock"/>
 	<item cid="1130" flags="s" id="3326" name="rock"/>
 	<item cid="1131" flags="16777217" id="3327" name="rock"/>
 	<item cid="1132" flags="s" id="3328" name="rock"/>
@@ -7932,14 +7932,14 @@
 	<item cid="1145" flags="s" id="3341-3347" name="rock"/>
 	<item cid="1197" id="3348" name="dried grass roof" speed="160"/>
 	<item cid="1198-1209" flags="s" id="3349-3360" name="wooden roof"/>
-	<item cid="1450-1511" flags="139267" id="3361" name="stone wall"/>
+	<item cid="1450" flags="139267" id="3361" name="stone wall"/>
 	<item cid="1451" flags="270339" id="3362" name="stone wall"/>
 	<item cid="1452" flags="tb" id="3363-3366" name="stone wall"/>
 	<item cid="1456" flags="270339" id="3367" name="stone wall"/>
 	<item cid="1457" flags="tb" id="3368-3392" name="stone wall"/>
 	<item cid="1482" flags="t" id="3393-3396" name="stone wall"/>
 	<item cid="1486" flags="tb" id="3397-3422" name="stone wall"/>
-	<item cid="1512-1527" flags="139267" id="3423" name="bamboo wall"/>
+	<item cid="1512" flags="139267" id="3423" name="bamboo wall"/>
 	<item cid="1513" flags="270339" id="3424" name="bamboo wall"/>
 	<item cid="1514" flags="tb" id="3425-3428" name="bamboo wall"/>
 	<item cid="1518" flags="139267" id="3429" name="bamboo wall"/>
@@ -7948,22 +7948,22 @@
 	<item cid="1521" flags="tb" id="3432-3433" name="bamboo wall"/>
 	<item cid="1523" flags="ts" id="3434-3438" name="bamboo wall"/>
 	<item cid="1528-1535" flags="t" id="3439-3446" name="stone archway"/>
-	<item cid="1536-1537" flags="270339" id="3447" name="bamboo wall"/>
+	<item cid="1536" flags="270339" id="3447" name="bamboo wall"/>
 	<item cid="1537" flags="ts" id="3448" name="bamboo wall"/>
 	<item cid="1538" flags="ts" id="3449" name="window"/>
-	<item cid="1539-1540" flags="139267" id="3450" name="bamboo wall"/>
+	<item cid="1539" flags="139267" id="3450" name="bamboo wall"/>
 	<item cid="1540" flags="ts" id="3451" name="bamboo wall"/>
 	<item cid="1541" flags="ts" id="3452" name="window"/>
 	<item cid="1542" flags="tb" id="3453" name="broken bamboo"/>
 	<item cid="1543-1555" flags="tb" id="3454-3466" name="stone wall"/>
 	<item cid="1556" flags="tb" id="3467" name="window"/>
-	<item cid="1557-1559" flags="t" id="3468" name="stone wall"/>
+	<item cid="1557" flags="t" id="3468" name="stone wall"/>
 	<item cid="1558" flags="tb" id="3469-3470" name="stone wall"/>
 	<item cid="1560" flags="tb" id="3471" name="window"/>
-	<item cid="1561-1564" flags="t" id="3472" name="stone wall"/>
+	<item cid="1561" flags="t" id="3472" name="stone wall"/>
 	<item cid="1562" flags="tb" id="3473-3475" name="stone wall"/>
 	<item cid="1565-1568" flags="t" id="3476-3479" name="stone archway"/>
-	<item cid="1569-1584" flags="ts" id="3480-3483" name="stone wall"/>
+	<item cid="1569" flags="ts" id="3480-3483" name="stone wall"/>
 	<item cid="1573" flags="tb" id="3484-3486" name="stone wall"/>
 	<item cid="1576" flags="ts" id="3487-3488" name="stone wall"/>
 	<item cid="1578" flags="tb" id="3489-3492" name="stone wall"/>
@@ -7976,7 +7976,7 @@
 	<item cid="1592" flags="tb" id="3503" name="grass wall"/>
 	<item cid="1593-1594" flags="t" id="3504-3505" name="grass archway"/>
 	<item cid="1595-1596" flags="ts" id="3506-3507" name="liane"/>
-	<item cid="1597-1621" flags="tb" id="3508-3521" name="palisade"/>
+	<item cid="1597" flags="tb" id="3508-3521" name="palisade"/>
 	<item cid="1611" flags="ts" id="3522" name="palisade"/>
 	<item cid="1612" flags="b" id="3523-3526" name="palisade"/>
 	<item cid="1616" flags="tb" id="3527" name="palisade"/>
@@ -8063,21 +8063,21 @@
 		<transformUseTo value="3551"/>
 	</item>
 
-	<item cid="1716-1721" flags="16777216" id="3569-3570" name="waterfall"/>
+	<item cid="1716" flags="16777216" id="3569-3570" name="waterfall"/>
 	<item cid="1718" flags="16785408" id="3571-3574" name="waterfall"/>
 	<item cid="1755-1764" flags="t" id="3587-3596" name="small boat"/>
 	<item cid="1765-1766" flags="s" id="3597-3598" name="sail"/>
 	<item cid="1767-1768" id="3599-3600" name="paddle"/>
 	<item cid="1769-4945" flags="s" id="3601-3602" name="boat"/>
 	<item cid="1847-1853" flags="ts" id="3603-3609" name="stone"/>
-	<item cid="1854-1858" id="3610-3611" name="stones"/>
+	<item cid="1854" id="3610-3611" name="stones"/>
 	<item cid="1856" flags="8388608" id="3612" name="stones"/>
 	<item cid="1857" id="3613-3614" name="stones"/>
-	<item cid="1859-1875" flags="ts" id="3615-3620" name="stone"/>
+	<item cid="1859" flags="ts" id="3615-3620" name="stone"/>
 	<item cid="1865" flags="8388608" id="3621-3623" name="stone"/>
 	<item cid="1868" flags="ts" id="3624-3631" name="stone"/>
 	<item cid="1876-1879" flags="ts" id="3632-3635" name="mossy stone"/>
-	<item cid="1880-1921" flags="ts" id="3636-3652" name="stone"/>
+	<item cid="1880" flags="ts" id="3636-3652" name="stone"/>
 	<item cid="1897" flags="8388608" id="3653-3656" name="stone"/>
 	<item cid="1901" flags="ts" id="3657-3668" name="stone"/>
 	<item cid="1913" flags="8388608" id="3669" name="stone"/>
@@ -8111,16 +8111,16 @@
 		<floorchange value="west"/>
 	</item>
 
-	<item cid="2004-2011" flags="ts" id="3689-3692" name="large cauldron"/>
+	<item cid="2004" flags="ts" id="3689-3692" name="large cauldron"/>
 	<item cid="2008" flags="16785409" id="3693-3696" name="large cauldron"/>
-	<item cid="2062-2073" flags="ts" id="3697" name="statue"/>
+	<item cid="2062" flags="ts" id="3697" name="statue"/>
 	<item cid="2063" flags="16785409" id="3698" name="statue"/>
 	<item cid="2064" flags="ts" id="3699" name="statue"/>
 	<item cid="2065" flags="16785409" id="3700" name="statue"/>
 	<item cid="2066" flags="1056769" id="3701-3708" name="statue"/>
-	<item cid="2074-2075" flags="ts" id="3709" name="small pagoda"/>
+	<item cid="2074" flags="ts" id="3709" name="small pagoda"/>
 	<item cid="2075" flags="16785409" id="3710" name="small pagoda"/>
-	<item cid="2076-2093" flags="tb" id="3711" name="statue"/>
+	<item cid="2076" flags="tb" id="3711" name="statue"/>
 	<item cid="2077" flags="ts" id="3712" name="statue"/>
 	<item cid="2078" flags="tb" id="3713" name="statue"/>
 	<item cid="2079" flags="ts" id="3714-3726" name="statue"/>
@@ -8139,7 +8139,7 @@
 
 	<item cid="5024" flags="16777216" id="3744" name="skull candle"/>
 	<item cid="2242-2252" flags="tb" id="3745-3755" name="bamboo fence"/>
-	<item cid="2253-2262" id="3756-3757" name="bridge" speed="200"/>
+	<item cid="2253" id="3756-3757" name="bridge" speed="200"/>
 	<item cid="2255" flags="s" id="3758-3761" name="bridge" speed="200"/>
 	<item cid="2259" id="3762-3765" name="bridge" speed="200"/>
 	<item cid="2263" flags="ts" id="3766" name="pillar"/>
@@ -8147,7 +8147,7 @@
 	<item cid="2265-2288" flags="s" id="3768-3791" name="bridge"/>
 	<item cid="2289-2290" flags="ts" id="3792-3793" name="stone wall"/>
 	<item cid="2291-2298" flags="s" id="3794-3801" name="bamboo wall"/>
-	<item cid="2299-2301" flags="16785409" id="3802-3803" name="statue"/>
+	<item cid="2299" flags="16785409" id="3802-3803" name="statue"/>
 	<item cid="2301" flags="1056769" id="3804" name="statue"/>
 	<item cid="2346" flags="32844" id="3805" name="carved stone table">
 		<rotateTo value="3806"/>
@@ -8678,7 +8678,7 @@
 	</item>
 
 	<item cid="3702" flags="s" id="3985" name="jungle grass"/>
-	<item cid="3703-3722" flags="ts" id="3986-3993" name="thorn bush"/>
+	<item cid="3703" flags="ts" id="3986-3993" name="thorn bush"/>
 	<item cid="3711" flags="s" id="3994-3995" name="thorn bush"/>
 	<item cid="3713" flags="ts" id="3996-4005" name="thorn bush"/>
 	<item cid="3742" flags="ts" id="4006" name="orange tree"/>
@@ -8691,13 +8691,13 @@
 	<item cid="3753" flags="ts" id="4017" name="purple kiss bush"/>
 	<item cid="3754" flags="ts" id="4018" name="plant"/>
 	<item cid="3755-3760" flags="ts" id="4019-4024" name="jungle umbrella"/>
-	<item cid="3761-3770" flags="ts" id="4025-4028" name="bamboo plant"/>
+	<item cid="3761" flags="ts" id="4025-4028" name="bamboo plant"/>
 	<item cid="3765" flags="s" id="4029" name="bamboo plant"/>
 	<item cid="3766" flags="ts" id="4030-4033" name="bamboo plant"/>
 	<item cid="3770" flags="s" id="4034" name="bamboo plant"/>
 	<item cid="3771-3773" flags="ts" id="4035-4037" name="tree"/>
 	<item cid="3774-3776" flags="ts" id="4038-4040" name="small trunk"/>
-	<item cid="3777-3803" flags="s" id="4041" name="skinny branch"/>
+	<item cid="3777" flags="s" id="4041" name="skinny branch"/>
 	<item cid="3778" flags="ts" id="4042-4046" name="skinny branch"/>
 	<item cid="3783" flags="s" id="4047" name="skinny branch"/>
 	<item cid="3784" flags="ts" id="4048-4067" name="skinny branch"/>
@@ -8725,15 +8725,15 @@
 	<item cid="3895-3898" flags="ts" id="4159-4162" name="velvet petal"/>
 	<item cid="3899" flags="ts" id="4163" name="wild plant"/>
 	<item cid="3900-3902" flags="ts" id="4164-4166" name="pearl flower"/>
-	<item cid="3903-3907" flags="ts" id="4167-4171" name="mushrooms"/>
+	<item cid="3903" flags="ts" id="4167-4171" name="mushrooms"/>
 	<item cid="3908-3912" flags="ts" id="4172-4176" name="moldy mushroom"/>
-	<item cid="3913-3916" flags="ts" id="4177-4180" name="mushrooms"/>
+	<item cid="3913" flags="ts" id="4177-4180" name="mushrooms"/>
 	<item cid="3917" id="4181" name="pack of mushrooms"/>
 	<item cid="3918" id="4182" name="small mushroom"/>
 	<item cid="3919" id="4183" name="small mushrooms"/>
 	<item cid="3920" flags="ts" id="4184" name="giant mushroom"/>
 	<item cid="3921" flags="ts" id="4185" name="large pearl flower"/>
-	<item cid="3922-3937" flags="8200" id="4186-4188" name="log"/>
+	<item cid="3922" flags="8200" id="4186-4188" name="log"/>
 	<item cid="3925" flags="16785416" id="4189" name="log"/>
 	<item cid="3926" flags="8200" id="4190-4196" name="log"/>
 	<item cid="3933" flags="16785416" id="4197" name="log"/>
@@ -8747,10 +8747,10 @@
 
 	<item cid="3946-3951" flags="8200" id="4210-4215" name="log"/>
 	<item cid="3952-3958" flags="ts" id="4216-4222" name="small trunk"/>
-	<item cid="3959-3974" id="4223-4226" name="branch"/>
+	<item cid="3959" id="4223-4226" name="branch"/>
 	<item cid="3963" flags="s" id="4227-4228" name="branch"/>
 	<item cid="3965" id="4229-4238" name="branch"/>
-	<item cid="3975-3986" flags="8200" id="4239-4241" name="log covered in moss"/>
+	<item cid="3975" flags="8200" id="4239-4241" name="log covered in moss"/>
 	<item cid="3978" flags="16785416" id="4242" name="log covered in moss"/>
 	<item cid="3979" flags="8200" id="4243-4247" name="log covered in moss"/>
 	<item cid="3984" flags="16785416" id="4248" name="log covered in moss"/>
@@ -9304,19 +9304,19 @@
 	<item cid="4394-4410" id="4405-4421" name="rocks" speed="120"/>
 	<item cid="4445-4456" flags="8396800" id="4456-4467" name="rocks"/>
 	<item cid="4457-4502" flags="tb" id="4468-4513" name="mountain"/>
-	<item cid="4503-4514" flags="t" id="4514-4517" name="rocks"/>
+	<item cid="4503" flags="t" id="4514-4517" name="rocks"/>
 	<item cid="4507" flags="8396800" id="4518-4521" name="rocks"/>
 	<item cid="4511" flags="t" id="4522-4525" name="rocks"/>
-	<item cid="4515-4542" id="4526-4541" name="grass" speed="150"/>
+	<item cid="4515" id="4526-4541" name="grass" speed="150"/>
 	<item cid="4531" flags="t" id="4542-4545" name="grass" speed="150"/>
 	<item cid="4535" flags="8396800" id="4546-4549" name="grass" speed="150"/>
 	<item cid="4539" flags="t" id="4550-4553" name="grass" speed="150"/>
-	<item cid="4543-4555" flags="t" id="4554-4557" name="gravel"/>
+	<item cid="4543" flags="t" id="4554-4557" name="gravel"/>
 	<item cid="4547" flags="8396800" id="4558-4561" name="gravel"/>
 	<item cid="4551" flags="t" id="4562-4566" name="gravel"/>
 	<item cid="4559-4568" id="4570-4579" name="gravel" speed="150"/>
 	<item cid="4569-4583" flags="t" id="4580-4594" name="mossy spots"/>
-	<item cid="4584-4596" id="4595" name="rocks" speed="150"/>
+	<item cid="4584" id="4595" name="rocks" speed="150"/>
 	<item cid="4585" flags="t" id="4596-4607" name="rocks" speed="150"/>
 	<item cid="4597-4602" flags="16777217" id="4608-4613" name="shallow water">
 		<description value="You see the silvery movement of fish."/>
@@ -9382,7 +9382,7 @@
 		<fluidSource value="water"/>
 	</item>
 
-	<item cid="4633-4652" flags="16785409" id="4644-4651" name="shallow water">
+	<item cid="4633" flags="16785409" id="4644-4651" name="shallow water">
 		<fluidSource value="water"/>
 		<allowpickupable value="1"/>
 	</item>
@@ -9403,7 +9403,7 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item cid="4656-4679" flags="8396800" id="4667-4674" name="dirt"/>
+	<item cid="4656" flags="8396800" id="4667-4674" name="dirt"/>
 	<item cid="4664" flags="t" id="4675-4678" name="dirt"/>
 	<item cid="4668" flags="8396800" id="4679-4686" name="dirt"/>
 	<item cid="4676" flags="t" id="4687-4690" name="dirt"/>
@@ -9413,7 +9413,7 @@
 	</item>
 
 	<item cid="4702-4725" flags="8396800" id="4713-4736" name="swamp"/>
-	<item cid="4726-4737" flags="t" id="4737-4740" name="snow"/>
+	<item cid="4726" flags="t" id="4737-4740" name="snow"/>
 	<item cid="4730" flags="8396800" id="4741-4744" name="snow"/>
 	<item cid="4734" flags="t" id="4745-4748" name="snow"/>
 	<item cid="4738-4744" flags="16777217" id="4749-4755" name="swamp">
@@ -9421,13 +9421,13 @@
 		<allowpickupable value="1"/>
 	</item>
 
-	<item cid="4749-4772" flags="t" id="4760-4775" name="sand"/>
+	<item cid="4749" flags="t" id="4760-4775" name="sand"/>
 	<item cid="4765" flags="8396800" id="4776-4779" name="sand"/>
 	<item cid="4769" flags="t" id="4780-4783" name="sand"/>
-	<item cid="4773-4784" flags="t" id="4784-4787" name="grass"/>
+	<item cid="4773" flags="t" id="4784-4787" name="grass"/>
 	<item cid="4777" flags="8396800" id="4788-4791" name="grass"/>
 	<item cid="4781" flags="t" id="4792-4795" name="grass"/>
-	<item cid="4785-4808" flags="8396800" id="4796-4803" name="dirt"/>
+	<item cid="4785" flags="8396800" id="4796-4803" name="dirt"/>
 	<item cid="4793" flags="t" id="4804-4807" name="dirt"/>
 	<item cid="4797" flags="8396800" id="4808-4815" name="dirt"/>
 	<item cid="4805" flags="t" id="4816-4819" name="dirt"/>
@@ -9601,7 +9601,7 @@
 
 	<item cid="5676" flags="ts" id="4875" name="hydra eggs"/>
 	<item cid="4874-4880" flags="16785408" id="4876-4882" name="swamp"/>
-	<item cid="4881-4903" flags="139267" id="4883" name="ship"/>
+	<item cid="4881" flags="139267" id="4883" name="ship"/>
 	<item cid="4882" flags="tb" id="4884-4885" name="ship"/>
 	<item cid="4884" flags="270339" id="4886" name="ship"/>
 	<item cid="4885" flags="tb" id="4887-4905" name="ship"/>
@@ -9632,12 +9632,12 @@
 
 	<item cid="4917" flags="ts" id="4919" name="ship railing"/>
 	<item cid="4918-4919" flags="tb" id="4920-4921" name="ship cabin wall"/>
-	<item cid="4920-4939" flags="ts" id="4922-4926" name="ship railing"/>
+	<item cid="4920" flags="ts" id="4922-4926" name="ship railing"/>
 	<item cid="4925" flags="s" id="4927-4928" name="ship railing"/>
 	<item cid="4927" flags="ts" id="4929-4937" name="ship railing"/>
 	<item cid="4936" flags="s" id="4938-4939" name="ship railing"/>
 	<item cid="4938" flags="ts" id="4940-4941" name="ship railing"/>
-	<item cid="4940-4952" flags="tb" id="4942-4944" name="mast"/>
+	<item cid="4940" flags="tb" id="4942-4944" name="mast"/>
 	<item cid="4943" flags="s" id="4945-4947" name="mast"/>
 	<item cid="4947" flags="tb" id="4948-4953" name="mast"/>
 	<item cid="4953-4960" flags="s" id="4954-4961" name="sail" speed="1"/>
@@ -9648,7 +9648,7 @@
 	<item cid="4973" flags="s" id="4974" name="ship"/>
 	<item cid="4974-4975" flags="tb" id="4975-4976" name="mast"/>
 	<item cid="4976" flags="s" id="4977" name="ship"/>
-	<item cid="4977-4986" flags="s" id="4978-4987" name="hawser"/>
+	<item cid="4977" flags="s" id="4978-4987" name="hawser"/>
 	<item cid="4987-4988" flags="s" id="4988-4989" name="cleat"/>
 	<item cid="4989" flags="16785409" id="4990" name="white flag"/>
 	<item cid="4990" flags="16785409" id="4991" name="pirate flag"/>
@@ -9659,14 +9659,14 @@
 	<item cid="4994" flags="ts" id="4995" name="ice stalagmite"/>
 	<item cid="4995" flags="s" id="4996" name="big anphora"/>
 	<item cid="4996" flags="s" id="4997" name="stone rubbish"/>
-	<item cid="4997-5000" flags="s" id="4998-5001" name="hawser"/>
-	<item cid="5001-4916" flags="ts" id="5002" name="ship cabin wall"/>
+	<item cid="4997" flags="s" id="4998-5001" name="hawser"/>
+	<item cid="5001" flags="ts" id="5002" name="ship cabin wall"/>
 	<item cid="5002" flags="tb" id="5003" name="ship cabin wall"/>
 	<item cid="5003" flags="139267" id="5004" name="ship cabin wall"/>
 	<item cid="5004" flags="270339" id="5005" name="ship cabin wall"/>
 	<item cid="5005" flags="tb" id="5006-5008" name="ship cabin wall"/>
 	<item cid="5008" flags="tb" id="5009" name="metal wall"/>
-	<item cid="5009-5010" flags="tb" id="5010" name="ornamented wall"/>
+	<item cid="5009" flags="tb" id="5010" name="ornamented wall"/>
 	<item cid="5010" flags="139267" id="5011" name="ornamented wall"/>
 	<item cid="5011-5012" flags="16785411" id="5012-5013" name="lava wall"/>
 	<item cid="5013" flags="p" id="5014" name="exotic butterfly">
@@ -9701,7 +9701,7 @@
 		<description value="The words 'Speak no evil' are engraved on it."/>
 	</item>
 
-	<item cid="5057-5060" flags="16777216" id="5057-5060" name="small snake head"/>
+	<item flags="16777216" id="5057-5060" name="small snake head"/>
 	<item flags="16777216" id="5061-5067" name="lava wall"/>
 	<item flags="16777216" id="5068-5070" name="electric sparks"/>
 	<item flags="16777217" id="5071-5073" name="electric iron bars"/>
@@ -9971,7 +9971,7 @@
 		<transformUseTo value="5144"/>
 	</item>
 
-	<item cid="5145-5154" flags="270339" id="5146-5148" name="framework wall"/>
+	<item cid="5145" flags="270339" id="5146-5148" name="framework wall"/>
 	<item cid="5148" flags="139267" id="5149-5151" name="framework wall"/>
 	<item cid="5151" flags="270339" id="5152-5153" name="framework wall"/>
 	<item cid="5153" flags="139267" id="5154-5155" name="framework wall"/>
@@ -9992,7 +9992,7 @@
 		<floorchange value="west"/>
 	</item>
 
-	<item cid="5260-5274" flags="139267" id="5261" name="wooden wall"/>
+	<item cid="5260" flags="139267" id="5261" name="wooden wall"/>
 	<item cid="5261" flags="270339" id="5262" name="wooden wall"/>
 	<item cid="5262" flags="tb" id="5263-5266" name="wooden wall"/>
 	<item cid="5266" flags="139267" id="5267" name="wooden wall"/>
@@ -10091,11 +10091,11 @@
 	<item cid="5307" flags="s" id="5308" name="white stone pillar"/>
 	<item cid="5308-5313" flags="s" id="5309-5314" name="white stone railing"/>
 	<item cid="5314-5319" flags="ts" id="5315-5320" name="wooden railing"/>
-	<item cid="5320-5330" flags="ts" id="5321-5324" name="wooden pillar"/>
+	<item cid="5320" flags="ts" id="5321-5324" name="wooden pillar"/>
 	<item cid="5324" flags="t" id="5325-5326" name="wooden pillar"/>
 	<item cid="5326" flags="ts" id="5327-5329" name="wooden pillar"/>
 	<item cid="5329" flags="t" id="5330-5331" name="wooden pillar"/>
-	<item cid="5331-5388" flags="1056769" id="5332-5389" name="sign"/>
+	<item cid="5331" flags="1056769" id="5332-5389" name="sign"/>
 	<item cid="5389-5390" flags="ts" id="5390-5391" name="tree"/>
 	<item cid="5391-5392" flags="ts" id="5392-5393" name="mangrove"/>
 	<item cid="5393" flags="16785409" id="5394" name="dry mangrove"/>
@@ -10108,17 +10108,17 @@
 	<item cid="2117-2117" flags="16785409" id="5402-5404" name="bamboo lamp"/>
 	<item cid="9291-5409" flags="16777216" id="5405-5410" name="shallow water" speed="500"/>
 	<item cid="5410-5411" flags="ts" id="5411-5412" name="stone"/>
-	<item cid="5412-5415" flags="16785409" id="5413" name="coral reef"/>
+	<item cid="5412" flags="16785409" id="5413" name="coral reef"/>
 	<item cid="5413" flags="ts" id="5414-5416" name="coral reef"/>
 	<item cid="5416" id="5417" name="sea star"/>
 	<item cid="5417" flags="16777216" id="5418" name="coral"/>
-	<item cid="5418-5419" flags="16785408" id="5419" name="bubbles"/>
+	<item cid="5418" flags="16785408" id="5419" name="bubbles"/>
 	<item cid="5419" flags="25174016" id="5420" name="bubbles"/>
 	<item cid="5420" flags="16777217" id="5421" name="algae"/>
 	<item cid="5421-5422" flags="ts" id="5422-5423" name="coral reef"/>
 	<item cid="5423-5424" flags="16785409" id="5424-5425" name="water wheel"/>
 	<item cid="5425" flags="ts" id="5426" name="stearing wheell"/>
-	<item cid="5426-5437" flags="t" id="5427-5434" name="shallow water"/>
+	<item cid="5426" flags="t" id="5427-5434" name="shallow water"/>
 	<item cid="5434" flags="8396800" id="5435-5438" name="shallow water"/>
 	<item cid="5438-5440" flags="ts" id="5439-5441" name="steering wheel"/>
 	<item cid="5441-5442" flags="tb" id="5442-5443" name="damaged mast"/>
@@ -10259,7 +10259,7 @@
 		<transformUseTo value="5517"/>
 	</item>
 
-	<item cid="5518-5519" flags="tb" id="5519" name="stone wall"/>
+	<item cid="5518" flags="tb" id="5519" name="stone wall"/>
 	<item cid="5519" flags="139267" id="5520" name="stone wall"/>
 	<item cid="5520" flags="ts" id="5521" name="wooden railing"/>
 	<item cid="5521" flags="m" id="5522" name="dead quara">
@@ -10681,7 +10681,7 @@
 	</item>
 
 	<item flags="ts" id="5750-5754" name="rocks"/>
-	<item cid="5755-5761" flags="16777216" id="5755-5756" name="turtle" speed="160"/>
+	<item flags="16777216" id="5755-5756" name="turtle" speed="160"/>
 	<item flags="16777217" id="5757-5761" name="turtle" speed="160"/>
 	<item flags="m" id="5762" name="dead quara">
 		<containerSize value="10"/>
@@ -10828,7 +10828,7 @@
 		<transformUseTo value="5812"/>
 	</item>
 
-	<item cid="5814-5827" flags="16777219" id="5814" name="melting ground"/>
+	<item flags="16777219" id="5814" name="melting ground"/>
 	<item flags="16777216" id="5815" name="melting ground"/>
 	<item flags="t" id="5816-5819" name="melting ground"/>
 	<item flags="8396800" id="5820-5823" name="melting ground"/>
@@ -10839,7 +10839,7 @@
 	<item id="5854-5855" name="lance"/>
 	<item id="5856-5857" name="weapon rack"/>
 	<item id="5858-5859" name="scimitar"/>
-	<item cid="5860-5863" flags="tb" id="5860-5863" name="armor rack"/>
+	<item flags="tb" id="5860-5863" name="armor rack"/>
 	<item flags="112" id="5865" name="juice squeezer">
 		<weight value="1500"/>
 	</item>
@@ -12407,12 +12407,12 @@
 		<showduration value="1"/>
 	</item>
 
-	<item cid="6132-6136" flags="139267" id="6133" name="tree wall"/>
+	<item cid="6132" flags="139267" id="6133" name="tree wall"/>
 	<item cid="6133" flags="tb" id="6134-6135" name="tree wall"/>
 	<item cid="6135" flags="270339" id="6136" name="tree wall"/>
 	<item cid="6136" flags="tb" id="6137" name="tree wall"/>
 	<item cid="6137" id="6138" name="roof"/>
-	<item cid="6138-6151" flags="tb" id="6139-6142" name="tree wall"/>
+	<item cid="6138" flags="tb" id="6139-6142" name="tree wall"/>
 	<item cid="6142" flags="139267" id="6143" name="tree wall"/>
 	<item cid="6143" flags="tb" id="6144" name="tree wall"/>
 	<item cid="6144" flags="270339" id="6145" name="tree wall"/>
@@ -12424,10 +12424,10 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="6174-6176" flags="t" id="6175-6176" name="tree archway"/>
+	<item cid="6174" flags="t" id="6175-6176" name="tree archway"/>
 	<item cid="6176" flags="ts" id="6177" name="tree archway"/>
 	<item cid="6177-6178" flags="ts" id="6178-6179" name="window"/>
-	<item cid="6179-6188" flags="s" id="6180-6181" name="tree"/>
+	<item cid="6179" flags="s" id="6180-6181" name="tree"/>
 	<item cid="6181" flags="t" id="6182-6189" name="tree"/>
 	<item cid="6189-6190" flags="ts" id="6190-6191" name="branch"/>
 	<item cid="6191" flags="s" id="6192" name="closed door">
@@ -12510,17 +12510,17 @@
 		<transformUseTo value="6208"/>
 	</item>
 
-	<item cid="6209-6214" id="6210" name="bamboo roof"/>
+	<item cid="6209" id="6210" name="bamboo roof"/>
 	<item cid="6210" flags="ts" id="6211-6212" name="bamboo roof"/>
 	<item cid="6212" id="6213" name="bamboo roof"/>
 	<item cid="6213" flags="ts" id="6214-6215" name="bamboo roof"/>
-	<item cid="6215-6218" id="6216-6217" name="grass"/>
+	<item cid="6215" id="6216-6217" name="grass"/>
 	<item cid="6217" flags="8388608" id="6218-6219" name="grass"/>
 	<item cid="6219-6224" id="6220-6225" name="branches"/>
 	<item cid="6225-6230" id="6226-6231" name="flower"/>
 	<item cid="6231-6232" flags="t" id="6232-6233" name="branch"/>
 	<item cid="6233-6236" flags="t" id="6234-6237" name="plant archway"/>
-	<item cid="6237-6247" flags="139267" id="6238" name="plant wall"/>
+	<item cid="6237" flags="139267" id="6238" name="plant wall"/>
 	<item cid="6238" flags="270339" id="6239" name="plant wall"/>
 	<item cid="6239" flags="tb" id="6240-6243" name="plant wall"/>
 	<item cid="6243" flags="139267" id="6244" name="plant wall"/>
@@ -13114,7 +13114,7 @@
 		<weight value="2500"/>
 	</item>
 
-	<item cid="6373-6385" flags="t" id="6374-6378" name="debris"/>
+	<item cid="6373" flags="t" id="6374-6378" name="debris"/>
 	<item cid="6378" flags="8396800" id="6379-6382" name="debris"/>
 	<item cid="6382" flags="t" id="6383-6386" name="debris"/>
 	<item cid="6386" flags="16480" id="6387" name="greeting card">
@@ -13154,7 +13154,7 @@
 	<item cid="6407-6411" flags="t" id="6408-6412" name="bone archway"/>
 	<item cid="6412" flags="ts" id="6413" name="bone pillar"/>
 	<item cid="6413-6414" flags="ts" id="6414-6415" name="bone window"/>
-	<item cid="6415-6421" flags="s" id="6416-6419" name="bone wall"/>
+	<item cid="6415" flags="s" id="6416-6419" name="bone wall"/>
 	<item cid="6419" flags="tb" id="6420-6421" name="bone wall"/>
 	<item cid="6421" flags="s" id="6422" name="bone wall"/>
 	<item cid="6422-6429" flags="t" id="6423-6430" name="tree"/>
@@ -13206,10 +13206,10 @@
 
 	<item cid="6471-6472" flags="ts" id="6472-6473" name="wooden window"/>
 	<item cid="6473-6474" id="6474-6475" name="planks"/>
-	<item cid="6475-6487" flags="t" id="6476-6480" name="debris"/>
+	<item cid="6475" flags="t" id="6476-6480" name="debris"/>
 	<item cid="6480" flags="8396800" id="6481-6484" name="debris"/>
 	<item cid="6484" flags="t" id="6485-6488" name="debris"/>
-	<item cid="6488-6489" flags="16777312" id="6489" name="christmas branch">
+	<item cid="6488" flags="16777312" id="6489" name="christmas branch">
 		<weight value="1800"/>
 	</item>
 
@@ -13249,7 +13249,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item cid="6502-6503" flags="16842848" id="6503" name="red christmas garland">
+	<item cid="6502" flags="16842848" id="6503" name="red christmas garland">
 		<weight value="500"/>
 	</item>
 
@@ -13288,7 +13288,7 @@
 	</item>
 
 	<item cid="6512" flags="16777216" id="6513" name="christmas wreath"/>
-	<item cid="6513-6514" flags="16777216" id="6514-6515" name="christmas garland"/>
+	<item cid="6513" flags="16777216" id="6514-6515" name="christmas garland"/>
 	<item cid="6515" id="6516" name="dead plaguesmith">
 		<containerSize value="18"/>
 		<decayTo value="6520"/>
@@ -13298,7 +13298,7 @@
 	</item>
 
 	<item cid="6516" flags="16777216" id="6517" name="christmas wreath"/>
-	<item cid="6517-6518" flags="16777216" id="6518-6519" name="christmas garland"/>
+	<item cid="6517" flags="16777216" id="6518-6519" name="christmas garland"/>
 	<item cid="6519" flags="m" id="6520" name="dead plaguesmith">
 		<containerSize value="18"/>
 		<decayTo value="6521"/>
@@ -13473,7 +13473,7 @@
 		<weight value="500"/>
 	</item>
 
-	<item cid="6562-6565" flags="ts" id="6562-6563" name="roof"/>
+	<item flags="ts" id="6562-6563" name="roof"/>
 	<item flags="t" id="6564" name="roof"/>
 	<item flags="ts" id="6565" name="roof"/>
 	<item flags="p" id="6566" name="stuffed dragon">
@@ -13555,8 +13555,8 @@
 	</item>
 
 	<item flags="t" id="6609" name="snow drift"/>
-	<item cid="6610-6626" flags="t" id="6610-6626" name="snow"/>
-	<item cid="6627-6682" flags="16785409" id="6627-6646" name="shallow water">
+	<item flags="t" id="6610-6626" name="snow"/>
+	<item flags="16785409" id="6627-6646" name="shallow water">
 		<allowpickupable value="1"/>
 		<fluidSource value="water"/>
 	</item>
@@ -13587,13 +13587,13 @@
 		<fluidSource value="water"/>
 	</item>
 
-	<item cid="6695-6718" flags="t" id="6695-6698" name="ice"/>
+	<item flags="t" id="6695-6698" name="ice"/>
 	<item flags="8396800" id="6699-6702" name="ice"/>
 	<item flags="t" id="6703-6706" name="ice"/>
 	<item flags="ts" id="6707-6714" name="ice"/>
 	<item flags="t" id="6715-6718" name="ice"/>
 	<item flags="tb" id="6719-6726" name="icy mountain"/>
-	<item cid="6727-6738" flags="tb" id="6727" name="ice wall"/>
+	<item flags="tb" id="6727" name="ice wall"/>
 	<item flags="139267" id="6728" name="ice wall"/>
 	<item flags="270339" id="6729" name="ice wall"/>
 	<item flags="tb" id="6730-6733" name="ice wall"/>
@@ -13601,23 +13601,23 @@
 	<item flags="tb" id="6735" name="ice wall"/>
 	<item flags="270339" id="6736" name="ice wall"/>
 	<item flags="tb" id="6737-6738" name="ice wall"/>
-	<item cid="6739-6749" flags="139267" id="6739" name="frozen wall"/>
+	<item flags="139267" id="6739" name="frozen wall"/>
 	<item flags="270339" id="6740" name="frozen wall"/>
 	<item flags="tb" id="6741-6744" name="frozen wall"/>
 	<item flags="139267" id="6745" name="frozen wall"/>
 	<item flags="tb" id="6746" name="frozen wall"/>
 	<item flags="270339" id="6747" name="frozen wall"/>
 	<item flags="tb" id="6748-6749" name="frozen wall"/>
-	<item cid="6750-6755" flags="ts" id="6750-6753" name="igloo"/>
+	<item flags="ts" id="6750-6753" name="igloo"/>
 	<item flags="t" id="6754-6755" name="igloo"/>
 	<item flags="t" id="6756-6760" name="snow"/>
 	<item flags="tb" id="6761-6762" name="frozen wall"/>
 	<item flags="t" id="6763-6767" name="ice archway"/>
 	<item flags="tb" id="6768-6772" name="ice wall"/>
-	<item cid="6773-6774" flags="139267" id="6773" name="fur wall"/>
+	<item flags="139267" id="6773" name="fur wall"/>
 	<item flags="270339" id="6774" name="fur wall"/>
 	<item flags="tb" id="6775" name="fur pillar"/>
-	<item cid="6776-6787" flags="tb" id="6776-6778" name="fur wall"/>
+	<item flags="tb" id="6776-6778" name="fur wall"/>
 	<item flags="139267" id="6779" name="fur wall"/>
 	<item flags="tb" id="6780" name="fur wall"/>
 	<item flags="270339" id="6781" name="fur wall"/>
@@ -13664,12 +13664,12 @@
 
 	<item flags="t" id="6803" name="fur archway"/>
 	<item flags="s" id="6804-6821" name="fur" speed="160"/>
-	<item cid="6822-6838" flags="tb" id="6822-6837" name="snow"/>
+	<item flags="tb" id="6822-6837" name="snow"/>
 	<item flags="b" id="6838" name="snow"/>
-	<item cid="6839-6840" flags="139267" id="6839" name="wooden wall"/>
+	<item flags="139267" id="6839" name="wooden wall"/>
 	<item flags="270339" id="6840" name="wooden wall"/>
 	<item flags="tb" id="6841" name="wooden pillar"/>
-	<item cid="6842-6849" flags="tb" id="6842-6844" name="wooden wall"/>
+	<item flags="tb" id="6842-6844" name="wooden wall"/>
 	<item flags="139267" id="6845" name="wooden wall"/>
 	<item flags="tb" id="6846" name="wooden wall"/>
 	<item flags="270339" id="6847" name="wooden wall"/>
@@ -13677,17 +13677,17 @@
 	<item flags="139267" id="6850" name="ornamented wall"/>
 	<item flags="139267" id="6851-6852" name="stone base"/>
 	<item flags="270339" id="6853" name="ornamented wall"/>
-	<item cid="6854-6856" flags="270339" id="6854-6855" name="stone base"/>
+	<item flags="270339" id="6854-6855" name="stone base"/>
 	<item flags="139267" id="6856" name="stone base"/>
 	<item flags="139267" id="6857" name="ornamented wall"/>
 	<item flags="270339" id="6858-6859" name="stone base"/>
 	<item flags="tb" id="6860" name="ornamented wall"/>
-	<item cid="6861-6867" flags="tb" id="6861-6862" name="stone base"/>
+	<item flags="tb" id="6861-6862" name="stone base"/>
 	<item flags="139267" id="6863" name="stone base"/>
 	<item flags="tb" id="6864" name="stone base"/>
 	<item flags="270339" id="6865" name="stone base"/>
 	<item flags="tb" id="6866-6867" name="stone base"/>
-	<item cid="6869-6881" flags="b" id="6869-6881" name="ice"/>
+	<item flags="b" id="6869-6881" name="ice"/>
 	<item flags="t" id="6882-6885" name="archway"/>
 	<item id="6886-6888" name="strut"/>
 	<item flags="s" id="6889-6890" name="tusks"/>
@@ -13795,10 +13795,10 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="6925-6937" flags="b" id="6925-6937" name="ice"/>
+	<item flags="b" id="6925-6937" name="ice"/>
 	<item id="6939-6950" name="snow"/>
 	<item id="6951-6952" name="ice"/>
-	<item cid="6953-6965" flags="s" id="6953-6959" name="ice railing"/>
+	<item flags="s" id="6953-6959" name="ice railing"/>
 	<item flags="t" id="6960" name="ice railing"/>
 	<item flags="s" id="6961" name="ice railing"/>
 	<item flags="t" id="6962" name="ice railing"/>
@@ -13941,10 +13941,10 @@
 	</item>
 
 	<item flags="t" id="7060-7061" name="ice archway"/>
-	<item cid="7062-7074" id="7062-7066" name="rock" speed="150"/>
+	<item id="7062-7066" name="rock" speed="150"/>
 	<item flags="t" id="7067-7070" name="rock" speed="150"/>
 	<item flags="8396800" id="7071-7074" name="rock" speed="150"/>
-	<item cid="7075-7090" flags="t" id="7075-7082" name="dark rock"/>
+	<item flags="t" id="7075-7082" name="dark rock"/>
 	<item flags="8396800" id="7083-7086" name="dark rock"/>
 	<item flags="t" id="7087-7090" name="dark rock"/>
 	<item id="7091" name="dead frost dragon">
@@ -13974,7 +13974,7 @@
 		<corpseType value="undead"/>
 	</item>
 
-	<item cid="7095-7101" flags="8396801" id="7095-7098" name="wooden railing"/>
+	<item flags="8396801" id="7095-7098" name="wooden railing"/>
 	<item flags="ts" id="7099-7101" name="wooden railing"/>
 	<item flags="tb" id="7102-7105" name="dirt wall"/>
 	<item flags="16777217" id="7106" name="water gazer"/>
@@ -13997,7 +13997,7 @@
 
 	<item flags="s" id="7142" name="bucket"/>
 	<item flags="t" id="7143-7144" name="wooden archway"/>
-	<item cid="7145-7157" flags="t" id="7145-7149" name="ice"/>
+	<item flags="t" id="7145-7149" name="ice"/>
 	<item flags="8396800" id="7150-7153" name="ice"/>
 	<item flags="t" id="7154-7157" name="ice"/>
 	<item flags="224" id="7158" name="rainbow trout">
@@ -14038,7 +14038,7 @@
 		<duration value="5"/>
 	</item>
 
-	<item cid="7185-7186" flags="t" id="7185" name="some crack"/>
+	<item flags="t" id="7185" name="some crack"/>
 	<item flags="ts" id="7186" name="some crack"/>
 	<item flags="16777217" id="7187-7188" name="raft" speed="1"/>
 	<item flags="ts" id="7189" name="case">
@@ -14048,7 +14048,7 @@
 	<item flags="16777217" id="7190-7199" name="raft" speed="1"/>
 	<item id="7200" name="fragile ice" speed="110"/>
 	<item flags="t" id="7201-7212" name="raft"/>
-	<item cid="7213-7227" flags="ts" id="7213-7214" name="ship rudder"/>
+	<item flags="ts" id="7213-7214" name="ship rudder"/>
 	<item flags="s" id="7215-7216" name="ship rudder"/>
 	<item flags="ts" id="7217" name="ship rudder"/>
 	<item flags="s" id="7218" name="ship rudder"/>
@@ -14162,7 +14162,7 @@
 
 	<item flags="ts" id="7261" name="plant"/>
 	<item flags="tb" id="7262-7263" name="roof"/>
-	<item cid="7264-7267" flags="ts" id="7264-7265" name="sled"/>
+	<item flags="ts" id="7264-7265" name="sled"/>
 	<item flags="8204" id="7266-7267" name="sled"/>
 	<item flags="16785409" id="7268-7271" name="husky"/>
 	<item id="7272" name="raft"/>
@@ -15424,7 +15424,7 @@
 		<duration value="60"/>
 	</item>
 
-	<item cid="190-192" flags="s" id="7546-7548" name="spider web"/>
+	<item cid="190" flags="s" id="7546-7548" name="spider web"/>
 	<item cid="197" flags="ts" id="7552" name="large seashell">
 		<description value="Maybe there's something inside of it."/>
 	</item>
@@ -15489,7 +15489,7 @@
 		<weight value="310"/>
 	</item>
 
-	<item cid="240-265" flags="tb" id="7592-7595" name="tent"/>
+	<item cid="240" flags="tb" id="7592-7595" name="tent"/>
 	<item cid="244" flags="t" id="7596-7599" name="tent"/>
 	<item cid="248" flags="s" id="7600" name="tent"/>
 	<item cid="249" flags="t" id="7601-7604" name="tent"/>
@@ -15627,7 +15627,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item cid="290-303" flags="t" id="7641-7644" name="rock ground"/>
+	<item cid="290" flags="t" id="7641-7644" name="rock ground"/>
 	<item cid="296" flags="8396800" id="7645-7648" name="rock ground"/>
 	<item cid="300" flags="t" id="7649-7652" name="rock ground"/>
 	<item cid="304-305" flags="t" id="7653-7654" name="grass"/>
@@ -15636,14 +15636,14 @@
 		<weight value="150"/>
 	</item>
 
-	<item cid="307-315" flags="t" id="7656" name="grass"/>
+	<item cid="307" flags="t" id="7656" name="grass"/>
 	<item cid="308" flags="8396800" id="7657-7660" name="grass"/>
 	<item cid="312" flags="t" id="7661-7664" name="grass"/>
 	<item cid="316" flags="p" id="7665" name="flower pot">
 		<weight value="2500"/>
 	</item>
 
-	<item cid="317-320" flags="t" id="7666" name="dirt"/>
+	<item cid="317" flags="t" id="7666" name="dirt"/>
 	<item cid="318" flags="8396800" id="7667-7669" name="dirt"/>
 	<item cid="321" flags="p" id="7670" name="flower pot">
 		<description value="The plant in there sprouted, but only gardeners might recognise what it will develop into."/>
@@ -16588,7 +16588,7 @@
 	<item cid="750" flags="9" id="7827" name="large telescope"/>
 	<item cid="751" flags="s" id="7828" name="astro clock"/>
 	<item cid="752-755" id="7829-7832" name="astronomical map"/>
-	<item cid="756-760" flags="t" id="7833-7834" name="ground"/>
+	<item cid="756" flags="t" id="7833-7834" name="ground"/>
 	<item cid="758" flags="8396800" id="7835" name="ground"/>
 	<item cid="759" flags="t" id="7836-7837" name="ground"/>
 	<item cid="761" flags="16777440" id="7838" name="flash arrow">
@@ -17422,20 +17422,20 @@
 	</item>
 
 	<item cid="1010-1011" flags="b" id="7975-7976" name="earth"/>
-	<item cid="1012-1024" flags="t" id="7977-7986" name="sparkling gems"/>
+	<item cid="1012" flags="t" id="7977-7986" name="sparkling gems"/>
 	<item cid="1025-1046" flags="tb" id="7987-8008" name="earth"/>
 	<item cid="1047-1048" flags="ts" id="8009-8010" name="bone"/>
 	<item cid="1049-1052" id="8011-8014" name="plants"/>
 	<item cid="1053" flags="tb" id="8015" name="earth"/>
-	<item cid="1087-1090" flags="tb" id="8017" name="earth"/>
+	<item cid="1087" flags="tb" id="8017" name="earth"/>
 	<item cid="1088" flags="t" id="8018-8019" name="earth"/>
 	<item cid="1090" flags="ts" id="8020" name="earth"/>
 	<item cid="1091-1098" flags="t" id="8021-8028" name="rifty earth"/>
 	<item cid="1700-1702" flags="t" id="8030-8032" name="rifty earth"/>
-	<item cid="1703-1715" flags="t" id="8033-8037" name="sand"/>
+	<item cid="1703" flags="t" id="8033-8037" name="sand"/>
 	<item cid="1708" flags="8396800" id="8038-8041" name="sand"/>
 	<item cid="1712" flags="t" id="8042-8045" name="sand"/>
-	<item cid="1724-1733" id="8048-8052" name="earth" speed="120"/>
+	<item cid="1724" id="8048-8052" name="earth" speed="120"/>
 	<item cid="1729" flags="t" id="8053-8057" name="earth" speed="120"/>
 	<item cid="1959" flags="16785412" id="8058" name="purple fire"/>
 	<item cid="1979" flags="t" id="8059" name="grave"/>
@@ -17484,17 +17484,17 @@
 	</item>
 
 	<item cid="3610-4393" flags="m" id="8113-8116" name=""/>
-	<item cid="4411-4432" flags="t" id="8117-8132" name="earth"/>
+	<item cid="4411" flags="t" id="8117-8132" name="earth"/>
 	<item cid="4427" flags="b" id="8133" name="earth"/>
 	<item cid="4428" flags="m" id="8134" name="earth"/>
 	<item cid="4429" flags="tb" id="8135-8138" name="earth"/>
 	<item cid="4433" flags="ts" id="8139" name="snowy birch tree"/>
-	<item cid="4434-4608" flags="t" id="8140" name="grass"/>
+	<item cid="4434" flags="t" id="8140" name="grass"/>
 	<item cid="4435" flags="8200" id="8141-8143" name="grass"/>
 	<item cid="4438" flags="t" id="8144" name="grass"/>
 	<item cid="4439" flags="8200" id="8145-8159" name="grass"/>
 	<item cid="4615-4620" flags="m" id="8160-8165" name=""/>
-	<item cid="4745-4746" flags="t" id="8166" name="grass"/>
+	<item cid="4745" flags="t" id="8166" name="grass"/>
 	<item cid="4746" flags="8200" id="8167" name="grass"/>
 	<item cid="4747-4748" flags="tb" id="8168-8169" name="earth"/>
 	<item cid="4824" flags="4" id="8170" name="stairs">
@@ -17570,7 +17570,7 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="7480-7492" flags="ts" id="8214-8226" name="jagged stones"/>
+	<item cid="7480" flags="ts" id="8214-8226" name="jagged stones"/>
 	<item cid="7493-7498" id="8227-8232" name="strange stone"/>
 	<item cid="7499-7502" id="8233-8236" name="dragon head"/>
 	<item cid="7503-7506" id="8237-8240" name="jagged stones"/>
@@ -17581,7 +17581,7 @@
 	</item>
 
 	<item cid="7519" flags="16777216" id="8253" name="something crawling"/>
-	<item cid="7520-7522" id="8254-8255" name="hole">
+	<item cid="7520" id="8254-8255" name="hole">
 		<floorchange value="down"/>
 	</item>
 
@@ -17786,12 +17786,12 @@
 
 	<item cid="957" flags="ts" id="8313" name="birch"/>
 	<item cid="958" flags="ts" id="8314" name="dead tree"/>
-	<item cid="959-966" flags="8" id="8315-8322" name="sand" speed="160"/>
+	<item cid="959" flags="8" id="8315-8322" name="sand" speed="160"/>
 	<item cid="967" id="8323" name="hole" speed="160"/>
 	<item cid="968-969" flags="ts" id="8324-8325" name="heap of sand"/>
 	<item cid="970-978" id="8326-8334" name="dried grass" speed="150"/>
 	<item cid="979-991" flags="t" id="8335-8346" name="sand"/>
-	<item cid="992-1005" id="8347-8348" name="dried grass" speed="150"/>
+	<item cid="992" id="8347-8348" name="dried grass" speed="150"/>
 	<item cid="994" flags="t" id="8349-8350" name="dried grass" speed="150"/>
 	<item cid="996" flags="8396800" id="8351-8354" name="dried grass" speed="150"/>
 	<item cid="1000" flags="t" id="8355-8360" name="dried grass" speed="150"/>
@@ -17841,7 +17841,7 @@
 	<item cid="7572" flags="s" id="8402" name="bone claw"/>
 	<item cid="7573" flags="s" id="8403" name="bone"/>
 	<item cid="7574-7575" flags="s" id="8404-8405" name="skull"/>
-	<item cid="7576-7585" flags="s" id="8406-8415" name="bones"/>
+	<item cid="7576" flags="s" id="8406-8415" name="bones"/>
 	<item cid="7586-7587" flags="ts" id="8416-8417" name="heap of sand"/>
 	<item cid="7588-7591" flags="ts" id="8418-8421" name="hydra statue"/>
 	<item cid="7592" flags="ts" id="8422" name="druid statue"/>
@@ -17867,7 +17867,7 @@
 		<weight value="265"/>
 	</item>
 
-	<item cid="7645-7687" flags="139267" id="8475" name="stone wall"/>
+	<item cid="7645" flags="139267" id="8475" name="stone wall"/>
 	<item cid="7646" flags="270339" id="8476" name="stone wall"/>
 	<item cid="7647" flags="tb" id="8477-8480" name="stone wall"/>
 	<item cid="7651" flags="139267" id="8481" name="stone wall"/>
@@ -17884,7 +17884,7 @@
 	<item cid="7669" flags="139267" id="8499-8504" name="stone wall"/>
 	<item cid="7675" flags="tb" id="8505-8508" name="stone wall"/>
 	<item cid="7679" flags="270339" id="8509-8517" name="stone wall"/>
-	<item cid="7688-7695" flags="tb" id="8518-8521" name="decorated stone wall"/>
+	<item cid="7688" flags="tb" id="8518-8521" name="decorated stone wall"/>
 	<item cid="7692" flags="139267" id="8522-8523" name="decorated stone wall"/>
 	<item cid="7694" flags="270339" id="8524-8525" name="decorated stone wall"/>
 	<item cid="7696-7703" id="8526-8533" name="gem"/>
@@ -18100,21 +18100,21 @@
 	<item cid="7804" flags="16785412" id="8632" name="water vortex"/>
 	<item cid="7805-7808" flags="ts" id="8633-8636" name="large crystal"/>
 	<item cid="7809-7812" flags="ts" id="8637-8640" name="crystal"/>
-	<item cid="7813-7814" flags="16785409" id="8641" name="crucible"/>
+	<item cid="7813" flags="16785409" id="8641" name="crucible"/>
 	<item cid="7814" flags="ts" id="8642" name="crucible"/>
-	<item cid="7815-7820" flags="16785409" id="8643" name="mould"/>
+	<item cid="7815" flags="16785409" id="8643" name="mould"/>
 	<item cid="7816" flags="16785408" id="8644" name="mould"/>
 	<item cid="7817" flags="16785409" id="8645" name="mould"/>
 	<item cid="7818" flags="ts" id="8646-8647" name="mould"/>
 	<item cid="7820" flags="t" id="8648" name="mould"/>
-	<item cid="7821-7840" flags="16785409" id="8649-8652" name="steaming hot lava"/>
+	<item cid="7821" flags="16785409" id="8649-8652" name="steaming hot lava"/>
 	<item cid="7825" flags="ts" id="8653-8656" name="steaming hot lava"/>
 	<item cid="7829" flags="t" id="8657-8662" name="steaming hot lava"/>
 	<item cid="7835" flags="16785409" id="8663-8668" name="steaming hot lava"/>
 	<item cid="7841-7842" flags="16785409" id="8669-8670" name="bellow"/>
 	<item cid="7843" flags="ts" id="8671" name="anzil"/>
 	<item cid="7844-7845" flags="16777216" id="8672-8673" name="steaming hot lava"/>
-	<item cid="7846-7849" flags="16777216" id="8674-8677" name="muzzle"/>
+	<item cid="7846" flags="16777216" id="8674-8677" name="muzzle"/>
 	<item cid="7850-7851" id="8678-8679" name="armor parts"/>
 	<item cid="7852-7853" id="8680-8681" name="tool parts"/>
 	<item cid="7854-7855" id="8682-8683" name="armor parts"/>
@@ -18335,7 +18335,7 @@
 	<item cid="7941" flags="s" id="8769" name="closed door">
 	</item>
 
-	<item cid="7942-7948" flags="ts" id="8770-8772" name="demon oak"/>
+	<item cid="7942" flags="ts" id="8770-8772" name="demon oak"/>
 	<item cid="7945" flags="16785409" id="8773-8776" name="demon oak"/>
 	<item cid="7949-7950" flags="ts" id="8777-8778" name="sorcerer statue"/>
 	<item cid="7951-7952" flags="ts" id="8779-8780" name="statue">
@@ -18346,7 +18346,7 @@
 	<item cid="7957-7963" flags="ts" id="8785-8791" name="damaged tree"/>
 	<item cid="7964-7968" flags="ts" id="8792-8796" name="damaged palm tree"/>
 	<item cid="7969" flags="ts" id="8797" name="tree"/>
-	<item cid="7970-7990" flags="ts" id="8798-8818" name="dead tree"/>
+	<item cid="7970" flags="ts" id="8798-8818" name="dead tree"/>
 	<item cid="7991" flags="p" id="8819" name="magician's robe">
 		<description value="This robe feels soft and light as a feather."/>
 		<weight value="2500"/>
@@ -18372,7 +18372,7 @@
 		<weight value="1800"/>
 	</item>
 
-	<item cid="7996-8005" flags="t" id="8824-8833" name="sparkling gems"/>
+	<item cid="7996" flags="t" id="8824-8833" name="sparkling gems"/>
 	<item cid="8006-8007" flags="ts" id="8834-8835" name="sorcerer statue">
 		<description value="Nothing is written on it."/>
 	</item>
@@ -19318,7 +19318,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item cid="8158-8173" flags="t" id="8986-9001" name="tree"/>
+	<item cid="8158" flags="t" id="8986-9001" name="tree"/>
 	<item cid="8174" flags="p" id="9002" name="Tibiacity Encyclopedia">
 		<description value="It contains all the knowledge of Tibia."/>
 		<weight value="1337"/>
@@ -19428,9 +19428,9 @@
 	<item cid="5025" flags="ts" id="9084" name="iron pillar"/>
 	<item cid="5026" flags="ts" id="9085" name="iron construction"/>
 	<item cid="5027" flags="ts" id="9086" name="thread of screw"/>
-	<item cid="5028-5030" flags="ts" id="9087-9088" name="screw"/>
+	<item cid="5028" flags="ts" id="9087-9088" name="screw"/>
 	<item cid="5030" flags="s" id="9089" name="screw"/>
-	<item cid="5031-5032" flags="s" id="9090" name="thread of screw"/>
+	<item cid="5031" flags="s" id="9090" name="thread of screw"/>
 	<item cid="5032" flags="9" id="9091" name="thread of screw"/>
 	<item cid="5033" flags="tb" id="9092" name="roof">
 		<floorchange value="east"/>
@@ -19451,7 +19451,7 @@
 		<floorchange value="south"/>
 	</item>
 
-	<item cid="5040-5403" flags="tb" id="9099" name="roof"/>
+	<item cid="5040" flags="tb" id="9099" name="roof"/>
 	<item cid="5041" flags="s" id="9100-9101" name="roof"/>
 	<item cid="5043" flags="tb" id="9102-9103" name="roof"/>
 	<item cid="5401" flags="s" id="9104-9105" name="roof"/>
@@ -19508,7 +19508,7 @@
 		<weight value="790"/>
 	</item>
 
-	<item cid="8201-8216" flags="139267" id="9118" name="stone wall"/>
+	<item cid="8201" flags="139267" id="9118" name="stone wall"/>
 	<item cid="8202" flags="270339" id="9119" name="stone wall"/>
 	<item cid="8203" flags="tb" id="9120-9123" name="stone wall"/>
 	<item cid="8207" flags="139267" id="9124" name="stone wall"/>
@@ -19523,7 +19523,7 @@
 		<weight value="890"/>
 	</item>
 
-	<item cid="8226-8227" flags="139267" id="9142" name="stone wall"/>
+	<item cid="8226" flags="139267" id="9142" name="stone wall"/>
 	<item cid="8227" flags="270339" id="9143" name="stone wall"/>
 	<item cid="8228-8230" id="9144-9146" name="white marble floor"/>
 	<item cid="8243-8248" flags="t" id="9159-9164" name="archway"/>
@@ -19607,7 +19607,7 @@
 		<transformUseTo value="9181"/>
 	</item>
 
-	<item cid="8267-8270" flags="270339" id="9183-9184" name="stone wall"/>
+	<item cid="8267" flags="270339" id="9183-9184" name="stone wall"/>
 	<item cid="8269" flags="139267" id="9185-9187" name="stone wall"/>
 	<item cid="8272" flags="270339" id="9188" name="stone wall"/>
 	<item cid="8273" flags="ts" id="9189-9190" name="stone wall"/>
@@ -19616,7 +19616,7 @@
 	</item>
 
 	<item cid="8276-8290" id="9192-9206" name="iron floor"/>
-	<item cid="8291-8307" flags="139267" id="9207-9209" name="iron wall"/>
+	<item cid="8291" flags="139267" id="9207-9209" name="iron wall"/>
 	<item cid="8294" flags="270339" id="9210-9212" name="iron wall"/>
 	<item cid="8297" flags="tb" id="9213-9216" name="iron wall"/>
 	<item cid="8301" flags="139267" id="9217" name="iron wall"/>
@@ -19625,11 +19625,11 @@
 	<item cid="8304" flags="tb" id="9220-9221" name="iron wall"/>
 	<item cid="8306" flags="139267" id="9222" name="iron wall"/>
 	<item cid="8307" flags="270339" id="9223" name="iron wall"/>
-	<item cid="8308-8318" id="9224-9232" name="wooden floor"/>
+	<item cid="8308" id="9224-9232" name="wooden floor"/>
 	<item cid="8317" flags="8396801" id="9233-9234" name="wooden floor"/>
 	<item cid="8319-8322" flags="ts" id="9235-9238" name="sun clock"/>
 	<item cid="8323-8324" flags="ts" id="9239-9240" name="vampire bride statue"/>
-	<item cid="8325-8326" flags="ts" id="9241" name="vampire lord statue"/>
+	<item cid="8325" flags="ts" id="9241" name="vampire lord statue"/>
 	<item cid="8326" flags="16785409" id="9242" name="vampire lord statue"/>
 	<item cid="8327-8328" flags="ts" id="9243-9244" name="statue"/>
 	<item cid="8329-8332" flags="t" id="9245-9248" name="metal pieces"/>
@@ -19717,7 +19717,7 @@
 	</item>
 
 	<item cid="8369-8371" flags="t" id="9285-9287" name="archway"/>
-	<item cid="8372-8377" flags="tb" id="9288" name="stone wall"/>
+	<item cid="8372" flags="tb" id="9288" name="stone wall"/>
 	<item cid="8373" flags="270339" id="9289-9291" name="stone wall"/>
 	<item cid="8376" flags="139267" id="9292-9293" name="stone wall"/>
 	<item cid="8378-8383" flags="tb" id="9294-9299" name="broken stone wall"/>
@@ -19745,7 +19745,7 @@
 
 	<item cid="8454-8470" flags="tb" id="9370-9386" name="stone wall"/>
 	<item cid="8471-8476" flags="s" id="9387-9392" name="stone railing"/>
-	<item cid="8477-8488" flags="s" id="9393-9398" name="small tower"/>
+	<item cid="8477" flags="s" id="9393-9398" name="small tower"/>
 	<item cid="8483" flags="ts" id="9399" name="small tower"/>
 	<item cid="8484" flags="s" id="9400-9404" name="small tower"/>
 	<item cid="8489-8498" flags="s" id="9405-9414" name="stone wall"/>
@@ -19773,7 +19773,7 @@
 	<item cid="8544-8549" id="9460-9465" name="eaves gutter"/>
 	<item cid="8550-8553" flags="ts" id="9466-9469" name="rain barrel"/>
 	<item cid="8554" flags="tb" id="9470" name="palisade"/>
-	<item cid="8555-8570" flags="s" id="9471-9484" name="gate"/>
+	<item cid="8555" flags="s" id="9471-9484" name="gate"/>
 	<item cid="8569" flags="b" id="9485-9486" name="gate"/>
 	<item cid="8571-8578" flags="s" id="9487-9494" name="stone gargoyle"/>
 	<item cid="8579-8586" id="9495-9502" name="banner"/>
@@ -19789,7 +19789,7 @@
 	<item cid="8615" flags="s" id="9531" name="mechanism"/>
 	<item cid="8616-8617" flags="b" id="9532-9533" name="gate"/>
 	<item cid="8618" flags="s" id="9534" name="mechanism"/>
-	<item cid="8619-8644" id="9535-9536" name="roof" speed="160"/>
+	<item cid="8619" id="9535-9536" name="roof" speed="160"/>
 	<item cid="8621" flags="s" id="9537-9560" name="roof" speed="160"/>
 	<item cid="8645" flags="ts" id="9561" name="piano"/>
 	<item cid="8646-8650" id="9562-9566" name="large gem"/>
@@ -19841,7 +19841,7 @@
 	<item cid="8670-8671" flags="16777216" id="9586-9587" name="water"/>
 	<item cid="8672-8679" flags="ts" id="9588-9595" name="large well"/>
 	<item cid="8680" flags="ts" id="9596" name="stone pedestal"/>
-	<item cid="8681-8683" flags="16785409" id="9597" name="statue"/>
+	<item cid="8681" flags="16785409" id="9597" name="statue"/>
 	<item cid="8682" flags="16777217" id="9598-9599" name="statue"/>
 	<item cid="8684" flags="16785409" id="9600" name="water"/>
 	<item cid="8685-8688" flags="ts" id="9601-9604" name="large well"/>
@@ -19850,7 +19850,7 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="8691-8694" flags="tb" id="9607-9608" name="small balcony"/>
+	<item cid="8691" flags="tb" id="9607-9608" name="small balcony"/>
 	<item cid="8693" flags="s" id="9609-9610" name="small balcony"/>
 	<item cid="8695-8707" flags="t" id="9611-9623" name="old carpet"/>
 	<item cid="8708" id="9624" name="closed trapdoor">
@@ -20031,7 +20031,7 @@
 	<item cid="8785-8792" flags="16777216" id="9700-9707" name="acid"/>
 	<item cid="8793-8798" id="9708-9713" name="burnt wall"/>
 	<item cid="8799-8804" flags="ts" id="9714-9719" name="mosaik"/>
-	<item cid="8805-8811" flags="ts" id="9720-9725" name="large window"/>
+	<item cid="8805" flags="ts" id="9720-9725" name="large window"/>
 	<item cid="8811" flags="b" id="9726" name="large window"/>
 	<item cid="8812-8813" flags="t" id="9727-9728" name="stone"/>
 	<item cid="8814-8815" id="9729-9730" name="small window"/>
@@ -20053,7 +20053,7 @@
 		<weight value="900"/>
 	</item>
 
-	<item cid="8822-8825" flags="112" id="9737" name="ghost charm">
+	<item cid="8822" flags="112" id="9737" name="ghost charm">
 		<weight value="900"/>
 	</item>
 
@@ -20106,12 +20106,12 @@
 
 	<item cid="8836-8837" flags="ts" id="9751-9752" name="statue"/>
 	<item cid="8838-8843" flags="ts" id="9753-9758" name="tree"/>
-	<item cid="8844-8851" flags="b" id="9759-9762" name="roof" speed="1"/>
+	<item cid="8844" flags="b" id="9759-9762" name="roof" speed="1"/>
 	<item cid="8848" flags="t" id="9763-9766" name="roof" speed="1"/>
 	<item cid="8852" flags="s" id="9767" name="strange apparatus"/>
 	<item cid="8854-8855" flags="16785409" id="9768-9769" name="street lamp"/>
 	<item cid="8856-8857" flags="16777216" id="9770-9771" name="wall lamp"/>
-	<item cid="8858-8859" flags="16777217" id="9772" name="ghost charm">
+	<item cid="8858" flags="16777217" id="9772" name="ghost charm">
 		<description value="You can see the other side through it."/>
 		<weight value="900"/>
 	</item>
@@ -20284,7 +20284,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item cid="8924-8931" flags="65536" id="9838" name="wall lamp"/>
+	<item cid="8924" flags="65536" id="9838" name="wall lamp"/>
 	<item cid="8925" flags="16842752" id="9839" name="wall lamp"/>
 	<item cid="8926" flags="65536" id="9840" name="wall lamp"/>
 	<item cid="8927" flags="16842752" id="9841" name="wall lamp"/>
@@ -20417,27 +20417,27 @@
 		<effect value="fire"/>
 	</item>
 
-	<item cid="8970-8971" flags="s" id="9884" name="strange apparatus"/>
+	<item cid="8970" flags="s" id="9884" name="strange apparatus"/>
 	<item cid="8971" flags="16777217" id="9885" name="strange apparatus"/>
 	<item cid="8972" flags="s" id="9886" name="broken apparatus"/>
-	<item cid="8973-8976" flags="s" id="9887" name="strange apparatus"/>
+	<item cid="8973" flags="s" id="9887" name="strange apparatus"/>
 	<item cid="8974" flags="16777217" id="9888" name="strange apparatus"/>
 	<item cid="8975" flags="s" id="9889" name="strange apparatus"/>
 	<item cid="8976" flags="16777217" id="9890" name="strange apparatus"/>
 	<item cid="8977" flags="s" id="9891" name="broken apparatus"/>
-	<item cid="8978-8979" flags="s" id="9892" name="strange apparatus"/>
+	<item cid="8978" flags="s" id="9892" name="strange apparatus"/>
 	<item cid="8979" flags="16777217" id="9893" name="strange apparatus"/>
 	<item cid="8980" flags="s" id="9894" name="broken apparatus"/>
-	<item cid="8981-8982" flags="s" id="9895" name="strange machine"/>
+	<item cid="8981" flags="s" id="9895" name="strange machine"/>
 	<item cid="8982" flags="16777217" id="9896" name="strange machine"/>
 	<item cid="8983" flags="s" id="9897" name="broken machine"/>
-	<item cid="8984-8985" flags="s" id="9898" name="strange machine"/>
+	<item cid="8984" flags="s" id="9898" name="strange machine"/>
 	<item cid="8985" flags="16777217" id="9899" name="strange machine"/>
 	<item cid="8986" flags="s" id="9900" name="broken machine"/>
-	<item cid="8987-8988" flags="s" id="9901" name="strange machine"/>
+	<item cid="8987" flags="s" id="9901" name="strange machine"/>
 	<item cid="8988" flags="16777217" id="9902" name="strange machine"/>
 	<item cid="8989" flags="s" id="9903" name="broken machine"/>
-	<item cid="8990-8991" flags="s" id="9904" name="strange machine"/>
+	<item cid="8990" flags="s" id="9904" name="strange machine"/>
 	<item cid="8991" flags="16777217" id="9905" name="strange machine"/>
 	<item cid="8992" flags="s" id="9906" name="broken machine"/>
 	<item cid="8993-8994" flags="s" id="9907-9908" name="weird machine"/>
@@ -21053,7 +21053,7 @@
 	<item cid="9116" flags="t" id="10035" name="ladder"/>
 	<item cid="9119" flags="16785409" id="10038" name="crucible"/>
 	<item cid="9121-9121" id="10039-10040" name="bellow"/>
-	<item cid="9122-9124" flags="ts" id="10041" name="crucible"/>
+	<item cid="9122" flags="ts" id="10041" name="crucible"/>
 	<item cid="9123" flags="16785409" id="10042-10043" name="crucible"/>
 	<item cid="9125" id="10044" name="lever">
 		<transformUseTo value="10045"/>
@@ -21122,7 +21122,7 @@
 		<weight value="800"/>
 	</item>
 
-	<item cid="9144-9145" flags="p" id="10063" name="Epaminondas doll">
+	<item cid="9144" flags="p" id="10063" name="Epaminondas doll">
 		<description value="He talks, moves and sings just like a real person."/>
 		<weight value="777"/>
 	</item>
@@ -21454,7 +21454,7 @@
 	</item>
 
 	<item cid="9258" id="10176" name="dirt"/>
-	<item cid="9259-9269" flags="139267" id="10177" name="limestone wall"/>
+	<item cid="9259" flags="139267" id="10177" name="limestone wall"/>
 	<item cid="9260" flags="270339" id="10178" name="limestone wall"/>
 	<item cid="9261" flags="tb" id="10179-10182" name="limestone wall"/>
 	<item cid="9265" flags="139267" id="10183" name="limestone wall"/>
@@ -21467,7 +21467,7 @@
 	<item cid="9276" flags="s" id="10194" name="limestone railing"/>
 	<item cid="9277-9278" flags="270339" id="10195-10196" name="stone wall"/>
 	<item cid="9279" flags="s" id="10197" name="limestone railing"/>
-	<item cid="9280-9285" flags="ts" id="10198-10199" name="limestone pillar"/>
+	<item cid="9280" flags="ts" id="10198-10199" name="limestone pillar"/>
 	<item cid="9282" flags="s" id="10200-10203" name="limestone pillar"/>
 	<item cid="9286-9289" id="10204-10207" name="limestone wall"/>
 	<item cid="9292" flags="ts" id="10209" name="Carlin banner"/>
@@ -21525,7 +21525,7 @@
 		<weight value="820"/>
 	</item>
 
-	<item cid="9309-9331" flags="139267" id="10226" name="framework wall"/>
+	<item cid="9309" flags="139267" id="10226" name="framework wall"/>
 	<item cid="9310" flags="270339" id="10227" name="framework wall"/>
 	<item cid="9311" flags="tb" id="10228-10231" name="framework wall"/>
 	<item cid="9315" flags="139267" id="10232" name="framework wall"/>
@@ -21536,7 +21536,7 @@
 	<item cid="9325" flags="139267" id="10242-10244" name="framework wall"/>
 	<item cid="9328" flags="270339" id="10245-10246" name="framework wall"/>
 	<item cid="9330" flags="139267" id="10247-10248" name="framework wall"/>
-	<item cid="9332-9344" flags="139267" id="10249" name="stone wall"/>
+	<item cid="9332" flags="139267" id="10249" name="stone wall"/>
 	<item cid="9333" flags="270339" id="10250" name="stone wall"/>
 	<item cid="9334" flags="tb" id="10251-10254" name="stone wall"/>
 	<item cid="9338" flags="139267" id="10255" name="stone wall"/>
@@ -22204,7 +22204,7 @@
 		<rotateTo value="2581"/>
 	</item>
 
-	<item cid="9622-9623" id="10538" name="slain death blob">
+	<item cid="9622" id="10538" name="slain death blob">
 		<containerSize value="10"/>
 	</item>
 
@@ -22440,19 +22440,19 @@
 		<weight value="3500"/>
 	</item>
 
-	<item cid="9700-9719" id="10617-10624" name="dirt mud" speed="110"/>
+	<item cid="9700" id="10617-10624" name="dirt mud" speed="110"/>
 	<item cid="9708" flags="t" id="10625-10636" name="dirt mud" speed="110"/>
-	<item cid="9720-9732" id="10637" name="sand" speed="160"/>
+	<item cid="9720" id="10637" name="sand" speed="160"/>
 	<item cid="9721" flags="t" id="10638-10649" name="sand" speed="160"/>
 	<item cid="9733-9773" flags="tb" id="10650-10690" name="zaoan wall"/>
-	<item cid="9774-9791" flags="s" id="10691-10699" name="zaoan decoration"/>
+	<item cid="9774" flags="s" id="10691-10699" name="zaoan decoration"/>
 	<item cid="9783" flags="ts" id="10700-10701" name="zaoan decoration"/>
 	<item cid="9785" flags="t" id="10702-10703" name="zaoan decoration"/>
 	<item cid="9787" flags="s" id="10704" name="zaoan decoration"/>
 	<item cid="9788" flags="t" id="10705-10708" name="zaoan decoration"/>
 	<item cid="9792-9793" flags="s" id="10709-10710" name="serpent's statue"/>
 	<item cid="9794-9795" flags="s" id="10711-10712" name="dragon statue"/>
-	<item cid="9796-9801" flags="s" id="10713-10718" name="serpent decoration"/>
+	<item cid="9796" flags="s" id="10713-10718" name="serpent decoration"/>
 	<item cid="9802-9803" flags="16777312" id="10719-10720" name="friendship amulet">
 		<description value="It shines as beautifully as a good friendship. This amulet was rewarded by Tibiafriends."/>
 		<weight value="520"/>
@@ -22461,7 +22461,7 @@
 	<item cid="9804" flags="t" id="10721" name="zaoan decoration"/>
 	<item cid="9805-9806" flags="t" id="10722-10723" name="skull decoration"/>
 	<item cid="9807-9808" flags="t" id="10724-10725" name="lizard statue"/>
-	<item cid="9809-9810" id="10726" name="zaoan decoration"/>
+	<item cid="9809" id="10726" name="zaoan decoration"/>
 	<item cid="9810" flags="t" id="10727" name="zaoan decoration"/>
 	<item cid="9811" flags="ts" id="10728" name="dragonbone tree"/>
 	<item cid="9812" flags="ts" id="10729" name="tree"/>
@@ -22471,12 +22471,12 @@
 	<item cid="9816" flags="ts" id="10733" name="jade plant"/>
 	<item cid="9817" flags="ts" id="10734" name="thornpeak grass"/>
 	<item cid="9818-9819" flags="ts" id="10735-10736" name="pepper root grass"/>
-	<item cid="9820-9823" id="10737-10738" name="pepper grass"/>
+	<item cid="9820" id="10737-10738" name="pepper grass"/>
 	<item cid="9822" flags="8388608" id="10739-10740" name="pepper grass"/>
-	<item cid="9824-9826" flags="t" id="10741" name="trollhair plants"/>
+	<item cid="9824" flags="t" id="10741" name="trollhair plants"/>
 	<item cid="9825" flags="s" id="10742-10743" name="trollhair plants"/>
 	<item cid="9827-9834" flags="ts" id="10744-10751" name="plant's hedge"/>
-	<item cid="9835-9842" flags="ts" id="10752-10755" name="diabolic's hedge"/>
+	<item cid="9835" flags="ts" id="10752-10755" name="diabolic's hedge"/>
 	<item cid="9839" flags="16785409" id="10756-10759" name="diabolic's hedge"/>
 	<item cid="9843" flags="112" id="10760" name="flask with beaver bait">
 		<description value="It smells like a mixture of wood and fish. Phew"/>
@@ -22484,7 +22484,7 @@
 	</item>
 
 	<item cid="9844-9845" id="10761-10762" name="wild wine"/>
-	<item cid="9846-9847" flags="ts" id="10763" name="pepper root grass"/>
+	<item cid="9846" flags="ts" id="10763" name="pepper root grass"/>
 	<item cid="9847" flags="s" id="10764" name="pepper root grass"/>
 	<item cid="9848-9857" id="10765-10774" name="stone floor"/>
 	<item cid="9858" flags="s" id="10775" name="closed door">
@@ -22569,7 +22569,7 @@
 	<item cid="9901-9910" flags="tb" id="10818-10827" name="stone wall"/>
 	<item cid="9911-9912" flags="s" id="10828-10829" name="zaoan decoration"/>
 	<item cid="9913-9928" flags="tb" id="10830-10845" name="stone wall"/>
-	<item cid="9929-9951" id="10846-10856" name="serpent ground"/>
+	<item cid="9929" id="10846-10856" name="serpent ground"/>
 	<item cid="9940" flags="8396800" id="10857-10868" name="serpent ground"/>
 	<item cid="9952-9954" flags="ts" id="10869-10871" name="bush"/>
 	<item cid="9955-9956" flags="ts" id="10872-10873" name="hand plant"/>
@@ -22577,9 +22577,9 @@
 	<item cid="9959" flags="ts" id="10876" name="throatslitter"/>
 	<item cid="9960-9961" flags="ts" id="10877-10878" name="rattleleaf bush"/>
 	<item cid="9963-9966" flags="b" id="10880-10883" name="defense construction"/>
-	<item cid="9967-9979" id="10884" name="scale roof" speed="160"/>
+	<item cid="9967" id="10884" name="scale roof" speed="160"/>
 	<item cid="9968" flags="s" id="10885-10896" name="scale roof" speed="160"/>
-	<item cid="9980-9991" flags="s" id="10897-10905" name="serpent decoration"/>
+	<item cid="9980" flags="s" id="10897-10905" name="serpent decoration"/>
 	<item cid="9989" flags="16777217" id="10906" name="serpent decoration"/>
 	<item cid="9990" flags="s" id="10907-10908" name="serpent decoration"/>
 	<item cid="9992-9994" flags="s" id="10909-10911" name="horn decoration"/>
@@ -22599,9 +22599,9 @@
 		<weight value="680"/>
 	</item>
 
-	<item cid="10012-10021" id="10929-10931" name="zaoan decoration"/>
+	<item cid="10012" id="10929-10931" name="zaoan decoration"/>
 	<item cid="10015" flags="s" id="10932-10938" name="zaoan decoration"/>
-	<item cid="10022-10024" flags="s" id="10939-10941" name="horn decoration"/>
+	<item cid="10022" flags="s" id="10939-10941" name="horn decoration"/>
 	<item cid="10025" flags="p" id="10942" name="almanac of magic">
 		<description value="Invaluable for all magic research."/>
 		<weight value="5555"/>
@@ -22628,7 +22628,7 @@
 	<item cid="10037-10038" flags="ts" id="10954-10955" name="banner"/>
 	<item cid="10039-10040" flags="ts" id="10956-10957" name="dragon banner"/>
 	<item cid="10041-10042" flags="ts" id="10958-10959" name="banner"/>
-	<item cid="10043-10045" flags="ts" id="10960" name="lance"/>
+	<item cid="10043" flags="ts" id="10960" name="lance"/>
 	<item cid="10044" flags="b" id="10961-10962" name="lance"/>
 	<item cid="10046-10047" id="10963-10964" name="dragon banner"/>
 	<item cid="10048-10049" id="10965-10966" name="banner"/>
@@ -22684,14 +22684,14 @@
 	<item cid="10090-10095" flags="b" id="11007-11012" name="banner"/>
 	<item cid="10096" flags="s" id="11013" name="stacke"/>
 	<item cid="10097" flags="m" id="11014" name="pepper grass"/>
-	<item cid="10099-10110" flags="8396800" id="11016-11023" name="mud sand"/>
+	<item cid="10099" flags="8396800" id="11016-11023" name="mud sand"/>
 	<item cid="10107" flags="t" id="11024-11027" name="mud sand"/>
 	<item cid="10111" id="11028" name="pepper grass"/>
 	<item cid="10112" id="11029" name="mud sand grass"/>
-	<item cid="10113-10125" flags="16777216" id="11030" name="water" speed="200"/>
+	<item cid="10113" flags="16777216" id="11030" name="water" speed="200"/>
 	<item cid="10114" flags="t" id="11031-11038" name="water" speed="200"/>
 	<item cid="10122" flags="16785408" id="11039-11042" name="water" speed="200"/>
-	<item cid="10126-10133" flags="s" id="11043-11050" name="rice"/>
+	<item cid="10126" flags="s" id="11043-11050" name="rice"/>
 	<item cid="10134-10139" flags="m" id="11051-11056" name="skull stone"/>
 	<item cid="10140" id="11057" name="demonic residue"/>
 	<item cid="10141-10144" flags="s" id="11058-11061" name="gate"/>
@@ -22705,7 +22705,7 @@
 		<weight value="2180"/>
 	</item>
 
-	<item cid="10160-10171" id="11077" name="sand" speed="120"/>
+	<item cid="10160" id="11077" name="sand" speed="120"/>
 	<item cid="10161" flags="t" id="11078-11088" name="sand" speed="120"/>
 	<item cid="10172" flags="16785409" id="11089" name="dragon statue">
 		<transformUseTo value="11093"/>
@@ -22938,7 +22938,7 @@
 		<weight value="1800"/>
 	</item>
 
-	<item cid="10228-10243" id="11145-11152" name="sand" speed="200"/>
+	<item cid="10228" id="11145-11152" name="sand" speed="200"/>
 	<item cid="10236" flags="t" id="11153" name="sand" speed="200"/>
 	<item cid="10237" id="11154-11160" name="sand" speed="200"/>
 	<item cid="10245-10246" flags="65537" id="11162-11163" name="fish"/>
@@ -22951,7 +22951,7 @@
 		<weight value="8000"/>
 	</item>
 
-	<item cid="10248-10271" flags="8396800" id="11165-11172" name="sand"/>
+	<item cid="10248" flags="8396800" id="11165-11172" name="sand"/>
 	<item cid="10256" flags="t" id="11173-11176" name="sand"/>
 	<item cid="10260" flags="8396800" id="11177-11188" name="sand"/>
 	<item cid="10272" flags="224" id="11189" name="crab pincers">
@@ -23432,7 +23432,7 @@
 		<fluidSource value="blood"/>
 	</item>
 
-	<item cid="10372-10381" flags="ts" id="11289-11294" name="banner"/>
+	<item cid="10372" flags="ts" id="11289-11294" name="banner"/>
 	<item cid="10378" flags="b" id="11295-11298" name="banner"/>
 	<item cid="10382" flags="m" id="11299" name="dead eternal guardian">
 		<containerSize value="10"/>
@@ -23912,7 +23912,7 @@
 		<weight value="30"/>
 	</item>
 
-	<item cid="3997-4010" flags="p" id="11401" name="Tibiora's box">
+	<item cid="3997" flags="p" id="11401" name="Tibiora's box">
 		<description value="It contains all the knowledge of the Tibian lands gathered arduously by Tibia-Stats.com."/>
 		<weight value="4200"/>
 	</item>
@@ -24011,33 +24011,33 @@
 		<transformUseTo value="11448"/>
 	</item>
 
-	<item cid="10495-10506" flags="t" id="11451-11458" name="tainted soil"/>
+	<item cid="10495" flags="t" id="11451-11458" name="tainted soil"/>
 	<item cid="10503" flags="16785408" id="11459-11462" name="tainted soil"/>
 	<item cid="10507" flags="t" id="11463" name="lamp"/>
 	<item cid="10508-10519" flags="t" id="11464-11475" name="stone floor"/>
 	<item cid="10520-10521" flags="s" id="11476-11477" name="closed door"/>
-	<item cid="10522-10547" flags="t" id="11478-11481" name="dirt floor"/>
+	<item cid="10522" flags="t" id="11478-11481" name="dirt floor"/>
 	<item cid="10526" flags="8396800" id="11482-11485" name="dirt floor"/>
 	<item cid="10530" flags="t" id="11486-11503" name="dirt floor"/>
-	<item cid="10548-10577" id="11504-11509" name="ground" speed="140"/>
+	<item cid="10548" id="11504-11509" name="ground" speed="140"/>
 	<item cid="10554" flags="t" id="11510-11513" name="ground" speed="140"/>
 	<item cid="10558" flags="8396800" id="11514-11517" name="ground" speed="140"/>
 	<item cid="10562" flags="t" id="11518-11525" name="ground" speed="140"/>
 	<item cid="10570" flags="8396800" id="11526-11529" name="ground" speed="140"/>
 	<item cid="10574" flags="t" id="11530-11533" name="ground" speed="140"/>
-	<item cid="10578-10587" flags="ts" id="11534-11543" name="stone"/>
+	<item cid="10578" flags="ts" id="11534-11543" name="stone"/>
 	<item cid="10588-10591" flags="tb" id="11544-11547" name="stone wall"/>
 	<item cid="10592" flags="16777217" id="11548" name="sulphur"/>
-	<item cid="10593-10604" flags="16785409" id="11549-11556" name="acid"/>
+	<item cid="10593" flags="16785409" id="11549-11556" name="acid"/>
 	<item cid="10601" flags="ts" id="11557-11560" name="acid"/>
 	<item cid="10605" id="11561" name="mud" speed="140"/>
-	<item cid="10606-10614" flags="ts" id="11562-11565" name="dead bamboo"/>
+	<item cid="10606" flags="ts" id="11562-11565" name="dead bamboo"/>
 	<item cid="10610" flags="s" id="11566" name="dead bamboo"/>
 	<item cid="10611" flags="ts" id="11567-11570" name="dead bamboo"/>
-	<item cid="10675-10681" flags="8388608" id="11631-11637" name="small mudpit"/>
+	<item cid="10675" flags="8388608" id="11631-11637" name="small mudpit"/>
 	<item cid="10744" flags="139267" id="11700" name="stone wall"/>
 	<item cid="10746" flags="tb" id="11702" name="stone wall"/>
-	<item cid="10773-10796" flags="t" id="11729-11732" name="ground"/>
+	<item cid="10773" flags="t" id="11729-11732" name="ground"/>
 	<item cid="10777" flags="8396800" id="11733-11736" name="ground"/>
 	<item cid="10781" flags="t" id="11737-11744" name="ground"/>
 	<item cid="10789" flags="8396800" id="11745-11748" name="ground"/>
@@ -24059,7 +24059,7 @@
 	</item>
 
 	<item cid="10819-10822" flags="8396800" id="11775-11778" name="ground"/>
-	<item cid="10829-10836" flags="8396800" id="11785-11788" name="muddy floor"/>
+	<item cid="10829" flags="8396800" id="11785-11788" name="muddy floor"/>
 	<item cid="10833" flags="t" id="11789-11792" name="muddy floor"/>
 	<item cid="10837-10839" flags="ts" id="11793-11795" name="skull pillar"/>
 	<item cid="10840" flags="16777220" id="11796" name="dimensional portal"/>
@@ -24072,24 +24072,24 @@
 
 	<item cid="10877-10899" flags="tb" id="11833-11855" name="corrupted wall"/>
 	<item cid="10902" id="11858" name="bridge" speed="90"/>
-	<item cid="10908-10951" flags="t" id="11864-11867" name="bridge"/>
+	<item cid="10908" flags="t" id="11864-11867" name="bridge"/>
 	<item cid="10912" flags="s" id="11868-11907" name="bridge"/>
 	<item cid="10952-10953" flags="tb" id="11908-11909" name="corrupted wall"/>
 	<item cid="10955-10958" flags="t" id="11911-11914" name="corrupted wall"/>
-	<item cid="10959-10960" flags="ts" id="11915" name="dragon basin"/>
+	<item cid="10959" flags="ts" id="11915" name="dragon basin"/>
 	<item cid="10960" flags="16785409" id="11916" name="dragon basin"/>
 	<item cid="10961-10964" id="11917-11920" name="tapestry"/>
 	<item cid="10965-10966" id="11921-11922" name="decorative spear's"/>
 	<item cid="10967-10968" id="11923-11924" name="decorative shield"/>
 	<item cid="10975-10976" flags="ts" id="11931-11932" name="statue"/>
-	<item cid="10981-10990" flags="tb" id="11937-11946" name="corrupted wall"/>
+	<item cid="10981" flags="tb" id="11937-11946" name="corrupted wall"/>
 	<item cid="10992" flags="ts" id="11948" name="window"/>
 	<item cid="10993-10996" flags="tb" id="11949-11952" name="corrupted wall"/>
 	<item cid="10997-11002" id="11953-11958" name="marble floor"/>
 	<item cid="11003-11005" flags="t" id="11959-11961" name="archway"/>
 	<item cid="11006" flags="tb" id="11962" name="stone wall"/>
 	<item cid="11007-11008" flags="ts" id="11963-11964" name="pillar"/>
-	<item cid="2422-11013" flags="32844" id="11965" name="chair"/>
+	<item cid="2422" flags="32844" id="11965" name="chair"/>
 	<item cid="11010" flags="32780" id="11966-11969" name="chair"/>
 	<item cid="11014-11015" flags="tb" id="11970-11971" name="stone wall"/>
 	<item cid="11016-11026" flags="t" id="11972-11982" name="jade ornaments"/>
@@ -24149,7 +24149,7 @@
 	<item cid="11054-11055" flags="16842752" id="12010-12011" name="torch"/>
 	<item cid="11056" flags="8201" id="12012" name="table"/>
 	<item cid="11057" flags="ts" id="12013" name="pillar"/>
-	<item cid="11058-11061" flags="16785409" id="12014-12015" name="torch"/>
+	<item cid="11058" flags="16785409" id="12014-12015" name="torch"/>
 	<item cid="11060" flags="ts" id="12016-12017" name="torch"/>
 	<item cid="11068" flags="b" id="12024" name="timbers"/>
 	<item cid="11083-11084" flags="16785409" id="12039-12040" name="well"/>
@@ -24335,9 +24335,9 @@
 
 	<item cid="11263-11264" id="12219-12220" name="tapestry"/>
 	<item cid="11265-11271" flags="s" id="12221-12227" name="dragon statue"/>
-	<item cid="11272-11277" flags="ts" id="12228" name="corrupted wall"/>
+	<item cid="11272" flags="ts" id="12228" name="corrupted wall"/>
 	<item cid="11273" flags="tb" id="12229-12233" name="corrupted wall"/>
-	<item cid="11318-11315" id="12266-12267" name="sign"/>
+	<item cid="11318" id="12266-12267" name="sign"/>
 	<item cid="11312" flags="16777216" id="12268" name="sign"/>
 	<item cid="11313" id="12269-12270" name="sign"/>
 	<item cid="11315" flags="16785408" id="12271" name="sign"/>
@@ -24394,7 +24394,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item cid="11349-11359" flags="16785409" id="12305-12307" name="corrupted plantation"/>
+	<item cid="11349" flags="16785409" id="12305-12307" name="corrupted plantation"/>
 	<item cid="11352" flags="8200" id="12308-12315" name="corrupted plantation"/>
 	<item cid="11362" flags="112" id="12318" name="replica of the sceptre">
 		<weight value="1400"/>
@@ -24434,10 +24434,10 @@
 		<weight value="180"/>
 	</item>
 
-	<item cid="11373-11377" flags="s" id="12329" name="corrupted plantation"/>
+	<item cid="11373" flags="s" id="12329" name="corrupted plantation"/>
 	<item cid="11374" flags="ts" id="12330-12333" name="corrupted plantation"/>
 	<item cid="11378-11379" flags="16777216" id="12334-12335" name="poison field"/>
-	<item cid="11394-11404" flags="s" id="12350-12354" name="sleeping dragon"/>
+	<item cid="11394" flags="s" id="12350-12354" name="sleeping dragon"/>
 	<item cid="11399" flags="16777217" id="12355-12357" name="sleeping dragon"/>
 	<item cid="11402" flags="s" id="12358" name="sleeping dragon"/>
 	<item cid="11403" flags="16777217" id="12359-12360" name="sleeping dragon"/>
@@ -24453,7 +24453,7 @@
 	</item>
 
 	<item cid="11430-11431" flags="s" id="12386-12387" name="closet"/>
-	<item cid="11440-11442" id="12396-12397" name="large book"/>
+	<item cid="11440" id="12396-12397" name="large book"/>
 	<item cid="11442" flags="16384" id="12398" name="large book"/>
 	<item cid="11443" flags="224" id="12399" name="girlish hair decoration">
 		<weight value="50"/>
@@ -24676,7 +24676,7 @@
 		<weight value="50"/>
 	</item>
 
-	<item cid="11494-11509" flags="ts" id="12450-12457" name="molten larva well"/>
+	<item cid="11494" flags="ts" id="12450-12457" name="molten larva well"/>
 	<item cid="11502" flags="16785409" id="12458-12465" name="molten larva well"/>
 	<item cid="11510" flags="224" id="12466" name="scroll of heroic deeds">
 		<weight value="79"/>
@@ -24772,7 +24772,7 @@
 		<description value="You can see the other side through it."/>
 	</item>
 
-	<item cid="11555-11570" flags="tb" id="12511-12525" name="palisade"/>
+	<item cid="11555" flags="tb" id="12511-12525" name="palisade"/>
 	<item cid="11570" flags="ts" id="12526" name="palisade"/>
 	<item cid="11571" id="12527" name="dead brimstone bug">
 		<containerSize value="10"/>
@@ -24790,7 +24790,7 @@
 		<fluidSource value="slime"/>
 	</item>
 
-	<item cid="11573-11581" flags="b" id="12529" name="palisade"/>
+	<item cid="11573" flags="b" id="12529" name="palisade"/>
 	<item cid="11574" flags="8388611" id="12530" name="palisade"/>
 	<item cid="11575" flags="tb" id="12531" name="palisade"/>
 	<item cid="11576" flags="b" id="12532" name="palisade"/>
@@ -25406,10 +25406,10 @@
 
 	<item cid="4051" flags="73" id="12672" name="telescope"/>
 	<item cid="4054" flags="76" id="12673" name="red chair"/>
-	<item cid="4140-4144" flags="139267" id="12678" name="wooden wall"/>
+	<item cid="4140" flags="139267" id="12678" name="wooden wall"/>
 	<item cid="4144" flags="270339" id="12679" name="wooden wall"/>
 	<item cid="9141" id="12681" name="wooden planks"/>
-	<item cid="10770-11704" flags="270339" id="12682" name="wooden wall"/>
+	<item cid="10770" flags="270339" id="12682" name="wooden wall"/>
 	<item cid="10846" flags="tb" id="12683-12685" name="wooden wall"/>
 	<item cid="11049" flags="b" id="12686-12688" name="wooden wall"/>
 	<item cid="11335" flags="tb" id="12689-12691" name="wooden wall"/>
@@ -25441,13 +25441,13 @@
 		<transformUseTo value="12701"/>
 	</item>
 
-	<item cid="11717-11730" id="12704-12705" name="lush grass" speed="150"/>
+	<item cid="11717" id="12704-12705" name="lush grass" speed="150"/>
 	<item cid="11719" flags="8396800" id="12706-12717" name="lush grass" speed="150"/>
 	<item cid="11731-11739" id="12718-12726" name="timber floor"/>
 	<item cid="11740-11751" flags="8396800" id="12727-12738" name="lush grass"/>
 	<item cid="11752-11767" flags="8396800" id="12739-12754" name="timber floor"/>
 	<item cid="11768-11769" flags="b" id="12755-12756" name="timber wall"/>
-	<item cid="11770-11785" flags="8396800" id="12757-12768" name="leaves"/>
+	<item cid="11770" flags="8396800" id="12757-12768" name="leaves"/>
 	<item cid="11782" flags="t" id="12769-12772" name="leaves"/>
 	<item cid="11786-11788" id="12773-12775" name="branch "/>
 	<item cid="11789-11790" id="12776-12777" name="deer antlers"/>
@@ -25537,7 +25537,7 @@
 		<weight value="205"/>
 	</item>
 
-	<item cid="11983-12000" flags="tb" id="12970" name="stone"/>
+	<item cid="11983" flags="tb" id="12970" name="stone"/>
 	<item cid="11984" flags="t" id="12971" name="stone"/>
 	<item cid="11985" flags="tb" id="12972-12973" name="stone"/>
 	<item cid="11987" flags="t" id="12974" name="stone"/>
@@ -25592,7 +25592,7 @@
 		<weight value="1500"/>
 	</item>
 
-	<item cid="12045-12046" flags="p" id="13032" name="music box">
+	<item cid="12045" flags="p" id="13032" name="music box">
 		<description value="The song inside is made of love. It was rewarded by TibiaSpace.com."/>
 		<weight value="2700"/>
 	</item>
@@ -25617,7 +25617,7 @@
 	<item cid="12109" flags="tb" id="13096" name="giant cake"/>
 	<item cid="12111" flags="tb" id="13098" name="giant cake"/>
 	<item cid="12112-12113" id="13099-13100" name="cake tile"/>
-	<item cid="12114-12122" flags="ts" id="13101-13105" name="huge cauldron"/>
+	<item cid="12114" flags="ts" id="13101-13105" name="huge cauldron"/>
 	<item cid="12119" flags="16785409" id="13106-13109" name="huge cauldron"/>
 	<item cid="12123" flags="112" id="13110" name="ghost duster">
 		<weight value="1100"/>
@@ -25688,7 +25688,7 @@
 	</item>
 
 	<item cid="12183-12185" id="13170-13172" name="broken wall"/>
-	<item cid="12186-12187" flags="112" id="13173-13174" name="net">
+	<item cid="12186" flags="112" id="13173-13174" name="net">
 		<weight value="98"/>
 	</item>
 
@@ -25704,7 +25704,7 @@
 	</item>
 
 	<item cid="12212-12213" flags="ts" id="13199-13200" name="stone"/>
-	<item cid="12214-12225" flags="t" id="13201-13202" name="dark sand"/>
+	<item cid="12214" flags="t" id="13201-13202" name="dark sand"/>
 	<item cid="12216" flags="8396800" id="13203-13206" name="dark sand"/>
 	<item cid="12220" flags="t" id="13207-13212" name="dark sand"/>
 	<item cid="12226" flags="p" id="13213" name="strange red powder">
@@ -25776,7 +25776,7 @@
 		<weight value="200"/>
 	</item>
 
-	<item cid="12301-12302" flags="16777217" id="13288" name="huge cauldron"/>
+	<item cid="12301" flags="16777217" id="13288" name="huge cauldron"/>
 	<item cid="12302" flags="16777233" id="13289" name="huge cauldron"/>
 	<item cid="12304" flags="112" id="13291" name="maxilla maximus">
 		<description value="A hermit near Carlin might be able to tell you more about it."/>
@@ -26522,7 +26522,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item cid="12083-12355" flags="t" id="13607-13619" name="slime fungus"/>
+	<item cid="12083" flags="t" id="13607-13619" name="slime fungus"/>
 	<item cid="12356-12367" flags="8396800" id="13620-13631" name="rocky floor"/>
 	<item cid="12368" flags="16785408" id="13632" name="magic wolf trap"/>
 	<item cid="12369" flags="16777312" id="13633" name="captured wolf">
@@ -26533,7 +26533,7 @@
 	<item cid="12379-12386" id="13636-13643" name="rocky floor" speed="120"/>
 	<item cid="12387-12397" flags="tb" id="13644-13654" name="rocky wall"/>
 	<item cid="12401-12402" flags="tb" id="13658-13659" name="rocky wall"/>
-	<item cid="12406-12411" flags="ts" id="13663-13664" name="rocky wall"/>
+	<item cid="12406" flags="ts" id="13663-13664" name="rocky wall"/>
 	<item cid="12408" flags="tb" id="13665-13668" name="rocky wall"/>
 	<item cid="12413" flags="p" id="13670" name="belongings of a deceased">
 		<weight value="3000"/>
@@ -26543,7 +26543,7 @@
 	<item cid="12421" flags="ts" id="13678" name="greasy stone"/>
 	<item cid="12425" flags="16785409" id="13682" name="floating stone"/>
 	<item cid="12429-12430" flags="tb" id="13686-13687" name="rocky wall"/>
-	<item cid="12431-12434" flags="16842752" id="13688" name="lamp"/>
+	<item cid="12431" flags="16842752" id="13688" name="lamp"/>
 	<item cid="12432" flags="65536" id="13689-13690" name="lamp"/>
 	<item cid="12434" flags="16842752" id="13691" name="lamp"/>
 	<item cid="12435-12436" id="13692-13693" name="hieroglyph banner"/>
@@ -26701,9 +26701,9 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item cid="12666-12668" flags="ts" id="13822-13823" name="water pump"/>
+	<item cid="12666" flags="ts" id="13822-13823" name="water pump"/>
 	<item cid="12668" flags="16785409" id="13824" name="water pump"/>
-	<item cid="12669-12670" flags="p" id="13825" name="star ring">
+	<item cid="12669" flags="p" id="13825" name="star ring">
 		<description value="If you wear it on your ring slot, it will boost your health regeneration when you're not hungry. Professions: players without vocation"/>
 		<weight value="80"/>
 		<slotType value="ring"/>
@@ -26999,7 +26999,7 @@
 		<weight value="4690"/>
 	</item>
 
-	<item cid="12813-12814" flags="p" id="13950" name="old radio">
+	<item cid="12813" flags="p" id="13950" name="old radio">
 		<description value="Granted by RadioTibia.com.br to hear the sounds of Tibia."/>
 		<weight value="4015"/>
 	</item>
@@ -27371,7 +27371,7 @@
 		<weight value="200"/>
 	</item>
 
-	<item cid="12851-12901" id="14355-14364" name="hive structure" speed="125"/>
+	<item cid="12851" id="14355-14364" name="hive structure" speed="125"/>
 	<item cid="12861" flags="t" id="14365-14368" name="hive structure" speed="125"/>
 	<item cid="12865" flags="tb" id="14369-14387" name="hive structure" speed="125"/>
 	<item cid="12886" flags="s" id="14388-14395" name="hive structure" speed="125"/>
@@ -27382,13 +27382,13 @@
 	</item>
 
 	<item cid="12903" id="14405" name="market"/>
-	<item cid="12906-12925" flags="s" id="14406-14407" name="hive structure"/>
+	<item cid="12906" flags="s" id="14406-14407" name="hive structure"/>
 	<item cid="12908" flags="tb" id="14408-14412" name="hive structure"/>
 	<item cid="12913" flags="ts" id="14413-14425" name="hive structure"/>
-	<item cid="12926-12930" flags="t" id="14426-14427" name="hive pillar"/>
+	<item cid="12926" flags="t" id="14426-14427" name="hive pillar"/>
 	<item cid="12928" flags="ts" id="14428-14430" name="hive pillar"/>
 	<item cid="12931-12934" flags="s" id="14431-14434" name="hive structure"/>
-	<item cid="12935-12936" flags="t" id="14435-14436" name="mud">
+	<item cid="12935" flags="t" id="14435-14436" name="mud">
 		<description value="There is a hole in the ceiling."/>
 	</item>
 
@@ -27398,25 +27398,25 @@
 		<floorchange value="down"/>
 	</item>
 
-	<item cid="12962-13038" flags="4" id="14462" name="hive structure"/>
+	<item cid="12962" flags="4" id="14462" name="hive structure"/>
 	<item cid="12963" flags="tb" id="14463-14484" name="hive structure"/>
 	<item cid="12987" flags="s" id="14485-14486" name="hive structure"/>
 	<item cid="12989" flags="tb" id="14487-14489" name="hive structure"/>
 	<item cid="12992" flags="t" id="14490-14495" name="hive structure"/>
 	<item cid="12998" flags="ts" id="14496-14523" name="hive structure"/>
 	<item cid="13026" flags="4" id="14524-14536" name="hive structure"/>
-	<item cid="13039-13054" flags="8396800" id="14537-14544" name="insectoid hive"/>
+	<item cid="13039" flags="8396800" id="14537-14544" name="insectoid hive"/>
 	<item cid="13047" flags="t" id="14545-14548" name="insectoid hive"/>
 	<item cid="13051" flags="8396800" id="14549-14550" name="insectoid hive"/>
 	<item cid="13053" flags="t" id="14551-14552" name="insectoid hive"/>
-	<item cid="13055-13082" flags="8396800" id="14553-14562" name="hive structure"/>
+	<item cid="13055" flags="8396800" id="14553-14562" name="hive structure"/>
 	<item cid="13065" flags="t" id="14563-14566" name="hive structure"/>
 	<item cid="13069" flags="8396800" id="14567-14568" name="hive structure"/>
 	<item cid="13071" flags="t" id="14569-14570" name="hive structure"/>
 	<item cid="13073" flags="8396800" id="14571-14572" name="hive structure"/>
 	<item cid="13075" flags="t" id="14573-14580" name="hive structure"/>
 	<item cid="13083" flags="139267" id="14581" name="moist wall"/>
-	<item cid="13085-13121" flags="270339" id="14583-14584" name="moist wall"/>
+	<item cid="13085" flags="270339" id="14583-14584" name="moist wall"/>
 	<item cid="13087" flags="tb" id="14585-14592" name="moist wall"/>
 	<item cid="13095" flags="270339" id="14593" name="moist wall"/>
 	<item cid="13096" flags="tb" id="14594-14601" name="moist wall"/>
@@ -27433,10 +27433,10 @@
 	<item cid="13129-13134" flags="t" id="14627-14632" name="archway"/>
 	<item cid="13149-13154" flags="ts" id="14647-14652" name="stone pillar"/>
 	<item cid="13157-13160" flags="ts" id="14655-14658" name="moist stones"/>
-	<item cid="13161-13167" id="14659-14662" name="small moist stones"/>
+	<item cid="13161" id="14659-14662" name="small moist stones"/>
 	<item cid="13165" flags="ts" id="14663" name="small moist stones"/>
 	<item cid="13166" id="14664-14665" name="small moist stones"/>
-	<item cid="13170-13226" flags="ts" id="14668-14679" name="hive structure"/>
+	<item cid="13170" flags="ts" id="14668-14679" name="hive structure"/>
 	<item cid="13182" flags="tb" id="14680-14684" name="hive structure"/>
 	<item cid="13206" flags="s" id="14685" name="hive structure"/>
 	<item cid="13207" flags="tb" id="14686-14693" name="hive structure"/>
@@ -27452,9 +27452,9 @@
 		<floorchange value="west"/>
 	</item>
 
-	<item cid="13352-13367" flags="16777216" id="14829-14844" name="insectoid pore"/>
+	<item cid="13352" flags="16777216" id="14829-14844" name="insectoid pore"/>
 	<item cid="13376-13377" id="14853-14854" name="small insectoid hairs"/>
-	<item cid="13382-13396" flags="ts" id="14858-14860" name="insectoid meatball"/>
+	<item cid="13382" flags="ts" id="14858-14860" name="insectoid meatball"/>
 	<item cid="13385" flags="8388608" id="14861" name="insectoid meatball"/>
 	<item cid="13386" flags="ts" id="14862-14863" name="insectoid meatball"/>
 	<item cid="13388" flags="8388608" id="14864" name="insectoid meatball"/>
@@ -27529,10 +27529,10 @@
 	</item>
 
 	<item cid="13592-13593" flags="8200" id="15063-15064" name="ramp"/>
-	<item cid="13594-13645" flags="b" id="15065-15066" name="grotto"/>
+	<item cid="13594" flags="b" id="15065-15066" name="grotto"/>
 	<item cid="13597" flags="tb" id="15067-15112" name="grotto"/>
 	<item cid="13643" flags="b" id="15113-15115" name="grotto"/>
-	<item cid="13651-13654" flags="65536" id="15121-15122" name="lamp"/>
+	<item cid="13651" flags="65536" id="15121-15122" name="lamp"/>
 	<item cid="13653" flags="16842752" id="15123-15124" name="lamp"/>
 	<item cid="13655" flags="65536" id="15125" name="strange lamp"/>
 	<item cid="13656" flags="16842752" id="15126" name="strange lamp">
@@ -27544,11 +27544,11 @@
 		<description value="This lamp is glowing very dimly."/>
 	</item>
 
-	<item cid="13659-13662" flags="65536" id="15129" name="lamp"/>
+	<item cid="13659" flags="65536" id="15129" name="lamp"/>
 	<item cid="13660" flags="16842752" id="15130" name="lamp"/>
 	<item cid="13661" flags="65536" id="15131" name="lamp"/>
 	<item cid="13662" flags="16842752" id="15132" name="lamp"/>
-	<item cid="13672-13673" flags="s" id="15142-15143" name="sponge"/>
+	<item cid="13672" flags="s" id="15142-15143" name="sponge"/>
 	<item cid="13670" flags="16777216" id="15140" name="alga"/>
 	<item cid="13674" flags="16777217" id="15144" name="tree coral"/>
 	<item cid="13675" flags="16777216" id="15145" name="white coral"/>
@@ -27638,7 +27638,7 @@
 		<corpseType value="blood"/>
 	</item>
 
-	<item cid="13754-13769" flags="8396800" id="15191-15202" name="leaves"/>
+	<item cid="13754" flags="8396800" id="15191-15202" name="leaves"/>
 	<item cid="13766" flags="t" id="15203-15206" name="leaves"/>
 	<item cid="13771" flags="m" id="15208" name="dead deepling spellsinger">
 		<weight value="4400"/>
@@ -27767,7 +27767,7 @@
 		<corpseType value="blood"/>
 	</item>
 	<item cid="13805-13810" id="15232-15237" name="brown sea floor" speed="150"/>
-	<item cid="13823-13840" flags="9" id="15250-15253" name="enormous statue"/>
+	<item cid="13823" flags="9" id="15250-15253" name="enormous statue"/>
 	<item cid="13827" flags="s" id="15254-15255" name="enormous statue"/>
 	<item cid="13829" flags="9" id="15256-15257" name="enormous statue"/>
 	<item cid="13831" flags="ts" id="15258-15261" name="enormous statue"/>
@@ -27984,7 +27984,7 @@
 		<fluidSource value="slime"/>
 	</item>
 
-	<item cid="13874-13894" flags="s" id="15300-15305" name="table"/>
+	<item cid="13874" flags="s" id="15300-15305" name="table"/>
 	<item cid="13880" flags="8" id="15306-15311" name="table"/>
 	<item cid="13886" flags="s" id="15312-15320" name="table"/>
 	<item cid="13897-13900" flags="t" id="15323-15326" name="lampions"/>
@@ -28533,7 +28533,7 @@
 		<weight value="2100"/>
 	</item>
 
-	<item cid="14113-14132" flags="16785408" id="15516-15525" name="lava stream"/>
+	<item cid="14113" flags="16785408" id="15516-15525" name="lava stream"/>
 	<item cid="14123" flags="25174016" id="15526-15529" name="lava stream"/>
 	<item cid="14127" flags="16785408" id="15530-15533" name="lava stream"/>
 	<item cid="14131" flags="16777216" id="15534-15535" name="lava stream"/>
@@ -28821,7 +28821,7 @@
 		<weight value="1000"/>
 	</item>
 
-	<item cid="14764-14765" flags="p" id="16107" name="doll of Durin The Almighty">
+	<item cid="14764" flags="p" id="16107" name="doll of Durin The Almighty">
 		<weight value="4000"/>
 		<description value="The mightiest. The only. God of all dwarfs. Awarded by Tibia Bariloche."/>
 	</item>
@@ -29020,7 +29020,7 @@
 	</item>
 
 	<item cid="15995-16006" flags="ts" id="17340-17351" name="window"/>
-	<item cid="16034-16049" flags="tb" id="17352" name="stone wall"/>
+	<item cid="16034" flags="tb" id="17352" name="stone wall"/>
 	<item cid="16008" flags="139267" id="17353-17355" name="stone wall"/>
 	<item cid="16018" flags="tb" id="17356-17357" name="stone wall"/>
 	<item cid="16013" flags="270339" id="17358" name="stone wall"/>
@@ -29198,13 +29198,13 @@
 		<containerSize value="30"/>
 	</item>
 
-	<item cid="11971-11972" flags="139267" id="17433" name="stone"/>
+	<item cid="11971" flags="139267" id="17433" name="stone"/>
 	<item cid="11972" flags="270339" id="17434" name="stone"/>
 	<item cid="13144" flags="t" id="17435" name="open door">
 		<transformUseTo value="17237"/>
 	</item>
 
-	<item cid="14770-14781" id="17436-17443" name="crystal floor"/>
+	<item cid="14770" id="17436-17443" name="crystal floor"/>
 	<item cid="14778" flags="8396800" id="17444-17447" name="crystal floor"/>
 	<item cid="14782" flags="8396800" id="17448" name="rock soil"/>
 	<item cid="14783-14786" flags="8396800" id="17449-17452" name="crystal floor"/>
@@ -29219,7 +29219,7 @@
 	<item cid="14858-14859" flags="tb" id="17484-17485" name="basalt wall"/>
 	<item cid="14863-14866" flags="tb" id="17489-17492" name="crystal wall"/>
 	<item cid="14867-14869" flags="tb" id="17493-17495" name="small basalt wall"/>
-	<item cid="14870-14872" flags="tb" id="17496" name="crystals"/>
+	<item cid="14870" flags="tb" id="17496" name="crystals"/>
 	<item cid="14871" flags="b" id="17497" name="crystals"/>
 	<item cid="14872" flags="tb" id="17498" name="crystals"/>
 	<item cid="14873-14877" flags="tb" id="17499-17503" name="basalt wall with crystals"/>
@@ -29267,15 +29267,15 @@
 	<item cid="14963" flags="ts" id="17588" name="red crystals"/>
 	<item cid="14964" flags="t" id="17589" name="small red crystals"/>
 	<item cid="14965-14966" flags="ts" id="17590-17591" name="red crystals"/>
-	<item cid="14967-14971" flags="ts" id="17592-17596" name="crystal geode"/>
+	<item cid="14967" flags="ts" id="17592-17596" name="crystal geode"/>
 	<item cid="14972-14973" flags="ts" id="17597-17598" name="large blue crystal"/>
 	<item cid="14974" flags="ts" id="17599" name="red crystals"/>
-	<item cid="15000-15015" id="17625-17628" name="basalt floor"/>
+	<item cid="15000" id="17625-17628" name="basalt floor"/>
 	<item cid="15004" flags="8396800" id="17629-17640" name="basalt floor"/>
 	<item cid="15016-15021" flags="t" id="17641-17646" name="crystal trail"/>
-	<item cid="15022-15039" id="17647-17652" name="mold floor"/>
+	<item cid="15022" id="17647-17652" name="mold floor"/>
 	<item cid="15028" flags="8396800" id="17653-17664" name="mold floor"/>
-	<item cid="15040-15059" id="17665-17672" name="mossy floor"/>
+	<item cid="15040" id="17665-17672" name="mossy floor"/>
 	<item cid="15048" flags="8396800" id="17673-17684" name="mossy floor"/>
 	<item cid="15060-15066" flags="tb" id="17685-17691" name="mossy wall"/>
 	<item cid="15067" flags="tb" id="17692" name="mossy window"/>
@@ -29348,16 +29348,16 @@
 	<item cid="15156-15157" flags="65" id="17778-17779" name="large decorative mushroom"/>
 	<item cid="15158-15164" flags="8396800" id="17780-17786" name="muddy floor"/>
 	<item cid="15165-15188" flags="ts" id="17787-17810" name="huge red crystal"/>
-	<item cid="15205-15216" flags="t" id="17811-17814" name="mushrooms"/>
+	<item cid="15205" flags="t" id="17811-17814" name="mushrooms"/>
 	<item cid="15209" flags="8396800" id="17815-17822" name="mushrooms"/>
-	<item cid="15221-15266" flags="tb" id="17823-17831" name="crystal wall"/>
+	<item cid="15221" flags="tb" id="17823-17831" name="crystal wall"/>
 	<item cid="15239" flags="67" id="17832-17833" name="crystal wall"/>
 	<item cid="15251" flags="8194" id="17834" name="crystal wall"/>
 	<item cid="15260" flags="tb" id="17835-17841" name="crystal wall"/>
 	<item cid="15267-15268" flags="tb" id="17842-17843" name="mossy wall"/>
 	<item cid="15269" flags="tb" id="17844" name="crystal wall"/>
 	<item cid="15270-15271" flags="67" id="17845-17846" name="large fallen crystal"/>
-	<item cid="15272-15296" flags="tb" id="17847" name="crystal wall"/>
+	<item cid="15272" flags="tb" id="17847" name="crystal wall"/>
 	<item cid="15273" flags="67" id="17848-17849" name="crystal wall"/>
 	<item cid="15290" flags="b" id="17850-17853" name="crystal wall"/>
 	<item cid="15298-15301" flags="b" id="17854-17857" name="basalt" speed="150"/>
@@ -29368,7 +29368,7 @@
 	<item cid="15321-15332" flags="t" id="17869-17880" name="basalt wall"/>
 	<item cid="15333-15344" flags="t" id="17881-17892" name="crystal wall"/>
 	<item cid="15345" flags="tb" id="17893" name="basalt wall"/>
-	<item cid="15347-15375" flags="b" id="17894-17897" name="mossy wall" speed="150"/>
+	<item cid="15347" flags="b" id="17894-17897" name="mossy wall" speed="150"/>
 	<item cid="15355" flags="tb" id="17898-17918" name="mossy wall" speed="150"/>
 	<item cid="15376" flags="tb" id="17919" name="mountain"/>
 	<item cid="15377-15392" flags="tb" id="17920-17933" name="mossy wall"/>
@@ -29379,9 +29379,9 @@
 	<item cid="15466" flags="8200" id="17998" name="crystals"/>
 	<item cid="15467" flags="ts" id="17999" name="large blue crystal"/>
 	<item cid="15468-15472" id="18000-18004" name="crystal glass floor"/>
-	<item cid="15484-15487" flags="ts" id="18005" name="stone block"/>
+	<item cid="15484" flags="ts" id="18005" name="stone block"/>
 	<item cid="15485" flags="8200" id="18006-18008" name="stone block"/>
-	<item cid="15488-15505" flags="16785408" id="18009-18020" name="small stream"/>
+	<item cid="15488" flags="16785408" id="18009-18020" name="small stream"/>
 	<item cid="15500" flags="16777217" id="18021-18026" name="small stream"/>
 	<item cid="15506" flags="s" id="18027" name="simple bed">
 		<partnerDirection value="2"/>
@@ -29467,14 +29467,14 @@
 	<item cid="15532-15534" id="18053-18055" name="mushroom sponge"/>
 	<item cid="15535-15583" flags="s" id="18056-18104" name="titanic mushroom"/>
 	<item cid="15584-15595" flags="8396800" id="18105-18116" name="mushroom sponge"/>
-	<item cid="15596-15600" id="18117" name="wooden floor"/>
+	<item cid="15596" id="18117" name="wooden floor"/>
 	<item cid="15597" flags="ts" id="18118-18121" name="wooden floor"/>
 	<item cid="15601-15604" flags="t" id="18122-18125" name="stone block"/>
 	<item cid="15605-15608" flags="ts" id="18126-18129" name="wooden floor"/>
 	<item cid="15609-15610" flags="t" id="18130-18131" name="stone block"/>
 	<item cid="15611" flags="ts" id="18132" name="stone pillar"/>
 	<item cid="15612-15615" flags="ts" id="18133-18136" name="wooden floor"/>
-	<item cid="15616-15631" flags="16785408" id="18137-18140" name="mossy floor"/>
+	<item cid="15616" flags="16785408" id="18137-18140" name="mossy floor"/>
 	<item cid="15620" flags="8396800" id="18141-18152" name="mossy floor"/>
 	<item cid="15632" flags="ts" id="18153" name="giant carrot">
 		<description value="Someone turned it upside down."/>
@@ -29490,7 +29490,7 @@
 	<item cid="15636-15638" flags="t" id="18157-18159" name="carrots"/>
 	<item cid="15639" flags="ts" id="18160" name="giant carrot"/>
 	<item cid="15640" flags="8200" id="18161" name="carrot pedeistal"/>
-	<item cid="15641-15674" id="18162-18171" name="stone floor"/>
+	<item cid="15641" id="18162-18171" name="stone floor"/>
 	<item cid="15651" flags="8396800" id="18172-18195" name="stone floor"/>
 	<item cid="15675-15678" flags="8396800" id="18196-18199" name="strange symbols"/>
 	<item cid="15679-15684" flags="tb" id="18200-18205" name="stone"/>
@@ -29546,24 +29546,24 @@
 	<item cid="15713-15716" flags="ts" id="18229-18232" name="large crystal"/>
 	<item cid="15717" id="18233" name="basalt floor"/>
 	<item cid="15718" flags="8200" id="18234" name="stairs"/>
-	<item cid="15719-15741" flags="tb" id="18235-18249" name="icy bones"/>
+	<item cid="15719" flags="tb" id="18235-18249" name="icy bones"/>
 	<item cid="15734" flags="ts" id="18250-18251" name="icy bones"/>
 	<item cid="15736" flags="t" id="18252-18256" name="icy bones"/>
 	<item cid="15741" flags="ts" id="18257" name="icy bones"/>
 	<item cid="15747-15751" flags="s" id="18258-18262" name="icy bone railing"/>
 	<item cid="15752-15753" flags="s" id="18263-18264" name="icy skull"/>
-	<item cid="15754-15757" flags="s" id="18265-18268" name="icy bones"/>
+	<item cid="15754" flags="s" id="18265-18268" name="icy bones"/>
 	<item cid="15758" flags="139267" id="18269" name="ice wall"/>
 	<item cid="15759-15766" flags="s" id="18270-18277" name="icy bones"/>
 	<item cid="15767-15770" flags="s" id="18278-18281" name="icy bone claw"/>
-	<item cid="15771-15773" flags="tb" id="18282-18283" name="ice wall"/>
+	<item cid="15771" flags="tb" id="18282-18283" name="ice wall"/>
 	<item cid="15773" flags="139267" id="18284" name="ice wall"/>
 	<item cid="15774-15777" flags="m" id="18285-18288" name="icy mammoth horn"/>
 	<item cid="15778-15779" flags="m" id="18289-18290" name="icy mammoth ear"/>
 	<item cid="15780-15781" flags="m" id="18291-18292" name="icy mammoth head"/>
 	<item cid="15782-15784" flags="m" id="18293-18295" name="icy mammoth trunk"/>
 	<item cid="15785" id="18296" name="ice stone floor"/>
-	<item cid="15786-15789" id="18297-18298" name="bones"/>
+	<item cid="15786" id="18297-18298" name="bones"/>
 	<item cid="15788" flags="s" id="18299-18300" name="bones"/>
 	<item cid="15790-15791" flags="s" id="18301-18302" name="icy bones"/>
 	<item cid="15792" flags="224" id="18303" name="crystal bolt">
@@ -29653,7 +29653,7 @@
 	</item>
 
 	<item cid="15834-15845" flags="8396800" id="18345-18356" name="ice stone floor"/>
-	<item cid="15846-15862" flags="t" id="18357-18361" name="scattered crystals"/>
+	<item cid="15846" flags="t" id="18357-18361" name="scattered crystals"/>
 	<item cid="15851" flags="8396800" id="18362-18373" name="scattered crystals"/>
 	<item cid="15864" id="18374" name="dead stone devourer">
 		<containerSize value="25"/>
@@ -30452,9 +30452,9 @@
 
 	<item cid="16268" flags="4" id="18532" name="mushroom sponge" speed="150"/>
 	<item cid="16269-16272" flags="4" id="18533-18536" name="mossy floor" speed="150"/>
-	<item cid="13088-13116" flags="139267" id="18537" name="moist wall"/>
+	<item cid="13088" flags="139267" id="18537" name="moist wall"/>
 	<item cid="13116" flags="270339" id="18538" name="moist wall"/>
-	<item cid="16007-16041" flags="139267" id="18539" name="stone wall"/>
+	<item cid="16007" flags="139267" id="18539" name="stone wall"/>
 	<item cid="16011" flags="270339" id="18540-18546" name="stone wall"/>
 	<item cid="9177" flags="p" id="18547" name="voodoo doll">
 		<weight value="650"/>

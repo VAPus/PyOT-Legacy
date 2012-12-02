@@ -15,5 +15,5 @@ class TestMonster(FrameworkTestGame):
                 printer("[WARNING] Monster %s (corpse: %d) is not a container. Likely invalid\n" % (monsterName, corpse))
             if not item.name:
                 printer("[WARNING] Monster %s (corpse: %d) doesn't have a name, likely invalid\n" % (monsterName, corpse))
-            elif not "dead" in item.name:
+            elif not "dead" in item.name.lower() and not "slain" in item.name.lower() and not "undead" in item.name.lower():
                 printer("[WARNING] Monster %s (corpse: %d) doesn't have dead in it's name, likely invalid\n" % (monsterName, corpse))

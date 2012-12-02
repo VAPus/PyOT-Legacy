@@ -435,7 +435,7 @@
 	"name": "ice"
 },{
 	"id": 708,
-	"cid": "837-840",
+	"cid": 837,
 	"name": "tar",
 	"allowpickupable": 1,
 	"effect": "poff",
@@ -501,7 +501,7 @@
 	"flags": "b"
 },{
 	"id": 920,
-	"cid": "1152-1155",
+	"cid": 1152,
 	"name": "flat roof",
 	"speed": 160
 },{
@@ -519,12 +519,12 @@
 	"speed": 160
 },{
 	"id": "925-944",
-	"cid": "1157-1176",
+	"cid": 1157,
 	"name": "tiled roof",
 	"flags": "s"
 },{
 	"id": "945-964",
-	"cid": "1177-1196",
+	"cid": 1177,
 	"name": "wooden roof",
 	"flags": "s"
 },{
@@ -541,7 +541,7 @@
 	"name": "tic-tac-toe board"
 },{
 	"id": 1025,
-	"cid": "1270-1280",
+	"cid": 1270,
 	"name": "brick wall",
 	"flags": 139267
 },{
@@ -576,7 +576,7 @@
 	"flags": "tb"
 },{
 	"id": 1036,
-	"cid": "1281-1293",
+	"cid": 1281,
 	"name": "framework wall",
 	"flags": 139267
 },{
@@ -611,7 +611,7 @@
 	"flags": "tb"
 },{
 	"id": 1049,
-	"cid": "1294-1304",
+	"cid": 1294,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -646,7 +646,7 @@
 	"flags": "tb"
 },{
 	"id": 1060,
-	"cid": "1305-1315",
+	"cid": 1305,
 	"name": "sandstone wall",
 	"flags": 139267
 },{
@@ -715,7 +715,7 @@
 	"flags": "tb"
 },{
 	"id": 1111,
-	"cid": "1356-1364",
+	"cid": 1356,
 	"name": "white stone wall",
 	"flags": 139267
 },{
@@ -782,7 +782,7 @@
 	"fluidSource": "water"
 },{
 	"id": "1196-1197",
-	"cid": "1441-1449",
+	"cid": 1441,
 	"name": "lava wall",
 	"flags": 16785411
 },{
@@ -1204,7 +1204,7 @@
 	"weight": 3000
 },{
 	"id": "1296-1307",
-	"cid": "1783-1839",
+	"cid": 1783,
 	"name": "stone",
 	"flags": "ts"
 },{
@@ -1356,7 +1356,7 @@
 	"flags": "ts"
 },{
 	"id": "1370-1373",
-	"cid": "1932-1939",
+	"cid": 1932,
 	"name": "marble fountain",
 	"flags": "ts"
 },{
@@ -1371,7 +1371,7 @@
 	"flags": "ts"
 },{
 	"id": "1379-1380",
-	"cid": "7775-1946",
+	"cid": 7775,
 	"name": "mill",
 	"flags": "ts"
 },{
@@ -1502,7 +1502,7 @@
 	"flags": 1056768
 },{
 	"id": "1407-1408",
-	"cid": "1980-1982",
+	"cid": 1980,
 	"name": "gravestone",
 	"flags": 1056769
 },{
@@ -1572,7 +1572,7 @@
 	"name": "unlit campfire"
 },{
 	"id": 1427,
-	"cid": "2002-2003",
+	"cid": 2002,
 	"name": "campfire",
 	"flags": "s"
 },{
@@ -1726,7 +1726,7 @@
 	"flags": "ts"
 },{
 	"id": "1470-1471",
-	"cid": "2053-2058",
+	"cid": 2053,
 	"name": "cobra statue",
 	"flags": "ts"
 },{
@@ -1766,7 +1766,7 @@
 	"transformUseTo": 1479
 },{
 	"id": "1481-1484",
-	"cid": "2110-2114",
+	"cid": 2110,
 	"name": "coal basin",
 	"flags": 16777225
 },{
@@ -2011,7 +2011,7 @@
 	"flags": "s"
 },{
 	"id": "1524-1531",
-	"cid": "2162-2170",
+	"cid": 2162,
 	"name": "stone railing",
 	"flags": "s"
 },{
@@ -2149,7 +2149,7 @@
 	"flags": "s"
 },{
 	"id": "1602-1613",
-	"cid": "2302-2314",
+	"cid": 2302,
 	"name": "big table",
 	"flags": 8201
 },{
@@ -8036,7 +8036,7 @@
 	"weight": 200
 },{
 	"id": "2601-2604",
-	"cid": "3510-3514",
+	"cid": 3510,
 	"name": "coal basin",
 	"flags": 16777289
 },{
@@ -11788,7 +11788,7 @@
 	"weight": 1000
 },{
 	"id": "3122-3127",
-	"cid": "4304-4309",
+	"cid": 4304,
 	"name": "dead dragon",
 	"flags": "s"
 },{
@@ -11874,7 +11874,7 @@
 	"floorchange": "down"
 },{
 	"id": 3139,
-	"cid": "486-498",
+	"cid": 486,
 	"name": "wooden floor"
 },{
 	"id": "3140-3151",
@@ -12018,7 +12018,7 @@
 	"floorchange": "down"
 },{
 	"id": 3325,
-	"cid": "1129-1151",
+	"cid": 1129,
 	"name": "rock",
 	"flags": 16777217
 },{
@@ -12093,7 +12093,7 @@
 	"flags": "s"
 },{
 	"id": 3361,
-	"cid": "1450-1511",
+	"cid": 1450,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -12128,7 +12128,7 @@
 	"flags": "tb"
 },{
 	"id": 3423,
-	"cid": "1512-1527",
+	"cid": 1512,
 	"name": "bamboo wall",
 	"flags": 139267
 },{
@@ -12173,7 +12173,7 @@
 	"flags": "t"
 },{
 	"id": 3447,
-	"cid": "1536-1537",
+	"cid": 1536,
 	"name": "bamboo wall",
 	"flags": 270339
 },{
@@ -12188,7 +12188,7 @@
 	"flags": "ts"
 },{
 	"id": 3450,
-	"cid": "1539-1540",
+	"cid": 1539,
 	"name": "bamboo wall",
 	"flags": 139267
 },{
@@ -12218,7 +12218,7 @@
 	"flags": "tb"
 },{
 	"id": 3468,
-	"cid": "1557-1559",
+	"cid": 1557,
 	"name": "stone wall",
 	"flags": "t"
 },{
@@ -12233,7 +12233,7 @@
 	"flags": "tb"
 },{
 	"id": 3472,
-	"cid": "1561-1564",
+	"cid": 1561,
 	"name": "stone wall",
 	"flags": "t"
 },{
@@ -12248,7 +12248,7 @@
 	"flags": "t"
 },{
 	"id": "3480-3483",
-	"cid": "1569-1584",
+	"cid": 1569,
 	"name": "stone wall",
 	"flags": "ts"
 },{
@@ -12313,7 +12313,7 @@
 	"flags": "ts"
 },{
 	"id": "3508-3521",
-	"cid": "1597-1621",
+	"cid": 1597,
 	"name": "palisade",
 	"flags": "tb"
 },{
@@ -12464,7 +12464,7 @@
 	"transformUseTo": 3551
 },{
 	"id": "3569-3570",
-	"cid": "1716-1721",
+	"cid": 1716,
 	"name": "waterfall",
 	"flags": 16777216
 },{
@@ -12498,7 +12498,7 @@
 	"flags": "ts"
 },{
 	"id": "3610-3611",
-	"cid": "1854-1858",
+	"cid": 1854,
 	"name": "stones"
 },{
 	"id": 3612,
@@ -12511,7 +12511,7 @@
 	"name": "stones"
 },{
 	"id": "3615-3620",
-	"cid": "1859-1875",
+	"cid": 1859,
 	"name": "stone",
 	"flags": "ts"
 },{
@@ -12531,7 +12531,7 @@
 	"flags": "ts"
 },{
 	"id": "3636-3652",
-	"cid": "1880-1921",
+	"cid": 1880,
 	"name": "stone",
 	"flags": "ts"
 },{
@@ -12617,7 +12617,7 @@
 	"floorchange": "west"
 },{
 	"id": "3689-3692",
-	"cid": "2004-2011",
+	"cid": 2004,
 	"name": "large cauldron",
 	"flags": "ts"
 },{
@@ -12627,7 +12627,7 @@
 	"flags": 16785409
 },{
 	"id": 3697,
-	"cid": "2062-2073",
+	"cid": 2062,
 	"name": "statue",
 	"flags": "ts"
 },{
@@ -12652,7 +12652,7 @@
 	"flags": 1056769
 },{
 	"id": 3709,
-	"cid": "2074-2075",
+	"cid": 2074,
 	"name": "small pagoda",
 	"flags": "ts"
 },{
@@ -12662,7 +12662,7 @@
 	"flags": 16785409
 },{
 	"id": 3711,
-	"cid": "2076-2093",
+	"cid": 2076,
 	"name": "statue",
 	"flags": "tb"
 },{
@@ -12729,7 +12729,7 @@
 	"flags": "tb"
 },{
 	"id": "3756-3757",
-	"cid": "2253-2262",
+	"cid": 2253,
 	"name": "bridge",
 	"speed": 200
 },{
@@ -12770,7 +12770,7 @@
 	"flags": "s"
 },{
 	"id": "3802-3803",
-	"cid": "2299-2301",
+	"cid": 2299,
 	"name": "statue",
 	"flags": 16785409
 },{
@@ -13612,7 +13612,7 @@
 	"flags": "s"
 },{
 	"id": "3986-3993",
-	"cid": "3703-3722",
+	"cid": 3703,
 	"name": "thorn bush",
 	"flags": "ts"
 },{
@@ -13677,7 +13677,7 @@
 	"flags": "ts"
 },{
 	"id": "4025-4028",
-	"cid": "3761-3770",
+	"cid": 3761,
 	"name": "bamboo plant",
 	"flags": "ts"
 },{
@@ -13707,7 +13707,7 @@
 	"flags": "ts"
 },{
 	"id": 4041,
-	"cid": "3777-3803",
+	"cid": 3777,
 	"name": "skinny branch",
 	"flags": "s"
 },{
@@ -13847,7 +13847,7 @@
 	"flags": "ts"
 },{
 	"id": "4167-4171",
-	"cid": "3903-3907",
+	"cid": 3903,
 	"name": "mushrooms",
 	"flags": "ts"
 },{
@@ -13857,7 +13857,7 @@
 	"flags": "ts"
 },{
 	"id": "4177-4180",
-	"cid": "3913-3916",
+	"cid": 3913,
 	"name": "mushrooms",
 	"flags": "ts"
 },{
@@ -13884,7 +13884,7 @@
 	"flags": "ts"
 },{
 	"id": "4186-4188",
-	"cid": "3922-3937",
+	"cid": 3922,
 	"name": "log",
 	"flags": 8200
 },{
@@ -13935,7 +13935,7 @@
 	"flags": "ts"
 },{
 	"id": "4223-4226",
-	"cid": "3959-3974",
+	"cid": 3959,
 	"name": "branch"
 },{
 	"id": "4227-4228",
@@ -13948,7 +13948,7 @@
 	"name": "branch"
 },{
 	"id": "4239-4241",
-	"cid": "3975-3986",
+	"cid": 3975,
 	"name": "log covered in moss",
 	"flags": 8200
 },{
@@ -14719,7 +14719,7 @@
 	"flags": "tb"
 },{
 	"id": "4514-4517",
-	"cid": "4503-4514",
+	"cid": 4503,
 	"name": "rocks",
 	"flags": "t"
 },{
@@ -14734,7 +14734,7 @@
 	"flags": "t"
 },{
 	"id": "4526-4541",
-	"cid": "4515-4542",
+	"cid": 4515,
 	"name": "grass",
 	"speed": 150
 },{
@@ -14757,7 +14757,7 @@
 	"speed": 150
 },{
 	"id": "4554-4557",
-	"cid": "4543-4555",
+	"cid": 4543,
 	"name": "gravel",
 	"flags": "t"
 },{
@@ -14782,7 +14782,7 @@
 	"flags": "t"
 },{
 	"id": 4595,
-	"cid": "4584-4596",
+	"cid": 4584,
 	"name": "rocks",
 	"speed": 150
 },{
@@ -14881,7 +14881,7 @@
 	"speed": 160
 },{
 	"id": "4644-4651",
-	"cid": "4633-4652",
+	"cid": 4633,
 	"name": "shallow water",
 	"allowpickupable": 1,
 	"flags": 16785409,
@@ -14911,7 +14911,7 @@
 	"speed": 1
 },{
 	"id": "4667-4674",
-	"cid": "4656-4679",
+	"cid": 4656,
 	"name": "dirt",
 	"flags": 8396800
 },{
@@ -14943,7 +14943,7 @@
 	"flags": 8396800
 },{
 	"id": "4737-4740",
-	"cid": "4726-4737",
+	"cid": 4726,
 	"name": "snow",
 	"flags": "t"
 },{
@@ -14965,7 +14965,7 @@
 	"flags": 16777217
 },{
 	"id": "4760-4775",
-	"cid": "4749-4772",
+	"cid": 4749,
 	"name": "sand",
 	"flags": "t"
 },{
@@ -14980,7 +14980,7 @@
 	"flags": "t"
 },{
 	"id": "4784-4787",
-	"cid": "4773-4784",
+	"cid": 4773,
 	"name": "grass",
 	"flags": "t"
 },{
@@ -14995,7 +14995,7 @@
 	"flags": "t"
 },{
 	"id": "4796-4803",
-	"cid": "4785-4808",
+	"cid": 4785,
 	"name": "dirt",
 	"flags": 8396800
 },{
@@ -15288,7 +15288,7 @@
 	"flags": 16785408
 },{
 	"id": 4883,
-	"cid": "4881-4903",
+	"cid": 4881,
 	"name": "ship",
 	"flags": 139267
 },{
@@ -15358,7 +15358,7 @@
 	"flags": "tb"
 },{
 	"id": "4922-4926",
-	"cid": "4920-4939",
+	"cid": 4920,
 	"name": "ship railing",
 	"flags": "ts"
 },{
@@ -15383,7 +15383,7 @@
 	"flags": "ts"
 },{
 	"id": "4942-4944",
-	"cid": "4940-4952",
+	"cid": 4940,
 	"name": "mast",
 	"flags": "tb"
 },{
@@ -15438,7 +15438,7 @@
 	"flags": "s"
 },{
 	"id": "4978-4987",
-	"cid": "4977-4986",
+	"cid": 4977,
 	"name": "hawser",
 	"flags": "s"
 },{
@@ -15479,12 +15479,12 @@
 	"flags": "s"
 },{
 	"id": "4998-5001",
-	"cid": "4997-5000",
+	"cid": 4997,
 	"name": "hawser",
 	"flags": "s"
 },{
 	"id": 5002,
-	"cid": "5001-4916",
+	"cid": 5001,
 	"name": "ship cabin wall",
 	"flags": "ts"
 },{
@@ -15514,7 +15514,7 @@
 	"flags": "tb"
 },{
 	"id": 5010,
-	"cid": "5009-5010",
+	"cid": 5009,
 	"name": "ornamented wall",
 	"flags": "tb"
 },{
@@ -15592,7 +15592,6 @@
 	"flags": 1048641
 },{
 	"id": "5057-5060",
-	"cid": "5057-5060",
 	"name": "small snake head",
 	"flags": 16777216
 },{
@@ -15998,7 +15997,7 @@
 	"transformUseTo": 5144
 },{
 	"id": "5146-5148",
-	"cid": "5145-5154",
+	"cid": 5145,
 	"name": "framework wall",
 	"flags": 270339
 },{
@@ -16061,7 +16060,7 @@
 	"floorchange": "west"
 },{
 	"id": 5261,
-	"cid": "5260-5274",
+	"cid": 5260,
 	"name": "wooden wall",
 	"flags": 139267
 },{
@@ -16260,7 +16259,7 @@
 	"flags": "ts"
 },{
 	"id": "5321-5324",
-	"cid": "5320-5330",
+	"cid": 5320,
 	"name": "wooden pillar",
 	"flags": "ts"
 },{
@@ -16280,7 +16279,7 @@
 	"flags": "t"
 },{
 	"id": "5332-5389",
-	"cid": "5331-5388",
+	"cid": 5331,
 	"name": "sign",
 	"flags": 1056769
 },{
@@ -16346,7 +16345,7 @@
 	"flags": "ts"
 },{
 	"id": 5413,
-	"cid": "5412-5415",
+	"cid": 5412,
 	"name": "coral reef",
 	"flags": 16785409
 },{
@@ -16365,7 +16364,7 @@
 	"flags": 16777216
 },{
 	"id": 5419,
-	"cid": "5418-5419",
+	"cid": 5418,
 	"name": "bubbles",
 	"flags": 16785408
 },{
@@ -16395,7 +16394,7 @@
 	"flags": "ts"
 },{
 	"id": "5427-5434",
-	"cid": "5426-5437",
+	"cid": 5426,
 	"name": "shallow water",
 	"flags": "t"
 },{
@@ -16670,7 +16669,7 @@
 	"transformUseTo": 5517
 },{
 	"id": 5519,
-	"cid": "5518-5519",
+	"cid": 5518,
 	"name": "stone wall",
 	"flags": "tb"
 },{
@@ -17374,7 +17373,6 @@
 	"flags": "ts"
 },{
 	"id": "5755-5756",
-	"cid": "5755-5761",
 	"name": "turtle",
 	"flags": 16777216,
 	"speed": 160
@@ -17583,7 +17581,6 @@
 	"weight": 2200
 },{
 	"id": 5814,
-	"cid": "5814-5827",
 	"name": "melting ground",
 	"flags": 16777219
 },{
@@ -17624,7 +17621,6 @@
 	"name": "scimitar"
 },{
 	"id": "5860-5863",
-	"cid": "5860-5863",
 	"name": "armor rack",
 	"flags": "tb"
 },{
@@ -19376,7 +19372,7 @@
 	"weight": 800
 },{
 	"id": 6133,
-	"cid": "6132-6136",
+	"cid": 6132,
 	"name": "tree wall",
 	"flags": 139267
 },{
@@ -19400,7 +19396,7 @@
 	"name": "roof"
 },{
 	"id": "6139-6142",
-	"cid": "6138-6151",
+	"cid": 6138,
 	"name": "tree wall",
 	"flags": "tb"
 },{
@@ -19447,7 +19443,7 @@
 	"speed": 160
 },{
 	"id": "6175-6176",
-	"cid": "6174-6176",
+	"cid": 6174,
 	"name": "tree archway",
 	"flags": "t"
 },{
@@ -19462,7 +19458,7 @@
 	"flags": "ts"
 },{
 	"id": "6180-6181",
-	"cid": "6179-6188",
+	"cid": 6179,
 	"name": "tree",
 	"flags": "s"
 },{
@@ -19593,7 +19589,7 @@
 	"transformUseTo": 6208
 },{
 	"id": 6210,
-	"cid": "6209-6214",
+	"cid": 6209,
 	"name": "bamboo roof"
 },{
 	"id": "6211-6212",
@@ -19611,7 +19607,7 @@
 	"flags": "ts"
 },{
 	"id": "6216-6217",
-	"cid": "6215-6218",
+	"cid": 6215,
 	"name": "grass"
 },{
 	"id": "6218-6219",
@@ -19638,7 +19634,7 @@
 	"flags": "t"
 },{
 	"id": 6238,
-	"cid": "6237-6247",
+	"cid": 6237,
 	"name": "plant wall",
 	"flags": 139267
 },{
@@ -20474,7 +20470,7 @@
 	"weight": 2500
 },{
 	"id": "6374-6378",
-	"cid": "6373-6385",
+	"cid": 6373,
 	"name": "debris",
 	"flags": "t"
 },{
@@ -20560,7 +20556,7 @@
 	"flags": "ts"
 },{
 	"id": "6416-6419",
-	"cid": "6415-6421",
+	"cid": 6415,
 	"name": "bone wall",
 	"flags": "s"
 },{
@@ -20701,7 +20697,7 @@
 	"name": "planks"
 },{
 	"id": "6476-6480",
-	"cid": "6475-6487",
+	"cid": 6475,
 	"name": "debris",
 	"flags": "t"
 },{
@@ -20716,7 +20712,7 @@
 	"flags": "t"
 },{
 	"id": 6489,
-	"cid": "6488-6489",
+	"cid": 6488,
 	"name": "christmas branch",
 	"flags": 16777312,
 	"weight": 1800
@@ -20794,7 +20790,7 @@
 	"weight": 1000
 },{
 	"id": 6503,
-	"cid": "6502-6503",
+	"cid": 6502,
 	"name": "red christmas garland",
 	"flags": 16842848,
 	"weight": 500
@@ -20855,7 +20851,7 @@
 	"flags": 16777216
 },{
 	"id": "6514-6515",
-	"cid": "6513-6514",
+	"cid": 6513,
 	"name": "christmas garland",
 	"flags": 16777216
 },{
@@ -20874,7 +20870,7 @@
 	"flags": 16777216
 },{
 	"id": "6518-6519",
-	"cid": "6517-6518",
+	"cid": 6517,
 	"name": "christmas garland",
 	"flags": 16777216
 },{
@@ -21104,7 +21100,6 @@
 	"weight": 500
 },{
 	"id": "6562-6563",
-	"cid": "6562-6565",
 	"name": "roof",
 	"flags": "ts"
 },{
@@ -21220,12 +21215,10 @@
 	"flags": "t"
 },{
 	"id": "6610-6626",
-	"cid": "6610-6626",
 	"name": "snow",
 	"flags": "t"
 },{
 	"id": "6627-6646",
-	"cid": "6627-6682",
 	"name": "shallow water",
 	"allowpickupable": 1,
 	"flags": 16785409,
@@ -21265,7 +21258,6 @@
 	"fluidSource": "water"
 },{
 	"id": "6695-6698",
-	"cid": "6695-6718",
 	"name": "ice",
 	"flags": "t"
 },{
@@ -21290,7 +21282,6 @@
 	"flags": "tb"
 },{
 	"id": 6727,
-	"cid": "6727-6738",
 	"name": "ice wall",
 	"flags": "tb"
 },{
@@ -21323,7 +21314,6 @@
 	"flags": "tb"
 },{
 	"id": 6739,
-	"cid": "6739-6749",
 	"name": "frozen wall",
 	"flags": 139267
 },{
@@ -21352,7 +21342,6 @@
 	"flags": "tb"
 },{
 	"id": "6750-6753",
-	"cid": "6750-6755",
 	"name": "igloo",
 	"flags": "ts"
 },{
@@ -21377,7 +21366,6 @@
 	"flags": "tb"
 },{
 	"id": 6773,
-	"cid": "6773-6774",
 	"name": "fur wall",
 	"flags": 139267
 },{
@@ -21390,7 +21378,6 @@
 	"flags": "tb"
 },{
 	"id": "6776-6778",
-	"cid": "6776-6787",
 	"name": "fur wall",
 	"flags": "tb"
 },{
@@ -21484,7 +21471,6 @@
 	"speed": 160
 },{
 	"id": "6822-6837",
-	"cid": "6822-6838",
 	"name": "snow",
 	"flags": "tb"
 },{
@@ -21493,7 +21479,6 @@
 	"flags": "b"
 },{
 	"id": 6839,
-	"cid": "6839-6840",
 	"name": "wooden wall",
 	"flags": 139267
 },{
@@ -21506,7 +21491,6 @@
 	"flags": "tb"
 },{
 	"id": "6842-6844",
-	"cid": "6842-6849",
 	"name": "wooden wall",
 	"flags": "tb"
 },{
@@ -21539,7 +21523,6 @@
 	"flags": 270339
 },{
 	"id": "6854-6855",
-	"cid": "6854-6856",
 	"name": "stone base",
 	"flags": 270339
 },{
@@ -21560,7 +21543,6 @@
 	"flags": "tb"
 },{
 	"id": "6861-6862",
-	"cid": "6861-6867",
 	"name": "stone base",
 	"flags": "tb"
 },{
@@ -21585,7 +21567,6 @@
 	"flags": "m"
 },{
 	"id": "6869-6881",
-	"cid": "6869-6881",
 	"name": "ice",
 	"flags": "b"
 },{
@@ -21741,7 +21722,6 @@
 	"speed": 150
 },{
 	"id": "6925-6937",
-	"cid": "6925-6937",
 	"name": "ice",
 	"flags": "b"
 },{
@@ -21756,7 +21736,6 @@
 	"name": "ice"
 },{
 	"id": "6953-6959",
-	"cid": "6953-6965",
 	"name": "ice railing",
 	"flags": "s"
 },{
@@ -22013,7 +21992,6 @@
 	"flags": "t"
 },{
 	"id": "7062-7066",
-	"cid": "7062-7074",
 	"name": "rock",
 	"speed": 150
 },{
@@ -22028,7 +22006,6 @@
 	"speed": 150
 },{
 	"id": "7075-7082",
-	"cid": "7075-7090",
 	"name": "dark rock",
 	"flags": "t"
 },{
@@ -22071,7 +22048,6 @@
 	"flags": "m"
 },{
 	"id": "7095-7098",
-	"cid": "7095-7101",
 	"name": "wooden railing",
 	"flags": 8396801
 },{
@@ -22135,7 +22111,6 @@
 	"flags": "t"
 },{
 	"id": "7145-7149",
-	"cid": "7145-7157",
 	"name": "ice",
 	"flags": "t"
 },{
@@ -22229,7 +22204,6 @@
 	"weight": 850
 },{
 	"id": 7185,
-	"cid": "7185-7186",
 	"name": "some crack",
 	"flags": "t"
 },{
@@ -22261,7 +22235,6 @@
 	"flags": "t"
 },{
 	"id": "7213-7214",
-	"cid": "7213-7227",
 	"name": "ship rudder",
 	"flags": "ts"
 },{
@@ -22432,7 +22405,6 @@
 	"flags": "tb"
 },{
 	"id": "7264-7265",
-	"cid": "7264-7267",
 	"name": "sled",
 	"flags": "ts"
 },{
@@ -24020,7 +23992,7 @@
 	"duration": 60
 },{
 	"id": "7546-7548",
-	"cid": "190-192",
+	"cid": 190,
 	"name": "spider web",
 	"flags": "s"
 },{
@@ -24152,7 +24124,7 @@
 	"weight": 310
 },{
 	"id": "7592-7595",
-	"cid": "240-265",
+	"cid": 240,
 	"name": "tent",
 	"flags": "tb"
 },{
@@ -24352,7 +24324,7 @@
 	"flags": "p"
 },{
 	"id": "7641-7644",
-	"cid": "290-303",
+	"cid": 290,
 	"name": "rock ground",
 	"flags": "t"
 },{
@@ -24379,7 +24351,7 @@
 	"weight": 150
 },{
 	"id": 7656,
-	"cid": "307-315",
+	"cid": 307,
 	"name": "grass",
 	"flags": "t"
 },{
@@ -24400,7 +24372,7 @@
 	"weight": 2500
 },{
 	"id": 7666,
-	"cid": "317-320",
+	"cid": 317,
 	"name": "dirt",
 	"flags": "t"
 },{
@@ -25675,7 +25647,7 @@
 	"name": "astronomical map"
 },{
 	"id": "7833-7834",
-	"cid": "756-760",
+	"cid": 756,
 	"name": "ground",
 	"flags": "t"
 },{
@@ -26763,7 +26735,7 @@
 	"flags": "b"
 },{
 	"id": "7977-7986",
-	"cid": "1012-1024",
+	"cid": 1012,
 	"name": "sparkling gems",
 	"flags": "t"
 },{
@@ -26791,7 +26763,7 @@
 	"flags": 16777216
 },{
 	"id": 8017,
-	"cid": "1087-1090",
+	"cid": 1087,
 	"name": "earth",
 	"flags": "tb"
 },{
@@ -26820,7 +26792,7 @@
 	"flags": "t"
 },{
 	"id": "8033-8037",
-	"cid": "1703-1715",
+	"cid": 1703,
 	"name": "sand",
 	"flags": "t"
 },{
@@ -26839,7 +26811,7 @@
 	"flags": 25165824
 },{
 	"id": "8048-8052",
-	"cid": "1724-1733",
+	"cid": 1724,
 	"name": "earth",
 	"speed": 120
 },{
@@ -26946,7 +26918,7 @@
 	"flags": "m"
 },{
 	"id": "8117-8132",
-	"cid": "4411-4432",
+	"cid": 4411,
 	"name": "earth",
 	"flags": "t"
 },{
@@ -26971,7 +26943,7 @@
 	"flags": "ts"
 },{
 	"id": 8140,
-	"cid": "4434-4608",
+	"cid": 4434,
 	"name": "grass",
 	"flags": "t"
 },{
@@ -26995,7 +26967,7 @@
 	"flags": "m"
 },{
 	"id": 8166,
-	"cid": "4745-4746",
+	"cid": 4745,
 	"name": "grass",
 	"flags": "t"
 },{
@@ -27145,7 +27117,7 @@
 	"floorchange": "down"
 },{
 	"id": "8214-8226",
-	"cid": "7480-7492",
+	"cid": 7480,
 	"name": "jagged stones",
 	"flags": "ts"
 },{
@@ -27182,7 +27154,7 @@
 	"flags": 16777216
 },{
 	"id": "8254-8255",
-	"cid": "7520-7522",
+	"cid": 7520,
 	"name": "hole",
 	"floorchange": "down"
 },{
@@ -27503,7 +27475,7 @@
 	"flags": "ts"
 },{
 	"id": "8315-8322",
-	"cid": "959-966",
+	"cid": 959,
 	"name": "sand",
 	"flags": 8,
 	"speed": 160
@@ -27529,7 +27501,7 @@
 	"flags": "t"
 },{
 	"id": "8347-8348",
-	"cid": "992-1005",
+	"cid": 992,
 	"name": "dried grass",
 	"speed": 150
 },{
@@ -27703,7 +27675,7 @@
 	"flags": "s"
 },{
 	"id": "8406-8415",
-	"cid": "7576-7585",
+	"cid": 7576,
 	"name": "bones",
 	"flags": "s"
 },{
@@ -27778,7 +27750,7 @@
 	"weight": 265
 },{
 	"id": 8475,
-	"cid": "7645-7687",
+	"cid": 7645,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -27863,7 +27835,7 @@
 	"flags": 270339
 },{
 	"id": "8518-8521",
-	"cid": "7688-7695",
+	"cid": 7688,
 	"name": "decorated stone wall",
 	"flags": "tb"
 },{
@@ -28292,7 +28264,7 @@
 	"flags": "ts"
 },{
 	"id": 8641,
-	"cid": "7813-7814",
+	"cid": 7813,
 	"name": "crucible",
 	"flags": 16785409
 },{
@@ -28302,7 +28274,7 @@
 	"flags": "ts"
 },{
 	"id": 8643,
-	"cid": "7815-7820",
+	"cid": 7815,
 	"name": "mould",
 	"flags": 16785409
 },{
@@ -28327,7 +28299,7 @@
 	"flags": "t"
 },{
 	"id": "8649-8652",
-	"cid": "7821-7840",
+	"cid": 7821,
 	"name": "steaming hot lava",
 	"flags": 16785409
 },{
@@ -28362,7 +28334,7 @@
 	"flags": 16777216
 },{
 	"id": "8674-8677",
-	"cid": "7846-7849",
+	"cid": 7846,
 	"name": "muzzle",
 	"flags": 16777216
 },{
@@ -28771,7 +28743,7 @@
 	"flags": "s"
 },{
 	"id": "8770-8772",
-	"cid": "7942-7948",
+	"cid": 7942,
 	"name": "demon oak",
 	"flags": "ts"
 },{
@@ -28812,7 +28784,7 @@
 	"flags": "ts"
 },{
 	"id": "8798-8818",
-	"cid": "7970-7990",
+	"cid": 7970,
 	"name": "dead tree",
 	"flags": "ts"
 },{
@@ -28850,7 +28822,7 @@
 	"weight": 1800
 },{
 	"id": "8824-8833",
-	"cid": "7996-8005",
+	"cid": 7996,
 	"name": "sparkling gems",
 	"flags": "t"
 },{
@@ -30091,7 +30063,7 @@
 	"weight": 1000
 },{
 	"id": "8986-9001",
-	"cid": "8158-8173",
+	"cid": 8158,
 	"name": "tree",
 	"flags": "t"
 },{
@@ -30313,7 +30285,7 @@
 	"flags": "ts"
 },{
 	"id": "9087-9088",
-	"cid": "5028-5030",
+	"cid": 5028,
 	"name": "screw",
 	"flags": "ts"
 },{
@@ -30323,7 +30295,7 @@
 	"flags": "s"
 },{
 	"id": 9090,
-	"cid": "5031-5032",
+	"cid": 5031,
 	"name": "thread of screw",
 	"flags": "s"
 },{
@@ -30372,7 +30344,7 @@
 	"floorchange": "south"
 },{
 	"id": 9099,
-	"cid": "5040-5403",
+	"cid": 5040,
 	"name": "roof",
 	"flags": "tb"
 },{
@@ -30473,7 +30445,7 @@
 	"weight": 790
 },{
 	"id": 9118,
-	"cid": "8201-8216",
+	"cid": 8201,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -30533,7 +30505,7 @@
 	"weight": 890
 },{
 	"id": 9142,
-	"cid": "8226-8227",
+	"cid": 8226,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -30692,7 +30664,7 @@
 	"transformUseTo": 9181
 },{
 	"id": "9183-9184",
-	"cid": "8267-8270",
+	"cid": 8267,
 	"name": "stone wall",
 	"flags": 270339
 },{
@@ -30722,7 +30694,7 @@
 	"name": "iron floor"
 },{
 	"id": "9207-9209",
-	"cid": "8291-8307",
+	"cid": 8291,
 	"name": "iron wall",
 	"flags": 139267
 },{
@@ -30767,7 +30739,7 @@
 	"flags": 270339
 },{
 	"id": "9224-9232",
-	"cid": "8308-8318",
+	"cid": 8308,
 	"name": "wooden floor"
 },{
 	"id": "9233-9234",
@@ -30786,7 +30758,7 @@
 	"flags": "ts"
 },{
 	"id": 9241,
-	"cid": "8325-8326",
+	"cid": 8325,
 	"name": "vampire lord statue",
 	"flags": "ts"
 },{
@@ -30940,7 +30912,7 @@
 	"flags": "t"
 },{
 	"id": 9288,
-	"cid": "8372-8377",
+	"cid": 8372,
 	"name": "stone wall",
 	"flags": "tb"
 },{
@@ -31054,7 +31026,7 @@
 	"flags": "s"
 },{
 	"id": "9393-9398",
-	"cid": "8477-8488",
+	"cid": 8477,
 	"name": "small tower",
 	"flags": "s"
 },{
@@ -31166,7 +31138,7 @@
 	"flags": "tb"
 },{
 	"id": "9471-9484",
-	"cid": "8555-8570",
+	"cid": 8555,
 	"name": "gate",
 	"flags": "s"
 },{
@@ -31240,7 +31212,7 @@
 	"flags": "s"
 },{
 	"id": "9535-9536",
-	"cid": "8619-8644",
+	"cid": 8619,
 	"name": "roof",
 	"speed": 160
 },{
@@ -31357,7 +31329,7 @@
 	"flags": "ts"
 },{
 	"id": 9597,
-	"cid": "8681-8683",
+	"cid": 8681,
 	"name": "statue",
 	"flags": 16785409
 },{
@@ -31387,7 +31359,7 @@
 	"floorchange": "down"
 },{
 	"id": "9607-9608",
-	"cid": "8691-8694",
+	"cid": 8691,
 	"name": "small balcony",
 	"flags": "tb"
 },{
@@ -31712,7 +31684,7 @@
 	"flags": "ts"
 },{
 	"id": "9720-9725",
-	"cid": "8805-8811",
+	"cid": 8805,
 	"name": "large window",
 	"flags": "ts"
 },{
@@ -31759,7 +31731,7 @@
 	"weight": 900
 },{
 	"id": 9737,
-	"cid": "8822-8825",
+	"cid": 8822,
 	"name": "ghost charm",
 	"flags": 112,
 	"weight": 900
@@ -31844,7 +31816,7 @@
 	"flags": "ts"
 },{
 	"id": "9759-9762",
-	"cid": "8844-8851",
+	"cid": 8844,
 	"name": "roof",
 	"flags": "b",
 	"speed": 1
@@ -31871,7 +31843,7 @@
 	"flags": 16777216
 },{
 	"id": 9772,
-	"cid": "8858-8859",
+	"cid": 8858,
 	"name": "ghost charm",
 	"description": "You can see the other side through it.",
 	"flags": 16777217,
@@ -32125,7 +32097,7 @@
 	"weight": 1000
 },{
 	"id": 9838,
-	"cid": "8924-8931",
+	"cid": 8924,
 	"name": "wall lamp",
 	"flags": 65536
 },{
@@ -32326,7 +32298,7 @@
 	"speed": 150
 },{
 	"id": 9884,
-	"cid": "8970-8971",
+	"cid": 8970,
 	"name": "strange apparatus",
 	"flags": "s"
 },{
@@ -32341,7 +32313,7 @@
 	"flags": "s"
 },{
 	"id": 9887,
-	"cid": "8973-8976",
+	"cid": 8973,
 	"name": "strange apparatus",
 	"flags": "s"
 },{
@@ -32366,7 +32338,7 @@
 	"flags": "s"
 },{
 	"id": 9892,
-	"cid": "8978-8979",
+	"cid": 8978,
 	"name": "strange apparatus",
 	"flags": "s"
 },{
@@ -32381,7 +32353,7 @@
 	"flags": "s"
 },{
 	"id": 9895,
-	"cid": "8981-8982",
+	"cid": 8981,
 	"name": "strange machine",
 	"flags": "s"
 },{
@@ -32396,7 +32368,7 @@
 	"flags": "s"
 },{
 	"id": 9898,
-	"cid": "8984-8985",
+	"cid": 8984,
 	"name": "strange machine",
 	"flags": "s"
 },{
@@ -32411,7 +32383,7 @@
 	"flags": "s"
 },{
 	"id": 9901,
-	"cid": "8987-8988",
+	"cid": 8987,
 	"name": "strange machine",
 	"flags": "s"
 },{
@@ -32426,7 +32398,7 @@
 	"flags": "s"
 },{
 	"id": 9904,
-	"cid": "8990-8991",
+	"cid": 8990,
 	"name": "strange machine",
 	"flags": "s"
 },{
@@ -33324,7 +33296,7 @@
 	"name": "bellow"
 },{
 	"id": 10041,
-	"cid": "9122-9124",
+	"cid": 9122,
 	"name": "crucible",
 	"flags": "ts"
 },{
@@ -33439,7 +33411,7 @@
 	"weight": 800
 },{
 	"id": 10063,
-	"cid": "9144-9145",
+	"cid": 9144,
 	"name": "Epaminondas doll",
 	"description": "He talks, moves and sings just like a real person.",
 	"flags": "p",
@@ -34016,7 +33988,7 @@
 	"name": "dirt"
 },{
 	"id": 10177,
-	"cid": "9259-9269",
+	"cid": 9259,
 	"name": "limestone wall",
 	"flags": 139267
 },{
@@ -34081,7 +34053,7 @@
 	"flags": "s"
 },{
 	"id": "10198-10199",
-	"cid": "9280-9285",
+	"cid": 9280,
 	"name": "limestone pillar",
 	"flags": "ts"
 },{
@@ -34182,7 +34154,7 @@
 	"weight": 820
 },{
 	"id": 10226,
-	"cid": "9309-9331",
+	"cid": 9309,
 	"name": "framework wall",
 	"flags": 139267
 },{
@@ -34237,7 +34209,7 @@
 	"flags": 139267
 },{
 	"id": 10249,
-	"cid": "9332-9344",
+	"cid": 9332,
 	"name": "stone wall",
 	"flags": 139267
 },{
@@ -35299,7 +35271,7 @@
 	"cid": 9620
 },{
 	"id": 10538,
-	"cid": "9622-9623",
+	"cid": 9622,
 	"name": "slain death blob",
 	"containerSize": 10
 },{
@@ -35675,7 +35647,7 @@
 	"weight": 3500
 },{
 	"id": "10617-10624",
-	"cid": "9700-9719",
+	"cid": 9700,
 	"name": "dirt mud",
 	"speed": 110
 },{
@@ -35686,7 +35658,7 @@
 	"speed": 110
 },{
 	"id": 10637,
-	"cid": "9720-9732",
+	"cid": 9720,
 	"name": "sand",
 	"speed": 160
 },{
@@ -35702,7 +35674,7 @@
 	"flags": "tb"
 },{
 	"id": "10691-10699",
-	"cid": "9774-9791",
+	"cid": 9774,
 	"name": "zaoan decoration",
 	"flags": "s"
 },{
@@ -35737,7 +35709,7 @@
 	"flags": "s"
 },{
 	"id": "10713-10718",
-	"cid": "9796-9801",
+	"cid": 9796,
 	"name": "serpent decoration",
 	"flags": "s"
 },{
@@ -35764,7 +35736,7 @@
 	"flags": "t"
 },{
 	"id": 10726,
-	"cid": "9809-9810",
+	"cid": 9809,
 	"name": "zaoan decoration"
 },{
 	"id": 10727,
@@ -35813,7 +35785,7 @@
 	"flags": "ts"
 },{
 	"id": "10737-10738",
-	"cid": "9820-9823",
+	"cid": 9820,
 	"name": "pepper grass"
 },{
 	"id": "10739-10740",
@@ -35822,7 +35794,7 @@
 	"flags": 8388608
 },{
 	"id": 10741,
-	"cid": "9824-9826",
+	"cid": 9824,
 	"name": "trollhair plants",
 	"flags": "t"
 },{
@@ -35837,7 +35809,7 @@
 	"flags": "ts"
 },{
 	"id": "10752-10755",
-	"cid": "9835-9842",
+	"cid": 9835,
 	"name": "diabolic's hedge",
 	"flags": "ts"
 },{
@@ -35858,7 +35830,7 @@
 	"name": "wild wine"
 },{
 	"id": 10763,
-	"cid": "9846-9847",
+	"cid": 9846,
 	"name": "pepper root grass",
 	"flags": "ts"
 },{
@@ -36054,7 +36026,7 @@
 	"flags": "tb"
 },{
 	"id": "10846-10856",
-	"cid": "9929-9951",
+	"cid": 9929,
 	"name": "serpent ground"
 },{
 	"id": "10857-10868",
@@ -36097,7 +36069,7 @@
 	"flags": "b"
 },{
 	"id": 10884,
-	"cid": "9967-9979",
+	"cid": 9967,
 	"name": "scale roof",
 	"speed": 160
 },{
@@ -36108,7 +36080,7 @@
 	"speed": 160
 },{
 	"id": "10897-10905",
-	"cid": "9980-9991",
+	"cid": 9980,
 	"name": "serpent decoration",
 	"flags": "s"
 },{
@@ -36170,7 +36142,7 @@
 	"weight": 680
 },{
 	"id": "10929-10931",
-	"cid": "10012-10021",
+	"cid": 10012,
 	"name": "zaoan decoration"
 },{
 	"id": "10932-10938",
@@ -36179,7 +36151,7 @@
 	"flags": "s"
 },{
 	"id": "10939-10941",
-	"cid": "10022-10024",
+	"cid": 10022,
 	"name": "horn decoration",
 	"flags": "s"
 },{
@@ -36242,7 +36214,7 @@
 	"flags": "ts"
 },{
 	"id": 10960,
-	"cid": "10043-10045",
+	"cid": 10043,
 	"name": "lance",
 	"flags": "ts"
 },{
@@ -36367,7 +36339,7 @@
 	"flags": "ts"
 },{
 	"id": "11016-11023",
-	"cid": "10099-10110",
+	"cid": 10099,
 	"name": "mud sand",
 	"flags": 8396800
 },{
@@ -36385,7 +36357,7 @@
 	"name": "mud sand grass"
 },{
 	"id": 11030,
-	"cid": "10113-10125",
+	"cid": 10113,
 	"name": "water",
 	"flags": 16777216,
 	"speed": 200
@@ -36403,7 +36375,7 @@
 	"speed": 200
 },{
 	"id": "11043-11050",
-	"cid": "10126-10133",
+	"cid": 10126,
 	"name": "rice",
 	"flags": "s"
 },{
@@ -36440,7 +36412,7 @@
 	"weight": 2180
 },{
 	"id": 11077,
-	"cid": "10160-10171",
+	"cid": 10160,
 	"name": "sand",
 	"speed": 120
 },{
@@ -36809,7 +36781,7 @@
 	"weight": 1800
 },{
 	"id": "11145-11152",
-	"cid": "10228-10243",
+	"cid": 10228,
 	"name": "sand",
 	"speed": 200
 },{
@@ -36843,7 +36815,7 @@
 	"weight": 8000
 },{
 	"id": "11165-11172",
-	"cid": "10248-10271",
+	"cid": 10248,
 	"name": "sand",
 	"flags": 8396800
 },{
@@ -37528,7 +37500,7 @@
 	"fluidSource": "blood"
 },{
 	"id": "11289-11294",
-	"cid": "10372-10381",
+	"cid": 10372,
 	"name": "banner",
 	"flags": "ts"
 },{
@@ -38190,7 +38162,7 @@
 	"weight": 30
 },{
 	"id": 11401,
-	"cid": "3997-4010",
+	"cid": 3997,
 	"name": "Tibiora's box",
 	"description": "It contains all the knowledge of the Tibian lands gathered arduously by Tibia-Stats.com.",
 	"flags": "p",
@@ -38365,7 +38337,7 @@
 	"speed": 200
 },{
 	"id": "11451-11458",
-	"cid": "10495-10506",
+	"cid": 10495,
 	"name": "tainted soil",
 	"flags": "t"
 },{
@@ -38390,7 +38362,7 @@
 	"flags": "s"
 },{
 	"id": "11478-11481",
-	"cid": "10522-10547",
+	"cid": 10522,
 	"name": "dirt floor",
 	"flags": "t"
 },{
@@ -38405,7 +38377,7 @@
 	"flags": "t"
 },{
 	"id": "11504-11509",
-	"cid": "10548-10577",
+	"cid": 10548,
 	"name": "ground",
 	"speed": 140
 },{
@@ -38440,7 +38412,7 @@
 	"speed": 140
 },{
 	"id": "11534-11543",
-	"cid": "10578-10587",
+	"cid": 10578,
 	"name": "stone",
 	"flags": "ts"
 },{
@@ -38455,7 +38427,7 @@
 	"flags": 16777217
 },{
 	"id": "11549-11556",
-	"cid": "10593-10604",
+	"cid": 10593,
 	"name": "acid",
 	"flags": 16785409
 },{
@@ -38470,7 +38442,7 @@
 	"speed": 140
 },{
 	"id": "11562-11565",
-	"cid": "10606-10614",
+	"cid": 10606,
 	"name": "dead bamboo",
 	"flags": "ts"
 },{
@@ -38513,7 +38485,7 @@
 	"flags": "s"
 },{
 	"id": "11631-11637",
-	"cid": "10675-10681",
+	"cid": 10675,
 	"name": "small mudpit",
 	"flags": 8388608
 },{
@@ -38639,7 +38611,7 @@
 	"flags": 16777216
 },{
 	"id": "11729-11732",
-	"cid": "10773-10796",
+	"cid": 10773,
 	"name": "ground",
 	"flags": "t"
 },{
@@ -38719,7 +38691,7 @@
 	"flags": 8396800
 },{
 	"id": "11785-11788",
-	"cid": "10829-10836",
+	"cid": 10829,
 	"name": "muddy floor",
 	"flags": 8396800
 },{
@@ -38807,7 +38779,7 @@
 	"speed": 90
 },{
 	"id": "11864-11867",
-	"cid": "10908-10951",
+	"cid": 10908,
 	"name": "bridge",
 	"flags": "t"
 },{
@@ -38831,7 +38803,7 @@
 	"flags": "t"
 },{
 	"id": 11915,
-	"cid": "10959-10960",
+	"cid": 10959,
 	"name": "dragon basin",
 	"flags": "ts"
 },{
@@ -38881,7 +38853,7 @@
 	"flags": "s"
 },{
 	"id": "11937-11946",
-	"cid": "10981-10990",
+	"cid": 10981,
 	"name": "corrupted wall",
 	"flags": "tb"
 },{
@@ -38918,7 +38890,7 @@
 	"flags": "ts"
 },{
 	"id": 11965,
-	"cid": "2422-11013",
+	"cid": 2422,
 	"name": "chair",
 	"flags": 32844
 },{
@@ -39049,7 +39021,7 @@
 	"flags": "ts"
 },{
 	"id": "12014-12015",
-	"cid": "11058-11061",
+	"cid": 11058,
 	"name": "torch",
 	"flags": 16785409
 },{
@@ -39498,7 +39470,7 @@
 	"flags": "s"
 },{
 	"id": 12228,
-	"cid": "11272-11277",
+	"cid": 11272,
 	"name": "corrupted wall",
 	"flags": "ts"
 },{
@@ -39516,7 +39488,7 @@
 	"flags": 8396800
 },{
 	"id": "12266-12267",
-	"cid": "11318-11315",
+	"cid": 11318,
 	"name": "sign"
 },{
 	"id": 12268,
@@ -39660,7 +39632,7 @@
 	"speed": 200
 },{
 	"id": "12305-12307",
-	"cid": "11349-11359",
+	"cid": 11349,
 	"name": "corrupted plantation",
 	"flags": 16785409
 },{
@@ -39741,7 +39713,7 @@
 	"weight": 180
 },{
 	"id": 12329,
-	"cid": "11373-11377",
+	"cid": 11373,
 	"name": "corrupted plantation",
 	"flags": "s"
 },{
@@ -39776,7 +39748,7 @@
 	"flags": "s"
 },{
 	"id": "12350-12354",
-	"cid": "11394-11404",
+	"cid": 11394,
 	"name": "sleeping dragon",
 	"flags": "s"
 },{
@@ -39831,7 +39803,7 @@
 	"flags": 16777216
 },{
 	"id": "12396-12397",
-	"cid": "11440-11442",
+	"cid": 11440,
 	"name": "large book"
 },{
 	"id": 12398,
@@ -40163,7 +40135,7 @@
 	"weight": 50
 },{
 	"id": "12450-12457",
-	"cid": "11494-11509",
+	"cid": 11494,
 	"name": "molten larva well",
 	"flags": "ts"
 },{
@@ -40379,7 +40351,7 @@
 	"flags": 16777220
 },{
 	"id": "12511-12525",
-	"cid": "11555-11570",
+	"cid": 11555,
 	"name": "palisade",
 	"flags": "tb"
 },{
@@ -40408,7 +40380,7 @@
 	"fluidSource": "slime"
 },{
 	"id": 12529,
-	"cid": "11573-11581",
+	"cid": 11573,
 	"name": "palisade",
 	"flags": "b"
 },{
@@ -41319,7 +41291,7 @@
 	"flags": "ts"
 },{
 	"id": 12678,
-	"cid": "4140-4144",
+	"cid": 4140,
 	"name": "wooden wall",
 	"flags": 139267
 },{
@@ -41337,7 +41309,7 @@
 	"name": "wooden planks"
 },{
 	"id": 12682,
-	"cid": "10770-11704",
+	"cid": 10770,
 	"name": "wooden wall",
 	"flags": 270339
 },{
@@ -41413,7 +41385,7 @@
 	"transformUseTo": 12701
 },{
 	"id": "12704-12705",
-	"cid": "11717-11730",
+	"cid": 11717,
 	"name": "lush grass",
 	"speed": 150
 },{
@@ -41443,7 +41415,7 @@
 	"flags": "b"
 },{
 	"id": "12757-12768",
-	"cid": "11770-11785",
+	"cid": 11770,
 	"name": "leaves",
 	"flags": 8396800
 },{
@@ -41738,7 +41710,7 @@
 	"weight": 205
 },{
 	"id": 12970,
-	"cid": "11983-12000",
+	"cid": 11983,
 	"name": "stone",
 	"flags": "tb"
 },{
@@ -41901,7 +41873,7 @@
 	"weight": 1500
 },{
 	"id": 13032,
-	"cid": "12045-12046",
+	"cid": 12045,
 	"name": "music box",
 	"description": "The song inside is made of love. It was rewarded by TibiaSpace.com.",
 	"flags": "p",
@@ -41993,7 +41965,7 @@
 	"name": "cake tile"
 },{
 	"id": "13101-13105",
-	"cid": "12114-12122",
+	"cid": 12114,
 	"name": "huge cauldron",
 	"flags": "ts"
 },{
@@ -42162,7 +42134,7 @@
 	"name": "broken wall"
 },{
 	"id": "13173-13174",
-	"cid": "12186-12187",
+	"cid": 12186,
 	"name": "net",
 	"flags": 112,
 	"weight": 98
@@ -42225,7 +42197,7 @@
 	"flags": "ts"
 },{
 	"id": "13201-13202",
-	"cid": "12214-12225",
+	"cid": 12214,
 	"name": "dark sand",
 	"flags": "t"
 },{
@@ -42406,7 +42378,7 @@
 	"flags": "p"
 },{
 	"id": 13288,
-	"cid": "12301-12302",
+	"cid": 12301,
 	"name": "huge cauldron",
 	"flags": 16777217
 },{
@@ -43521,7 +43493,7 @@
 	"weight": 4000
 },{
 	"id": "13607-13619",
-	"cid": "12083-12355",
+	"cid": 12083,
 	"name": "slime fungus",
 	"flags": "t"
 },{
@@ -43574,7 +43546,7 @@
 	"flags": 65536
 },{
 	"id": "13663-13664",
-	"cid": "12406-12411",
+	"cid": 12406,
 	"name": "rocky wall",
 	"flags": "ts"
 },{
@@ -43653,7 +43625,7 @@
 	"flags": "tb"
 },{
 	"id": 13688,
-	"cid": "12431-12434",
+	"cid": 12431,
 	"name": "lamp",
 	"flags": 16842752
 },{
@@ -44010,7 +43982,7 @@
 	"weight": 4000
 },{
 	"id": "13822-13823",
-	"cid": "12666-12668",
+	"cid": 12666,
 	"name": "water pump",
 	"flags": "ts"
 },{
@@ -44020,7 +43992,7 @@
 	"flags": 16785409
 },{
 	"id": 13825,
-	"cid": "12669-12670",
+	"cid": 12669,
 	"name": "star ring",
 	"description": "If you wear it on your ring slot, it will boost your health regeneration when you're not hungry. Professions: players without vocation",
 	"flags": "p",
@@ -44510,7 +44482,7 @@
 	"weight": 4690
 },{
 	"id": 13950,
-	"cid": "12813-12814",
+	"cid": 12813,
 	"name": "old radio",
 	"description": "Granted by RadioTibia.com.br to hear the sounds of Tibia.",
 	"flags": "p",
@@ -45030,7 +45002,7 @@
 	"weight": 200
 },{
 	"id": "14355-14364",
-	"cid": "12851-12901",
+	"cid": 12851,
 	"name": "hive structure",
 	"speed": 125
 },{
@@ -45074,7 +45046,7 @@
 	"name": "market"
 },{
 	"id": "14406-14407",
-	"cid": "12906-12925",
+	"cid": 12906,
 	"name": "hive structure",
 	"flags": "s"
 },{
@@ -45089,7 +45061,7 @@
 	"flags": "ts"
 },{
 	"id": "14426-14427",
-	"cid": "12926-12930",
+	"cid": 12926,
 	"name": "hive pillar",
 	"flags": "t"
 },{
@@ -45104,7 +45076,7 @@
 	"flags": "s"
 },{
 	"id": "14435-14436",
-	"cid": "12935-12936",
+	"cid": 12935,
 	"name": "mud",
 	"description": "There is a hole in the ceiling.",
 	"flags": "t"
@@ -45126,7 +45098,7 @@
 	"floorchange": "down"
 },{
 	"id": 14462,
-	"cid": "12962-13038",
+	"cid": 12962,
 	"name": "hive structure",
 	"flags": 4
 },{
@@ -45161,7 +45133,7 @@
 	"flags": 4
 },{
 	"id": "14537-14544",
-	"cid": "13039-13054",
+	"cid": 13039,
 	"name": "insectoid hive",
 	"flags": 8396800
 },{
@@ -45181,7 +45153,7 @@
 	"flags": "t"
 },{
 	"id": "14553-14562",
-	"cid": "13055-13082",
+	"cid": 13055,
 	"name": "hive structure",
 	"flags": 8396800
 },{
@@ -45220,7 +45192,7 @@
 	"flags": "tb"
 },{
 	"id": "14583-14584",
-	"cid": "13085-13121",
+	"cid": 13085,
 	"name": "moist wall",
 	"flags": 270339
 },{
@@ -45361,7 +45333,7 @@
 	"flags": "ts"
 },{
 	"id": "14659-14662",
-	"cid": "13161-13167",
+	"cid": 13161,
 	"name": "small moist stones"
 },{
 	"id": 14663,
@@ -45378,7 +45350,7 @@
 	"flags": "ts"
 },{
 	"id": "14668-14679",
-	"cid": "13170-13226",
+	"cid": 13170,
 	"name": "hive structure",
 	"flags": "ts"
 },{
@@ -45534,7 +45506,7 @@
 	"flags": "ts"
 },{
 	"id": "14829-14844",
-	"cid": "13352-13367",
+	"cid": 13352,
 	"name": "insectoid pore",
 	"flags": 16777216
 },{
@@ -45554,7 +45526,7 @@
 	"speed": 120
 },{
 	"id": "14858-14860",
-	"cid": "13382-13396",
+	"cid": 13382,
 	"name": "insectoid meatball",
 	"flags": "ts"
 },{
@@ -45801,7 +45773,7 @@
 	"flags": 8200
 },{
 	"id": "15065-15066",
-	"cid": "13594-13645",
+	"cid": 13594,
 	"name": "grotto",
 	"flags": "b"
 },{
@@ -45832,7 +45804,7 @@
 	"flags": 25174020
 },{
 	"id": "15121-15122",
-	"cid": "13651-13654",
+	"cid": 13651,
 	"name": "lamp",
 	"flags": 65536
 },{
@@ -45864,7 +45836,7 @@
 	"flags": 16842752
 },{
 	"id": 15129,
-	"cid": "13659-13662",
+	"cid": 13659,
 	"name": "lamp",
 	"flags": 65536
 },{
@@ -45917,7 +45889,7 @@
 	"flags": 16777217
 },{
 	"id": "15142-15143",
-	"cid": "13672-13673",
+	"cid": 13672,
 	"name": "sponge",
 	"flags": "s"
 },{
@@ -46091,7 +46063,7 @@
 	"weight": 2000
 },{
 	"id": "15191-15202",
-	"cid": "13754-13769",
+	"cid": 13754,
 	"name": "leaves",
 	"flags": 8396800
 },{
@@ -46288,7 +46260,7 @@
 	"flags": 8396800
 },{
 	"id": "15250-15253",
-	"cid": "13823-13840",
+	"cid": 13823,
 	"name": "enormous statue",
 	"flags": 9
 },{
@@ -46592,7 +46564,7 @@
 	"weight": 6300
 },{
 	"id": "15300-15305",
-	"cid": "13874-13894",
+	"cid": 13874,
 	"name": "table",
 	"flags": "s"
 },{
@@ -47482,7 +47454,7 @@
 	"weight": 2100
 },{
 	"id": "15516-15525",
-	"cid": "14113-14132",
+	"cid": 14113,
 	"name": "lava stream",
 	"flags": 16785408
 },{
@@ -48046,7 +48018,7 @@
 	"weight": 1000
 },{
 	"id": 16107,
-	"cid": "14764-14765",
+	"cid": 14764,
 	"name": "doll of Durin The Almighty",
 	"description": "The mightiest. The only. God of all dwarfs. Awarded by Tibia Bariloche.",
 	"flags": "p",
@@ -48362,7 +48334,7 @@
 	"flags": "ts"
 },{
 	"id": 17352,
-	"cid": "16034-16049",
+	"cid": 16034,
 	"name": "stone wall",
 	"flags": "tb"
 },{
@@ -48612,7 +48584,7 @@
 	"flags": "p"
 },{
 	"id": 17433,
-	"cid": "11971-11972",
+	"cid": 11971,
 	"name": "stone",
 	"flags": 139267
 },{
@@ -48628,7 +48600,7 @@
 	"transformUseTo": 17237
 },{
 	"id": "17436-17443",
-	"cid": "14770-14781",
+	"cid": 14770,
 	"name": "crystal floor"
 },{
 	"id": "17444-17447",
@@ -48722,7 +48694,7 @@
 	"flags": "tb"
 },{
 	"id": 17496,
-	"cid": "14870-14872",
+	"cid": 14870,
 	"name": "crystals",
 	"flags": "tb"
 },{
@@ -48934,7 +48906,7 @@
 	"flags": "ts"
 },{
 	"id": "17592-17596",
-	"cid": "14967-14971",
+	"cid": 14967,
 	"name": "crystal geode",
 	"flags": "ts"
 },{
@@ -48956,7 +48928,7 @@
 	"cid": 14988
 },{
 	"id": "17625-17628",
-	"cid": "15000-15015",
+	"cid": 15000,
 	"name": "basalt floor"
 },{
 	"id": "17629-17640",
@@ -48970,7 +48942,7 @@
 	"flags": "t"
 },{
 	"id": "17647-17652",
-	"cid": "15022-15039",
+	"cid": 15022,
 	"name": "mold floor"
 },{
 	"id": "17653-17664",
@@ -48979,7 +48951,7 @@
 	"flags": 8396800
 },{
 	"id": "17665-17672",
-	"cid": "15040-15059",
+	"cid": 15040,
 	"name": "mossy floor"
 },{
 	"id": "17673-17684",
@@ -49207,7 +49179,7 @@
 	"flags": "ts"
 },{
 	"id": "17811-17814",
-	"cid": "15205-15216",
+	"cid": 15205,
 	"name": "mushrooms",
 	"flags": "t"
 },{
@@ -49217,7 +49189,7 @@
 	"flags": 8396800
 },{
 	"id": "17823-17831",
-	"cid": "15221-15266",
+	"cid": 15221,
 	"name": "crystal wall",
 	"flags": "tb"
 },{
@@ -49252,7 +49224,7 @@
 	"flags": 67
 },{
 	"id": 17847,
-	"cid": "15272-15296",
+	"cid": 15272,
 	"name": "crystal wall",
 	"flags": "tb"
 },{
@@ -49308,7 +49280,7 @@
 	"flags": "tb"
 },{
 	"id": "17894-17897",
-	"cid": "15347-15375",
+	"cid": 15347,
 	"name": "mossy wall",
 	"flags": "b",
 	"speed": 150
@@ -49364,7 +49336,7 @@
 	"name": "crystal glass floor"
 },{
 	"id": 18005,
-	"cid": "15484-15487",
+	"cid": 15484,
 	"name": "stone block",
 	"flags": "ts"
 },{
@@ -49374,7 +49346,7 @@
 	"flags": 8200
 },{
 	"id": "18009-18020",
-	"cid": "15488-15505",
+	"cid": 15488,
 	"name": "small stream",
 	"flags": 16785408
 },{
@@ -49514,7 +49486,7 @@
 	"flags": 8396800
 },{
 	"id": 18117,
-	"cid": "15596-15600",
+	"cid": 15596,
 	"name": "wooden floor"
 },{
 	"id": "18118-18121",
@@ -49548,7 +49520,7 @@
 	"flags": "ts"
 },{
 	"id": "18137-18140",
-	"cid": "15616-15631",
+	"cid": 15616,
 	"name": "mossy floor",
 	"flags": 16785408
 },{
@@ -49596,7 +49568,7 @@
 	"flags": 8200
 },{
 	"id": "18162-18171",
-	"cid": "15641-15674",
+	"cid": 15641,
 	"name": "stone floor"
 },{
 	"id": "18172-18195",
@@ -49744,7 +49716,7 @@
 	"flags": 8200
 },{
 	"id": "18235-18249",
-	"cid": "15719-15741",
+	"cid": 15719,
 	"name": "icy bones",
 	"flags": "tb"
 },{
@@ -49774,7 +49746,7 @@
 	"flags": "s"
 },{
 	"id": "18265-18268",
-	"cid": "15754-15757",
+	"cid": 15754,
 	"name": "icy bones",
 	"flags": "s"
 },{
@@ -49794,7 +49766,7 @@
 	"flags": "s"
 },{
 	"id": "18282-18283",
-	"cid": "15771-15773",
+	"cid": 15771,
 	"name": "ice wall",
 	"flags": "tb"
 },{
@@ -49828,7 +49800,7 @@
 	"name": "ice stone floor"
 },{
 	"id": "18297-18298",
-	"cid": "15786-15789",
+	"cid": 15786,
 	"name": "bones"
 },{
 	"id": "18299-18300",
@@ -49993,7 +49965,7 @@
 	"flags": 8396800
 },{
 	"id": "18357-18361",
-	"cid": "15846-15862",
+	"cid": 15846,
 	"name": "scattered crystals",
 	"flags": "t"
 },{
@@ -51130,7 +51102,7 @@
 	"speed": 150
 },{
 	"id": 18537,
-	"cid": "13088-13116",
+	"cid": 13088,
 	"name": "moist wall",
 	"flags": 139267
 },{
@@ -51140,7 +51112,7 @@
 	"flags": 270339
 },{
 	"id": 18539,
-	"cid": "16007-16041",
+	"cid": 16007,
 	"name": "stone wall",
 	"flags": 139267
 },{
