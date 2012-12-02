@@ -45,7 +45,6 @@
 },{
 	"id": 110,
 	"name": "special flask",
-	"description": "Bozo gave it to you to collect certain secrect ingredients.",
 	"flags": 112,
 	"weight": 180
 },{
@@ -196,7 +195,6 @@
 },{
 	"id": 138,
 	"name": "empty beer bottle",
-	"description": "It is the bottle Boozer gave you for the brown ale.",
 	"flags": 112,
 	"weight": 250
 },{
@@ -209,7 +207,7 @@
 },{
 	"id": 140,
 	"name": "parcel",
-	"containerSize": 10,
+	"description": "It is the parcel for the watchtower on the Femor Hills.",
 	"flags": 108,
 	"weight": 1800
 },{
@@ -230,8 +228,12 @@
 },{
 	"id": 144,
 	"name": "mummy disguise",
+	"containerSize": 10,
+	"corpseType": "undead",
+	"decayTo": 4131,
+	"duration": 900,
 	"flags": "p",
-	"weight": 900
+	"weight": 1000
 },{
 	"id": 145,
 	"name": "heavy package",
@@ -293,20 +295,19 @@
 	"weight": 200
 },{
 	"id": 173,
-	"name": "wrinkled parchment",
-	"description": "It is covered with strange numbers.",
+	"name": "parchment",
+	"description": "It says 'Roses are red, violets are blue, sugar is sweet and so are you.' Excellent!.",
 	"flags": "p",
 	"weight": 200
 },{
 	"id": 174,
-	"name": "gingerbread recipe",
-	"description": "Use it to learn how to make gingerbread in the christmas bakery.",
+	"name": "parchment",
+	"description": "It says 'Roses are red, violets are blue, sugar is sweet, there's mud on my shoe.' You blew it.",
 	"flags": "p",
 	"weight": 200
 },{
 	"id": 175,
-	"name": "parchment",
-	"description": "It says 'Roses are red...'.",
+	"name": "research notes",
 	"flags": "p",
 	"weight": 200
 },{
@@ -418,10 +419,9 @@
 	"flags": 16785409
 },{
 	"id": 227,
-	"name": "fine vase",
-	"description": "This vase looks incredibly fragile. Better make sure it won't move one bit, just don't touch it.",
+	"name": "valuable vase",
 	"flags": "p",
-	"weight": 940
+	"weight": 1000
 },{
 	"id": 228,
 	"name": "elven vase",
@@ -498,7 +498,6 @@
 	"flags": "t"
 },{
 	"id": 248,
-	"name": "tent",
 	"flags": "s"
 },{
 	"id": "249-252",
@@ -1064,7 +1063,7 @@
 	"flags": "t"
 },{
 	"id": 408,
-	"name": "wooden flooring"
+	"name": "wooden floor"
 },{
 	"id": 409,
 	"name": "white marble tile"
@@ -1072,12 +1071,12 @@
 	"id": 410,
 	"name": "black marble tile"
 },{
-	"id": "411-412",
+	"id": "411-413",
 	"name": "trapdoor",
 	"flags": 4,
 	"floorchange": "down"
 },{
-	"id": "413-414",
+	"id": 414,
 	"name": "stairs",
 	"flags": 4,
 	"floorchange": "down"
@@ -1114,20 +1113,8 @@
 	"flags": 16777220,
 	"speed": 70
 },{
-	"id": 426,
-	"name": "dead minotaur",
-	"containerSize": 10,
-	"corpseType": "blood",
-	"decayTo": 0,
-	"duration": 600,
-	"flags": "m",
-	"weight": 60000
-},{
-	"id": 427,
-	"name": "dead minotaur",
-	"corpseType": "blood",
-	"flags": "m",
-	"weight": 60000
+	"id": "426-427",
+	"flags": "m"
 },{
 	"id": 428,
 	"name": "stairs",
@@ -1148,7 +1135,7 @@
 	"floorchange": "down"
 },{
 	"id": 433,
-	"name": "ladder",
+	"name": "stairs",
 	"flags": 4,
 	"floorchange": "down"
 },{
@@ -1467,9 +1454,9 @@
 	"writeable": 1
 },{
 	"id": 637,
-	"name": "document",
+	"name": "tactical map",
+	"description": "A map showing recent troop movements and tactical instructions of parts of the Emperor's army.",
 	"flags": 16480,
-	"text": "Fishing Master Certificate\\n\\nAwarded to |NAME| by the Tibian Fishing Association TFA.",
 	"weight": 200
 },{
 	"id": 638,
@@ -1507,7 +1494,13 @@
 	"writeOnceItemId": 7726,
 	"writeable": 1
 },{
-	"id": "643-644",
+	"id": 643,
+	"name": "crumpled piece of paper",
+	"description": "It contains the formula for the memory potion Eclesius invented.",
+	"flags": "p",
+	"weight": 110
+},{
+	"id": 644,
 	"flags": "p"
 },{
 	"id": 645,
@@ -5327,9 +5320,8 @@
 	"transformUseTo": 2117
 },{
 	"id": 2117,
-	"name": "lantern",
-	"flags": 16785409,
-	"transformUseTo": 2116
+	"name": "bamboo lamp",
+	"flags": 16785409
 },{
 	"id": "2118-2119",
 	"name": "fire field",
@@ -5410,9 +5402,6 @@
 },{
 	"id": 2129,
 	"name": "magic wall",
-	"blocksolid": 1,
-	"decayTo": 0,
-	"duration": 20,
 	"flags": 16777219
 },{
 	"id": 2130,
@@ -5501,7 +5490,14 @@
 	"flags": 4,
 	"replaceable": 0
 },{
-	"id": "2141-2143",
+	"id": 2141,
+	"name": "dead midnight panther",
+	"corpseType": "blood",
+	"decayTo": 0,
+	"duration": 600,
+	"flags": "m"
+},{
+	"id": "2142-2143",
 	"flags": "m"
 },{
 	"id": 2144,
@@ -5699,7 +5695,11 @@
 	"name": "statue",
 	"flags": 1056769
 },{
-	"id": "2302-2313",
+	"id": 2302,
+	"name": "table",
+	"flags": 8201
+},{
+	"id": "2303-2313",
 	"name": "big table",
 	"flags": 8201
 },{
@@ -6028,9 +6028,8 @@
 	"rotateTo": 2418
 },{
 	"id": 2422,
-	"name": "ivory chair",
-	"flags": 32844,
-	"rotateTo": 2424
+	"name": "chair",
+	"flags": 32844
 },{
 	"id": 2423,
 	"name": "ivory chair",
@@ -7980,7 +7979,7 @@
 	"weight": 3000
 },{
 	"id": 2967,
-	"name": "purple key",
+	"name": "pink key",
 	"flags": 112,
 	"weight": 100
 },{
@@ -7990,9 +7989,10 @@
 	"weight": 100
 },{
 	"id": 2969,
-	"name": "silver key",
+	"name": "letter to Chantalle",
+	"description": "Carina from Venore tells Chantalle that the 'precious necklace' she loved so much is still for sale.",
 	"flags": 112,
-	"weight": 100
+	"weight": 10
 },{
 	"id": 2970,
 	"name": "copper key",
@@ -8000,7 +8000,7 @@
 	"weight": 100
 },{
 	"id": 2971,
-	"name": "crystal key",
+	"name": "sky key",
 	"flags": 112,
 	"weight": 100
 },{
@@ -8822,15 +8822,9 @@
 	"weight": 90
 },{
 	"id": 3094,
-	"name": "sword ring",
-	"decayTo": 0,
-	"duration": 1800,
+	"name": "ring",
 	"flags": 16777312,
-	"showduration": 1,
-	"skillSword": 4,
-	"slotType": "ring",
-	"transformDeEquipTo": 3091,
-	"weight": 90
+	"weight": 5
 },{
 	"id": 3095,
 	"name": "axe ring",
@@ -8994,7 +8988,8 @@
 	"weight": 400
 },{
 	"id": 3121,
-	"name": "torn book",
+	"name": "damaged logbook",
+	"description": "It must be the one which the explorer society requested.",
 	"flags": "p",
 	"weight": 1100
 },{
@@ -9004,9 +8999,10 @@
 	"weight": 500
 },{
 	"id": 3123,
-	"name": "worn leather boots",
+	"name": "old worn firewalker boots",
+	"description": "They can be recharged with an enchanted ruby.",
 	"flags": "p",
-	"weight": 400
+	"weight": 950
 },{
 	"id": 3124,
 	"name": "burnt scroll",
@@ -9029,7 +9025,8 @@
 	"weight": 60
 },{
 	"id": 3129,
-	"name": "leaves",
+	"name": "some special leaves",
+	"description": "They have an aromatic smell.",
 	"flags": "p",
 	"weight": 80
 },{
@@ -9395,7 +9392,8 @@
 	"weight": 1100
 },{
 	"id": 3212,
-	"name": "black book",
+	"name": "textbook",
+	"description": "It contains the script to a piece performed in the theatre of Carlin.",
 	"flags": "p",
 	"weight": 1300
 },{
@@ -9582,12 +9580,9 @@
 	"weight": 400
 },{
 	"id": 3241,
-	"name": "ornamented ankh",
-	"decayTo": 0,
-	"description": "This ancient relic shows signs of untold age. It seems to be rotting rapidly.",
-	"duration": 86400,
+	"name": "ceremonial ankh",
 	"flags": "p",
-	"weight": 200
+	"weight": 500
 },{
 	"id": 3242,
 	"name": "stuffed bunny",
@@ -10499,9 +10494,8 @@
 },{
 	"id": 3351,
 	"name": "steel helmet",
-	"armor": 6,
+	"description": "The words 'Ramsay the Reckless' are engraved inside. It appears to be cracked and broken.",
 	"flags": "p",
-	"slotType": "head",
 	"weight": 4600
 },{
 	"id": 3352,
@@ -11265,8 +11259,9 @@
 },{
 	"id": 3456,
 	"name": "pick",
+	"description": "It is a masterpiece of dwarvish smithery and made of especially hard steel.",
 	"flags": 112,
-	"weight": 4500
+	"weight": 6000
 },{
 	"id": 3457,
 	"name": "shovel",
@@ -11463,7 +11458,7 @@
 	"writeable": 1
 },{
 	"id": 3506,
-	"name": "letter to Markwin",
+	"name": "secret letter",
 	"flags": "p",
 	"weight": 50
 },{
@@ -11528,8 +11523,11 @@
 	"weight": 500
 },{
 	"id": 3537,
-	"name": "white knight",
+	"name": "shield of the white knight",
+	"defense": 8,
+	"description": "It seems a bit chunky, but what was good enough for a white knight should be good for everyone.",
 	"flags": "p",
+	"weaponType": "shield",
 	"weight": 500
 },{
 	"id": 3538,
@@ -11799,8 +11797,7 @@
 	"id": 3579,
 	"name": "salmon",
 	"flags": 224,
-	"showcount": 0,
-	"weight": 320
+	"weight": 440
 },{
 	"id": 3580,
 	"name": "northern pike",
@@ -12680,10 +12677,10 @@
 	"id": 3996,
 	"name": "dead rat",
 	"corpseType": "blood",
-	"decayTo": 3996,
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "p",
-	"weight": 3000
+	"weight": 2000
 },{
 	"id": 3997,
 	"name": "Tibiora's box",
@@ -12783,10 +12780,10 @@
 	"id": 4009,
 	"name": "dead wolf",
 	"corpseType": "blood",
-	"decayTo": 4009,
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "p",
-	"weight": 8000
+	"weight": 4000
 },{
 	"id": 4010,
 	"name": "Tibiora's box",
@@ -12816,10 +12813,8 @@
 	"name": "dead minotaur",
 	"containerSize": 10,
 	"corpseType": "blood",
-	"decayTo": 4275,
-	"duration": 900,
 	"flags": "p",
-	"weight": 85000
+	"weight": 67520
 },{
 	"id": 4014
 },{
@@ -12877,10 +12872,10 @@
 	"id": 4022,
 	"name": "dead dog",
 	"corpseType": "blood",
-	"decayTo": 4022,
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "p",
-	"weight": 1000
+	"weight": 700
 },{
 	"id": 4023,
 	"flags": "m"
@@ -12934,10 +12929,17 @@
 	"duration": 900,
 	"flags": "m"
 },{
-	"id": "4031-4032",
+	"id": 4031,
 	"name": "dead bear",
 	"corpseType": "blood",
 	"decayTo": 4032,
+	"duration": 600,
+	"flags": "m"
+},{
+	"id": 4032,
+	"name": "dead bear",
+	"corpseType": "blood",
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "m"
 },{
@@ -13162,6 +13164,10 @@
 },{
 	"id": 4064,
 	"name": "dead dragon",
+	"containerSize": 10,
+	"corpseType": "blood",
+	"decayTo": 0,
+	"duration": 600,
 	"flags": "m"
 },{
 	"id": 4065,
@@ -13212,11 +13218,18 @@
 	"flags": "m",
 	"fluidSource": "blood"
 },{
-	"id": "4071-4072",
+	"id": 4071,
 	"name": "dead lion",
 	"corpseType": "blood",
 	"decayTo": 4072,
 	"duration": 600,
+	"flags": "m"
+},{
+	"id": 4072,
+	"name": "dead lion",
+	"corpseType": "blood",
+	"decayTo": 0,
+	"duration": 900,
 	"flags": "m"
 },{
 	"id": 4073,
@@ -13233,11 +13246,18 @@
 	"flags": "m",
 	"fluidSource": "blood"
 },{
-	"id": "4075-4076",
+	"id": 4075,
 	"name": "dead bear",
 	"corpseType": "blood",
 	"decayTo": 4076,
 	"duration": 600,
+	"flags": "m"
+},{
+	"id": 4076,
+	"name": "dead bear",
+	"corpseType": "blood",
+	"decayTo": 0,
+	"duration": 900,
 	"flags": "m"
 },{
 	"id": 4077,
@@ -13404,11 +13424,18 @@
 	"duration": 900,
 	"flags": "m"
 },{
-	"id": "4098-4099",
+	"id": 4098,
 	"name": "slain demon",
 	"containerSize": 24,
 	"corpseType": "blood",
 	"decayTo": 4099,
+	"duration": 600,
+	"flags": "m"
+},{
+	"id": 4099,
+	"name": "slain demon",
+	"corpseType": "blood",
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "m"
 },{
@@ -13531,7 +13558,7 @@
 	"id": 4114,
 	"name": "dead behemoth",
 	"corpseType": "blood",
-	"decayTo": 4114,
+	"decayTo": 0,
 	"duration": 600,
 	"flags": "m"
 },{
@@ -13607,9 +13634,6 @@
 },{
 	"id": 4123,
 	"name": "dead goblin",
-	"corpseType": "blood",
-	"decayTo": 0,
-	"duration": 600,
 	"flags": "p",
 	"weight": 4000
 },{
@@ -13731,11 +13755,8 @@
 },{
 	"id": 4139,
 	"name": "slain vampire",
-	"corpseType": "undead",
-	"decayTo": 0,
-	"duration": 600,
 	"flags": "p",
-	"weight": 100000
+	"weight": 60000
 },{
 	"id": 4140,
 	"name": "wooden wall",
@@ -13762,9 +13783,6 @@
 },{
 	"id": 4143,
 	"name": "dead dwarf",
-	"corpseType": "blood",
-	"decayTo": 0,
-	"duration": 600,
 	"flags": "p",
 	"weight": 60000
 },{
@@ -14630,12 +14648,11 @@
 },{
 	"id": 4252,
 	"name": "dead troll",
-	"containerSize": 10,
 	"corpseType": "blood",
-	"decayTo": 864,
-	"duration": 900,
+	"decayTo": 4178,
+	"duration": 600,
 	"flags": "p",
-	"weight": 50000
+	"weight": 25040
 },{
 	"id": 4253,
 	"name": "dead troll",
@@ -14807,23 +14824,22 @@
 	"id": 4274,
 	"name": "dead minotaur",
 	"containerSize": 10,
-	"corpseType": "blood",
+	"decayTo": 4275,
+	"duration": 600,
 	"flags": "p",
-	"weight": 67520
+	"weight": 60000
 },{
 	"id": 4275,
 	"name": "dead minotaur",
-	"corpseType": "blood",
 	"decayTo": 4276,
-	"duration": 900,
+	"duration": 600,
 	"flags": "p",
 	"weight": 60000
 },{
 	"id": 4276,
 	"name": "dead minotaur",
-	"corpseType": "blood",
 	"decayTo": 0,
-	"duration": 900,
+	"duration": 600,
 	"flags": "p",
 	"weight": 60000
 },{
@@ -14855,11 +14871,10 @@
 },{
 	"id": 4280,
 	"name": "dead deer",
-	"corpseType": "blood",
 	"decayTo": 0,
 	"duration": 600,
 	"flags": "p",
-	"weight": 5000
+	"weight": 18000
 },{
 	"id": 4281,
 	"name": "dead dog",
@@ -14918,6 +14933,8 @@
 },{
 	"id": 4289,
 	"name": "dead dragon",
+	"decayTo": 0,
+	"duration": 600,
 	"flags": "m"
 },{
 	"id": 4290,
@@ -14971,8 +14988,10 @@
 	"id": 4296,
 	"name": "slain ghoul",
 	"corpseType": "undead",
+	"decayTo": 4297,
+	"duration": 600,
 	"flags": "p",
-	"weight": 60200
+	"weight": 60000
 },{
 	"id": 4297,
 	"name": "slain ghoul",
@@ -15012,8 +15031,11 @@
 },{
 	"id": 4302,
 	"name": "dead rabbit",
+	"corpseType": "blood",
+	"decayTo": 4303,
+	"duration": 600,
 	"flags": "p",
-	"weight": 3070
+	"weight": 1000
 },{
 	"id": 4303,
 	"name": "dead rabbit",
@@ -15282,26 +15304,26 @@
 	"flags": "m"
 },{
 	"id": 4342,
-	"name": "dead crocodile",
-	"containerSize": 6,
+	"name": "dead killer caiman",
+	"containerSize": 10,
 	"corpseType": "blood",
 	"decayTo": 4343,
-	"duration": 900,
+	"duration": 300,
 	"flags": "m",
 	"fluidSource": "blood"
 },{
 	"id": 4343,
-	"name": "dead crocodile",
+	"name": "dead killer caiman",
 	"corpseType": "blood",
 	"decayTo": 4344,
-	"duration": 600,
+	"duration": 300,
 	"flags": "m"
 },{
 	"id": 4344,
-	"name": "dead crocodile",
+	"name": "dead killer caiman",
 	"corpseType": "blood",
 	"decayTo": 0,
-	"duration": 600,
+	"duration": 60,
 	"flags": "m"
 },{
 	"id": 4345,
@@ -18722,7 +18744,6 @@
 },{
 	"id": 5938,
 	"name": "Ceiron's waterskin",
-	"description": "It is empty.",
 	"flags": 112,
 	"weight": 700
 },{
@@ -18763,6 +18784,7 @@
 },{
 	"id": 5945,
 	"name": "coral comb",
+	"description": "It once belonged to a mermaid.",
 	"flags": "p",
 	"weight": 450
 },{
@@ -18802,8 +18824,7 @@
 	"weight": 250
 },{
 	"id": 5952,
-	"name": "poem scroll",
-	"description": "It contains a love poem, written by an unknown elven poet.",
+	"name": "lottery ticket",
 	"flags": "p",
 	"weight": 120
 },{
@@ -18821,12 +18842,9 @@
 	"flags": "m"
 },{
 	"id": 5956,
-	"name": "old parchment",
-	"description": "It is covered with foreign symbols.",
+	"name": "intelligence reports",
 	"flags": "p",
-	"maxTextLen": 1023,
-	"weight": 200,
-	"writeable": 1
+	"weight": 120
 },{
 	"id": 5957,
 	"name": "lottery ticket",
@@ -19520,8 +19538,8 @@
 	"fluidSource": "blood"
 },{
 	"id": 6046,
-	"name": "dead crocodile",
-	"containerSize": 6,
+	"name": "dead killer caiman",
+	"containerSize": 10,
 	"corpseType": "blood",
 	"decayTo": 4342,
 	"duration": 10,
@@ -21556,6 +21574,8 @@
 },{
 	"id": 6572,
 	"name": "party trumpet",
+	"decayTo": 6572,
+	"duration": 2,
 	"flags": "p",
 	"weight": 50
 },{
@@ -21900,11 +21920,7 @@
 	"name": "wooden wall",
 	"flags": 270339
 },{
-	"id": 6841,
-	"name": "wooden pillar",
-	"flags": "tb"
-},{
-	"id": "6842-6844",
+	"id": "6841-6844",
 	"name": "wooden wall",
 	"flags": "tb"
 },{
@@ -22395,7 +22411,7 @@
 	"flags": "t"
 },{
 	"id": "7062-7066",
-	"name": "rock",
+	"name": "frozen mud",
 	"speed": 150
 },{
 	"id": "7067-7070",
@@ -22703,7 +22719,6 @@
 },{
 	"id": 7243,
 	"name": "empty jug",
-	"description": "It seems to be perfect for collecting ants.",
 	"flags": 112,
 	"weight": 750
 },{
@@ -23317,11 +23332,8 @@
 	"weight": 200
 },{
 	"id": 7369,
-	"name": "golden goblet",
-	"flags": "p",
-	"maxTextLen": 128,
-	"weight": 3500,
-	"writeable": 1
+	"name": "golden trophy",
+	"flags": "p"
 },{
 	"id": 7370,
 	"name": "silver goblet",
@@ -26345,10 +26357,7 @@
 	"name": "abacus",
 	"description": "If you use it wisely, you may write yourself into the history books.",
 	"flags": 16480,
-	"maxTextLen": 128,
-	"weight": 1200,
-	"writeOnceItemId": 8984,
-	"writeable": 1
+	"weight": 1200
 },{
 	"id": 8157,
 	"name": "norseman doll",
@@ -26476,7 +26485,7 @@
 },{
 	"id": 8198,
 	"name": "baking tray",
-	"description": "There is cookie dough on it.",
+	"description": "There is garlic cookie dough on it.",
 	"flags": 112,
 	"weight": 1200
 },{
@@ -27251,10 +27260,8 @@
 },{
 	"id": 8709,
 	"name": "open trapdoor",
-	"decayTo": 475,
-	"duration": 120,
 	"floorchange": "down",
-	"transformUseTo": 475
+	"transformUseTo": 8708
 },{
 	"id": "8710-8714",
 	"name": "old carpet",
@@ -28986,8 +28993,7 @@
 	"flags": "p"
 },{
 	"id": 9149,
-	"name": "special flask",
-	"description": "It contains the ink of a freshly slain quara.",
+	"name": "flask with paint",
 	"flags": "p",
 	"weight": 180
 },{
@@ -28995,7 +29001,7 @@
 	"flags": 16777312
 },{
 	"id": 9151,
-	"name": "soul bag",
+	"name": "scum bag",
 	"containerSize": 8,
 	"flags": "p",
 	"slotType": "backpack",
@@ -29032,10 +29038,9 @@
 	"flags": 5
 },{
 	"id": 9170,
-	"name": "special flask",
-	"description": "It contains the smell of a freshly slain slime.",
+	"name": "antidote potion",
 	"flags": "p",
-	"weight": 180
+	"weight": 265
 },{
 	"id": 9171,
 	"flags": 16480
@@ -29970,20 +29975,12 @@
 	"transformDeEquipTo": 9393,
 	"weight": 500
 },{
-	"id": 9393,
+	"id": "9393-9394",
 	"name": "claw of 'The Noxious Spawn'",
 	"description": "It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on.",
 	"flags": "p",
 	"slotType": "ring",
 	"transformEquipTo": 9392,
-	"weight": 500
-},{
-	"id": 9394,
-	"name": "claw of 'The Noxious Spawn'",
-	"description": "It's like a glove and you can't wear a ring on it. You are not sure if you should really put it on.",
-	"flags": "p",
-	"slotType": "ring",
-	"transformDeEquipTo": 9394,
 	"weight": 500
 },{
 	"id": 9395,
@@ -33501,7 +33498,8 @@
 },{
 	"id": 11048,
 	"name": "lamp",
-	"flags": 16785409
+	"flags": 16785409,
+	"transformUseTo": 11050
 },{
 	"id": 11049,
 	"name": "wooden wall",
@@ -36111,9 +36109,8 @@
 },{
 	"id": 12181,
 	"name": "demon infant",
-	"description": "The little demon is pleased.",
 	"flags": "p",
-	"weight": 1200
+	"weight": 600
 },{
 	"id": 12182,
 	"name": "demon infant",
@@ -37881,13 +37878,14 @@
 	"flags": "ts"
 },{
 	"id": 12784,
-	"name": "flask with paint",
+	"name": "flask of wasp poison",
+	"description": "It's very toxic. Do not ever drink green liquids.",
 	"flags": 112,
 	"weight": 180
 },{
 	"id": 12785,
-	"name": "special flask",
-	"description": "Bozo gave it to you to collect certain secret ingredients.",
+	"name": "empty potion flask",
+	"description": "Return it to a magic store for deposit.",
 	"flags": 112,
 	"weight": 180
 },{

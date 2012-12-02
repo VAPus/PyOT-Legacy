@@ -349,8 +349,11 @@ if __name__ == "__main__":
             item.set("id", str(id))
             if id in ids:
                 print "WARNING: ItemId %d got two entries!" % (id)
-                
-                root.remove(item)
+                for elem in root.findall("item"):
+                    if elem.get("id") == str(id):
+                        root.remove(elem)
+                        break
+                #root.remove(item)
             ids.add(id)
 
     for item in items.values():
@@ -406,6 +409,7 @@ if __name__ == "__main__":
         for name in set1:
             if not name in set2 or set1[name] != set2[name]:
                 return False
+
         return True
             
     for elem in container[:]:
@@ -413,6 +417,7 @@ if __name__ == "__main__":
         if "-" in id: continue
         
         id = int(id)
+
         if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags") and _compareSub(currElem, elem):
             count += 1
             root.remove(elem)
