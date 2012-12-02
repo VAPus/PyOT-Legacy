@@ -358,6 +358,9 @@ class Item(object):
         if self.creature and position.x != 0xFFFF:
             del self.creature
 
+    def decayNow(self):
+        return self.decay(self.decayTo, duration=0)
+
     def decay(self, to=None, duration=None, callback=None):
         if to == None:
             to = self.decayTo
