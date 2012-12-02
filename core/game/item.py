@@ -105,6 +105,7 @@ class Item(object):
                 raise Exception("Cannot verify Position inside inventory when creature == None and inContainer == None!")
             
             if creature and pos.y < 64:
+                ### One of these should go.
                 if creature.inventory[pos.y-1] == self:
                     return pos
                 elif creature.inventory[pos.y] == self:
@@ -121,7 +122,7 @@ class Item(object):
                         if creature.openContainers[con] == container:
                             pos.y = con+64
                             break
-                if container.container[pos.z] == self:
+                if len(container.container) > pos.z and container.container[pos.z] == self:
                     return pos
                 else:
                     for z in xrange(len(container.container)):
