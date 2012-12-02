@@ -4,7 +4,7 @@ convert[4097] = (5906, EFFECT_MAGIC_RED) # Demon dust
 
 @register("useWith", 5942)
 def useWith(creature, thing, onThing, onPosition, **k):
-    if not onThing.itemId in convert:
+    if not isinstance(onThing, Item) or not onThing.itemId in convert:
         return
 
     if random.randint(1,15) == 1:
