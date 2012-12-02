@@ -176,6 +176,7 @@ def loader(timer):
     __builtin__.callLater = reactor.callLater
     __builtin__.Item = game.item.Item
     __builtin__.itemAttribute = game.item.attribute
+    __builtin__.cid = game.item.cid
     __builtin__.idByName = game.item.idByName
     __builtin__.getTile = game.map.getTile
     __builtin__.setTile = game.map.setTile

@@ -1173,7 +1173,7 @@ class BaseProtocol(object):
     @packet(0x7D)
     def handleRequestTrade(self, player, packet):
         position = packet.position(player.position.instanceId)
-        itemId = packet.uint16()
+        itemId = sid(packet.uint16())
         stackpos = packet.uint8()
         player2 = game.engine.getCreatureByCreatureId(packet.uint32())
         
@@ -1343,11 +1343,11 @@ class BaseProtocol(object):
         if player != creature and not player.inRange(creature.position, 7, 5):
             player.cancelMessage("Target is too far away.")
             return 
-        
+        serverId = sid(clientItemId)
         if not hotkey:
             thing = player.findItem(stackPosition)
         else:
-            thing = player.findItemById(clientItemId)
+            thing = player.findItemById(serverId)
             
             if not thing:
                 player.cancelMessage("You don't have any left of this item.")
@@ -1355,7 +1355,7 @@ class BaseProtocol(object):
                 return
                 
             # Also tell hotkey message
-            count = player.inventoryCache[clientItemId][0]
+            count = player.inventoryCache[serverId][0]
             
             if not thing.showCount:
                 player.message("Using one of %s..." % thing.rawName())

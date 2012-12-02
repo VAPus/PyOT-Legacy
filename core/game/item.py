@@ -174,7 +174,11 @@ class Item(object):
     @property
     def type(self):
         return items[self.itemId].get("type", 0)
-            
+    
+    @property
+    def cid(self):
+        return items[self.itemId].get('cid', self.itemId)
+        
     def __getattr__(self, name):
         if not "__" in name:
             _items = items[self.itemId]
@@ -813,8 +817,11 @@ def idByName(name):
     except KeyError:
         pass
 
-def cid(sid):
+def sid(cid):
     return cidToSid.get(sid, sid)
+
+def cid(sid):
+    return items[sid].get('cid', sid)
         
 def attribute(itemId, attr):
     try:
