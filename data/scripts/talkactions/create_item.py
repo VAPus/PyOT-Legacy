@@ -17,6 +17,7 @@ def makeitem(creature, text):
                     newitem.place(creature.position)
 
                 count -= rcount
+                newitem.decay()
         else:
             raise
     #except:
@@ -37,5 +38,6 @@ def createItemByName(creature, text):
         count = text.split(",")[1].strip() if "," in text else 1
         item = Item(itemid, int(count))
         creature.addItem(item)
+        item.decay()
         creature.magicEffect(EFFECT_MAGIC_GREEN)
     return False
