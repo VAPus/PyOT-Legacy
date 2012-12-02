@@ -6,6 +6,7 @@ import weakref
 import sys
 import time
 import traceback
+import gc
 from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
@@ -608,11 +609,14 @@ def reimporter():
         for sub in mod[1].__all__:
             if sub != "__init__":
                 reload(sys.modules["data.%s.%s" % (mod[0], sub)])
-         
-    # Step 3 cleanups.
+
+    # Call gc.collect()
+    gc.collect()
+
+    # Cleanups.
     reimportCleanup()
     
-    # Step 4 postReload.
+    # postReload.
     get("postReload").runSync()
     
 def reimportCleanup():
