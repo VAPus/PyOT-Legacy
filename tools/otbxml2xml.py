@@ -257,9 +257,9 @@ if __name__ == "__main__":
                     attribute.clear()
                     #item.remove(attribute)
                     continue # We auto generate those.
-                if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
+                """if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
                     attribute.set("value", str(items[int(val)].cid))
-
+                """
                 try:
                     del attribute.attrib["key"]
                 except:
