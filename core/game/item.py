@@ -348,13 +348,13 @@ class Item(object):
         if creature:
             creature.placeItem(position, self)
         else:
-            self.decay()
             tile = position.getTile()
             stackpos = tile.placeItem(self)
             position = position.setStackpos(stackpos)
             self.setPosition(position)
             updateTile(position, tile)
-          
+            self.decay()
+
     def setPosition(self, position, creature=None):
         self.position = position
         if creature:
