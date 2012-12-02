@@ -293,6 +293,7 @@ if __name__ == "__main__":
                 del item.attrib["fromid"]
                 del item.attrib["toid"]
                 item.set("id", "%s-%s" % (orgId, toId))
+            item.set("cid", "%s-%s" % (items[orgId].cid, items[toId].cid))
             i = 1
             if toId - orgId > 100:
                 print "I think an item going from %d to %d is wrong...." % (orgId, toId)
@@ -304,7 +305,7 @@ if __name__ == "__main__":
 
             # First check that name, cid (incremental) & flags is the same.
             for id in xrange(orgId+1, toId+1):
-                if items[id].flags != orgFlags or items[id].cid != orgCid + (id - orgCid):
+                if items[id].flags != orgFlags or id != orgId + (id - orgId) or items[id].cid != orgCid + (items[id].cid - orgCid):
                     ok = False
 
             # If not, unroll it.
@@ -314,6 +315,7 @@ if __name__ == "__main__":
                     newItem = copy.deepcopy(item)
                 
                     newItem.set("id", str(id))
+                    newItem.set("cid", str(items[id].cid))
                     root.insert(index+1, newItem)
                     
                     index += 1
@@ -324,6 +326,9 @@ if __name__ == "__main__":
             orgId = item.attrib["fromid"]
             del item.attrib["fromid"]
             item.set("id", orgId)
+            item.set("cid", str(items[orgId].cid))
+        else:
+            item.set("cid", str(items[int(item.get('id'))].cid))
 
         index += 1
 
@@ -341,25 +346,26 @@ if __name__ == "__main__":
         id = item.get("id")
         if "-" in id:
             start, end = map(int, id.split('-'))
-            item.set("id", "%s-%s" % (items[start].cid, items[end].cid))
-            for id in xrange(items[start].cid, items[end].cid+1):
+            #item.set("id", "%s-%s" % (items[start].cid, items[end].cid))
+            for id in xrange(start, end+1):
                 ids.add(id)
         else:
-            id = items[int(item.get("id"))].cid
-            item.set("id", str(id))
-            if id in ids:
+            #id = items[int(item.get("id"))].cid
+            #item.set("id", str(id))
+            """if id in ids:
                 print "WARNING: ItemId %d got two entries!" % (id)
                 for elem in root.findall("item"):
                     if elem.get("id") == str(id):
                         root.remove(elem)
                         break
-                #root.remove(item)
-            ids.add(id)
+                #root.remove(item)"""
+            ids.add(int(id))
 
     for item in items.values():
-        if item.cid not in ids:
+        if item.sid not in ids:
             elm = ET.Element('item')
-            elm.set('id', str(item.cid))
+            elm.set('cid', str(item.cid))
+            elm.set('id', str(item.sid))
             if item.flags:
                 elm.set('flags', str(item.flags))
             if item.type and item.type > 2:
@@ -369,9 +375,14 @@ if __name__ == "__main__":
             if "name" in item.attr:
                 elm.set('name', item.attr["name"].decode('utf-8'))
 
-            ids.add(item.cid)
+            ids.add(item.sid)
 
             root.append(elm)
+
+    # Remove cid if cid = sid.
+    for item in root.findall("item"):
+        if item.get("cid") == item.get('id'):
+            del item.attrib['cid']
 
     # Sort it.
     container = root.findall("item")
@@ -458,6 +469,16 @@ if __name__ == "__main__":
         del attr['id']
 
         try:
+            attr['_cid'] = int(attr['cid'])
+            del attr['cid']
+        except:
+            try:
+                attr['_cid'] = attr['cid']
+                del attr['cid']
+            except:
+                pass
+
+        try:
             attr['flags'] = int(attr['flags'])
         except:
             pass
@@ -497,6 +518,6 @@ if __name__ == "__main__":
     with open('out.json', 'w') as f:
         data = json.dumps(items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
         data = data.replace('        ', '\t').replace('\n\t', '\n') # Cut first tab.
-        data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
+        data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"').replace('"_cid"', '"cid"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
         data = data.replace('[\n{', '[{').replace('}\n]', '}]')
         f.write(data)

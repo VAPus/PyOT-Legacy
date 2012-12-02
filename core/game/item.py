@@ -812,6 +812,9 @@ def idByName(name):
         return idByNameCache[name]
     except KeyError:
         pass
+
+def cid(sid):
+    return cidToSid.get(sid, sid)
         
 def attribute(itemId, attr):
     try:
@@ -825,13 +828,14 @@ def attribute(itemId, attr):
 def loadItems():
     global items
     global idByNameCache
+    global cidToSid
 
     print "> > Loading items..."
     
     if config.itemCache:
         try:
             with _open("data/cache/items.cache", "rb") as f:
-                items = marshal.loads(f.read())
+                items, idByNameCache, cidToSid = marshal.loads(f.read())
             log.msg("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
@@ -840,6 +844,8 @@ def loadItems():
     # Make three new values while we are loading
     loadItems = {}
     idNameCache = {}
+    _cidToSid = {}
+
     """tree = ET.parse("data/items.xml")
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}    
     for item in tree.getroot():
@@ -915,11 +921,29 @@ def loadItems():
                 item["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % type.upper())
 
         id = item['id']
+        cid = item.get('cid')
+
         del item['id']
         if not isinstance(id, int):
             start, end = map(int, id.split('-'))
+            fixCid = not isinstance(cid, int)
+            if fixCid:
+                if cid == None:
+                    bCid = start
+                else:
+                    bCid = int(cid.split('-')[0])
+
             for id in xrange(start, end+1):
-                loadItems[id] = item
+                if fixCid:
+                    _newItem = item.copy()
+                    _newItem['cid'] = bCid
+                    loadItems[id] = _newItem
+                    _cidToSid[bCid] = id
+                    bCid += 1
+                else:
+                    loadItems[id] = item
+
+                 
         else:
             loadItems[id] = item
             
@@ -936,8 +960,9 @@ def loadItems():
     # Replace the existing items
     items = loadItems
     idByNameCache = idNameCache
+    cidToSid = _cidToSid
 
     # Cache
     if config.itemCache:
         with _open("data/cache/items.cache", "wb") as f:
-            f.write(marshal.dumps(items, 2))
+            f.write(marshal.dumps((items, idByNameCache, cidToSid), 2))

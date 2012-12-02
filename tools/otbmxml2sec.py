@@ -170,29 +170,13 @@ class Node(object):
             return None
 
 
-# Hack Item
 START = time.time()
-
-_Item = Item
-def Item(serverId):
-    try:
-        clientId = itemReader.items[serverId].cid
-    except:
-        print "[WARNING] items.otb / map.otbm mismatch, itemId %d not found! Hacking to a void." % serverId
-        clientId = 100
-    return _Item(clientId)
 
 dummyItems = {}
 def genItem(itemid):
-    try:
-        clientId = itemReader.items[itemid].cid
-    except:
-        print "[WARNING] items.otb / map.otbm mismatch, itemId %d not found! Hacking to a void." % itemid
-        clientId = 100
-
-    if not clientId in dummyItems:
-        dummyItems[clientId] = Item(itemid)
-    return dummyItems[clientId]
+    if not itemid in dummyItems:
+        dummyItems[itemid] = Item(itemid)
+    return dummyItems[itemid]
 
 otbmFile = io.open("map.otbm", 'rb')
 otbm = Reader(otbmFile.read())
