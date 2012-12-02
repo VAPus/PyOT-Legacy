@@ -4,7 +4,6 @@
 from struct import unpack, unpack_from, Struct
 import sys
 import gc
-import otbxml2xml as itemReader
 from generator import Map, Item, Tile, Spawn
 import time
 import io

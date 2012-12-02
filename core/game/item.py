@@ -939,6 +939,8 @@ def loadItems():
                     bCid = start
                 else:
                     bCid = int(cid.split('-')[0])
+            else:
+                _cidToSid[cid] = item
 
             for id in xrange(start, end+1):
                 if fixCid:
@@ -953,7 +955,7 @@ def loadItems():
                  
         else:
             loadItems[id] = item
-            
+            _cidToSid[cid] = id            
             try:
                 name = item["name"].upper()
                 if not name in idNameCache:

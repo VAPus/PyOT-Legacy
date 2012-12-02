@@ -128,6 +128,7 @@ class BasePacket(TibiaPacket):
         self.raw("\x00\x00")
         count = 0
         for item in tile.topItems():  
+            print item.itemId, item.cid, type(item.cid)
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
@@ -139,7 +140,7 @@ class BasePacket(TibiaPacket):
             count += 1
             if count == 10:
                 return
-
+        
         if not tile.things: return
 
         for creature in tile.creatures():
@@ -177,6 +178,7 @@ class BasePacket(TibiaPacket):
                 return
                 
         for item in tile.bottomItems():
+            print item.itemId
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
@@ -867,7 +869,8 @@ class BaseProtocol(object):
                     extra = ""
                     # TODO propper description handling
                     if config.debugItems:
-                        extra = "(ItemId: %d, Cid: %d)" % (thing.cid, clientId)
+                        extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+
                     player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():

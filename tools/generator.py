@@ -5,19 +5,19 @@ import config
 import struct
 import io
 import math
-import xml.etree.cElementTree as ET
+import json
 ### Load all solid and movable items
 topitems = set()
 movable = set()
 
-parse = ET.parse("../data/items.xml")
-root = parse.getroot()
-for item in root.findall("item"):
-    flags = item.get('flags', '')
+parse = json.load(io.open("../data/items.json", 'r'))
+for item in parse:
+    flags = str(item.get('flags', ''))
     if not flags: continue
 
     id = item.get('id')
-    if '-' in id:
+    
+    if isinstance(id, basestring) and '-' in id:
         start, end = map(int, id.split('-'))
         ids = set(range(start, end+1))
     else:
@@ -275,16 +275,17 @@ class Map(object):
                             continue
 
                         for level in areaY:
-                            """if len(self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS]) > 1:
+                            """if len(areaY[level]) > 1:
                                 # Reorder
-                                insert = 1
-                                for thing in self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS][1:]:
+                                insert = 0
+                                on = 0
+                                for thing in areaY[level][:]:
                                     if isinstance(thing, Item):
-                                        if thing.id in topitems:
-                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].remove(thing)
-                                            self.area[level][(xA*areas[0])+xS][(yA*areas[1])+yS].insert(insert, thing)
+                                        if thing.id in topitems and on != insert:
+                                            areaY[level].remove(thing)
+                                            areaY[level].insert(insert, thing)
                                             insert += 1
-                            """
+                                    on += 1"""
                             sectorY = None
                             for thing in areaY[level]:
                                 e,extras = thing.gen(xPos, yPos,level,xS,yS, extras)
