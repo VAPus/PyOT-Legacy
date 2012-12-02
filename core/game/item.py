@@ -344,6 +344,7 @@ class Item(object):
         if creature:
             creature.placeItem(position, self)
         else:
+            self.decay()
             tile = position.getTile()
             stackpos = tile.placeItem(self)
             position = position.setStackpos(stackpos)
@@ -526,6 +527,7 @@ class Item(object):
             item.itemId = toId
             if toId:
                 newStackpos = tile.placeItem(item)
+                item.decay()
 
             for spectator in game.engine.getSpectators(position):
                 stream = spectator.packet()
@@ -539,6 +541,7 @@ class Item(object):
                 self = self.copy()
                 
             self.itemId = toId
+            self.decay()
             self.refresh(position)
 
     def refresh(self, position=None):

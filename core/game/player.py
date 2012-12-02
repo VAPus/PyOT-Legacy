@@ -1221,6 +1221,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[9])
                 stream.send(self.client)
+                item.decay()
                 return True
         if ret == False and placeOnGround:
             item.place(self.position)
