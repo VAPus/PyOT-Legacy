@@ -26,58 +26,41 @@ newInstanceId = __uid().next
 
 def getTile(pos):
     """ Returns the Tile on this position. """
-    x,y = pos.x, pos.y
-    iX = x // sectorX
-    iY = y // sectorY
-    sectorSum = (pos.instanceId << 22) + (iX << 11) + iY
-    posSum = (x,y,pos.z)
+    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
     area = None
     try:
-        area = knownMap[sectorSum]
+        return knownMap[posSum]
     except KeyError:
-        if loadTiles(x, y, pos.instanceId, sectorSum):
-            return knownMap[sectorSum].get(posSum)
-    else:
-        return area.get(posSum)
+        if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x // sectorX, pos.y // sectorY)):
+            return knownMap.get(posSum)
 
 def setTile(pos, tile):
     """ Set the tile on this position. """
     x = pos.x
     y = pos.y
-    iX = x // sectorX
-    iY = y // sectorY
 
-    sectorSum = (pos.instanceId << 22) + (iX << 11) + iY
-    posSum = (x,y,pos.z)
-    area = None
+    posSum = (x,y,pos.z,pos.instanceId)
+
     try:
-        area = knownMap[sectorSum]
+        knownMap[posSum] = tile
+        return True
     except KeyError:
-        if loadTiles(x, y, pos.instanceId, sectorSum):
-            knownMap[sectorSum][posSum] = tile
+        if loadTiles(x, y, pos.instanceId, (pos.instanceId, x // sectorX, y // sectorY)):
+            knownMap[posSum] = tile
             return True
         else:
             return False
-    else:
-        area[posSum] = tile
-        return True
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
-    iX = x // sectorX
-    iY = y // sectorY
-        
-    sectorSum = (instanceId << 22) + (iX << 11) + iY
-    posSum = (x,y,z)
+    posSum = (x,y,z,instanceId)
     area = None
 
     try:
-        area = knownMap[sectorSum]
+        return knownMap[posSum]
     except KeyError:
-        if loadTiles(x, y, instanceId, sectorSum):
-            return knownMap[sectorSum].get(posSum)
-    else:
-        return area.get(posSum)
+        if loadTiles(x, y, instanceId, (instanceId, x // sectorX, y // sectorY)):
+            return knownMap.get(posSum)
         
 def getHouseId(pos):
     """ Returns the houseId on this position, or False if none """
@@ -351,10 +334,12 @@ houseTiles = {}
 houseDoors = {}
 
 dummyTiles = {}
-    
+
+sectors = set()
+
 def loadTiles(x,y, instanceId, sectorSum):
     """ Load the sector witch holds this x,y position. Returns the result. """
-    if sectorSum in knownMap: return None
+    if sectorSum in sectors: return None
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
     
@@ -622,7 +607,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         break
                     # otherwise it should be ",", we don't need to verify this.
                 if ground:
-                    ySum = (xr + baseX), (yr + baseY),level
+                    ySum = (xr + baseX), (yr + baseY), level, instanceId
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -653,7 +638,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             houseTiles[houseId].append(tile)
                         else:
                             houseTiles[houseId] = [tile]
-                            
+                        
                         try:
                             for item in game.house.houseData[houseId].data["items"][ySum]:
                                 tile.placeItem(item)
@@ -698,6 +683,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 
     return thisSectorMap           
 ### End New Map Format ###
+
 def load(sectorX, sectorY, instanceId, sectorSum):
     """ Load sectorX.sectorY.sec. Returns True/False """
           
@@ -707,10 +693,11 @@ def load(sectorX, sectorY, instanceId, sectorSum):
     try:
         with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
             map = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
-            knownMap[sectorSum] = map
+            knownMap.update(map)
+        sectors.add(sectorSum)
     except IOError:
         # No? Mark it as empty
-        knownMap[sectorSum] = None
+        sectors.add(sectorSum)
         return False
         
     print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
@@ -754,8 +741,13 @@ def _unloadMap(sectorX, sectorY, instanceId):
     
 def unload(sectorX, sectorY, instanceId):
     """ Unload sectorX.sectorY, loaded into instanceId """
-    sectorSum = (instanceId << 22) + (sectorX << 11) + sectorY
-    try:
-        del knownMap[sectorSum]
-    except:
-        pass
+    sectorSum = (instanceId, sectorX, sectorY)
+    sectors.remove(sectorSum)
+
+    for z in zrange(16):
+        for x in xrange(sectorX * mapInfo.sectorSize[0], (sectorX + 1) * mapInfo.sectorSize[0]):
+            for y in xrange(sectorY * mapInfo.sectorSize[1], (sectorY + 1) * mapInfo.sectorSize[1]):
+                 try:
+                     del knownMap[x,y,z,instanceId]
+                 except:
+                     pass
