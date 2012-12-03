@@ -205,6 +205,8 @@ while child:
         #items[item.sid] = lastRealItem
     child = node.next()
 
+for i in items:
+    if items[i].cid == 1361: print i
 print "-- Got a total of %d items!" % len(items)
 print "-- "
 print ""
@@ -257,9 +259,9 @@ if __name__ == "__main__":
                     attribute.clear()
                     #item.remove(attribute)
                     continue # We auto generate those.
-                if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
+                """if key in ("rotateTo", "decayTo", "transformEquipTo", "transformDeEquipTo", "transformUseTo") and int(val) != 0:
                     attribute.set("value", str(items[int(val)].cid))
-
+                """
                 try:
                     del attribute.attrib["key"]
                 except:
@@ -293,18 +295,22 @@ if __name__ == "__main__":
                 del item.attrib["fromid"]
                 del item.attrib["toid"]
                 item.set("id", "%s-%s" % (orgId, toId))
+            item.set("cid", "%s-%s" % (items[orgId].cid, items[toId].cid))
             i = 1
             if toId - orgId > 100:
                 print "I think an item going from %d to %d is wrong...." % (orgId, toId)
 
             #item.set("id", str(orgId))
             ok = True
+            # Quick check.
+            if toId - orgId != items[toId].cid - items[orgId].cid:
+                ok = False
             orgFlags = items[orgId].flags
             orgCid = items[orgId].cid
 
             # First check that name, cid (incremental) & flags is the same.
             for id in xrange(orgId+1, toId+1):
-                if items[id].flags != orgFlags or items[id].cid != orgCid + (id - orgCid):
+                if items[id].flags != orgFlags or id != orgId + (id - orgId) or items[id].cid != orgCid + (items[id].cid - orgCid):
                     ok = False
 
             # If not, unroll it.
@@ -314,17 +320,22 @@ if __name__ == "__main__":
                     newItem = copy.deepcopy(item)
                 
                     newItem.set("id", str(id))
+                    newItem.set("cid", str(items[id].cid))
+                    if items[id].flags:
+                        newItem.set("flags", str(items[id].flags))
                     root.insert(index+1, newItem)
                     
                     index += 1
                 item.set("id", str(orgId))
-                    
+                item.set("cid", str(orgCid))                    
         elif "fromid" in item.attrib:
             # No toid. Rewrite.
             orgId = item.attrib["fromid"]
             del item.attrib["fromid"]
             item.set("id", orgId)
-
+            item.set("cid", str(items[orgId].cid))
+        else:
+            item.set("cid", str(items[int(item.get('id'))].cid))
         index += 1
 
     # Rewrite ids.
@@ -341,12 +352,16 @@ if __name__ == "__main__":
         id = item.get("id")
         if "-" in id:
             start, end = map(int, id.split('-'))
-            item.set("id", "%s-%s" % (items[start].cid, items[end].cid))
-            for id in xrange(items[start].cid, items[end].cid+1):
+            """item.set("cid", "%s-%s" % (items[start].cid, items[end].cid))
+            print start
+            print end-start, items[end].cid - items[start].cid
+            assert end-start == items[end].cid - items[start].cid"""
+            for id in xrange(start, end+1):
                 ids.add(id)
+
         else:
-            id = items[int(item.get("id"))].cid
-            item.set("id", str(id))
+            #id = items[int(item.get("id"))].cid
+            #item.set("id", str(id))
             if id in ids:
                 print "WARNING: ItemId %d got two entries!" % (id)
                 for elem in root.findall("item"):
@@ -354,12 +369,13 @@ if __name__ == "__main__":
                         root.remove(elem)
                         break
                 #root.remove(item)
-            ids.add(id)
+            ids.add(int(id))
 
     for item in items.values():
-        if item.cid not in ids:
+        if item.sid not in ids:
             elm = ET.Element('item')
-            elm.set('id', str(item.cid))
+            elm.set('cid', str(item.cid))
+            elm.set('id', str(item.sid))
             if item.flags:
                 elm.set('flags', str(item.flags))
             if item.type and item.type > 2:
@@ -369,9 +385,14 @@ if __name__ == "__main__":
             if "name" in item.attr:
                 elm.set('name', item.attr["name"].decode('utf-8'))
 
-            ids.add(item.cid)
+            ids.add(item.sid)
 
             root.append(elm)
+
+    # Remove cid if cid = sid.
+    for item in root.findall("item"):
+        if item.get("cid") == item.get('id'):
+            del item.attrib['cid']
 
     # Sort it.
     container = root.findall("item")
@@ -411,23 +432,27 @@ if __name__ == "__main__":
                 return False
 
         return True
-            
+    # Needs fixes. Skip.     
     for elem in container[:]:
         id = elem.get("id")
         if "-" in id: continue
         
         id = int(id)
+        cid = items[id].cid
 
-        if id == currId + count + 1 and currName == elem.get("name") and currFlags == elem.get("flags") and _compareSub(currElem, elem):
+        if id == currId + count + 1 and (cid == currCid + count + 1 or cid == currCid) and currName == elem.get("name") and currFlags == elem.get("flags") and _compareSub(currElem, elem):
             count += 1
             root.remove(elem)
             container.remove(elem)
             continue
         elif count:
             currElem.set("id", "%s-%s" % (currId, currId+count))
+            if cid != currCid:
+                currElem.set("cid", "%s-%s" % (currCid, currCid+count))
 
         currElem = elem
         currId = id
+        currCid = cid
         currFlags = elem.get("flags")
         currName = elem.get("name")
         count = 0
@@ -447,7 +472,7 @@ if __name__ == "__main__":
     
     # JSON
     import json
-    items = []
+    _items = []
     for item in container:
         attr = item.attrib
         
@@ -456,6 +481,16 @@ if __name__ == "__main__":
         except:
             attr['__id'] = attr['id']
         del attr['id']
+
+        try:
+            attr['_cid'] = int(attr['cid'])
+            del attr['cid']
+        except:
+            try:
+                attr['_cid'] = attr['cid']
+                del attr['cid']
+            except:
+                pass
 
         try:
             attr['flags'] = int(attr['flags'])
@@ -480,7 +515,7 @@ if __name__ == "__main__":
         except:
             pass
 
-        items.append(attr)
+        _items.append(attr)
 
         for sub in item:
             if sub.tag == "attribute": continue
@@ -495,8 +530,45 @@ if __name__ == "__main__":
             attr[sub.tag] = val
 
     with open('out.json', 'w') as f:
-        data = json.dumps(items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
+        data = json.dumps(_items, indent=8, sort_keys=True, separators=(',', ': '), ensure_ascii=True)
         data = data.replace('        ', '\t').replace('\n\t', '\n') # Cut first tab.
-        data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
+        data = data.replace('},\n{', '},{').replace('"__id"', '"id"').replace('"_name"', '"name"').replace('"_cid"', '"cid"') #.replace(',\n\t', ', ').replace('{\n\t', '{\t')
         data = data.replace('[\n{', '[{').replace('}\n]', '}]')
         f.write(data)
+
+    jsonData = json.loads(data)
+    loadItems = {}
+    for item in jsonData:
+        id = item['id']
+        cid = item.get('cid')
+
+        del item['id']
+        if not isinstance(id, int):
+            start, end = map(int, id.split('-'))
+            fixCid = isinstance(cid, basestring)
+            if fixCid:
+                bCid = int(cid.split('-')[0])
+            for id in xrange(start, end+1):
+                if fixCid:
+                    _newItem = item.copy()
+                    _newItem['cid'] = bCid
+                    loadItems[id] = _newItem
+                    bCid += 1
+                else:
+                    loadItems[id] = item
+
+
+        else:
+            loadItems[id] = item
+    """
+    for itemId in loadItems:
+        try:
+            assert itemId
+            assert loadItems[itemId].get('cid', itemId) == items[itemId].cid
+            #assert loadItems[itemId].get('flags', 0) == items[itemId].flags
+        except:
+            print itemId
+            print loadItems[itemId].get('cid', itemId), items[itemId].cid
+            print loadItems[itemId].get('flags', 0), items[itemId].flags
+            raise
+    """

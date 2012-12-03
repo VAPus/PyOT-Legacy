@@ -64,7 +64,7 @@ class Packet(base.BasePacket):
     def item(self, item, count=None):
         import game.item
         if isinstance(item, game.item.Item):
-            cid = item.itemId
+            cid = item.cid
             if cid > 11703:
                 if item.solid:
                     self.uint16(100)

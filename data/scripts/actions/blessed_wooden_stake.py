@@ -1,6 +1,6 @@
 convert = {}
-convert[4137] = (5905, EFFECT_MAGIC_BLUE) # Vampire dust
-convert[4097] = (5906, EFFECT_MAGIC_RED) # Demon dust
+convert[2956] = (5905, EFFECT_MAGIC_BLUE) # Vampire dust
+convert[2916] = (5906, EFFECT_MAGIC_RED) # Demon dust
 
 @register("useWith", 5942)
 def useWith(creature, thing, onThing, onPosition, **k):
@@ -18,4 +18,3 @@ def useWith(creature, thing, onThing, onPosition, **k):
         magicEffect(onPosition, EFFECT_BLOCKHIT)
 
     onThing.transform(onThing.itemId + 1)
-    onThing.decay()

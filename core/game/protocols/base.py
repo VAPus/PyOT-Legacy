@@ -69,7 +69,7 @@ class BasePacket(TibiaPacket):
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
         if isinstance(item, game.item.Item):
-            self.uint16(item.itemId)
+            self.uint16(item.cid)
                 
             if item.stackable:
                 self.uint8(item.count or 1)
@@ -127,8 +127,9 @@ class BasePacket(TibiaPacket):
     def tileDescription(self, tile, player):
         self.raw("\x00\x00")
         count = 0
+        
         for item in tile.topItems():  
-            self.raw(pack("<H", item.itemId))
+            self.raw(pack("<H", item.cid))
                     
             if item.stackable:
                 self.raw(chr(item.count or 1))
@@ -139,7 +140,7 @@ class BasePacket(TibiaPacket):
             count += 1
             if count == 10:
                 return
-
+        
         if not tile.things: return
 
         for creature in tile.creatures():
@@ -177,7 +178,7 @@ class BasePacket(TibiaPacket):
                 return
                 
         for item in tile.bottomItems():
-            self.raw(pack("<H", item.itemId))
+            self.raw(pack("<H", item.cid))
                     
             if item.stackable:
                 self.raw(chr(item.count or 1))
@@ -188,7 +189,7 @@ class BasePacket(TibiaPacket):
             count += 1
             if count == 10:
                 return
-
+        
     def exit(self, message):
         self.uint8(0x14)
         self.string(message) # Error message
@@ -856,9 +857,9 @@ class BaseProtocol(object):
                 return
         else:
             thing = player.findItem(stackPosition)
-            if not thing or thing.itemId != clientId:
+            if not thing or thing.cid != clientId:
                 for thing2 in game.map.getTile(position).things:
-                    if thing2.itemId == clientId:
+                    if thing2.cid == clientId:
                         thing = thing2
                         break       
         if thing:
@@ -868,6 +869,7 @@ class BaseProtocol(object):
                     # TODO propper description handling
                     if config.debugItems:
                         extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+
                     player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
                 def afterScript():
@@ -1173,7 +1175,7 @@ class BaseProtocol(object):
     @packet(0x7D)
     def handleRequestTrade(self, player, packet):
         position = packet.position(player.position.instanceId)
-        itemId = packet.uint16()
+        itemId = sid(packet.uint16())
         stackpos = packet.uint8()
         player2 = game.engine.getCreatureByCreatureId(packet.uint32())
         
@@ -1283,7 +1285,7 @@ class BaseProtocol(object):
                 extra = ""
                 # TODO propper description handling
                 if config.debugItems:
-                    extra = "(ItemId: %d)" % thing.itemId
+                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description(player) + extra)
             game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
         
@@ -1343,11 +1345,11 @@ class BaseProtocol(object):
         if player != creature and not player.inRange(creature.position, 7, 5):
             player.cancelMessage("Target is too far away.")
             return 
-        
+        serverId = sid(clientItemId)
         if not hotkey:
             thing = player.findItem(stackPosition)
         else:
-            thing = player.findItemById(clientItemId)
+            thing = player.findItemById(serverId)
             
             if not thing:
                 player.cancelMessage("You don't have any left of this item.")
@@ -1355,7 +1357,7 @@ class BaseProtocol(object):
                 return
                 
             # Also tell hotkey message
-            count = player.inventoryCache[clientItemId][0]
+            count = player.inventoryCache[serverId][0]
             
             if not thing.showCount:
                 player.message("Using one of %s..." % thing.rawName())
