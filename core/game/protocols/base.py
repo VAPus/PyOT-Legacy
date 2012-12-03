@@ -127,8 +127,8 @@ class BasePacket(TibiaPacket):
     def tileDescription(self, tile, player):
         self.raw("\x00\x00")
         count = 0
+        
         for item in tile.topItems():  
-            print item.itemId, item.cid, type(item.cid)
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
@@ -178,7 +178,6 @@ class BasePacket(TibiaPacket):
                 return
                 
         for item in tile.bottomItems():
-            print item.itemId
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
@@ -190,7 +189,7 @@ class BasePacket(TibiaPacket):
             count += 1
             if count == 10:
                 return
-
+        
     def exit(self, message):
         self.uint8(0x14)
         self.string(message) # Error message

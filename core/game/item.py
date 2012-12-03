@@ -33,6 +33,7 @@ class Item(object):
                   'animation': 1 << 24}
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
+        #itemId = 106
         attr = items.get(itemId)
         if not attr:
             print "ItemId %d doesn't exist!" % itemId
@@ -933,13 +934,10 @@ def loadItems():
         del item['id']
         if not isinstance(id, int):
             start, end = map(int, id.split('-'))
-            fixCid = not isinstance(cid, int)
+            fixCid = isinstance(cid, basestring)
             if fixCid:
-                if cid == None:
-                    bCid = start
-                else:
-                    bCid = int(cid.split('-')[0])
-            else:
+                bCid = int(cid.split('-')[0])
+            elif cid != None:
                 _cidToSid[cid] = item
 
             for id in xrange(start, end+1):
@@ -955,7 +953,8 @@ def loadItems():
                  
         else:
             loadItems[id] = item
-            _cidToSid[cid] = id            
+            if cid != id:
+                _cidToSid[cid] = id            
             try:
                 name = item["name"].upper()
                 if not name in idNameCache:
