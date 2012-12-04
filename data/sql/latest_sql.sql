@@ -1,5 +1,8 @@
 -- MySQL dump 10.13  Distrib 5.5.28, for debian-linux-gnu (x86_64)
 --
+-- Host: localhost    Database: pyot
+-- ------------------------------------------------------
+-- Server version	5.5.28-0ubuntu0.12.10.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -79,6 +82,7 @@ DROP TABLE IF EXISTS `globals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `globals` (
+  `world_id` tinyint(8) NOT NULL DEFAULT '0',
   `key` varchar(16) NOT NULL,
   `data` mediumblob NOT NULL,
   `type` varchar(16) NOT NULL,
@@ -92,7 +96,7 @@ CREATE TABLE `globals` (
 
 LOCK TABLES `globals` WRITE;
 /*!40000 ALTER TABLE `globals` DISABLE KEYS */;
-INSERT INTO `globals` VALUES ('objectStorage','Ä}q.','pickle'),('storage','{}','json');
+INSERT INTO `globals` VALUES (0,'objectStorage','Ä}q.','pickle'),(0,'storage','{}','json');
 /*!40000 ALTER TABLE `globals` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -237,6 +241,7 @@ DROP TABLE IF EXISTS `houses`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `houses` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `world_id` tinyint(8) NOT NULL,
   `owner` int(11) unsigned NOT NULL DEFAULT '0',
   `guild` int(8) unsigned NOT NULL DEFAULT '0',
   `paid` int(11) unsigned NOT NULL DEFAULT '0',
@@ -247,7 +252,8 @@ CREATE TABLE `houses` (
   `data` mediumblob,
   `price` int(11) unsigned NOT NULL DEFAULT '0',
   `for_sale` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `world_id` (`world_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -257,7 +263,7 @@ CREATE TABLE `houses` (
 
 LOCK TABLES `houses` WRITE;
 /*!40000 ALTER TABLE `houses` DISABLE KEYS */;
-INSERT INTO `houses` VALUES (1,0,0,0,'The W House',1,126,1000,'Ä}q(Uitemsq}q((MËMÈKKtq]q(cgame.item\nItem\nq)Åq}qUitemIdq	Msbh)Åq\n}qUitemIdqMsbe(MËMÈKKtq\r]q(h)Åq}qh	Msbh)Åq}qhMsbe(MËMÈKKtq]q(h)Åq}qh	Msbh)Åq}qhMsbe(MÍMËKK\0tq]q\Z(h)Åq}q(h	M√U	containerqc_collections\ndeque\nq]qKÜq Rq!ubh)Åq\"}q#(hM√U	containerq$h]q%KÜq&Rq\'ube(MËMÈKKtq(]q)(h)Åq*}q+h	Msbh)Åq,}q-hMsbeuUguestsq.]q/Udoorsq0}q1U	subownersq2]q3u.',0,0),(2,0,0,0,'The Bear',1,193,100000,NULL,0,0),(3,0,0,0,'The School and Church',1,109,100000000,NULL,0,0),(4,0,0,0,'Island',1,18,10000000,NULL,0,0),(5,0,0,0,'Mini Flat I',1,50,10000,NULL,0,0),(6,0,0,0,'Mini Flat II',1,50,10000,NULL,0,0),(7,0,0,0,'Mini Flat III',1,50,10000,NULL,0,0),(8,0,0,0,'Mini Flat IV',1,50,10000,NULL,0,0),(9,0,0,0,'Stone Entrance I',1,40,10000,NULL,0,0),(10,0,0,0,'Stone Entrance II',1,28,10000,NULL,0,0),(11,0,0,0,'Stone Entrance III',1,28,10000,NULL,0,0),(12,0,0,0,'Yellow Flower I',1,18,10000,NULL,0,0),(13,0,0,0,'Yellow Flower II',1,18,10000,NULL,0,0),(14,0,0,0,'Yellow Flower III',1,18,10000,NULL,0,0),(15,0,0,0,'Temple House I',1,20,10000,NULL,0,0),(16,0,0,0,'Temple House II',1,20,10000,NULL,0,0),(17,0,0,0,'Temple House III',1,20,10000,NULL,0,0),(18,0,0,0,'City Side I',1,18,10000,NULL,0,0),(19,0,0,0,'City Side II',1,18,10000,NULL,0,0),(20,0,0,0,'City Side III',1,25,10000,NULL,0,0),(21,0,0,0,'City Side IV',1,20,10000,NULL,0,0),(22,0,0,0,'Sandland',1,132,100000,NULL,0,0),(23,0,0,0,'Desert Ground',1,15,10000,NULL,0,0),(24,0,0,0,'Desert Ground II',1,15,10000,NULL,0,0),(25,0,0,0,'Ezo TownHouse I',1,48,100000,NULL,0,0),(26,0,0,0,'Ezo TownHouse II',1,9,100000,NULL,0,0),(27,0,0,0,'Ezo TownHouse III',1,9,100000,NULL,0,0),(28,0,0,0,'Ezo TownHouse IV',1,40,100000,NULL,0,0),(29,0,0,0,'Ezo TownHouse V',1,40,100000,NULL,0,0);
+INSERT INTO `houses` VALUES (1,0,0,0,0,'The W House',1,126,1000,'Ä}q(Uitemsq}q((MËMÈKKtq]q(cgame.item\nItem\nq)Åq}qUitemIdq	Msbh)Åq\n}qUitemIdqMsbe(MËMÈKKtq\r]q(h)Åq}qh	Msbh)Åq}qhMsbe(MËMÈKKtq]q(h)Åq}qh	Msbh)Åq}qhMsbe(MÍMËKK\0tq]q\Z(h)Åq}q(h	M√U	containerqc_collections\ndeque\nq]qKÜq Rq!ubh)Åq\"}q#(hM√U	containerq$h]q%KÜq&Rq\'ube(MËMÈKKtq(]q)(h)Åq*}q+h	Msbh)Åq,}q-hMsbeuUguestsq.]q/Udoorsq0}q1U	subownersq2]q3u.',0,0),(2,0,0,0,0,'The Bear',1,193,100000,NULL,0,0),(3,0,0,0,0,'The School and Church',1,109,100000000,NULL,0,0),(4,0,0,0,0,'Island',1,18,10000000,NULL,0,0),(5,0,0,0,0,'Mini Flat I',1,50,10000,NULL,0,0),(6,0,0,0,0,'Mini Flat II',1,50,10000,NULL,0,0),(7,0,0,0,0,'Mini Flat III',1,50,10000,NULL,0,0),(8,0,0,0,0,'Mini Flat IV',1,50,10000,NULL,0,0),(9,0,0,0,0,'Stone Entrance I',1,40,10000,NULL,0,0),(10,0,0,0,0,'Stone Entrance II',1,28,10000,NULL,0,0),(11,0,0,0,0,'Stone Entrance III',1,28,10000,NULL,0,0),(12,0,0,0,0,'Yellow Flower I',1,18,10000,NULL,0,0),(13,0,0,0,0,'Yellow Flower II',1,18,10000,NULL,0,0),(14,0,0,0,0,'Yellow Flower III',1,18,10000,NULL,0,0),(15,0,0,0,0,'Temple House I',1,20,10000,NULL,0,0),(16,0,0,0,0,'Temple House II',1,20,10000,NULL,0,0),(17,0,0,0,0,'Temple House III',1,20,10000,NULL,0,0),(18,0,0,0,0,'City Side I',1,18,10000,NULL,0,0),(19,0,0,0,0,'City Side II',1,18,10000,NULL,0,0),(20,0,0,0,0,'City Side III',1,25,10000,NULL,0,0),(21,0,0,0,0,'City Side IV',1,20,10000,NULL,0,0),(22,0,0,0,0,'Sandland',1,132,100000,NULL,0,0),(23,0,0,0,0,'Desert Ground',1,15,10000,NULL,0,0),(24,0,0,0,0,'Desert Ground II',1,15,10000,NULL,0,0),(25,0,0,0,0,'Ezo TownHouse I',1,48,100000,NULL,0,0),(26,0,0,0,0,'Ezo TownHouse II',1,9,100000,NULL,0,0),(27,0,0,0,0,'Ezo TownHouse III',1,9,100000,NULL,0,0),(28,0,0,0,0,'Ezo TownHouse IV',1,40,100000,NULL,0,0),(29,0,0,0,0,'Ezo TownHouse V',1,40,100000,NULL,0,0);
 /*!40000 ALTER TABLE `houses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -479,4 +485,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-12-04 20:56:42
+-- Dump completed on 2012-12-04 21:13:35

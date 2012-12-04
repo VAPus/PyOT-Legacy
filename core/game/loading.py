@@ -132,9 +132,9 @@ def loader(timer):
     print "%40s\n" % _txtColor("\t[DONE]", "blue")
     
    
-    globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")
+    globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
     groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
-    houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")
+    houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
 
     # Globalize certain things
     print "> > Globalize data...",
