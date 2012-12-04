@@ -55,9 +55,4 @@ def container(creature, thing, position, index, **k):
     else:
         creature.closeContainer(thing)
 
-_script_ = game.scriptsystem.get("use")
-_items = game.item.items
-
-for sid in _items:
-    if "containerSize" in _items[sid]:
-        _script_.register(sid, container)
+registerForAttr('use', 'containerSize', container)

@@ -197,35 +197,10 @@ def conjure(make, count=1, **kwargs):
 
 def field(fieldId):
     def makeFieldCallback(position, **k):
-        item = game.item.Item(fieldId)
+        item = Item(fieldId)
         
-        def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
-            if not creature.alive:
-                return
-                
-            ticks += 1
-            creature.modifyHealth(-damage)
-            creature.magicEffect(creature.position, effect)
-            
-            
-            if ticks < forTicks:
-                reactor.callLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
-                
-        def callback(creature, thing, **k):
-            if thing.damage:
-                creature.magicEffect(creature.position, typeToEffect(thing.field)[0])
-                creature.modifyHealth(-thing.damage)
-                
-            if thing.turns:
-                effectOverTime(creature, thing.damage, thing.ticks / 1000, typeToEffect(thing.field)[1], thing.turns)
-        
-        game.engine.placeItem(item, position)
-            
-        if item.damage:
-            game.scriptsystem.get('walkOn').register(item, callback)
-            if item.duration:
-                item.decay(position, callback=lambda i: game.scriptsystem.get('walkOn').register(i, callback))
-                
+        item.place(position)
+                            
     return makeFieldCallback
     
 class Spell(object):
@@ -399,7 +374,7 @@ class Spell(object):
                 
             if not useItem:
                 caster.needMagicItem()
-                caster.magicEffect(game.enum.EFFECT_POFF)
+                caster.magicEffect(EFFECT_POFF)
                 return False
                 
             return True
@@ -632,7 +607,7 @@ class Rune(Spell):
 
                 if not thing.count:
                     creature.needMagicItem()
-                    creature.magicEffect(creature.position, game.enum.EFFECT_POFF)
+                    creature.magicEffect(EFFECT_POFF)
                         
                 else:
                     thing.modify(-1)  

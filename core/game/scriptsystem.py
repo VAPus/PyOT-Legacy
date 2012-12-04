@@ -560,7 +560,8 @@ def importer():
     handleModule("spells")
     handleModule("monsters")
     handleModule("npcs")
-    
+    handlePostLoadEntries()
+
 def scriptInitPaths(base, subdir=True):
     all = []
     paths = []
@@ -609,6 +610,8 @@ def reimporter():
         for sub in mod[1].__all__:
             if sub != "__init__":
                 reload(sys.modules["data.%s.%s" % (mod[0], sub)])
+
+    handlePostLoadEntries()
 
     # Call gc.collect()
     gc.collect()
@@ -774,3 +777,20 @@ def access_wrapper_inner(%s):
     return f(%s)""" % (vars, '\n    '.join(checks), vars) in locals(), locals()
         return access_wrapper_inner
     return _wrapper
+
+# A special post-loading cache thingy.
+postLoadEntries = {}
+
+def registerForAttr(type, attr, callback):
+    postLoadEntries.setdefault(attr, []).append((type, callback))
+
+def handlePostLoadEntries():
+    _unpackPostLoad = postLoadEntries.items()
+    for id, attr in game.item.items.iteritems():
+        for key, entries in _unpackPostLoad:
+            if key in attr:
+                for entry in entries:
+                    globalScripts[entry[0]].register(id, entry[1])
+
+
+    postLoadEntries.clear()

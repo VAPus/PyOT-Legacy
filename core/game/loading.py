@@ -161,6 +161,7 @@ def loader(timer):
 
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
+    __builtin__.registerForAttr = game.scriptsystem.registerForAttr
     __builtin__.defer = defer
     __builtin__.reactor = reactor
     __builtin__.engine = game.engine
@@ -200,6 +201,9 @@ def loader(timer):
     __builtin__.genOutfit = game.resource.genOutfit
     __builtin__.genMount = game.resource.genMount
     __builtin__.regVocation = game.vocation.regVocation
+
+    # Spells
+    __builtin__.typeToEffect = game.spell.typeToEffect
 
     # Grab them
     __builtin__.getNPC = game.npc.getNPC

@@ -16,8 +16,4 @@ def writable(creature, thing, position, **k):
     
     creature.setWindowHandler(windowId, writeback)
     
-useScript = game.scriptsystem.get("use")
-_items = game.item.items
-for sid in _items:
-    if "writable" in _items[sid]:
-        useScript.register(sid, writable)
+registerForAttr('use', 'writable', writable)
