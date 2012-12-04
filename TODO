@@ -1,30 +1,8 @@
-Here are some random TODOs for people.
+Before we go beta1 (or rather, before we go alpha2). Fix these things:
+- [PROTOCOLS] Max items per client per client version (and send a replacement item, like ground if it's a ground item, sword if it's a sword...).
+- [PROTOCOLS] Max effect id per client version (just send poff or something if it's above).
+- [PROTOCOLS] Max animation id (just send a common shoot effect if it's above)
 
+- [CORE] Proper assist and multiple-player-kills tracking.
 
-Monster:
- - [everywhere] Fix random move (it makes things bug, need a bit of investegation, so lots of learning for anyone who want to do this one hehe)
- - Make em starter.
-
-Guild:
- - Make control scripts
- - Make guild class or extend Player class
- - SQL part
-
-Scripts:
- - Add more scripts.
-
-Scriptsystem:
- - Per creature scripts (would be easier to bind things here rather then to use if creature in someSet for all events, since those will only fire on the actual creatures, and therefore reduce overhead)
-
-Documentation:
- - Document more functions
- - Write a page on how to make Monsters
- - Write a page on how to make Spells
- - Write a page on how to make NPCs
- - Finish more of tfsToPyOT
-
-Somethings that could be fun:
- - Write tests
-
-Tools:
- - Fix the script convertor to use the new form of registering.
+- [SCRIPT] beds
