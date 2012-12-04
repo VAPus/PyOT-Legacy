@@ -7,6 +7,7 @@ from twisted.python import log
 import time
 import game.map
 import config
+import userconfig
 import math
 import sql
 import otjson
@@ -156,6 +157,7 @@ def loader(timer):
 
     __builtin__.sql = sql.conn
     __builtin__.config = config
+    __builtin__.userconfig = userconfig
 
     import game.pathfinder
 
