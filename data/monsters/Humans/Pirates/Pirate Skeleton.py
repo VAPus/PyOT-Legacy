@@ -8,4 +8,4 @@ pirate_skeleton.setBehavior(summonable=0, hostile=1, illusionable=1, convinceabl
 pirate_skeleton.walkAround(energy=1, fire=1, poison=1)
 pirate_skeleton.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 pirate_skeleton.regMelee(50)
-pirate_skeleton.loot( (3031, 100, 25), (10559, 4.5), ("bone", 6.0), ("big bone", 5.0), ("skull", 4.5), ("short sword", 0.75), ("bone club", 1.0), ("sword", 0.75) )
+pirate_skeleton.loot( (2148, 100, 25), (10559, 4.5), ("bone", 6.0), ("big bone", 5.0), ("skull", 4.5), ("short sword", 0.75), ("bone club", 1.0), ("sword", 0.75) )

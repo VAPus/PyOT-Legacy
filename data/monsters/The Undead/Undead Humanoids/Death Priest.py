@@ -8,4 +8,4 @@ death_priest.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0
 death_priest.walkAround(energy=0, fire=1, poison=0)
 death_priest.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 death_priest.regMelee(200)#unknown?
-death_priest.loot( (3031, 100, 143), ("white pearl", 3.25), ("health potion", 13.5), ("hieroglyph banner", 24.0), ("scarab coin", 22.0, 3), ("orichalcum pearl", 11.5, 4), ("mana potion", 16.0), ("spellbook", 3.25), ("ring of healing", 1.5) )
+death_priest.loot( (2148, 100, 143), ("white pearl", 3.25), ("health potion", 13.5), ("hieroglyph banner", 24.0), ("scarab coin", 22.0, 3), ("orichalcum pearl", 11.5, 4), ("mana potion", 16.0), ("spellbook", 3.25), ("ring of healing", 1.5) )

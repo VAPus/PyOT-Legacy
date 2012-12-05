@@ -8,4 +8,4 @@ ghoul.setBehavior(summonable=450, hostile=1, illusionable=1, convinceable=450, p
 ghoul.walkAround(energy=1, fire=1, poison=1)
 ghoul.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 ghoul.regMelee(70)
-ghoul.loot( (3976, 14.5, 2), ("ghoul snack", 5.25), ("rotten piece of cloth", 15.5), ("torch", 4.5), (3031, 100, 30), ("pile of grave earth", 1.0), ("brown piece of cloth", 1.25, 3), ("scale armor", 0.75), ("skull", 0.25), ("viking helmet", 1.0), ("life ring", 0.25) )
+ghoul.loot( (3976, 14.5, 2), ("ghoul snack", 5.25), ("rotten piece of cloth", 15.5), ("torch", 4.5), (2148, 100, 30), ("pile of grave earth", 1.0), ("brown piece of cloth", 1.25, 3), ("scale armor", 0.75), ("skull", 0.25), ("viking helmet", 1.0), ("life ring", 0.25) )

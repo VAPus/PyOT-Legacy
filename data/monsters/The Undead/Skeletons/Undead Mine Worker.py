@@ -9,4 +9,4 @@ undead_mine_worker.walkAround(energy=1, fire=1, poison=1)
 undead_mine_worker.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 undead_mine_worker.voices("Ahrrr... uhmmm... hmm...", "Grrr...", "Urrrgh... gnarrr...")
 undead_mine_worker.regMelee(20)#could be wrong
-undead_mine_worker.loot( (3031, 100, 9), ("bone", 52.25), ("brown mushroom", 8.75), ("white mushroom", 37.0, 3), ("mace", 26.0), ("sword", 2.25) )
+undead_mine_worker.loot( (2148, 100, 9), ("bone", 52.25), ("brown mushroom", 8.75), ("white mushroom", 37.0, 3), ("mace", 26.0), ("sword", 2.25) )

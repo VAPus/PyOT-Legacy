@@ -8,7 +8,7 @@ quara_mantassin.setBehavior(summonable=0, hostile=1, illusionable=0, convinceabl
 quara_mantassin.walkAround(energy=1, fire=0, poison=1)
 quara_mantassin.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_mantassin.voices("Shrrrr", "Zuerk Pachak!")
-quara_mantassin.loot( ("halberd", 4.0), (3031, 100, 129), ("blue robe", 0.25), ("stealth ring", 1.0), ("fish fin", 0.5, 3), ("two handed sword", 1.0), ("cape", 1.0), ("small sapphire", 1.25), ("shrimp", 4.75), ("mantassin tail", 9.5), ("strange helmet", 0.0025) )
+quara_mantassin.loot( ("halberd", 4.0), (2148, 100, 129), ("blue robe", 0.25), ("stealth ring", 1.0), ("fish fin", 0.5, 3), ("two handed sword", 1.0), ("cape", 1.0), ("small sapphire", 1.25), ("shrimp", 4.75), ("mantassin tail", 9.5), ("strange helmet", 0.0025) )
 
 quara_mantassin.regMelee(140)
 quara_mantassin.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength time?

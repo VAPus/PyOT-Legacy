@@ -10,4 +10,4 @@ mutated_human.walkAround(energy=1, fire=1, poison=0)
 mutated_human.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 mutated_human.voices("Take that creature off my back!! I can feel it!", "You will regret interrupting my studies!", "You will be the next infected one... CRAAAHHH!", "Science... is a curse.", "Run as fast as you can.", "Oh by the gods! What is this... aaaaaargh!")
 mutated_human.regMelee(90) #poisons you 3 hp/turn
-mutated_human.loot( (3031, 100, 130), ("fishbone", 10.5), ("cheese", 8.25), ("sword", 5.0), ("mutated flesh", 20.0), ("scale armor", 7.75), ("fern", 0.5), (3976, 11.0, 2), ("rusty armor", 1.75), ("strange talisman", 5.0), ("peanut", 0.5), ("silver amulet", 0.0025) )
+mutated_human.loot( (2148, 100, 130), ("fishbone", 10.5), ("cheese", 8.25), ("sword", 5.0), ("mutated flesh", 20.0), ("scale armor", 7.75), ("fern", 0.5), (3976, 11.0, 2), ("rusty armor", 1.75), ("strange talisman", 5.0), ("peanut", 0.5), ("silver amulet", 0.0025) )

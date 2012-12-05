@@ -9,7 +9,7 @@ draptor.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pus
 draptor.walkAround(energy=0, fire=0, poison=0)
 draptor.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 #draptor.voices(*arg)
-draptor.loot( (3031, 100, 180), ("strong mana potion", 13.25), ("strong health potion", 21.0), ("draptor scales", 5.25) )
+draptor.loot( (2148, 100, 180), ("strong mana potion", 13.25), ("strong health potion", 21.0), ("draptor scales", 5.25) )
 
 dfwave = spell.Spell("drap fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE6)

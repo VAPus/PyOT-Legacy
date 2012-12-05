@@ -9,4 +9,4 @@ shaburak_lord.walkAround(energy=0, fire=0, poison=0)
 shaburak_lord.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 shaburak_lord.voices("GREEN IS MEAN!", "WE RULE!", "POWER TO THE SHABURAK!", "DEATH TO THE ASKARAK!", "ONLY WE ARE TRUE DEMONS!")
 shaburak_lord.regMelee(200)#
-shaburak_lord.loot( ("brown mushroom", 6.25), (3031, 100, 162), ("strong health potion", 8.25), ("platinum coin", 59.75, 2), ("steel boots", 0.5), ("small ruby", 16.75, 5), ("strong mana potion", 6.25), ("energy ring", 1.0), ("magma coat", 0.5), ("magic sulphur", 1.5), ("wand of inferno", 0.5) )
+shaburak_lord.loot( ("brown mushroom", 6.25), (2148, 100, 162), ("strong health potion", 8.25), ("platinum coin", 59.75, 2), ("steel boots", 0.5), ("small ruby", 16.75, 5), ("strong mana potion", 6.25), ("energy ring", 1.0), ("magma coat", 0.5), ("magic sulphur", 1.5), ("wand of inferno", 0.5) )

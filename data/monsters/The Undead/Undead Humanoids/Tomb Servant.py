@@ -9,4 +9,4 @@ tomb_servant.walkAround(energy=0, fire=0, poison=0)
 tomb_servant.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 tomb_servant.voices("Chaarr!!", "Ngl..Nglll...Gll")
 tomb_servant.regMelee(130)#close~
-tomb_servant.loot( (3031, 100, 107), ("longsword", 7.0), ("bone", 54.25), (3976, 100, 12), ("rotten meat", 2.0), ("bone shield", 6.0), ("scarab coin", 7.0), ("fist on a stick", 0.25), ("half-digested piece of meat", 0.5) )
+tomb_servant.loot( (2148, 100, 107), ("longsword", 7.0), ("bone", 54.25), (3976, 100, 12), ("rotten meat", 2.0), ("bone shield", 6.0), ("scarab coin", 7.0), ("fist on a stick", 0.25), ("half-digested piece of meat", 0.5) )

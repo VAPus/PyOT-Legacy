@@ -8,4 +8,4 @@ eternal_guardian.setBehavior(summonable=0, hostile=1, illusionable=0, convinceab
 eternal_guardian.walkAround(energy=1, fire=0, poison=0)
 eternal_guardian.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 eternal_guardian.regMelee(300)
-eternal_guardian.loot( (3031, 100, 53), ("small stone", 100, 10) )
+eternal_guardian.loot( (2148, 100, 53), ("small stone", 100, 10) )

@@ -8,7 +8,7 @@ quara_pincher.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=
 quara_pincher.walkAround(energy=1, fire=0, poison=1)
 quara_pincher.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 quara_pincher.voices("Clank! Clank!", "Clap!", "Crrrk! Crrrk!")
-quara_pincher.loot( ("shrimp", 5.25), (3031, 100, 124), (12446, 15.0), ("great health potion", 0.75), ("small ruby", 8.0, 2), ("halberd", 4.75), ("fish fin", 1.5, 3), ("warrior helmet", 0.75), ("crown armor", 0.25), ("glacier robe", 0.25), ("giant shrimp", 0.0025) )
+quara_pincher.loot( ("shrimp", 5.25), (2148, 100, 124), (12446, 15.0), ("great health potion", 0.75), ("small ruby", 8.0, 2), ("halberd", 4.75), ("fish fin", 1.5, 3), ("warrior helmet", 0.75), ("crown armor", 0.25), ("glacier robe", 0.25), ("giant shrimp", 0.0025) )
 
 #Close Range Paralyze (lasts for 1-3 seconds).
 quara_pincher.regMelee(340)

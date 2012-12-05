@@ -12,4 +12,4 @@ Bonelord.setDefense(5, fire=1.1, earth=1.0, energy=1.0, ice=0.8, holy=1.0, death
 Bonelord.summon("Skeleton", 10)
 Bonelord.maxSummons(2)
 Bonelord.regMelee(5)
-Bonelord.loot( ("morning star", 6.75), ("longsword", 8.5), (3031, 100, 48), ("two handed sword", 4.0), ("spellbook", 4.75), ("steel shield", 3.5), ("small flask of eyedrops", 5.5), ("terra rod", 0.5), ("bonelord eye", 1.0), ("mana potion", 0.25), ("bonelord shield", 0.0025) )
+Bonelord.loot( ("morning star", 6.75), ("longsword", 8.5), (2148, 100, 48), ("two handed sword", 4.0), ("spellbook", 4.75), ("steel shield", 3.5), ("small flask of eyedrops", 5.5), ("terra rod", 0.5), ("bonelord eye", 1.0), ("mana potion", 0.25), ("bonelord shield", 0.0025) )

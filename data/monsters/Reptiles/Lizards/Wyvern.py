@@ -10,4 +10,4 @@ wyvern.walkAround(energy=1, fire=1, poison=0)
 wyvern.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 wyvern.voices("Shriiiek")
 wyvern.regMelee(120) #(poisons you, starting from up to 24
-wyvern.loot( ("dragon ham", 60.25, 3), (3031, 100, 63), ("wand of inferno", 0.75), ("power bolt", 3.5), ("wyvern talisman", 4.0), ("emerald bangle", 0.5), ("small sapphire", 0.5), ("strong health potion", 0.5), ("wyvern fang", 0.25) )
+wyvern.loot( ("dragon ham", 60.25, 3), (2148, 100, 63), ("wand of inferno", 0.75), ("power bolt", 3.5), ("wyvern talisman", 4.0), ("emerald bangle", 0.5), ("small sapphire", 0.5), ("strong health potion", 0.5), ("wyvern fang", 0.25) )

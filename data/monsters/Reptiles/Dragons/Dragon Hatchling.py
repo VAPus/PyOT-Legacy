@@ -8,7 +8,7 @@ dragon_hatchling.setBehavior(summonable=0, hostile=1, illusionable=1, convinceab
 dragon_hatchling.walkAround(energy=1, fire=0, poison=1)
 dragon_hatchling.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 dragon_hatchling.voices("Fchu?", "Rooawwrr")
-dragon_hatchling.loot( (3031, 100, 55), ("dragon ham", 53.5), (12413, 3.5), ("health potion", 0.25) )
+dragon_hatchling.loot( (2148, 100, 55), ("dragon ham", 53.5), (12413, 3.5), ("health potion", 0.25) )
  
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE8)

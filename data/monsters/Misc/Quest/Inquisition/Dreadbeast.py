@@ -8,4 +8,4 @@ dreadbeast.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=800
 dreadbeast.walkAround(energy=0, fire=0, poison=0)
 dreadbeast.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 dreadbeast.regMelee(50)#+poison
-dreadbeast.loot( ("bone", 8.5), (3031, 100, 90), ("skull", 1.0), ("hardened bone", 0.25, 3), ("big bone", 1.75), ("health potion", 0.25), ("plate armor", 1.75), ("bone club", 1.25), ("bone shield", 0.25), ("green mushroom", 0.25) )
+dreadbeast.loot( ("bone", 8.5), (2148, 100, 90), ("skull", 1.0), ("hardened bone", 0.25, 3), ("big bone", 1.75), ("health potion", 0.25), ("plate armor", 1.75), ("bone club", 1.25), ("bone shield", 0.25), ("green mushroom", 0.25) )

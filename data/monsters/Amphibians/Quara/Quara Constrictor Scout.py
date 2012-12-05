@@ -8,7 +8,7 @@ quara_constrictor_scout.setBehavior(summonable=0, hostile=1, illusionable=1, con
 quara_constrictor_scout.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor_scout.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor_scout.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
-quara_constrictor_scout.loot( ("longsword", 4.75), ("brass armor", 1.75), (3031, 100, 40), ("quara tentacle", 7.0), ("fish fin", 0.5, 3), ("small amethyst", 0.25) )
+quara_constrictor_scout.loot( ("longsword", 4.75), ("brass armor", 1.75), (2148, 100, 40), ("quara tentacle", 7.0), ("fish fin", 0.5, 3), ("small amethyst", 0.25) )
 
 qcslifedrain_berserk = spell.Spell() #lifedrain berserk
 qcslifedrain_berserk.area(AREA_SQUARE)

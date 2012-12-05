@@ -8,4 +8,4 @@ blazing_fire_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, conv
 blazing_fire_elemental.walkAround(energy=1, fire=0, poison=1)
 blazing_fire_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 blazing_fire_elemental.regMelee(100)
-blazing_fire_elemental.loot( (3031, 100, 113), ("fiery heart", 12.25), ("glimmering soil", 5.75), ("flaming arrow", 5.25, 3) )
+blazing_fire_elemental.loot( (2148, 100, 113), ("fiery heart", 12.25), ("glimmering soil", 5.75), ("flaming arrow", 5.25, 3) )

@@ -8,4 +8,4 @@ stone_golem.setBehavior(summonable=590, hostile=1, illusionable=1, convinceable=
 stone_golem.walkAround(energy=1, fire=1, poison=0)
 stone_golem.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 stone_golem.regMelee(110)
-stone_golem.loot( (3031, 97.5, 15), ("small stone", 38.5, 4), ("power ring", 5.25), ("carlin sword", 2.5), ("sulphurous stone", 9.5), ("ancient stone", 1.25), ("iron ore", 2.5, 3), ("coal", 0.75), ("shiny stone", 0.75) )
+stone_golem.loot( (2148, 97.5, 15), ("small stone", 38.5, 4), ("power ring", 5.25), ("carlin sword", 2.5), ("sulphurous stone", 9.5), ("ancient stone", 1.25), ("iron ore", 2.5, 3), ("coal", 0.75), ("shiny stone", 0.75) )

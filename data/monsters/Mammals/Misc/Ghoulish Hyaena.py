@@ -9,4 +9,4 @@ ghoulish_hyaena.walkAround(energy=0, fire=0, poison=0)
 ghoulish_hyaena.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 ghoulish_hyaena.voices("Grawrrr!!", "Hoouu!")
 ghoulish_hyaena.regMelee(170)#incorrect
-ghoulish_hyaena.loot( (3031, 100, 40), ("health potion", 19.0), ("meat", 47.75), (3976, 100, 7), ("small ruby", 5.75, 2) )
+ghoulish_hyaena.loot( (2148, 100, 40), ("health potion", 19.0), ("meat", 47.75), (3976, 100, 7), ("small ruby", 5.75, 2) )

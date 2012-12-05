@@ -11,4 +11,4 @@ Gang_Member.voices("This is our territory!", "Help me guys!", "I don't like the 
 Gang_Member.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Gang_Member.setDefense(9, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.0, drown=1.0)
 Gang_Member.regMelee(70)
-Gang_Member.loot( (3031, 100, 30), ("leather legs", 15.5), ("brown bread", 4.25), ("mace", 9.5), ("club ring", 1.0), ("studded legs", 5.0) )
+Gang_Member.loot( (2148, 100, 30), ("leather legs", 15.5), ("brown bread", 4.25), ("mace", 9.5), ("club ring", 1.0), ("studded legs", 5.0) )

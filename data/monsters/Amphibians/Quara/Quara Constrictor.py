@@ -8,7 +8,7 @@ quara_constrictor.setBehavior(summonable=0, hostile=1, illusionable=1, convincea
 quara_constrictor.walkAround(energy=1, fire=0, poison=1)
 quara_constrictor.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 quara_constrictor.voices("Boohaa!", "Tssss!", "Gluh! Gluh!", "Gaaahhh!")
-quara_constrictor.loot( (3031, 100, 100), ("fish fin", 0.5, 3), ("brass armor", 2.25), ("small amethyst", 0.25), ("longsword", 5.0), ("shrimp", 5.5), ("quara tentacle", 9.75) )
+quara_constrictor.loot( (2148, 100, 100), ("fish fin", 0.5, 3), ("brass armor", 2.25), ("small amethyst", 0.25), ("longsword", 5.0), ("shrimp", 5.5), ("quara tentacle", 9.75) )
 
 qcpberk = spell.Spell() #poison berserk
 qcpberk.area(AREA_SQUARE)

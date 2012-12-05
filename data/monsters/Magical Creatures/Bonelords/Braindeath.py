@@ -12,4 +12,4 @@ Braindeath.setDefense(13, fire=1.15, earth=0, energy=0.9, ice=0.8, holy=1.2, dea
 Braindeath.summon("Vampire", 10)
 Braindeath.maxSummons(2)
 Braindeath.regMelee(100)
-Braindeath.loot( ("clerical mace", 2.25), ("piece of dead brain", 4.5), ("bone sword", 16.0), ("sniper arrow", 16.25, 4), ("bonelord eye", 2.25), ("steel shield", 5.75), (3031, 100, 88), ("haunted blade", 1.0), ("spellbook", 0.75), ("bonelord shield", 0.25), ("bonelord helmet", 0.25) )
+Braindeath.loot( ("clerical mace", 2.25), ("piece of dead brain", 4.5), ("bone sword", 16.0), ("sniper arrow", 16.25, 4), ("bonelord eye", 2.25), ("steel shield", 5.75), (2148, 100, 88), ("haunted blade", 1.0), ("spellbook", 0.75), ("bonelord shield", 0.25), ("bonelord helmet", 0.25) )

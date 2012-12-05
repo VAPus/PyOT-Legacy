@@ -8,4 +8,4 @@ massive_earth_elemental.setBehavior(summonable=0, hostile=1, illusionable=0, con
 massive_earth_elemental.walkAround(energy=1, fire=1, poison=0)
 massive_earth_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 massive_earth_elemental.regMelee(110)
-massive_earth_elemental.loot( ("clay lump", 0.75), ("small stone", 100, 10), ("lump of earth", 37.5), ("dwarven ring", 2.75), (3031, 100, 227), ("small diamond", 9.0, 2), ("rusty armor", 6.25), ("small topaz", 7.25, 2), ("protection amulet", 3.0), ("diamond sceptre", 0.5), ("stone skin amulet", 0.5), ("terra amulet", 0.25) )
+massive_earth_elemental.loot( ("clay lump", 0.75), ("small stone", 100, 10), ("lump of earth", 37.5), ("dwarven ring", 2.75), (2148, 100, 227), ("small diamond", 9.0, 2), ("rusty armor", 6.25), ("small topaz", 7.25, 2), ("protection amulet", 3.0), ("diamond sceptre", 0.5), ("stone skin amulet", 0.5), ("terra amulet", 0.25) )

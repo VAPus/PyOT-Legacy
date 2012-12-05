@@ -8,4 +8,4 @@ charged_energy_elemental.setBehavior(summonable=0, hostile=1, illusionable=1, co
 charged_energy_elemental.walkAround(energy=0, fire=0, poison=1)
 charged_energy_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 charged_energy_elemental.regMelee(100)
-charged_energy_elemental.loot( (3031, 100, 128), ("flash arrow", 8.0, 3), ("energy soil", 7.75) )
+charged_energy_elemental.loot( (2148, 100, 128), ("flash arrow", 8.0, 3), ("energy soil", 7.75) )

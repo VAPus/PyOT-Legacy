@@ -8,7 +8,7 @@ quara_pincher_scout.setBehavior(summonable=0, hostile=1, illusionable=0, convinc
 quara_pincher_scout.walkAround(energy=1, fire=0, poison=1)
 quara_pincher_scout.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 quara_pincher_scout.voices("Clank! Clank!", "Clap!", "Crrrk! Crrrk!")
-quara_pincher_scout.loot( ("plate armor", 4.75), ("halberd", 2.25), (12446, 9.25), (3031, 100, 149), ("fish fin", 0.75, 3), ("small ruby", 3.25, 2), ("life crystal", 1.0) )
+quara_pincher_scout.loot( ("plate armor", 4.75), ("halberd", 2.25), (12446, 9.25), (2148, 100, 149), ("fish fin", 0.75, 3), ("small ruby", 3.25, 2), ("life crystal", 1.0) )
 
 #Close Range Paralyze (lasts for 1-3 seconds).
 quara_pincher_scout.regMelee(240)

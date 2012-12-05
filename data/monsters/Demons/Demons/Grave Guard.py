@@ -8,4 +8,4 @@ grave_guard.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0,
 grave_guard.walkAround(energy=0, fire=0, poison=0)
 grave_guard.setImmunity(paralyze=0, invisible=1, lifedrain=0, drunk=1)
 grave_guard.regMelee(200)#unknown?
-grave_guard.loot( (3031, 100, 130), ("health potion", 20.25), ("grave flower", 71.25), ("daramanian waraxe", 1.0), ("mana potion", 21.75), ("scarab coin", 5.75), ("death ring", 2.0) )
+grave_guard.loot( (2148, 100, 130), ("health potion", 20.25), ("grave flower", 71.25), ("daramanian waraxe", 1.0), ("mana potion", 21.75), ("scarab coin", 5.75), ("death ring", 2.0) )

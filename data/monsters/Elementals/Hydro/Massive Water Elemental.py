@@ -8,4 +8,4 @@ massive_water_elemental.setBehavior(summonable=0, hostile=1, illusionable=0, con
 massive_water_elemental.walkAround(energy=1, fire=0, poison=0)
 massive_water_elemental.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 massive_water_elemental.regMelee(165)
-massive_water_elemental.loot( ("fish", 59.25, 2), ("platinum coin", 29.5, 2), (3031, 100, 100), ("energy ring", 1.0), ("rainbow trout", 1.5), ("great health potion", 11.75), ("small diamond", 3.25, 2), ("great mana potion", 8.75), ("green perch", 1.0), ("small emerald", 3.25, 2), ("life ring", 1.0) )
+massive_water_elemental.loot( ("fish", 59.25, 2), ("platinum coin", 29.5, 2), (2148, 100, 100), ("energy ring", 1.0), ("rainbow trout", 1.5), ("great health potion", 11.75), ("small diamond", 3.25, 2), ("great mana potion", 8.75), ("green perch", 1.0), ("small emerald", 3.25, 2), ("life ring", 1.0) )

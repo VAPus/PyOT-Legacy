@@ -8,7 +8,7 @@ quara_hydromancer_scout.setBehavior(summonable=0, hostile=1, illusionable=0, con
 quara_hydromancer_scout.walkAround(energy=1, fire=0, poison=1)
 quara_hydromancer_scout.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 quara_hydromancer_scout.voices("Qua hah tsh!", "Teech tsha tshul!", "Quara tsha Fach!", "Tssssha Quara!", "Blubber.", "Blup.")
-quara_hydromancer_scout.loot( ("white pearl", 2.25), ("fish", 15.25, 2), ("small emerald", 1.25, 2), (3031, 100, 88), ("quara eye", 9.75), ("fish fin", 1.25, 3), ("black pearl", 1.75), ("wand of cosmic energy", 1.25), ("knight armor", 0.25), ("ring of healing", 0.5) )
+quara_hydromancer_scout.loot( ("white pearl", 2.25), ("fish", 15.25, 2), ("small emerald", 1.25, 2), (2148, 100, 88), ("quara eye", 9.75), ("fish fin", 1.25, 3), ("black pearl", 1.75), ("wand of cosmic energy", 1.25), ("knight armor", 0.25), ("ring of healing", 0.5) )
 
 #Missing - Paralyze (on target?)
 

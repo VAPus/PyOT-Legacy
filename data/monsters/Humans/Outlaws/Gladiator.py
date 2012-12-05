@@ -11,4 +11,4 @@ Gladiator.voices("You are no match for me!", "Feel my prowess.", "Take this!")
 Gladiator.setImmunity(0,0,0) # paralyze, invisible, lifedrain
 Gladiator.setDefense(15, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.9, death=1.05, physical=0.95, drown=1.0)
 Gladiator.regMelee(90)
-Gladiator.loot( ("plate shield", 9.25), ("mace", 10.75), ("chain helmet", 4.75), (3031, 100, 28), ("sword", 10.75), ("meat", 20.5), ("brass armor", 1.75), ("steel shield", 0.75), ("iron helmet", 0.25), ("belted cape", 0.5) )
+Gladiator.loot( ("plate shield", 9.25), ("mace", 10.75), ("chain helmet", 4.75), (2148, 100, 28), ("sword", 10.75), ("meat", 20.5), ("brass armor", 1.75), ("steel shield", 0.75), ("iron helmet", 0.25), ("belted cape", 0.5) )

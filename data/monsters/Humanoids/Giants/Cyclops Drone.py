@@ -10,4 +10,4 @@ cyclops_drone.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 cyclops_drone.voices("Fee! Fie! Foe! Fum!", "Luttl pest!", "Me makking you pulp!", "Humy tasy! Hum hum!")
 cyclops_drone.regMelee(110)#ish?
 cyclops_drone.regDistance(80, ANIMATION_LARGEROCK, chance(21))
-cyclops_drone.loot( (3031, 100, 30), ("meat", 50.25), ("cyclops toe", 6.75), ("halberd", 0.5), ("plate shield", 2.25), ("short sword", 8.5), ("dark helmet", 0.25), ("battle shield", 1.5), ("cyclops trophy", 0.0025), ("strong health potion", 0.75), ("club ring", 0.0025) )
+cyclops_drone.loot( (2148, 100, 30), ("meat", 50.25), ("cyclops toe", 6.75), ("halberd", 0.5), ("plate shield", 2.25), ("short sword", 8.5), ("dark helmet", 0.25), ("battle shield", 1.5), ("cyclops trophy", 0.0025), ("strong health potion", 0.75), ("club ring", 0.0025) )

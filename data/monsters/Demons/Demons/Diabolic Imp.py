@@ -9,4 +9,4 @@ diabolic_imp.walkAround(energy=1, fire=0, poison=0)
 diabolic_imp.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 diabolic_imp.voices("Muahaha!", "He he he.")
 diabolic_imp.regMelee(240) #poisons from 8hp
-diabolic_imp.loot( ("necrotic rod", 0.75), ("cleaver", 9.25), ("scimitar", 6.25), ("concentrated demonic blood", 39.0, 2), ("demonic essence", 7.5, 3), ("blank rune", 23.0, 2), (3031, 100, 199), (2548, 50.25), ("small amethyst", 4.5, 3), ("platinum coin", 13.0, 7), ("soul orb", 6.75), ("guardian shield", 7.5), ("double axe", 1.5), ("stealth ring", 2.5), ("magma coat", 0.5), ("magma monocle", 0.5), ("death ring", 0.25) )
+diabolic_imp.loot( ("necrotic rod", 0.75), ("cleaver", 9.25), ("scimitar", 6.25), ("concentrated demonic blood", 39.0, 2), ("demonic essence", 7.5, 3), ("blank rune", 23.0, 2), (2148, 100, 199), (2548, 50.25), ("small amethyst", 4.5, 3), ("platinum coin", 13.0, 7), ("soul orb", 6.75), ("guardian shield", 7.5), ("double axe", 1.5), ("stealth ring", 2.5), ("magma coat", 0.5), ("magma monocle", 0.5), ("death ring", 0.25) )

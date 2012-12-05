@@ -8,4 +8,4 @@ skeleton.setBehavior(summonable=300, hostile=1, illusionable=1, convinceable=300
 skeleton.walkAround(energy=1, fire=1, poison=1)
 skeleton.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 skeleton.regMelee(17)
-skeleton.loot( (3031, 100, 10), ("brass shield", 3.0), ("sword", 2.0), ("hatchet", 5.5), ("mace", 5.25), ("pelvis bone", 9.75), ("bone", 49.75), ("torch", 9.75), ("viking helmet", 7.5) )
+skeleton.loot( (2148, 100, 10), ("brass shield", 3.0), ("sword", 2.0), ("hatchet", 5.5), ("mace", 5.25), ("pelvis bone", 9.75), ("bone", 49.75), ("torch", 9.75), ("viking helmet", 7.5) )

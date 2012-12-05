@@ -9,4 +9,4 @@ defiler.walkAround(energy=1, fire=1, poison=0)
 defiler.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 defiler.voices("Blubb", "Blubb Blubb")
 defiler.regMelee(240)#and poisons you
-defiler.loot( (3031, 100, 344), ("platinum coin", 79.0, 4), ("soul orb", 20.25), ("demonic essence", 19.25, 3), ("talon", 1.5), ("glob of acid slime", 12.0), ("glob of tar", 12.0), ("small emerald", 9.0, 3), ("green gem", 0.5), ("yellow gem", 0.5), ("small ruby", 2.25, 2), ("small diamond", 0.5), ("red gem", 0.75), ("blue gem", 1.0), ("death ring", 0.25) )
+defiler.loot( (2148, 100, 344), ("platinum coin", 79.0, 4), ("soul orb", 20.25), ("demonic essence", 19.25, 3), ("talon", 1.5), ("glob of acid slime", 12.0), ("glob of tar", 12.0), ("small emerald", 9.0, 3), ("green gem", 0.5), ("yellow gem", 0.5), ("small ruby", 2.25, 2), ("small diamond", 0.5), ("red gem", 0.75), ("blue gem", 1.0), ("death ring", 0.25) )

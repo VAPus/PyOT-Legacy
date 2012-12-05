@@ -8,4 +8,4 @@ draken_warmaster.setBehavior(summonable=0, hostile=1, illusionable=0, convinceab
 draken_warmaster.walkAround(energy=0, fire=0, poison=0)
 draken_warmaster.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 draken_warmaster.regMelee(300)
-draken_warmaster.loot( ("zaoan shoes", 2.0), ("zaoan armor", 0.75), ("ultimate health potion", 3.75), ("zaoan legs", 0.75), ("small ruby", 4.5, 5), ("drakinata", 0.75), ("zaoan halberd", 7.75), ("tower shield", 2.0), ("great health potion", 10.25, 3), ("bone shoulderplate", 12.0), ("meat", 29.75), ("warmaster's wristguards", 7.0), ("platinum coin", 100, 5), (3031, 100, 200), ("ring of the sky", 0.25) )
+draken_warmaster.loot( ("zaoan shoes", 2.0), ("zaoan armor", 0.75), ("ultimate health potion", 3.75), ("zaoan legs", 0.75), ("small ruby", 4.5, 5), ("drakinata", 0.75), ("zaoan halberd", 7.75), ("tower shield", 2.0), ("great health potion", 10.25, 3), ("bone shoulderplate", 12.0), ("meat", 29.75), ("warmaster's wristguards", 7.0), ("platinum coin", 100, 5), (2148, 100, 200), ("ring of the sky", 0.25) )

@@ -8,6 +8,6 @@ yielothax.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, p
 yielothax.walkAround(energy=1, fire=0, poison=0)
 yielothax.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 yielothax.voices("IIEEH!! Iiih iih ih iiih!!!", "Bsssssssm Bssssssm Bsssssssssssm!")
-yielothax.loot( ("brown mushroom", 20.75, 3), ("strong mana potion", 19.25), (3031, 100, 221), ("wand of cosmic energy", 0.5), ("shockwave amulet", 0.5), ("might ring", 4.0), ("lightning pendant", 0.75), ("broken ring of ending", 0.25), ("small diamond", 15.5, 5), ("epee", 0.5), ("talon", 1.0), ("strong health potion", 20.0), ("yielowax", 0.25), ("mastermind potion", 0.5), ("lightning legs", 0.75), ("yielocks", 0.25) )
+yielothax.loot( ("brown mushroom", 20.75, 3), ("strong mana potion", 19.25), (2148, 100, 221), ("wand of cosmic energy", 0.5), ("shockwave amulet", 0.5), ("might ring", 4.0), ("lightning pendant", 0.75), ("broken ring of ending", 0.25), ("small diamond", 15.5, 5), ("epee", 0.5), ("talon", 1.0), ("strong health potion", 20.0), ("yielowax", 0.25), ("mastermind potion", 0.5), ("lightning legs", 0.75), ("yielocks", 0.25) )
 
 yielothax.regMelee(200)

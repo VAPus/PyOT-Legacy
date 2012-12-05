@@ -10,4 +10,4 @@ Dark_Monk.voices("You are no match to us!", "Your end has come!", "This is where
 Dark_Monk.setImmunity(0,1,0) # paralyze, invisible, lifedrain
 Dark_Monk.setDefense(22, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.9, death=0.6, physical=1.05, drown=1.0)
 Dark_Monk.regMelee(100)
-Dark_Monk.loot( ("dark rosary", 11.25), ("sandals", 0.75), (3031, 100, 18), ("mana potion", 1.0), ("safety pin", 1.0), ("lamp", 0.25), ("rope belt", 7.25), ("bread", 22.5), ("life crystal", 1.25), ("book of prayers", 2.25), ("ankh", 1.25), ("scroll", 2.25), ("brown flask", 0.25), ("power ring", 0.0025) )
+Dark_Monk.loot( ("dark rosary", 11.25), ("sandals", 0.75), (2148, 100, 18), ("mana potion", 1.0), ("safety pin", 1.0), ("lamp", 0.25), ("rope belt", 7.25), ("bread", 22.5), ("life crystal", 1.25), ("book of prayers", 2.25), ("ankh", 1.25), ("scroll", 2.25), ("brown flask", 0.25), ("power ring", 0.0025) )

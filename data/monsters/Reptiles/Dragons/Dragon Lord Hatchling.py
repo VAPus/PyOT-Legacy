@@ -8,7 +8,7 @@ dragon_lord_hatchling.setBehavior(summonable=0, hostile=1, illusionable=1, convi
 dragon_lord_hatchling.walkAround(energy=1, fire=0, poison=1)
 dragon_lord_hatchling.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 dragon_lord_hatchling.voices("Fchu?", "Rooawwrr")
-dragon_lord_hatchling.loot( (3031, 100, 169), ("dragon ham", 69.75), ("green mushroom", 0.5), ("mana potion", 0.5), ("magma boots", 0.0025) )
+dragon_lord_hatchling.loot( (2148, 100, 169), ("dragon ham", 69.75), ("green mushroom", 0.5), ("mana potion", 0.5), ("magma boots", 0.0025) )
 
 dfwave = spell.Spell("drag fwave", target=TARGET_AREA)
 dfwave.area(AREA_WAVE7)

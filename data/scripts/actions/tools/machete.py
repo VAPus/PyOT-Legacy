@@ -13,4 +13,3 @@ def onUseWith(onThing, onPosition, **k):
     elif onThing.itemId in SPIDER_WEB:
         onThing.transform(onThing.itemId + 6)
         onThing.decay()
-        
