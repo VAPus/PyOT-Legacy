@@ -65,8 +65,8 @@ from re import match, search, subn, IGNORECASE, VERBOSE
 from re import split as splitre
 from re import error as reerror
 from re import sub as resub
-from os.path import dirname, isfile, expanduser
-from os.path import join as pathjoin
+#from os.path import dirname, isfile, expanduser
+#from os.path import join as pathjoin
 
 class UnknownClassicalModeError(Exception): pass
 class BadNumValueError(Exception): pass
@@ -76,11 +76,9 @@ class BadUserDefinedPatternError(Exception): pass
 class BadRcFileError(Exception): pass
 class BadGenderError(Exception): pass
 
-class _CaseError(Exception): pass
-
 __ver_major__ = 0
 __ver_minor__ = 2
-__ver_patch__ = 1
+__ver_patch__ = 3
 __ver_sub__ = ""
 __version__ = "%d.%d.%d%s" % (__ver_major__,__ver_minor__,
                               __ver_patch__,__ver_sub__)
@@ -104,18 +102,19 @@ def joinstem(cutpoint=0, words=''):
 
     e.g.
     joinstem(-2, ["ephemeris", "iris", ".*itis"]) returns
-    (?:ephemer|ir|.*it
+    (?:ephemer|ir|.*it)
  
     '''
     return enclose('|'.join(w[:cutpoint] for w in words))
 
 def bysize(words):
     '''
-    take a list of words and return a dict of lists sorted by word length
+    take a list of words and return a dict of sets sorted by word length
     e.g.
-    ret[3]=['ant', 'cat', 'dog', 'eel']
-    ret[4]=['frog', 'goat']
-    ret[5]=['horse']
+    ret[3]=set(['ant', 'cat', 'dog', 'pig'])
+    ret[4]=set(['frog', 'goat'])
+    ret[5]=set(['horse'])
+    ret[8]=set(['elephant'])
     '''
     ret = {}
     for w in words:
@@ -124,14 +123,27 @@ def bysize(words):
         ret[len(w)].add(w)
     return ret
 
-def make_pl_si_lists(lst, plending, siendginsize, dojoinstem=True):
-    if siendginsize is not None:
-        siendginsize = -siendginsize
-    si_list = [w[:siendginsize] + plending for w in lst]
+def make_pl_si_lists(lst, plending, siendingsize, dojoinstem=True):
+    '''
+    given a list of singular words: lst
+    an ending to append to make the plural: plending
+    the number of characters to remove from the singular before appending plending: siendingsize
+    a flag whether to create a joinstem: dojoinstem
+
+    return:
+    a list of pluralised words: si_list (called si because this is what you need to
+                                         look for to make the singular)
+    the pluralised words as a dict of sets sorted by word length: si_bysize
+    the singular words as a dict of sets sorted by word length: pl_bysize
+    if dojoinstem is True: a regular expression that matches any of the stems: stem
+    '''
+    if siendingsize is not None:
+        siendingsize = -siendingsize
+    si_list = [w[:siendingsize] + plending for w in lst]
     pl_bysize = bysize(lst)
     si_bysize = bysize(si_list)
     if dojoinstem:
-        stem = joinstem(siendginsize, lst)        
+        stem = joinstem(siendingsize, lst)        
         return si_list, si_bysize, pl_bysize, stem
     else:
         return si_list, si_bysize, pl_bysize
@@ -322,7 +334,7 @@ pl_sb_C_um_a_list = (
     "lustrum",  "memorandum", "millennium", "rostrum", 
     "spectrum", "speculum",   "stadium",    "trapezium",
     "ultimatum",    "medium",   "vacuum",   "velum", 
-    "consortium",
+    "consortium",  "arboretum",
 )
 
 (si_sb_C_um_a_list, si_sb_C_um_a_bysize,
@@ -593,7 +605,7 @@ pl_sb_uninflected_s_complete = [
     "mumps",
 
 # MISCELLANEOUS OTHERS...
-    "diabetes", "jackanapes", "series", "species", "rabies",
+    "diabetes", "jackanapes", "series", "species", "subspecies", "rabies",
     "chassis", "innings", "news", "mews", "haggis",
 ]
 
@@ -1090,9 +1102,14 @@ A_y_cons = 'y(b[lor]|cl[ea]|fere|gg|p[ios]|rou|tt)'
 
 # EXCEPTIONS TO EXCEPTIONS
 
+A_explicit_a = enclose('|'.join((
+    "unabomber", "unanimous", "US",
+    )))
+
 A_explicit_an = enclose('|'.join((
     "euler",
-    "hour(?!i)", "heir", "honest", "hono",
+    "hour(?!i)", "heir", "honest", "hono[ur]",
+    "mpeg",
     )))
 
 A_ordinal_an = enclose('|'.join((
@@ -1362,13 +1379,15 @@ class engine:
 
     def gender(self, gender):
         '''
-        set the gender for plural to singular pronouns
-        only the first letter of gender is significant
-        n: neuter (they -> it)
-        f: feminine (they -> she)
-        m: masculine (they -> he)
-        t: they (they -> they) gender neutral singular
-        
+        set the gender for the singular of plural pronouns
+
+        can be one of:
+        'neuter'                ('they' -> 'it')
+        'feminine'              ('they' -> 'she')
+        'masculine'             ('they' -> 'he')
+        'gender-neutral'        ('they' -> 'they')
+        'feminine or masculine' ('they' -> 'she or he')
+        'masculine or feminine' ('they' -> 'he or she')
         '''
         if gender in singular_pronoun_genders:
             self.thegender = gender
@@ -1509,7 +1528,7 @@ class engine:
                         self.ordinalmo, section)
                     total += count
                     (section, count) = subn(
-                        r"(?x)\bnumwords  \( ([^)]*) \)            ",
+                        r"(?x)\bnumber_to_words  \( ([^)]*) \)            ",
                         self.numwordsmo, section)
                     total += count
                     (section, count) = subn(
@@ -2595,7 +2614,7 @@ class engine:
 # HANDLE ...y
 
         if lowerword[-2:] == 'ys':
-            if lowerword[-3] in 'aeiou':
+            if len(lowerword) > 2 and lowerword[-3] in 'aeiou':
                 return word[:-1]
 
             if (self.classical_dict['names']):
@@ -2695,7 +2714,7 @@ class engine:
 # HANDLE SPECIAL CASES
 
         for a in (
-                  (r"(%s)" % A_explicit_an, "an"),
+                  (r"^(%s)" % A_explicit_an, "an"),
                   (r"^[aefhilmnorsx]$", "an"),
                   (r"^[bcdgjkpqtuvwyz]$", "a"),
                  ):
@@ -2725,8 +2744,11 @@ class engine:
         for a in (
                   (r"^e[uw]", "a"),
                   (r"^onc?e\b", "a"),
+                  (r"^onetime\b", "a"),
                   (r"^uni([^nmd]|mo)", "a"),
-                  (r"^u[bcfhjkqrst][aeiou]", "a"),
+                  (r"^u[bcfghjkqrst][aeiou]", "a"),
+                  (r"^ukr", "a"),
+                  (r"^(%s)" % A_explicit_a, "a"),
                  ):
             mo = search(a[0], word, IGNORECASE)
             if mo:
