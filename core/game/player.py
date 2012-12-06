@@ -94,7 +94,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.market = None
         self.depotMarketCache = {}
         self.marketDepotId = 0
-
+        self.lastClientMove = None
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
@@ -935,9 +935,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.target = target
 
     def cancelWalk(self, direction=None):
-        stream = self.packet(0xB5)
-        stream.uint8(direction if direction is not None else self.direction)
-        stream.send(self.client)
+        direction = direction if direction is not None else self.direction
+
+        if self.lastClientMove == direction:
+            self.lastClientMove = None
+            stream = self.packet(0xB5)
+            stream.uint8(direction if direction is not None else self.direction)
+            stream.send(self.client)
 
     def tutorial(self, tutorialId):
         stream = self.packet(0xDC)

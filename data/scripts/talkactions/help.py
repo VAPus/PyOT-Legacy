@@ -324,12 +324,16 @@ def walkRandomStep(creature, callback):
             creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
         except:
             callback()
-    creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
+    try:
+        creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
+    except:
+        _callback()
 
 @register("talkaction", "aime")
 @access("DEVELOPER")
 def playerAI(creature, **k):
     creature.setSpeed(1500)
+    creature.raiseMessages = True
     
     def _playerAI():
         if creature.data["health"] < 300:

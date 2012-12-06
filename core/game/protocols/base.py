@@ -720,7 +720,7 @@ class BaseProtocol(object):
     def handleWalk(self, player, direction):
         if player.target and player.modes[1] == game.enum.CHASE and player.targetMode > 0:
             player.cancelTarget()
-        
+        player.lastClientMove = direction        
         player.walkPattern = deque((direction,))
         game.engine.autoWalkCreature(player)
 
