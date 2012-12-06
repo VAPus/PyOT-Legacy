@@ -520,7 +520,7 @@ reactor.addSystemEventTrigger('before','shutdown',run)
 
 def handleModule(name):
     try:
-        modules = __import__('data.%s' % name, globals(), locals(), ["*"], -1)
+        modules = __import__('%s.%s' % (config.dataDirectory, name), globals(), locals(), ["*"], -1)
     except:
         (exc_type, exc_value, exc_traceback) = sys.exc_info()
 
@@ -604,12 +604,12 @@ def reimporter():
     for mod in modPool:
         # Step 1 reload self
         del mod[1]
-        mod.append(__import__('data.%s' % mod[0], globals(), locals(), ["*"], -1))
+        mod.append(__import__('%s.%s' % (config.dataDirectory, mod[0]), globals(), locals(), ["*"], -1))
         
         # Step 2, reload submodules
         for sub in mod[1].__all__:
             if sub != "__init__":
-                reload(sys.modules["data.%s.%s" % (mod[0], sub)])
+                reload(sys.modules["%s.%s.%s" % (config.dataDirectory, mod[0], sub)])
 
     handlePostLoadEntries()
 

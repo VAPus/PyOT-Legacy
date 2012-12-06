@@ -225,8 +225,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     updateTile(self.player.position, tile)
                         
                 except AttributeError:
-                    import data.map.info
-                    self.player.position = Position(*data.map.info.towns[1][1])
+                    self.player.position = Position(*game.map.mapInfo.towns[1][1])
                     tile = getTile(self.player.position)
                     tile.placeCreature(self.player)
                     # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.

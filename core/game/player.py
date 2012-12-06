@@ -1553,8 +1553,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.despawn()
         
         # Set position
-        import data.map.info
-        self.position = Position(*data.map.info.towns[self.data["town_id"]][1])
+        self.position = Position(*game.map.mapInfo.towns[self.data["town_id"]][1])
         self.data["health"] = self.data["healthmax"]
         self.data["mana"] = self.data["manamax"]
         
@@ -1606,8 +1605,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.data["mana"] = self.data["manamax"]
             self.alive = True
             game.scriptsystem.get("respawn").runSync(self)
-            import data.map.info
-            self.teleport(Position(*data.map.info.towns[self.data['town_id']][1]))
+            self.teleport(Position(*game.map.mapInfo.towns[self.data['town_id']][1]))
 
     # Loading:
     def __buildInventoryCache(self, container):

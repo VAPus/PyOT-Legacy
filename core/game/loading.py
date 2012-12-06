@@ -311,7 +311,7 @@ def loader(timer):
     if config.loadEntierMap:
         print "> > Loading the entier map...",
         begin = time.time()
-        files = glob.glob('data/map/*.sec')
+        files = glob.glob('%s/%s/*.sec' % (config.dataDirectory, config.mapDirectory))
         for fileSec in files:
             x, y, junk = fileSec.split(os.sep)[-1].split('.')
             x = int(x)

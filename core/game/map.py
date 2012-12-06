@@ -12,8 +12,7 @@ import struct
 import sys
 import itertools
 import gc
-import data.map.info as mapInfo
-
+mapInfo = __import__('%s.%s.info' % (config.dataDirectory, config.mapDirectory), globals(), locals(), [], -1)
 sectorX, sectorY = mapInfo.sectorSize
 
 ##### Position class ####
@@ -691,7 +690,7 @@ def load(sectorX, sectorY, instanceId, sectorSum):
     
     # Attempt to load a sector file
     try:
-        with io.open("data/map/%s%d.%d.sec" % (instances[instanceId], sectorX, sectorY), "rb") as f:
+        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances[instanceId], sectorX, sectorY), "rb") as f:
             map = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
             knownMap.update(map)
         sectors.add(sectorSum)

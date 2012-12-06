@@ -842,7 +842,7 @@ def loadItems():
     
     if config.itemCache:
         try:
-            with _open("data/cache/items.cache", "rb") as f:
+            with _open("%s/cache/items.cache" % config.dataDirectory, "rb") as f:
                 items, idByNameCache, cidToSid = marshal.loads(f.read())
             log.msg("%d Items loaded (from cache)" % len(items))
             return
@@ -854,7 +854,7 @@ def loadItems():
     idNameCache = {}
     _cidToSid = {}
 
-    """tree = ET.parse("data/items.xml")
+    """tree = ET.parse("%s/items.xml" % config.dataDirectory)
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}    
     for item in tree.getroot():
         _item = item.attrib
@@ -910,7 +910,7 @@ def loadItems():
     """
 
     # JSON format.
-    jsonItems = json.loads(_open('data/items.json', 'r').read())
+    jsonItems = json.loads(_open(config.itemFile, 'r').read())
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
     for item in jsonItems:
         flags = item.get('flags')
@@ -972,5 +972,5 @@ def loadItems():
 
     # Cache
     if config.itemCache:
-        with _open("data/cache/items.cache", "wb") as f:
+        with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
             f.write(marshal.dumps((items, idByNameCache, cidToSid), 2))

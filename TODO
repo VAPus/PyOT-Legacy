@@ -5,4 +5,4 @@ Before we go beta1 (or rather, before we go alpha2). Fix these things:
 
 - [CORE] Proper assist and multiple-player-kills tracking.
 
-- [SCRIPT] beds
+- [SCRIPT] beds (needs offline training, hp/mana/soul regen)

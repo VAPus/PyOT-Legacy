@@ -2,7 +2,6 @@ from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import game.enum as enum
 import config
-import data.map.info
 
 class CreatureMovement(object):
     def stepDuration(self, ground):
@@ -221,7 +220,7 @@ class CreatureMovement(object):
         position.z += level
             
         # We don't walk out of the map!
-        if position.x < 1 or position.y < 1 or position.x > data.map.info.width or position.y > data.map.info.height:
+        if position.x < 1 or position.y < 1 or position.x > game.map.mapInfo.width or position.y > game.map.mapInfo.height:
             self.cancelWalk()
             return
 

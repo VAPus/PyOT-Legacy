@@ -664,9 +664,8 @@ def townNameToId(name):
     
     """
     
-    import data.map.info as i
-    for id in i.towns:
-        if i.towns[id][0] == name:
+    for id in game.map.mapInfo.towns:
+        if game.map.mapInfo.towns[id][0] == name:
             return id
 
 def townIdToName(id):
@@ -676,9 +675,8 @@ def townIdToName(id):
 
     """
 
-    import data.map.info as i
     try:
-        return i.towns[id][0]
+        return game.map.mapInfo.towns[id][0]
     except:
         return None
 
@@ -688,8 +686,8 @@ def townPosition(id):
     :rtype: list
     
     """
-    import data.map.info as i
-    return i.towns[id][1]
+
+    return game.map.mapInfo.towns[id][1]
 
 def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level=0):
     """ Broadcasts a message to every player
