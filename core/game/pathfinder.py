@@ -31,7 +31,7 @@ class Node(object):
                     if thing.solid:
                         self.state = False
                         break
-                if checkCreature:
+                if self.state and checkCreature:
                     self.state = checkCreature.verifyMove(tile)
             else:
                 self.state = False
@@ -93,7 +93,7 @@ class AStar(object):
         n = currentNode
         prev = self.startNode
         _result = [n.step]
-
+        
         prev = n
         n = n.parent
         if not n:
@@ -239,7 +239,7 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId):
         except:
             pass
     
-    if abs(xStart-xGoal) < 2 and abs(yStart-yGoal) < 2:
+    """if abs(xStart-xGoal) < 2 and abs(yStart-yGoal) < 2:
        pattern = []
        if xStart > xGoal:
            pattern.append(WEST)
@@ -252,7 +252,7 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId):
        
        if config.pathfinderCache:
            RouteCache[cachePoint] = pattern
-       return pattern
+       return pattern"""
 
     aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId)
     

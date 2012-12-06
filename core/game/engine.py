@@ -220,10 +220,11 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
         if isOk:
             currPos = newPos
             pattern.append(base)
-        
+    
     if not pattern:
         # Try a straight line
         pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId)
+        print pattern
         if not pattern:
             return None
                 

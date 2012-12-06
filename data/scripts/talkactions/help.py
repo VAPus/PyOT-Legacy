@@ -409,9 +409,9 @@ def newInventory(creature, **k):
     purse = Item(2853)
     purse.name = "Purse"
     purse.addAction('purse')
-    creature.inventory = [Item(8820), Item(2125), Item(2853), Item(2463),
+    creature.inventory = [Item(8820), Item(2125), Item(1987), Item(2463),
                       None, Item(7449), None, None, None,
-                      Item(763,20), purse]
+                      None, purse]
 
     for item in creature.inventory:
         if not item:
