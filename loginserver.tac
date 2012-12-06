@@ -2,7 +2,11 @@ import sys
 sys.path.insert(0, '.')
 sys.path.insert(1, 'core')
 
-import config
+try:
+    import config
+except ImportError:
+    print "You got no config.py file. Please make a file from config.py.dist"
+    sys.exit()
 
 #### Use psyco? ####
 if config.tryPsyco:
