@@ -529,7 +529,7 @@ def saveAll(force=False):
             
     # Houses
     if game.map.houseTiles:
-        for houseId, house in game.house.houseData.items():
+        for houseId, house in game.house.houseData.iteritems():
             # House is loaded?
             if houseId in game.map.houseTiles:
                 try:
@@ -544,7 +544,7 @@ def saveAll(force=False):
                     for item in tile.bottomItems():
                         ic = item.count
                         if not item.fromMap and (ic == None or ic > 0):
-                            if lastItem and lastItem.stackable and lastItem.itemId == item.itemId and lastItem.count != 100:
+                            if lastItem and lastItem.itemId == item.itemId and lastItem.stackable and lastItem.count < 100:
                                     # Stack.
                                     lCount = lastItem.count
                                     lastItem.count = min(100, lCount + ic)
