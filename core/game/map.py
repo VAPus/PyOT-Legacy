@@ -12,7 +12,12 @@ import struct
 import sys
 import itertools
 import gc
-mapInfo = __import__('%s.%s.info' % (config.dataDirectory, config.mapDirectory), globals(), locals(), [], -1)
+try:
+    mapInfo = __import__('%s.%s' % (config.dataDirectory, config.mapDirectory), globals(), locals(), ['info'], -1).info
+except:
+    print "[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory)
+    sys.exit()
+
 sectorX, sectorY = mapInfo.sectorSize
 
 ##### Position class ####
