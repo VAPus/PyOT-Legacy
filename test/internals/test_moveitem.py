@@ -303,3 +303,26 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertEqual(item.itemId, idByName('meat'))
 
+    def test_bug93(self):
+        # Make two bags. Place them on the ground.
+        bag1 = Item(idByName('bag'))
+        bag2 = Item(idByName('bag'))
+
+        bag1.place(Position(1001, 1000, 7))
+        bag2.place(Position(1001, 1000, 7))
+
+        # Open bags. 
+        self.player.openContainer(bag2)
+
+        for id2, bag in self.player.openContainers.iteritems():
+            if bag == bag2:
+                break
+        for id1, bag in self.player.openContainers.iteritems():
+            if bag == bag1:
+                break
+
+        # Move bag1 into bag2. This works.
+        self.assertTrue(moveItem(self.player, bag1.position, Position(0xFFFF, 64 + id2, 0)))
+
+        # Move bag2 into bag1. This shouldn't work.
+        self.assertFalse(moveItem(self.player, bag2.position, Position(0xFFFF, 64 + id1, 0)))

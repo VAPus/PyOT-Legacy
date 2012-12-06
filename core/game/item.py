@@ -360,7 +360,7 @@ class Item(object):
         self.position = position
         if creature:
             self.creature = creature
-        if self.creature and position.x != 0xFFFF:
+        if self.creature and (position.x != 0xFFFF or not creature):
             del self.creature
 
     def decayNow(self):

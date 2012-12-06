@@ -313,7 +313,7 @@ class Tile(object):
         items = None
         if self.things:
             items = []
-            for item in self.items:
+            for item in self.things:
                 if isinstance(item, Item):
                     items.append(item.copy())
 

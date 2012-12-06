@@ -453,8 +453,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     bag = self.openContainers[position.y - 64]
                 except:
                     return
+                
                 item = bag.getThing(position.z)
-                return item
+                return item or bag
 
         # Option 4, find any item the player might posess
         if sid:
@@ -1295,7 +1296,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if count:
             # Add item
-            if self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0:
+            if update and (self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0):
                 self.tooHeavy()
                 return False
 
@@ -1306,8 +1307,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
             if info == None:
                 return False # Not possible
+            if container.position.x == 0xFFFF and update:
+                item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info), self)
+            else:
+                item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info))
 
-            item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info), self)
             item.inContainer = container if isinstance(info, int) else info
 
             if recursive and info and info.openIndex != None:
@@ -1316,7 +1320,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             elif container.openIndex != None:
                 stream.addContainerItem(container.openIndex, item)
 
-            self.addCache(item, container)
+            if update:
+                self.addCache(item, container)
 
         
         

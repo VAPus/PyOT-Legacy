@@ -217,6 +217,9 @@ class FrameworkTestGame(FrameworkTest):
                 except:
                     pass
 
+        # Clear open bags.
+        self.player.openContainers.clear()
+
     def virtualPlayer(self, id, name):
         # Setup a virtual player.
         # No network abilities, or spawning or such.

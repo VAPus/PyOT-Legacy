@@ -823,6 +823,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
     itemContainer = None
     if destItem:
         itemContainer = thing.inContainer
+        if destItem == itemContainer:
+            return False
+
     # Hack.
     if fromPosition.x == 0xFFFF and not thing.creature:
         thing.creature = player
@@ -845,14 +848,18 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.notPossible()
         return False
     
-    if destItem and destItem.inContainer: # Recursive check.
-        container = destItem.inContainer
+    if destItem and (destItem.inContainer or destItem.container): # Recursive check.
+        if destItem.container:
+            container = destItem
+        else:
+            container = destItem.inContainer
             
         while container:
+            print container, thing
             if container == thing:
                 return player.notPossible()
             container = container.inContainer
-            
+
     slots = thing.slots()
     
     # Can it be placed there?
