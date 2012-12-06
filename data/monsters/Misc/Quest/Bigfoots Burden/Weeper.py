@@ -1,0 +1,11 @@
+weeper = genMonster("Weeper", (489, 15906), "a weeper") #mostly unkown
+weeper.setHealth(6800)
+weeper.bloodType("blood")
+weeper.setDefense(armor=65, fire=0, earth=0, energy=1, ice=1.05, holy=1, death=0.7, physical=1, drown=1.05)
+weeper.setExperience(4800)
+weeper.setSpeed(450)
+weeper.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=275)
+weeper.walkAround(energy=0, fire=0, poison=0)
+weeper.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+weeper.voices("Moooaaan")
+weeper.regMelee(200)
