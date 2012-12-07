@@ -1,5 +1,7 @@
+import copy
+
 class Condition(object):
-    def __init__(self, type, subtype="", length=1, every=2, check=None, *argc, **kwargs):
+    def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
         self.length = length
         self.every = every
         self.creature = None
@@ -24,16 +26,39 @@ class Condition(object):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana
+            elif type == CONDITION_DRUNK:
+                self.effect = self.effectDrunk
+            else:
+                self.effect = self.effectNone
 
     def start(self, creature):
+        """ Start the condition.
+        :param creature: The creature object that this condition should affect.
+        """
         self.creature = creature
+        if self.type == CONDITION_HASTE:
+            raise Exception("CONDITION_HASTE is a boost, not a condition.")
         if self.creature.isPlayer():
             self.saveCondition = True
+            if self.type == CONDITION_PARALYZE and self.creature.hasCondition(CONDITION_HASTE):
+                self.creature.removeCondition(CONDITION_HASTE)
+            
+        elif self.creature.isMonster():
+            if self.type == CONDITION_DRUNK and self.creature.base.drunk:
+                self.stop()
+            elif self.type == CONDITION_PARALYZE and self.creature.base.paralyze:
+                self.stop()
+            elif self.type == CONDITION_INVISIBLE and self.creature.base.invisible:
+                self.stop()
+
+        if self.type == CONDITION_PARALYZE:
+            creature.setSpeed(100)
 
         self.init()
         self.tick()
 
     def stop(self):
+        """ Stops the condition."""
         try:
             self.tickEvent.cancel()
         except:
@@ -42,26 +67,35 @@ class Condition(object):
         self.finish()
 
     def init(self):
+        """ (For subclassing) Used to create your own custom initializer when subclassing Conditions."""
         pass
 
-    def callback(self): pass
+    def callback(self):
+        """ (For subclassing) Called when the Condition finishes when used in a subclassed Condition."""
+        pass
 
     def finish(self):
+        """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
         del self.creature.conditions[self.type]
+        if self.type == CONDITION_PARALYZE:
+            self.defaultSpeed()
         if self.creature.isPlayer():
             self.saveCondition = True
         self.creature.refreshConditions()
         self.callback()
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
+        """ The default effect handler when the condition is a poison type """
         self.creature.magicEffect(EFFECT_HITBYPOISON)
         self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
+        """ The default effect handler when the condition is a fire type """
         self.creature.magicEffect(EFFECT_HITBYFIRE)
         self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectRegenerateHealth(self, gainhp=None):
+        """ The default effect handler when the condition is a health regen type """
         if not gainhp:
             gainhp = self.creature.getVocation().health
             self.creature.onHeal(None, gainhp[0])
@@ -70,6 +104,7 @@ class Condition(object):
             self.creature.onHeal(None, gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
+        """ The default effect hander when the condition is a mana regen type """
         if not gainmana:
             gainmana = self.creature.getVocation().mana
             self.creature.modifyMana(gainmana[0])
@@ -77,7 +112,18 @@ class Condition(object):
         else:
             self.creature.modifyMana(gainmana)
 
+    def effectDrunk(self):
+        " Drunk effect "
+        # Does drunkenness have any effect? Dunno.
+        # XXX: Drarwenring supression.
+        self.creature.magicEffect(EFFECT_BUBBLES)
+
+    def effectNone(self):
+        """ Dummy function when no effect is used. """
+        pass
+    
     def tick(self):
+        """ Handles the ticks. Calls the effect, schedule the next tick or finishes if there are no next tick """
         if not self.creature:
             return
 
@@ -96,9 +142,11 @@ class Condition(object):
             self.finish()
 
     def copy(self):
+        """ Returns a copy of this Condition. """
         return copy.deepcopy(self)
 
     def __getstate__(self):
+        """ Returns a saveable version of the Condition, without the creature and tick event set. """
         d = self.__dict__.copy()
         d["creature"] = None
         del d["tickEvent"]
@@ -111,8 +159,10 @@ class Boost(Condition):
         self.tickEvent = None
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
+        elif isinstance(type, int):
+            self.type = '_'+str(type)
         else:
-            self.type = '_'.join(type)
+            self.type = '_'.join(map(str, type))
         self.ptype = [type] if not isinstance(type, list) else type
         self.effectArgs = argc
         self.effectKwargs = kwargs
@@ -120,21 +170,33 @@ class Boost(Condition):
         self.percent = percent
 
     def add(self, type, mod):
+        """ Adds yet another variaible to boost.
+        :param type: The type (like speed, health, healthmax) to boost.
+        :param mod: How much to modify the type.
+        """
         self.ptype.append(type)
         self.mod.append(mod)
         return self
 
-    def tick(self): pass
+    def tick(self):
+        """ Handles the tick. Boost usually doesn't have any ticks. """
+        pass
+
     def init(self):
+        """ Initialize the Boost, this function sets the boosting."""
         pid = 0
         for ptype in self.ptype:
             # Apply
-            try:
-                pvalue = getattr(self.creature, ptype)
-                inStruct = 0
-            except:
-                pvalue = self.creature.data[ptype]
-                inStruct = 1
+            if isinstance(ptype, int):
+                # Skill.
+                pvalue = self.creature.getActiveSkill(ptype)
+            else:
+                try:
+                    pvalue = getattr(self.creature, ptype)
+                    inStruct = 0
+                except:
+                    pvalue = self.creature.data[ptype]
+                    inStruct = 1
 
             if isinstance(self.mod[pid], int):
                 if self.percent:
@@ -146,8 +208,11 @@ class Boost(Condition):
 
             # Hack
             if ptype == "speed":
-                self.type = game.enum.CONDITION_HASTE
+                self.type = enum.CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
+            elif isinstance(ptype, int):
+                #  Skills.
+                self.creature.tempAddSkillLevel(ptype, int(pvalue - self.creature.getActiveSkill(ptype)))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)
@@ -159,15 +224,20 @@ class Boost(Condition):
 
         self.creature.refreshStatus()
     def callback(self):
+        """ Called when the boost ends. Substracts the boosting. """
         pid = 0
         for ptype in self.ptype:
             # Apply
-            try:
-                pvalue = getattr(self.creature, ptype)
-                inStruct = 0
-            except:
-                pvalue = self.creature.data[ptype]
-                inStruct = 1
+            if isinstance(ptype, int):
+                # Skill.
+                pvalue = self.creature.getActiveSkill(ptype)
+            else:
+                try:
+                    pvalue = getattr(self.creature, ptype)
+                    inStruct = 0
+                except:
+                    pvalue = self.creature.data[ptype]
+                    inStruct = 1
 
             if isinstance(self.mod[pid], int):
                 if self.percent:
@@ -180,6 +250,9 @@ class Boost(Condition):
             # Hack
             if ptype == "speed":
                 self.creature.setSpeed(pvalue)
+            elif isinstance(ptype, int):
+                #  Skills.
+                self.creature.tempAddSkillLevel(ptype, -(int(pvalue - self.creature.getActiveSkill(ptype))))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)
@@ -190,6 +263,7 @@ class Boost(Condition):
         self.creature.refreshStatus()
         
 def MultiCondition(type, subtype="", *argc):
+    """ Return one Condition where the callback have been set to call the next condition upon the finish of the first. """
     conditions = []
     for x in argc:
         conditions.append(Condition(type, subtype, **x))
