@@ -7,3 +7,4 @@ syntax: glob
 *.cache
 *.log
 .svn
+config.py
