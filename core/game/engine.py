@@ -1,8 +1,6 @@
 """A collection of functions that almost every other component requires"""
-import __builtin__
 from twisted.internet import reactor, threads, defer
 from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
-__builtin__.inlineCallbacks = inlineCallbacks
 from collections import deque
 from twisted.python import log
 import time
@@ -22,13 +20,11 @@ import glob
 import game.protocol
 import core.logger
 import game.chat
+import __builtin__
 import re
 import subprocess
 import platform
 import os
-import game.deathlist
-import game.ban
-
 try:
     import cPickle as pickle
 except:
@@ -42,14 +38,280 @@ except:
 # Some half important constants
 IS_ONLINE = False
 IS_RUNNING = True
+MERCURIAL_REV = 0
+IS_IN_TEST = False
+serverStart = time.time() - config.tibiaTimeOffset
 globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-serverStart = time.time() - config.tibiaTimeOffset
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "placeInDepot", "townNameToId", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "_txtColor"]
 
+def windowsLoading():
+    if config.consoleColumns:
+        os.system("mode con cols=%d" % config.consoleColumns)
+    if config.consoleColor:
+        os.system("color %s" % config.consoleColor)
+
+# The loader rutines, async loading :)
+@inlineCallbacks
+def loader(timer):
+    IS_IN_TEST = "trial_temp" in os.getcwd()
+    if IS_IN_TEST:
+        os.chdir("..")
+        # Also ugly hack.
+        sys.stdout = StringIO()
+        
+    # Attempt to get the Merucurial rev
+    if os.path.exists(".hg"):
+        try:
+            # This will work independantly of the OS (no need to have mercurial installed!
+            # Not sure if it's 100% accurate, be aware that this is not the active rev, but the latest fetched one.
+            # Downloaded packages doesn't have this file, thats why we keep in in a try, it will raise.
+            
+            MERCURIAL_REV = (os.path.getsize(".hg/store/00changelog.i") / 64) - 1 # Since mercurial start on rev 0, we need to -1 to get the rev number.
+            #MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
+            log.msg("Begin loading (PyOT r%s)" % MERCURIAL_REV)
+            if platform.system() == "Windows":
+                os.system("title PyOT r%s" % MERCURIAL_REV)
+                windowsLoading()
+            else:
+                sys.stdout.write("\x1b]2;PyOT r%s\x07" % MERCURIAL_REV)
+
+        except (OSError, subprocess.CalledProcessError):
+            # hg not in space.
+            log.msg("Begin loading...")
+            if platform.system() == "Windows":
+                os.system("title PyOT")
+                windowsLoading()
+            else:
+                sys.stdout.write("\x1b]2;PyOT\x07")
+    else:
+        MERCURIAL_REV = "unknown"
+        log.msg("Begin loading...")
+        if platform.system() == "Windows":
+            os.system("title PyOT")
+            windowsLoading()
+        else:
+            sys.stdout.write("\x1b]2;PyOT\x07")      
+            
+    import game.item
+    import game.house, game.guild
+    
+    # Begin loading items in the background
+    d = game.item.loadItems()
+    
+    # Reset online status
+    print "> > Reseting players online status...",
+    sql.conn.runOperation("UPDATE players SET online = 0")
+    print "%40s\n" % _txtColor("\t[DONE]", "blue")
+    
+    @inlineCallbacks
+    def sync(d, timer):
+        print "> > Loading global data...",
+        for x in (yield sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals`")):
+            if x[2] == 'json':
+                globalStorage[x[0]] = otjson.loads(x[1])
+            elif x[2] == 'pickle':
+                globalStorage[x[0]] = pickle.loads(x[1])
+            else:
+                globalStorage[x[0]] = x[1]
+        print "%50s\n" % _txtColor("\t[DONE]", "blue")
+        
+        print "> > Loading groups...",
+        for x in (yield sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")):
+            groups[x[0]] = (x[1], otjson.loads(x[2]))
+        print "%60s\n" % _txtColor("\t[DONE]", "blue")
+        
+        print "> > Loading house data...",
+        for x in (yield sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses`")):
+            game.house.houseData[int(x[0])] = game.house.House(int(x[0]), int(x[1]),x[2],x[3],x[4],x[5],x[6],x[7],x[8])
+        print "%55s\n" % _txtColor("\t[DONE]", "blue")
+        
+        # Load scripts
+        print "> > Loading scripts...",
+        game.scriptsystem.importer()
+        game.scriptsystem.get("startup").runSync()
+        print "%55s\n" % _txtColor("\t[DONE]", "blue")
+        
+        # Load map (if configurated to do so)
+        if config.loadEntierMap:
+            print "> > Loading the entier map...",
+            begin = time.time()
+            files = glob.glob('data/map/*.sec')
+            for fileSec in files:
+                x, y, junk = fileSec.split('/')[-1].split('.')
+                game.map.load(int(x),int(y), None)
+            print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
+            
+        # Charge rent?
+        def _charge(house):
+            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
+            
+        for house in game.house.houseData.values():
+            if not house.rent or not house.owner: continue
+            
+            if house.paid < (timer - config.chargeRentEvery):
+                game.scriptsystem.get("chargeRent").runSync(None, house=house)
+                _charge(house)
+            else:
+                callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)
+        
+        
+        # Now we're online :)
+        print _txtColor("Message of the Day: %s" % config.motd, "red")
+        log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
+        
+        IS_ONLINE = True
+        
+        print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")
+        
+    
+    # Loading languages
+    import language
+    if config.enableTranslations:
+        print "> > Loading languages... ",
+        if language.LANGUAGES:
+            print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
+        else:
+            print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
+            
+    # Globalize certain things
+    print "> > Globalize data...",
+    import game.player, game.creature, game.npc, game.monster, game.spell, game.party
+    import game.conditions
+    __builtin__.enum = game.enum
+    
+    for i in dir(game.enum):
+        if not "__" in i:
+            setattr(__builtin__, i, getattr(game.enum, i))
+            
+    for i in globalize:
+        setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
+        
+    print "%55s\n" % _txtColor("\t[DONE]", "blue")    
+    
+    __builtin__.sql = sql.conn
+    __builtin__.config = config
+    
+    import game.pathfinder
+    
+    __builtin__.register = game.scriptsystem.register
+    __builtin__.registerFirst = game.scriptsystem.registerFirst
+    __builtin__.defer = defer
+    __builtin__.reactor = reactor
+    __builtin__.engine = sys.modules["game.engine"]
+    __builtin__.sys = sys
+    __builtin__.math = math
+    __builtin__.inlineCallbacks = inlineCallbacks
+    __builtin__.returnValue = returnValue
+    __builtin__.Deferred = Deferred
+    __builtin__.deque = deque
+    __builtin__.random = random
+    __builtin__.time = time
+    __builtin__.re = re
+    __builtin__.spell = game.spell # Simplefy spell making
+    __builtin__.callLater = reactor.callLater
+    __builtin__.Item = game.item.Item
+    __builtin__.itemAttribute = game.item.attribute
+    __builtin__.getTile = game.map.getTile
+    
+    __builtin__.itemAttribute = game.item.attribute
+    __builtin__.getHouseId = game.map.getHouseId
+    __builtin__.Position = game.map.Position
+    __builtin__.StackPosition = game.map.StackPosition
+    __builtin__.getHouseById = game.house.getHouseById
+    __builtin__.getGuildById = game.guild.getGuildById
+    __builtin__.logger = core.logger
+    
+    # Resources
+    __builtin__.genMonster = game.monster.genMonster
+    __builtin__.genNPC = game.npc.genNPC
+    __builtin__.genQuest = game.resource.genQuest
+    __builtin__.genOutfit = game.resource.genOutfit
+    __builtin__.genMount = game.resource.genMount
+    __builtin__.regVocation = game.vocation.regVocation
+    
+    # Grab them
+    __builtin__.getNPC = game.npc.getNPC
+    __builtin__.getMonster = game.monster.getMonster
+    
+    # Used alot in monster and npcs
+    __builtin__.chance = game.monster.chance
+    
+    # We use this in the import system
+    __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
+    
+    # Access
+    __builtin__.access = game.scriptsystem.access
+    
+    # Conditions
+    __builtin__.Condition = game.conditions.Condition
+    __builtin__.Boost = game.conditions.Boost
+    __builtin__.CountdownCondition = game.conditions.CountdownCondition
+    __builtin__.PercentCondition = game.conditions.PercentCondition
+    __builtin__.MultiCondition = game.conditions.MultiCondition
+    __builtin__.RepeatCondition = game.conditions.RepeatCondition
+
+    # Pathfinder
+    __builtin__.pathfinder = game.pathfinder
+
+    
+    class Globalizer(object):
+        __slots__ = ('monster', 'npc', 'creature', 'player', 'map', 'item', 'scriptsystem', 'spell', 'resource', 'vocation', 'enum', 'house', 'guild', 'party', 'engine', 'errors', 'chat')
+        monster = game.monster
+        npc = game.npc
+        creature = game.creature
+        player = game.player
+        map = game.map
+        item = game.item
+        scriptsystem = game.scriptsystem
+        spell = game.spell
+        resource = game.resource
+        vocation = game.vocation
+        enum = game.enum
+        house = game.house
+        guild = game.guild
+        party = game.party
+        errors = game.errors
+        chat = game.chat
+        engine = sys.modules["game.engine"] # For consistancy
+        
+            
+    __builtin__.game = Globalizer
+    
+    d.addCallback(sync, timer)
+    
+    # Load protocols
+    print "> > Loading game protocols...",
+    for version in config.supportProtocols:
+        game.protocol.loadProtocol(version)
+    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    
+    # Do we issue saves?
+    if config.doSaveAll and not IS_IN_TEST:
+        print "> > Schedule global save...",
+        reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
+        print "%50s\n" % _txtColor("\t[DONE]", "blue")
+        
+    # Do we save on shutdowns?
+    if config.saveOnShutdown:
+        game.scriptsystem.get("shutdown").register(lambda **k: saveAll(True), False)
+        
+    # Reset online status on shutdown
+    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
+    # Light stuff
+    if not IS_IN_TEST:
+        print "> > Turn world time and light on...",
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        print "%45s" % _txtColor("\t[DONE]", "blue")
+    
+        reactor.callLater(60, looper, pathfinder.clear, 60)
+
+    yield d
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""
@@ -68,9 +330,8 @@ def action(forced=False, delay=0):
     
     """
     
-    def _decor(f):
-        " Wrapper function "
-        def _new_f(creature, *args, **argw):
+    def decor(f):
+        def new_f(creature, *args, **argw):
             if creature.action and forced:
                 try:
                     creature.action.cancel()
@@ -83,9 +344,9 @@ def action(forced=False, delay=0):
                 reactor.callLater(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
-        _new_f.__doc__ = f.__doc__
-        return _new_f
-    return _decor
+
+        return new_f
+    return decor
 
 def loopDecorator(time):
     """Loop function decorator.
@@ -95,16 +356,16 @@ def loopDecorator(time):
 
     """
     
-    def _decor(f):
+    def decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
                 reactor.callLater(time, new_f, *args, **kwargs)
         
-        def _first(*args, **kwargs):
+        def first(*args, **kwargs):
             reactor.callLater(0, new_f, *args, **kwargs)
-        _first.__doc__ = f.__doc__
-        return _first
-    return _decor
+            
+        return first
+    return decor
     
 # First order of buisness, the autoWalker
 @action(True)
@@ -164,7 +425,6 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     
 #@action()
 def handleAutoWalking(creature, callback=None, level=0):
-    """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
     if not creature.walkPattern:
         return
         
@@ -198,6 +458,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
+    print fromPos, to
     pattern = []
     currPos = fromPos
     # First diagonal if possible
@@ -220,11 +481,10 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
         if isOk:
             currPos = newPos
             pattern.append(base)
-    
+        
     if not pattern:
         # Try a straight line
-        pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId)
-        print pattern
+        pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y)
         if not pattern:
             return None
                 
@@ -270,7 +530,6 @@ def getSpectators(pos, radius=(8,6), ignore=()):
     return players
 
 def hasSpectators(pos, radius=(8,6), ignore=()):
-    """ Returns True if anyone can see the position, otherwise False. """
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore: return True
         
@@ -381,7 +640,7 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo):
+def transformItem(item, transformTo, pos):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
@@ -390,8 +649,34 @@ def transformItem(item, transformTo):
     :param transformTo: New itemID. Leave to 0 or None to delete the item.
     :type transformTo: int or None.
     
+    :param pos: Position of the item.
+    :type pos: List of tuple.
+    
+    
     """
-    return item.transform(transformTo)
+    pos = item.vertifyPosition(None, pos)
+    if not pos:
+        raise Exception("BUG: Can't vertify position")
+ 
+    tile = game.map.getTile(pos)
+    if not isinstance(pos, game.map.StackPosition):
+        pos = pos.setStackpos(tile.findStackpos(item))
+
+    tile.removeItem(item)
+    if item.tileStacked:
+        item = item.copy()
+        
+    item.itemId = transformTo
+    if transformTo:
+        newStackpos = tile.placeItem(item)
+
+    for spectator in getSpectators(pos):
+        stream = spectator.packet()
+        stream.removeTileItem(pos, pos.stackpos)
+        if transformTo:
+            stream.addTileItem(pos, newStackpos, item)
+            
+        stream.send(spectator)
 
 def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
@@ -411,10 +696,10 @@ def teleportItem(item, fromPos, toPos):
     
     
     """
-    if fromPos.x != 0xFFFF:
+    if fromPos[0] != 0xFFFF:
         try:
-            tile = fromPos.getTile()
-            if not isinstance(fromPos, StackPosition):
+            tile = game.map.getTile(fromPos)
+            if not isinstance(fromPos, game.map.StackPosition):
                 fromPos = fromPos.setStackpos(tile.findStackpos(item))
                 
             tile.removeItem(item)
@@ -425,7 +710,7 @@ def teleportItem(item, fromPos, toPos):
         except:
             pass
               
-    newTile = toPos.getTile()
+    newTile = game.map.getTile(toPos)
     if item.decayPosition:
             item.decayPosition = toPos
     toStackPos = newTile.placeItem(item)
@@ -450,8 +735,8 @@ def placeItem(item, position):
     :returns: Stack position of item.
     
     """
-    print "placeItem"
-    stackpos = position.getTile().placeItem(item)
+    
+    stackpos = game.map.getTile(position).placeItem(item)
     for spectator in getSpectators(position):
         stream = spectator.packet()
         stream.addTileItem(position, stackpos, item)
@@ -459,9 +744,8 @@ def placeItem(item, position):
     return stackpos
 
 def relocate(fromPos, toPos):
-    """ Remove all movable items on fromPos tile, to toPos tile. """
-    tile = fromPos.getTile()
-    toPos = toPos.getTile()
+    tile = game.map.getTile(fromPos)
+    toPos = game.map.getTile(toPos)
     items = []
     for item in tile.getItems():
         if not item.movable: continue
@@ -502,11 +786,10 @@ def explainPacket(packet):
 
 # Save system, async :)
 def saveAll(force=False):
-    """ Save everything, players, houses, global storage etc. """
     commited = False
     
     t = time.time()
-    for player in game.player.allPlayers.values():
+    for player in game.player.allPlayersObject:
         result = player._saveQuery(force)
         if result:
             sql.runOperation(*result)
@@ -530,7 +813,7 @@ def saveAll(force=False):
             
     # Houses
     if game.map.houseTiles:
-        for houseId, house in game.house.houseData.iteritems():
+        for houseId, house in game.house.houseData.items():
             # House is loaded?
             if houseId in game.map.houseTiles:
                 try:
@@ -539,35 +822,28 @@ def saveAll(force=False):
                     log.msg("House id %d have broken items!" % houseId)
                     items = {} # Broken items
                     
-                for tile in game.map.houseTiles[houseId]:
-                    _items = []
-                    lastItem = None
-                    for item in tile.bottomItems():
-                        ic = item.count
-                        if not item.fromMap and (ic == None or ic > 0):
-                            if lastItem and lastItem.itemId == item.itemId and lastItem.stackable and lastItem.count < 100:
-                                    # Stack.
-                                    lCount = lastItem.count
-                                    lastItem.count = min(100, lCount + ic)
-                                    ic -= lastItem.count - lCount
-                                    item.count = ic
-                            if ic or ic == None:
+                try:
+                    for tile in game.map.houseTiles[houseId]:
+                        _items = []
+                        for item in tile.bottomItems():
+                            ic = item.count
+                            if not item.fromMap and (ic == None or ic > 0):
                                 _items.append(item)
-                                lastItem = item
-                    
-                    items[tile.position] = _items
-
+                        if _items:
+                            items[tile.position] = _items
+                except:
+                    pass
                 if items != house.data["items"]:
                     house.data["items"] = items
                     house.save = True # Force save
-                if house.save:
+                if house.save or force:
                     log.msg("Saving house ", houseId)
-                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data) if house.data else '', houseId))
+                    sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
                     house.save = False
                     commited = True
                 else:
                     log.msg("Not saving house", houseId)
-        
+    
     if force:        
         log.msg("Full (forced) save took: %f" % (time.time() - t))
 
@@ -581,10 +857,10 @@ def getTibiaTime():
     :rtype: tuple (hours, minutes, seconds).
     """
     
-    seconds = int((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
-    hours = seconds // 3600
+    seconds = ((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) / config.tibiaDayLength)
+    hours = int(float(seconds / 3600))
     seconds = seconds - (hours * 3600)
-    minutes = seconds // 60
+    minutes = int(seconds / 60)
     seconds = seconds % 60
     
     return (hours, minutes, seconds)
@@ -604,10 +880,10 @@ def getLightLevel():
         hoursleft = (abs(24 - tibiaTime[0]) + config.tibiaDayFullLightStart) % 24
 
         if hoursleft >= 12:
-            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft-12)
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft-12)
             return config.tibiaNightLight + lightChange            
         else:
-            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft)
+            lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) / dayHours) * (hoursleft)
             return config.tibiaFullDayLight - lightChange
         
 LIGHT_LEVEL = getLightLevel()
@@ -641,19 +917,17 @@ def getPlayerIDByName(name):
     except:
         d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            returnValue(d[0]['id'])
+            returnValue(d[0][0])
         else:
             returnValue(None)
 
 def getPlayer(playerName):
-    """ Returns the player with name `playerName`, this function only works for already loaded players. """
     try:
         return game.player.allPlayers[playerName]
     except:
         return None
 
 def getCreatureByCreatureId(cid):
-    """ Returns the creature with this id. """
     for creature in game.creature.allCreaturesObject:
         if creature.cid == cid:
             return creature
@@ -665,21 +939,10 @@ def townNameToId(name):
     
     """
     
-    for id in game.map.mapInfo.towns:
-        if game.map.mapInfo.towns[id][0] == name:
+    import data.map.info as i
+    for id in i.towns:
+        if i.towns[id][0] == name:
             return id
-
-def townIdToName(id):
-    """ Returns the name of a down based on the id.
-
-    :rtype: str or None.
-
-    """
-
-    try:
-        return game.map.mapInfo.towns[id][0]
-    except:
-        return None
 
 def townPosition(id):
     """ Returns the position of a town passed by id
@@ -687,8 +950,8 @@ def townPosition(id):
     :rtype: list
     
     """
-
-    return game.map.mapInfo.towns[id][1]
+    import data.map.info as i
+    return i.towns[id][1]
 
 def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level=0):
     """ Broadcasts a message to every player
@@ -740,249 +1003,52 @@ def placeInDepot(name, depotId, items):
     else:
         result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
-            result = pickle.loads(result[0]['depot'])
+            result = pickle.loads(result[0])
             try:
                 __inPlace(result[depotId])
             except:
                 result[depotId] = items
             result = fastPickler(result)
-            sql.conn.runOperation("UPDATE `players` SET `depot` = %s", result)
+            sql.conn.runOperation("UPDATE `players` SET `depot` = %s" % result)
             returnValue(True)
         else:
             returnValue(False)
             
 @inlineCallbacks
 def loadPlayer(playerName):
-    """ Load player with name `playerName`, return result. """
     try:
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
     except KeyError:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", (playerName, config.worldId))
+        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`name` = %s", (playerName))
         if not character:
             returnValue(None)
             return
         cd = character[0]
-        deathlist.loadDeathList(cd['id'])
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44]}
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         
 @inlineCallbacks
 def loadPlayerById(playerId):
-    """ Load a player with id `playerId`. Return result. """
-    # Quick look
-    for player in game.player.allPlayersObject:
-        if player.data["id"] == playerId:
-            returnValue(player)
+    try:
+        # Quick look
+        for player in game.player.allPlayersObject:
+            if player.data["id"] == playerId:
+                returnValue(player)
+                return
+    except:
+        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` WHERE p.`id` = %s", (playerId))
+        if not character:
+            returnValue(None)
             return
-    
-    character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
-    if not character:
-        returnValue(None)
-        return
-    cd = character[0]
-    deathlist.loadDeathList(cd['id'])
-    game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
-    returnValue(game.player.allPlayers[cd['name']])
-
-def moveItem(player, fromPosition, toPosition, count=0):
-    """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
-    if fromPosition == toPosition:
-        return True
-
-    # TODO, script events.
-    
-    # Analyse a little.
-    fromMap = False
-    toMap = False
-
-    if fromPosition.x != 0xFFFF:
-        # From map
-        fromMap = True
-
-    if toPosition.x != 0xFFFF:
-        toMap = True
+        cd = character[0]
+        cd = {"id": int(cd[0]), "name": cd[1], "world_id": int(cd[2]), "group_id": int(cd[3]), "account_id": int(cd[4]), "vocation": int(cd[5]), "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "instanceId": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "inventory": cd[27], "depot": cd[28], "conditions": cd[29], "skills": {SKILL_FIST: cd[30], SKILL_SWORD: cd[32], SKILL_CLUB: cd[34], SKILL_AXE: cd[36], SKILL_DISTANCE: cd[38], SKILL_SHIELD: cd[40], SKILL_FISH: cd[42]}, "skill_tries": {SKILL_FIST: cd[31], SKILL_SWORD: cd[33], SKILL_CLUB: cd[35], SKILL_AXE: cd[37], SKILL_DISTANCE: cd[39], SKILL_SHIELD: cd[41], SKILL_FISH: cd[43]}, "language":cd[44]}
+        game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
+        returnValue(game.player.allPlayers[cd['name']])
         
-    oldItem = None
-    renew = False
-    stack = True
-        
-    thing = player.findItem(fromPosition)
-    destItem = None
-    if toPosition.x == 0xFFFF or isinstance(toPosition, StackPosition):
-        destItem = player.findItem(toPosition)
-    if not thing:
-        return False
-    if thing.stackable and not count:
-        count = thing.count
-    if destItem and destItem == thing.inContainer:
-        return False
-    if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
-        player.closeContainer(thing)
-
-    itemContainer = None
-    if destItem:
-        itemContainer = thing.inContainer
-        if destItem == itemContainer:
-            return False
-
-    # Hack.
-    if fromPosition.x == 0xFFFF and not thing.creature:
-        thing.creature = player
-
-    if not thing.position:
-        thing.position = fromPosition
-    if destItem and not destItem.position:
-        destItem.position = toPosition
-        
-    # Some vertifications.
-    if thing.stackable and count and count > thing.count:
-        player.notPossible()
-        return False
-    
-    elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
-        player.notPickupable()
-        return False
-                    
-    elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
-        player.notPossible()
-        return False
-    
-    if destItem and (destItem.inContainer or destItem.container): # Recursive check.
-        if destItem.container:
-            container = destItem
-        else:
-            container = destItem.inContainer
-            
-        while container:
-            print container, thing
-            if container == thing:
-                return player.notPossible()
-            container = container.inContainer
-
-    slots = thing.slots()
-    
-    # Can it be placed there?
-    if (not destItem or destItem.container == None) and toPosition.x == 0xFFFF and toPosition.y < 64:
-        if (toPosition.y-1) not in slots:
-            if not config.ammoSlotOnlyForAmmo and (toPosition.y-1) == SLOT_AMMO:
-                pass
-            else:
-                player.notPossible()
-                return False
-
-    if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and player.inventory[SLOT_RIGHT] and player.inventory[SLOT_RIGHT].slotType == "two-handed":
-        player.notPossible()
-        return False
-
-    elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and player.inventory[SLOT_LEFT]:
-        player.notPossible()
-        return False
-
-    if toPosition.x == 0xFFFF and player.freeCapacity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
-        player.tooHeavy()
-        return False
-    
-    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1)) == False:
-        return False
-    elif toPosition.x == 0xFFFF and toPosition.y < 64 and game.scriptsystem.get("equip").runSync(player, thing, slot = (toPosition.y-1)) == False:
-        return False
-    
-    # Special case when both items are the same and stackable.
-    stacked = False
-    if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
-        if _newItem == None:
-            newCount = min(100, destItem.count + count) - destItem.count
-            player.modifyItem(destItem, newCount)
-            player.modifyItem(thing, -count)
-            return True
-        elif isinstance(_newItem, Item):
-            newItem = _newItem
-            stacked = True
-        
-    # remove from fromPosition.
-    if not stacked and count and thing.stackable:
-        newItem = thing.copy()
-        newItem.count = count
-        
-        player.modifyItem(thing, -count)
-        
-    elif not stacked:
-        newItem = thing # Easy enough.
-        
-    if destItem and destItem.containerSize:
-        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
-            return False
-        if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-            return False
-        
-        if not thing.stackable:
-            thing.remove()
-        print "itemToContainer1"
-        player.itemToContainer(destItem, newItem)
-    else:    
-        if not thing.stackable:
-            thing.remove()
-    
-    if toMap:
-        print "toMap called"
-        # Place to ground.
-        thisTile = toPosition.getTile()
-        
-        for item in thisTile.getItems():
-            if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
-                return False
-            if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                return False
-
-        newItem.place(toPosition)
-    else:
-        if not destItem or not destItem.containerSize:
-            if toPosition.y < 64:
-                # Inventory.
-                player.itemToInventory(newItem, toPosition.y-1)
-                
-            else:
-                container = player.getContainer(toPosition.y-64)
-                
-                if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
-                    return False
-                if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                    return False
-                print "itemToContainer2"
-                player.itemToContainer(container, newItem)
-
-            if destItem and itemContainer:
-                player.itemToContainer(itemContainer, destItem)    
-        elif not destItem.containerSize:
-            # Move destItem.
-            print "destItem no container branch"
-            if thing.inContainer and thing.inContainer != destItem:
-                print "itemToContainer3"
-                player.itemToContainer(thing.inContainer, destItem)
-            elif player.inventory[SLOT_BACKPACK]:
-                print "destItem backpack branch"
-                if player.inventory[SLOT_BACKPACK] != destItem:
-                    print "itemToContainer4"
-                    player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
-            else:
-                print "XXX: In case of bug, do something here?"
-
-    if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
-        player.closeContainer(thing)
-    
-    # Update everything. Lazy.
-    #player.refreshInventory()
-    #player.updateAllContainers()
-    #player.refreshStatus()
-    
-    # Done.
-    return True
-    
 # Helper calls
 def summonCreature(name, position, master=None):
-    """ Summons a monster with `name` on position, set master to `master`. """
     import game.monster
     creature = game.monster.getMonster(name).spawn(position, spawnDelay=0)
     if master:
@@ -992,34 +1058,28 @@ def summonCreature(name, position, master=None):
     return creature
     
 def magicEffect(pos, type):
-    """ Send a magic effect `type` on this position. """
     for spectator in getSpectators(pos):
         stream = spectator.packet()
         stream.magicEffect(pos, type)
         stream.send(spectator)
 
 def getHouseByPos(pos):
-    """ Return the House object on this position """
     return game.house.getHouseById(game.map.getHouseId(pos))
 
 # Speed pickler
 def fastPickler(obj):
-    """ Just a allias for pickle.dumps with protocol 2"""
     return pickle.dumps(obj, 2)
     
 # Protocol 0x00:
 class ReturnValueExit(Exception):
-    " A special exception used by :func:`game.engine.Return` "
     def __init__(self, value=""):
         self.value = value
         
 def Return(ret):
-    """ Used in exec protocolfunctions to end the function, and give a return value. """
     raise ReturnValueExit(ret)
      
 @inlineCallbacks
 def executeCode(code):
-    """ Used by execute protocol to run a piece of code """
     try:
         if "yield " in code:
             newcode = []
@@ -1035,63 +1095,31 @@ def _N():
             returnValue(otjson.dumps((yield _N())))
         else:
             exec(code)
-    except ReturnValueExit as e:
-        returnValue(otjson.dumps(e.value))
+    except ReturnValueExit, e:
+        e = e.value
     else:
         yield defer.maybeDeferred()
+    returnValue(otjson.dumps(e))
+    
+    
+# COLORS
+import platform
+if platform.system() == "Windows":
+    # No colorss? :(
+    _txtColor = lambda x, c: x
+else:
+    def _txtColor(text, color):
+        
+        if color == "blue":
+            color = 34
+        elif color == "red":
+            color = 31
+        elif color == "green":
+            color = 32
+        elif color == "yellow":
+            color = 33
+        RESET_SEQ = "\033[0m"
+        COLOR_SEQ = "\033[1;%dm"
 
-def mail(toPlayer, package, message="", town=0, ignoreLimits=True):
-    """ Make a parcel, letter, if package is not already a parcel or letter. And send it. """
-    name = toPlayer if isinstance(toPlayer, str) else toPlayer.name()
-
-    if not isinstance(toPlayer, Player) and town == 0:
-        town = 1
-    elif town == 0:
-        town = toPlayer.data['town_id']
-
-    if isinstance(package, Item):
-        label = None
-        for item in package.container:
-            if item.itemId == ITEM_LABEL:
-                label = item
-                break
-
-        if not label or not label.text:
-            return False
-
-        lines = label.text.split("\n")
-        if lines < 2:
-            return False
-
-        town = townNameToId(lines[1])
-        if package.itemId != ITEM_PARCEL_STAMPED:
-            package.itemId = ITEM_PARCEL_STAMPED            
-        pack = package
-
-    elif isinstance(package, list):
-        # make parcel.
-        pack = Item(ITEM_PARCEL_STAMPED)
-        label = Item(ITEM_LABEL)
-        pack.placeItem(label)
-        for item in package:
-            pack.placeItem(item)
-
-        label.text = "%s\n%s\n%s" % (name, townIdToName(town), message)
-    else:
-        # Letter.
-        pack = Item(ITEM_LETTER_STAMPED)
-        pack.text =  "%s\n%s\n%s" % (name, townIdToName(town), message)
-
-    # Get mail depot
-    if isinstance(toPlayer, Player):
-        depot = toPlayer.getDepot(town)
-        #if not ignoreLimits:
-        #    return False
-
-        depot.append(pack)
-        toPlayer.setDepot(town, depot)
-    else:
-        return placeInDepot(toPlayer, town, pack)
-
-    return True
-
+        return "%s%s%s" % (COLOR_SEQ % color, text, RESET_SEQ)
+    
