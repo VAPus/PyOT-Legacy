@@ -271,7 +271,7 @@ def setowner(creature,text):
 @register("talkaction", "poisonme")
 @access("DEVELOPER")
 def poisonme(creature, **k):
-    creature.condition(Condition(CONDITION_POISON, 0, 10, damage=10))
+    creature.condition(CountdownCondition(CONDITION_POISON, 10))
     print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
     
 
@@ -279,6 +279,12 @@ def poisonme(creature, **k):
 @access("DEVELOPER")
 def conditionme(creature, **k):
     creature.multiCondition(Condition(CONDITION_POISON, 0, 10, damage=10), Condition(CONDITION_FIRE, 0, 10, damage=10), Condition(CONDITION_POISON, 0, 20, damage=-10))
+    
+
+@register("talkaction", "conditionpercent")
+@access("DEVELOPER")
+def conditionme(creature, **k):
+    creature.multiCondition(PercentCondition(CONDITION_POISON, 50, 0.9, 5), PercentCondition(CONDITION_FIRE, 10, 1.1))
     
 
 @register("talkaction", "restore")

@@ -1,7 +1,7 @@
 import copy
 
 class Condition(object):
-    def __init__(self, type, subtype="", length=1, every=1, check=None, *argc, **kwargs):
+    def __init__(self, type, subtype="", length=1, every=2, check=None, *argc, **kwargs):
         self.length = length
         self.every = every
         self.creature = None
@@ -86,7 +86,7 @@ class Condition(object):
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
         """ The default effect handler when the condition is a poison type """
-        self.creature.magicEffect(EFFECT_HITBYPOISON)
+        self.creature.magicEffect(EFFECT_GREEN_RINGS)
         self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
@@ -276,7 +276,7 @@ def MultiCondition(type, subtype="", *argc):
 
 class CountdownCondition(Condition):
     def __init__(self, type, startdmg, subtype=""):
-        # This is constant. EVERY 1 sec, do recalculations
+        # This is constant. EVERY 2 sec, do recalculations
         # Finishes when dmg hits 1.
         self.creature = None
         self.tickEvent = None
@@ -300,7 +300,7 @@ class CountdownCondition(Condition):
                 self.effect = self.effectRegenerateMana        
 
     def effectPoison(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYPOISON)
+        self.creature.magicEffect(EFFECT_GREEN_RINGS)
         self.creature.modifyHealth(-damage)
 
     def effectFire(self, damage):
@@ -347,7 +347,7 @@ class CountdownCondition(Condition):
             
 class PercentCondition(Condition): #under 100% it will decrase in percentages
     def __init__(self, type, startdmg, percent, rptcount=False, subtype=""):
-        # This is constant. EVERY 1 sec, do recalculations
+        # This is constant. EVERY 2 sec, do recalculations
         # Finishes when dmg hits 1.
         self.creature = None
         self.tickEvent = None
@@ -415,7 +415,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
 
 class RepeatCondition(Condition):
     def __init__(self, type, startdmg, rptcount=False, subtype=""):
-        # This is constant. EVERY 1 sec, do recalculations
+        # This is constant. EVERY 2 sec, do recalculations
         # Finishes when dmg hits 1.
         self.creature = None
         self.tickEvent = None

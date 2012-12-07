@@ -184,7 +184,6 @@ def loader(timer):
     __builtin__.getTile = game.map.getTile
     __builtin__.setTile = game.map.setTile
     __builtin__.getTileConst = game.map.getTileConst
-    __builtin__.Condition = game.conditions.Condition
     __builtin__.Boost = game.conditions.Boost
     __builtin__.MultiCondition = game.conditions.MultiCondition
     __builtin__.itemAttribute = game.item.attribute
@@ -219,6 +218,14 @@ def loader(timer):
 
     # Access
     __builtin__.access = game.scriptsystem.access
+    
+    # Conditions
+    __builtin__.Condition = game.conditions.Condition
+    __builtin__.Boost = game.conditions.Boost
+    __builtin__.CountdownCondition = game.conditions.CountdownCondition
+    __builtin__.PercentCondition = game.conditions.PercentCondition
+    __builtin__.MultiCondition = game.conditions.MultiCondition
+    __builtin__.RepeatCondition = game.conditions.RepeatCondition
 
     # Pathfinder
     __builtin__.pathfinder = game.pathfinder
