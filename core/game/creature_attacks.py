@@ -21,7 +21,7 @@ class CreatureAttacks(object):
     def onHit(self, by, dmg, type, effect=None):
 
         if not type == enum.DISTANCE:
-            if not by.ignoreBlock and by.doBlock:
+            if by and not by.ignoreBlock and self.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
 
         if type == enum.ICE:
@@ -54,7 +54,7 @@ class CreatureAttacks(object):
 
         elif type == enum.DISTANCE:
             textColor, magicEffect = enum.COLOR_RED, None
-            if not by.ignoreBlock and by.doBlock:
+            if by and not by.ignoreBlock and self.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
         elif type == enum.LIFEDRAIN:
             textColor = enum.COLOR_TEAL
@@ -62,11 +62,11 @@ class CreatureAttacks(object):
 
         else: ### type == enum.MELEE:
             textColor, magicEffect = self.hitEffects()
-        if effect:
+        if effect != None:
             magicEffect = effect
 
         # pvpDamageFactor.
-        if self.isPlayer() and by.isPlayer() and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
+        if self.isPlayer() and (by and by.isPlayer()) and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
         process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
@@ -76,8 +76,9 @@ class CreatureAttacks(object):
         dmg = max(-self.data["health"], dmg)
         
         if dmg:
-            self.addDamager(by)
-            by.lastPassedDamage = time.time()
+            if by:
+                self.addDamager(by)
+                by.lastPassedDamage = time.time()
             
             if magicEffect:
                 self.magicEffect(magicEffect)
@@ -111,7 +112,7 @@ class CreatureAttacks(object):
                 else:
                     self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
 
-            elif not self.target and self.data["health"] < 1:
+            elif by and not self.target and self.data["health"] < 1:
                 self.follow(by) # If I'm a creature, set my target
 
             self.modifyHealth(dmg)

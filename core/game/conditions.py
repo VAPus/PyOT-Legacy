@@ -84,24 +84,37 @@ class Condition(object):
         self.creature.refreshConditions()
         self.callback()
 
-    def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
+    def effectPoison(self, damage=0, minDamage=0, maxDamage=0, display=True):
         """ The default effect handler when the condition is a poison type """
         self.creature.magicEffect(EFFECT_GREEN_RINGS)
-        self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
+        if not damage:
+            damage = random.randint(minDamage, maxDamage)
+        if display:
+            self.creature.onHit(None, -damage, POISON, False)
+        else:
+            self.creature.modifyHealth(-damage)
 
-    def effectFire(self, damage=0, minDamage=0, maxDamage=0):
+    def effectFire(self, damage=0, minDamage=0, maxDamage=0, display=True):
         """ The default effect handler when the condition is a fire type """
         self.creature.magicEffect(EFFECT_HITBYFIRE)
-        self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
+        if not damage:
+            damage = random.randint(minDamage, maxDamage)
 
-    def effectRegenerateHealth(self, gainhp=None):
+        if display:
+            self.creature.onHit(None, -damage, FIRE, False)
+        else:
+            self.creature.modifyHealth(-damage)
+        
+    def effectRegenerateHealth(self, gainhp=None, display=True):
         """ The default effect handler when the condition is a health regen type """
         if not gainhp:
-            gainhp = self.creature.getVocation().health
+            gainhp = self.creature.getVocation().health[0]
             self.creature.onHeal(None, gainhp[0])
 
-        else:
+        if display:
             self.creature.onHeal(None, gainhp)
+        else:
+            self.creature.modifyHealth(gainhp)
 
     def effectRegenerateMana(self, gainmana=None):
         """ The default effect hander when the condition is a mana regen type """
