@@ -543,6 +543,9 @@ def reimporter():
     
     # Clear spells
     game.spell.clear()
+
+    # Cleanups
+    reimportCleanup()
         
     # Reload modules
     for mod in modPool:
@@ -557,55 +560,44 @@ def reimporter():
 
     handlePostLoadEntries()
 
-    # Call gc.collect()
-    gc.collect()
-
-    # Cleanups.
-    reimportCleanup()
-
-    # Call gc.collect() again. May be needed.
+    # Call gc.collect(). May be needed.
     gc.collect()
     
     # postReload.
     get("postReload").runSync()
     
 def reimportCleanup():
-    for script in globalScripts:
+    for script in globalScripts.itervalues():
         if isinstance(script, Scripts):
-            for func in script.scripts[:]:
-                if not func:
-                    script.scripts.remove(func)
+            for func in script.weaks:
+                script.scripts.remove(func)
+            
         elif type(script) == TriggerScripts:
-            for trigger in script.triggers.copy():
-                for func in script.triggers[trigger][:]:
-                    if not func:
-                        script.triggers[trigger].remove(func)
-                if len(script.triggers[trigger]) == 0:
-                    del script.triggers[trigger]
+            for (trigger, func) in script.weaks:
+                script.scripts[trigger].remove(func)
+                if len(script.scripts[trigger]) == 0:
+                    del script.scripts[trigger]
+            
         elif type(script) == RegexTriggerScripts:
-            for trigger in script.triggers.copy():
-                for func in script.triggers[trigger][0][:]:
-                    if not func:
-                        script.triggers[trigger][0].remove(func)
-                if len(script.triggers[trigger][0]) == 0:
-                    del script.triggers[trigger]
-                    
+            for (trigger, func) in script.weaks:
+                script.scripts[trigger][0].remove(func)
+                if len(script.scripts[trigger][0]) == 0:
+                    del script.scripts[trigger]
                             
         elif isinstance(script, ThingScripts):
-            for trigger in script.scripts.copy():
-                for func in script.scripts[trigger][:]:
-                    if not func:
-                        script.scripts[trigger].remove(func)
+            for (trigger, func) in script.weaks:
+                script.scripts[trigger].remove(func)
                 if len(script.scripts[trigger]) == 0:
                     del script.scripts[trigger]
                     
             for trigger in script.thingScripts.copy():
-                for func in script.scripts[trigger][:]:
+                for func in script.thingScripts[trigger][:]:
                     if not func:
-                        script.scripts[trigger].remove(func)
-                if len(script.scripts[trigger]) == 0:
-                    del script.scripts[trigger]
-                    
+                        script.thingScripts[trigger].remove(func)
+                if len(script.thingScripts[trigger]) == 0:
+                    del script.thingScripts[trigger]
+        script.weaks = set()
+
 # This is the function to get events, it should also be a getAll, and get(..., creature)
 def get(type):
     return globalScripts[type]
