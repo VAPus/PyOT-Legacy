@@ -9,4 +9,4 @@ tarantula.walkAround(energy=1, fire=1, poison=0)
 tarantula.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 tarantula.loot( (2148, 100, 34), ("tarantula egg", 14.75), ("plate shield", 2.0), (8859, 7.25), ("brass legs", 4.25) )
 
-tarantula.regMelee(90) #Poisons you for 1-2 hp/turn
+tarantula.regMelee(90, condition=CountdownCondition(CONDITION_POISON, 2), conditionChance=100)

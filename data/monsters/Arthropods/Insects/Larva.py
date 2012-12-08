@@ -7,5 +7,6 @@ larva.setSpeed(135)
 larva.setBehavior(summonable=355, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
 larva.walkAround(energy=1, fire=1, poison=0)
 larva.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
-larva.regMelee(35)#poison 1p/turn
 larva.loot( ("meat", 14.25), (2148, 100, 15) )
+
+larva.regMelee(35, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)

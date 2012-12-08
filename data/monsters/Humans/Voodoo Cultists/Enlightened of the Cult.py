@@ -11,4 +11,4 @@ enlightened_of_the_cult.summon("Crypt Shambler", 10)
 enlightened_of_the_cult.summon("Ghost", 10)
 enlightened_of_the_cult.maxSummons(2)
 enlightened_of_the_cult.voices("Praise to my master Urgith!", "You will rise as my servant!", "Praise to my masters! Long live the triangle!", "You will die in the name of the triangle!")
-enlightened_of_the_cult.regMelee(100) #Poisons you up to 4 Hitpoints/turn
+enlightened_of_the_cult.regMelee(100, condition=CountdownCondition(CONDITION_POISON, 4), conditionChance=100)

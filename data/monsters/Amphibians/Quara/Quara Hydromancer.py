@@ -31,7 +31,7 @@ qhib.area(AREA_BEAM7) #7 or 4?
 qhib.element(ICE) #life drain
 qhib.effects(area=EFFECT_BUBBLES)
 
-quara_hydromancer.regMelee(80) #poisons you for up to 5 hp/turn
+quara_hydromancer.regMelee(80, condition=CountdownCondition(CONDITION_POISON, 5), conditionChance=100)
 quara_hydromancer.regSelfSpell("Light Healing", 25, 55, check=chance(20)) #strength?
 quara_hydromancer.regTargetSpell(qhldb, 170, 240, check=chance(20))
 quara_hydromancer.regTargetSpell(qhib, 100, 180, check=chance(20))

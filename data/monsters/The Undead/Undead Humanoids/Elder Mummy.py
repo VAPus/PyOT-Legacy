@@ -7,4 +7,4 @@ elder_mummy.setSpeed(250)#
 elder_mummy.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)
 elder_mummy.walkAround(energy=1, fire=1, poison=0)
 elder_mummy.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=0)
-elder_mummy.regMelee(120)#poison 3/turn
+elder_mummy.regMelee(120, condition=CountdownCondition(CONDITION_POISON, 3), conditionChance=100)

@@ -29,7 +29,7 @@ qciceball.area(AREA_CIRCLE3)
 qciceball.element(ICE)
 qciceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
 
-quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 15, 1, damage=1), conditionChance=100) #
+quara_constrictor.regMelee(150, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)
 quara_constrictor.regTargetSpell(qcldberk, 1, 80, check=chance(25))
 quara_constrictor.regTargetSpell(qciceball, 40, 70, check=chance(25)) 
 quara_constrictor.regTargetSpell(qcpberk, 1, 80, check=chance(25))

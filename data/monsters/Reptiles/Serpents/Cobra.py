@@ -1,4 +1,3 @@
-
 cobra = genMonster("Cobra", (81, 10603), "a cobra")
 cobra.setHealth(65)
 cobra.bloodType("blood")
@@ -9,5 +8,5 @@ cobra.setBehavior(summonable=275, hostile=1, illusionable=1, convinceable=0, pus
 cobra.walkAround(energy=1, fire=1, poison=0)
 cobra.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=1)
 cobra.voices("Fsssss", "Zzzzzz")
-cobra.regMelee(5) #Poisons you up to 5 hp/turn only ##melee damage is wrong
+cobra.regMelee(15, condition=CountdownCondition(CONDITION_POISON, 5), conditionChance=100)
 cobra.loot( ("cobra tongue", 4.75) )

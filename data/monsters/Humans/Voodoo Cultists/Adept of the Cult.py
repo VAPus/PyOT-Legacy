@@ -11,4 +11,4 @@ adept_of_the_cult.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 adept_of_the_cult.summon("Ghoul", 10)
 adept_of_the_cult.maxSummons(2)
 adept_of_the_cult.voices("Feel the power of the cult!", "Praise the voodoo!", "Power to the cult!")
-adept_of_the_cult.regMelee(90) #poisons you 2 hp/turn
+adept_of_the_cult.regMelee(90, condition=CountdownCondition(CONDITION_POISON, 2), conditionChance=100)

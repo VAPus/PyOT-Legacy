@@ -1,4 +1,3 @@
-
 carniphila = genMonster("Carniphila", (120, 6047), "a carniphila")
 carniphila.setHealth(255)
 carniphila.bloodType("slime")
@@ -8,5 +7,5 @@ carniphila.setSpeed(240)
 carniphila.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 carniphila.walkAround(energy=1, fire=1, poison=0)
 carniphila.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
-carniphila.regMelee(100) #poisons you 5 hp/turn
+carniphila.regMelee(100, condition=CountdownCondition(CONDITION_POISON, 5), conditionChance=100)
 carniphila.loot( ("seeds", 0.75), ("dark mushroom", 8.0), ("shadow herb", 1.0), (2148, 100, 40), ("carniphila seeds", 4.0), ("corncob", 1.25), ("sling herb", 0.75, 2), ("carrot on a stick", 0.0025) )

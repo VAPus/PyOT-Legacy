@@ -9,4 +9,4 @@ poison_spider.walkAround(energy=1, fire=1, poison=0)
 poison_spider.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 poison_spider.loot( (2148, 61.25, 4), ("poison spider shell", 1.25) )
 
-poison_spider.regMelee(20) #Poison with 1 hp per turn (15-20 turns) or starting with 2 hp per turn (20-25 turns, 21-30 hp).
+poison_spider.regMelee(20, condition=CountdownCondition(CONDITION_POISON, 2), conditionChance=100)

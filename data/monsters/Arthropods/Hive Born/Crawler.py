@@ -7,4 +7,4 @@ Crawler.setSpeed(250) #incorrect
 Crawler.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=40)
 Crawler.walkAround(energy=1, fire=1, poison=0)
 Crawler.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
-Crawler.regMelee(120) #can poison you for up to 4 hp/turn
+Crawler.regMelee(120, condition=CountdownCondition(CONDITION_POISON, 4), conditionChance=100)

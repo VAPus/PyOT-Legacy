@@ -8,5 +8,5 @@ bog_raider.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, 
 bog_raider.walkAround(energy=1, fire=1, poison=1)
 bog_raider.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 bog_raider.voices("Tchhh!", "Slurp!")
-bog_raider.regMelee(180) #poisons you 4hp/turn
+bog_raider.regMelee(180, condition=CountdownCondition(CONDITION_POISON, 4), conditionChance=100)
 bog_raider.loot( (2148, 100, 105), ("boggy dreads", 10.0), ("great health potion", 1.75), ("springsprout rod", 1.0), ("great spirit potion", 2.0), ("plate legs", 2.0), ("ultimate health potion", 0.75), ("belted cape", 0.5), ("paladin armor", 0.0025) )

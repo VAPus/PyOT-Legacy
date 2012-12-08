@@ -7,4 +7,4 @@ Parasite.setSpeed(135)
 Parasite.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
 Parasite.walkAround(energy=1, fire=1, poison=0)
 Parasite.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
-Parasite.regMelee(35)#poison 1p/turn
+Parasite.regMelee(35, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)
