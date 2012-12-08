@@ -71,9 +71,9 @@ class Client(proto_helpers.StringTransport):
         self.client._packets.append(packet)
         self.client._data = pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data
         if kwargs:
-            return p.TibiaPacketReader(packet.data)
+            return p.TibiaPacketReader(packet.data[1:])
         else:
-            self.client.dataReceived(self.client._data)
+            self.client.dataReceived(self.client._data[1:])
                 
     def write(self, data):
         # From server. Never use directly on the test side!
