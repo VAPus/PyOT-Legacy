@@ -2,7 +2,6 @@
 from twisted.internet import reactor, defer
 from twisted.python import log
 import config
-import weakref
 import sys
 import time
 import traceback
@@ -19,25 +18,22 @@ class InvalidScriptFunctionArgument(Exception):
     pass
 
 class Scripts(object):
-    __slots__ = ('scripts', 'parameters')
+    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = []
         self.parameters = parameters
-        
+        self.weaks = set() 
     def register(self, callback, weakfunc=True):
         if weakfunc:
-            func = weakref.proxy(callback, self.unregCallback)
-        else:
-            func = callback
-        self.scripts.append(func)
+            self.weaks.add(callback)
+        
+        self.scripts.append(callback)
         
     def unregister(self, callback):
         self.scripts.remove(callback)
-    
-    def unregCallback(self, callback):
-        if game.engine.IS_RUNNING:
-            self.scripts.remove(callback)
-                
+        if callback in self.weaks:
+            self.weaks.remove(callback)
+   
     def run(self, creature, end=None, **kwargs):
         #scriptPool.callInThread(self._run, creature, end, **kwargs)
         raise Exception("Threaded script is not allowed in this branch!")
@@ -84,53 +80,44 @@ class NCScripts(Scripts):
             return ok
                 
 class TriggerScripts(object):
-    __slots__ = ('scripts', 'parameters')
+    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = parameters
+        self.weaks = set()
 
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
-            func = weakref.proxy(callback, self._unregCallback(trigger))
-        else:
-            func = callback
+            self.weaks.add((trigger, callback))
             
         if not trigger in self.scripts:
-            self.scripts[trigger] = [func]
+            self.scripts[trigger] = [callback]
         else:
-            self.scripts[trigger].append(func)
+            self.scripts[trigger].append(callback)
         
     def registerFirst(self, trigger, callback, weakfunc=True):
         if not trigger in self.scripts:
             self.register(trigger, callback, weakfunc)
         else:
             if weakfunc:
-                func = weakref.proxy(callback, self._unregCallback(trigger))
-            else:
-                func = callback
-            self.scripts[trigger].insert(0, func)
+                self.weaks.add((trigger, callback))
+                
+            self.scripts[trigger].insert(0, callback)
             
     def unregister(self, trigger, callback):
         self.scripts[trigger].remove(callback)
 
         if not len(self.scripts[trigger]):
             del self.scripts[trigger]
-        
+        if (trigger, callback) in self.weaks:
+            self.weaks.remove((trigger, callback))
+
     def run(self, trigger, creature, end=None, **kwargs):
         #scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
         raise Exception("Threaded script is not allowed in this branch!")
 
     def runSync(self, trigger, creature, end=None, **kwargs):
-        return self._run(trigger, creature, end, **kwargs)
-        
-    def _unregCallback(self, trigger):
-        def trigger_cleanup_callback(func):
-            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
-                self.scripts[trigger].remove(func)
-                if not len(self.scripts[trigger]):
-                    del self.scripts[trigger]
-                
-        return trigger_cleanup_callback
+        return self._run(trigger, creature, end, **kwargs)  
                 
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
@@ -148,46 +135,32 @@ class TriggerScripts(object):
         return ok
 
 class RegexTriggerScripts(TriggerScripts):
-    __slots__ = ('scripts', 'parameters')
+    __slots__ = ('scripts', 'parameters', 'weaks')
 
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = () # We can't have parameters
-        
+        self.weaks = set()
+
     def register(self, trigger, callback, weakfunc=True):
         if weakfunc:
-            func = weakref.proxy(callback, self._unregCallback(trigger))
-        else:
-            func = callback
+            self.weaks.add((trigger, callback))
+        
             
         if not trigger in self.scripts:
-            self.scripts[trigger] = [func], re.compile(trigger).search
+            self.scripts[trigger] = [callback], re.compile(trigger).search
         else:
-            self.scripts[trigger][0].append(func)
+            self.scripts[trigger][0].append(callback)
         
     def registerFirst(self, trigger, callback, weakfunc=True):
         if not trigger in self.scripts:
             self.register(trigger, callback, weakfunc)
         else:
             if weakfunc:
-                func = weakref.proxy(callback, self._unregCallback(trigger))
-            else:
-                func = callback
-            self.scripts[trigger][0].insert(0, func)
+                self.weaks.add((trigger, callback))
+            
+            self.scripts[trigger][0].insert(0, callback)
 
-        
-    def _unregCallback(self, trigger):
-        def trigger_cleanup_callback(func):
-            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
-                for elm in self.scripts[trigger]:
-                    if func in elm[0]:
-                        elm[0].remove(func)
-                        if not len(elm[0]):
-                            del self.scripts[trigger]
-                        return
-                
-        return trigger_cleanup_callback
-    
     def _run(self, trigger, creature, end, **kwargs):
         ok = True
 
@@ -218,11 +191,12 @@ class RegexTriggerScripts(TriggerScripts):
         
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
-    __slots__ = ('scripts', 'thingScripts', 'parameters')
+    __slots__ = ('scripts', 'thingScripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.thingScripts = {}
         self.parameters = parameters
+        self.weaks = set()
         
     def haveScripts(self, id):
         if type(id) in (list, tuple, set):
@@ -236,56 +210,45 @@ class ThingScripts(object):
             return False
             
     def register(self, id, callback, weakfunc=True):
-        
-        if weakfunc:
-            func = weakref.proxy(callback, self._unregCallback(id))
-        else:
-            func = callback
-            
         if type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
-                    self.scripts[xid] = [func]
+                    self.scripts[xid] = [callback]
                 else:
-                    self.scripts[xid].append(func)   
-                    
+                    self.scripts[xid].append(callback)   
+                if weakfunc:
+                    self.weaks.add((xid, callback))                    
         elif type(id) in (int, long, str):
             if not id in self.scripts:
-                self.scripts[id] = [func]
+                self.scripts[id] = [callback]
             else:
-                self.scripts[id].append(func)
-                
+                self.scripts[id].append(callback)
+            self.weaks.add((id, callback))
         else:
             if not id in self.thingScripts:
-                self.thingScripts[id] = [func]
+                self.thingScripts[id] = [callback]
             else:
-                self.thingScripts[id].append(func)
+                self.thingScripts[id].append(callback)
                 
     def registerFirst(self, id, callback, weakfunc=True):
-        
-        if weakfunc:
-            func = weakref.proxy(callback, self._unregCallback)
-        else:
-            func = callback
-            
         if type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
-                    self.scripts[xid] = [func]
+                    self.scripts[xid] = [callback]
                 else:
-                    self.scripts[xid].insert(0, func)  
-                    
+                    self.scripts[xid].insert(0, callback)  
+                self.weaks.add((xid, callback))
         elif type(id) in (int, long, str):
             if not id in self.scripts:
-                self.scripts[id] = [func]
+                self.scripts[id] = [callback]
             else:
-                self.scripts[id].insert(0, func)
-                
+                self.scripts[id].insert(0, callback)
+            self.weaks.add((id, callback))
         else:
             if not id in self.thingScripts:
-                self.thingScripts[id] = [func]
+                self.thingScripts[id] = [callback]
             else:
-                self.thingScripts[id].insert(0, func) 
+                self.thingScripts[id].insert(0, callback) 
                 
     def unregister(self, id, callback):
         try:
@@ -296,33 +259,14 @@ class ThingScripts(object):
                 
         except:
             pass # Nothing
+        if (id, callback) in self.weaks:
+            self.weaks.remove((id, callback))
 
     def unregAll(self, id):
         try:
             del self.scripts[id]
         except:
             pass
-     
-    def _unregCallback(self, id):
-        def thing_cleanup_callback(func):
-            if game.engine.IS_RUNNING: # If we're shutting down, this is a waste of time
-                if type(id) in (tuple, list, set):
-                    for xid in id:
-                        self.scripts[xid].remove(func)  
-                        if not self.scripts[xid]:
-                            del self.scripts[xid]
-                        
-                elif type(id) in (int, long, str):
-                    self.scripts[id].remove(func)
-                    if not self.scripts[id]:
-                        del self.scripts[id]
-                        
-                else:
-                    self.thingScripts[id].remove(func)
-                    if not self.thingScripts[id]:
-                        del self.scripts[id]
-                    
-        return thing_cleanup_callback
         
     def run(self, thing, creature, end=None, **kwargs):
         #scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
@@ -618,6 +562,9 @@ def reimporter():
 
     # Cleanups.
     reimportCleanup()
+
+    # Call gc.collect() again. May be needed.
+    gc.collect()
     
     # postReload.
     get("postReload").runSync()
