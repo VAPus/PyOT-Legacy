@@ -267,11 +267,11 @@ class PlayerAttacks(CreatureAttacks):
                     if weapon.breakChance:
                         animation = weapon.shootType
                         if random.randint(1, 100) < weapon.breakChance:
-                            self.modifyItem(weapon, -1)
+                            weapon.modify(-1)
                     # ammo
                     else:
                         animation = ammo.shootType
-                        self.modifyItem(ammo, -1)
+                        ammo.modify(-1)
                     # shoot effect
                     self.shoot(self.position, self.target.position) # animation
                     

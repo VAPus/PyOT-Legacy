@@ -589,9 +589,6 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.send(self.client)
             return newItem
 
-    def modifyItem(self, thing, mod):
-        thing.modify(mod)
-
     def removeItem(self, thing):
         return thing.remove()
 

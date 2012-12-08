@@ -893,8 +893,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
-            player.modifyItem(destItem, newCount)
-            player.modifyItem(thing, -count)
+            destItem.modify(newCount)
+            thing.modify(-count)
+            
             return True
         elif isinstance(_newItem, Item):
             newItem = _newItem
@@ -905,7 +906,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing.copy()
         newItem.count = count
         
-        player.modifyItem(thing, -count)
+        thing.modify(-count)
         
     elif not stacked:
         newItem = thing # Easy enough.

@@ -7,7 +7,7 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         if  not onThing.hasAction('DISTILLERY_FULL'):
             onThing.description = 'It is full.'
             onThing.addAction('DISTILLERY_FULL')
-            creature.modifyItem(thing, -1)
+            thing.modify(-1)
         else:
             creature.cancelMessage('The machine is already full with bunches of sugar cane.')
         return True

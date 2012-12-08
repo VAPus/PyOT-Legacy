@@ -35,7 +35,7 @@ SMALL_AMETHYST: ENCHANTED_SMALL_AMETHYST
 @register("useWith", (2146, 2147, 2149, 2150))
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == HOTA_WEAK and thing.itemId == SMALL_RUBY:
-        creature.modifyItem(thing, -1)
+        thing.modify(-1)
         onThing.transform(HOTA_FULL)
         magicEffect(onPosition, EFFECT_MAGIC_RED)
         return True
