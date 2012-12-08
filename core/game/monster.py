@@ -766,19 +766,20 @@ class MonsterBrain(object):
         feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
         ret = brainFeatures[feature](monster)
+        
         if ret == False:
             monster.turnOffBrain()
             return False
         elif ret == True:
             monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
             return True
-                    
+        
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
             if check and not engine.hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
                 return False
-            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+            if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = reactor.callLater(1, self.handleThink, monster)

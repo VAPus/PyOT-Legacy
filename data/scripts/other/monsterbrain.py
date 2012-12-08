@@ -128,7 +128,7 @@ def defaultBrainFeaturePriority(monster):
 def defaultBrainFeature(monster):
         ret = defaultBrainFeaturePriority(monster)
         if ret is not None:
-            return ret
+            return False if ret == False else None
 
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:

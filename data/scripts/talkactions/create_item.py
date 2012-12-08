@@ -1,13 +1,12 @@
 @register("talkactionFirstWord", '/i')
 @access("CREATEITEM")
 def makeitem(creature, text):
-    #try:
-    if True:    
+    try:
         count = 1
         if ' ' in text:
             count = int(text.split(" ")[1])
         text = int(text.split(" ")[0])
-        if text >= 1000:
+        if True: # text >= 1000:
             while count:
                 rcount = min(100, count)
                 newitem = Item(text, rcount)
@@ -17,10 +16,8 @@ def makeitem(creature, text):
                     newitem.place(creature.position)
 
                 count -= rcount
-        else:
-            raise
-    #except:
-    #    creature.message("Invalid Item!")
+    except:
+        creature.message("Invalid Item!")
          
     return False
 

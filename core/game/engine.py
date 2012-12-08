@@ -224,7 +224,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     if not pattern:
         # Try a straight line
         pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId)
-        print pattern
+        #print pattern
         if not pattern:
             return None
                 
@@ -450,7 +450,7 @@ def placeItem(item, position):
     :returns: Stack position of item.
     
     """
-    print "placeItem"
+    #print "placeItem"
     stackpos = position.getTile().placeItem(item)
     for spectator in getSpectators(position):
         stream = spectator.packet()
@@ -855,7 +855,6 @@ def moveItem(player, fromPosition, toPosition, count=0):
             container = destItem.inContainer
             
         while container:
-            print container, thing
             if container == thing:
                 return player.notPossible()
             container = container.inContainer
@@ -919,14 +918,14 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
         if not thing.stackable:
             thing.remove()
-        print "itemToContainer1"
+        #print "itemToContainer1"
         player.itemToContainer(destItem, newItem)
     else:    
         if not thing.stackable:
             thing.remove()
     
     if toMap:
-        print "toMap called"
+        #print "toMap called"
         # Place to ground.
         thisTile = toPosition.getTile()
         
@@ -950,21 +949,21 @@ def moveItem(player, fromPosition, toPosition, count=0):
                     return False
                 if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                     return False
-                print "itemToContainer2"
+                #print "itemToContainer2"
                 player.itemToContainer(container, newItem)
 
             if destItem and itemContainer:
                 player.itemToContainer(itemContainer, destItem)    
         elif not destItem.containerSize:
             # Move destItem.
-            print "destItem no container branch"
+            #print "destItem no container branch"
             if thing.inContainer and thing.inContainer != destItem:
-                print "itemToContainer3"
+                #print "itemToContainer3"
                 player.itemToContainer(thing.inContainer, destItem)
             elif player.inventory[SLOT_BACKPACK]:
-                print "destItem backpack branch"
+                #print "destItem backpack branch"
                 if player.inventory[SLOT_BACKPACK] != destItem:
-                    print "itemToContainer4"
+                    #print "itemToContainer4"
                     player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
             else:
                 print "XXX: In case of bug, do something here?"
