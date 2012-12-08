@@ -11,5 +11,3 @@ def openWindow(creature, thing, position, **k):
 @register('use', closeWindows)
 def closeWindow(creature, thing, position, **k):
     thing.transform(thing.itemId-2)
-
-

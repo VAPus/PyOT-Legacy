@@ -13,7 +13,7 @@ waterElementCorpse = 10499
 fishingRods = 2580, 10223
 mechanicalFishingRod = 10223
 @register("useWith", fishingRods)
-def onUse(creature, thing, position, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onPosition.x == 0xFFFF:
         creature.notPossible()
         return

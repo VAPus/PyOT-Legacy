@@ -40,7 +40,7 @@ SKINS = {
 }
 
 @register("useWith", 5908)
-def useWith(creature, thing, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     skin = SKINS[onThing.itemId]
     if (skin == None) or (onThing.itemId not in ITEMS):
         creature.notPossible()

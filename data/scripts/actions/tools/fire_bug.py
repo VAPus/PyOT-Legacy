@@ -2,7 +2,7 @@
 #need too add hit effects when using it on the proper items
 
 @register('useWith', 5468)
-def useWith(creature, thing, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onThing.itemId == 5466: # Sugar cane
         validItem = True
         onThing.transform(5465)

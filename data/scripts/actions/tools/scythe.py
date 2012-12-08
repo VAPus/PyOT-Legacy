@@ -8,7 +8,7 @@ ITEM_BUNCH_SUGAR_CANE = 5467
 #sugar can is really cut with a sickle but for now a scythe is good.
 
 @register("useWith", 2550)
-def onUseWith(creature, thing, position, onThing, onPosition, **k):
+def onUseWith(onThing, onPosition, **k):
     if onThing.itemId == ITEM_PRE_WHEAT:
         onThing.transform(ITEM_WHEAT)
         Item(ITEM_BUNCH_WHEAT, 1).place(onPosition)

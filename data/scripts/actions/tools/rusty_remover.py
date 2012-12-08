@@ -19,7 +19,7 @@ effect_broke = 3
 effect_renew = 28
 
 @register("useWith", 9930)
-def onUseWith(creature, thing, position, onThing, onPosition, **k):    
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     developed = None
     const = onThing.itemId
     

@@ -3,7 +3,7 @@ convert[2956] = (5905, EFFECT_MAGIC_BLUE) # Vampire dust
 convert[2916] = (5906, EFFECT_MAGIC_RED) # Demon dust
 
 @register("useWith", 5942)
-def useWith(creature, thing, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if not isinstance(onThing, Item) or not onThing.itemId in convert:
         return
 

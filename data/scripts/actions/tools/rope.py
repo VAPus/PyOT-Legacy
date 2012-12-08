@@ -5,7 +5,7 @@ ladders = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 
 ropes = 2120, 7731
 
 @register("useWith", ropes)
-def onUse(creature, position, onThing, onPosition, **k):
+def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onPosition.x == 0xFFFF:
         creature.notPossible()
         return
@@ -29,4 +29,3 @@ def onUse(creature, position, onThing, onPosition, **k):
             creature.teleport(newPos)
         else:
             creature.notPossible()
-    
