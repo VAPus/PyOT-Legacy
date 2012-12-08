@@ -1014,8 +1014,8 @@ class BaseProtocol(object):
             return
         
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
-            if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
+            if not onPosition.x == 0xFFFF and not player.inRange(onPosition, 1, 1):
+                walkPattern = game.engine.calculateWalkPattern(player, player.position, onPosition, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1041,6 +1041,8 @@ class BaseProtocol(object):
                 game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
+            else:
+                player.notPossible()
             
     @packet(0xA0)
     def handleSetModes(self, player, packet):
