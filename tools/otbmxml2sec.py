@@ -15,6 +15,7 @@ except:
     xrange = range
 
 # Config
+# MUST BE A POWER OF TWO!!!
 SECTOR_SIZE = (32, 32)
 #SECTOR_SIZE = (50000, 50000)    
 # The reader class:

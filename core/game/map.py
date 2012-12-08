@@ -19,6 +19,17 @@ except:
     sys.exit()
 
 sectorX, sectorY = mapInfo.sectorSize
+sectorShiftX = 0
+sectorShiftY = 0
+for n in xrange(12):
+    if sectorX == 2**n:
+        sectorShiftX = n
+    if sectorY == 2**n:
+        sectorShiftY = n
+
+if sectorShiftX == sectorShiftY == 0:
+    print "Sector size (%d, %d) are not a power of two." % (sectorX, sectorY)
+    sys.exit()
 
 ##### Position class ####
 def __uid():
@@ -31,11 +42,10 @@ newInstanceId = __uid().next
 def getTile(pos):
     """ Returns the Tile on this position. """
     posSum = (pos.x,pos.y,pos.z,pos.instanceId)
-    area = None
     try:
         return knownMap[posSum]
     except KeyError:
-        if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x // sectorX, pos.y // sectorY)):
+        if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
             return knownMap.get(posSum)
 
 def setTile(pos, tile):
@@ -49,7 +59,7 @@ def setTile(pos, tile):
         knownMap[posSum] = tile
         return True
     except KeyError:
-        if loadTiles(x, y, pos.instanceId, (pos.instanceId, x // sectorX, y // sectorY)):
+        if loadTiles(x, y, pos.instanceId, (pos.instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             knownMap[posSum] = tile
             return True
         else:
@@ -58,12 +68,10 @@ def setTile(pos, tile):
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
     posSum = (x,y,z,instanceId)
-    area = None
-
     try:
         return knownMap[posSum]
     except KeyError:
-        if loadTiles(x, y, instanceId, (instanceId, x // sectorX, y // sectorY)):
+        if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             return knownMap.get(posSum)
         
 def getHouseId(pos):
@@ -347,7 +355,7 @@ def loadTiles(x,y, instanceId, sectorSum):
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
     
-    return load(x // mapInfo.sectorSize[0], y // mapInfo.sectorSize[1], instanceId, sectorSum)
+    return load(sectorSum[1], sectorSum[2], instanceId, sectorSum)
 
 ### Start New Map Format ###
 
@@ -696,7 +704,7 @@ def load(sectorX, sectorY, instanceId, sectorSum):
     # Attempt to load a sector file
     try:
         with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances[instanceId], sectorX, sectorY), "rb") as f:
-            map = loadSectorMap(f.read(), instanceId, sectorX * mapInfo.sectorSize[0], sectorY * mapInfo.sectorSize[1])
+            map = loadSectorMap(f.read(), instanceId, sectorX << sectorShiftX, sectorY << sectorShiftY)
             knownMap.update(map)
         sectors.add(sectorSum)
     except IOError:
@@ -718,9 +726,9 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     # Calculate the x->x and y->y ranges
     # We're using a little higher values here to avoid reloading again 
     
-    xMin = (sectorX * mapInfo.sectorSize[0]) + 14
+    xMin = (sectorX << sectorShiftX) + 14
     xMax = (xMin + mapInfo.sectorSize[0]) + 14
-    yMin = (sectorY * mapInfo.sectorSize[1]) + 11
+    yMin = (sectorY << sectorShiftY) + 11
     yMax = (yMin + mapInfo.sectorSize[1]) + 11
     try:
         for player in game.player.allPlayers.viewvalues():
@@ -749,8 +757,8 @@ def unload(sectorX, sectorY, instanceId):
     sectors.remove(sectorSum)
 
     for z in zrange(16):
-        for x in xrange(sectorX * mapInfo.sectorSize[0], (sectorX + 1) * mapInfo.sectorSize[0]):
-            for y in xrange(sectorY * mapInfo.sectorSize[1], (sectorY + 1) * mapInfo.sectorSize[1]):
+        for x in xrange(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
+            for y in xrange(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
                  try:
                      del knownMap[x,y,z,instanceId]
                  except:
