@@ -348,6 +348,8 @@ class Item(object):
             return ()
   
     def place(self, position, creature=None):
+        assert isinstance(position, Position) or isinstance(position, StackPosition)
+
         if creature:
             creature.placeItem(position, self)
         else:

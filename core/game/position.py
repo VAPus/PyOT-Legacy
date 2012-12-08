@@ -149,3 +149,4 @@ class StackPosition(Position):
     def setStackpos(self, stack):
         """ Change the stack position on this x,y,z position. """
         self.stackpos = stack
+        return self
