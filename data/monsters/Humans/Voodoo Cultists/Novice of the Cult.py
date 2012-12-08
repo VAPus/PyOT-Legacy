@@ -11,4 +11,4 @@ novice_of_the_cult.setImmunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 novice_of_the_cult.summon("chicken", 10)
 novice_of_the_cult.maxSummons(1)
 novice_of_the_cult.voices("Fear us!", "You will not tell anyone what you have seen!", "Your curiosity will be punished!")
-novice_of_the_cult.regMelee(65)#poisons you 1 hp/10 turn
+novice_of_the_cult.regMelee(65, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)

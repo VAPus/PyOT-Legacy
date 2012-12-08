@@ -10,4 +10,4 @@ Sacred_Spider.walkAround(energy=1, fire=1, poison=0)
 Sacred_Spider.setImmunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 Sacred_Spider.loot( (2148, 100, 118), (8859, 27.5), ("plate armor", 5.5), ("scarab coin", 12.5, 4), ("gold ingot", 0.25) )
 
-Sacred_Spider.regMelee(150) #Poisons you (up to 4 hp per turn) ##max melee damage could be wrong
+Sacred_Spider.regMelee(150, condition=CountdownCondition(CONDITION_POISON, 4), conditionChance=100)

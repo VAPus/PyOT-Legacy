@@ -8,4 +8,5 @@ manta_ray.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, p
 manta_ray.walkAround(energy=0, fire=0, poison=0)
 manta_ray.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 manta_ray.voices("Flap flap flap!")
-manta_ray.regMelee(110) #poison you for up to 6 hp/turn
+
+manta_ray.regMelee(110, condition=CountdownCondition(CONDITION_POISON, 6), conditionChance=100)

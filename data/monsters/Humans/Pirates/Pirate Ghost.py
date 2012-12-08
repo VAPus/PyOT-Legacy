@@ -8,5 +8,5 @@ pirate_ghost.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0
 pirate_ghost.walkAround(energy=1, fire=1, poison=0)
 pirate_ghost.setImmunity(paralyze=1, invisible=0, lifedrain=1, drunk=0)
 pirate_ghost.voices("Yooh Ho Hooh Ho!", "Hell is waiting for You!", "It's alive!", "The curse! Aww the curse!", "You will not get my treasure!")
-pirate_ghost.regMelee(95)#also causes poison damage up to 2/hp turn
+pirate_ghost.regMelee(95, condition=CountdownCondition(CONDITION_POISON, 2), conditionChance=100)
 pirate_ghost.loot( ("stealth ring", 0.75), (2148, 100, 63), ("tattered piece of robe", 4.5), ("parchment", 0.5), ("spike sword", 0.0025), ("red robe", 0.25) )

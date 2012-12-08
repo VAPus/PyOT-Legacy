@@ -7,4 +7,4 @@ Insectoid_Worker.setSpeed(300) #unknown
 Insectoid_Worker.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
 Insectoid_Worker.walkAround(energy=1, fire=1, poison=0)
 Insectoid_Worker.setImmunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
-Insectoid_Worker.regMelee(110) #poisons you for up to 8 hp/turn
+Insectoid_Worker.regMelee(110, condition=CountdownCondition(CONDITION_POISON, 8), conditionChance=100)

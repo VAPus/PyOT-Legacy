@@ -8,5 +8,5 @@ banshee.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pus
 banshee.walkAround(energy=1, fire=0, poison=0)
 banshee.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 banshee.voices("Dance for me your dance of death!", "Let the music play!", "I will mourn your death!", "Are you ready to rock?", "Feel my gentle kiss of death.", "That's what I call easy listening!", "IIIIEEEeeeeeehhhHHHH!")
-banshee.regMelee(100)#+poison up to 3/hp turn
+banshee.regMelee(100, condition=CountdownCondition(CONDITION_POISON, 3), conditionChance=100)
 banshee.loot( ("wedding ring", 0.5), ("stone skin amulet", 1.0), ("blue robe", 0.5), ("spellbook", 0.5), ("petrified scream", 3.75), ("strong mana potion", 0.75), ("ring of healing", 1.0), ("silver brooch", 1.75), ("white pearl", 1.25), ("poison dagger", 1.5), ("lyre", 1.0), ("black pearl", 2.25), ("simple dress", 5.75), ("hair of a banshee", 5.25), (2148, 100, 80), ("silver amulet", 9.0), ("candlestick", 70.25), ("red robe", 0.25), ("life crystal", 0.25), ("terra mantle", 0.25), ("sweet smelling bait", 0.0025), ("crystal ring", 0.0025) )

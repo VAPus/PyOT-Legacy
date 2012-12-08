@@ -9,4 +9,4 @@ insectoid_scout.setBehavior(summonable=0, hostile=1, illusionable=0, convinceabl
 insectoid_scout.walkAround(energy=0, fire=0, poison=0)
 insectoid_scout.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 insectoid_scout.voices("Klk! Klk!", "Chrrr! Chrrr!")#wrong?
-insectoid_scout.regMelee(63)#poison 2/3 turn
+insectoid_scout.regMelee(63, condition=CountdownCondition(CONDITION_POISON, 3), conditionChance=100)

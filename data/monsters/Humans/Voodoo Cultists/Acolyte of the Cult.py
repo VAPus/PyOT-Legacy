@@ -11,4 +11,4 @@ acolyte_of_the_cult.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 acolyte_of_the_cult.summon("Skeleton", 10)
 acolyte_of_the_cult.maxSummons(2)
 acolyte_of_the_cult.voices("Praise the voodoo!", "Power to the cult!", "Feel the power of the cult!")
-acolyte_of_the_cult.regMelee(100)#poisons you 2 hp/turn
+acolyte_of_the_cult.regMelee(100, condition=CountdownCondition(CONDITION_POISON, 2), conditionChance=100)
