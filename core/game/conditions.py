@@ -76,7 +76,11 @@ class Condition(object):
 
     def finish(self):
         """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
-        del self.creature.conditions[self.type]
+        try:
+            del self.creature.conditions[self.type]
+        except:
+            pass # May already have happend. Etc one tick conditions.
+
         if self.type == CONDITION_PARALYZE:
             self.defaultSpeed()
         if self.creature.isPlayer():
@@ -90,7 +94,7 @@ class Condition(object):
         if not damage:
             damage = random.randint(minDamage, maxDamage)
         if display:
-            self.creature.onHit(None, -damage, POISON, False)
+            self.creature.onHit(None, -damage, DEATH, False)
         else:
             self.creature.modifyHealth(-damage)
 
@@ -153,6 +157,13 @@ class Condition(object):
             self.tickEvent = reactor.callLater(self.every, self.tick)
         else:
             self.finish()
+
+    def process(self):
+        """ Mustly useful in tests. This repeats the tick process of this Condition until the Condition is finished without waiting. """
+        if self.tickEvent:
+            while self.tickEvent.active():
+                self.tickEvent.cancel()
+                self.tick()
 
     def copy(self):
         """ Returns a copy of this Condition. """
@@ -294,6 +305,8 @@ class CountdownCondition(Condition):
         self.creature = None
         self.tickEvent = None
         self.damage = startdmg
+        # Cheat, this is a requirement.
+        self.length = 2
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
@@ -311,30 +324,6 @@ class CountdownCondition(Condition):
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana        
-
-    def effectPoison(self, damage):
-        self.creature.magicEffect(EFFECT_GREEN_RINGS)
-        self.creature.modifyHealth(-damage)
-
-    def effectFire(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYFIRE)
-        self.creature.modifyHealth(-damage)
-
-    def effectRegenerateHealth(self, gainhp):
-        if not gainhp:
-            gainhp = self.creature.getVocation().health
-            self.creature.onHeal(None, gainhp[0])
-
-        else:
-            self.creature.onHeal(None, gainhp)
-
-    def effectRegenerateMana(self, gainmana):
-        if not gainmana:
-            gainmana = self.creature.getVocation().mana
-            self.creature.modifyMana(gainmana[0])
-
-        else:
-            self.creature.modifyMana(gainmana)
 
     def tick(self):
         if not self.creature:
@@ -354,6 +343,7 @@ class CountdownCondition(Condition):
         # No damamge? Finish it!
         # Otherwise, scheduler next tick.
         if self.damage <= 0:
+            self.length = 0
             self.finish()
         else:
             self.tickEvent = reactor.callLater(2, self.tick)
@@ -370,6 +360,8 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
             self.count = 20
         else:
             self.count = rptcount
+
+        self.length = self.count * 2
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
@@ -388,30 +380,6 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana        
 
-    def effectPoison(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYPOISON)
-        self.creature.modifyHealth(-damage)
-
-    def effectFire(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYFIRE)
-        self.creature.modifyHealth(-damage)
-
-    def effectRegenerateHealth(self, gainhp):
-        if not gainhp:
-            gainhp = self.creature.getVocation().health
-            self.creature.onHeal(None, gainhp[0])
-
-        else:
-            self.creature.onHeal(None, gainhp)
-
-    def effectRegenerateMana(self, gainmana):
-        if not gainmana:
-            gainmana = self.creature.getVocation().mana
-            self.creature.modifyMana(gainmana[0])
-
-        else:
-            self.creature.modifyMana(gainmana)
-
     def tick(self):
         if not self.creature:
             return
@@ -419,6 +387,8 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         self.effect(self.damage)
         
         self.count -= 1
+        self.length -= 2
+
         self.damage = round(self.damage * self.percent, 2)
         if self.count <= 0 or self.damage <= 0:
             self.finish()
@@ -433,10 +403,13 @@ class RepeatCondition(Condition):
         self.creature = None
         self.tickEvent = None
         self.damage = startdmg
+
         if not rptcount:
             self.count = 10
         else:
             self.count = rptcount
+
+        self.length = self.count * 2
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
@@ -455,30 +428,6 @@ class RepeatCondition(Condition):
             elif type == CONDITION_REGENERATEMANA:
                 self.effect = self.effectRegenerateMana        
 
-    def effectPoison(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYPOISON)
-        self.creature.modifyHealth(-damage)
-
-    def effectFire(self, damage):
-        self.creature.magicEffect(EFFECT_HITBYFIRE)
-        self.creature.modifyHealth(-damage)
-
-    def effectRegenerateHealth(self, gainhp):
-        if not gainhp:
-            gainhp = self.creature.getVocation().health
-            self.creature.onHeal(None, gainhp[0])
-
-        else:
-            self.creature.onHeal(None, gainhp)
-
-    def effectRegenerateMana(self, gainmana):
-        if not gainmana:
-            gainmana = self.creature.getVocation().mana
-            self.creature.modifyMana(gainmana[0])
-
-        else:
-            self.creature.modifyMana(gainmana)
-
     def tick(self):
         if not self.creature:
             return
@@ -486,6 +435,8 @@ class RepeatCondition(Condition):
         self.effect(self.damage)
         
         self.count -= 1
+        self.length -= 2
+
         if self.count <= 0:
             self.finish()
         else:

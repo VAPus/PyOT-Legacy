@@ -110,7 +110,7 @@ class CreatureAttacks(object):
                 if by:
                     self.message(_lp(self, "You lose %(amount)d hitpoint due to an attack by %(who)s.", "You lose %(amount)d hitpoints due to an attack by %(who)s.", -dmg) % {"amount": -dmg, "who": by.name().capitalize()}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
                 else:
-                    self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %d hitpoints.", -dmg) % -dmg, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
+                    self.message(_lp(self, "You lose %(amount)d hitpoint.", "You lose %(amount)d hitpoints.", -dmg) % {"amount": -dmg}, MSG_DAMAGE_RECEIVED, value = -1 * dmg, color = textColor, pos=self.position)
 
             elif by and not self.target and self.data["health"] < 1:
                 self.follow(by) # If I'm a creature, set my target
