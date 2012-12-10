@@ -415,7 +415,7 @@ First some important class (type) names:
 
 .. function:: doPlayerFeed(cid, food)
 
-    No equal
+    No equal (use Conditions)
 
 .. function:: doPlayerSendCancel(cid, text)
 
@@ -570,6 +570,8 @@ First some important class (type) names:
     Equal to::
 
         placeItem(Item(itemid, type/count), pos)
+        or
+        <Item>.place(pos)
 
 .. function:: doCreateItemEx(itemid[, count/subType = -1])
 
@@ -582,6 +584,8 @@ First some important class (type) names:
     Equal to::
 
         placeItem(Item, pos)
+        or
+        <Item>.place(pos)
 
 .. function:: doMonsterSetTarget(cid, target)
 

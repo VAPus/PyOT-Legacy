@@ -48,12 +48,6 @@ PyOT Features (so far)
 =======================
 TODO: Write this one.
 
-When will we see PyOT v1.0
-===========================
-We'll likely release v1.0 once all the features in the future section and our :ref:`todo` list is done.
-
-Note: While alot of nice Tibia versions likely will come out, I guess we should target v1.0 towards full 9.4 support (including market code).
-
 Indices and tables
 ==================
 
