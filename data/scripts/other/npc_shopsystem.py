@@ -77,7 +77,14 @@ class Shop(ClassAction):
         
     def offer(self, name, sellPrice=0, buyPrice=0, subtype=0):
         if type(name) == str:
-            name = game.item.idByName(name)
+            temp = game.item.idByName(name)
+            if temp:
+                name = temp
+
+        # verify.
+        if name not in game.item.items:
+            print "[WARNING] %s is not a valid shop item." % name
+            return
             
         self.on.offers.append( (name, sellPrice, buyPrice, subtype) )
 
