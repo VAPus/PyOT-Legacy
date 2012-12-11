@@ -1,4 +1,5 @@
 import game.map
+import config
 
 # A cache, this can probably get pretty big, but right now it's not something I'll think about
 RouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
@@ -7,6 +8,7 @@ def clear():
     RouteCache = {}
     
 # FIXME: Not make this a global...
+
 CACHE_CURRENT = config.pathfinderCache
 
 class Node(object):

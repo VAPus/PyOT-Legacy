@@ -213,7 +213,7 @@ class Packet(base.BasePacket):
         self.uint8(0x0B)
         self.uint8(flag)
 
-    def message(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def message(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
         """if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
             if pos:

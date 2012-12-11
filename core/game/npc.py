@@ -87,7 +87,9 @@ class NPC(Creature):
     def sendTradeOffers(self, to):
         forSale = set()
         stream = to.packet(0x7A)
-        stream.string(self.data["name"])
+        # What version did this become available?
+        if to.client.version >= 910:
+            stream.string(self.data["name"])
         if to.client.version >= 942:
             count = min(len(self.base.offers), 0xFFFF)
             stream.uint16(count)

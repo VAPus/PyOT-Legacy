@@ -431,7 +431,7 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA2)
         self.uint16(icons)
 
-    def message(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def message(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
         self.uint8(self.enum(msgType))
         if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
@@ -482,7 +482,7 @@ class BasePacket(TibiaPacket):
         # TODO: Send members for certain channels
         self.uint32(0)
 
-    def say(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def say(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xAA)
         self.uint8(self.enum(msgType))
         if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
