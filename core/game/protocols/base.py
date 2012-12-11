@@ -881,6 +881,26 @@ class BaseProtocol(object):
         else:
             player.notPossible()
 
+    @packet(0x8D)
+    def handleLookAtBattleList(self, player, packet):
+        creatureId = packet.uint32()
+
+        try:
+            creature = game.creature.allCreatures[creatureId]
+        except:
+            return
+
+        if not player.canSee(creature):
+            return
+
+        def afterScript():
+            if player == creature:
+                player.message(creature.description(True))
+            else:
+                player.message(creature.description())
+
+        game.scriptsystem.get('lookAt').runSync(creature, player, afterScript, position=creature.position)
+
     @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
         clientId = packet.uint16()
