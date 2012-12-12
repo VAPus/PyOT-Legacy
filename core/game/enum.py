@@ -1,3 +1,5 @@
+SERVER_VERSION = "1.0.0-alpha1"
+
 ### Light ###
 #: No light.
 LIGHTLEVEL_NONE = 0

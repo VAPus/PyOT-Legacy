@@ -37,6 +37,7 @@ sqlSocket = None
 #sqlSocket = "/var/run/mysqld/mysqld.sock"
 
 # LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
+# This option also enables otserv compatible status protocol.
 letGameServerRunTheLoginServer = True
 
 # This servers worldId
@@ -50,6 +51,12 @@ supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 
 
 # MOTD
 motd = "PyOT, it's alive!"
+
+# Status info
+ownerName = "Server owner"
+ownerEmail = "owner@vapus.net"
+location = "Europe"
+url = "http://vapus.net"
 
 # Walking
 diagonalWalkCost = 3
