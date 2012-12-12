@@ -756,7 +756,7 @@ def unload(sectorX, sectorY, instanceId):
     sectorSum = (instanceId, sectorX, sectorY)
     sectors.remove(sectorSum)
 
-    for z in zrange(16):
+    for z in xrange(16):
         for x in xrange(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
             for y in xrange(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
                  try:
