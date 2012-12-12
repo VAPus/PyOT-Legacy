@@ -79,7 +79,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                     pkg.uint8(0x23)
                     pkg.string("PyOT")
                     pkg.string(game.enum.SERVER_VERSION)
-                    pkg.string("%s-%s" % (config.versionMin, config.versionMax)
+                    pkg.string("%s-%s" % (config.versionMin, config.versionMax))
 
                 pkg.send(self)
                 return
