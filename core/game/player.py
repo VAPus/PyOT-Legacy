@@ -1486,7 +1486,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             
         if game.scriptsystem.get("death").runSync(self, lastAttacker, corpse=corpse, deathData=deathData) == False:
             return
-        
+
+        # Lose all conditions.
+        self.loseAllConditions()
+
         unjust = deathData["unjust"]
         loseRate = deathData["loseRate"]
         itemLoseRate = deathData["itemLoseRate"]

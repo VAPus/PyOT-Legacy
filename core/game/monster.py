@@ -127,6 +127,9 @@ class Monster(Creature):
                 summon.magicEffect(EFFECT_POFF)
                 summon.despawn()
                 summon.turnOffBrain()
+
+        # Lose all conditions.
+        self.loseAllConditions()
                 
         # Transform
         tile = map.getTile(self.position)
