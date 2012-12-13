@@ -812,6 +812,13 @@ class MonsterBrain(object):
                 continue
             
             badDir.append(step)
+
+            # First verify the move.
+            pos = monster.positionInDirection(step)
+            tile = pos.getTile()
+            if not tile or not monster.verifyMove(tile):
+                continue
+            
             if config.monsterNeverSkipWalks:
                 def _():
                     if len(badDir) < 4:
