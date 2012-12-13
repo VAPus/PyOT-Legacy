@@ -23,3 +23,13 @@ class TestMap(FrameworkTestGame):
 
         self.assertEqual(orgTile.flags, copy.flags)
         self.assertEqual(orgTile.ground.itemId, copy.ground.itemId)
+
+    def test_load(self):
+        sectorSum = (0, 4, 1)
+        game.map.load(4, 1, 0, sectorSum)
+        self.assertIn(sectorSum, game.map.sectors)
+        
+    def test_unload(self):
+        sectorSum = (0, 4, 1)
+        game.map.unload(4, 1, 0)
+        self.assertNotIn(sectorSum, game.map.sectors)
