@@ -20,7 +20,7 @@ class Node(object):
         self.parent = None
         self.state = True
         self.tileTried = False
-        
+                
     def verify(self, z, instanceId, checkCreature):
         global CACHE_CURRENT # XXX: Fixme!
         if self.tileTried:
@@ -94,6 +94,12 @@ class AStar(object):
         # Make a result
         n = currentNode
         prev = self.startNode
+        
+        # Not possible.
+        if not n.vertify():
+            self.found = None
+            return
+
         _result = [n.step]
         
         prev = n
