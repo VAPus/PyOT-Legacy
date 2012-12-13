@@ -20,69 +20,76 @@ class LoginProtocol(protocolbase.TibiaProtocol):
     def onFirstPacket(self, packet):
         global IPS
         try:
-            packetType = packet.uint8()
+            packet.uint8()
         except:
             return
 
+        
         if config.letGameServerRunTheLoginServer:
+            pos = packet.pos
+            packet.pos = 0
+            packetType = packet.uint8()
             if packetType == 0xFF:
-                if packet.getX(4) == "info":
-                    try:
-                        sendPlayers == packet.uint8()
-                    except:
-                        sendPlayers = False
+                if packetType == 0xFF:
+                    if packet.getX(4) == "info":
+                        try:
+                            sendPlayers == packet.uint8()
+                        except:
+                            sendPlayers = False
 
-                    data = ""
-                    # TODO: Send XML format.
+                        data = ""
+                        # TODO: Send XML format.
+  
+                elif packetType == 0x01:
+                    # Silly status protocol. No multi world support...
+                    reqInfo = packet.uint16()
 
-            elif packetType == 0x01:
-                # Silly status protocol. No multi world support...
-                reqInfo = packet.uint16()
+                    pkg = TibiaPacket()
 
-                pkg = TibiaPacket()
-
-                if reqInfo & 0x01: # REQUEST_BASIC_SERVER_INFO
-                    pkg.uint8(0x10)
-                    pkg.string(config.server[0][0])
-                    pkg.string(config.server[0][1])
-                    pkg.uint16(4)
-                    pkg.uint32(config.loginPort)
-
-                if reqInfo & 0x02: # REQUEST_SERVER_OWNER_INFO
-                    pkg.uint8(0x11)
-                    pkg.string(config.ownerName)
-                    pkg.string(config.ownerEmail)
+                    if reqInfo & 0x01: # REQUEST_BASIC_SERVER_INFO
+                        pkg.uint8(0x10)
+                        pkg.string(config.server[0][0])
+                        pkg.string(config.server[0][1])
+                        pkg.uint16(4)
+                        pkg.uint32(config.loginPort)
+   
+                    if reqInfo & 0x02: # REQUEST_SERVER_OWNER_INFO
+                        pkg.uint8(0x11)
+                        pkg.string(config.ownerName)
+                        pkg.string(config.ownerEmail)
                 
-                if regInfo & 0x04: # REQUEST_MISC_SERVER_INFO
-                    pkg.uint8(0x12)
-                    pkg.string(config.motd)
-                    pkg.string(config.location)
-                    pkg.string(config.url)
-                    pkg.uint64(time.time() - core.game.engine.serverStart + config.tibiaTimeOffset)
+                    if reqInfo & 0x04: # REQUEST_MISC_SERVER_INFO
+                        pkg.uint8(0x12)
+                        pkg.string(config.motd)
+                        pkg.string(config.location)
+                        pkg.string(config.url)
+                        pkg.uint64(time.time() - core.game.engine.serverStart + config.tibiaTimeOffset)
 
-                if regInfo & 0x08: # REQUEST_PLAYERS_INFO
-                    pkg.uint8(0x20)
-                    pkg.uint32(len(core.game.allPlayers))
-                    pkg.uint32(config.gameMaxConnections)
-                    pkg.uint32(len(core.game.allPlayers)) # TODO: Track record.
+                    if reqInfo & 0x08: # REQUEST_PLAYERS_INFO
+                        pkg.uint8(0x20)
+                        pkg.uint32(len(core.game.allPlayers))
+                        pkg.uint32(config.gameMaxConnections)
+                        pkg.uint32(len(core.game.allPlayers)) # TODO: Track record.
 
-                if reqInfo & 0x10: # REQUEST_SERVER_MAP_INFO
-                    pkg.uint8(0x30)
-                    pkg.string(core.game.map.mapInfo.description)
-                    pkg.string(core.game.map.mapInfo.author)
-                    pkg.uint16(core.game.map.mapInfo.width)
-                    pkg.uint16(core.game.map.mapInfo.height)
+                    if reqInfo & 0x10: # REQUEST_SERVER_MAP_INFO
+                        pkg.uint8(0x30)
+                        pkg.string(core.game.map.mapInfo.description)
+                        pkg.string(core.game.map.mapInfo.author)
+                        pkg.uint16(core.game.map.mapInfo.width)
+                        pkg.uint16(core.game.map.mapInfo.height)
 
-                # 0x20 and 0x40 is unimplanted.
+                    # 0x20 and 0x40 is unimplanted.
 
-                if regInfo & 0x80:
-                    pkg.uint8(0x23)
-                    pkg.string("PyOT")
-                    pkg.string(game.enum.SERVER_VERSION)
-                    pkg.string("%s-%s" % (config.versionMin, config.versionMax))
+                    if reqInfo & 0x80:
+                        pkg.uint8(0x23)
+                        pkg.string("PyOT")
+                        pkg.string(game.enum.SERVER_VERSION)
+                        pkg.string("%s-%s" % (config.versionMin, config.versionMax))
 
-                pkg.send(self)
-                return
+                    pkg.send(self)
+                    return
+            else:
+                packet.pos = pos
 
         packet.pos += 2
         #packet.uint16() # OS 0x00 and 0x01
@@ -95,7 +102,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             packet.pos = 0 # Reset position
 
         else:
-            log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
+            log.msg("RSA, length != 128 (it's %d)" % (len(packet.data) - packet.pos))
             self.transport.loseConnection()
             return
 
