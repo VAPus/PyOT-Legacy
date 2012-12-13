@@ -37,7 +37,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
             elif packetType == 0x01:
                 # Silly status protocol. No multi world support...
-                regInfo = packet.uint16()
+                reqInfo = packet.uint16()
 
                 pkg = TibiaPacket()
 
