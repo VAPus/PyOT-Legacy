@@ -748,6 +748,11 @@ class BaseProtocol(object):
         stack = True
         fromPosition = fromPosition.setStackpos(fromStackPos)
         thing = player.findItem(fromPosition)
+
+        if not thing:
+            player.notPossible()
+            return
+
         if not thing.position:
             thing.position = fromPosition
         isCreature = False
