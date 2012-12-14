@@ -16,6 +16,11 @@ def callback(creature, thing, **k):
         creature.magicEffect(typeToEffect(thing.field)[0])
         creature.modifyHealth(-thing.fieldDamage)
         if thing.turns:
-            effectOverTime(creature, thing.fieldDamage, thing.fieldTicks / 1000, typeToEffect(thing.field)[1], thing.fieldCount)
+            try:
+                effect = typeToEffect(thing.field)[1]
+            except:
+                effect = EFFECT_POOF
+
+            effectOverTime(creature, thing.fieldDamage, thing.fieldTicks / 1000,effect, thing.fieldCount)
 
 registerForAttr('walkOn', 'fieldDamage', callback)

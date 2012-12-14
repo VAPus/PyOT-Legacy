@@ -96,7 +96,7 @@ class AStar(object):
         prev = self.startNode
         
         # Not possible.
-        if not n.vertify():
+        if not n.verify():
             self.found = None
             return
 
