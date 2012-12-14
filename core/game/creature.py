@@ -710,9 +710,10 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             return False
 
         for condition in self.conditions.copy():
-            condition.stop()
+            self.conditions[condition].stop()
 
         return True
+
     ##############
     ### Spells ###
     ##############
