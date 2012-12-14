@@ -389,8 +389,9 @@ class Map(object):
                         if count:
                             output = output[:len(output)-count]
                             
+                        # BROKEN?
                         # A second awalk to optimize (\x00\x00\x00|\x00\x00\x00| -> \x00\x00\0x02|)
-                        _output = []
+                        """ _output = []
                         count = 0
                         for code in output:
                             if code[0:2] == "\x00\x00" and code[3] == '|': count += 1
@@ -404,7 +405,7 @@ class Map(object):
                         if count == 1:
                             _output.append("\x00\x00\x00|")
                         
-                        output = _output
+                        output = _output"""
                         if not output:
                             return None
                             

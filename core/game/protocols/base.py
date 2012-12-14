@@ -963,7 +963,7 @@ class BaseProtocol(object):
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
         end = None
-
+        print stackPosition, clientId, thing
         if isinstance(thing, Creature) and clientId != 99:
             print thing, " expected %d" % clientId
         elif thing.cid != clientId:
