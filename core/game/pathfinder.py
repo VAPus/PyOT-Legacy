@@ -96,7 +96,7 @@ class AStar(object):
         prev = self.startNode
         
         # Not possible.
-        if not n.verify():
+        if not n.verify(zStart, instanceId, checkCreature):
             self.found = None
             return
 
