@@ -991,14 +991,15 @@ class BaseProtocol(object):
                     reactor.callLater(seconds, d.callback, seconds)
                     return d
                     
-                walking = [True]
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 100:
+                game.engine.autoWalkCreature(player)
+                while player.walkPattern and scount < 100:
                     yield sleep(0.1)
                     scount += 1
-            
+                # Add a short delay here. Kinda fix overuse of useDelay.
+                yield sleep(0.2)
+    
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
                 if config.useDelay:
