@@ -30,7 +30,7 @@ def teleportTiles(creature, text): #/a value,force *force is opitional
             teleporta.y += number
         try:
             creature.teleport(teleporta, force_teleport)
-        except: # May rise SolidTile etc
+        except SolidTile: # May rise SolidTile etc
             creature.notPossible()
         else:
             creature.magicEffect(EFFECT_TELEPORT)    

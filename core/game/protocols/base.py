@@ -832,7 +832,6 @@ class BaseProtocol(object):
                 else:
                     game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda: game.engine.autoWalkCreatureTo(creature, toPosition))
             else:
-                print creature.position, toPosition
                 game.engine.autoWalkCreatureTo(creature, toPosition)
         
     @packet(0x8C)    
@@ -963,12 +962,7 @@ class BaseProtocol(object):
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
         end = None
-        print stackPosition, clientId, thing
-        if isinstance(thing, Creature) and clientId != 99:
-            print thing, " expected %d" % clientId
-        elif thing.cid != clientId:
-            print thing, " expected %d" % clientId
-
+        
         if not thing.position:
             thing.position = stackPosition
             

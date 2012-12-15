@@ -201,6 +201,7 @@ class PlayerAttacks(CreatureAttacks):
             # Damage types other than physical
             attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
             absorb = 0
+            if not type in atts: return dmg # Not implanted, or something entierly custom?
             for item in self.inventory:
                 if item:
                     absorb += getattr(item, "absorbPercentAll", 0) + getattr(item, attrs[type], 0)
@@ -387,12 +388,12 @@ class PlayerAttacks(CreatureAttacks):
             except:
                 pass"""
             #self.walkPattern  =deque()
-        stream.uint8(0xA3)
+            stream.uint8(0xA3)
 
-        stream.uint32(0)
+            stream.uint32(0)
         
-        if not streamX:
-            stream.send(self.client)
+            if not streamX:
+                stream.send(self.client)
 
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:

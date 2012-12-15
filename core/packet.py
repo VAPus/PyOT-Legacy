@@ -143,6 +143,7 @@ class TibiaPacket(object):
         else:
             data = ''.join(self.data)
         stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
+        self.data = None
         
     #@inThread
     def sendto(self, list):

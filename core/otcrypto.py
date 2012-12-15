@@ -42,6 +42,7 @@ def encryptXTEA(stream, k, length):
     length >>= 2
     stream = ''.join(stream)
     bstr = "<%dL" % length
+    
     packs = unpack(bstr, stream)
     buffer_append = buffer.append
 

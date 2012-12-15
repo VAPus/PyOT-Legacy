@@ -65,14 +65,13 @@ class CreatureMovement(object):
                 if pzStatus and not pzIcon:
                     self.setIcon(CONDITION_PROTECTIONZONE)
                     self.refreshConditions(stream)
-                    self.cancelTarget()
+                    self.cancelTarget(stream)
                     self.target = None
                 elif not pzStatus and pzIcon:
                     self.removeIcon(CONDITION_PROTECTIONZONE)
                     self.refreshConditions(stream)
 
                 #stream.magicEffect(position, 0x02)
-                print "Sending"
 
         self.position = position        
         newPosCreatures = game.engine.getCreatures(position)
