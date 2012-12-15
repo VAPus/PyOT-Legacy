@@ -1,4 +1,4 @@
-SERVER_VERSION = "1.0.0-alpha1"
+SERVER_VERSION = "1.0.0-alpha3"
 
 ### Light ###
 #: No light.
