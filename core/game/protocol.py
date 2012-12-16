@@ -1,7 +1,12 @@
 from twisted.python import log
-import sys, os
+import sys, os, glob
 
-protocolsAvailable = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970, 971)
+protocolsAvailable = []
+for path in glob.iglob('core/game/protocols/*.py'):
+    version = path.split('/')[-1].split('.', 1)[0]
+    if not '_' in version and not '.' in version and not 'base' in version:
+        protocolsAvailable.append(int(version))
+
 protocolsUsed = {}
 
 def getProtocol(version):

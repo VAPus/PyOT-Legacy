@@ -304,11 +304,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self._packet.stream = self.client
         
         with self.packet(0x0A) as stream:
-            stream.uint32(self.clientId()) # Cid
-            stream.uint16(1) # Drawing delay.
-            stream.uint8(1) # Rule violations?
-
-            #stream.violation(0)
+            if self.client.version < 980:
+                stream.uint32(self.clientId()) # Cid
+                stream.uint16(1) # Drawing delay.
+                stream.uint8(1) # Rule violations?
+                #stream.violation(0)
 
             stream.uint8(0x64) # Map description
             stream.position(self.position)
