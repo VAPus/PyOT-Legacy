@@ -1271,7 +1271,7 @@ First some important class (type) names:
 
     Equal to::
 
-        Item.test = text
+        Item.text = text
         Item.written = date
         Item.writtenBy = writer
 
