@@ -3,7 +3,7 @@ import sys, os, glob
 
 protocolsAvailable = []
 for path in glob.iglob('core/game/protocols/*.py'):
-    version = path.split('/')[-1].split('.', 1)[0]
+    version = path.split(os.sep)[-1].split('.', 1)[0]
     if not '_' in version and not '.' in version and not 'base' in version:
         protocolsAvailable.append(int(version))
 
