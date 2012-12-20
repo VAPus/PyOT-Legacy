@@ -954,6 +954,12 @@ def loadItems():
                 else:
                     loadItems[id] = item
 
+            try:
+                name = item["name"].upper()
+                if not name in idNameCache:
+                    idNameCache[name] = start
+            except:
+                pass
                  
         else:
             loadItems[id] = item
