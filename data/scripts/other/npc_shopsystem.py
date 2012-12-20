@@ -258,7 +258,7 @@ class Equipment(Shop):
         self.offer('present', 10)
         self.offer('watch', 20)
         self.offer('worm', 1)
-        self.offer('rust remover', 100)
+        self.offer('flask of rust remover', 100)
         self.offer('crowbar', 1000)
         self.offer(10516, 10000)
         self.offer(10511, 10000)
