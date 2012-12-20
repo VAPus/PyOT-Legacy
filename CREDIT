@@ -10,6 +10,7 @@ core scripts:
 - Stian (Stian Andreassen, http://vapus.net/forum/members/stian)
 - Soul4soul (http://vapus.net/forum/members/soul4soul)
 - Outerworld (http://vapus.net/forum/members/outerworld)
+- Tone
 
 Language:
 - Osca Tutenchamon (http://vapus.net/forum/members/osca-tutenchamon/)
@@ -21,13 +22,13 @@ Docuemntation:
 Monsters/NPC:
 - soul4soul (http://vapus.net/forum/members/soul4soul/)
 - Sentiello (http://vapus.net/forum/members/sentiello/)
+- Tone
 
 Tools:
 - Stian
 
 Thanks to:
 - Osca Tutenchamon
-- Tone
 - Big Vamp
 - Elvang
 - Mindrage
@@ -40,4 +41,4 @@ This project uses INFLECT (see core/inflect.py) by Paul Dyson.
 
 Items are a based on data from otserv/TFS project (GPL). Credit to those project.
 
-Base map is based on "woe" by UNKNOWN, with modifications by soul4soul.
+Base map is based on "ezo" by UNKNOWN, with modifications by soul4soul and Tone.
