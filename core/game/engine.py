@@ -461,31 +461,23 @@ def placeItem(item, position):
 def relocate(fromPos, toPos):
     """ Remove all movable items on fromPos tile, to toPos tile. """
     tile = fromPos.getTile()
-    toPos = toPos.getTile()
+    toTile = toPos.getTile()
     items = []
     for item in tile.getItems():
         if not item.movable: continue
         
-        if item.decayPosition:
-            item.decayPosition = toPos
+        if item.position:
+            item.position = toPos
             
-        stackpos = toPos.placeItem(item)
-        items.append((item, tile.getSlot(item), stackpos))
+        stackpos = toTile.placeItem(item)
+        items.append(item)
         
     for item in items:    
         tile.removeItem(item)
-        
-    for spectator in getSpectators(fromPos):
-        stream = spectator.packet()
-        for pair in items:
-            stream.removeTileItem(fromPos, pair[1])
-        stream.send(spectator)
+    
+    updateTile(fromPos, tile)
+    updateTile(toPos, toTile)
 
-    for spectator in getSpectators(toPos):
-        stream = spectator.packet()
-        for pair in items:
-            stream.addTileItem(toPos, pair[2], pair[0])
-        stream.send(spectator)
 # The development debug system
 def explainPacket(packet):
     """ Explains the packet structure in hex
