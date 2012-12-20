@@ -326,3 +326,12 @@ class TestMoveItem(FrameworkTestGame):
 
         # Move bag2 into bag1. This shouldn't work.
         self.assertFalse(moveItem(self.player, bag2.position, Position(0xFFFF, 64 + id1, 0)))
+
+    def test_relocate(self):
+        coin = Item(idByName('gold coin'))
+
+        coin.place(Position(1000, 1001, 7))
+
+        relocate(Position(1000, 1001, 7), Position(1001, 1000, 7))
+
+        self.assertIn(coin, Position(1001, 1000, 7).getTile().things)
