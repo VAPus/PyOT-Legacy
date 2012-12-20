@@ -963,8 +963,7 @@ class BaseProtocol(object):
         thing = player.findItem(stackPosition)
         end = None
         
-        if not thing.position:
-            thing.position = stackPosition
+        thing.position = stackPosition
             
         if config.useDelay and player.lastUsedObject + config.useDelay > time.time():
             player.cantUseObjectThatFast()
