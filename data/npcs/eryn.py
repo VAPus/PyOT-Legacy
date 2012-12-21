@@ -1,4 +1,4 @@
-Eryn = genNPC("Eryn", (130, 39, 122, 125, 37, 2212), "Eryn, the rune vendor")
+Eryn = genNPC("Eryn", (130, 39, 122, 125, 37, 0, 2212), "Eryn, the rune vendor")
 Eryn.setWalkable(False)
 
 Eryn.greet("Hello %(playerName)s. I sell runes, potions, wands and rods.")

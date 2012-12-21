@@ -1,4 +1,4 @@
-jeweler = genNPC("Jeweler", (130, 39, 122, 125, 37, 2212))
+jeweler = genNPC("Jeweler", (130, 39, 122, 125, 37, 0, 2212))
 jeweler.setWalkable(False)
 #buy,sell
 shop = jeweler.module('shop')

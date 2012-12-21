@@ -1,4 +1,4 @@
-Banker = genNPC("Banker", (130, 39, 122, 125, 37, 2212), "Banker.")
+Banker = genNPC("Banker", (132, 39, 122, 125, 37, 3, 2212), "Banker.")
 Banker.setWalkable(False)
 
 Banker.greet("Hello %(playerName)s. What can I do for you today?")

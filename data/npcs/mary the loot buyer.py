@@ -1,4 +1,4 @@
-mary = genNPC("Mary The Loot Buyer", (139, 132, 79, 97, 132, 2212))
+mary = genNPC("Mary The Loot Buyer", (139, 132, 79, 97, 132, 2, 2212))
 mary.setWalkable(False)
 
 shop = mary.module('shop')
