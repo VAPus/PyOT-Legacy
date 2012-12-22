@@ -7,16 +7,16 @@ def teleportToTemple(creature, text):
         if player.alive and player.client.ready:
             import data.map.info
             online[player.name().lower()] = data.map.info.towns[player.data["town_id"]][1]
-    print online
     if not text:
         return False
     try:
         x,y,z = online[text.lower()]
-        creature.teleport(Position(x,y,z))
+        player2 = game.player.allPlayers[text.title()]
+        player2.teleport(Position(x,y,z))
     except:
         creature.lmessage(text+" is not an online player.")
     else:
-        creature.magicEffect(EFFECT_TELEPORT)
+        player2.magicEffect(EFFECT_TELEPORT)
     return False
 @register("talkaction", '/t')
 @access("TELEPORT")
