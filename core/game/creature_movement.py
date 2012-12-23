@@ -301,8 +301,13 @@ class CreatureMovement(object):
         oldTile.removeCreature(self)
 
         assert self in newTile.creatures()
-        assert self not in oldTile.creatures()
-        
+
+        # Weird #112 issue. Hack fix.
+        if self in oldTile.creatures():
+            while True:
+                if self not in oldTile.creatures(): break
+                oldTile.removeCreature(self)
+
         # Clear target if we change level
         if level:
             self.cancelTarget()
