@@ -123,7 +123,12 @@ class Packet(base.BasePacket):
                     
                     self.creature(creature, known, removeKnown, player)
                 else:
-                    self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                    # Bugged?
+                    if creature.creatureType != 0 and creature.brainEvent:
+                        self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                    else:
+                        self.creature(creature, True, creature.cid, player) # Not optimal!
+
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.beginThink(creature, False)
                     

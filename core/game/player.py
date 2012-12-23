@@ -1495,8 +1495,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         itemLoseRate = deathData["itemLoseRate"]
         
         print "TODO: Unfair fight."
-        
-        self.sendReloginWindow(100)
+        if self.client:
+            self.sendReloginWindow(100)
 
         # Reduce experience, manaspent and total skill tries (ow my)
         if loseRate:

@@ -43,7 +43,7 @@ def floorchange(creature, thing, position, **k):
         destPos.z += 1
         destThing = destPos.getTile().getThing(1)
         
-        if destThing.name == "ladder":
+        if not destThing or destThing.name == "ladder":
             # Hack.
             creature.move(SOUTH, level=1)
             creature.move(NORTH)
