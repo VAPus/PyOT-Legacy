@@ -42,21 +42,22 @@ def floorchange(creature, thing, position, **k):
         destPos = position.copy()
         destPos.z += 1
         destThing = destPos.getTile().getThing(1)
-        
         if not destThing or destThing.name == "ladder":
-            # Hack.
-            creature.move(SOUTH, level=1)
-            creature.move(NORTH)
+            newPos = position.copy()
+            newPos.z += 1
+            try:
+                creature.teleport(newPos)
+            except:
+                creature.notPossible()
+            #creature.move(SOUTH, level=1)
+            #creature.move(NORTH)
         # Note: It's the reverse direction
         elif destThing.floorchange == "north":
             creature.move(SOUTH, level=1)
-            
         elif destThing.floorchange == "south":
             creature.move(NORTH, level=1)
-            
         elif destThing.floorchange == "west":
             creature.move(EAST, level=1)
-            
         elif destThing.floorchange == "east":
             creature.move(WEST, level=1)
 
