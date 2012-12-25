@@ -300,12 +300,10 @@ class CreatureMovement(object):
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
 
-        assert self in newTile.creatures()
-
         # Weird #112 issue. Hack fix.
-        if self in oldTile.creatures():
+        if self in oldTile.things:
             while True:
-                if self not in oldTile.creatures(): break
+                if self not in oldTile.things: break
                 oldTile.removeCreature(self)
 
         # Clear target if we change level
