@@ -188,7 +188,7 @@ class NPC(Creature):
             try:
                 self.activeModule.send(None)
                 self.activeModule.send(said)
-            except StopIteration:
+            except:
                 self.activeModule = None
             
     def handleSpeakTree(self, player, said):
