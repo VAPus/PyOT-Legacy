@@ -16,7 +16,7 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     if channelType == 1 and not creature in creature2.focus:
         ok = False
         for greeting in greetings:
-            if greeting == said and creature.position.z == creature2.position.z:
+            if greeting == said and creature.position.z == creature2.position.z and creature2.distanceStepsTo(creature.position) < 5:
                 ok = True
                 break
         if ok:
@@ -33,7 +33,7 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     elif channelType == 11 and not creature in creature2.focus:
         ok = False
         for greeting in greetings:
-            if greeting == said and creature.position.z == creature2.position.z:
+            if greeting == said and creature.position.z == creature2.position.z and creature2.distanceStepsTo(creature.position) < 5:
                ok = True
                break
         if ok:
