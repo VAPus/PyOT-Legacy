@@ -1608,3 +1608,7 @@ class BaseProtocol(object):
             offer.handleSell(player, amount)
 
         player.marketOffers(offer.itemId)
+
+    @packet(0x0F)
+    def handleUnknownPacket(self, player, packet):
+        pass # Silence the console. If we want 9.71 support, declear version 980 here.
