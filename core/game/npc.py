@@ -177,28 +177,30 @@ class NPC(Creature):
         if said in self.base._onSaid:
             self.activeModule = self.base._onSaid[said][0](self, player)
             self.activeSaid = said
-            try:
-                self.activeModule.send(None)
-                
-            except:
-                self.activeModule = None
+            if self.activeModule:
+                try:
+                    self.activeModule.send(None)   
+                except StopIteration:
+                    self.activeModule = None
         else:
             self.activeModule = self.base._defaultTalk(self, player)
             self.activeSaid = said
-            try:
-                self.activeModule.send(None)
-                self.activeModule.send(said)
-            except:
-                self.activeModule = None
+            if self.activeModule:
+                try:
+                    self.activeModule.send(None)
+                    self.activeModule.send(said)
+                except StopIteration:
+                    self.activeModule = None
             
     def handleSpeakTree(self, player, said):
         self.activeModule = self.base.speakTreeFunc(self, player)
         self.activeSaid = said
-        try:
-            self.activeModule.send(None)
-            self.activeModule.send(said)
-        except StopIteration:
-            self.activeModule = None
+        if self.activeModule:
+            try:
+                self.activeModule.send(None)
+                self.activeModule.send(said)
+            except StopIteration:
+                self.activeModule = None
             
     def isAttackable(self, by):
         return self.base.attackable
