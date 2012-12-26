@@ -1081,6 +1081,7 @@ class BaseProtocol(object):
             player.cancelTarget()
         else:
             cid = packet.uint32()
+            
             player.setAttackTarget(cid)
             
     @packet(0xA2)
@@ -1091,6 +1092,10 @@ class BaseProtocol(object):
     @packet(0xBE)
     def handleStop(self, player, packet):
         player.stopAction()
+        if player.target:
+            player.cancelTarget()
+            player.target = None
+            player.targetMode = 0
 
     @packet(0xC9)
     def handleUpdateTile(self, player, packet):

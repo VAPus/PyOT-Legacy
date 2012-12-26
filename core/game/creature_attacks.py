@@ -399,6 +399,7 @@ class PlayerAttacks(CreatureAttacks):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
             self.target = None
+            self.cancelTarget()
             return
 
         if time.time() - self.lastStairHop < config.stairHopDelay:
