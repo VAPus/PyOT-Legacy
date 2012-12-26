@@ -8,7 +8,7 @@ def defaultBrainFeaturePriority(monster):
                     return True
                 
             # If target is out of sight, stop following it and begin moving back to base position
-            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive:
+            if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or monster.data["health"] <= monster.base.runOnHealth:
                 monster.intervals = {} # Zero them out
                 if monster.master:
                     monster.target = monster.master
@@ -19,21 +19,12 @@ def defaultBrainFeaturePriority(monster):
                     monster.target = None
                     monster.targetMode = 0
                 
-                if monster.walkPer == 0.5:
-                    monster.walkPer = config.monsterWalkPer
-                    monster.setSpeed(monster.speed / 2)
-                
                 if config.monsterWalkBack:
                     engine.autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
                 elif not engine.hasSpectators(monster.position, (15, 15)):
                     callLater(2, monster.teleport, monster.spawnPosition)
                     
                 return
-            
-                
-            if monster.data["health"] <= monster.base.runOnHealth and monster.walkPer == config.monsterWalkPer:
-                monster.walkPer = 0.5
-                monster.setSpeed(monster.speed * 2)
             
             elif monster.distanceStepsTo(monster.target.position) > monster.base.targetDistance:
                 # When we reach our destination, can we target check
