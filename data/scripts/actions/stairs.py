@@ -63,6 +63,10 @@ def floorchange(creature, thing, position, **k):
 
 @register('useWith', stairs)
 def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
+    # Make sure onThing is the item and thing is the stair.
+    if onThing.itemId in stairs:
+        thing, onThing = onThing, thing
+
     newPos = position.copy()
     if thing.floorchange == "north":
         newPos.y -= 1
@@ -98,7 +102,10 @@ def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
         elif destThing.floorchange == "east":
             newPos.y -= 1
     
-    onThing.remove()
+    try:
+        onThing.remove()
+    except:
+        pass # On dragging, this is ok to fail.
     onThing.place(newPos)        
     
     return False
