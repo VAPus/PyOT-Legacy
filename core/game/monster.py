@@ -137,6 +137,12 @@ class Monster(Creature):
         if self.base.data["corpse"]:
             corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
             
+            corpse.movable = False
+            def _move_corpse():
+                corpse.movable = True
+
+            callLater(config.moveCorpseAfter, _move_corpse)
+
             # Set owner.
             if self.lastDamagers:
                 if self.getLastDamager().isPlayer():
