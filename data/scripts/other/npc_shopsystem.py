@@ -10,7 +10,8 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     if not creature2.isNPC():
         return # We got nothing todo
         
-    if creature.position.z != creature2.position.z and creature2.distanceStepsTo(creature.position) >= 5:
+    
+    if creature.position.z != creature2.position.z or creature2.distanceStepsTo(creature.position) >= 5:
         return # Too far away to care.
 
     said = said.lower()
