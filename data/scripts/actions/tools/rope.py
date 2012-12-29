@@ -6,8 +6,9 @@ ropes = 2120, 7731
 
 @register("useWith", ropes)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
-    if onPosition.x == 0xFFFF and onThing and not onThing.containerSize:
-        creature.notPossible()
+    if onPosition.x == 0xFFFF:
+        if onThing and not onThing.containerSize:
+            creature.notPossible()
         return
 
     newPos = onPosition.copy()
