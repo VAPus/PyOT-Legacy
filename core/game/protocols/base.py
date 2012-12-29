@@ -951,6 +951,10 @@ class BaseProtocol(object):
     @packet(0xD4)
     def handleSetMounted(self, player, packet):
         if config.allowMounts:
+            # Disallow mounting in PZ. If configuration to do so.
+            if not config.mountInPz and player.hasIcon(CONDITION_PROTECTIONZONE):
+                return
+
             if player.mount:
                 mount = packet.uint8() != 0
                 player.changeMountStatus(mount)

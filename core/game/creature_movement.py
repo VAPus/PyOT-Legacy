@@ -67,6 +67,9 @@ class CreatureMovement(object):
                     self.refreshConditions(stream)
                     self.cancelTarget(stream)
                     self.target = None
+                    if self.isPLayer() and self.mounted:
+                        callLater(0, self.changeMountStatus, False)
+
                 elif not pzStatus and pzIcon:
                     self.removeIcon(CONDITION_PROTECTIONZONE)
                     self.refreshConditions(stream)
@@ -362,6 +365,9 @@ class CreatureMovement(object):
                 if not level:
                     self.cancelTarget(stream)
                     self.target = None
+                if self.isPLayer() and self.mounted:
+                    callLater(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
+
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
                 self.refreshConditions(stream)

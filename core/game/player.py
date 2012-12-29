@@ -396,12 +396,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.shield(self.cid, self.getShield(player))
                 
     def setIcon(self, icon):
-        if not self.extraIcons & icon:
+        if not self.hasIcon(icon):
             self.extraIcons += icon
 
     def removeIcon(self, icon):
-        if self.extraIcons & icon:
+        if self.hasIcon(icon):
             self.extraIcons -= icon
+
+    def hasIcon(self, icon):
+        return self.extraIcons & icon
 
     def refreshSkills(self, stream=None):
         if self.client:

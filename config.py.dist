@@ -176,6 +176,7 @@ tibiaNightLight = 40 # Lowest light level
 # Mounts
 allowMounts = True
 applyMountSpeedChange = True
+mountInPz = False
 
 # Player walking speed.
 # 9.8 rules.
