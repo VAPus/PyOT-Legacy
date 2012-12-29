@@ -97,8 +97,9 @@ def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
             
         elif destThing.floorchange == "east":
             newPos.y -= 1
-            
-    teleportItem(onThing, onPosition, newPos)
+    
+    onThing.remove()
+    onThing.place(newPos)        
     
     return False
 
