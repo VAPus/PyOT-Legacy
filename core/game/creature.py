@@ -243,6 +243,9 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             stream.send(spectator)
 
     def changeMountStatus(self, mounted):
+        if self.mounted == mounted:
+            return
+
         mount = game.resource.getMount(self.mount)
         if mount:
             self.mounted = mounted
