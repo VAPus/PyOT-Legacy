@@ -10,13 +10,16 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     if not creature2.isNPC():
         return # We got nothing todo
         
+    if creature.position.z != creature2.position.z and creature2.distanceStepsTo(creature.position) >= 5:
+        return # Too far away to care.
+
     said = said.lower()
     _sayParams = {"playerName":creature.name()}
     ok = True
     if channelType == 1 and not creature in creature2.focus:
         ok = False
         for greeting in greetings:
-            if greeting == said and creature.position.z == creature2.position.z and creature2.distanceStepsTo(creature.position) < 5:
+            if greeting == said:
                 ok = True
                 break
         if ok:
@@ -33,7 +36,7 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
     elif channelType == 11 and not creature in creature2.focus:
         ok = False
         for greeting in greetings:
-            if greeting == said and creature.position.z == creature2.position.z and creature2.distanceStepsTo(creature.position) < 5:
+            if greeting == said:
                ok = True
                break
         if ok:
@@ -48,7 +51,7 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
             return
     if ok:
         # Check for goodbyes
-        if channelType == 11 and said in farwells and creature.position.z == creature2.position.z:
+        if channelType == 11 and said in farwells:
             creature2.farewell(creature)
         
         elif creature2.activeModule:
