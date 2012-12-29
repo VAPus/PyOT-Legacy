@@ -6,7 +6,7 @@ ropes = 2120, 7731
 
 @register("useWith", ropes)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
-    if onPosition.x == 0xFFFF:
+    if onPosition.x == 0xFFFF and onThing and not onThing.containerSize:
         creature.notPossible()
         return
 
