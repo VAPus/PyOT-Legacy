@@ -335,3 +335,21 @@ class TestMoveItem(FrameworkTestGame):
         relocate(Position(1000, 1001, 7), Position(1001, 1000, 7))
 
         self.assertIn(coin, Position(1001, 1000, 7).getTile().things)
+
+    def test_117_p9(self):
+        """ http://vapus.net/forum/project.php?issueid=117 """
+
+        coin = Item(idByName('gold coin'), 70)
+
+        coin2 = Item(idByName('gold coin'), 80)
+
+        bag = Item(idByName('bag'))
+        self.player.inventory[SLOT_BACKPACK] = bag
+
+        # Move coins to bag.
+        self.player.addItem(coin)
+        self.player.addItem(coin2)
+        
+        self.assertEqual(bag.size(), 2)
+        self.assertEqual(bag.container[1].count, 100)
+        self.assertEqual(bag.container[0].count, 50)

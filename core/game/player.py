@@ -1298,6 +1298,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
                 slot = 0
 
+        print item.count, count
+        if count != item.count:
+            item.count = count
+
         if count:
             # Add item
             if update and (self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0):
