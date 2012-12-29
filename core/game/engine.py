@@ -886,7 +886,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
             destItem.modify(newCount)
-            thing.modify(-count)
+            thing.modify(-newCount)
             
             return True
         elif isinstance(_newItem, Item):

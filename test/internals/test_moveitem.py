@@ -353,3 +353,15 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[1].count, 100)
         self.assertEqual(bag.container[0].count, 50)
+
+        bag.container[1].count = 60
+
+        bag.position = Position(0xFFFF, SLOT_BACKPACK+1, 0)
+        bag.creature = self.player
+        self.player.use(bag)
+
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, 0), Position(0xFFFF, 64, 1)))
+
+        self.assertEqual(bag.size(), 2)
+        self.assertEqual(bag.container[1].count, 100)
+        self.assertEqual(bag.container[0].count, 10)
