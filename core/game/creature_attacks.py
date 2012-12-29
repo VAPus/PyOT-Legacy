@@ -190,7 +190,9 @@ class PlayerAttacks(CreatureAttacks):
 
             if random.randint(1, 100) <= defence * defRate:
                 self.lmessage("You blocked an attack!")
-                
+                self.magicEffect(EFFECT_BLOCKHIT)
+                return 0
+
             # Apply some shielding effects
             dmg  = int((dmg + random.uniform(armor*0.475, (armor*0.95)-1)) + ((-dmg * armor) / 100.0))
             if dmg > 0:
