@@ -909,14 +909,18 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
-        if not thing.stackable:
+        try:
             thing.remove()
+        except:
+            pass # In certain situations, it's allowed to fail.
         #print "itemToContainer1"
         player.itemToContainer(destItem, newItem)
-    else:    
-        if not thing.stackable:
+    else:
+        try:
             thing.remove()
-    
+        except:
+            pass # In certain situations, it's allowed to fail.
+
     if toMap:
         #print "toMap called"
         # Place to ground.
@@ -942,11 +946,12 @@ def moveItem(player, fromPosition, toPosition, count=0):
                     return False
                 if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                     return False
+                
                 #print "itemToContainer2"
                 player.itemToContainer(container, newItem)
 
-            if destItem and itemContainer:
-                player.itemToContainer(itemContainer, destItem)    
+            #if destItem and itemContainer:
+            #    player.itemToContainer(itemContainer, destItem)    
         elif not destItem.containerSize:
             # Move destItem.
             #print "destItem no container branch"

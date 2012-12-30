@@ -15,7 +15,7 @@ class TestMoveItem(FrameworkTestGame):
         item = Item(idByName('gold coin'), 10)
         
         # Place to inventory
-        self.player.itemToInventory(item, SLOT_AMMO)
+        self.assertTrue(self.player.itemToInventory(item, SLOT_AMMO))
         
         # Assert position.
         self.assertIs(self.player.inventory[SLOT_AMMO], item)
@@ -365,3 +365,27 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[1].count, 100)
         self.assertEqual(bag.container[0].count, 10)
+
+    def test_bug119(self):
+        """ http://vapus.net/forum/project.php?issueid=119 """
+
+        bag = Item(idByName('bag'))
+        bag.position = Position(0xFFFF,SLOT_BACKPACK+1, 0)
+        bag.creature = self.player
+
+        self.player.inventory[SLOT_BACKPACK] = bag
+
+        self.player.use(bag)
+
+        rope = Item(idByName('rope'))
+        coin = Item(idByName('gold coin'), 1)
+
+        self.player.addItem(coin)
+        self.player.addItem(rope)
+
+        self.assertEqual(bag.size(), 2)
+        self.assertEqual(bag.container[0].name, "rope")
+
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, 1), Position(0xFFFF, 64, 0)))
+
+        self.assertEqual(bag.size(), 2)
