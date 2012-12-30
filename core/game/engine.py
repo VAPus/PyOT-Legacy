@@ -909,18 +909,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
-        try:
+        if not thing.stackable:
             thing.remove()
-        except:
-            pass # In certain situations, it's allowed to fail.
+        
         #print "itemToContainer1"
         player.itemToContainer(destItem, newItem)
     else:
-        try:
+        if not thing.stackable:
             thing.remove()
-        except:
-            pass # In certain situations, it's allowed to fail.
-
+        
     if toMap:
         #print "toMap called"
         # Place to ground.
