@@ -35,18 +35,18 @@ def container(creature, thing, position, index, **k):
             if bagFound:
                 parent = 1
                 #thing.parent = creature.openContainers[position.y-64]
-            if position.x != 0xFFFF:
-                try:
-                    thing.openCreatures.append(creature)
-                except:
-                    thing.openCreatures = [creature]
+            
+            try:
+                thing.openCreatures.append(creature)
+            except:
+                thing.openCreatures = [creature]
             ok = creature.openContainer(thing, parent=parent)
 
         # Opened from ground, close it on next step and set openCreatures :)
-        if ok and position.x != 0xFFFF:
+        if ok:
             def _verifyClose(who):
                 if thing.openIndex != None:
-                    if not who.inRange(position, 1, 1):
+                    if not who.inRange(thing.position, 1, 1):
                         who.closeContainer(thing)
                     else:
                         who.scripts["onNextStep"].append(_verifyClose)
