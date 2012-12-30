@@ -478,6 +478,12 @@ def relocate(fromPos, toPos):
     updateTile(fromPos, tile)
     updateTile(toPos, toTile)
 
+    for creature in tile.creatures():
+        if creature.distanceStepsTo(toPos) == 1:
+            autoWalkCreatureTo(creature, toPos)
+        else:
+            creature.teleport(toPos)
+
 # The development debug system
 def explainPacket(packet):
     """ Explains the packet structure in hex
