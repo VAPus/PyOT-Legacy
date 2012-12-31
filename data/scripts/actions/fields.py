@@ -13,14 +13,15 @@ def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
 
 def callback(creature, thing, **k):
     if thing.fieldDamage:
-        creature.magicEffect(typeToEffect(thing.field)[0])
+        try:
+            effect, effectOverTime = typeToEffect(thing.field)[0:2]
+        except:
+            effect = EFFECT_POOF
+            effectOverTime = EFFECT_POOF
+
+        creature.magicEffect(effect)
         creature.modifyHealth(-thing.fieldDamage)
         if thing.turns:
-            try:
-                effect = typeToEffect(thing.field)[1]
-            except:
-                effect = EFFECT_POOF
-
-            effectOverTime(creature, thing.fieldDamage, thing.fieldTicks / 1000,effect, thing.fieldCount)
+            effectOverTime(creature, thing.fieldDamage, thing.fieldTicks / 1000,effectOverTime, thing.fieldCount)
 
 registerForAttr('walkOn', 'fieldDamage', callback)

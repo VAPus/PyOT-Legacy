@@ -775,6 +775,12 @@ class BaseProtocol(object):
             else:
                 currItem = None
 
+            # Verify tile.
+            if toPosition.x != 0xFFFF:
+                for item in toPosition.getTile().getItems():
+                    if item.solid:
+                        player.notPossible()
+                        return
             if fromMap:
                 # This means we need to walk to the item
                 if not player.inRange(fromPosition, 1, 1):
