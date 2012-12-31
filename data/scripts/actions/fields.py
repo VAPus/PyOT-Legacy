@@ -16,8 +16,8 @@ def callback(creature, thing, **k):
         try:
             effect, effectOverTime = typeToEffect(thing.field)[0:2]
         except:
-            effect = EFFECT_POOF
-            effectOverTime = EFFECT_POOF
+            effect = EFFECT_POFF
+            effectOverTime = EFFECT_POFF
 
         creature.magicEffect(effect)
         creature.modifyHealth(-thing.fieldDamage)
