@@ -552,7 +552,7 @@ def saveAll(force=False):
                             if ic or ic == None:
                                 _items.append(item)
                                 lastItem = item
-                    
+                    _items.reverse()                    
                     items[tile.position] = _items
 
                 if items != house.data["items"]:

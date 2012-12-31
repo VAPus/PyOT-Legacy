@@ -321,11 +321,17 @@ class TestMoveItem(FrameworkTestGame):
             if bag == bag1:
                 break
 
+        # Verify position.
+        bag1Pos= bag1.verifyPosition()
+        bag2Pos = bag2.verifyPosition()
+
+        self.assertEqual(bag1, bag1Pos.getTile().getThing(bag1Pos.stackpos))
+
         # Move bag1 into bag2. This works.
-        self.assertTrue(moveItem(self.player, bag1.position, Position(0xFFFF, 64 + id2, 0)))
+        self.assertTrue(moveItem(self.player, bag1Pos, Position(0xFFFF, 64 + id2, 0)))
 
         # Move bag2 into bag1. This shouldn't work.
-        self.assertFalse(moveItem(self.player, bag2.position, Position(0xFFFF, 64 + id1, 0)))
+        self.assertFalse(moveItem(self.player, bag2Pos, Position(0xFFFF, 64 + id1, 0)))
 
     def test_relocate(self):
         coin = Item(idByName('gold coin'))

@@ -199,11 +199,11 @@ class Tile(object):
             return 1
 
         if item.ontop:
-            pos = self.getTopItemCount()
+            pos = 0 #self.getTopItemCount()
             self.things.insert(pos, item)
         else:
-            pos = len(self.things)
-            self.things.append(item)
+            pos = self.getTopItemCount() #len(self.things)
+            self.things.insert(pos, item)
         return pos+1
     
     def placeItemEnd(self, item):

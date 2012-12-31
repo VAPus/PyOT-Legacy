@@ -136,7 +136,7 @@ class Item(object):
 
         # Might fail. Since we might move to position with creature, and the creature move. Not to worry.        
         try:
-            if isinstance(pos, StackPosition) and tile.things[pos.stackpos] == self:
+            if isinstance(pos, StackPosition) and tile.getThing(pos.stackpos) == self:
                 return pos
         except:
             pass
@@ -146,7 +146,7 @@ class Item(object):
             
         elif isinstance(pos, StackPosition):
             for z in xrange(len(tile.things)):
-                if tile.things[z] == self:
+                if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
         
