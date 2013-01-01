@@ -1095,3 +1095,53 @@ def mail(toPlayer, package, message="", town=0, ignoreLimits=True):
 
     return True
 
+
+def _allowProjectileVerify(position, blockWindow = False):
+    " Verify position "
+    tile = position.getTile()
+    if not tile:
+        return False
+
+    for item in tile.getItems():
+        if item.blockprojectile:
+            return False
+
+        if blockWindow and "window" in item.name:
+            return False
+
+    return True
+
+def allowProjectile(posisition, position2, blockWindow = False):
+    """ Can a projectile from positiongo to position2? Also used for item tossing. """
+
+    xSteps = abs(position.x - position2.x)
+    ySteps = abs(position.y - position2.y)
+
+    xStep = -1 if position.x > position2.x else 1
+    yStep = -1 if position.y > position2.y else 1
+
+    tmpPosition = position.copy()
+
+    # First we walk diagonal.
+    while tmpPosition.x != position2.x and tmpPosition.y != position2.y:
+        tmpPosition.x += xStep
+        tmpPosition.y += yStep
+
+        if not _allowProjctileVerify(tmpPosition, blockWindow):
+            return False
+
+    # X dir.
+    while tmpPosition.x != position2.x:
+        tmpPosition.x += xStep
+
+        if not _allowProjectileVerify(tmpPosition, blockWindow):
+            return False
+
+    # Y dir.
+    while tmpPosition.y != position2.y:
+        tmpPosition.y += yStep
+
+        if not _allowProjectileVerify(tmpPosition, blockWindow):
+            return False
+
+    return True

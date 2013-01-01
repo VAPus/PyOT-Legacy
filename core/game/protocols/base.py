@@ -821,9 +821,9 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                steps = game.engine.calculateWalkPattern(player, fromPosition if fromPosition.x != 0xFFFF else player.position, toPosition, 0)
-                if not steps:
-                    return
+                if fromPosition.x != 0xFFFF or toPosition != player.position:
+                    if not game.engine.allowProjectile(fromPosition if fromPosition.x != 0xFFFF else player.position, toPosition):
+                        return
                 
             if player.canSee(fromPosition) and player.canSee(toPosition):
                 moveItem(player, fromPosition, toPosition, count)
