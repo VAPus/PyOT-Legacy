@@ -109,3 +109,20 @@ def runQuery(*argc, **kwargs):
 def runOperationLastId(*argc, **kwargs):
     return conn.runOperationLastId(*argc, **kwargs)
     
+
+# Update max_allowed_packet for MySQL.
+from twisted.internet.reactor import callLater
+def _():
+    @inlineCallbacks
+    def x():
+        d = yield runQuery("SHOW variables LIKE '%max_allowed_packet%';")
+        if int(d[0]['Value']) < 128 * 1024 * 1024:
+            print """Warning: Set:
+[mysqld]
+max_allowed_packet = 128M
+[client]
+max_allowed_packet = 128M
+
+in my.cnf (/etc/my.cnf or /etc/mysql/my.cnf on Linux, mysql install folder\\my.cnf on windows) and restart mysql and pyot is highly recommended!"""
+    x()
+callLater(2, _)
