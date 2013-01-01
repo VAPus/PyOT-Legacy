@@ -816,6 +816,15 @@ class BaseProtocol(object):
                         return
 
             # We can only drop a item to a position we can see. And to a place we could, hypotetically walk to. We should probably do a more propper check here, but it'll do for now.
+            if toPosition.x != 0xFFFF:
+                if (fromPosition.x != 0xFFFF and toPosition.z != fromPosition.z) or (player.position.z != toPosition.z):
+                    player.notPossible()
+                    return
+
+                steps = game.engine.calculateWalkPattern(player, player.position, toPosition, -1)
+                if not steps:
+                    return
+                
             if player.canSee(fromPosition) and player.canSee(toPosition) and game.engine.calculateWalkPattern(player, player.position, toPosition, -1):
                 moveItem(player, fromPosition, toPosition, count)
             

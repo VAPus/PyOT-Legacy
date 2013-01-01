@@ -96,12 +96,15 @@ class AStar(object):
         prev = self.startNode
         
         # Not possible.
-        if not n.verify(zStart, instanceId, checkCreature):
+        if not n.verify(zStart, instanceId, checkCreature) :
             self.found = None
             return
 
-        _result = [n.step]
-        
+        try:
+            _result = [n.step]
+        except:
+            _result = []
+
         prev = n
         n = n.parent
         if not n:
