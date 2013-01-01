@@ -1127,7 +1127,7 @@ def allowProjectile(position, position2, blockWindow = False):
         tmpPosition.x += xStep
         tmpPosition.y += yStep
 
-        if not _allowProjctileVerify(tmpPosition, blockWindow):
+        if not _allowProjectileVerify(tmpPosition, blockWindow):
             return False
 
     # X dir.
