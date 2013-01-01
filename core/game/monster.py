@@ -282,11 +282,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, monster=self, check=True)
+                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
                 else:
                     return
             else:
-                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, monster=self, check=True)
+                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
