@@ -778,7 +778,7 @@ class BaseProtocol(object):
             # Verify tile.
             if toPosition.x != 0xFFFF:
                 for item in toPosition.getTile().getItems():
-                    if item.solid:
+                    if item.solid and not item.hasheight:
                         player.notPossible()
                         return
             if fromMap:
