@@ -202,7 +202,7 @@ class Tile(object):
             pos = 0 #self.getTopItemCount()
             self.things.insert(pos, item)
         else:
-            pos = self.getTopItemCount() #len(self.things)
+            pos = self.getTopItemCount() + self.getCreatureCount() #len(self.things)
             self.things.insert(pos, item)
         return pos+1
     
