@@ -3,16 +3,17 @@ openedHoles = 294, 383, 392, 469, 470, 482, 484, 485, 489, 7933, 7938, 8249, 825
 openTraps = 462, 9625
 ladders = 369, 370, 408, 409, 427, 428, 430, 924, 3135, 3136, 5545, 5763, 8170, 8276, 8277, 8279, 8280, 8281, 8284, 8285, 8286, 8595, 8596, 9606
 ropes = 2120, 7731
-
+ 
 @register("useWith", ropes)
 def onUseWith(creature, thing, position, onThing, onPosition, **k):
     if onPosition.x == 0xFFFF:
-        if onThing and not onThing.containerSize:
+        if onThing.itemId and not onThing.containerSize:
             creature.notPossible()
         return
-
     newPos = onPosition.copy()
-    if onThing in ropeSpots:
+    crePos = creature.position.copy()
+ 
+    if onThing.itemId in ropeSpots:
         newPos.y += 1
         newPos.z -= 1
         creature.teleport(newPos)
@@ -22,11 +23,25 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
             creature.turn(3)
         else:
             creature.turn(2)
-    elif onThing in openedHoles or onThing in openTraps or onThing in ladders:
-        newPos.z += 1
+ 
+    elif onThing.itemId in openedHoles or onThing.itemId in openTraps or onThing.itemId in ladders:
+        Pos = onPosition.copy()
+        Pos.z += 1
         newPos.y += 1
-        downThing = getTile(newPos).getThing(0)
-        if downThing:
-            creature.teleport(newPos)
+        Creature = getTile(Pos).topCreature()
+        item = getTile(Pos).bottomItems()
+ 
+        if item:
+            ItemPos =  getTile(Pos).bottomItems()[0]
+            try:
+                ItemPos.move(newPos)
+            except:
+                pass
+ 
+        elif getTile(Pos).hasCreatures() and not item:
+            try:
+                Creature.teleport(newPos)
+            except:
+                pass
         else:
             creature.notPossible()
