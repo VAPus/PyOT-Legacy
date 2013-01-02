@@ -910,9 +910,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:
-        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
+        if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
             return False
-        if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+        if game.scriptsystem.get('dropOnto').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
         if not thing.stackable:
@@ -930,9 +930,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         thisTile = toPosition.getTile()
         
         for item in thisTile.getItems():
-            if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
+            if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
                 return False
-            if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+            if game.scriptsystem.get('dropOnto').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                 return False
 
         newItem.place(toPosition)
@@ -945,9 +945,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 container = player.getContainer(toPosition.y-64)
                 
-                if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
+                if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
                     return False
-                if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+                if game.scriptsystem.get('dropOnto').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                     return False
                 
                 #print "itemToContainer2"

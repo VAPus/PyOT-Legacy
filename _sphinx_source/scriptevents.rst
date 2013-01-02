@@ -515,4 +515,30 @@ The events are:
         def thankYouNotice(creature, author, **k):
             author.message("You have just been thanked by %s!" % creature.name())
 
-        
+.. function:: dropOnto(creature, thing, position, onThing, onPosition)
+
+    Called when a thing is tossed from position by creature to onThing and onPosition (with all things on the tile). This is also called when a thing is placed on a position (in that case, there is no position on the thing).
+    As with useWith, it's called twice with the order of thing and onThing reversed.
+
+    :param creature: The creature that tries to drop it something. May be undefined!
+    :type creature: usually :class:`game.player.Player` or None
+    :param thing: The thing that matched the register functions parameters.
+    :type thing: usually :class:`game.item.Item`
+    :param position: The positon the thing have.
+    :type position: :class:`game.position.StackPosition` or None
+
+    :param onThing: The thing that the ``thing``` was used against.
+    :type onThing: :class:`game.item.Item` or :class:`game.creature.Creature`
+    :param onPosition: The positon the ``onThing`` have.
+    :type onPosition: :class:`game.position.Position`
+
+    :returns: False prevent the drop.
+
+    :example:
+
+    .. code-block:: python
+
+        @register('dropOnto', 1234)
+        def dropOnto(creature, **k):
+            creature.message("Things can't be dropped here. (no littering!)")
+            return False

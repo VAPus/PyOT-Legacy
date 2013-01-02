@@ -399,6 +399,7 @@ globalScripts["loginCharacterFailed"] = NCScripts()
 globalScripts["logout"] = Scripts(('creature',))
 globalScripts["use"] = ThingScripts(('creature', 'thing', 'position', 'index'))
 globalScripts["useWith"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition'))
+globalScripts["dropOnto"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition'))
 globalScripts["rotate"] = ThingScripts()
 globalScripts["stack"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition', 'count'))
 globalScripts["walkOn"] = ThingScripts(('creature', 'thing', 'position', 'fromPosition'))
@@ -612,9 +613,6 @@ def register(type, *argc):
         
         # Step 2, verify parameters
         if object.parameters and not hasKeyword:
-            if len(object.parameters) > 4:
-                raise InvalidScriptFunctionArgument("Function lakes the **k argument")
-            
             for param in object.parameters:
                 if not param in vars:
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
@@ -648,9 +646,6 @@ def registerFirst(type, *argc):
         
         # Step 2, verify parameters
         if object.parameters and not hasKeyword:
-            if len(object.parameters) > 4:
-                raise InvalidScriptFunctionArgument("Function lakes the **k argument")
-            
             for param in object.parameters:
                 if not param in vars:
                     raise InvalidScriptFunctionArgument("Function does not have all the valid parameters (and doesn't supply a **k argument). '%s' not found." % param)
