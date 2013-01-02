@@ -518,6 +518,7 @@ The events are:
 .. function:: dropOnto(creature, thing, position, onThing, onPosition)
 
     Called when a thing is tossed from position by creature to onThing and onPosition (with all things on the tile). This is also called when a thing is placed on a position (in that case, there is no position on the thing).
+    As with useWith, it's called twice with the order of thing and onThing reversed.
 
     :param creature: The creature that tries to drop it something. May be undefined!
     :type creature: usually :class:`game.player.Player` or None

@@ -61,12 +61,8 @@ def floorchange(creature, thing, position, **k):
         elif destThing.floorchange == "east":
             creature.move(WEST, level=1)
 
-@register('useWith', stairs)
+@register('dropOnto', stairs)
 def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
-    # Make sure onThing is the item and thing is the stair.
-    if onThing.itemId in stairs:
-        thing, onThing = onThing, thing
-
     newPos = position.copy()
     if thing.floorchange == "north":
         newPos.y -= 1

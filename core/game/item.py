@@ -357,6 +357,8 @@ class Item(object):
             for item in tile.getItems():
                 if game.scriptsystem.get('dropOnto').runSync(self, self.creature, position=None, onPosition=position, onThing=item) == False:
                     return False
+                if game.scriptsystem.get('dropOnto').runSync(item, self.creature, position=None, onPosition=position, onThing=self) == False:
+                    return False
 
             stackpos = tile.placeItem(self)
             position = position.setStackpos(stackpos)
