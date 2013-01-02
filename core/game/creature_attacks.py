@@ -203,7 +203,7 @@ class PlayerAttacks(CreatureAttacks):
             # Damage types other than physical
             attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
             absorb = 0
-            if not type in atts: return dmg # Not implanted, or something entierly custom?
+            if not type in attrs: return dmg # Not implanted, or something entierly custom?
             for item in self.inventory:
                 if item:
                     absorb += getattr(item, "absorbPercentAll", 0) + getattr(item, attrs[type], 0)
