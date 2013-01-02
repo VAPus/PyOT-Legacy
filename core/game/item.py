@@ -145,7 +145,7 @@ class Item(object):
             return False # Not on this tile
             
         elif isinstance(pos, StackPosition):
-            for z in xrange(len(tile.things)):
+            for z in xrange(len(tile.things)+1):
                 if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
@@ -727,11 +727,11 @@ class Item(object):
                 player = p
                 break
 
-            moveItem(player, self.position, newPosition)
+            moveItem(player, self.verifyPosition(), newPosition)
         elif not self.creature:
             raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")
         else:
-            moveItem(self.creature, self.position, newPosition)
+            moveItem(self.creature, self.verifyPosition(), newPosition)
         
     def remove(self, position=None):
         if not position:
