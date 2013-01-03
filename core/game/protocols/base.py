@@ -383,12 +383,9 @@ class BasePacket(TibiaPacket):
         self.uint32(player.freeCapacity())
         self.uint32(player.data["capacity"] * 100)
         self.uint64(player.data["experience"])
-        if player.data["level"] > 0xFFFF:
-            self.uint16(0xFFFF)
-        else:
-            self.uint16(player.data["level"])
+        self.uint16(min(0xFFFF, player.data["level"]))
         
-        if not player.data["experience"]:
+        if player.data["experience"]:
             self.uint8(int(math.ceil(float(config.levelFormula(player.data["level"]+1)) / player.data["experience"]))) # % to next level, TODO
         else:
             self.uint8(0)
