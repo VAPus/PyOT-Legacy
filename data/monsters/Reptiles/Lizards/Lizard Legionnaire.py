@@ -1,4 +1,4 @@
-lizard_legionnaire = genMonster("Lizard Legionnaire", (338, 11267), "a lizard legionnaire")
+lizard_legionnaire = genMonster("Lizard Legionnaire", (338, 11276), "a lizard legionnaire")
 lizard_legionnaire.setHealth(1400)
 lizard_legionnaire.bloodType("blood")
 lizard_legionnaire.setDefense(armor=32, fire=0.55, earth=0, energy=1, ice=1.1, holy=1, death=1, physical=1, drown=1)

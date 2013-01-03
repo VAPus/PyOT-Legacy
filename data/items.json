@@ -1866,6 +1866,7 @@
 	"id": 1496,
 	"cid": 2121,
 	"name": "poison field",
+	"corpseType": "venom",
 	"decayTo": 0,
 	"duration": 120,
 	"field": "poison",
@@ -15673,6 +15674,9 @@
 	"id": 5014,
 	"cid": 5013,
 	"name": "exotic butterfly",
+	"corpseType": "venom",
+	"decayTo": 0,
+	"duration": 600,
 	"flags": "p",
 	"weight": 100
 },{
@@ -19190,6 +19194,7 @@
 	"id": 6074,
 	"name": "dead mammoth",
 	"containerSize": 15,
+	"corpseType": "blood",
 	"decayTo": 5666,
 	"duration": 10,
 	"fluidSource": "blood"
@@ -19213,6 +19218,7 @@
 	"id": 6077,
 	"name": "dead toad",
 	"containerSize": 10,
+	"corpseType": "blood",
 	"decayTo": 5765,
 	"duration": 10,
 	"fluidSource": "blood"
@@ -30294,6 +30300,7 @@
 	"cid": 8137,
 	"name": "remains of an elemental",
 	"containerSize": 14,
+	"corpseType": "fire",
 	"decayTo": 8968,
 	"duration": 10,
 	"flags": 16777216,
@@ -30303,6 +30310,7 @@
 	"cid": 8138,
 	"name": "remains of an elemental",
 	"containerSize": 14,
+	"corpseType": "fire",
 	"decayTo": 8967,
 	"duration": 10,
 	"flags": 16777216,
