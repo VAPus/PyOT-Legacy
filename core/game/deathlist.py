@@ -16,19 +16,23 @@ class DeathEntry(object):
         self.warId = war_id
         
     def justify(self):
+        " Mark this DeathEntry as a justified kill "
         sql.runOperation("UPDATE pvp_deaths SET unjust = 0 WHERE death_id = %s", self.id)
         self.revenged = 1 # Justified kills can't be revenged.
         self.unjustifed = 0
         
     def revenge(self):
+        " Mark this DeathEntry as a revengable kill. "
         sql.runOperation("UPDATE pvp_deaths SET revenged = 1 WHERE death_id = %s", self.id)
         self.revenged = 1
     
     def saveQuery(self):
+        " Make a save query (for saving). "
         return "(%s, %s, %s, %s, %s, %s)" % (self.killerId, self.victimId, self.unjustified, self.time, self.revenged, self.warId)
 
 @inlineCallbacks
 def loadDeathList(playerId):
+    " Loads the deathentries for this `playerId` from the database. "
     global byVictim, byKiller, loadedDeathIds
     query = yield sql.runQuery("SELECT death_id, killer_id, victim_id, unjust, `time`, revenged, war_id FROM pvp_deaths WHERE killer_id = %s OR victim_id = %s AND `time` >= %s", (playerId, playerId, int(time.time() - (config.deathListCutoff * 3600 * 24))))
     
@@ -53,10 +57,14 @@ def loadDeathList(playerId):
         loadedDeathIds.add(entry[0])
 
 def findUnrevengeKill(killerId, victimId):
+    " Returns unrevenged deathentries based on killer and victim. "
+
     for kill in byVictim[killerId]:
         if kill.unjustified and not kill.revenged:
             return kill
 def getSkull(playerId, targetId=None):
+    " Returns the skull for playerId "
+
     if not playerId in byKiller: return SKULL_NONE, 0
     
     _time = time.time()
@@ -126,6 +134,7 @@ def _addEntryToDatabase(deathEntry):
     loadedDeathIds.add(deathEntry.id)
     
 def addEntry(deathEntry):
+    " Adds a deathentry to the database and to the cache. "
     try:
         byKiller[deathEntry.killerId].append(deathEntry)
     except KeyError:

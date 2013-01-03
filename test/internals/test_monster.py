@@ -18,3 +18,7 @@ class TestMonster(FrameworkTestGame):
                 name = item.name.lower()
                 if not "dead" in name and not "slain" in name and not "undead" in name and not "remains" in name:
                     printer("[WARNING] Monster %s (corpse: %d) doesn't have dead/slain/undead/remains in it's name, likely invalid\n" % (monsterName, corpse))
+                    continue
+
+            if not item.corpseType:
+                printer("[WARNING] Monster %s corpse (%d) don't have a corpseType\n" % (monsterName, corpse))

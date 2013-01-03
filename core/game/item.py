@@ -65,36 +65,35 @@ class Item(object):
 
 
     def isPlayer(self):
+        " Return False "
         return False
 
     def isNPC(self):
+        " Returns False "
         return False
         
     def isMonster(self):
+        " Returns False "
         return False
 
     def isItem(self):
+        " Returns True "
         return True
         
     def thingId(self):
+        " Returns the itemId. Used by scripts for compatibility with Creatures. "
         return self.itemId # Used for scripts
 
     def register(self, event, func, **kwargs):
+        " Register a script event on this item. See :func:`game.scriptsystem.register` "
         game.scriptsystem.get(event).register(self, func, **kwargs)
         
     def registerAll(self, event, func, **kwargs):
+        " Register a script event for all items of this type. See :func:`game.scriptsystem.register` "
         game.scriptsystem.get(event).register(self.itemId, func, **kwargs)
         
-    def getsub(self):
-        try:
-            return self.count
-        except:
-            try:
-                return self.fluidSource
-            except:
-                return None
-
     def verifyPosition(self):
+        " Returns a verified (valid) position for this object. Or False if we can't find it. May raise an Exception too! "
         pos = self.position
         creature = self.creature
 
@@ -153,11 +152,13 @@ class Item(object):
         return pos            
         
     def actionIds(self):
+        " Return bound events. "
         if not self.itemId: return []
 
         return self.actions or ['item']
     
     def hasAction(self, name):
+        " Returns True if name is in our actions, else False "
         if name == "item":
             return True
         elif self.actions is None:
@@ -166,20 +167,24 @@ class Item(object):
             return name in self.actions
         
     def addAction(self, name):
+        " Add an action `name` to our actions list. "
         if self.actions is None:
             self.actions = [name]
         else:
             self.actions.append(name)
             
     def removeAction(self, name):
+        " Remove `name` from our actions. May raise if it's not there. "
         self.actions.remove(name)
     
     @property
     def type(self):
+        " Returns the type attribute. This is readonly. "
         return items[self.itemId].get("type", 0)
     
     @property
     def cid(self):
+        " Returns the cid attribute. This is readonly. "
         return items[self.itemId].get('cid', self.itemId)
         
     def __getattr__(self, name):
@@ -194,6 +199,7 @@ class Item(object):
         raise AttributeError, name
     
     def formatName(self, player=None):
+        " Returns a formated name, singular or plural with count "
         if not player:
             raise Exception("We need to have a player when asking for a items name now apperently!")
             
@@ -203,12 +209,14 @@ class Item(object):
         return _l(player, INFLECT.a(self.name))
     
     def useCharge(self):
+        " Use a charge. If charges hits 0 or below the item will be removed. May raise on non-charge items. "
         self.charges -= 1
 
         if self.charges <= 0:
             self.remove()
 
     def description(self, player=None):
+        " Returns a lookat description for the item. "
         position = self.position
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
@@ -290,14 +298,18 @@ class Item(object):
         return "%s%s\n" % (description, extra)
         
     def rawName(self):
+        " Returns the raw singular or plural name. "
+
         if self.count:
             return INFLECT.plural(self.name.title())
         return self.name.title()
         
     def reduceCount(self, count):
+        " Reduce count. May raise on non-count items. "
         self.count -= count
             
     def modify(self, mod):
+        " Modify count by `mod`. If counts are non-or below 0 item is removed. "
         count = self.count
         if count == None and mod < 0:
             self.remove()
@@ -318,6 +330,7 @@ class Item(object):
             self.remove()
             
     def slots(self):
+        " Return valid inventory slot constants for this item. "
         slot = self.slotType
 
         #if not slot:
@@ -348,6 +361,8 @@ class Item(object):
             return ()
   
     def place(self, position, creature=None):
+        " Place this item onto position "
+
         assert isinstance(position, Position) or isinstance(position, StackPosition)
 
         if creature:
@@ -367,6 +382,8 @@ class Item(object):
             self.decay()
 
     def setPosition(self, position, creature=None):
+        " Set the position for this items. This is not a move event! But called internally after the item is moved. "
+
         self.position = position
         if creature:
             self.creature = creature
@@ -374,9 +391,13 @@ class Item(object):
             del self.creature
 
     def decayNow(self):
+        " Decay the item now. "
+
         return self.decay(self.decayTo, duration=0)
 
     def decay(self, to=None, duration=None, callback=None):
+        " Schedule decay. "
+
         if to == None:
             to = self.decayTo
         
@@ -442,6 +463,8 @@ class Item(object):
             executeDelay()
             
     def stopDecay(self):
+        " Stop item from decaying. "
+
         if self.executeDecay:
             try:
                 self.executeDecay.cancel()
@@ -449,6 +472,8 @@ class Item(object):
                 pass
     
     def cleanParams(self):
+        " Returns a clean set of parameters (for saving and copying). "
+
         params = self.__dict__.copy()
         
         try:
@@ -512,6 +537,8 @@ class Item(object):
             
 
     def copy(self):
+        " Returns a unplaced copy of the item. Also kills tileStacking attributes. "
+
         newItem = Item(self.itemId)
         newItem.__dict__ = self.cleanParams()
         
@@ -522,6 +549,8 @@ class Item(object):
         return newItem
         
     def transform(self, toId, position=None):
+        " Transform this item into toId. This is the proper way to change the itemId of a item. "
+
         if not position:
             position = self.verifyPosition()
 
@@ -563,6 +592,8 @@ class Item(object):
             self.refresh(position)
 
     def refresh(self, position=None):
+        " Send the item to clients. Mostly useful internally. "
+
         if not position:
             position = self.verifyPosition()
 
@@ -663,12 +694,14 @@ class Item(object):
     
     ##### Container stuff ####
     def placeItem(self, item):
+        " (For containers) Place `item` into container. Return stackposition (0) if sucessful, or None if failed."
         if len(self.container) < self.container.maxlen:
             self.container.appendleft(item)
             item.inContainer = self
             return 0
 
     def placeItemRecursive(self, item):
+        " (For containers) Place `item` into container or any subcontainer. Returns 0 or subcontainer if successful. None otherwise. "
         if len(self.container) < self.container.maxlen:
             self.container.appendleft(item)
             item.inContainer = self
@@ -679,9 +712,11 @@ class Item(object):
                     return itemX
 
     def size(self):
+        " (For containers) return the amount of (top level) items in container. "
         return len(self.container)
     
     def containerWeight(self):
+        " (For containers) Return the recursive weight of the container. "
         weight = 0
         for item in self.getRecursive():
             iweight = item.weight
@@ -691,18 +726,21 @@ class Item(object):
         return weight
         
     def removeItem(self, item):
+        " (For containers) Remove `item` from container. "
         if item.inContainer == self:
            del item.inContainer
 
         return self.container.remove(item)
         
     def getThing(self, pos):
+        " (For containers) Return the `item` in `pos` stackposition. "
         try:
             return self.container[pos]
         except:
             return None
     
     def getRecursive(self, items = None):
+        " (For containers) Returns a generator with every recursive item in the container. "
         if items == None:
             items = self.container
             
@@ -713,6 +751,7 @@ class Item(object):
                     yield i
 
     def getRecursiveWithBag(self, items = None):
+        " (For containers) Similar to getRecursive, but also includes the bag and stackposition. "
         if not items:
             items = self.container
             
@@ -723,9 +762,12 @@ class Item(object):
                     yield i
                     
     def findSlot(self, item):
+        " (For containers) Return stackposition of `item` "
         return self.container.index(item)
     
     def move(self, newPosition):
+        " Move a placed item to newPosition. "
+
         if self.position.x != 0xFFFF and newPosition.x != 0xFFFF:
             # HACK. Find a player.
             player = None
@@ -740,6 +782,8 @@ class Item(object):
             moveItem(self.creature, self.verifyPosition(), newPosition)
         
     def remove(self, position=None):
+        " Remove the placed item. "
+
         if not position:
             position = self.verifyPosition()
         print "Removing", position
@@ -815,6 +859,7 @@ class Item(object):
 
 idByNameCache = {}
 def idByName(name):
+    " Return the sid based on name. "
     # Slow, should only be used to build the items on load.
     # We use this so we can prevent having a full runtime list
     # Main reason for the one above is not to save memory, but to support case independant
@@ -829,12 +874,15 @@ def idByName(name):
         pass
 
 def sid(cid):
+    " Return the sid based on `cid` "
     return cidToSid.get(sid, sid)
 
 def cid(sid):
+    " Return the cid based on `sid` "
     return items[sid].get('cid', sid)
         
 def attribute(itemId, attr):
+    " Return the attribute for itemId, similar to Item(itemId).<attr>, but does not have to create the item. "
     try:
         if attr in Item.attributes:
             return items[itemId]['flags'] & Item.attribute[attr]
@@ -844,6 +892,8 @@ def attribute(itemId, attr):
         return
         
 def loadItems():
+    " Load or refresh items. "
+
     global items
     global idByNameCache
     global cidToSid
