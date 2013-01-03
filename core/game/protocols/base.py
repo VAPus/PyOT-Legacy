@@ -921,7 +921,7 @@ class BaseProtocol(object):
         except:
             return
 
-        if not player.canSee(creature):
+        if not player.canSee(creature.position):
             return
 
         def afterScript():
