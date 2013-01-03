@@ -267,7 +267,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             for spectator in getSpectators(self.position):
                 stream = spectator.packet(0x8F)
                 stream.uint32(self.clientId())
-                stream.uint16(int(self.speed))
+                stream.speed(self.speed)
                 stream.send(spectator)
 
     def onDeath(self):
