@@ -11,9 +11,10 @@ class TestMonster(FrameworkTestGame):
                 continue
             corpse = monster.data['corpse']
             item = Item(corpse)
-            if not item.containerSize:
-                printer("[WARNING] Monster %s (corpse: %d) is not a container. Likely invalid\n" % (monsterName, corpse))
             if not item.name:
                 printer("[WARNING] Monster %s (corpse: %d) doesn't have a name, likely invalid\n" % (monsterName, corpse))
-            elif not "dead" in item.name.lower() and not "slain" in item.name.lower() and not "undead" in item.name.lower():
-                printer("[WARNING] Monster %s (corpse: %d) doesn't have dead in it's name, likely invalid\n" % (monsterName, corpse))
+
+            else:
+                name = item.name.lower()
+                if not "dead" in name and not "slain" in name and not "undead" in name and not "remains" in name:
+                    printer("[WARNING] Monster %s (corpse: %d) doesn't have dead/slain/undead/remains in it's name, likely invalid\n" % (monsterName, corpse))

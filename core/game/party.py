@@ -8,6 +8,8 @@ class Party(object):
         self.chatChannel = game.chat.openInstanceChannel("Party", CHANNEL_PARTY)
 
     def addMember(self, creature):
+        " Add `creature` (Likely a player) to the party. "
+
         if creature in self.members:
             raise Exception("%s is already a member of this party!" % (creature))
         try:
@@ -29,6 +31,8 @@ class Party(object):
         
         
     def removeMember(self, creature):
+        " Remove `creature` from the party. "
+
         if len(self.members) <= 2:
             self.disband()
             return
@@ -57,6 +61,8 @@ class Party(object):
                 
         
     def addInvite(self, creature):
+        " Add an invitation for `creature` to join the party. "
+
         if creature in self.invites:
             return # Already in it
             
@@ -69,9 +75,10 @@ class Party(object):
         creature.message("%s has invited you to %s party." % (self.leader.name(), self.leader.sexAdjective()))
 
     def removeInvite(self, player):
+        " Revoke the invitation for `player` to join the party. "
+
         try:
-            self.invites.remove(player)
-        
+            self.invites.remove(player)        
         except:
             return
 
@@ -88,12 +95,16 @@ class Party(object):
             self.leader.refreshShield()
     
     def toggleShareExperience(self):
+        " Toggle share experience in this party. This also runs the check. "
+
         self.shareExperience = not self.shareExperience
         
         if self.shareExperience:
             self.checkShareExperience()
         
     def checkShareExperience(self):
+        " Check if we share experience. "
+
         isOk = True
         
         lowestLevel = 9000000000
@@ -127,6 +138,8 @@ class Party(object):
                 
                 
     def disband(self):
+        " Disband the party. "
+
         for member in self.members:
             for formember in self.members:
                 with formember.packet() as stream:
@@ -138,6 +151,8 @@ class Party(object):
         self.leader = None
 
     def changeLeader(self, creature):
+        " Change party leader to `creature` "
+
         if creature not in self.members:
             raise Exception("Trying to make a non-member leader of the party")
         
@@ -146,6 +161,8 @@ class Party(object):
         self.refreshMemberShields()
 
     def getShield(self, forMember, byMember):
+        " Get the party shield constant. for a member, when you are `byMember` "
+
         if byMember in self.invites:
             if forMember is self.leader:
                 return SHIELD_MEMBER_INVITE
@@ -165,6 +182,8 @@ class Party(object):
         return SHIELD_NONE
     
     def refreshMemberShields(self):
+        " Refresh shields among the members. "
+
         # send all shields to every member.
         for member in self.members:
             for formember in self.members:
@@ -172,5 +191,7 @@ class Party(object):
                     stream.shield(member.cid, self.getShield(member, formember))
                     
     def broadcast(self, text):
+        " Broadcast a message `text` to all party members. "
+
         for member in self.members:
             member.message(text)
