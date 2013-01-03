@@ -153,7 +153,7 @@ class Item(object):
         
     def actionIds(self):
         " Return bound events. "
-        if not self.itemId: return (,)
+        if not self.itemId: return ()
 
         return self.actions or ('item')
     
