@@ -34,7 +34,12 @@ class Node(object):
                         self.state = False
                         break
                 if self.state and checkCreature:
-                    self.state = checkCreature.verifyMove(tile)
+                    state = checkCreature.verifyMove(tile)
+                    if isinstance(state, int):
+                        self.cost += state
+                        self.state = True
+                    else:
+                        self.state = state    
             else:
                 self.state = False
                 

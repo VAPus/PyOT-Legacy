@@ -414,7 +414,7 @@ class Monster(Creature):
             elif isinstance(thing, Creature):
                 ok = not thing.solid
                 if not ok and self.base.pushCreatures and isinstance(thing, Monster) and thing.base.pushable:
-                    continue    
+                    return 30
                 if not ok:
                     return False
                        
