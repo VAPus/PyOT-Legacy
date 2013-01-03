@@ -119,9 +119,10 @@ class NPC(Creature):
         else:
             stream = TibiaPacket(0x7B)
         
-        stream.uint32(to.getMoney())
+        stream.money(to.getMoney())
 
-        stream.uint8(len(forSale))
+        stream.uint8(min(0xFF, len(forSale)))
+
         for itemId in forSale:
             stream.uint16(cid(itemId))
             try:

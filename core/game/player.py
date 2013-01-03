@@ -2384,7 +2384,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         stream = self.packet(0xF6)
 
-        stream.uint32(min(0xFFFFFFFF, self.getBalance()))
+        stream.money(self.getBalance())
         # XXX: Some older than 9.7 version needed this.
         # stream.uint8(self.getVocation().clientId)
         stream.uint8(len(market.saleOffers(self))) # Active offers

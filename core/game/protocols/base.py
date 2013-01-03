@@ -69,6 +69,9 @@ class BasePacket(TibiaPacket):
     def speed(self, speed):
         self.uint16(speed)
 
+    def money(self, money):
+        self.uint32(min(0xFFFFFFFE, money))
+ 
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):

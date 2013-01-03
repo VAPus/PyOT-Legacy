@@ -12,6 +12,9 @@ def verify(): return True
 class Packet(base.Packet):
     def speed(self, speed):
         self.uint16((speed - 49) // 2)
+
+    def money(self, money):
+        self.uint64(min(0xFFFFFFFFFFFFFFFE, money))
       
 class Protocol(base.Protocol):
     Packet = Packet
