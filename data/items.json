@@ -13153,11 +13153,17 @@
 },{
 	"id": 3909,
 	"cid": 2812,
-	"flags": 108
+	"name": "unknown kit",
+	"description": "Use it in your house to construct a small table.",
+	"flags": 108,
+	"weight": 2500
 },{
 	"id": 3910,
 	"cid": 10207,
-	"flags": 108
+	"name": "christmas tree package",
+	"description": "Use it in your house to reveal a christmas tree.",
+	"flags": 108,
+	"weight": 3500
 },{
 	"id": 3911,
 	"cid": 2785,
@@ -13350,7 +13356,9 @@
 },{
 	"id": 3938,
 	"cid": 2812,
-	"flags": 108
+	"name": "unknown kit",
+	"flags": 108,
+	"weight": 3000
 },{
 	"id": 3939,
 	"cid": 2864,

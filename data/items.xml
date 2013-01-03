@@ -30501,9 +30501,17 @@
 	<item cid="371" flags="m" id="1934"/>
 	<item cid="372" flags="m" id="1938"/>
 	<item cid="395" flags="m" id="2812"/>
-	<item cid="2812" flags="108" id="3909"/>
-	<item cid="10207" flags="108" id="3910"/>
-	<item cid="2812" flags="108" id="3938"/>
+	<item cid="2812" flags="108" id="3909" name="unknown kit">
+		<weight value="2500" />
+	</item>
+	<item cid="10207" flags="108" id="3910" name="christmas tree package">
+		<description value="Use it in your house to reveal a christmas tree." />
+		<weight value="3500" />
+	</item>
+	<item cid="2812" flags="108" id="3938" name="unknown kit">
+		<weight value="3000" />
+	</item>
+	
 	<item cid="2556" flags="m" id="4374"/>
 	<item cid="4393" flags="m" id="4626"/>
 	<item cid="4428" flags="m" id="4627"/>
