@@ -65,6 +65,10 @@ class BasePacket(TibiaPacket):
         self.position(toPos)
         self.uint8(type)
 
+    # speed
+    def speed(self, speed):
+        self.uint16(speed)
+
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
@@ -230,7 +234,7 @@ class BasePacket(TibiaPacket):
         self.outfit(creature.outfit, creature.addon, creature.mount if creature.mounted else 0x00)
         self.uint8(creature.lightLevel) # Light
         self.uint8(creature.lightColor) # Light
-        self.uint16(int(creature.speed)) # Speed
+        self.speed(creature.speed) # Speed
         self.uint8(creature.getSkull(player)) # Skull
         self.uint8(creature.getShield(player)) # Party/Shield
         if not known:
@@ -397,7 +401,7 @@ class BasePacket(TibiaPacket):
         self.uint8(int(player.data["manaspent"] / int(config.magicLevelFormula(player.data["maglevel"], player.getVocation().mlevel)))) # % to next level, TODO
         self.uint8(player.data["soul"]) # TODO: Virtual cap? Soul
         self.uint16(min(42 * 60, int(player.data["stamina"] / 60))) # Stamina minutes
-        self.uint16(int(player.speed)) # Speed
+        self.speed(player.speed) # Speed
         if player.client.version > 961:
             self.uint16(0x00) # Regeneration time
         self.uint16(0x00) # Offline training time

@@ -58,8 +58,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
             version = packet.uint16() # Version int
-            # Funbug. 972 = 980
-            if version == 972: version = 980
+            
+            if version >= 972:
+                version = packet.uint32()
+                packet.uint8() # Client type.
+
             self.protocol = game.protocol.getProtocol(version)
             self.version = version
             print "Client protocol version %d" % version
@@ -70,9 +73,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 return
 
             if not IN_TEST:
-                if version >= 980:
-                    packet.pos += 5
-
                 if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
                     packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: Should we do it in a seperate thread?
                     packet.pos = 0 # Reset position

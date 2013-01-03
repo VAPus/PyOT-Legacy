@@ -303,12 +303,29 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         
         self._packet.stream = self.client
         
-        with self.packet(0x0A) as stream:
+        if self.client.version >= 980:
+            
+            with self.packet(0x0A) as stream:
+                stream.uint8(0x17)
+                stream.uint32(self.clientId()) # Cid
+                stream.uint16(1) # Drawing delay.
+                
+                # New speed formula thingy.
+                stream.double(857.36)
+                stream.double(261.29)
+                stream.double(-4795.01)
+ 
+                stream.uint8(1) # Rule violations?
+
+        with self.packet() as stream:
             if self.client.version < 980:
+                stream.uint8(0x0A)
                 stream.uint32(self.clientId()) # Cid
                 stream.uint16(1) # Drawing delay.
                 stream.uint8(1) # Rule violations?
                 #stream.violation(0)
+            else:
+                stream.uint8(0x0F) # Ping back
 
             stream.uint8(0x64) # Map description
             stream.position(self.position)

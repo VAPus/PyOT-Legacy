@@ -4,13 +4,14 @@ from struct import pack
 
 base = sys.modules["game.protocols.970"]
 
-provide = []
+provide = [981]
 
 def verify(): return True
 
 
 class Packet(base.Packet):
-    pass
-        
+    def speed(self, speed):
+        self.uint16((speed - 49) // 2)
+      
 class Protocol(base.Protocol):
     Packet = Packet

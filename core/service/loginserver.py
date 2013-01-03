@@ -95,15 +95,12 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         #packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
 
-        # Fun bug. 980 is being reported as 972.
-        if version == 972: version = 980
+        if version >= 972:
+            version = packet.uint32()
+            packet.uint8() # Client type.
 
         packet.pos += 12 # Checksum for files
         
-        if version >= 980:
-            #print hex(packet.uint8()), hex(packet.uint16()), hex(packet.uint16())
-            packet.pos += 5 # Something we don't care about.
-
         if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
             packet.pos = 0 # Reset position

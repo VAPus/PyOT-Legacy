@@ -117,6 +117,10 @@ class TibiaPacket(object):
         self.raw(pack("<Q", data))
     def int64(self, data):
         self.raw(pack("<q", data))
+
+    def double(self, data):
+        self.uint8(3)
+        self.uint32((round(data, 3) * 1000) + 0x7FFFFFFF)
         
     def string(self, string, pack=pack):
         # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
