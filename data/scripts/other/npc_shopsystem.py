@@ -76,7 +76,7 @@ class Shop(ClassAction):
         self.on.shopWalkAway = "How rude!"
         self.on.shopEmpty = "Sorry, I'm not offering anything."
         self.on.shopTrade = "Here's my offer, %(playerName)s. Don't you like it?"
-        
+
         self.on.onSaid(offers, self.handleOffers, self.handleClose)
         
     def offer(self, name, sellPrice=0, buyPrice=0, subtype=0):
@@ -96,14 +96,16 @@ class Shop(ClassAction):
         pass # TODO
     
     def handleOffers(self, npc, player):
+        if player.position.z != npc.position.z: return
+
+        if not player in npc.focus: npc.focus.add(player) # Hack...
+
         _sayParams = {"playerName":player.name()}
         
         if self.on.offers and player.position.z == npc.position.z and player in npc.focus:
             npc.sayTo(player, self.on.shopTrade % _sayParams)
             npc.sendTradeOffers(player)
             player.setTrade(npc)
-        elif player.position.z != npc.position.z and not player in npc.focus:
-            pass
         else:
             npc.sayTo(player, self.on.shopEmpty % _sayParams)
 

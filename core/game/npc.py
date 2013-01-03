@@ -118,6 +118,7 @@ class NPC(Creature):
             stream.uint8(0x7B)
         else:
             stream = TibiaPacket(0x7B)
+        
         stream.uint32(to.getMoney())
 
         stream.uint8(len(forSale))
@@ -131,15 +132,15 @@ class NPC(Creature):
             stream.send(to.client) 
         
     def buy(self, player, itemId, subtype, amount, ignoreCapacity=True, withBackpack=False):
-        
         for offer in self.base.offers:
-            if offer[0] == itemId and offer[3] == subtype:
+            if cid(offer[0]) == itemId and offer[3] == subtype:
                 # Can we afford it?
                 if player.removeMoney(offer[1] * amount):
                     count = amount
                    
-                    stack = Item(itemId).stackable
-                    player.message(_lp(player, "Bought %(amount)sx %(name)s for %(price)s gold.", "Bought %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": amount , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[1] * amount})
+                    tmpItem = Item(offer[0])
+                    stack = tmpItem.stackable
+                    player.message(_lp(player, "Bought %(amount)sx %(name)s for %(price)s gold.", "Bought %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": amount , "name": _l(player, tmpItem.name), "price": offer[1] * amount})
                     container = player.inventory[2]
                     if withBackpack:
                         container = game.item.Item(1988)
@@ -147,31 +148,32 @@ class NPC(Creature):
                         
                     while count > 0:
                         rcount = min(100, count) if stack else 1
-                        player.itemToContainer(container, game.item.Item(itemId, rcount))
+                        player.itemToContainer(container, Item(offer[0], rcount))
                         count -= rcount
                         
-                    if self.forSale and player.openTrade == self: # Resend my items
-                        self.sendGoods(player, self.forSale)
+                    
+                    self.sendGoods(player, self.forSale)
                         
     def sell(self, player, itemId, subtype, amount, ignoreEquipped=True):
         for offer in self.base.offers:
             count = amount
-            if offer[0] == itemId:
+            if cid(offer[0]) == itemId:
                 if Item(itemId).stackable:
                     # Do we really have this item?
-                    item = player.findItemById(itemId, count)
+                    item = player.findItemById(offer[0], count)
                     if item.count == count:
                         player.addMoney(offer[2] * amount)
-                        player.message(_lp(player, "Sold %(amount)sx %(name)s for %(price)s gold.", "Sold %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": count , "name": _l(player, game.item.items[itemId]["name"]), "price": offer[2] * amount})
+                        player.message(_lp(player, "Sold %(amount)sx %(name)s for %(price)s gold.", "Sold %(amount)sx %(name)ss for %(price)s gold.", amount) % {"amount": count , "name": _l(player, item.name), "price": offer[2] * amount})
                         if self.forSale and player.openTrade == self: # Resend my items
                             self.sendGoods(player, self.forSale)
                 else:
                     while count:
-                        item = player.findItemById(itemId)
+                        item = player.findItemById(offer[0])
                         player.addMoney(offer[2])
                         count -= 1
-                    if self.forSale and player.openTrade == self: # Resend my items
-                        self.sendGoods(player, self.forSale)
+                    # Resend my items
+                    self.sendGoods(player, self.forSale)
+
     def handleSpeak(self, player, said):
         said = said.strip()
         if said in self.base._onSaid:
@@ -227,6 +229,7 @@ class NPC(Creature):
             self.base._onSaid[self.activeSaid][1](self, player)
         except:
             pass
+
 class NPCBase(object):
     def __init__(self, brain, data):
         self.data = data
