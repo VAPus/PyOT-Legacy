@@ -574,6 +574,12 @@ class BaseProtocol(object):
     def handle(self, player, packet):
         packetType = packet.uint8()
 
+        if not player.alive:
+            if packetType == 0x0F:
+                packetType == 0x14
+            elif packetType != 0x14:
+                return
+
         if packetType in OPHANDLERS:
             try:
                  OPHANDLERS[packetType](self, player, packet)
