@@ -157,34 +157,32 @@ class Monster(Creature):
                 try:
                     maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                 except:
-                    if self.name() in config.ignoredMonsters:
-                        maxSize = 0
-                    else:
+                    # Monsters with loot MUST have a container with some size in it.
+                    if self.base.lootTable: 
                         print "[WARNING] Monster %s got a bad corpse" % self.name()
-                        maxSize = 0
+                    maxSize = 0
                 drops = []
-                for loot in self.base.lootTable:
-                    if config.lootDropRate*loot[1]*100 > random.randint(0, 10000): # [7363, 28.5, 4]
-                        if len(drops)+1 == maxSize:
-                            if config.stockLootInBagsIfNeeded:
-                                drops.insert(0, (config.stockLootBagId, None))
-                                maxSize += item.items[config.stockLootBagId]["containerSize"]
-                            else:
-                                drops.append(loot)
-                                
+                if maxSize:
+                    for loot in self.base.lootTable:
+                        if config.lootDropRate*loot[1]*100 > random.randint(0, 10000): # [7363, 28.5, 4]
+                            if len(drops)+1 == maxSize:
+                                if config.stockLootInBagsIfNeeded:
+                                    drops.insert(0, (config.stockLootBagId, None))
+                                    maxSize += item.items[config.stockLootBagId]["containerSize"]
+                                else:
+                                    drops.append(loot)            
                                 break
-                        else:        
-                            drops.append(loot)
+                            else:        
+                                drops.append(loot)
                             
-                    elif len(loot) == 4:
-                        drops.append((loot[0], None, loot[4]))
+                        elif len(loot) == 4:
+                            drops.append((loot[0], None, loot[4]))
                 
                 ret = scriptsystem.get("loot").runSync(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
                 for loot in drops:
-
                     lenLoot = len(loot)
                     ret = 0
                     if lenLoot == 2:
