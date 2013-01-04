@@ -206,7 +206,7 @@ class PlayerAttacks(CreatureAttacks):
             if not type in attrs: return dmg # Not implanted, or something entierly custom?
             for item in self.inventory:
                 if item:
-                    absorb += getattr(item, "absorbPercentAll", 0) + getattr(item, attrs[type], 0)
+                    absorb += (item.absorbPercentAll or 0) + (getattr(item, attrs[type]) or 0)
                     if item.charges and absorb > 0:
                         item.useCharge()
 
