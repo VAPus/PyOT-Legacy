@@ -50,7 +50,7 @@ def defaultBrainFeaturePriority(monster):
                     if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if spell[2](monster):
                             try:
-                                spell[1](None, monster, None, None, monster, strength=spell[3])
+                                spell[1](None, monster, monster.position, monster.position, monster, strength=spell[3])
                                     
                             except:
                                 spell[1](monster, spell[3])
@@ -83,7 +83,7 @@ def defaultBrainFeaturePriority(monster):
                     if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
                             try:
-                                check = spell[1](None, monster, None, None, monster.target, strength=spell[4])
+                                check = spell[1](None, monster, monster.position, monster.target.position, monster.target, strength=spell[4])
                                     
                             except:
                                 check = spell[1](monster, spell[4])
