@@ -86,6 +86,9 @@ monsterNeverSkipWalks = False # This makes monsters always calculate a new rute 
 monsterStairHops = False # Allow monsters to walk up and down stairs
 monsterAoEAffectMonsters = False # Does monsters AoE spells affect other monsters?
 
+# For "special" monsters with no corpse or so.
+ignoredMonsters = ("Northern Pike", "Rift Worm", "Insect Swarm", "Fish", "Slime", "Butterfly", "Son Of Verminor")
+
 # Outfits
 playerCanChangeOutfit = True
 playerCanChangeColor = True

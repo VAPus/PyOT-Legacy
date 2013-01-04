@@ -14578,6 +14578,8 @@
 	"cid": 4378,
 	"name": "dead butterfly",
 	"corpseType": "blood",
+	"decayTo": 0,
+	"duration": 600,
 	"flags": "p",
 	"weight": 10
 },{
@@ -15598,6 +15600,8 @@
 	"id": "4992-4994",
 	"cid": "4991-4993",
 	"name": "exotic butterfly",
+	"decayTo": 4313,
+	"duration": 900,
 	"flags": "p",
 	"weight": 100
 },{
@@ -15675,8 +15679,8 @@
 	"cid": 5013,
 	"name": "exotic butterfly",
 	"corpseType": "venom",
-	"decayTo": 0,
-	"duration": 600,
+	"decayTo": 4313,
+	"duration": 900,
 	"flags": "p",
 	"weight": 100
 },{
