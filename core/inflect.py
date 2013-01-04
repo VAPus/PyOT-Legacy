@@ -1195,8 +1195,7 @@ no_classical = dict((k, False) for k in def_classical.keys())
 #            raise BadRcFileError
 
 
-class engine:
-
+class engine(object):
     def __init__(self):
 
         self.classical_dict = def_classical.copy()
