@@ -10,6 +10,9 @@ def verify(): return True
 
 
 class Packet(base.Packet):
+    maxOutfits = 34
+    maxMounts = 32
+
     def speed(self, speed):
         self.uint16((speed - 49) // 2)
 
