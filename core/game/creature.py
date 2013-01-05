@@ -686,10 +686,13 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         if subtype and isinstance(conditionType, str):
             conditionType = "%s_%s" % (conditionType, subtype)
         try:
-            self.conditions[conditionType]
-            return True
+            if self.conditions[conditionType].length > 0:
+                return True
+            else:
+                self.loseCondition(conditionType)
         except:
-            return False
+            pass
+        return False
 
     def getCondition(self, conditionType, subtype=""):
         if subtype and isinstance(conditionType, str):

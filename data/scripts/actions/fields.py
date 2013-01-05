@@ -1,28 +1,15 @@
+def _verify(creature, thing, position):
+    if creature.position != position: return
 
-def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
-    if not creature.alive:
-        return
+    if not creature.hasCondition(getattr(game.enum, 'CONDITION_%s' % (thing.field.upper()))):
+        every = (thing.fieldTicks or 2000)/1000
+        creature.condition(Condition(getattr(game.enum, 'CONDITION_%s' % (thing.field.upper())), length=every * (thing.fieldCount or 1), every=every, damage=thing.fieldDamage))
+    callLater((thing.fieldTicks or 2000)/1000, _verify, creature, thing, position)
 
-    ticks += 1
-    creature.onHit(None, -thing.fieldDamage, getattr(game.enum, thing.field.upper()), False)
-    creature.magicEffect(effect)
-
-
-    if ticks < forTicks:
-        callLater(perTime, effectOverTime, creature, damage, perTime, effect, forTicks, ticks)
-
-def callback(creature, thing, **k):
+def callback(creature, thing, position, **k):
     if thing.fieldDamage:
-        try:
-            effect, effectOverTime = typeToEffect(thing.field)[0:2]
-        except:
-            effect = EFFECT_POFF
-            effectOverTime = EFFECT_POFF
-
-        creature.magicEffect(effect)
-        creature.onHit(None, -thing.fieldDamage, getattr(game.enum, thing.field.upper()), False)
-
-        if thing.fieldCount:
-            callLater(thing.fieldTicks / 1000, effectOverTime, creature, thing.fieldDamage, thing.fieldTicks / 1000, effectOverTime, thing.fieldCount)
-
+        every = (thing.fieldTicks or 2000)/1000
+        creature.condition(Condition(getattr(game.enum, 'CONDITION_%s' % (thing.field.upper())), length=every * (thing.fieldCount or 1), every=every, damage=thing.fieldDamage))
+        callLater(every, _verify, creature, thing, position)
+    
 registerForAttr('walkOn', 'fieldDamage', callback)
