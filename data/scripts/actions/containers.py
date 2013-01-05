@@ -56,7 +56,7 @@ def container(creature, thing, position, index, **k):
         creature.closeContainer(thing)
 
 def containerMove(creature, thing, position, **k):
-    if thing.owners:
+    if thing.owners and position:
         for owner in thing.owners[:]:
             if not owner.inRange(position, 1, 1) or position.z != owner.position.z:
                 who.closeContainer(thing)
