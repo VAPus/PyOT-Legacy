@@ -255,6 +255,7 @@ class NPCBase(object):
         self.speakTreeGreet = None
         self.speakTreeFarewell = None
         
+        self.blood = BLOOD
         
         # Default interation.
         self._defaultTalk = lambda npc, player: npc.sayTo(player, "Sorry, can I help you with something?")
