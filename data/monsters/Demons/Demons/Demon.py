@@ -33,5 +33,5 @@ demon.regTargetSpell("demon geb", 300, 460, check=chance(9)) #
 demon.regTargetSpell("demon estrike", 210, 300, check=chance(9)) #
 demon.regTargetSpell("demon manadrain", 0, 120, check=chance(9)) #
 demon.regSelfSpell("Light Healing", 1, 250, check=chance(9)) #
-demon.regSelfSpell(2301, 1, 1, check=chance(9)) #use rune id
+demon.regTargetSpell(2301, 1, 1, check=chance(9)) #use rune id
 ##need to add haste spells
