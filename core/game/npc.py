@@ -620,7 +620,7 @@ class NPCBrain(MonsterBrain):
             npc.turnOffBrain()
             return False
             
-        if npc.base.walkable and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
+        if npc.base.walkable and not npc.focus and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
             self.walkRandomStep(npc) # Walk a random step
 
         npc.brainEvent = reactor.callLater(2, self.handleThink, npc)

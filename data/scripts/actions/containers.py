@@ -55,4 +55,11 @@ def container(creature, thing, position, index, **k):
     else:
         creature.closeContainer(thing)
 
+def containerMove(creature, thing, position, **k):
+    if thing.owners:
+        for owner in thing.owners[:]:
+            if not owner.inRange(position, 1, 1) or position.z != owner.position.z:
+                who.closeContainer(thing)
+                
 registerForAttr('use', 'containerSize', container)
+registerForAttr('dropOnto', 'containerSize', containerMove)

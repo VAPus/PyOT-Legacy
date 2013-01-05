@@ -85,8 +85,9 @@ def calculateAreaDirection(position, direction, area):
         for a in area[1:]:
             x = position.x - a[0]
             y = position.y - a[1]
-           
-            positions.append(Position(x,y, position.z))
+            pos = Position(x, y, position.z)  
+            if pos.getTile():         
+                positions.append(pos)
                   
 
     return positions
