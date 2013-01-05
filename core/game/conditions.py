@@ -1,4 +1,5 @@
 import copy
+import math
 
 class Condition(object):
     def __init__(self, type, subtype="", length=1, every=2, check=None, *argc, **kwargs):
@@ -387,7 +388,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         if not self.creature:
             return
 
-        self.effect(self.damage)
+        self.effect(math.ceil(self.damage))
         
         self.count -= 1
         self.length -= 2
