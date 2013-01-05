@@ -396,8 +396,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             send = self.extraIcons
             for conId in self.conditions:
                 try:
-                    conId = int(conId)
-                    send += conId
+                    if self.conditions[conId].length > 0:
+                        conId = int(conId)
+                        send += conId
                 except:
                     pass
                 
