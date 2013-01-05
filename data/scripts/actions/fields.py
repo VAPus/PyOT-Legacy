@@ -4,7 +4,7 @@ def effectOverTime(creature, damage, perTime, effect, forTicks, ticks=0):
         return
 
     ticks += 1
-    creature.modifyHealth(-damage)
+    creature.onHit(None, -thing.fieldDamage, getattr(game.enum, thing.field.upper()), False)
     creature.magicEffect(effect)
 
 
@@ -20,7 +20,8 @@ def callback(creature, thing, **k):
             effectOverTime = EFFECT_POFF
 
         creature.magicEffect(effect)
-        creature.modifyHealth(-thing.fieldDamage)
+        creature.onHit(None, -thing.fieldDamage, getattr(game.enum, thing.field.upper()), False)
+
         if thing.fieldCount:
             callLater(thing.fieldTicks / 1000, effectOverTime, creature, thing.fieldDamage, thing.fieldTicks / 1000, effectOverTime, thing.fieldCount)
 
