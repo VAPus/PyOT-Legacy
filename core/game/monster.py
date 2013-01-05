@@ -326,7 +326,7 @@ class Monster(Creature):
             if player.isAttackable(self) and self.canTarget(player.position):
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
                 
-                if not path and self.distanceStepsTo(player.position) > 0: continue
+                if not path: continue
                 # Calc x+y distance, diagonal is honored too.
                 dist = len(path) 
                 if dist < bestDist:
@@ -412,6 +412,8 @@ class Monster(Creature):
                 elif field:
                     return False
                 elif thing.blockpath:
+                    return False
+                elif thing.teleport:
                     return False
 
             elif isinstance(thing, Creature):

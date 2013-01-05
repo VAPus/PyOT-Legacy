@@ -268,6 +268,9 @@ class CreatureMovement(object):
 
         if newTile.things:
             for thing in newTile.things:
+                if not self.isPlayer() and isinstance(thing, Item) and thing.teleport:
+                    return self.clearMove(direction, failback)
+
                 if thing.solid:
                     if level and isinstance(thing, Creature):
                         continue
