@@ -179,6 +179,7 @@ class Condition(object):
 class Boost(Condition):
     def __init__(self, type, mod, length, subtype="", percent=False, *argc, **kwargs):
         self.length = length
+        self.every = 2 # Required for CONDITION_LATER
         self.creature = None
         self.tickEvent = None
         if subtype and isinstance(type, str):
@@ -307,6 +308,7 @@ class CountdownCondition(Condition):
         self.damage = startdmg
         # Cheat, this is a requirement.
         self.length = 2
+        self.every = 2 # Required for CONDITION_LATER
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
@@ -362,6 +364,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
             self.count = rptcount
 
         self.length = self.count * 2
+        self.every = 2 # Required for CONDITION_LATER
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)
@@ -410,6 +413,7 @@ class RepeatCondition(Condition):
             self.count = rptcount
 
         self.length = self.count * 2
+        self.every = 2 # Required for CONDITION_LATER
         
         if subtype and isinstance(type, str):
             self.type = "%s_%s" % (type, subtype)

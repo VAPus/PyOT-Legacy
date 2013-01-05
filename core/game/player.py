@@ -1745,6 +1745,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.saveInventory = False
 
         if self.saveCondition or force:
+            for conId in self.conditions.copy():
+                if not self.conditions[conId].length > 0:
+                    del self.conditions[conId]
+
             extras.append(game.engine.fastPickler(self.conditions))
             extraQuery += ", p.`conditions` = %s"
             self.saveCondition = False
