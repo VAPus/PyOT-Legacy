@@ -116,6 +116,8 @@ class Monster(Creature):
         
     def onDeath(self):
         # Remove master summons
+        isSummon = self.isSummon()
+
         if self.master:
             self.master.activeSummons.remove(self)
 
@@ -153,7 +155,7 @@ class Monster(Creature):
                 
                     # Callback to remove owner after config.privateLootFor seconds
                     callLater(config.privateLootFor, _clear_private_loot)
-            if not self.lastDamagers or self.getLastDamager() != self.master:
+            if not isSummon and not self.lastDamagers or self.getLastDamager() != self.master:
                 try:
                     maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                 except:
@@ -253,7 +255,7 @@ class Monster(Creature):
         # Remove me. This also refresh the tile.
         self.remove()
 
-        if self.lastDamagers and self.getLastDamager().isPlayer() and self.getLastDamager() != self.master:
+        if not isSummon and self.lastDamagers and self.getLastDamager().isPlayer() and self.getLastDamager() != self.master:
             if lootMsg:
                 self.getLastDamager().message(_l(self.getLastDamager(), "loot of %(who)s: %(loot)s") % {"who": self.data["name"].lower(), "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
