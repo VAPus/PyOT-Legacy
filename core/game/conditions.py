@@ -394,7 +394,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         self.length -= 2
 
         self.damage = round(self.damage * self.percent, 2)
-        if self.count <= 0 or self.damage <= 0:
+        if self.count <= 0 or self.damage <= 0.27:
             self.finish()
         else:
             self.tickEvent = reactor.callLater(2, self.tick)
