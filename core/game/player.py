@@ -1228,21 +1228,20 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Item to container
     def addItem(self, item, placeOnGround=True):
-        ret = None
+        ret = False
         if self.inventory[2]:
             try:
                 ret = self.itemToContainer(self.inventory[2], item)
             except:
-                ret = False
-        else:
-            ret = False
-
+                pass
+        
         if ret == False and not self.inventory[9]:
             if self.addCache(item) != False:
                 self.inventory[9] = item
                 item.setPosition(Position(0xFFFF, 10, 0), self)
                 stream = self.packet()
                 stream.addInventoryItem(10, self.inventory[9])
+                self.refreshStatus(stream)
                 stream.send(self.client)
                 item.decay()
                 return True

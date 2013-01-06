@@ -395,3 +395,20 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, 1), Position(0xFFFF, 64, 0)))
 
         self.assertEqual(bag.size(), 2)
+
+    def test_consistant_weight(self):
+
+        self.player.toggleRaiseMessages()
+
+        if self.player.inventory[SLOT_BACKPACK]:
+            self.player.inventory[SLOT_BACKPACK].remove()
+
+        bag = Item(idByName('bag'))
+        bag.place(Position(0xFFFF,SLOT_AMMO+1, 0), self.player)
+
+        weight = self.player.inventoryWeight
+
+        self.assertTrue(moveItem(self.player, bag.position, Position(0xFFFF, SLOT_BACKPACK+1, 0)))
+
+        self.assertEqual(weight, self.player.inventoryWeight)
+        self.player.toggleRaiseMessages()

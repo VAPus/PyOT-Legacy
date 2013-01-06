@@ -366,7 +366,11 @@ class Item(object):
         assert isinstance(position, Position) or isinstance(position, StackPosition)
 
         if creature:
-            creature.placeItem(position, self)
+            if position.x != 0xFFFF or position.y > 64:
+                raise Exception("Item.place called with creature can only place to inventory.")
+
+            creature.itemToInventory(self, position.y)
+            #creature.placeItem(position, self)
         else:
             tile = position.getTile()
             for item in tile.getItems():
@@ -822,7 +826,7 @@ class Item(object):
             assert bag == self.inContainer
             creature = self.creature
             try:
-                creature.inventoryCache[bag.itemId].index(bag)
+                creature.inventoryCache[self.itemId].index(self)
                 if creature.removeCache(self):
                     update = True
             except:

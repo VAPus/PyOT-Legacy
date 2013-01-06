@@ -854,7 +854,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
             
         while container:
             if container == thing:
-                return player.notPossible()
+                player.notPossible()
+                return False #player.notPossible()
             container = container.inContainer
 
     slots = thing.slots()
@@ -969,7 +970,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 print "XXX: In case of bug, do something here?"
 
-    if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
+    if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
         player.closeContainer(thing)
     
     # Update everything. Lazy.
