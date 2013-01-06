@@ -197,9 +197,9 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             pkg.string(config.servers[character['world_id']][1])
             pkg.raw(socket.inet_aton(ip))
             pkg.uint16(port)
-            # Is this account enabled or disabled.
+            
             if version >= 980:
-                pkg.uint8(1)
+                pkg.uint8(0)
         # Add premium days
         pkg.uint16(account[0]['premdays'])
         pkg.send(self) # Send
