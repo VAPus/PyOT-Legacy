@@ -88,14 +88,14 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
                     pkg.send(self)
                     return
-            else:
-                packet.pos = pos
+
+            packet.pos = pos
 
         packet.pos += 2
         #packet.uint16() # OS 0x00 and 0x01
         version = packet.uint16() # Version int
 
-        if version >= 972:
+        if version >= 971:
             version = packet.uint32()
             packet.uint8() # Client type.
 
