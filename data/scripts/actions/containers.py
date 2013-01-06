@@ -46,7 +46,7 @@ def container(creature, thing, position, index, **k):
         if ok:
             def _verifyClose(who):
                 if thing.openIndex != None:
-                    if not who.inRange(thing.position, 1, 1):
+                    if not thing.position or not who.inRange(thing.position, 1, 1):
                         who.closeContainer(thing)
                     else:
                         who.scripts["onNextStep"].append(_verifyClose)
@@ -55,11 +55,11 @@ def container(creature, thing, position, index, **k):
     else:
         creature.closeContainer(thing)
 
-def containerMove(creature, thing, position, **k):
-    if thing.owners and position:
-        for owner in thing.owners[:]:
-            if not owner.inRange(position, 1, 1) or position.z != owner.position.z:
-                who.closeContainer(thing)
-                
+def containerMove(creature, thing, position, onPosition, **k):
+    if thing.openCreatures and onPosition:
+        for owner in thing.openCreatures[:]:
+            if not owner.inRange(onPosition, 1, 1) or onPosition.z != owner.position.z:
+                owner.closeContainer(thing)
+
 registerForAttr('use', 'containerSize', container)
 registerForAttr('dropOnto', 'containerSize', containerMove)

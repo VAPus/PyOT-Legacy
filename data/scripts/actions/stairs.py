@@ -63,6 +63,7 @@ def floorchange(creature, thing, position, **k):
 
 @register('dropOnto', stairs)
 def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
+    if not position: return # Place event.
     newPos = position.copy()
     if thing.floorchange == "north":
         newPos.y -= 1
@@ -84,6 +85,8 @@ def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
         newPos.z += 1
         destThing = newPos.getTile().getThing(1)
+
+        if not destThing: return False
 
         # Note: It's the reverse direction
         if destThing.floorchange == "north":
