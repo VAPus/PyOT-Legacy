@@ -572,16 +572,26 @@ class Item(object):
                 position.setTile(tile)
                 item = tile.getThing(stackPos)
                 return item.transform(toId, position)
-                
-            tile.removeItem(self)
+    
+            # Hack.
+            if stackPos != 0:
+                tile.removeItem(self)
             item = self
             if item.tileStacked:
                 item = item.copy()
-                
+                item.position = self.position                
             item.itemId = toId
             if toId:
-                newStackpos = tile.placeItem(item)
+                if stackPos == 0:
+                    # Hack.
+                    tile.ground = item
+                    newStackpos = 0
+                else:
+                    newStackpos = tile.placeItem(item)
                 item.decay()
+
+            if not toId and stackPos == 0:
+                item.itemId = 100
 
             for spectator in game.engine.getSpectators(position):
                 stream = spectator.packet()

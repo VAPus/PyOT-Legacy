@@ -305,6 +305,7 @@ class Tile(object):
 
     def findStackpos(self, thing):
         """ Returns the stackposition of that `thing` on this tile. """
+        if thing == self.ground: return 0
         return self.things.index(thing)+1
         
     def findClientItem(self, cid, stackpos=None):
