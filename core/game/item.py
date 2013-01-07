@@ -563,13 +563,16 @@ class Item(object):
         
         if position.x != 0xFFFF:
             tile = position.getTile()
+
+            stackPos = tile.findStackpos(self)
+
             # Is this a stacked tile?
             if tile.getFlags() & TILEFLAGS_STACKED:
                 tile = tile.copy()
                 position.setTile(tile)
-
-            stackPos = tile.findStackpos(self)
-
+                item = tile.getThing(stackPos)
+                return item.transform(toId, position)
+                
             tile.removeItem(self)
             item = self
             if item.tileStacked:
@@ -587,6 +590,7 @@ class Item(object):
                     stream.addTileItem(position, newStackpos, item)
                     
                 stream.send(spectator)
+            return item
         else:
             if self.tileStacked:
                 self = self.copy()
@@ -594,6 +598,7 @@ class Item(object):
             self.itemId = toId
             self.decay()
             self.refresh(position)
+            return self
 
     def refresh(self, position=None):
         " Send the item to clients. Mostly useful internally. "
