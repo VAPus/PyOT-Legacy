@@ -41,6 +41,7 @@ def useShovel(creature, thing, position, onThing, onPosition, **k):
             if random.randint(1, 40) == 1:
                 onThing.addAction(SCARAB_COIN_TILE)
     else:
+        creature.notPossible()
         return False
     onThing.decay()
     return True

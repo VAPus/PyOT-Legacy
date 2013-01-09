@@ -45,3 +45,5 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
                 pass
         else:
             creature.notPossible()
+    else:
+        creature.notPossible()
