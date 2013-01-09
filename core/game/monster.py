@@ -762,8 +762,8 @@ class MonsterBrain(object):
             raise Exception("Attempting to start a brain of a active monster!")
         
     def handleThink(self, monster, check=True):
-        # Are we alive?
-        if not monster.alive:
+        # Are we alive? And placed on a live position
+        if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()
             return False # Stop looper
         

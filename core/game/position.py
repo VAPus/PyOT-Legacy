@@ -88,6 +88,15 @@ class Position(object):
         """ Return a StackPosition with `stack` as the stack position and this as the x,y,z,instance position. """
         return StackPosition(self.x, self.y, self.z, stack, self.instanceId)
 
+    def exists(self):
+        """ Check if this position exists (holds a tile) """
+        tile = knownMap.get((self.x, self.y, self.z, self.instanceId), False)
+
+        if tile:
+            return True
+        else:
+            return False
+
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):
         self.positions = argc
