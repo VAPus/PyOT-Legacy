@@ -90,7 +90,7 @@ class Position(object):
 
     def exists(self):
         """ Check if this position exists (holds a tile) """
-        tile = knownMap.get((self.x, self.y, self.z, self.instanceId), False)
+        tile = game.map.knownMap.get((self.x, self.y, self.z, self.instanceId), False)
 
         if tile:
             return True
