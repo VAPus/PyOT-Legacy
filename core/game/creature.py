@@ -91,6 +91,9 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         # Messages
         self.raiseMessages = False
 
+        # Spells.
+        self.spellTargets = [] # A temp value. Used by spells.
+
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
         if self.lastAction > _time:

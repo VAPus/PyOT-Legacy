@@ -123,6 +123,13 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         
     return damageCallback
 
+def damageExtra(constant, type=game.enum.MELEE):
+    def damageCallback(caster, target, strength=None):
+        if not target: return
+        target.onHit(caster, len(caster.spellTargets) * constant, type, False)
+
+    return damageCallback
+
 def element(type):
     # This is for Creature spells ONLY!
     def elementDamageCallback(caster, target, strength):
@@ -490,7 +497,7 @@ class Spell(object):
                     pass
                 
                 creature.cooldownSpell(self.icon, self.group, self.cooldown, self.groupCooldown)
-                
+            creature.spellTargets = []
                     
             if self.castEffect:
                 creature.magicEffect(self.castEffect)
@@ -505,6 +512,7 @@ class Spell(object):
                 creature.shoot(creature.position, target.position, self.shootEffect)
                 
             if not self.targetType == TARGET_AREA:
+                creature.spellTargets.append(target)
                 for call in self.effectOnTarget:
                     call(target=target, caster=creature, strength=strength)
                 
@@ -530,6 +538,8 @@ class Spell(object):
                     for targ in generator:
                         if creature.isMonster() and not config.monsterAoEAffectMonsters and targ.isMonster():
                             continue
+
+                        creature.spellTargets.append(targ)
 
                         if self._targetEffect:
                             targ.magicEffect(self._targetEffect)
@@ -597,7 +607,7 @@ class Rune(Spell):
                         creature.onlyOnCreatures()
                         return False
 
-            print target
+            creature.spellTargets = [target]
                     
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):
