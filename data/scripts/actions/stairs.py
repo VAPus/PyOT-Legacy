@@ -42,7 +42,7 @@ def floorchange(creature, thing, position, **k):
         destPos = position.copy()
         destPos.z += 1
         destThing = destPos.getTile().getThing(1)
-        if not destThing or destThing.name == "ladder":
+        if not destThing or destThing.name == "ladder" or not destThing.floorchange:
             newPos = position.copy()
             newPos.z += 1
             try:
@@ -86,10 +86,11 @@ def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
         newPos.z += 1
         destThing = newPos.getTile().getThing(1)
 
-        if not destThing: return False
+        if not destThing:
+            pass # Keep it.
 
         # Note: It's the reverse direction
-        if destThing.floorchange == "north":
+        elif destThing.floorchange == "north":
             newPos.y += 1
             
         elif destThing.floorchange == "south":

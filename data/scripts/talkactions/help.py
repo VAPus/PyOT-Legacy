@@ -174,7 +174,7 @@ def trackScripts(creature, text):
     for script in game.scriptsystem.globalScripts:
         if text in game.scriptsystem.globalScripts[script].scripts:
             for _script in game.scriptsystem.globalScripts[script].scripts[text]:
-                scripts.append((script, inspect.getfile(_script())[2:]))
+                scripts.append((script, inspect.getfile(_script)[2:]))
                 
     t = ""
     for script in scripts:
