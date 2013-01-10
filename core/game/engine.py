@@ -824,15 +824,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if destItem == itemContainer:
             return False
 
-    # Hack.
+    # Hacks.
     if fromPosition.x == 0xFFFF and not thing.creature:
         thing.creature = player
-
     if not thing.position:
         thing.position = fromPosition
     if destItem and not destItem.position:
         destItem.position = toPosition
-        
+    if thing.position.x == 0xFFFF and thing.position.y >= 64 and thing.inContainer == None:
+        thing.inContainer = player.openContainers[thing.position.y - 64] # Should raise if it's not valid.
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
         player.notPossible()
@@ -971,6 +971,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 print "XXX: In case of bug, do something here?"
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
+        print "This cause"
         player.closeContainer(thing)
     
     # Update everything. Lazy.

@@ -806,8 +806,9 @@ class Item(object):
         if not position:
             position = self.verifyPosition()
         print "Removing", position
+        
         if not position:
-            raise Exception("BUG: Item position cannot be verified! %s")
+            raise Exception("BUG: Item position cannot be verified! %s" % self.position)
 
         # Option 1, from the map:
         if position.x != 0xFFFF:
