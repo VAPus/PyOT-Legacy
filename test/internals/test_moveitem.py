@@ -412,3 +412,19 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertEqual(weight, self.player.inventoryWeight)
         self.player.toggleRaiseMessages()
+
+    def test_groundstack(self):
+        """ http://vapus.net/forum/distributions-227/%5B8-6-9-71%5D-pyot-v1-0-alpha3-6061-6/#post32628 """
+
+
+        gold1 = Item(idByName("gold coin"), 10)
+        gold2 = Item(idByName("gold coin"), 10)
+
+        gold1.place(Position(1000, 1001, 7))
+        gold2.place(Position(1001, 1000, 7))
+
+        self.assertTrue(moveItem(self.player, gold2.position, gold1.position))
+
+        self.assertEqual(gold1.count, 20)
+
+        
