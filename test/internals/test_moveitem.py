@@ -426,5 +426,4 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(moveItem(self.player, gold2.position, gold1.position))
 
         self.assertEqual(gold1.count, 20)
-
-        
+        self.assertNotIn(gold2, gold1.position.getTile().things)
