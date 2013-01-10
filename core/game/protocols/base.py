@@ -1041,7 +1041,7 @@ class BaseProtocol(object):
         position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
-        
+        hotkey = position.x == 0xFFFF and not position.y
         onPosition = packet.position(player.position.instanceId)
         onClientId = packet.uint16()
         onStack = packet.uint8()
@@ -1049,14 +1049,24 @@ class BaseProtocol(object):
         stackPosition1 = position.setStackpos(stackpos)
         stackPosition2 = onPosition.setStackpos(onStack)
         
-        if clientId != 99:
-            thing = player.findItem(stackPosition1)
+        if hotkey:
+            print clientId, game.item.sid(clientId)
+            if not config.enableHotkey: 
+                player.message("Hotkeys are disabled.")
+                return
+            else:
+                thing = player.findItemById(clientId, clientId = True, remove=False)
+                position = stackPosition1 = thing.position
         else:
-            thing = position.getTile().topCreature()
+            if clientId != 99:
+                thing = player.findItem(stackPosition1)
+            else:
+                thing = position.getTile().topCreature()
             
         if not thing:
             return
         if not thing.position:
+            if hotkey: raise Exception("TODO: Fix.")
             thing.position = stackPosition1
             
         if onClientId != 99:

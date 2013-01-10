@@ -522,13 +522,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             except:
                 return None
 
-    def findItemById(self, itemId, count=0):
+    def findItemById(self, itemId, count=0, remove=True, clientId = False):
         items = []
         foundCount = 0
         stream = self.packet()
         # From inventory?
         for item in self.inventory:
-            if item and item.itemId == itemId:
+            if item and ((not clientId and item.itemId == itemId) or (clientId and item.cid == itemId)):
                 items.append((1, item, self.inventory.index(item)))
                 if count:
                     foundCount += item.count
@@ -538,12 +538,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     break
 
 
-        if (not len(items) or foundCount < count) and self.inventory[3]:
-            bags = [self.inventory[2]]
+        if (not len(items) or foundCount < count) and self.inventory[SLOT_BACKPACK]:
+            bags = [self.inventory[SLOT_BACKPACK]]
             for bag in bags:
                 index = 0
                 for item in bag.container:
-                    if item.itemId == itemId:
+                    if ((not clientId and item.itemId == itemId) or (clientId and item.cid == itemId)):
                         items.append((2, item, bag, index))
                         if count:
                             foundCount += item.count
@@ -557,6 +557,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if (count and foundCount < count) or not items:
             return None
+
+        elif not remove:
+            return items[0][1]
 
         elif not count:
             if items[0][0] == 1:
