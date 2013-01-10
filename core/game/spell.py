@@ -155,7 +155,7 @@ def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=ga
         target.addSupporter(caster)
         
     return healCallback
-	
+
 def cure(condition):
     def cureCallback(caster, target, strength=None):
         target.addSupporter(caster)
@@ -203,7 +203,20 @@ def field(fieldId):
         item.place(position)
                             
     return makeFieldCallback
-    
+
+def magicRope():
+    def magicRopeCallback(caster, target=None, strength=None):
+        ropeSpots = 384, 418, 8278, 8592
+        Pos = caster.position
+        newPos = Pos.copy()
+        item = getTile(Pos).getThing(0)
+        if item.itemId in ropeSpots:
+            newPos.y += 1
+            newPos.z -= 1
+            caster.teleport(newPos)
+
+    return magicRopeCallback
+
 class Spell(object):
     def __init__(self, name=None, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
         self.name = name
@@ -383,6 +396,20 @@ class Spell(object):
         self._requireCallback.append(check)
         
         return self
+
+    def onPos(self):
+        def verify(caster, **k):
+            found = False
+            item = getTile(caster.position).getThing(0)
+            ropeSpots = 384, 418, 8278, 8592
+            if item.itemId in (ropeSpots):
+                found = True
+            else:
+                caster.notPossible()
+            return found
+        self._requireCallback.append(verify)
+
+        return self
     
     def cooldowns(self, cooldown=0, groupCooldown=None):
         if cooldown and groupCooldown == None:
@@ -512,7 +539,7 @@ class Spell(object):
                         
         return spellCallback
         
-        
+       
 class Rune(Spell):
     def __init__(self, rune, icon=0, count=1, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
         self.rune = rune
