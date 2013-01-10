@@ -971,7 +971,6 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 print "XXX: In case of bug, do something here?"
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
-        print "This cause"
         player.closeContainer(thing)
     
     # Update everything. Lazy.

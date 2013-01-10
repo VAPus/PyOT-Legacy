@@ -56,6 +56,10 @@ def container(creature, thing, position, index, **k):
         creature.closeContainer(thing)
 
 def containerMove(creature, thing, position, onPosition, **k):
+    # Prevent this when dropping items INTO bags.
+    if onPosition.x == 0xFFFF:
+        return
+
     if thing.openCreatures and onPosition:
         for owner in thing.openCreatures[:]:
             if not owner.inRange(onPosition, 1, 1) or onPosition.z != owner.position.z:
