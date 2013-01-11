@@ -8,9 +8,9 @@ def verify():
     
 class Packet( sys.modules["game.protocols.854"].Packet ):
 
-    def cancelTarget( ):
-        stream.uint8( 0xA3 )
-        stream.uint32( 0 )
+    def cancelTarget( self ):
+        self.uint8( 0xA3 )
+        self.uint32( 0 )
         
         
 class Protocol( sys.modules["game.protocols.854"].Protocol ):

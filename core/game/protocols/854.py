@@ -238,8 +238,8 @@ class Packet(base.BasePacket):
         self.uint32(creatureId)
         self.uint8(skull)
 
-    def cancelTarget( ):
-        stream.uint8( 0xA3 )
+    def cancelTarget( self ):
+        self.uint8( 0xA3 )
         
         
 class Protocol(base.BaseProtocol):

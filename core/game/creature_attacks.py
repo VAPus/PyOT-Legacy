@@ -390,7 +390,8 @@ class PlayerAttacks(CreatureAttacks):
             except:
                 pass"""
             #self.walkPattern  =deque()
-            stream.cancelTarget( )
+            
+            stream.cancelTarget()
         
             if not streamX:
                 stream.send(self.client)
