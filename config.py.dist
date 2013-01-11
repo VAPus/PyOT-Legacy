@@ -44,10 +44,10 @@ letGameServerRunTheLoginServer = True
 worldId = 0
 
 # Versions:
-versionMin = 860
+versionMin = 854
 versionMax = 981
 versionError = "You must use a client between 8.6 and 9.81"
-supportProtocols = (860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970, 971, 980) # We support these main branches + compatible protocols to them
+supportProtocols = (854,860, 861, 862, 870, 910, 920, 931, 940, 941, 942, 943, 944, 945, 946, 951, 952, 953, 954, 960, 962, 963, 970, 971, 980) # We support these main branches + compatible protocols to them
 
 # MOTD
 motd = "PyOT, it's alive!"

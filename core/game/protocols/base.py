@@ -556,6 +556,10 @@ class BasePacket(TibiaPacket):
         self.uint32(creatureId)
         self.uint8(shield)
 
+    def cancelTarget( ):
+        self.uint8( 0xA3 )
+        self.uint32( 0 )
+
 ###########################################
 ############## BASE PROTOCOL ##############
 ###########################################
