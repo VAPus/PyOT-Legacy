@@ -130,6 +130,30 @@ def damageExtra(constant, type=game.enum.MELEE):
 
     return damageCallback
 
+def meleeBased(aConst, bConst, constantMin, constantMax, type=game.enum.MELEE, lvlMin=5, lvlMax=5):
+    def meleeBasedCallback(caster, target, strength=None):
+        if not target: return
+        
+        if strength:
+            dmg = -random.randint(strength[0], strength[1])
+        else:
+            b = 0
+            weapon = caster.inventory[enum.SLOT_RIGHT]
+            if weapon:
+                skillType = weapon.weaponSkillType
+                b = weapon.attack
+            else:
+                skillType = enum.SKILL_FIST
+            a = caster.getActiveSkill(skillType)
+            c = caster.data["level"]
+            maxDmg = (round((a*aConst+b*bConst)*constantMax+(c/lvlMax)))
+            minDmg = (round((a*aConst+b*bConst)*constantMin+(c/lvlMin)))
+            dmg = -random.randint(minDmg, maxDmg)
+        
+        target.onHit(caster, dmg, type)
+        
+    return meleeBasedCallback
+
 def element(type):
     # This is for Creature spells ONLY!
     def elementDamageCallback(caster, target, strength):
