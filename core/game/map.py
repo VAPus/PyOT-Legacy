@@ -436,10 +436,10 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
     }
 """
 
-l_unpack = struct.Struct("<HB").unpack
-long_unpack = struct.Struct("<i").unpack
-creature_unpack = struct.Struct("<bbH").unpack
-spawn_unpack = struct.Struct("<HHBBB").unpack
+_l_unpack = struct.Struct("<HB").unpack
+_long_unpack = struct.Struct("<i").unpack
+_creature_unpack = struct.Struct("<bbH").unpack
+_spawn_unpack = struct.Struct("<HHBBB").unpack
 
 def loadSectorMap(code, instanceId, baseX, baseY):
     """ Parse the `code` (sector data) starting at baseX,baseY. Returns the sector. """
@@ -458,17 +458,31 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_Item = game.item.Item
     l_Tile = Tile
     l_HouseTile = HouseTile
-    
+    l_Position = Position
     l_attributes = attributeIds
     
     # Spawn commands
     l_getNPC = game.npc.getNPC
     l_getMonster = game.monster.getMonster
-    
+
+    # Local reference (for CPython)
+    lord = ord
+    l_unpack = _l_unpack
+    long_unpack = _long_unpack
+    creature_unpack = _creature_unpack
+    spawn_unpack = _spawn_unpack
+    boundX, boundY = mapInfo.sectorSize
+    globalProtection = config.globalProtectionZone
+    protectedZones = config.protectedZones
+    stackTiles = config.stackTiles
+    l_dummyItems = dummyItems
+    l_dummyTiles = dummyTiles
+    l_houseData = game.house.houseData
+
     # This is the Z loop (floor), we read the first byte
     while pos < codeLength:
         # First byte where we're at.
-        level = ord(code[pos])
+        level = lord(code[pos])
         pos += 1
         
         if level == 60:
@@ -477,12 +491,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
             pos += 7
                             
             # Mark a position
-            centerPoint = Position(centerX, centerY, centerZ, instanceId)
+            centerPoint = l_Position(centerX, centerY, centerZ, instanceId)
                             
             # Here we use attrNr as a count for 
             for numCreature in xrange(creatureCount):
-                creatureType = ord(code[pos])
-                nameLength = ord(code[pos+1])
+                creatureType = lord(code[pos])
+                nameLength = lord(code[pos+1])
                 name = code[pos+2:pos+nameLength+2]
                 pos += 6 + nameLength
                 spawnX, spawnY, spawnTime = creature_unpack(code[pos-4:pos])
@@ -492,20 +506,21 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 else:
                     creature = l_getNPC(name)
                 if creature:
-                    creature.spawn(Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
+                    creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
                     print "Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name)
                                     
             continue
         
         # Loop over the mapInfo.sectorSize[0] x rows
-        for xr in xrange(mapInfo.sectorSize[0]):
+        for xr in xrange(boundX):
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
-            while yr < mapInfo.sectorSize[1]:
+            while yr < boundY:
                 # The items array and the flags for the Tile.
                 items = []
+                items_append = items.append
                 flags = 0
                 ground = None
 
@@ -535,7 +550,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 3
                             attr = {}
                             for n in xrange(attrNr):
-                                name = l_attributes[ord(code[pos])]
+                                name = l_attributes[lord(code[pos])]
                                     
                                 opCode = code[pos+1]
                                 pos += 2
@@ -553,7 +568,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     value = False
                                 elif opCode == "l":
                                     value = []
-                                    length = ord(code[pos])
+                                    length = lord(code[pos])
 
                                     pos += 1
                                     for i in xrange(length):
@@ -580,23 +595,23 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             if not ground:
                                 ground = item
                             else:
-                                items.append(item)
+                                items_append(item)
                         else:
                             pos += 4
                             try:
                                 if not ground:
-                                    ground = dummyItems[itemId]
+                                    ground = l_dummyItems[itemId]
                                 else:
-                                    items.append(dummyItems[itemId])
+                                    items_append(l_dummyItems[itemId])
                             except KeyError:
                                 item = l_Item(itemId)
                                 item.tileStacked = True
                                 item.fromMap = True
-                                dummyItems[itemId] = item
+                                l_dummyItems[itemId] = item
                                 if not ground:
                                     ground = item
                                 else:
-                                    items.append(item)
+                                    items_append(item)
                                 
                                     
 
@@ -618,18 +633,20 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         skip = True
                         skip_remaining = True
                         break
+
                     # otherwise it should be ",", we don't need to verify this.
+
                 if ground:
                     ySum = (xr + baseX), (yr + baseY), level, instanceId
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
-                    if config.globalProtectionZone and not flags & TILEFLAGS_PROTECTIONZONE:
+                    if globalProtection and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
-                    elif not config.protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
+                    elif not protectedZones and flags & TILEFLAGS_PROTECTIONZONE:
                         flags -= TILEFLAGS_PROTECTIONZONE
 
                     if houseId:
                         # Fix flags if necessary, TODO: Move this to map maker!
-                        if config.protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
+                        if protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
                             flags += TILEFLAGS_PROTECTIONZONE
                             
                         tile = l_HouseTile(ground, items, flags)
@@ -653,7 +670,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             houseTiles[houseId] = [tile]
                         
                         try:
-                            for item in game.house.houseData[houseId].data["items"][ySum]:
+                            for item in l_houseData[houseId].data["items"][ySum]:
                                 tile.placeItem(item)
                         except KeyError:
                             pass
@@ -661,7 +678,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         houseId = 0
                         thisSectorMap[ySum] = tile
 
-                    elif config.stackTiles:
+                    elif stackTiles:
                         ok = ground.solid
                         if not ok:
                             for i in items:
@@ -670,13 +687,16 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     break
                         if ok:
                             # Constantify items on stacked tiles. This needs some workarounds w/transform. But prevents random bug.
-                            items = tuple(items) if items else None
-                            hash = ground, items
+                            if items:
+                                hash = ground, tuple(items)
+                            else:
+                                hash = ground
+                            
                             try:
-                                thisSectorMap[ySum] = dummyTiles[hash]
+                                thisSectorMap[ySum] = _dummyTiles[hash]
                             except:
                                 tile = l_Tile(ground, items, flags + TILEFLAGS_STACKED)
-                                dummyTiles[hash] = tile
+                                l_dummyTiles[hash] = tile
                                 thisSectorMap[ySum] = tile
 
                         else:
