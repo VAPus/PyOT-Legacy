@@ -143,6 +143,11 @@ stringVersion = node.data.getXString(128)
 
 print "-- "
 print "-- OTB version %d.%d (Client: %s, build: %d)" % (majorVersion, minorVersion, stringVersion[12:16], buildVersion)
+version = int(stringVersion[12:16].replace('.', ''))
+if version < 981:
+    removeStart, removeStop = 20000, 20050
+else:
+    removeStart, removeStop = 30000, 30100
 
 items = {}
 lastRealItem = None
@@ -205,8 +210,6 @@ while child:
         #items[item.sid] = lastRealItem
     child = node.next()
 
-for i in items:
-    if items[i].cid == 1361: print i
 print "-- Got a total of %d items!" % len(items)
 print "-- "
 print ""
@@ -269,7 +272,7 @@ if __name__ == "__main__":
                 attribute.tag = key
                 
         id = int(item.get("id").split("-")[0]) if item.get("id") else int(item.get("fromid"))
-        if id > 20000 and id < 20050: #or id not in items:
+        if id > removeStart and id < removeStop: #or id not in items:
             item.clear()
             root.remove(item)
             continue
