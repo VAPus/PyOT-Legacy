@@ -1,10 +1,3 @@
-usableOnTarget = True
-splashable = True
-realAnimation = False
-healthMultiplier = 1
-manaMultiplier = 1
-exhaust = 1
-
 POTIONS = {\
 8704: {"empty": 7636, "splash": 5, "health": [50, 100]}, # small health potion
 7618: {"empty": 7636, "splash": 5, "health": [100, 200]}, # health potion
@@ -36,8 +29,8 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     except:
         pass
 
-    if not onThing.isPlayer() or (not usableOnTarget and creature != onThing):
-        if not splashable:
+    if not onThing.isPlayer() or (not config.usableOnTarget and creature != onThing):
+        if not config.splashable:
             return False
 
         splash = game.item.Item(enum.FULLSPLASH)
@@ -59,20 +52,20 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
     try:
         mana = potion["mana"]
         if mana:
-            onThing.modifyMana(int(round(random.randint(mana[0], mana[1]) * manaMultiplier)))
+            onThing.modifyMana(int(round(random.randint(mana[0], mana[1]) * config.manaMultiplier)))
     except:
         pass
 
     try:
         health = potion["health"]
         if health:
-            onThing.modifyHealth(int(round(random.randint(health[0], health[1]) * healthMultiplier)))
+            onThing.modifyHealth(int(round(random.randint(health[0], health[1]) * config.healthMultiplier)))
     except:
         pass
 
     magicEffect(onPosition, EFFECT_MAGIC_BLUE)
 
-    if not realAnimation:
+    if not config.realAnimation:
         onThing.say("Aaaah...", MSG_SPEAK_MONSTER_SAY)
     else:
         for tid in getPlayers(creature.position, (1, 1)):
@@ -89,5 +82,5 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         thing.modify(-1)
         Item(potion["empty"], 1).place(position)
 
-    creature.condition(Condition(CONDITION_EXHAUST, 0, 4))
+    creature.condition(Condition(CONDITION_EXHAUST, 0, config.exhaust))
 
