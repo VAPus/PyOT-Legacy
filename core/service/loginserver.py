@@ -185,10 +185,14 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                 else:
                     import urllib2
                     try:
-                        ip = urllib2.urlopen("http://automation.whatismyip.com/n09230945.asp").read()
-                    except:
                         ip = urllib2.urlopen("http://vapus.net/ip.php").read()
+                    except:
+                        ip = ""
 
+                    if not ip:
+                        print "[ERROR] Automatic IP service is down!"
+
+                    
                     IPS['auto'] = ip
                     # Save IPS here.
                     cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)

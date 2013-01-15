@@ -5,13 +5,19 @@ provide = []
 
 def verify():
     return True
-    
-class Packet( sys.modules["game.protocols.854"].Packet ):
+
+# Use 8.54 as base, optional.
+try:
+    module = sys.modules["game.protocols.854"]
+except:
+    module = getattr( __import__('game.protocols.854', globals(), locals()).protocols, '854')
+
+class Packet( module.Packet ):
 
     def cancelTarget( self ):
         self.uint8( 0xA3 )
         self.uint32( 0 )
         
         
-class Protocol( sys.modules["game.protocols.854"].Protocol ):
+class Protocol( module.Protocol ):
     Packet = Packet

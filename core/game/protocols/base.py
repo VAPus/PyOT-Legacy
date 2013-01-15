@@ -577,7 +577,7 @@ class BaseProtocol(object):
     Packet = BasePacket    
     def handle(self, player, packet):
         packetType = packet.uint8()
-
+        
         if not player.alive:
             if packetType == 0x0F:
                 packetType == 0x14
@@ -1000,6 +1000,7 @@ class BaseProtocol(object):
         clientId = packet.uint16() # Junk I tell you :p
         stackpos = packet.uint8()
         index = packet.uint8()
+
         stackPosition = position.setStackpos(stackpos)
         thing = player.findItem(stackPosition)
         end = None
@@ -1418,6 +1419,7 @@ class BaseProtocol(object):
         creature = game.engine.getCreatureByCreatureId(packet.uint32())
         hotkey = position.x == 0xFFFF and not position.y
         stackPosition = position.setStackpos(stackpos)
+
         # Is hotkeys allowed?
         if not config.enableHotkey:
             player.cancelMessage("Hotkeys are disabled.")
@@ -1427,11 +1429,11 @@ class BaseProtocol(object):
         if player != creature and not player.inRange(creature.position, 7, 5):
             player.cancelMessage("Target is too far away.")
             return 
-        serverId = game.item.sid(clientItemId)
+
         if not hotkey:
             thing = player.findItem(stackPosition)
         else:
-            thing = player.findItemById(serverId)
+            thing = player.findItemById(clientItemId, clientId = True, remove=False)
             
             if not thing:
                 player.cancelMessage("You don't have any left of this item.")
@@ -1439,7 +1441,7 @@ class BaseProtocol(object):
                 return
                 
             # Also tell hotkey message
-            count = player.inventoryCache[serverId][0]
+            count = player.inventoryCache[thing.itemId][0]
             
             if not thing.showCount:
                 player.message("Using one of %s..." % thing.rawName())

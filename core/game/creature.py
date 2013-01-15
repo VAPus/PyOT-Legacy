@@ -94,6 +94,10 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         # Spells.
         self.spellTargets = [] # A temp value. Used by spells.
 
+    @property
+    def itemId(self):
+        return 99
+
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
         if self.lastAction > _time:
