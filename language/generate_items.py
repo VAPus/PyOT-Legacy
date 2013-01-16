@@ -1,9 +1,12 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 # Include the config
 import sys
 sys.path.append('../')
 sys.path.append('../core')
 import config
 
+#assert sys.stdout.encoding == "UTF-8"
 # Because mysql ain't that nice...
 taken = set()
 
@@ -12,23 +15,31 @@ import inflect
 
 INFLECT = inflect.engine()
 
-# SQL
-import MySQLdb
-db = MySQLdb.connect(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase)
-cursor = db.cursor()
-cursor.execute("SELECT DISTINCT name, sid, stackable FROM items")
-for row in cursor.fetchall():
-    if not row[0]: continue
+# Items.
+import game.item
+
+# Hack.
+from StringIO import StringIO
+config.itemFile = "../"+config.itemFile
+sys.stdout = StringIO()
+game.item.loadItems()
+
+import codecs
+sys.stdout = codecs.getwriter('utf8')(sys.__stdout__)
+
+for itemId in game.item.items:
+    obj = game.item.items[itemId]
+    if not "name" in obj: continue
     pin = False
-    word = row[0]
+    word = obj["name"]
         
     if word not in taken:
-        print "# ID: %d" % row[1]
+        print "# ID: %d" % itemId
         print 'msgid "%s"' % word
         pin = True
 
     plural = INFLECT.plural(word)
-    if row[2] and plural and plural != word and plural not in taken:
+    if obj.get("flags", 0) & (1 << 7) and plural and plural != word and plural not in taken:
         pre = ""
         if not pin: 
             print "# This will bug!"
@@ -50,15 +61,10 @@ for row in cursor.fetchall():
             print 'msgstr ""'
             print ""
        
-
-cursor = db.cursor()
-cursor.execute("SELECT DISTINCT value, sid FROM item_attributes WHERE `key` = 'description'")
-for row in cursor.fetchall():
-    if row[0] and row[0] not in taken:
-        print "# Description for ID: %d" % row[1]
-        print 'msgid "%s"' % row[0]
+    if "description" in obj and obj["description"] not in taken:
+        print "# Description for ID: %d" % itemId
+        print 'msgid "%s"' % obj["description"]
         print 'msgstr ""'
         print ""
-        taken.add(row[0])
-
+        taken.add(obj["description"])
 

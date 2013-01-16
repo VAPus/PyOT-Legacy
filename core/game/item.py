@@ -5,7 +5,6 @@ from twisted.python import log
 from collections import deque, namedtuple
 import game.enum
 import config
-import game.engine
 import copy
 import time
 import marshal
@@ -593,7 +592,7 @@ class Item(object):
             if not toId and stackPos == 0:
                 item.itemId = 100
 
-            for spectator in game.engine.getSpectators(position):
+            for spectator in getSpectators(position):
                 stream = spectator.packet()
                 stream.removeTileItem(position, stackPos)
                 if toId:
@@ -626,7 +625,7 @@ class Item(object):
             tile = position.getTile()
             stackPos = tile.findStackpos(self)
             
-            for spectator in game.engine.getSpectators(position):
+            for spectator in getSpectators(position):
                 stream = spectator.packet()
                 
                 if self.itemId:
