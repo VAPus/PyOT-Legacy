@@ -190,7 +190,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                         ip = ""
 
                     if not ip:
-                        print "[ERROR] Automatic IP service is down!"
+                        raise Exception("[ERROR] Automatic IP service is down!")
 
                     
                     IPS['auto'] = ip
