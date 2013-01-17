@@ -170,32 +170,32 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         for character in characters:
             ip = config.servers[character['world_id']][0]
             port = config.gamePort
+
             if ':' in ip:
                 ip, port = ip.split(':')
                 port = int(port)
-            if ip in IPS:
+            if self.transport.getPeer().host == '127.0.0.1':
+                ip = '127.0.0.1'
+            elif ip in IPS:
                 ip = IPS[ip]
-            if ip != 'auto':
+            elif ip != 'auto':
                 _ip = ip
                 ip = socket.gethostbyname(ip)
                 IPS[_ip] = ip
             else:
-                if self.transport.getPeer().host == '127.0.0.1':
-                    ip = '127.0.0.1'
-                else:
-                    import urllib2
-                    try:
-                        ip = urllib2.urlopen("http://vapus.net/ip.php").read()
-                    except:
-                        ip = ""
+                import urllib2
+                try:
+                    ip = urllib2.urlopen("http://vapus.net/ip.php").read()
+                except:
+                    ip = ""
 
-                    if not ip:
-                        raise Exception("[ERROR] Automatic IP service is down!")
+                if not ip:
+                    raise Exception("[ERROR] Automatic IP service is down!")
 
                     
-                    IPS['auto'] = ip
-                    # Save IPS here.
-                    cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
+                IPS['auto'] = ip
+                # Save IPS here.
+                cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
 
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
