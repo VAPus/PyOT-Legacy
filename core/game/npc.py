@@ -117,7 +117,7 @@ class NPC(Creature):
             stream = streamX
             stream.uint8(0x7B)
         else:
-            stream = TibiaPacket(0x7B)
+            stream = to.packet(0x7B)
         
         stream.money(to.getMoney())
 
@@ -223,7 +223,11 @@ class NPC(Creature):
         else:
             self.sayTo(player, self.base.speakFarewell % {"playerName":player.name()})
                 
-        self.focus.remove(player)
+        try:
+            self.focus.remove(player)
+        except:
+            pass # Removed already? Fix this "bug" at some later release.
+
         if self.activeModule:
             self.activeModule.close()
         try:
