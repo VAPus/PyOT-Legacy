@@ -81,8 +81,9 @@ class NPC(Creature):
         self.sayPrivate(text, to, messageType)
 
     def _onBuyerWalks(self, who):
-        who.closeTrade()
-        self.farewell(who)
+        if self.distanceStepsTo(who.position) > 6 or self.position.z != who.position.z:
+            who.closeTrade()
+            self.farewell(who)
         
     def sendTradeOffers(self, to):
         forSale = set()
