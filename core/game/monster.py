@@ -324,6 +324,13 @@ class Monster(Creature):
         for player in targets:
             # Can we target him, same floor
             if player.isAttackable(self) and self.canTarget(player.position):
+                # Walk steps ignore targets 1 step from us.
+                distance = self.distanceStepsTo(player.position)
+                if distance == 1:
+                    bestDist = 1
+                    target = player
+                    break
+
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
                 
                 if not path: continue

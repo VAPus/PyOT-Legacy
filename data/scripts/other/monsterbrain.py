@@ -2,7 +2,7 @@ def defaultBrainFeaturePriority(monster):
         # Walking
         if monster.target: # We need a target for this code check to run
             # Chance of retargeting?
-            if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth:
+            if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth and monster.distanceStepsTo(monster.target.position) > 1:
                 monster.targetCheck()
                 if not monster.target:
                     return True
