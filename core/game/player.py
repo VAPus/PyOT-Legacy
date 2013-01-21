@@ -43,11 +43,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         data["skills"] = {SKILL_FIST: data['fist'], SKILL_SWORD: data['sword'], SKILL_CLUB: data['club'], SKILL_AXE: data['axe'], SKILL_DISTANCE: data['distance'], SKILL_SHIELD: data['shield'], SKILL_FISH: data['fishing']}
         data["skill_tries"] =  {SKILL_FIST: data['fist_tries'], SKILL_SWORD: data['sword_tries'], SKILL_CLUB: data['club_tries'], SKILL_AXE: data['axe_tries'], SKILL_DISTANCE: data['distance_tries'], SKILL_SHIELD: data['shield_tries'], SKILL_FISH: data['fishing_tries']}
         
-        # Explicit. Decimal to int.
+        # Explicit. Decimal to int (XXX: Restructure database?)
         data["experience"] = int(data["experience"])
         data["balance"] = int(data["balance"])
         data["manaspent"] = int(data["manaspent"])
         data["balance"] = int(data["balance"])
+        data["health"] = int(data["health"])
         
         if not data['instanceId']:
             data['instanceId'] = 0
