@@ -99,7 +99,7 @@ class NPC(Creature):
             stream.uint8(count)
         for item in self.base.offers[:count]:
             stream.uint16(cid(item[0]))
-            stream.uint8(item[3])
+            stream.uint8(min(0xFF, item[3]))
             stream.string(game.item.items[item[0]]["name"])
             stream.uint32(game.item.items[item[0]]["weight"])
             stream.int32(item[1])
@@ -127,7 +127,7 @@ class NPC(Creature):
         for itemId in forSale:
             stream.uint16(cid(itemId))
             try:
-                stream.uint8(to.inventoryCache[itemId][0])
+                stream.uint8(min(0xFF, to.inventoryCache[itemId][0]))
             except KeyError:
                 stream.uint8(0)
         if not streamX:    
