@@ -376,7 +376,8 @@ class Monster(Creature):
                     engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                             
         # Begin autowalking
-        engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+        if bestDist > 1:
+            engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                     
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
