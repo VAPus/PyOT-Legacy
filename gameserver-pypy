@@ -1,2 +1,2 @@
 #!/bin/sh
-PYPY_GC_NURSERY="8M" pypy -tOO --jit enable_opts=all /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid
+pypy -tOO --jit retrace_limit=25,max_retrace_guards=50,trace_limit=20000 /usr/bin/twistd --nodaemon --python gameserver.tac --pidfile gameserver.pid

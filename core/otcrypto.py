@@ -18,23 +18,22 @@ def decryptRSA(stream):
     return bytes(pow(int(stream.encode("hex"), 16), D, N))
 
 def decryptXTEA(stream, k):
-    buffer = []
     length = len(stream) >> 2
     bstr = "<%dL" % length
-    packs = unpack(bstr, stream)
+    packs = list(unpack(bstr, stream))
 
     for pos in xrange(0, length, 2):
-        v0, v1 = packs[pos], packs[pos+1]
+        v0 = packs[pos]
+        v1 = packs[pos+1]
         for i in xrange(32):
             v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ k[63-i])) & 0xffffffff
             v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ k[31-i])) & 0xffffffff
-        buffer.append(v0)
-        buffer.append(v1)
+        packs[pos] = v0
+        packs[pos+1] = v1
 
-    return pack(bstr, *buffer)
+    return pack(bstr, *packs)
 
 def encryptXTEA(stream, k, length):
-    buffer = []
     pad = 8 - (length & 7)
     if pad:
         stream.append("\x33" * pad)
@@ -43,8 +42,7 @@ def encryptXTEA(stream, k, length):
     stream = ''.join(stream)
     bstr = "<%dL" % length
     
-    packs = unpack(bstr, stream)
-    buffer_append = buffer.append
+    packs = list(unpack(bstr, stream))
 
     for pos in xrange(0, length, 2):
         v0 = packs[pos]
@@ -52,8 +50,8 @@ def encryptXTEA(stream, k, length):
         for i in xrange(32):
             v0 = (v0 + (((v1<<4 ^ v1>>5) + v1) ^ k[i])) & 0xffffffff
             v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ k[32 + i])) & 0xffffffff
-        buffer_append(v0)
-        buffer_append(v1)
+        packs[pos] = v0
+        packs[pos+1] = v1
 
 
-    return pack(bstr, *buffer)
+    return pack(bstr, *packs)
