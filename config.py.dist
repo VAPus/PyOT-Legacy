@@ -6,7 +6,7 @@ loginPort = 7171
 gameInterface = '' # Leave blank to accept connections on any hostname
 gamePort = 7172
 webInterface = '' # Leave blank to accept connections on any hostname
-webInterface = 8080
+webPort = 8080
 
 enableExtensionProtocol = True # Only works if loginserver and gameserver run on the same IP.
 enableWebProtocol = False
