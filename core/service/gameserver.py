@@ -18,6 +18,7 @@ waitingListIps = deque()
 lastChecks = {}
 class GameProtocol(protocolbase.TibiaProtocol):
     connections = 0
+    enableTcpNoDelay = True
 
     def onInit(self):
         self.player = None

@@ -10,6 +10,7 @@ if config.checkAdler32:
   
 class TibiaProtocol(Protocol):
     #__slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
+    enableTcpNoDelay = False
     def __init__(self):
         self.gotFirst = False
         self.xtea = None
@@ -22,12 +23,13 @@ class TibiaProtocol(Protocol):
         peer = self.transport.getPeer()
         log.msg("Connection made from {0}:{1}".format(peer.host, peer.port))
         
-        try:
-            # Enable TCP_NO_DELAY
-            self.transport.setTcpNoDelay(True)
-        except:
-            # May not always work.
-            pass
+        if self.tcpNoDelay:
+            try:
+                # Enable TCP_NO_DELAY
+                self.transport.setTcpNoDelay(True)
+            except:
+                # May not always work.
+                pass
         
         # Add self to a queue
         self.factory.addClient(self)
