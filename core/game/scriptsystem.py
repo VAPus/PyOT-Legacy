@@ -134,6 +134,29 @@ class TriggerScripts(object):
             end()
         return ok
 
+class NCTriggerScripts(TriggerScripts):
+    """ Designed for webrequests. """
+    def runSync(self, trigger, end=None, **kwargs):
+        return self._run(trigger, end, **kwargs)
+
+    def _run(self, trigger, end, **kwargs):
+        ok = True
+
+        trig = self.scripts
+        if not trigger in trig:
+            return end() if end else None
+
+        trig = trig[trigger]
+
+        if not trig:
+            return None
+
+        ok = trig[0](**kwargs)
+
+        if end and (ok or ok is None):
+            end()
+        return ok
+
 class RegexTriggerScripts(TriggerScripts):
     __slots__ = ('scripts', 'parameters', 'weaks')
 
@@ -435,6 +458,10 @@ globalScripts["getChannelMembers"] = TriggerScripts()
 globalScripts["level"] = Scripts()
 globalScripts["skill"] = Scripts()
 
+# Web stuff.
+globalScripts["webPage"] = NCTriggerScripts(('request'))
+
+# Login stuff
 if config.letGameServerRunTheLoginServer:
     globalScripts["preSendLogin"] = NCScripts()
     
@@ -505,6 +532,8 @@ def importer():
     handleModule("spells")
     handleModule("monsters")
     handleModule("npcs")
+    if config.enableWebProtocol:
+        handleModule("web")
     handlePostLoadEntries()
 
 def scriptInitPaths(base, subdir=True):
