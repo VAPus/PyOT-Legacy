@@ -164,6 +164,7 @@ def loader(timer):
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.registerForAttr = game.scriptsystem.registerForAttr
+    __builtin__.registerClass = game.scriptsystem.registerClass
     __builtin__.defer = defer
     __builtin__.reactor = reactor
     __builtin__.engine = game.engine
@@ -255,6 +256,8 @@ def loader(timer):
     if config.enableWebProtocol:
         import core.service.webserver
         __builtin__.WebPage = core.service.webserver.Page
+        from twisted.web.server import NOT_DONE_YET
+        __builtin__.NOT_DONE_YET = NOT_DONE_YET
 
     class Globalizer(object):
         __slots__ = ()
