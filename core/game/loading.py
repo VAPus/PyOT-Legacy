@@ -164,6 +164,7 @@ def loader(timer):
     __builtin__.register = game.scriptsystem.register
     __builtin__.registerFirst = game.scriptsystem.registerFirst
     __builtin__.registerForAttr = game.scriptsystem.registerForAttr
+    __builtin__.registerClass = game.scriptsystem.registerClass
     __builtin__.defer = defer
     __builtin__.reactor = reactor
     __builtin__.engine = game.engine
@@ -193,7 +194,7 @@ def loader(timer):
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     __builtin__.getGuildByName = game.guild.getGuildByName
-    __builtin__.logger = core.logger
+    __builtin__.logger = sys.modules["core.logger"]
 
     # Resources
     __builtin__.genMonster = game.monster.genMonster
@@ -250,6 +251,13 @@ def loader(timer):
 
     # JSON
     __builtin__.json = otjson
+
+    # Web
+    if config.enableWebProtocol:
+        import core.service.webserver
+        __builtin__.WebPage = core.service.webserver.Page
+        from twisted.web.server import NOT_DONE_YET
+        __builtin__.NOT_DONE_YET = NOT_DONE_YET
 
     class Globalizer(object):
         __slots__ = ()
