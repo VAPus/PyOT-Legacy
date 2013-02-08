@@ -1,0 +1,27 @@
+<html>
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+
+    <script>
+        $(function() {
+            var socket = new WebSocket("ws://"+window.location.hostname+":8081");
+
+            socket.onopen = function() {
+                // Initial request.
+                socket.send("Hello world!");
+            }
+            socket.onmessage = function(event) {
+                // Data handler.
+                $("#log").append(event.data);
+            }
+        });
+
+    </script>
+</head>
+
+<body>
+    <div id="log">
+
+    </div>
+</body>
+</html>

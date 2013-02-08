@@ -95,6 +95,14 @@ if config.enableExtensionProtocol:
     tcpService = internet.TCPServer(config.webPort, webFactory, interface=config.webInterface)
     tcpService.setServiceParent(topService)
 
+# (optional) built in websocket server.
+if config.enableWebGame:
+    from service.webgame import ClientFactory
+    from websocket import WebSocketFactory
+    webGameFactory = WebSocketFactory(ClientFactory())
+    tcpService = internet.TCPServer(config.webGamePort, webGameFactory, interface=config.webGameInterface)
+    tcpService.setServiceParent(topService)
+
 # Load the core stuff!
 # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
 reactor.callLater(0, game.loading.loader, startTime)

@@ -7,9 +7,12 @@ gameInterface = '' # Leave blank to accept connections on any hostname
 gamePort = 7172
 webInterface = '' # Leave blank to accept connections on any hostname
 webPort = 8080
+webGameInterface = ''
+webGamePort = 8081
 
 enableExtensionProtocol = True # Only works if loginserver and gameserver run on the same IP.
 enableWebProtocol = False
+enableWebGame = False
 
 # Server ips, for the loginserver
 servers = {0 : ('auto', "PyOT dev server")} # WORLD_ID -> (ip, name). If ip is 'auto', we'll automatically find the IP to the LOGINSERVER machine. This require internet access!
