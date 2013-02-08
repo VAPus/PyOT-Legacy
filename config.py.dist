@@ -353,3 +353,5 @@ meleeDamage = lambda attack,skill,level,factor: (0.085*factor*attack*skill)+(lev
 minDistanceDamage = lambda level: level // 5
 distanceDamage = lambda attack,skill,factor: (0.09*factor*attack*skill)
 hitChance = lambda skill, hitchance: hitchance*skill
+
+from webgameconfig import *
