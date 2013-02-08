@@ -19,14 +19,16 @@ class Page(Resource):
 class Web(Resource):
     def __init__(self):
         Resource.__init__(self)
-        self.putChild("static", File("data/web_static"))
+        self.static = File("data/web_static")
+        self.putChild("static", self.static)
 
     def getChild(self, path, request):
         req = game.scriptsystem.get("webPage").runSync(path, None, request=request)
         if req:
             return req
         else:
-            return default
+            req = self.static.getChild(path, request)
+            return req if req else default
 
 class WebFactory(Site):
     pass
