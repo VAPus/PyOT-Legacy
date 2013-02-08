@@ -204,6 +204,24 @@ def mask(buf, key):
         buf[i] = chr(ord(char) ^ key[i % 4])
     return "".join(buf)
 
+    k = unpack('!Q', key * 2)[0]
+    ## Some long data to process, use long xor
+    div, mod = divmod(len(buf), 8)
+    if mod:
+        ## The buffer legth is not a 8 bytes multiple, need to adjust with rest
+        if div:
+            ## More than 8 bytes: unmask all long words except last
+            longs = [pack('!Q', k ^ unpack('!Q', buf[i:i+8])[0]) for i in range(0, div*8, 8)]
+            ## Append the rest (last 0..7 bytes)
+            longs.append(pack('!Q', k ^ unpack('!Q', buf[div*8:] + " "*(8-mod))[0])[:mod])
+            return "".join(longs)
+        else:
+            ## Short: all bytes at once
+            return pack('!Q', k ^ unpack('!Q', buf[div*8:] + " "*(8-mod))[0])[:mod]
+    else:
+        ## The buffer legth is a 8 bytes multiple
+        return "".join(pack('!Q', k ^ unpack('!Q', buf[i:i+8])[0]) for i in xrange(0, div*8, 8))
+
 def make_hybi07_frame(buf, opcode=0x1):
     """
     Make a HyBi-07 frame.
@@ -323,8 +341,8 @@ class WebSocketProtocol(ProtocolWrapper):
     buf = ""
     codec = None
     location = "/"
-    host = "example.com"
-    origin = "http://example.com"
+    host = "vapus.net"
+    origin = "http://vapus.net"
     state = REQUEST
     flavor = None
 

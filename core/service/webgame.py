@@ -1,12 +1,10 @@
 from twisted.internet.protocol import Protocol, Factory
+from struct import pack
 
 class ClientProtocol(Protocol):
-    def _delayed(self):
-        self.transport.write(" NOT!")
     def dataReceived(self, data):
-        self.transport.write(data)
-        callLater(3, self._delayed)
-
+        self.transport.write(chr(100) + pack('!H', 1000))
+        
 class ClientFactory(Factory):
     protocol = ClientProtocol
 
