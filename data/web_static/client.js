@@ -10,9 +10,6 @@
 
 // We could use base91, for less network overhead, but slower processing.
 
-$.getScript("clientFiles/position.js");
-$.getScript("clientFiles/packet.js");
-
 // Test opcode.
 OPCODES = {};
 OPCODES[0] = function(packet) {
@@ -48,5 +45,7 @@ socket.onmessage = function(event) {
 		socket.close();
 	}
 }
+
+$("#test").wgAnimate(3031, {'delay': 1});
 
 });
