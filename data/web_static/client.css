@@ -4,6 +4,9 @@
     width: 512px;
     overflow: hidden;
     position: relative;
+    /* Move to javascript. Entier game should fill the window, and scale everything.
+    zoom: 2;
+    -moz-transform: scale(2);*/
 }
 #eventlayer {
     position: absolute;
@@ -13,6 +16,9 @@
     top: 0px;
     left: 0px;
 }
+#map {
+    background-color: #000;
+}
 #map div {
     height: 32px;
     width: 32px;
@@ -20,5 +26,10 @@
     left: 0px;
     position: absolute;
 }
-
-
+#map div div {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    height: 32px;
+    width: 32px;
+}

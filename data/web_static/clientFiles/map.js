@@ -1,5 +1,17 @@
 var WGMOVELOCK = 0;
 //jQuery.fx.interval = 20; // 50fps.
+
+function wgTile(pos, items) {
+    this.dom = $("<div>");
+    this.position = pos;
+    this.dom.css("left", pos[0]*32).css("top", pos[1]*32);
+    this.items = items;
+    for(var i = 0; i < items.length; i++) {
+        this.dom.append(items[i]);
+    }
+    return this;
+}
+
 function wgFullRender() {
     map = $("#map");
     // XXX: 16x16 static map now.
@@ -8,8 +20,7 @@ function wgFullRender() {
     for(var x = 0; x < 16; x++) {
         for(var y = 0; y < 16; y++) {
             var elm = $('<div>');
-            elm.css("left", x*32).css("top", y*32);
-            map.append(elm);
+            map.append(wgTile([x, y], [elm]).dom);
             elm.wgSprite(3031);
         }
     }
@@ -35,11 +46,10 @@ function wgMoveLeft() {
 
     for(var y = 0; y < 16; y++) {
         var elm = $('<div>');
-        elm.css("top", y*32).css("left", -32);
-        map.append(elm);
+        map.append(wgTile([-1, y], [elm]).dom);
         
     }
-    var fields = map.find("div");
+    var fields = map.children();
 
     map.animate({"left": "+=32px"}, 480, 'linear', function() {
         wgReleaseMoveLock();
@@ -63,11 +73,10 @@ function wgMoveRight() {
 
     for(var y = 0; y < 16; y++) {
         var elm = $('<div>');
-        elm.css("top", y*32).css("left", 512);
-        map.append(elm);
+        map.append(wgTile([16, y], [elm]).dom);
 
     }
-    var fields = map.find("div");
+    var fields = map.children();
 
     map.animate({"left": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
@@ -92,11 +101,10 @@ function wgMoveUp() {
 
     for(var x = 0; x < 16; x++) {
         var elm = $('<div>');
-        elm.css("top", -32).css("left", x * 32);
-        map.append(elm);
+        map.append(wgTile([x, -1], [elm]).dom);
 
     }
-    var fields = map.find("div");
+    var fields = map.children();
 
     map.animate({"top": "+=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
@@ -120,11 +128,10 @@ function wgMoveDown() {
 
     for(var x = 0; x < 16; x++) {
         var elm = $('<div>');
-        elm.css("top", 512).css("left", x * 32);
-        map.append(elm);
+        map.append(wgTile([x, 16], [elm]).dom);
 
     }
-    var fields = map.find("div");
+    var fields = map.children();
 
     map.animate({"top": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
