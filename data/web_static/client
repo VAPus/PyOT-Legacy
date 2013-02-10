@@ -40,6 +40,6 @@
     <div id="log">
 
     </div>
-    <div id="map"></div>
+    <div id="view"><div id="map"></div></div>
 </body>
 </html>

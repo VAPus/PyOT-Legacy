@@ -1,11 +1,11 @@
 /* Static style here. */
-#map {
+#map, #view {
     height: 512px;
     width: 512px;
     overflow: hidden;
     position: relative;
 }
-.mapelm {
+#map div {
     height: 32px;
     width: 32px;
     top: 0px;
