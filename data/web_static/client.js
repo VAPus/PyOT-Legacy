@@ -39,6 +39,7 @@ socket.onmessage = function(event) {
 	}
 }
 
+wgFullRender();
 $("#test").wgAnimate(3031, {'delay': 1});
 
 });

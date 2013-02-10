@@ -1,1 +1,16 @@
-// Static style here.
+/* Static style here. */
+#map {
+    height: 512px;
+    width: 512px;
+    overflow: hidden;
+    position: relative;
+}
+.mapelm {
+    height: 32px;
+    width: 32px;
+    top: 0px;
+    left: 0px;
+    position: absolute;
+}
+
+

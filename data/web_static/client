@@ -18,13 +18,17 @@
     <script src="//ajax.googleapis.com/ajax/libs/webfont/1.1.2/webfont.js"></script>
 
     <!-- webGame requirements -->
+    <script src="clientFiles/hotkeys.js"></script>
     <script src="clientFiles/position.js"></script>
     <script src="clientFiles/packet.js"></script>
     <script src="clientFiles/protocol.js"></script>
     <script src="clientFiles/animation.js"></script>
+    <script src="clientFiles/map.js"></script>
 
-    <script src="clientProtocol"></script>
+    <script src="clientDynamics"></script>
+
     <!-- Dynamic style are served by websocket -->
+    <link rel="stylesheet" href="clientStyle" />
 
     <!-- Static js. -->
     <script src="client.js"></script>
@@ -36,5 +40,6 @@
     <div id="log">
 
     </div>
+    <div id="map"></div>
 </body>
 </html>
