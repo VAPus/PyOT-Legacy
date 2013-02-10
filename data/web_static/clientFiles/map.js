@@ -60,7 +60,7 @@ function wgMoveRight() {
     }
     var fields = map.find("div");
 
-    map.animate({"left": "-=32px"}, 500, 'linear', function() {
+    map.animate({"left": "-=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -73,7 +73,7 @@ function wgMoveRight() {
         });
         map.css("left", 0);
 
-    });
+    }});
 
 }
 function wgMoveUp() {
@@ -89,7 +89,7 @@ function wgMoveUp() {
     }
     var fields = map.find("div");
 
-    map.animate({"top": "+=32px"}, 500, 'linear', function() {
+    map.animate({"top": "+=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -102,7 +102,7 @@ function wgMoveUp() {
         });
         map.css("top", 0);
 
-    });
+    }});
 }
 function wgMoveDown() {
     if(WGMOVELOCK) return;
@@ -117,7 +117,7 @@ function wgMoveDown() {
     }
     var fields = map.find("div");
 
-    map.animate({"top": "-=32px"}, 500, 'linear', function() {
+    map.animate({"top": "-=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -130,6 +130,6 @@ function wgMoveDown() {
         });
         map.css("top", 0);
 
-    });
+    }});
 }
 
