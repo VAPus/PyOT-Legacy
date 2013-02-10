@@ -18,7 +18,7 @@ function wgGetTileByView(viewX, viewY) {
     fields = $("#map div");
     length = fields.length;
     var rX = (viewX * 32) + 'px';
-    var rY = (viewY  *32) + 'px';
+    var rY = (viewY * 32) + 'px';
     while(length--) {
         if(fields[length].style.left == rX && fields[length].style.left == rY)
             return $(fields[length]); 
@@ -41,7 +41,7 @@ function wgMoveLeft() {
     }
     var fields = map.find("div");
 
-    map.animate({"left": "+=32px"}, 500, 'linear', function() {
+    map.animate({"left": "+=32px"}, 480, 'linear', function() {
         wgReleaseMoveLock();
         fields.each(function() { 
             var elm = $(this);
@@ -49,7 +49,7 @@ function wgMoveLeft() {
             if(left >= 480) {
                 elm.remove();
             } else {
-                elm.css("left", left+32)
+                elm.css("left", left+32);
             }
         }); 
         map.css("left", 0);
@@ -69,7 +69,7 @@ function wgMoveRight() {
     }
     var fields = map.find("div");
 
-    map.animate({"left": "-=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
+    map.animate({"left": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -77,7 +77,7 @@ function wgMoveRight() {
             if(left < 32) {
                 elm.remove();
             } else {
-                elm.css("left", left-32)
+                elm.css("left", left-32);
             }
         });
         map.css("left", 0);
@@ -98,7 +98,7 @@ function wgMoveUp() {
     }
     var fields = map.find("div");
 
-    map.animate({"top": "+=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
+    map.animate({"top": "+=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -106,7 +106,7 @@ function wgMoveUp() {
             if(top >= 480) {
                 elm.remove();
             } else {
-                elm.css("top", top+32)
+                elm.css("top", top+32);
             }
         });
         map.css("top", 0);
@@ -126,7 +126,7 @@ function wgMoveDown() {
     }
     var fields = map.find("div");
 
-    map.animate({"top": "-=32px"}, {"duration": 500, easing: 'linear', queue: false, complete: function() {
+    map.animate({"top": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -134,7 +134,7 @@ function wgMoveDown() {
             if(top < 32) {
                 elm.remove();
             } else {
-                elm.css("top", top-32)
+                elm.css("top", top-32);
             }
         });
         map.css("top", 0);
