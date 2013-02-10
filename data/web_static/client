@@ -20,9 +20,10 @@
     <!-- webGame requirements -->
     <script src="clientFiles/position.js"></script>
     <script src="clientFiles/packet.js"></script>
+    <script src="clientFiles/protocol.js"></script>
     <script src="clientFiles/animation.js"></script>
 
-    <!-- (TODO) <script src="clientProtocol" -->
+    <script src="clientProtocol"></script>
     <!-- Dynamic style are served by websocket -->
 
     <!-- Static js. -->

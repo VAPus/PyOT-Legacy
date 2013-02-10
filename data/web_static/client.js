@@ -11,13 +11,6 @@
 // We could use base91, for less network overhead, but slower processing.
 
 // Test opcode.
-OPCODES = {};
-OPCODES[0] = function(packet) {
-	$("#log").append(packet.string() + " ");
-	$("#log").append("Took: " + ((new Date()).getTime() - time).toString() + "ms");
-}
-var time = null;
-
 $(function() {
 
 var socket = new WebSocket("ws://"+window.location.hostname+":8081", "base64");
@@ -39,7 +32,7 @@ socket.onmessage = function(event) {
     opcode = packet.uint8();
 
 	if(opcode in OPCODES) {
-		OPCODES[opcode](packet);
+		wgHandleOpcode(opcode, packet);
 	} else {
 		alert("Unknown opcode " + opcode);
 		socket.close();

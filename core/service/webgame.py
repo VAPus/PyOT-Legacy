@@ -3,7 +3,8 @@ from struct import pack
 
 class ClientProtocol(Protocol):
     def dataReceived(self, data):
-        self.transport.write(chr(0) + pack("!H", 5) + "Hello")
+        code = "$('#log').append('Hello world from PyOT!');"
+        self.transport.write(chr(0) + pack("!H", len(code)) + code)
         
 class ClientFactory(Factory):
     protocol = ClientProtocol
