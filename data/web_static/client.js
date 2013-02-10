@@ -37,11 +37,11 @@ socket.onmessage = function(event) {
 		alert("Unknown opcode " + opcode);
 		socket.close();
 	}
-}
 
-setTimeout(function() {
-wgFullRender();
-$("#test").wgAnimate(3031, {'delay': 1});
-}, 1000);
+    if(opcode == 1) {
+        wgFullRender();
+        $("#test").wgAnimate(3031, {'delay': 1});
+    }
+}
 
 });

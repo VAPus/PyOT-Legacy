@@ -5,6 +5,14 @@
     overflow: hidden;
     position: relative;
 }
+#eventlayer {
+    position: absolute;
+    height: 512px;
+    width: 512px;
+    overflow: hidden;
+    top: 0px;
+    left: 0px;
+}
 #map div {
     height: 32px;
     width: 32px;
