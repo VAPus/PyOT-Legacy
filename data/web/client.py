@@ -33,5 +33,8 @@ $(document).bind('keydown.down', function(e) {
     wgMoveDown();
     return false;
 });
-
+$(document).bind('keydown.t', function(e) {
+    alert(wgGetTileByView(0, 0));
+    return false;
+});
 """

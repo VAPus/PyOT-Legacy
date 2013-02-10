@@ -14,7 +14,16 @@ function wgFullRender() {
         }
     }
 }
-
+function wgGetTileByView(viewX, viewY) {
+    fields = $("#map div");
+    length = fields.length;
+    var rX = (viewX * 32) + 'px';
+    var rY = (viewY  *32) + 'px';
+    while(length--) {
+        if(fields[length].style.left == rX && fields[length].style.left == rY)
+            return $(fields[length]); 
+    }
+}
 // To be moved.
 function wgReleaseMoveLock() {
     WGMOVELOCK = 0;
