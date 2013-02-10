@@ -204,6 +204,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if self.data["language"] != "en_EN":
             self.setLanguage(self.data["language"])
+
+        # WebGame
+        if config.enableWebGame:
+            self.wgSprites = set()
         
     def generateClientID(self):
         return 0x10000000 + uniqueId()

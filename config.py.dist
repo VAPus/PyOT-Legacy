@@ -281,6 +281,7 @@ banTimeFormat = "%Y-%m-%d %H:%M:%S" # Expire messages.
 # Data directories.
 dataDirectory = "data" # Should point to a folder at the top level. Cannot be a subfolder!
 itemFile = "data/items.json" # Should point to a file under the top directory.
+spriteFile = "data/sprites.gz"
 mapDirectory = "map" # Should point to a folder under the data directory. Cannot be a subfolder!
 
 # (WINDOWS ONLY)

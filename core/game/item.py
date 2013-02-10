@@ -12,6 +12,7 @@ import inflect
 import gc
 import xml.etree.cElementTree as ET
 import otjson as json
+import gzip
 
 INFLECT = inflect.engine()
 
@@ -22,6 +23,9 @@ except:
     _open = open # Less than 2.7
     
 items = None
+
+if config.enableWebGame:
+    sprites = None
             
 ### Item ###
 class Item(object):
@@ -916,6 +920,8 @@ def loadItems():
     global items
     global idByNameCache
     global cidToSid
+    if config.enableWebGame:
+        global sprites
 
     print "> > Loading items..."
     
@@ -1054,7 +1060,9 @@ def loadItems():
     items = loadItems
     idByNameCache = idNameCache
     cidToSid = _cidToSid
-
+    if config.enableWebGame:
+        with gzip.open(config.spriteFile, 'rb') as file:
+            sprites = json.loads(file.read())
     # Cache
     if config.itemCache:
         with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
