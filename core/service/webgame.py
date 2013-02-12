@@ -2,7 +2,24 @@ from twisted.internet.protocol import Protocol, Factory
 from struct import pack
 
 class ClientProtocol(Protocol):
+    def __init__(self):
+        self.player = None
+
+    def connectionMade(self):
+        if self.tcpNoDelay:
+            try:
+                # Enable TCP_NO_DELAY
+                self.transport.setTcpNoDelay(True)
+            except:
+                # May not always work.
+                pass
+
     def dataReceived(self, data):
+        protocol = game.protocol.getProtocol("web")
+
+        packet = protocol.Packet(data)
+
+        protocol.
         code = "$('#log').append('Hello world from PyOT!');"
         self.transport.write(chr(0) + pack("!H", len(code)) + code)
         
