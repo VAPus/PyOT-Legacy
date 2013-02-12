@@ -1,6 +1,6 @@
 # This is the "common protocol" for the web interface. We expand stuff rather "as needed" from here.
 
-from packet import TibiaPacket
+from packet import WGPacket
 from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet import defer, reactor
 from twisted.python import log
@@ -47,12 +47,7 @@ import traceback
 def verify(): return config.enableWebGame
 provide = []
 
-class Packet(object):
-    def __init__(self, data):
-        self.data = data
-        self.pos = 0
-
-class BasePacket(TibiaPacket):
+class BasePacket(WGPacket):
     maxKnownCreatures = 1300
     maxOutfits = 29
     maxMounts = 25
