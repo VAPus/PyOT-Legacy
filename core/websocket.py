@@ -197,13 +197,6 @@ def mask(buf, key):
     The key must be exactly four bytes long.
     """
 
-    # This is super-secure, I promise~
-    key = [ord(i) for i in key]
-    buf = list(buf)
-    for i, char in enumerate(buf):
-        buf[i] = chr(ord(char) ^ key[i % 4])
-    return "".join(buf)
-
     k = unpack('!Q', key * 2)[0]
     ## Some long data to process, use long xor
     div, mod = divmod(len(buf), 8)

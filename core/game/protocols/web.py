@@ -43,6 +43,10 @@ import traceback
 # XXX: Security.
 # * If you want it, grab a SSL sertificate, it performs better than anything else I suppose. IT also gives you actual security.
 # * We don't have another checksum like adler32. Who needs it? TCP got a checksum build into it already.
+
+def verify(): return config.enableWebGame
+provide = []
+
 class Packet(object):
     def __init__(self, data):
         self.data = data

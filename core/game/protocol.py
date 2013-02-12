@@ -5,18 +5,20 @@ protocolsAvailable = []
 for path in glob.iglob('core/game/protocols/*.py'):
     version = path.split(os.sep)[-1].split('.', 1)[0]
     if not '_' in version and not '.' in version and not 'base' in version:
-        protocolsAvailable.append(int(version))
-
+        try:
+            protocolsAvailable.append(int(version))
+        except:
+            protocolsAvailable.append(version)
 protocolsUsed = {}
 
 def getProtocol(version):
-    if not protocolsUsed:
+    if not version in protocolsUsed:
         loadProtocol(version)
-    try:
-        return protocolsUsed[version]
-    except:
+    
+    protocol = protocolsUsed[version]
+    if not protocol:
         log.msg("Protocol %d unsupported" % version)
-    return None
+    return protocol
 
 def loadProtocol(version):
     if "_trial_temp" in os.getcwd():
@@ -26,8 +28,8 @@ def loadProtocol(version):
         log.msg("Protocol (Base) %d doesn't exist!" % version)
         return
         
-    protocol = __import__('game.protocols.%d' % version, globals(), locals())
-    protocol = sys.modules['game.protocols.%d' % version]
+    protocol = __import__('game.protocols.%s' % version, globals(), locals())
+    protocol = sys.modules['game.protocols.%s' % version]
             
     protocol.verify()
     protocolsUsed[version] = protocol.Protocol()
