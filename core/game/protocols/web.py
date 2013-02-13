@@ -44,6 +44,10 @@ import traceback
 # * If you want it, grab a SSL sertificate, it performs better than anything else I suppose. IT also gives you actual security.
 # * We don't have another checksum like adler32. Who needs it? TCP got a checksum build into it already.
 
+# Open Idea.
+# Don't send any complex data as it's own format. But rather pack it using say
+# msgpack and let the scripts decode it. That way you can easily make another status field, or another creature data field without any hazzel.
+
 def verify(): return config.enableWebGame
 provide = []
 
