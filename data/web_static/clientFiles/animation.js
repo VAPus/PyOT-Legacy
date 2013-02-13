@@ -1,9 +1,16 @@
-var _wgSpriteCache = {};
-var _wgSpriteFrames = {};
+var _wgItemCache = {};
+var _wgItemFrames = {};
+
+var _wgOutfitCache = {};
+var _wgOutfitFrames = {};
 
 function wgRegisterItemSprite(id, frames, data) {
-    _wgSpriteFrames[id] = frames;
-    _wgSpriteCache[id] = data;
+    _wgItemFrames[id] = frames;
+    _wgItemCache[id] = data;
+}
+function wgRegisterMonsterSprite(id, width, height, phases, data) {
+    _wgItemFrames[id] = [width, height, phases];
+    _wgItemCache[id] = data;
 }
 
 (function( $ ) {
@@ -11,7 +18,7 @@ jQuery.fn.intAttr = function(key) {
     return parseInt(this.attr(key));
 }
 
-jQuery.fn.wgAnimate = function (spriteId, options) {
+jQuery.fn.wgAnimateItem = function (spriteId, options) {
     var settings = jQuery.extend( {
       'start'  : 0, // Start frame.
       'frames' : 0, // Frames to animate
@@ -21,7 +28,7 @@ jQuery.fn.wgAnimate = function (spriteId, options) {
 
     return this.each(function() {
         var $this = $(this);
-        $this.wgSprite(spriteId, settings['start']);
+        $this.wgItemSprite(spriteId, settings['start']);
         setTimeout(function() { $this.wgMoveAnimation(settings['move'], settings['delay']); }, settings['delay'] * 1000);
     });
 }
@@ -46,7 +53,7 @@ jQuery.fn.wgMoveAnimation = function(frames, repeat) {
     });
 }
 
-jQuery.fn.wgSprite = function (spriteId, subId) {
+jQuery.fn.wgItemSprite = function (spriteId, subId) {
     if(!subId) subId = 0;
 
     if(!_wgSpriteCache[spriteId]) {
@@ -63,3 +70,22 @@ jQuery.fn.wgSprite = function (spriteId, subId) {
     });
 } 
 })( jQuery );
+
+jQuery.fn.wgOutfitSprite = function (spriteId, subId) {
+    if(!subId) subId = 0;
+
+    if(!_wgSpriteCache[spriteId]) {
+        // TODO.
+    }
+
+    return this.each(function() {
+        var $this = $(this);
+        $this.css("background", 'url("data:image/png;base64,' + _wgSpriteCache[spriteId] + '") no-repeat');
+        $this.css("background-position", (subId * -32).toString() + "px 0px");
+        $this.attr("wgSpriteId", spriteId);
+        $this.attr("wgFrameId", subId);
+
+    });
+}
+})( jQuery );
+

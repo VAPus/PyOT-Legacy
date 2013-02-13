@@ -14,6 +14,13 @@ wgRegisterOpcode(0x01, function(data) { // Register data assert
         var frames = data.uint8();
         wgRegisterItemSprite(id, frames, data.string());
     }
+    if(type == 1) { // Outfit.
+        var id = data.uint16();
+        var width = data.uint8();
+        var height = data.uint8();
+        var phases = data.uint8();
+        wgRegisterItemSprite(id, width, height, phases, data.string());
+    }
 });
 
 // Default hotkeys.

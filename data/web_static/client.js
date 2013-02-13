@@ -40,7 +40,8 @@ socket.onmessage = function(event) {
 
     if(opcode == 1) {
         wgFullRender();
-        $("#test").wgAnimate(3031, {'delay': 1});
+        $("#test").wgAnimateItem(3031, {'delay': 1});
+        $("#test").wgOutfitSprite(3031, {'delay': 1});
         // Scale.
         wgScaleEvent();
     }
