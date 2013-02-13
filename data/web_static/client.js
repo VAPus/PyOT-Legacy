@@ -41,7 +41,20 @@ socket.onmessage = function(event) {
     if(opcode == 1) {
         wgFullRender();
         $("#test").wgAnimate(3031, {'delay': 1});
+        // Scale.
+        wgScaleEvent();
     }
 }
 
 });
+
+function wgScaleEvent() {
+    height = $(window).height(); // Substraction required.
+
+    bodyHeight = $("body").height();
+    $("body").css('-moz-transform', 'scale('+(height/bodyHeight)+')');
+    $("body").css('width', $("#view").width());
+    $("body").css('margin-left', ($(window).width() - ($("#view").width() * (height/bodyHeight))) / 2);
+}
+
+$(window).resize(wgScaleEvent);

@@ -18,9 +18,6 @@ class ClientProtocol(Protocol):
 
     def dataReceived(self, data):
         packet = WGPacketReader(data)
-
-        code = "$('#log').append('Hello world from PyOT!');"
-        self.transport.write(chr(0) + pack("!H", len(code)) + code)
         
         packet = chr(1) + chr(0) + pack("!H", 3031)
         packet += chr(8) + pack("!H", len(game.item.sprites["item"]["3031"][0]))

@@ -1,3 +1,14 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    transform-origin: 0 0;
+}
+/* Because of scaling, every div MUST HAVE a fixed size. Atleast by default. */
+div {
+    overflow: hidden;
+    height: 0px;
+    width: 0px;
+}
 /* Static style here. */
 #map, #view {
     height: 512px;

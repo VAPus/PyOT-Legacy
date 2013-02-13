@@ -37,9 +37,6 @@
 
 <body>
     <div id="test" style="height: 32px; width: 32px; overflow: hidden;"></div>
-    <div id="log">
-
-    </div>
     <div id="view"><div id="map"></div><div id="eventlayer"></div></div>
 </body>
 </html>
