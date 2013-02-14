@@ -37,15 +37,15 @@ socket.onmessage = function(event) {
 		alert("Unknown opcode " + opcode);
 		socket.close();
 	}
+}
 
-    if(opcode == 1) {
+setTimeout(function() {
         wgFullRender();
         $("#test").wgAnimateItem(3031, {'delay': 1});
-        $("#test").wgOutfitSprite(3031, {'delay': 1});
+        
         // Scale.
         wgScaleEvent();
-    }
-}
+}, 1000);
 
 });
 

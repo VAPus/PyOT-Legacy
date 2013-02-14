@@ -19,9 +19,14 @@ function wgFullRender() {
 
     for(var x = 0; x < 16; x++) {
         for(var y = 0; y < 16; y++) {
-            var elm = $('<div>');
+            var elm = $('<div></div>');
             map.append(wgTile([x, y], [elm]).dom);
-            elm.wgSprite(3031);
+            if(x == 10 && y == 10) {
+                elm.wgItemSprite(1454);
+            } else {
+                elm.wgItemSprite(3031);
+            }
+          
         }
     }
 }
@@ -45,7 +50,7 @@ function wgMoveLeft() {
     var map = $("#map");
 
     for(var y = 0; y < 16; y++) {
-        var elm = $('<div>');
+        var elm = $('<div></div>');
         map.append(wgTile([-1, y], [elm]).dom);
         
     }
@@ -72,7 +77,7 @@ function wgMoveRight() {
     var map = $("#map");
 
     for(var y = 0; y < 16; y++) {
-        var elm = $('<div>');
+        var elm = $('<div></div>');
         map.append(wgTile([16, y], [elm]).dom);
 
     }
@@ -100,7 +105,7 @@ function wgMoveUp() {
     var map = $("#map");
 
     for(var x = 0; x < 16; x++) {
-        var elm = $('<div>');
+        var elm = $('<div></div>');
         map.append(wgTile([x, -1], [elm]).dom);
 
     }
@@ -127,7 +132,7 @@ function wgMoveDown() {
     var map = $("#map");
 
     for(var x = 0; x < 16; x++) {
-        var elm = $('<div>');
+        var elm = $('<div></div>');
         map.append(wgTile([x, 16], [elm]).dom);
 
     }

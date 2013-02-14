@@ -38,6 +38,7 @@
 <body>
     <div id="test" style="height: 32px; width: 32px; overflow: hidden;"></div>
     <div id="test_monster" style="height: 64px; width: 64px"></div>
+
     <div id="view"><div id="map"></div><div id="eventlayer"></div></div>
 </body>
 </html>

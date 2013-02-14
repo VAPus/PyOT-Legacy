@@ -4,13 +4,13 @@ var _wgItemFrames = {};
 var _wgOutfitCache = {};
 var _wgOutfitFrames = {};
 
-function wgRegisterItemSprite(id, frames, data) {
-    _wgItemFrames[id] = frames;
+function wgRegisterItemSprite(id, width, height, frames, data) {
+    _wgItemFrames[id] = [width, height, frames];
     _wgItemCache[id] = data;
 }
-function wgRegisterMonsterSprite(id, width, height, phases, data) {
-    _wgItemFrames[id] = [width, height, phases];
-    _wgItemCache[id] = data;
+function wgRegisterOutfitSprite(id, width, height, phases, data) {
+    _wgOutfitFrames[id] = [width, height, phases];
+    _wgOutfitCache[id] = data;
 }
 
 (function( $ ) {
@@ -40,14 +40,13 @@ jQuery.fn.wgMoveAnimation = function(frames, repeat) {
         if(!spriteId) return;
 
         var frameId = $this.intAttr("wgFrameId");
-
         frame = frameId + frames;
-        if(frame >= _wgSpriteFrames[spriteId]) return; // XXX: Animation over.
+        if(frame >= _wgItemFrames[spriteId][2]) return; // XXX: Animation over.
     
         $this.css("background-position", (frame * -32).toString() + 'px 0px');
         $this.attr("wgFrameId", frame);
 
-        if(repeat && (frame + frames) < _wgSpriteFrames[spriteId]) {
+        if(repeat && (frame + frames) < _wgItemFrames[spriteId][2]) {
             setTimeout(function() { $this.wgMoveAnimation(frames, repeat) }, repeat * 1000);
         }
     });
@@ -56,31 +55,34 @@ jQuery.fn.wgMoveAnimation = function(frames, repeat) {
 jQuery.fn.wgItemSprite = function (spriteId, subId) {
     if(!subId) subId = 0;
 
-    if(!_wgSpriteCache[spriteId]) {
+    if(!_wgItemCache[spriteId]) {
         // TODO.
     }
 
     return this.each(function() {
         var $this = $(this);
-        $this.css("background", 'url("data:image/png;base64,' + _wgSpriteCache[spriteId] + '") no-repeat');
+        $this.css("background", 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat');
         $this.css("background-position", (subId * -32).toString() + "px 0px");
         $this.attr("wgSpriteId", spriteId);
         $this.attr("wgFrameId", subId);
-        
+
+        $this.css('height', 32 * _wgItemFrames[spriteId][1]);
+        $this.css('width', 32 * _wgItemFrames[spriteId][0]);
+        $this.css('margin-left', 32 + (-32 * _wgItemFrames[spriteId][1]));
+        $this.css('margin-top', 32 + (-32 * _wgItemFrames[spriteId][0]));        
     });
 } 
-})( jQuery );
 
 jQuery.fn.wgOutfitSprite = function (spriteId, subId) {
     if(!subId) subId = 0;
 
-    if(!_wgSpriteCache[spriteId]) {
+    if(!_wgOutfitCache[spriteId]) {
         // TODO.
     }
 
     return this.each(function() {
         var $this = $(this);
-        $this.css("background", 'url("data:image/png;base64,' + _wgSpriteCache[spriteId] + '") no-repeat');
+        $this.css("background", 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat');
         $this.css("background-position", (subId * -32).toString() + "px 0px");
         $this.attr("wgSpriteId", spriteId);
         $this.attr("wgFrameId", subId);

@@ -33,6 +33,7 @@ div {
 #map div {
     height: 32px;
     width: 32px;
+    overflow: visible;
     top: 0px;
     left: 0px;
     position: absolute;
@@ -43,4 +44,5 @@ div {
     left: 0px;
     height: 32px;
     width: 32px;
+    
 }
