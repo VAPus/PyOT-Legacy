@@ -54,6 +54,8 @@ function wgScaleEvent() {
 
     bodyHeight = $("body").height();
     $("body").css('-moz-transform', 'scale('+(height/bodyHeight)+')');
+    $("body").css('-webkit-transform', 'scale('+(height/bodyHeight)+')');
+    $("body").css('transform', 'scale('+(height/bodyHeight)+')');
     $("body").css('width', $("#view").width());
     $("body").css('margin-left', ($(window).width() - ($("#view").width() * (height/bodyHeight))) / 2);
 }

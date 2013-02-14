@@ -23,9 +23,12 @@ function wgFullRender() {
             map.append(wgTile([x, y], [elm]).dom);
             if(x == 10 && y == 10) {
                 elm.wgItemSprite(1454);
+            } else if(x == 8 && y == 8) {
+                elm.wgAnimateOutfit(27, {'delay':0.3, 'start':2, 'repeat': true});
             } else {
                 elm.wgItemSprite(3031);
             }
+
           
         }
     }
@@ -56,7 +59,7 @@ function wgMoveLeft() {
     }
     var fields = map.children();
 
-    map.animate({"left": "+=32px"}, 480, 'linear', function() {
+    map.animate({"left": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() { 
             var elm = $(this);
@@ -69,7 +72,7 @@ function wgMoveLeft() {
         }); 
         map.css("left", 0);
        
-    });
+    }});
 }
 function wgMoveRight() {
     if(WGMOVELOCK) return;
@@ -83,7 +86,7 @@ function wgMoveRight() {
     }
     var fields = map.children();
 
-    map.animate({"left": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
+    map.animate({"left": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -111,7 +114,7 @@ function wgMoveUp() {
     }
     var fields = map.children();
 
-    map.animate({"top": "+=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
+    map.animate({"top": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -138,7 +141,7 @@ function wgMoveDown() {
     }
     var fields = map.children();
 
-    map.animate({"top": "-=32px"}, {"duration": 480, easing: 'linear', queue: false, complete: function() {
+    map.animate({"top": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);

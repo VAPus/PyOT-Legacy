@@ -2,6 +2,7 @@ body, html {
     padding: 0;
     margin: 0;
     transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
 }
 /* Because of scaling, every div MUST HAVE a fixed size. Atleast by default. */
 div {
@@ -15,9 +16,6 @@ div {
     width: 512px;
     overflow: hidden;
     position: relative;
-    /* Move to javascript. Entier game should fill the window, and scale everything.
-    zoom: 2;
-    -moz-transform: scale(2);*/
 }
 #eventlayer {
     position: absolute;
@@ -27,7 +25,7 @@ div {
     top: 0px;
     left: 0px;
 }
-#map {
+#view {
     background-color: #000;
 }
 #map div {
