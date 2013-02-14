@@ -48,7 +48,7 @@ import traceback
 # Don't send any complex data as it's own format. But rather pack it using say
 # msgpack and let the scripts decode it. That way you can easily make another status field, or another creature data field without any hazzel.
 
-def verify(): return config.enableWebGame
+def verify(): return config.useWebGame
 provide = []
 
 class BasePacket(WGPacket):

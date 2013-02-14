@@ -24,7 +24,7 @@ except:
     
 items = None
 
-if config.enableWebGame:
+if config.useWebGame:
     sprites = None
             
 ### Item ###
@@ -920,7 +920,7 @@ def loadItems():
     global items
     global idByNameCache
     global cidToSid
-    if config.enableWebGame:
+    if config.useWebGame:
         global sprites
 
     print "> > Loading items..."
@@ -1060,9 +1060,9 @@ def loadItems():
     items = loadItems
     idByNameCache = idNameCache
     cidToSid = _cidToSid
-    if config.enableWebGame:
+    if config.useWebGame:
         with gzip.open(config.spriteFile, 'rb') as file:
-            sprites = json.loads(file.read())
+            sprites = json.load(file)
     # Cache
     if config.itemCache:
         with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:

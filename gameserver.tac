@@ -70,33 +70,34 @@ application = service.Application("pyot-game-server")
 topService.setServiceParent(application)
 
 # Game Server
-gameFactory = GameFactory()
-gameServer = internet.TCPServer(config.gamePort, gameFactory, interface=config.gameInterface)
-gameServer.setServiceParent(topService)
+if not config.useWebGame:
+    gameFactory = GameFactory()
+    gameServer = internet.TCPServer(config.gamePort, gameFactory, interface=config.gameInterface)
+    gameServer.setServiceParent(topService)
 
-# (optionally) buildt in login server.
-if config.letGameServerRunTheLoginServer:
-    from service.loginserver import LoginFactory
-    loginFactory = LoginFactory()
-    tcpService = internet.TCPServer(config.loginPort, loginFactory, interface=config.loginInterface)
-    tcpService.setServiceParent(topService)
+    # (optionally) buildt in login server.
+    if config.letGameServerRunTheLoginServer:
+        from service.loginserver import LoginFactory
+        loginFactory = LoginFactory()
+        tcpService = internet.TCPServer(config.loginPort, loginFactory, interface=config.loginInterface)
+        tcpService.setServiceParent(topService)
 
-# (optional) built in extension server.
-if config.enableExtensionProtocol:
-    from service.extserver import ExtFactory
-    extFactory = ExtFactory()
-    tcpService = internet.TCPServer(config.loginPort + 10000, extFactory, interface=config.loginInterface)
-    tcpService.setServiceParent(topService)
+    # (optional) built in extension server.
+    if config.enableExtensionProtocol:
+        from service.extserver import ExtFactory
+        extFactory = ExtFactory()
+        tcpService = internet.TCPServer(config.loginPort + 10000, extFactory, interface=config.loginInterface)
+        tcpService.setServiceParent(topService)
 
-# (optional) built in extension server.
-if config.enableExtensionProtocol:
+# (optional) built in web server.
+if config.enableWebProtocol:
     from service.webserver import WebFactory, Web
     webFactory = WebFactory(Web())
     tcpService = internet.TCPServer(config.webPort, webFactory, interface=config.webInterface)
     tcpService.setServiceParent(topService)
 
-# (optional) built in websocket server.
-if config.enableWebGame:
+# websocket server.
+if config.useWebGame:
     from service.webgame import ClientFactory
     from websocket import WebSocketFactory
     webGameFactory = WebSocketFactory(ClientFactory())

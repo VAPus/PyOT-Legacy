@@ -12,7 +12,8 @@ webGamePort = 8081
 
 enableExtensionProtocol = True # Only works if loginserver and gameserver run on the same IP.
 enableWebProtocol = False
-enableWebGame = False
+
+useWebGame = False # False = Tibia protocol, True = WebGame protocol. enableWebProtocol should also be on. True turn of extension, login and game server.
 
 # Server ips, for the loginserver
 servers = {0 : ('auto', "PyOT dev server")} # WORLD_ID -> (ip, name). If ip is 'auto', we'll automatically find the IP to the LOGINSERVER machine. This require internet access!
@@ -49,7 +50,7 @@ letGameServerRunTheLoginServer = True
 # This servers worldId
 worldId = 0
 
-# Versions:
+# Versions (Tibia only):
 versionMin = 854
 versionMax = 981
 versionError = "You must use a client between 8.6 and 9.81"
