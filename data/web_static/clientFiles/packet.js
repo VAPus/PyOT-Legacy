@@ -61,3 +61,11 @@ function Packet(data) {
     }
     return this;
 }
+
+function wgSocketClose() {
+    GLOBAL_SOCKET.close();
+}
+
+function wgSocketSend(data) {
+    GLOBAL_SOCKET.send(data);
+}

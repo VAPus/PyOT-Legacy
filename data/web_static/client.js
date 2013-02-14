@@ -11,6 +11,8 @@
 // We could use base91, for less network overhead, but slower processing.
 
 // Test opcode.
+var GLOBAL_SOCKET;
+
 $(function() {
 
 var socket = new WebSocket("ws://"+window.location.hostname+":8081", "base64");
@@ -38,6 +40,7 @@ socket.onmessage = function(event) {
 		socket.close();
 	}
 }
+GLOBAL_SOCKET = socket;
 
 setTimeout(function() {
         wgFullRender();

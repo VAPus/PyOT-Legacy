@@ -51,7 +51,7 @@ import traceback
 def verify(): return config.useWebGame
 provide = []
 
-class BasePacket(WGPacket):
+class WebPacket(WGPacket):
     maxKnownCreatures = 1300
     maxOutfits = 29
     maxMounts = 25
@@ -101,7 +101,17 @@ class BasePacket(WGPacket):
 
     def money(self, money):
         self.uint32(min(0xFFFFFFFE, money))
- 
+
+    # Login, characters.
+    def exitWithError(self, message):
+        self.uint8(0x02)
+        self.string(message)
+        
+    def characters(self, list):
+        self.uint8(len(list))
+        for member in list:
+            self.string(member['name'])
+            
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):
@@ -604,7 +614,7 @@ def packet(opcode):
     return _
         
 class Protocol(object):
-    Packet = BasePacket    
+    Packet = WebPacket    
     def handle(self, player, packet):
         packetType = packet.uint8()
         

@@ -25,6 +25,24 @@ wgRegisterOpcode(0x01, function(data) { // Register data assert
     }
 });
 
+wgRegisterOpcode(0x02, function(data) { // Exit with error.
+    alert(data.string());
+    wgSocketClose();
+});
+
+wgRegisterOpcode(0x03, function(data) {
+    length = data.uint8();
+    while(length--) {
+        last = data.string();
+        alert(last);
+    }
+    
+    pkg = Packet();
+    pkg.string(last);
+    
+    wgSocketSend(pkg);
+});
+
 // Default hotkeys.
 $(document).bind('keydown.left', function(e) {
     wgMoveLeft();
