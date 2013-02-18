@@ -23,9 +23,10 @@ socket.send = function(data) {
 }
 socket.onopen = function() {
     // Initial request.
-    socket.send("X");
-	
-	time = (new Date()).getTime();
+    pkg = new PacketWriter();
+    pkg.string("123");
+    pkg.string("123");
+    socket.send(pkg.get());
 }
 
 socket.onmessage = function(event) {

@@ -4,7 +4,7 @@ var WGMOVELOCK = 0;
 function wgTile(pos, items) {
     this.dom = $("<div>");
     this.position = pos;
-    this.dom.css("left", pos[0]*32).css("top", pos[1]*32);
+    this.dom.css("left", pos[0]*32).css("top", (pos[1]-pos[2])*32);
     this.items = items;
     for(var i = 0; i < items.length; i++) {
         this.dom.append(items[i]);
@@ -20,7 +20,7 @@ function wgFullRender() {
     for(var x = 0; x < 16; x++) {
         for(var y = 0; y < 16; y++) {
             var elm = $('<div></div>');
-            map.append(wgTile([x, y], [elm]).dom);
+            map.append(wgTile([x, y, 0], [elm]).dom);
             if(x == 10 && y == 10) {
                 elm.wgItemSprite(1454);
             } else if(x == 8 && y == 8) {
@@ -54,7 +54,7 @@ function wgMoveLeft() {
 
     for(var y = 0; y < 16; y++) {
         var elm = $('<div></div>');
-        map.append(wgTile([-1, y], [elm]).dom);
+        map.append(wgTile([-1, y, 0], [elm]).dom);
         
     }
     var fields = map.children();
@@ -81,7 +81,7 @@ function wgMoveRight() {
 
     for(var y = 0; y < 16; y++) {
         var elm = $('<div></div>');
-        map.append(wgTile([16, y], [elm]).dom);
+        map.append(wgTile([16, y, 0], [elm]).dom);
 
     }
     var fields = map.children();
@@ -109,7 +109,7 @@ function wgMoveUp() {
 
     for(var x = 0; x < 16; x++) {
         var elm = $('<div></div>');
-        map.append(wgTile([x, -1], [elm]).dom);
+        map.append(wgTile([x, -1, 0], [elm]).dom);
 
     }
     var fields = map.children();
@@ -136,7 +136,7 @@ function wgMoveDown() {
 
     for(var x = 0; x < 16; x++) {
         var elm = $('<div></div>');
-        map.append(wgTile([x, 16], [elm]).dom);
+        map.append(wgTile([x, 16, 0], [elm]).dom);
 
     }
     var fields = map.children();

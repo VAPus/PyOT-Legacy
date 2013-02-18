@@ -34,7 +34,7 @@ import traceback
 # * Health, level, capacity, mana... are all uint64_t. We might change them to strings instead to provide true infinity values (2**(1 << 64)-1)
 
 # XXX: Special packets
-# * 0x00 | 0x00: Evaluate javascript.
+# * 0x00: Evaluate javascript.
 # * Center camera.
 # * A way to zoom map.
 # * A way to open a game socket (Login and Game happens over the same port).
@@ -134,8 +134,8 @@ class WebPacket(WGPacket):
     # Isn't "Description" a bad word for it?
     def mapDescription(self, position, width, height, player):
         skip = -1
-        start = 7
-        end = 0
+        start = max(position.z - 7, 127)
+        end = position.z + 7
         step = -1
 
         # Lower then ground level

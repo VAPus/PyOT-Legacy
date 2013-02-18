@@ -62,10 +62,64 @@ function Packet(data) {
     return this;
 }
 
+// To write packets.
+function PacketWriter() {
+    this.data = "";
+
+    this.uint8 = function(code) {
+        this.data += String.fromCharCode(code);
+    };
+
+    this.uint16 = function(code) {
+        this.data += String.fromCharCode(code >> 8, code & 0xFFFF)
+    }
+
+    this.uint32 = function(code) {
+        this.uint16(code >> 16);
+        this.uint16(code & 0xFFFFFFFF);
+    }
+
+    this.uint64 = function(code) {
+        this.uint32(code >> 32);
+        this.uint32(code & 0xFFFFFFFFFFFFFFFF);
+    }
+
+    this.string = function(code) {
+        this.uint16(code.length);
+        this.data += code;
+    }
+
+    this.longString = function() {
+        this.uint32(code.length);
+        this.data += code;
+    }
+
+    this.position = function(pos) {
+        // Unlike Tibia, we use 127 as the ground. Allows you to have floor from 0 to 255.
+        // We also use uint32. 5 versus 9 bytes.
+        this.uint32(pos.x);
+        this.uint32(pos.y);
+        this.uint8(pos.z);
+
+    }
+
+    this.stackPosition = function(pos) {
+        this.uint32(pos.x);
+        this.uint32(pos.y);
+        this.uint8(pos.z);
+        this.uint8(pos.stackPos);
+    }
+    
+    this.get = function () {
+        return window.btoa(this.data);
+    }
+    return this;
+}
+
 function wgSocketClose() {
     GLOBAL_SOCKET.close();
 }
 
-function wgSocketSend(data) {
-    GLOBAL_SOCKET.send(data);
+function wgSocketSend(pkg) {
+    GLOBAL_SOCKET.send(data.get());
 }
