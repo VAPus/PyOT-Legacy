@@ -111,7 +111,7 @@ function PacketWriter() {
     }
     
     this.get = function () {
-        return window.btoa(this.data);
+        return this.data; //return window.btoa(this.data);
     }
     return this;
 }

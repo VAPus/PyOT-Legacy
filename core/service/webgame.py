@@ -25,6 +25,7 @@ class ClientProtocol(Protocol):
         if not self.firstPacket:
             # Then we got username and password.
             username = packet.string()
+            print username
             password = packet.string()
             if not username and not config.anyAccountWillDo:
                 self.exitWithError("Username cannot be blank.")
@@ -32,7 +33,7 @@ class ClientProtocol(Protocol):
                 
             if username:
                 # Our funny way of doing async SQL
-                account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
+                account = yield sql.runQuery("SELECT `id`, `premdays`, `language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
 
                 if account:
                     # Ban check.
@@ -44,7 +45,7 @@ class ClientProtocol(Protocol):
                         language = config.defaultLanguage
                     else:
                         language = account[0]['language']
-                    characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id']))
+                    characters = yield sql.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id']))
          
             if not username or not account:
                 if config.anyAccountWillDo:
@@ -65,7 +66,7 @@ class ClientProtocol(Protocol):
                 self.exitWithError("Need character name.")
                 return
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (self.account['id'], characterName, config.worldId))
+            character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (self.account['id'], characterName, config.worldId))
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=self.account, name=characterName)
@@ -140,7 +141,7 @@ class ClientProtocol(Protocol):
             # Pass on to handler.
             self.protocol.handle(self.player, packet)
             
-        packet = chr(1) + chr(0) + pack("!H", 3031)
+        """packet = chr(1) + chr(0) + pack("!H", 3031)
         packet += chr(1) + chr(1) + chr(8) + pack("!H", len(game.item.sprites["item"]["3031"][0]))
         packet += str(game.item.sprites["item"]["3031"][0])
         self.transport.write(packet)
@@ -155,7 +156,7 @@ class ClientProtocol(Protocol):
         packet += pack("!H", len(game.item.sprites["outfit"]["27"][0]))
         packet += str(game.item.sprites["outfit"]["27"][0])
         self.transport.write(packet)
-        
+        """
 class ClientFactory(Factory):
     protocol = ClientProtocol
 

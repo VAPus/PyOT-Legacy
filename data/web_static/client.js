@@ -24,8 +24,8 @@ socket.send = function(data) {
 socket.onopen = function() {
     // Initial request.
     pkg = new PacketWriter();
-    pkg.string("123");
-    pkg.string("123");
+    pkg.string("111");
+    pkg.string("111");
     socket.send(pkg.get());
 }
 

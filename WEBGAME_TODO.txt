@@ -1,0 +1,25 @@
+- Server opcode 0x00, run serverside callback.
+- Server opcode 0x01, request assert.
+
+- Make map render.
+- Make characters move.
+- Handle move packets.
+
+- Light layers
+- Light sources (canvas layer?)
+
+- Move camera packet
+- Zoom packet
+
+- Make map size configurable (currently 16x16)
+- Widgetify UI
+- Char widget
+- Inventory widget
+- Status widget
+- Minimap widget (tricky?)
+- Bag widgets
+
+- Effects
+- CSS transform effects (For shake ground, cool teleport effects etc)
+- Per object actual effect (unlike Tibia overlay, this can be used directly to do cool things like 3D wrap using CSS3!)
+

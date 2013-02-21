@@ -37,7 +37,7 @@ if config.enableExtensionProtocol:
     from service.extserver import IPS as MEDIA_IPS
 
 if config.useWebGame:
-    from javascript import JSFrame
+    pass #from javascript import JSFrame
     
 class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def __init__(self, client, data):
@@ -211,7 +211,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # WebGame
         if config.enableWebGame:
             self.wgSprites = set()
-            self.jsFrame = JSFrame()
+            #self.jsFrame = JSFrame()
         
     def generateClientID(self):
         return 0x10000000 + uniqueId()

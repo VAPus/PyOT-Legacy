@@ -1,0 +1,63 @@
+PROTOCOL - CLIENT
+
+Opcode: 0x00
+    String JS
+    
+    Evalute JS
+    
+Opcode: 0x01
+    uint8 type
+    uint16 id
+    uint8 width
+    uint8 height
+    uint8 phases
+    String data
+    
+    Register data assert
+    
+Opcode 0x02
+    String message
+    
+    Exit with error.
+    
+Opcode 0x03
+    uint8 length
+    
+    foreach length:
+        String characterName
+        
+    Characterlist
+    
+Opcode 0x04
+    Position pos
+    uint32 clientId
+    
+    Initial game packet.
+    
+Opcode 0x05
+    Position startPosition
+    
+    XXX
+    
+PROTOCOL - SERVER
+Noop - First:
+    String username
+    String password
+    
+    Login packet.
+    
+Noop - No character.
+    String characterName
+    
+    Choose character packet.
+    
+Opcode 0x00
+    String identifier
+    
+    Call server side callback.
+    
+Opcode 0x01
+    uint8 type
+    uint16 id
+    
+    Request assert.

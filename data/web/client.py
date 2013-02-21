@@ -78,7 +78,7 @@ wgRegisterOpcode(0x05, function(data) { // Full Map
         if(data.uint8() == 0xFF)
             counter += data.uint8();
         else {
-            z = Math.floor(counter // floor);
+            z = Math.floor(counter / floor);
             mod = counter % floor;
             x = mod >> 4;
             y = mod & 0xf;
