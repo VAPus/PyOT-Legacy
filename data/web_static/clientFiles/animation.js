@@ -13,26 +13,31 @@ function wgFramesBySprite(spriteId, type) {
 function wgRegisterItemSprite(id, width, height, frames, data) {
     _wgItemFrames[id] = [width, height, frames];
     _wgItemCache[id] = data;
+
+    wgSpriteCallbacks(0, id);
 }
 function wgRegisterOutfitSprite(id, width, height, phases, data) {
     _wgOutfitFrames[id] = [width, height, phases];
     _wgOutfitCache[id] = data;
+
+    wgSpriteCallbacks(1, id);
 }
 
 function wgRequestSprite(type, id, callback) {
-    pkg = PacketWriter();
-    pkg.uint8(0x01);
-    pkg.uint8(type);
-    pkg.uint16(id);
-
+    if(!_wgSpriteHandlers[type][id]) {
+        var pkg = PacketWriter();
+        pkg.uint8(0x01);
+        pkg.uint8(type);
+        pkg.uint16(id);
+        wgSocketSend(pkg);
+    }
     if(callback) {
         if(_wgSpriteHandlers[type][id]) {
-        _wgSpriteHandlers[type][id].push(callback);
+            _wgSpriteHandlers[type][id].push(callback);
         } else {
-        _wgSpriteHandlers[type][id] = [callback];
+            _wgSpriteHandlers[type][id] = [callback];
         }
     }
-    wgSocketSend(pkg);
 }
 
 function wgSpriteCallbacks(type, id) {
