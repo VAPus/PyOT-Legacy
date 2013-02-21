@@ -14,11 +14,11 @@ function wgTile(pos, items) {
 
 function wgFullRender() {
     map = $("#map");
-    // XXX: 16x16 static map now.
+    // XXX: 25x17 static map now.
     //map.find("*").remove();
 
-    for(var x = 0; x < 16; x++) {
-        for(var y = 0; y < 16; y++) {
+    for(var x = 0; x < 25; x++) {
+        for(var y = 0; y < 17; y++) {
             var elm = $('<div></div>');
             map.append(wgTile([x, y, 0], [elm]).dom);
             if(x == 10 && y == 10) {

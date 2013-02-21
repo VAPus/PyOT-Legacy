@@ -62,16 +62,17 @@ function wgHandleTile(data, x, y, z) {
     $("#map").append(wgTile([x, y, z], [elm]).dom);
 }
 
-wgRegisterOpcode(0x05, function(data) { // Full Map 
-    position = data.position(); // Start corner position.
+wgRegisterOpcode(0x05, function(data) { // Full Map
+    alert("Camera"); 
+    position = data.position(); // Start center position.
     counter = 0;
     if(position.z >= 127)
         floors = (position.z - 127) + 7; // Flawed.
     else {
         floors = 5; // 3 below, two above
     }
-    endCounter = floors * 16 * 16; // Accurate for now.
-    floor = 16 * 16;
+    endCounter = floors * 25 * 17; // Accurate for now.
+    floor = 25 * 17;
     while(counter < endCounter) {
         // Skip op, 255. Tile op 0.
         if(data.uint8() == 0xFF)

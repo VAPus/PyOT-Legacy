@@ -160,7 +160,7 @@ class WebPacket(WGPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.raw("%s\xFF" % chr(skip))
+            self.raw("\xFF%s" % chr(skip))
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
@@ -172,7 +172,7 @@ class WebPacket(WGPacket):
 
                 if tile:
                     if skip >= 0:
-                        self.raw("%s\xFF" % chr(skip))
+                        self.raw("\xFF%s" % chr(skip))
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
@@ -183,7 +183,7 @@ class WebPacket(WGPacket):
         return skip
 
     def tileDescription(self, tile, player):
-        self.raw("\x00\x00")
+        #self.raw("\x00\x00")
         count = 0
         
         for item in tile.topItems():  
@@ -193,8 +193,8 @@ class WebPacket(WGPacket):
                 self.raw(chr(item.count or 1))
             elif item.type in (11,12):
                 self.raw(chr(item.fluidSource or 0))
-            if item.animation:
-                self.raw('\xFE')
+            #if item.animation:
+            #    self.raw('\xFE')
             count += 1
             if count == 10:
                 return
@@ -248,6 +248,8 @@ class WebPacket(WGPacket):
             if count == 10:
                 return
         
+        self.raw("\x00\x00")
+
     def exit(self, message):
         self.uint8(0x14)
         self.string(message) # Error message

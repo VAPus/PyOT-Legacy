@@ -12,7 +12,7 @@ class ClientProtocol(Protocol):
     def __init__(self):
         self.player = None
         self.firstPacket = False
-        self.ready = True # WebGame is "always" ready. Unless the client dies.
+        self.ready = False
         
     def connectionMade(self):
         try:

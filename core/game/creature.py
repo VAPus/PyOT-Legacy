@@ -267,6 +267,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         self.refreshOutfit()
 
     def setSpeed(self, speed):
+        return # XXX: Disable for now
         if speed != self.speed:
             if speed > 1500:
                 speed = 1500.0
