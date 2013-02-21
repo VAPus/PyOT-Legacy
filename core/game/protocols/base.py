@@ -77,7 +77,13 @@ class BasePacket(TibiaPacket):
         self.uint32(clientId) # Cid
         self.uint16(1) # Drawing delay.
         self.uint8(1) # Rule violations?
- 
+
+    def camera(self, center):
+        self.uint8(0x64) # Map description
+        self.position(center.position)
+        self.mapDescription(Position(center.position.x - 8, center.position.y - 6,
+                                        center.position.z),
+                                18, 14, center) 
     # Item
     # Parameters is of class Item or ItemID
     def item(self, item, count=None):

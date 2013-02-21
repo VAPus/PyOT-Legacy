@@ -107,6 +107,11 @@ class WebPacket(WGPacket):
         self.position(position)
         self.uint32(clientId)
 
+    def camera(self, center):
+        self.uint8(0x05) # Map description
+        self.position(center.position)
+        self.mapDescription(Position(center.position.x - 1 - (config.wgSizeX >> 1), center.position.y - 1 - (config.wgSizeY >> 1),
+                            center.position.z), config.wgSizeX, config.wgSizeY, center)
     # Login, characters.
     def exitWithError(self, message):
         self.uint8(0x02)

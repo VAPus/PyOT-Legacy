@@ -317,11 +317,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             if self.client.version >= 980:
                 stream.uint8(0x0F) # Ping back
 
-            stream.uint8(0x64) # Map description
-            stream.position(self.position)
-            stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
-                                        self.position.z),
-                                18, 14, self)
+            stream.camera(self)
             
             self.refreshInventory(stream)
             self.refreshStatus(stream)
