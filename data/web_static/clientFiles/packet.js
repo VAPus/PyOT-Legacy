@@ -71,17 +71,17 @@ function PacketWriter() {
     };
 
     this.uint16 = function(code) {
-        this.data += String.fromCharCode(code >> 8, code & 0xFFFF)
+        this.data += String.fromCharCode(code >> 8, code & 0xFF)
     }
 
     this.uint32 = function(code) {
         this.uint16(code >> 16);
-        this.uint16(code & 0xFFFFFFFF);
+        this.uint16(code & 0xFFFF);
     }
 
     this.uint64 = function(code) {
         this.uint32(code >> 32);
-        this.uint32(code & 0xFFFFFFFFFFFFFFFF);
+        this.uint32(code & 0xFFFFFFFF);
     }
 
     this.string = function(code) {
@@ -121,5 +121,5 @@ function wgSocketClose() {
 }
 
 function wgSocketSend(pkg) {
-    GLOBAL_SOCKET.send(data.get());
+    GLOBAL_SOCKET.send(pkg.get());
 }

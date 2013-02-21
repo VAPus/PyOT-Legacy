@@ -19,7 +19,9 @@ var socket = new WebSocket("ws://"+window.location.hostname+":8081", "base64");
 
 socket.__send = socket.send
 socket.send = function(data) {
-    socket.__send(window.btoa(data));
+    socket.__send(
+        btoa(data)
+    );
 }
 socket.onopen = function() {
     // Initial request.
@@ -45,11 +47,10 @@ GLOBAL_SOCKET = socket;
 
 setTimeout(function() {
         wgFullRender();
-        $("#test").wgAnimateItem(3031, {'delay': 1});
         
         // Scale.
         wgScaleEvent();
-}, 1000);
+}, 10000);
 
 });
 

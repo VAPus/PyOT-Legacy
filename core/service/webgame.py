@@ -4,10 +4,15 @@ from core.packet import WGPacketReader, WGPacket
 from twisted.internet.defer import inlineCallbacks
 
 class ClientProtocol(Protocol):
+    # Unlike Tibia, these are static.
     protocol = game.protocol.getProtocol("web")
+    packet = game.protocol.getProtocol("web").Packet
+    version = 1
+
     def __init__(self):
         self.player = None
         self.firstPacket = False
+        self.ready = True # WebGame is "always" ready. Unless the client dies.
         
     def connectionMade(self):
         try:
@@ -16,6 +21,12 @@ class ClientProtocol(Protocol):
         except:
             # May not always work.
             pass
+
+    def exitWithError(self, message):
+        pkg = self.protocol.Packet()
+        pkg.exitWithError(message)
+        pkg.send(self)
+        self.transport.close()
 
     @inlineCallbacks
     def dataReceived(self, data):
@@ -60,8 +71,11 @@ class ClientProtocol(Protocol):
             self.account = account[0]
             self.language = language
             pkg.characters(characters)
+            pkg.send(self)
         elif not self.player:
             characterName = packet.string()
+            print characterName
+            
             if not characterName:
                 self.exitWithError("Need character name.")
                 return

@@ -71,6 +71,12 @@ class BasePacket(TibiaPacket):
 
     def money(self, money):
         self.uint32(min(0xFFFFFFFE, money))
+
+    def initialPacket(self, clientId, position):
+        self.uint8(0x0A)
+        self.uint32(clientId) # Cid
+        self.uint16(1) # Drawing delay.
+        self.uint8(1) # Rule violations?
  
     # Item
     # Parameters is of class Item or ItemID

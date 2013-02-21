@@ -102,12 +102,18 @@ class WebPacket(WGPacket):
     def money(self, money):
         self.uint32(min(0xFFFFFFFE, money))
 
+    def initialPacket(self, clientId, position):
+        self.uint8(0x04)
+        self.position(position)
+        self.uint32(clientId)
+
     # Login, characters.
     def exitWithError(self, message):
         self.uint8(0x02)
         self.string(message)
         
     def characters(self, list):
+        self.uint8(0x03)
         self.uint8(len(list))
         for member in list:
             self.string(member['name'])

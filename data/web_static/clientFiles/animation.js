@@ -4,6 +4,8 @@ var _wgItemFrames = {};
 var _wgOutfitCache = {};
 var _wgOutfitFrames = {};
 
+var _wgSpriteHandlers = {0:{}, 1:{}, 2:{}, 3:{}, 4:{}};
+
 function wgFramesBySprite(spriteId, type) {
     if(type == 0) return _wgItemFrames[spriteId];
     else if(type == 1) return _wgOutfitFrames[spriteId];
@@ -15,6 +17,31 @@ function wgRegisterItemSprite(id, width, height, frames, data) {
 function wgRegisterOutfitSprite(id, width, height, phases, data) {
     _wgOutfitFrames[id] = [width, height, phases];
     _wgOutfitCache[id] = data;
+}
+
+function wgRequestSprite(type, id, callback) {
+    pkg = PacketWriter();
+    pkg.uint8(0x01);
+    pkg.uint8(type);
+    pkg.uint16(id);
+
+    if(callback) {
+        if(_wgSpriteHandlers[type][id]) {
+        _wgSpriteHandlers[type][id].push(callback);
+        } else {
+        _wgSpriteHandlers[type][id] = [callback];
+        }
+    }
+    wgSocketSend(pkg);
+}
+
+function wgSpriteCallbacks(type, id) {
+    if(_wgSpriteHandlers[type][id]) {
+        for(var i = 0; i < _wgSpriteHandlers[type][id].length; i++) {
+            _wgSpriteHandlers[type][id][i]();
+        }
+        delete _wgSpriteHandlers[type][id];
+    }
 }
 
 (function( $ ) {
@@ -85,7 +112,9 @@ jQuery.fn.wgItemSprite = function (spriteId, subId) {
     if(!subId) subId = 0;
 
     if(!_wgItemCache[spriteId]) {
-        // TODO.
+        var $this = this;
+        wgRequestSprite(0, spriteId, function() { $this.wgItemSprite(spriteId, subId); });
+        return this;
     }
 
     return this.each(function() {

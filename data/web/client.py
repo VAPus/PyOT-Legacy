@@ -31,10 +31,9 @@ wgRegisterOpcode(0x02, function(data) { // Exit with error.
 });
 
 wgRegisterOpcode(0x03, function(data) { // Character list.
-    length = data.uint8();
-    while(length--) {
+    var length = data.uint8();
+    for(var i = 0; i < length; i++) {
         last = data.string();
-        alert(last);
     }
     
     pkg = PacketWriter();
