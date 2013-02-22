@@ -16,6 +16,8 @@ else:
     IPS = {}
 
 class LoginProtocol(protocolbase.TibiaProtocol):
+    tcpNoDelay = True
+
     @inlineCallbacks
     def onFirstPacket(self, packet):
         global IPS
