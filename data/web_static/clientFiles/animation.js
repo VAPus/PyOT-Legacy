@@ -141,7 +141,9 @@ jQuery.fn.wgOutfitSprite = function (spriteId, subId) {
     if(!subId) subId = 0;
 
     if(!_wgOutfitCache[spriteId]) {
-        // TODO.
+        var $this = this;
+        wgRequestSprite(1, spriteId, function() { $this.wgOutfitSprite(spriteId, subId); });
+        return this;
     }
 
     return this.each(function() {

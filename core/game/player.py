@@ -319,19 +319,19 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
             stream.camera(self)
             
-            self.refreshInventory(stream)
-            self.refreshStatus(stream)
-            self.refreshSkills(stream)
+            #self.refreshInventory(stream)
+            #self.refreshStatus(stream)
+            #self.refreshSkills(stream)
 
-            stream.playerInfo(self)
-            stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
-            stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
+            #stream.playerInfo(self)
+            #stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
+            #stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
             
-            if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
-                self.setIcon(CONDITION_PROTECTIONZONE)
-            self.refreshConditions(stream)
+            #if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
+            #    self.setIcon(CONDITION_PROTECTIONZONE)
+            #self.refreshConditions(stream)
 
-            stream.magicEffect(self.position, 0x03)
+            #stream.magicEffect(self.position, 0x03)
 
         self.sendVipList()
 

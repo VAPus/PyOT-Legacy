@@ -5,7 +5,9 @@ function Packet(data) {
 
     this.uint8 = function() {
         this.pos += 1;
-        return this.data.charCodeAt(this.pos - 1);
+        var val = this.data.charCodeAt(this.pos - 1);
+        if(isNaN(val)) alert("Out of range!");
+        return val;
     };
 
     this.uint16 = function() {

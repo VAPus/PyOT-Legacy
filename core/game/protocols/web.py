@@ -129,30 +129,30 @@ class WebPacket(WGPacket):
         if isinstance(item, game.item.Item):
             self.uint16(item.cid)
                 
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type in (11,12):
-                self.uint8(item.fluidSource or 0)
-            if item.animation:
-                self.uint8(0xFE)
+            #if item.stackable:
+            #    self.uint8(item.count or 1)
+            #elif item.type in (11,12):
+            #    self.uint8(item.fluidSource or 0)
+            #if item.animation:
+            #    self.uint8(0xFE)
             
         else:
             self.uint16(item)
-            if count:
-                self.uint8(count)
+            #if count:
+            #    self.uint8(count)
         
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
     def mapDescription(self, position, width, height, player):
         skip = -1
-        start = max(position.z - 7, 127)
-        end = position.z + 7
+        start = position.z + 7 #max(position.z - 7, 127)
+        end = position.z - 7
         step = -1
 
         # Lower then ground level
-        if position.z > 7:
+        if position.z > 127:
             start = position.z - 2
-            end = min(15, position.z + 2) # Choose the smallest of 15 and z + 2
+            end = min(255, position.z + 2) # Choose the smallest of 255 and z + 2
             step = 1
 
         # Run the steps by appending the floor
@@ -183,16 +183,15 @@ class WebPacket(WGPacket):
         return skip
 
     def tileDescription(self, tile, player):
-        #self.raw("\x00\x00")
         count = 0
         
         for item in tile.topItems():  
-            self.raw(pack("<H", item.cid))
+            self.raw(pack("!H", item.cid))
                     
-            if item.stackable:
-                self.raw(chr(item.count or 1))
-            elif item.type in (11,12):
-                self.raw(chr(item.fluidSource or 0))
+            #if item.stackable:
+            #    self.raw(chr(item.count or 1))
+            #elif item.type in (11,12):
+            #    self.raw(chr(item.fluidSource or 0))
             #if item.animation:
             #    self.raw('\xFE')
             count += 1
@@ -201,7 +200,7 @@ class WebPacket(WGPacket):
         
         if not tile.things: return
 
-        for creature in tile.creatures():
+        """for creature in tile.creatures():
             if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
                 continue
             known = False
@@ -234,21 +233,20 @@ class WebPacket(WGPacket):
             count += 1
             if count == 10:
                 return
-                
+        """        
         for item in tile.bottomItems():
-            self.raw(pack("<H", item.cid))
+            self.raw(pack("!H", item.cid))
                     
-            if item.stackable:
+            """if item.stackable:
                 self.raw(chr(item.count or 1))
             elif item.type in (11,12):
                 self.raw(chr(item.fluidSource or 0))
             if item.animation:
-                self.raw('\xFE')
+                self.raw('\xFE')"""
             count += 1
             if count == 10:
                 return
         
-        self.raw("\x00\x00")
 
     def exit(self, message):
         self.uint8(0x14)
@@ -1712,3 +1710,25 @@ class Protocol(object):
     @packet(0x0F)
     def handleUnknownPacket(self, player, packet):
         pass # Silence the console. If we want 9.71 support, declear version 980 here.
+
+    @packet(0x01)
+    def handleWGRequestAssert(self, player, packet):
+        # XXX: Check the data to see if it's stealing...
+        type = packet.uint8()
+        id = packet.uint16()
+        
+        with player.packet() as stream:
+            stream.uint8(1)
+            stream.uint8(type)
+            stream.uint16(id)
+            if type == 0:
+                thing = game.item.sprites["item"][str(id)]
+            elif type == 1:
+                thing =  game.item.sprites["outfit"][str(id)]
+
+            # Width, height, phases.
+            stream.uint8(thing[1][0])
+            stream.uint8(thing[1][1])
+            stream.uint8(thing[1][6])
+
+            stream.string(str(thing[0]))

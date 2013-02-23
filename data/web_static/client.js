@@ -33,21 +33,21 @@ socket.onopen = function() {
 
 socket.onmessage = function(event) {
     // Data handler.
-    packet = new Packet(event.data);
-    opcode = packet.uint8();
+    var packet = new Packet(event.data);
 
+    while(packet.pos < packet.data.length) {
+        var opcode = packet.uint8();
 	if(opcode in OPCODES) {
 		wgHandleOpcode(opcode, packet);
 	} else {
 		alert("Unknown opcode " + opcode);
 		socket.close();
 	}
+    }
 }
 GLOBAL_SOCKET = socket;
 
 setTimeout(function() {
-        wgFullRender();
-        
         // Scale.
         wgScaleEvent();
 }, 10000);
