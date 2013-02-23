@@ -24,19 +24,20 @@ function wgRegisterOutfitSprite(id, width, height, phases, data) {
 }
 
 function wgRequestSprite(type, id, callback) {
-    if(!_wgSpriteHandlers[type][id]) {
-        var pkg = PacketWriter();
-        pkg.uint8(0x01);
-        pkg.uint8(type);
-        pkg.uint16(id);
-        wgSocketSend(pkg);
-    }
     if(callback) {
         if(_wgSpriteHandlers[type][id]) {
             _wgSpriteHandlers[type][id].push(callback);
         } else {
             _wgSpriteHandlers[type][id] = [callback];
         }
+    }
+
+    if(_wgSpriteHandlers[type][id].length < 2) {
+        var pkg = PacketWriter();
+        pkg.uint8(0x01);
+        pkg.uint8(type);
+        pkg.uint16(id);
+        wgSocketSend(pkg);
     }
 }
 
@@ -127,6 +128,7 @@ jQuery.fn.wgItemSprite = function (spriteId, subId) {
         $this.css("background", 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat');
         $this.css("background-position", (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px");
         $this.attr("wgSpriteId", spriteId);
+        $this.css("z-index",  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0]);
         $this.attr("wgFrameId", subId);
         $this.attr("wgSpriteType", 0);
 
