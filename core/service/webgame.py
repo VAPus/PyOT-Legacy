@@ -32,7 +32,7 @@ class ClientProtocol(Protocol):
     def dataReceived(self, data):
         packet = WGPacketReader(data)
         pkg = self.protocol.Packet()
-        
+                
         if not self.firstPacket:
             # Then we got username and password.
             username = packet.string()
@@ -75,7 +75,7 @@ class ClientProtocol(Protocol):
         elif not self.player:
             characterName = packet.string()
             print characterName
-            
+            print Position(999, 998, 7).getTile().things,  Position(999, 998, 7).getTile().ground
             if not characterName:
                 self.exitWithError("Need character name.")
                 return
@@ -154,6 +154,27 @@ class ClientProtocol(Protocol):
         else:
             # Pass on to handler.
             self.protocol.handle(self.player, packet)
+
+    def onConnectionLost(self):
+        if self.player:
+            print "Lost connection on, ", self.player.position
+            self.player.client = None
+
+            if self.player.alive and not self.player.prepareLogout():
+                logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
+                callLater(logoutBlock.length, self.onConnectionLost)
+                return
+
+            self.player.knownCreatures = set()
+            self.player.knownBy = set()
+            for x in game.player.allPlayers.values():
+                if x.client and self.player.data["id"] in x.getVips():
+                    stream = x.packet()
+                    stream.vipLogout(self.player.data["id"])
+                    stream.send(x.client)
+
+            game.scriptsystem.get("logout").runSync(self.player)
+            self.player.despawn()
             
 class ClientFactory(Factory):
     protocol = ClientProtocol

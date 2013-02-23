@@ -37,10 +37,5 @@ div {
     position: absolute;
 }
 #map div div {
-    position: relative;
-    top: 0px;
-    left: 0px;
-    height: 32px;
-    width: 32px;
-    
+    position: relative;    
 }

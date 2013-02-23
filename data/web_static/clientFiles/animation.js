@@ -1,3 +1,15 @@
+var _cssClasses = [];
+function WGCreateCSSClass(className, cssProps, doc) {
+    if(_cssClasses.indexOf(className) != -1) return;
+
+    var ruleBits = [];
+    for(var i in cssProps)
+        ruleBits.push(i + ':' + cssProps[i] + ';');
+
+    var style = $('<style>.'+className+'{'+ruleBits.join("")+'}</style>')
+    $('html > head').append(style);
+    _cssClasses.push(className);   
+};
 var _wgItemCache = {};
 var _wgItemFrames = {};
 
@@ -125,17 +137,20 @@ jQuery.fn.wgItemSprite = function (spriteId, subId) {
 
     return this.each(function() {
         var $this = $(this);
-        $this.css("background", 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat');
-        $this.css("background-position", (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px");
-        $this.attr("wgSpriteId", spriteId);
-        $this.css("z-index",  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0]);
-        $this.attr("wgFrameId", subId);
-        $this.attr("wgSpriteType", 0);
+        WGCreateCSSClass('wg-sprite-item-'+spriteId+'-'+subId, {
+            "background": 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat',
+            "background-position": (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px",
+            "z-index":  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0],
+            'height': (32 * _wgItemFrames[spriteId][1]) + 'px !important',
+            'width': (32 * _wgItemFrames[spriteId][0]) + 'px !important',
+            'margin-left': (32 + (-32 * _wgItemFrames[spriteId][1])) + 'px',
+            'margin-top': (32 + (-32 * _wgItemFrames[spriteId][0])) + 'px'
 
-        $this.css('height', 32 * _wgItemFrames[spriteId][1]);
-        $this.css('width', 32 * _wgItemFrames[spriteId][0]);
-        $this.css('margin-left', 32 + (-32 * _wgItemFrames[spriteId][1]));
-        $this.css('margin-top', 32 + (-32 * _wgItemFrames[spriteId][0]));        
+        });
+        $this.addClass('wg-sprite-item-'+spriteId+'-'+subId)
+        $this.attr("wgSpriteId", spriteId);
+        $this.attr("wgFrameId", subId);
+        $this.attr("wgSpriteType", 0);        
     });
 } 
 
