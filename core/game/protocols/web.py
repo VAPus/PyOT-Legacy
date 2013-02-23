@@ -145,8 +145,8 @@ class WebPacket(WGPacket):
     # Isn't "Description" a bad word for it?
     def mapDescription(self, position, width, height, player):
         skip = -1
-        start = position.z + 7 #max(position.z - 7, 127)
-        end = position.z - 7
+        start = position.z  #max(position.z - 7, 127)
+        end = position.z
         step = -1
 
         # Lower then ground level

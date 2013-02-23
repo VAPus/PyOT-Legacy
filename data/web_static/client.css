@@ -24,6 +24,7 @@ div {
     overflow: hidden;
     top: 0px;
     left: 0px;
+    display: none;
 }
 #view {
     background-color: #000;

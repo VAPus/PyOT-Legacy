@@ -63,19 +63,19 @@ function wgHandleTile(data, x, y, z) {
 }
 
 wgRegisterOpcode(0x05, function(data) { // Full Map
-    position = data.position(); // Start center position.
-    counter = 0;
+    var position = data.position(); // Start center position.
+    var counter = 0;
     if(position.z >= 127) {
-        floors = (position.z - 127) + 7; // Flawed.
+        var floors = (position.z - 127) + 7; // Flawed.
     } else {
-        floors = 15; // Flawed
+        var floors = 1; // Flawed
     }
-    endCounter = floors * 25 * 17; // Accurate for now.
-    floor = 25 * 17;
-    items = [];
-    orgX = position.x;
-    orgY = position.y;
-    orgZ = position.z;
+    var endCounter = floors * 25 * 17; // Accurate for now.
+    var floor = 25 * 17;
+    var items = [];
+    var orgX = position.x;
+    var orgY = position.y;
+    var orgZ = position.z;
 
     var map = $("#map");
 
@@ -86,10 +86,11 @@ wgRegisterOpcode(0x05, function(data) { // Full Map
             // Reposition. New item array.
             // XXX: Render other floors
 
-            if(position.z == 14)
-                map.append(wgTile([position.x - orgX, position.y - orgY, position.z - 14], items).dom);
+            var move = mapOp - 0xFEFF; // 0xFF00 - 1
 
-            move = mapOp - 0xFEFF; // 0xFF00 - 1
+            if(move == 1 && position.z == 7)
+                map.append(wgTile([position.x - orgX, position.y - orgY, position.z - 7], items).dom);
+
             counter += move;
             moveY = counter % 17;
             moveX = Math.floor((counter % floor) / 17);
