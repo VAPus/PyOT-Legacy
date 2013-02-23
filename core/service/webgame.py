@@ -155,7 +155,7 @@ class ClientProtocol(Protocol):
             # Pass on to handler.
             self.protocol.handle(self.player, packet)
 
-    def onConnectionLost(self):
+    def connectionLost(self, reason):
         if self.player:
             print "Lost connection on, ", self.player.position
             self.player.client = None

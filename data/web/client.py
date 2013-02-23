@@ -76,16 +76,21 @@ wgRegisterOpcode(0x05, function(data) { // Full Map
     orgX = position.x;
     orgY = position.y;
     orgZ = position.z;
-    
+
+    var map = $("#map");
+
     while(counter < endCounter) {
         var mapOp = data.uint16();
+        
         if(mapOp >= 0xFF00) {
+            // Reposition. New item array.
+            // XXX: Render other floors
+
+            if(position.z == 14)
+                map.append(wgTile([position.x - orgX, position.y - orgY, position.z - 14], items).dom);
+
             move = mapOp - 0xFEFF; // 0xFF00 - 1
             counter += move;
-            // Reposition. New item array.
-            // XXX: Render other floors.
-            if(position.z == 14)
-                $("#map").append(wgTile([position.x - orgX, position.y - orgY, position.z - 14], items).dom);
             moveY = counter % 17;
             moveX = Math.floor((counter % floor) / 17);
             moveZ = Math.floor(counter / floor); 

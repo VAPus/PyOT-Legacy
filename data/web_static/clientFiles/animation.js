@@ -36,28 +36,22 @@ function wgRegisterOutfitSprite(id, width, height, phases, data) {
 }
 
 function wgRequestSprite(type, id, callback) {
-    if(callback) {
-        if(_wgSpriteHandlers[type][id]) {
-            _wgSpriteHandlers[type][id].push(callback);
-        } else {
-            _wgSpriteHandlers[type][id] = [callback];
-        }
-    }
-
-    if(_wgSpriteHandlers[type][id].length < 2) {
+    if(!_wgSpriteHandlers[type][id]) {
         var pkg = PacketWriter();
         pkg.uint8(0x01);
         pkg.uint8(type);
         pkg.uint16(id);
         wgSocketSend(pkg);
     }
+
+    _wgSpriteHandlers[type][id] = callback;
+    
 }
 
 function wgSpriteCallbacks(type, id) {
     if(_wgSpriteHandlers[type][id]) {
-        for(var i = 0; i < _wgSpriteHandlers[type][id].length; i++) {
-            _wgSpriteHandlers[type][id][i]();
-        }
+        _wgSpriteHandlers[type][id]();
+       
         delete _wgSpriteHandlers[type][id];
     }
 }
@@ -131,22 +125,21 @@ jQuery.fn.wgItemSprite = function (spriteId, subId) {
 
     if(!_wgItemCache[spriteId]) {
         var $this = this;
-        wgRequestSprite(0, spriteId, function() { $this.wgItemSprite(spriteId, subId); });
-        return this;
+        wgRequestSprite(0, spriteId, function() {
+            WGCreateCSSClass('wg-sprite-item-'+spriteId+'-'+subId, {
+                "background": 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat',
+                "background-position": (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px",
+                "z-index":  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0],
+                'height': (32 * _wgItemFrames[spriteId][1]) + 'px !important',
+                'width': (32 * _wgItemFrames[spriteId][0]) + 'px !important',
+                'margin-left': (32 + (-32 * _wgItemFrames[spriteId][1])) + 'px',
+                'margin-top': (0 + (-32 * _wgItemFrames[spriteId][0])) + 'px'
+            });
+        });
     }
 
     return this.each(function() {
         var $this = $(this);
-        WGCreateCSSClass('wg-sprite-item-'+spriteId+'-'+subId, {
-            "background": 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat',
-            "background-position": (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px",
-            "z-index":  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0],
-            'height': (32 * _wgItemFrames[spriteId][1]) + 'px !important',
-            'width': (32 * _wgItemFrames[spriteId][0]) + 'px !important',
-            'margin-left': (32 + (-32 * _wgItemFrames[spriteId][1])) + 'px',
-            'margin-top': (32 + (-32 * _wgItemFrames[spriteId][0])) + 'px'
-
-        });
         $this.addClass('wg-sprite-item-'+spriteId+'-'+subId)
         $this.attr("wgSpriteId", spriteId);
         $this.attr("wgFrameId", subId);

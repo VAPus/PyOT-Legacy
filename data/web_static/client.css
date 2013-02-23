@@ -38,4 +38,5 @@ div {
 }
 #map div div {
     position: relative;    
+    top: 32px;
 }
