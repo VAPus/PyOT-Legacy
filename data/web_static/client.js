@@ -47,10 +47,10 @@ socket.onmessage = function(event) {
 }
 GLOBAL_SOCKET = socket;
 
-setTimeout(function() {
+/*setTimeout(function() {
         // Scale.
         wgScaleEvent();
-}, 10000);
+}, 10000);*/
 
 });
 

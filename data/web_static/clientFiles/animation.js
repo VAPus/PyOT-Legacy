@@ -22,14 +22,14 @@ function wgFramesBySprite(spriteId, type) {
     if(type == 0) return _wgItemFrames[spriteId];
     else if(type == 1) return _wgOutfitFrames[spriteId];
 }
-function wgRegisterItemSprite(id, width, height, frames, data) {
-    _wgItemFrames[id] = [width, height, frames];
+function wgRegisterItemSprite(id, width, height, frames, itemtype, subtype, movetype, animateAlways, data) {
+    _wgItemFrames[id] = [width, height, frames, itemtype, subtype, movetype, animateAlways];
     _wgItemCache[id] = data;
 
     wgSpriteCallbacks(0, id);
 }
 function wgRegisterOutfitSprite(id, width, height, phases, data) {
-    _wgOutfitFrames[id] = [width, height, phases];
+    _wgOutfitFrames[id] = [width, height, phases, 4, 0, 0, 0];
     _wgOutfitCache[id] = data;
 
     wgSpriteCallbacks(1, id);
@@ -129,13 +129,26 @@ jQuery.fn.wgItemSprite = function (spriteId, subId) {
             WGCreateCSSClass('wg-sprite-item-'+spriteId+'-'+subId, {
                 "background": 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat',
                 "background-position": (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px",
-                "z-index":  _wgItemFrames[spriteId][1] +  _wgItemFrames[spriteId][0],
+                "z-index":  (100 * _wgItemFrames[spriteId][4]),
                 'height': (32 * _wgItemFrames[spriteId][1]) + 'px !important',
                 'width': (32 * _wgItemFrames[spriteId][0]) + 'px !important',
-                'margin-left': (32 + (-32 * _wgItemFrames[spriteId][1])) + 'px',
-                'margin-top': (0 + (-32 * _wgItemFrames[spriteId][0])) + 'px'
+                'margin-left': (32 + (-32 * _wgItemFrames[spriteId][0])) + 'px',
+                'margin-top': (0 + (-32 * _wgItemFrames[spriteId][1])) + 'px'
             });
+            if(_wgItemFrames[spriteId][6])
+                setTimeout(function() { $('.wg-sprite-item-'+spriteId+'-'+subId).wgMoveAnimation(1, 1, true); }, 1 * 1000);
         });
+    }
+    if(_cssClasses.indexOf('wg-sprite-item-'+spriteId+'-'+subId) != -1) {
+            WGCreateCSSClass('wg-sprite-item-'+spriteId+'-'+subId, {
+                "background": 'url("data:image/png;base64,' + _wgItemCache[spriteId] + '") no-repeat',
+                "background-position": (subId * -_wgItemFrames[spriteId][0] * 32).toString() + "px 0px",
+                "z-index":  (100 * _wgItemFrames[spriteId][4]),
+                'height': (32 * _wgItemFrames[spriteId][1]) + 'px !important',
+                'width': (32 * _wgItemFrames[spriteId][0]) + 'px !important',
+                'margin-left': (32 + (-32 * _wgItemFrames[spriteId][0])) + 'px',
+                'margin-top': (0 + (-32 * _wgItemFrames[spriteId][1])) + 'px'
+            });
     }
 
     return this.each(function() {

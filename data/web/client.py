@@ -14,13 +14,18 @@ wgRegisterOpcode(0x01, function(data) { // Register data assert
         var width = data.uint8();
         var height = data.uint8();
         var frames = data.uint8();
-        wgRegisterItemSprite(id, width, height, frames, data.string());
+        var itemtype = data.uint8();
+        var subtype = data.uint8();
+        var movetype = data.uint8();
+        var animateAlways = data.uint8();
+        wgRegisterItemSprite(id, width, height, frames, itemtype, subtype, movetype, animateAlways, data.string());
     }
     if(type == 1) { // Outfit.
         var id = data.uint16();
         var width = data.uint8();
         var height = data.uint8();
         var phases = data.uint8();
+        data.pos += 4;
         wgRegisterOutfitSprite(id, width, height, phases, data.string());
     }
 });
