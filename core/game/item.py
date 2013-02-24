@@ -898,7 +898,7 @@ def idByName(name):
 
 def sid(cid):
     " Return the sid based on `cid` "
-    return cidToSid.get(sid, sid)
+    return cidToSid.get(cid, cid)
 
 def cid(sid):
     " Return the cid based on `sid` "

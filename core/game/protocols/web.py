@@ -200,7 +200,7 @@ class WebPacket(WGPacket):
         
         if not tile.things: return
 
-        """for creature in tile.creatures():
+        for creature in tile.creatures():
             if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
                 continue
             known = False
@@ -221,10 +221,7 @@ class WebPacket(WGPacket):
                 else:
                     # Bugged?
                     if creature.creatureType != 0 and creature.brainEvent:
-                        if player.client.version >= 953:
-                            self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
-                        else:
-                            self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                        self.raw(pack("!HIB", 99, creature.clientId(), creature.direction, creature.solid))
                     else:
                         self.creature(creature, True, creature.cid, player) # Not optimal!
             if creature.creatureType != 0 and not creature.brainEvent:
@@ -233,7 +230,7 @@ class WebPacket(WGPacket):
             count += 1
             if count == 10:
                 return
-        """        
+                
         for item in tile.bottomItems():
             self.raw(pack("!H", item.cid))
                     
@@ -1733,6 +1730,11 @@ class Protocol(object):
             stream.uint8(thing[1][7])
             stream.uint8(thing[1][8])
             stream.uint8(thing[1][9])
-            stream.uint8(thing[1][12])
+            if type == 0:
+                sid = game.item.sid(id)
+                
+                stream.uint8(1 if game.item.items[sid].get('flags', 0) & (1 << 24) else 0)
+            else:
+                stream.uint8(thing[1][12])
 
             stream.string(str(thing[0]))

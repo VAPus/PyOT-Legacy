@@ -105,7 +105,43 @@ wgRegisterOpcode(0x05, function(data) { // Full Map
 
         } else {
             var elm = $('<div></div>');
-            elm.wgItemSprite(mapOp); // For now only items.
+            if(mapOp == 98) {
+                var clientId = data.uint32();
+                var health = data.uint8();
+                var direction = data.uint8();
+                var outfitType = data.uint16();
+                if(outfitType) {
+                    data.pos += 5
+                } else {
+                    outfitType = data.uint16();
+                }
+                var mount = data.uint16();
+                data.pos += 7;
+
+                elm.wgOutfitSprite(outfitType, direction);
+
+            } else if(mapOp == 97) {
+                var removeKnown = data.uint32();
+                var clientId = data.uint32();
+                var creatureType = data.uint8();
+                var name = data.string();
+                var health = data.uint8();
+                var direction = data.uint8();
+                var outfitType = data.uint16();
+                
+                if(outfitType) {
+                    data.pos += 5
+                } else {
+                    var lookType = data.uint16();
+                }
+                var mount = data.uint16();
+                data.pos += 8;
+
+                elm.wgOutfitSprite(outfitType, direction);
+
+            } else {
+                elm.wgItemSprite(mapOp); // For now only items.
+            }
             items.push(elm);
 
         }

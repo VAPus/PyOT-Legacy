@@ -101,7 +101,7 @@ jQuery.fn.wgMoveAnimation = function(frames, delay, repeat) {
         if(!spriteId) return;
 
         var allFrames = wgFramesBySprite(spriteId, $this.intAttr("wgSpriteType"));
-        var frameSum = allFrames[0] * allFrames[1] * allFrames[2];
+        var frameSum = allFrames[2];
         var frameId = $this.intAttr("wgFrameId");
         frame = frameId + frames;
         if(frame >= frameSum) {
@@ -165,22 +165,37 @@ jQuery.fn.wgOutfitSprite = function (spriteId, subId) {
 
     if(!_wgOutfitCache[spriteId]) {
         var $this = this;
-        wgRequestSprite(1, spriteId, function() { $this.wgOutfitSprite(spriteId, subId); });
-        return this;
+        wgRequestSprite(1, spriteId, function() {
+            WGCreateCSSClass('wg-sprite-outfit-'+spriteId+'-'+subId, {
+                "background": 'url("data:image/png;base64,' + _wgOutfitCache[spriteId] + '") no-repeat',
+                "background-position": (subId * -_wgOutfitFrames[spriteId][0] * 32).toString() + "px 0px",
+                "z-index":  (100 * _wgOutfitFrames[spriteId][4]),
+                'height': (32 * _wgOutfitFrames[spriteId][1]) + 'px !important',
+                'width': (32 * _wgOutfitFrames[spriteId][0]) + 'px !important',
+                'margin-left': (32 + (-32 * _wgOutfitFrames[spriteId][0])) + 'px',
+                'margin-top': (0 + (-32 * _wgOutfitFrames[spriteId][1])) + 'px'
+            });
+        });
+    }
+
+    if(_cssClasses.indexOf('wg-sprite-outfit-'+spriteId+'-'+subId) != -1) {
+            WGCreateCSSClass('wg-sprite-outfit-'+spriteId+'-'+subId, {
+                "background": 'url("data:image/png;base64,' + _wgOutfitCache[spriteId] + '") no-repeat',
+                "background-position": (subId * -_wgOutfitFrames[spriteId][0] * 32).toString() + "px 0px",
+                "z-index":  (100 * _wgOutfitFrames[spriteId][4]),
+                'height': (32 * _wgOutfitFrames[spriteId][1]) + 'px !important',
+                'width': (32 * _wgOutfitFrames[spriteId][0]) + 'px !important',
+                'margin-left': (32 + (-32 * _wgOutfitFrames[spriteId][0])) + 'px',
+                'margin-top': (0 + (-32 * _wgOutfitFrames[spriteId][1])) + 'px'
+            });
     }
 
     return this.each(function() {
         var $this = $(this);
-        $this.css("background", 'url("data:image/png;base64,' + _wgOutfitCache[spriteId] + '") no-repeat');
-        $this.css("background-position", (subId * -_wgOutfitFrames[spriteId][0] * 32).toString() + "px 0px");
         $this.attr("wgSpriteId", spriteId);
         $this.attr("wgFrameId", subId);
         $this.attr("wgSpriteType", 1);
-
-        $this.css('height', 32 * _wgOutfitFrames[spriteId][1]);
-        $this.css('width', 32 * _wgOutfitFrames[spriteId][0]);
-        $this.css('margin-left', 32 + (-32 * _wgOutfitFrames[spriteId][1]));
-        $this.css('margin-top', 32 + (-32 * _wgOutfitFrames[spriteId][0]));
+        $this.addClass('wg-sprite-outfit-'+spriteId+'-'+subId);
     });
 }
 })( jQuery );
