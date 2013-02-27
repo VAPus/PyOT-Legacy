@@ -24,6 +24,8 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
                 ok = True
                 break
         if ok:
+            if not creature2._onBuyerWalks in creature.scripts["onNextStep"]:
+                creature.scripts["onNextStep"].insert(0, creature2._onBuyerWalks)
             creature2.focus.add(creature)
             # Allow functions to be greatings.
             if hasattr(creature2.base.speakGreet, '__call__'):
@@ -41,6 +43,8 @@ def saidTo(creature, creature2, said, channelType, channelId, **k):
                ok = True
                break
         if ok:
+            if not creature2._onBuyerWalks in creature.scripts["onNextStep"]:
+                creature.scripts["onNextStep"].insert(0, creature2._onBuyerWalks)
             creature2.focus.add(creature)
             # Allow functions to be greatings.
             if hasattr(creature2.base.speakGreet, '__call__'):
