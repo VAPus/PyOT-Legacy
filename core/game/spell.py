@@ -712,10 +712,29 @@ class Rune(Spell):
                     target.condition(array[0].copy(), array[1])
         
             else:
-                for call in self.effectOnTarget:
-                    call(target=None, caster=creature, strength=strength, position=onPosition)
-                if self._targetEffect:
-                    caster.magicEffect(self._targetEffect, onPosition)
+                area = self.targetArea(caster=creature) if callable(self.targetArea) else self.targetArea
+                positions = calculateAreaDirection(creature.position, creature.direction, area)
+                targetGenerators = []
+                for pos in positions:
+                    if self.areaEffect:
+                        creature.magicEffect(self.areaEffect, pos)
+                        
+                    creatures = game.map.getTile(pos).creatures()
+                    if creatures:
+                        targetGenerators.append(creatures)
+                        
+                for generator in targetGenerators:
+                    for targ in generator:
+                        if creature.isMonster() and not config.monsterAoEAffectMonsters and targ.isMonster():
+                            continue
+
+                        creature.spellTargets.append(targ)
+
+                        if self._targetEffect:
+                            targ.magicEffect(self._targetEffect)
+                        
+                        for call in self.effectOnTarget:
+                            call(target=targ, caster=creature, strength=strength)
                     
         if config.runeCastDelay:
             def castDelay(*a, **k):
