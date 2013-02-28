@@ -7,12 +7,11 @@ import game.enum
 import config
 import copy
 import time
-import marshal
 import inflect
 import gc
-import xml.etree.cElementTree as ET
 import otjson as json
 import gzip
+import cPickle
 
 INFLECT = inflect.engine()
 
@@ -1061,8 +1060,8 @@ def loadItems():
     idByNameCache = idNameCache
     cidToSid = _cidToSid
     if config.useWebGame:
-        with gzip.open(config.spriteFile, 'rb') as file:
-            sprites = json.load(file)
+        with open(config.spriteFile, 'rb') as file:
+            sprites = cPickle.load(file)
     # Cache
     if config.itemCache:
         with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
