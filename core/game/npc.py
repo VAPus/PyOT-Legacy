@@ -84,6 +84,9 @@ class NPC(Creature):
         if self.distanceStepsTo(who.position) > 6 or self.position.z != who.position.z:
             who.closeTrade()
             self.farewell(who)
+        else:
+            if not self._onBuyerWalks in who.scripts["onNextStep"]:
+                who.scripts["onNextStep"].insert(0, self._onBuyerWalks)
         
     def sendTradeOffers(self, to):
         forSale = set()

@@ -1355,7 +1355,7 @@ class BaseProtocol(object):
     @packet(0x7C)
     def handleCloseTradeNPC(self, player, packet):
         if player.openTrade:
-            player.openTrade.farewell(player)
+            # player.openTrade.farewell(player) ## NPC shouldn't farewell if you close trade window
             player.closeTrade()
 
         
