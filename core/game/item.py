@@ -2,15 +2,12 @@ from twisted.internet.defer import inlineCallbacks
 from twisted.internet import reactor
 import sql
 from twisted.python import log
-from collections import deque, namedtuple
+from collections import deque
 import game.enum
 import config
-import copy
 import time
 import inflect
-import gc
 import otjson as json
-import gzip
 import cPickle
 
 INFLECT = inflect.engine()
@@ -994,7 +991,9 @@ def loadItems():
     """
 
     # JSON format.
-    jsonItems = json.loads(_open(config.itemFile, 'r').read())
+    with _open(config.itemFile, 'r') as file:
+        jsonItems = json.loads(file.read())
+
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
     for item in jsonItems:
         flags = item.get('flags')
@@ -1060,8 +1059,8 @@ def loadItems():
     idByNameCache = idNameCache
     cidToSid = _cidToSid
     if config.useWebGame:
-        with open(config.spriteFile, 'rb') as file:
-            sprites = cPickle.load(file)
+        with _open(config.spriteFile, 'rb') as file:
+            sprites = cPickle.loads(file.read())
     # Cache
     if config.itemCache:
         with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
