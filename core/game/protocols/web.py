@@ -1719,9 +1719,9 @@ class Protocol(object):
             stream.uint8(type)
             stream.uint16(id)
             if type == 0:
-                thing = game.item.sprites["item"][str(id)]
+                thing = game.item.sprites["item"][id]
             elif type == 1:
-                thing =  game.item.sprites["outfit"][str(id)]
+                thing =  game.item.sprites["outfit"][id]
 
             # Width, height, phases. Itemtype, subtype, movetype, animate.
             stream.uint8(thing[1][0])
@@ -1737,4 +1737,4 @@ class Protocol(object):
             else:
                 stream.uint8(thing[1][12])
 
-            stream.string(str(thing[0]))
+            stream.string(thing[0])
