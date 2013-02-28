@@ -761,8 +761,6 @@ def handlePostLoadEntries():
 # A register function for classes. It's cool, because it keeps state. No param vertification tho.
 def registerClass(type, *argc):
     def _wrapper(c):
-        assert isinstance(c, type)
-
         object = globalScripts[type]
 
         _class_ = c()        
