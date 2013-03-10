@@ -498,8 +498,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 creatureType = lord(code[pos])
                 nameLength = lord(code[pos+1])
                 name = code[pos+2:pos+nameLength+2]
-                pos += 6 + nameLength
-                spawnX, spawnY, spawnTime = creature_unpack(code[pos-4:pos])
+                pos += 8 + nameLength
+                spawnX, spawnY, spawnTime = creature_unpack(code[pos-6:pos])
                 
                 if creatureType == 61:
                     creature = l_getMonster(name)
