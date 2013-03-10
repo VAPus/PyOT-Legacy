@@ -1,7 +1,6 @@
 import copy
 import sys
 sys.path.append('../')
-import config
 import struct
 import io
 import math
