@@ -631,15 +631,15 @@ class Spawn(object):
         self.cret = []
         self.center = centerPoint
     def monster(self, name,x,y,z, spawntime):
-        self.cret.append(chr(61) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
+        self.cret.append(chr(61) + chr(len(name)) + name + struct.pack("<bbI", x, y, spawntime))
         
     def npc(self, name,x,y,z, spawntime):
-        self.cret.append(chr(62) + chr(len(name)) + name + struct.pack("<bbH", x, y, spawntime))
+        self.cret.append(chr(62) + chr(len(name)) + name + struct.pack("<bbI", x, y, spawntime))
         
     def gen(self, x,y,z,rx,ry, extras):
         if self.cret:
             #extras.append( "%s.%s" % ("S(%d,%d%s%s)" % (self.center[0], self.center[1], ',%d'%z if z != 7 or self.radius != 5 else '', ",%d"%self.radius if self.radius != 5 else ''), '.'.join(self.cret)) )
-            code = struct.pack("<BHHBBB", 60, self.center[0], self.center[1], z, self.radius, len(self.cret)) # opCode + amount of creatures + radius
+            code = struct.pack("<BHHBBB", 60, self.center[0], self.center[1], z, self.radius, len(self.cret)) # opCode + positionX + positionY + positionZ + amount of creatures + radius
             extras.append(code + ''.join(self.cret))
             return (None, extras)
         return (None, extras)

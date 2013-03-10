@@ -438,7 +438,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 
 _l_unpack = struct.Struct("<HB").unpack
 _long_unpack = struct.Struct("<i").unpack
-_creature_unpack = struct.Struct("<bbH").unpack
+_creature_unpack = struct.Struct("<bbI").unpack
 _spawn_unpack = struct.Struct("<HHBBB").unpack
 
 def loadSectorMap(code, instanceId, baseX, baseY):
