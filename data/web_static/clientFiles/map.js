@@ -1,8 +1,9 @@
 var WGMOVELOCK = 0;
 //jQuery.fx.interval = 20; // 50fps.
 
+var MAP = $("#map");
 function wgTile(pos, items) {
-    this.dom = $("<div>");
+    this.dom = $(document.createElement("div"));
     this.position = pos;
     this.dom.css("left", pos[0]*32).css("top", (pos[1]-pos[2])*32);
     this.items = items;
@@ -13,14 +14,13 @@ function wgTile(pos, items) {
 }
 
 function wgFullRender() {
-    map = $("#map");
     // XXX: 25x17 static map now.
     //map.find("*").remove();
 
     for(var x = 0; x < 25; x++) {
         for(var y = 0; y < 17; y++) {
-            var elm = $('<div></div>');
-            map.append(wgTile([x, y, 0], [elm]).dom);
+            var elm = $(document.createElement('div'));
+            MAP.append(wgTile([x, y, 0], [elm]).dom);
             if(x == 10 && y == 10) {
                 elm.wgItemSprite(1454);
             } else if(x == 8 && y == 8) {
@@ -34,7 +34,7 @@ function wgFullRender() {
     }
 }
 function wgGetTileByView(viewX, viewY) {
-    fields = $("#map div");
+    fields = MAP.find('div');
     length = fields.length;
     var rX = (viewX * 32) + 'px';
     var rY = (viewY * 32) + 'px';
@@ -50,16 +50,15 @@ function wgReleaseMoveLock() {
 function wgMoveLeft() {
     if(WGMOVELOCK) return;
     WGMOVELOCK = 1;
-    var map = $("#map");
-
+    
     for(var y = 0; y < 16; y++) {
-        var elm = $('<div></div>');
-        map.append(wgTile([-1, y, 0], [elm]).dom);
+        var elm = $(document.createElement('div'));
+        MAP.append(wgTile([-1, y, 0], [elm]).dom);
         
     }
-    var fields = map.children();
+    var fields = MAP.children();
 
-    map.animate({"left": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
+    MAP.animate({"left": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() { 
             var elm = $(this);
@@ -70,23 +69,22 @@ function wgMoveLeft() {
                 elm.css("left", left+32);
             }
         }); 
-        map.css("left", 0);
+        MAP.css("left", 0);
        
     }});
 }
 function wgMoveRight() {
     if(WGMOVELOCK) return;
     WGMOVELOCK = 1;
-    var map = $("#map");
 
     for(var y = 0; y < 16; y++) {
-        var elm = $('<div></div>');
-        map.append(wgTile([16, y, 0], [elm]).dom);
+        var elm = $(document.createElement('div'));
+        MAP.append(wgTile([16, y, 0], [elm]).dom);
 
     }
-    var fields = map.children();
+    var fields = MAP.children();
 
-    map.animate({"left": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
+    MAP.animate({"left": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -97,7 +95,7 @@ function wgMoveRight() {
                 elm.css("left", left-32);
             }
         });
-        map.css("left", 0);
+        MAP.css("left", 0);
 
     }});
 
@@ -105,16 +103,15 @@ function wgMoveRight() {
 function wgMoveUp() {
     if(WGMOVELOCK) return;
     WGMOVELOCK = 1;
-    var map = $("#map");
 
     for(var x = 0; x < 16; x++) {
-        var elm = $('<div></div>');
-        map.append(wgTile([x, -1, 0], [elm]).dom);
+        var elm = $(document.createElement('div'));
+        MAP.append(wgTile([x, -1, 0], [elm]).dom);
 
     }
-    var fields = map.children();
+    var fields = MAP.children();
 
-    map.animate({"top": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
+    MAP.animate({"top": "+=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -125,23 +122,22 @@ function wgMoveUp() {
                 elm.css("top", top+32);
             }
         });
-        map.css("top", 0);
+        MAP.css("top", 0);
 
     }});
 }
 function wgMoveDown() {
     if(WGMOVELOCK) return;
     WGMOVELOCK = 1;
-    var map = $("#map");
-
+    
     for(var x = 0; x < 16; x++) {
-        var elm = $('<div></div>');
-        map.append(wgTile([x, 16, 0], [elm]).dom);
+        var elm = $(document.createElement('div'));
+        MAP.append(wgTile([x, 16, 0], [elm]).dom);
 
     }
     var fields = map.children();
 
-    map.animate({"top": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
+    MAP.animate({"top": "-=32px"}, {"duration": 320, easing: 'linear', queue: false, complete: function() {
         wgReleaseMoveLock();
         fields.each(function() {
             var elm = $(this);
@@ -152,7 +148,7 @@ function wgMoveDown() {
                 elm.css("top", top-32);
             }
         });
-        map.css("top", 0);
+        MAP.css("top", 0);
 
     }});
 }
