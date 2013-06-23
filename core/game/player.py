@@ -1489,8 +1489,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return (container, container / 10.0)
     
     def onDeath(self):
-        lastAttacker = self.getLastDamager()
-        lastDmgIsPlayer = lastAttacker.isPlayer()
+        noDuplications = set()
+        damagers = set()
+        for d in self.lastDamagers:
+            if time.time() - d.time < config.trackHitsTime:
+                if str(d) not in noDuplications:
+                    noDuplications.add(str(d))
+                    damagers.add(d)
+
+        pvpDeath = any(d for d in damagers if d.byPlayer() or d.bySummon())
+
         deathData = {}
         loseRate = self.losePrecent()
         itemLoseRate = self.itemLosePrecent()
@@ -1501,18 +1509,69 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         deathData["loseRate"] = loseRate
         deathData["itemLoseRate"] = itemLoseRate
         deathData["unjust"] = False
+        deathData["pvp"] = pvpDeath
         corpse = Item(HUMAN_CORPSE)
         
-        lastDamagerSkull = self.getSkull(lastAttacker)
-        if lastDmgIsPlayer:
-            # Just or unjust?
-            unjust = True
-            if self.getSkull() or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW, SKULL_GREEN):
-                unjust = False
+        # Here we should create and insert death info and later add killers to it
+
+        print self.data["name"], "has died by:"
+        if pvpDeath:
+            nonPlayerCounted = False
+            for damage in damagers:
+                unjust = True
+                # If killer used summon as well as his own attacks we just skip the summon
+                if damage.bySummon() and damage.creaure.master in damagers:
+                    continue
+
+                # Non-player was involved (count only one)
+                if (damage.byMonster() or damage.byElement()) and not nonPlayerCounted:
+                    # Insert non-player as killer
+                    print str(damage)
+                    nonPlayerCounted = True
+                    continue
+                elif (damage.byMonster() or damage.byElement()) and nonPlayerCounted:
+                    continue
+
+                if damage.bySummon():
+                    playerSkull = self.getSkull(damage.creature.master)
+                else:
+                    playerSkull = self.getSkull(damage.creature)
+
+                if self.getSkull() or playerSkull in (SKULL_ORANGE, SKULL_YELLOW, SKULL_GREEN):
+                    unjust = False
                 
-            deathData["unjust"] = unjust
-            
-        if game.scriptsystem.get("death").runSync(self, lastAttacker, corpse=corpse, deathData=deathData) == False:
+                if playerSkull == SKULL_ORANGE:
+                    revengeEntry = death.findUnrevengeKill(damage.creature.data["id"], self.data["id"])
+                    if not revengeEntry:
+                        print "BUG: This was a revenge, but we can't find the revenge death entry..."
+                    elif revengeEntry.revenged == True:
+                        print "BUG: revenging a revenged kill."
+                    else:
+                        revengeEntry.revenge()
+                
+                if damage.bySummon():
+                    #entry = deathlist.DeathEntry(damage.master.data["id"], self.data["id"], unjust)
+                    print "%s of %s (%s)" % (damage.creature.name(), damage.creature.master.name(), "unjustified" if unjust else "justified")
+                elif damage.byPlayer():
+                    print "%s (%s)" % (damage.creature.name(), "unjustified" if unjust else "justified")
+                else:
+                    #entry = deathlist.DeathEntry(damage.data["id"], self.data["id"], unjust)
+                    print str(damage)
+                
+                    # PvP Experience.
+                    # TODO: Schare experience.
+                    #damage.modifyExperience(config.pvpExpFormula(damage.data["level"], self.data["level"], self.data["experience"]))                
+                    # Resend attackers skull.
+                    # Trick to destroy cache:
+                    #damage.skull = 0
+                    #damage.refreshSkull()
+
+                #deathlist.addEntry(entry)
+        else:
+            # Insert non-player as killer
+            print str(self.getLastDamager())#.base.data["description"]
+
+        if game.scriptsystem.get("death").runSync(self, self.getLastDamager(), corpse=corpse, deathData=deathData) == False:
             return
 
         # Lose all conditions.
@@ -1521,8 +1580,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         unjust = deathData["unjust"]
         loseRate = deathData["loseRate"]
         itemLoseRate = deathData["itemLoseRate"]
-        
-        print "TODO: Unfair fight."
+
         if self.client:
             self.sendReloginWindow(100)
 
@@ -1551,33 +1609,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 # Set new level.
                 self.addSkillLevel(skill, level - self.data["skills"][skill])
                 self.skillAttempt(skill, goal)
-            
-        # PvP experience and death entries.
-        if lastDmgIsPlayer:
-            # Was this revenge?
-            if lastDamagerSkull == SKULL_ORANGE:
-                revengeEntry = death.findUnrevengeKill(lastAttacker.data["id"], self.data["id"])
-                if not revengeEntry:
-                    print "BUG: This was a revenge, but we can't find the revenge death entry..."
-                elif revengeEntry.revenged == True:
-                    print "BUG: revenging a revenged kill."
-                else:
-                    revengeEntry.revenge()
-            entry = deathlist.DeathEntry(lastAttacker.data["id"], self.data["id"], unjust)
-            deathlist.addEntry(entry)
-            
-            # Resend attackers skull.
-            # Trick to destroy cache:
-            lastAttacker.skull = 0
-            lastAttacker.refreshSkull()
-            
-            # PvP Experience.
-            lastAttacker.modifyExperience(config.pvpExpFormula(lastAttacker.data["level"], self.data["level"], self.data["experience"]))
          
         #if temp skull remove it on death
         if self.getSkull() in (SKULL_WHITE, SKULL_YELLOW, SKULL_GREEN):
             self.setSkull(SKULL_NONE)
-		 
+         
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:

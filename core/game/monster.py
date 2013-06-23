@@ -147,8 +147,9 @@ class Monster(Creature):
 
             # Set owner.
             if self.lastDamagers:
-                if self.getLastDamager().isPlayer():
-                    corpse.owners = [self.getLastDamager()]
+                if self.getLastDamager().byPlayer() or self.getLastDamager().bySummon():
+                    
+                    corpse.owners = [self.getLastDamager().creature if self.getLastDamager().byPlayer() else self.getLastDamager().creature.master]
             
                     def _clear_private_loot():
                         del corpse.owners
