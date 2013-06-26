@@ -77,7 +77,7 @@ class CreatureAttacks(object):
         dmg = max(-self.data["health"], dmg)
         
         if dmg:
-            self.addDamager(Hit(dmg, type, by))
+            self.addHit(Hit(dmg, type, by))
             if by:
                 by.lastPassedDamage = time.time()
             
@@ -145,14 +145,14 @@ class CreatureAttacks(object):
         else:
             return False
             
-    def addDamager(self, hit):
-        self.lastDamagers.appendleft(hit)
+    def addHit(self, hit):
+        self.lastHits.appendleft(hit)
     def addSupporter(self, creature):
         self.lastSupporters.appendleft((creature, time.time()))
-    def getLastDamager(self):
-        return self.lastDamagers[0]
+    def getLastHit(self):
+        return self.lastHits[0]
     def getLastSupporter(self):
-        return self.lastDamagers[0][0]
+        return self.lastSupporters[0][0]
             
 class PlayerAttacks(CreatureAttacks):
     # Damage calculation:

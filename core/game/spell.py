@@ -5,6 +5,7 @@ import game.engine
 import game.map
 import random
 import game.creature
+from game.hit import Hit
 from twisted.internet import reactor
 
 spells = {}
@@ -206,7 +207,7 @@ def mana(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         mana = -random.randint(minDmg, maxDmg)
 
         if mana < 0:
-            target.addDamager(caster)
+            target.addHit(Hit(None, None, caster))
         elif mana > 0:
             target.addSupporter(caster)
 
@@ -345,14 +346,14 @@ class Spell(object):
                 added = False
                 if health:
                     if health < 0:
-                        target.addDamager(caster)
+                        target.addHit(Hit(None, None, caster))
                         added = True
                     elif not added:
                         target.addSupporter(caster)
                     target.modifyHealth(health)
                 if mana:
                     if not added and mana < 0:
-                       target.addDamager(caster)
+                       target.addHit(Hit(None, None, caster))
                        added = True
                     elif not added:
                        target.addSupporter(caster)

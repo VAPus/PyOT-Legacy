@@ -1489,14 +1489,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return (container, container / 10.0)
     
     def onDeath(self):
-        noDuplications = set()
+        duplications = set()
         damagers = set()
-        for d in self.lastDamagers:
+        for d in self.lastHits:
             if time.time() - d.time < config.trackHitsTime:
-                if str(d) not in noDuplications:
-                    noDuplications.add(str(d))
+                if str(d) not in duplications:
+                    duplications.add(str(d))
                     damagers.add(d)
-
+        del duplications
         pvpDeath = any(d for d in damagers if d.byPlayer() or d.bySummon())
 
         deathData = {}
@@ -1569,9 +1569,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 #deathlist.addEntry(entry)
         else:
             # Insert non-player as killer
-            print str(self.getLastDamager())#.base.data["description"]
+            print str(self.getLastHit())
 
-        if game.scriptsystem.get("death").runSync(self, self.getLastDamager(), corpse=corpse, deathData=deathData) == False:
+        if game.scriptsystem.get("death").runSync(self, self.getLastHit(), corpse=corpse, deathData=deathData) == False:
             return
 
         # Lose all conditions.
