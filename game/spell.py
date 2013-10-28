@@ -1,8 +1,8 @@
 import game.scriptsystem # We use the talkactions from here
 import game.item
-import game.enum
 import game.engine
 import game.map
+import game.const
 import random
 import game.creature
 from twisted.internet import reactor
@@ -13,7 +13,7 @@ targetRunes = {}
 
 def calculateAreaDirection(position, direction, area):
     positions = []
-    if area[0] == game.enum.TARGET_DIRECTION:
+    if area[0] == TARGET_DIRECTION:
         # We begin on row 1, right in front of us
         yp = 1
         blocking = [] # We keep the blocking tiles from this row because we are using them in the next
@@ -81,7 +81,7 @@ def calculateAreaDirection(position, direction, area):
             prevMinEntry = minEntry
             yp += 1
                     
-    elif area[0] == game.enum.TARGET_CASTER_AREA:
+    elif area[0] == TARGET_CASTER_AREA:
         for a in area[1:]:
             x = position.x - a[0]
             y = position.y - a[1]
@@ -94,9 +94,9 @@ def calculateAreaDirection(position, direction, area):
     
 def typeToEffect(type):
     if type == "fire":
-        return (game.enum.EFFECT_HITBYFIRE, game.enum.ANIMATION_FIRE)
+        return (EFFECT_HITBYFIRE, ANIMATION_FIRE)
     elif type == "poison":
-        return (game.enum.EFFECT_HITBYPOISON, game.enum.ANIMATION_POISON)
+        return (EFFECT_HITBYPOISON, ANIMATION_POISON)
   
 
 def clear():
@@ -108,7 +108,7 @@ def clear():
     
 ### The new way ###
 
-def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvlMin=5, lvlMax=5):
+def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.const.MELEE, lvlMin=5, lvlMax=5):
     def damageCallback(caster, target, strength=None):
         if not target: return
         
@@ -123,14 +123,14 @@ def damage(mlvlMin, mlvlMax, constantMin, constantMax, type=game.enum.MELEE, lvl
         
     return damageCallback
 
-def damageExtra(constant, type=game.enum.MELEE):
+def damageExtra(constant, type=game.const.MELEE):
     def damageCallback(caster, target, strength=None):
         if not target: return
         target.onHit(caster, len(caster.spellTargets) * constant, type, False)
 
     return damageCallback
 
-def meleeBased(aConst, bConst, constantMin, constantMax, type=game.enum.MELEE, lvlMin=5, lvlMax=5):
+def meleeBased(aConst, bConst, constantMin, constantMax, type=game.const.MELEE, lvlMin=5, lvlMax=5):
     def meleeBasedCallback(caster, target, strength=None):
         if not target: return
         
@@ -138,12 +138,12 @@ def meleeBased(aConst, bConst, constantMin, constantMax, type=game.enum.MELEE, l
             dmg = -random.randint(strength[0], strength[1])
         else:
             b = 0
-            weapon = caster.inventory[enum.SLOT_RIGHT]
+            weapon = caster.inventory[SLOT_RIGHT]
             if weapon:
                 skillType = weapon.weaponSkillType
                 b = weapon.attack
             else:
-                skillType = enum.SKILL_FIST
+                skillType = SKILL_FIST
             a = caster.getActiveSkill(skillType)
             c = caster.data["level"]
             maxDmg = (round((a*aConst+b*bConst)*constantMax+(c/lvlMax)))
@@ -167,7 +167,7 @@ def element(type):
 
     return elementDamageCallback
     
-def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=game.enum.CONDITION_PARALYZE):
+def heal(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5, cure=game.const.CONDITION_PARALYZE):
     def healCallback(caster, target, strength=None):
         if not target: return
         
@@ -249,7 +249,7 @@ def magicRope():
     return magicRopeCallback
 
 class Spell(object):
-    def __init__(self, name=None, words=None, icon=0, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+    def __init__(self, name=None, words=None, icon=0, target=game.const.TARGET_TARGET, group=game.const.ATTACK_GROUP):
         self.name = name
         self.words = words
         self.targetType = target
@@ -575,7 +575,7 @@ class Spell(object):
         
        
 class Rune(Spell):
-    def __init__(self, rune, icon=0, count=1, target=game.enum.TARGET_TARGET, group=game.enum.ATTACK_GROUP):
+    def __init__(self, rune, icon=0, count=1, target=game.const.TARGET_TARGET, group=game.const.ATTACK_GROUP):
         self.rune = rune
         self.targetType = target
         self.count = count

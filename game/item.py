@@ -3,7 +3,7 @@ from twisted.internet import reactor
 import sql
 from twisted.python import log
 from collections import deque, namedtuple
-import game.enum
+import game.const
 import config
 import copy
 import time
@@ -335,27 +335,27 @@ class Item(object):
         #if not slot:
         #    return ()
         if slot == "head":
-            return game.enum.SLOT_HEAD,
+            return SLOT_HEAD,
         elif slot == "necklace":
-            return game.enum.SLOT_NECKLACE,
+            return SLOT_NECKLACE,
         elif slot == "backpack":
-            return game.enum.SLOT_BACKPACK,
+            return SLOT_BACKPACK,
         elif slot == "body":
-            return game.enum.SLOT_ARMOR,
+            return SLOT_ARMOR,
         elif slot == "two-handed":
-            return game.enum.SLOT_RIGHT,
+            return SLOT_RIGHT,
         elif slot == "legs":
-            return game.enum.SLOT_LEGS,
+            return SLOT_LEGS,
         elif slot == "feet":
-            return game.enum.SLOT_FEET,
+            return SLOT_FEET,
         elif slot == "ring":
-            return game.enum.SLOT_RING,
+            return SLOT_RING,
         elif slot == "ammo":
-            return game.enum.SLOT_AMMO,
+            return SLOT_AMMO,
         elif self.weaponType == 'shield':
-            return game.enum.SLOT_LEFT,
+            return SLOT_LEFT,
         elif self.weaponType:
-            return game.enum.SLOT_RIGHT,
+            return SLOT_RIGHT,
         else:
             return ()
   
@@ -956,11 +956,11 @@ def loadItems():
                 key = attr.tag
                 val = attr.get("value")
                 if key == "fluidSource":
-                    val = getattr(game.enum, 'FLUID_%s' % val.upper())
+                    val = getattr(game.const, 'FLUID_%s' % val.upper())
                 elif key == "weaponType" and val not in ("ammunition", "wand"):
-                    _item["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % val.upper())
+                    _item["weaponSkillType"] = getattr(game.const, 'SKILL_%s' % val.upper())
                 elif key == 'shootType':
-                    val = getattr(game.enum, 'ANIMATION_%s' % val.upper())
+                    val = getattr(game.const, 'ANIMATION_%s' % val.upper())
                 else:
                     try:
                         val = int(val)
@@ -997,15 +997,15 @@ def loadItems():
             item['flags'] = flagTree[flags]
 
         if 'shootType' in item:
-            item['shootType'] = getattr(game.enum, 'ANIMATION_%s' % item['shootType'].upper())
+            item['shootType'] = getattr(game.const, 'ANIMATION_%s' % item['shootType'].upper())
 
         if 'fluidSource' in item:
-            item['fluidSource'] = getattr(game.enum, 'FLUID_%s' % item['fluidSource'].upper())
+            item['fluidSource'] = getattr(game.const, 'FLUID_%s' % item['fluidSource'].upper())
 
         if 'weaponType' in item:
             type = item['weaponType']
             if type not in ("ammunition", "wand"):
-                item["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % type.upper())
+                item["weaponSkillType"] = getattr(game.const, 'SKILL_%s' % type.upper())
 
         id = item['id']
         cid = item.get('cid')

@@ -234,7 +234,7 @@ class Boost(Condition):
 
             # Hack
             if ptype == "speed":
-                self.type = enum.CONDITION_HASTE
+                self.type = CONDITION_HASTE
                 self.creature.setSpeed(pvalue)
             elif isinstance(ptype, int):
                 #  Skills.

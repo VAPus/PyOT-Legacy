@@ -3,9 +3,8 @@ from packet import TibiaPacket
 from twisted.internet.defer import Deferred, inlineCallbacks
 from twisted.internet import defer, reactor
 from twisted.python import log
-import game.enum
+import game.const
 import game.map
-enum = game.enum
 import math
 import config
 import sys
@@ -45,10 +44,6 @@ class BasePacket(TibiaPacket):
     protocolEnums["MSG_STATUS_SMALL"] = 0x1A
     protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B""" # TODO fix this!
 
-    def enum(self, key):
-        #return self.protocolEnums[key]
-        return getattr(game.enum, key)
-        
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
@@ -408,7 +403,7 @@ class BasePacket(TibiaPacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]
@@ -435,9 +430,9 @@ class BasePacket(TibiaPacket):
         self.uint8(0xA2)
         self.uint16(icons)
 
-    def message(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def message(self, player, message, msgType=game.const.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
-        self.uint8(self.enum(msgType))
+        self.uint8(self.const(msgType))
         if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
             if pos:
                 self.position(pos)
@@ -486,9 +481,9 @@ class BasePacket(TibiaPacket):
         # TODO: Send members for certain channels
         self.uint32(0)
 
-    def say(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def say(self, player, message, msgType=game.const.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xAA)
-        self.uint8(self.enum(msgType))
+        self.uint8(self.const(msgType))
         if msgType in (MSG_DAMAGE_DEALT, MSG_DAMAGE_RECEIVED, MSG_DAMAGE_OTHERS):
             if pos:
                 self.position(pos)
@@ -599,8 +594,8 @@ class BaseProtocol(object):
             #self.transport.loseConnection()
 
  
-    def enum(self, key):
-        return getattr(game.enum, key)
+    def const(self, key):
+        return getattr(game.const, key)
 
     @packet(0x14)
     def handleLogout(self, player, packet):
@@ -620,9 +615,9 @@ class BaseProtocol(object):
         channelId = 0
         reciever = ""
 
-        if channelType in (self.enum(MSG_CHANNEL_MANAGEMENT), self.enum(MSG_CHANNEL), self.enum(MSG_CHANNEL_HIGHLIGHT)):
+        if channelType in (self.const(MSG_CHANNEL_MANAGEMENT), self.const(MSG_CHANNEL), self.const(MSG_CHANNEL_HIGHLIGHT)):
             channelId = packet.uint16()
-        elif channelType in (self.enum(MSG_PRIVATE_TO), self.enum(MSG_GAMEMASTER_PRIVATE_TO)):
+        elif channelType in (self.const(MSG_PRIVATE_TO), self.const(MSG_GAMEMASTER_PRIVATE_TO)):
             reciever = packet.string()
 
         text = packet.string()
@@ -735,7 +730,7 @@ class BaseProtocol(object):
         player.turn(3)
 
     def handleWalk(self, player, direction):
-        if player.target and player.modes[1] == game.enum.CHASE and player.targetMode > 0:
+        if player.target and player.modes[1] == CHASE and player.targetMode > 0:
             player.cancelTarget()
             player.target = None
             player.targetMode = 0

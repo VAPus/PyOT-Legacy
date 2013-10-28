@@ -5,7 +5,6 @@ from twisted.python import log
 import scriptsystem
 from collections import deque
 import config
-import game.enum
 import time
 import io
 import struct

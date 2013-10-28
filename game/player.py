@@ -1,4 +1,4 @@
-from game import enum, engine
+from game import engine
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import config
@@ -339,7 +339,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshSkills(stream)
 
             stream.playerInfo(self)
-            stream.worldlight(game.engine.getLightLevel(), enum.LIGHTCOLOR_DEFAULT)
+            stream.worldlight(game.engine.getLightLevel(), LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
             
             if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
@@ -747,7 +747,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.data["maglevel"] = 0
             self.refreshStatus()
 
-        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=enum.MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
+        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
         exp = int(exp)
@@ -1608,8 +1608,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if not self.alive and self.data["health"] < 1:
 
-            splash = game.item.Item(enum.FULLSPLASH)
-            splash.fluidSource = enum.FLUID_BLOOD
+            splash = Item(FULLSPLASH)
+            splash.fluidSource = FLUID_BLOOD
 
             corpse.place(self.position)
             splash.place(self.position)
@@ -1839,7 +1839,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
             addBack = removedMoney - amount
             if addBack: # Add some money back
-                for x in enum.MONEY_MAP:
+                for x in MONEY_MAP:
                     if addBack >= x[1]:
                         coins = int(addBack / x[1])
                         addBack = addBack % x[1]
@@ -1857,7 +1857,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return 0
 
     def addMoney(self, amount):
-        for x in enum.MONEY_MAP:
+        for x in MONEY_MAP:
             if amount >= x[1]:
                 coins = int(amount / x[1])
                 amount = amount % x[1]
