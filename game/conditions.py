@@ -23,6 +23,8 @@ class Condition(object):
                 self.effect = self.effectFire
             elif type == CONDITION_POISON:
                 self.effect = self.effectPoison
+            elif type == CONDITION_ENERGY:
+                self.effect = self.effectEnergy
             elif type == CONDITION_REGENERATEHEALTH:
                 self.effect = self.effectRegenerateHealth
             elif type == CONDITION_REGENERATEMANA:
@@ -30,6 +32,7 @@ class Condition(object):
             elif type == CONDITION_DRUNK:
                 self.effect = self.effectDrunk
             else:
+                print "Condition got unknown effect", type
                 self.effect = self.effectNone
 
     def start(self, creature):
@@ -110,6 +113,17 @@ class Condition(object):
         else:
             self.creature.modifyHealth(-damage)
         
+    def effectEnergy(self, damage=0, minDamage=0, maxDamage=0, display=True):
+        """ The default effect handler when the condition is a energy type """
+        self.creature.magicEffect(EFFECT_ENERGYHIT)
+        if not damage:
+            damage = random.randint(minDamage, maxDamage)
+
+        if display:
+            self.creature.onHit(None, -damage, ENERGY, False)
+        else:
+            self.creature.modifyHealth(-damage)
+
     def effectRegenerateHealth(self, gainhp=None, display=True):
         """ The default effect handler when the condition is a health regen type """
         if not gainhp:

@@ -483,8 +483,10 @@ def callEventDate(date, func):
 scriptPool.start()"""
 
 def run():
-    game.engine.IS_ONLINE = False
-    game.engine.IS_RUNNING = False
+    global IS_ONLINE
+    global IS_RUNNING
+    IS_ONLINE = False
+    IS_RUNNING = False
     get('shutdown').runSync()
     
 reactor.addSystemEventTrigger('before','shutdown',run)

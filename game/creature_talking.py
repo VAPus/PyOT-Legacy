@@ -297,7 +297,7 @@ class PlayerTalking(CreatureTalking):
         return True
 
     def privateChannelMessage(self, text, receiver, channelType=enum.MSG_CHANNEL):
-        player = game.engine.getPlayer(receiver)
+        player = getPlayer(receiver)
         if player:
             stream = player.packet(0xAA)
             stream.uint32(1)
@@ -376,5 +376,5 @@ class PlayerTalking(CreatureTalking):
         else:
             self.privateChannelMessage(text, reciever, MSG_PRIVATE_FROM)
 
-        for creature in game.engine.getCreatures(self.position):
+        for creature in getCreatures(self.position):
             creature.playerSay(self, text, channelType, channelId or reciever)

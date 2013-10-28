@@ -22,7 +22,7 @@ class TestFramework(framework.FrameworkTest):
 class TestVirtualPlayer(framework.FrameworkTestGame):
     def test_existance(self):
         # Do this player even exist?
-        self.assertTrue(game.engine.getPlayer(self.player.data["name"]))
+        self.assertTrue(getPlayer(self.player.data["name"]))
         
         # Are we placed?
         self.assertTrue(self.player in self.player.position.getTile().things)

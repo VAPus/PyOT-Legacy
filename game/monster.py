@@ -1,5 +1,5 @@
 from creature import Creature, uniqueId, allCreatures
-import engine, map, scriptsystem
+import map, scriptsystem
 from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor, defer
@@ -312,7 +312,7 @@ class Monster(Creature):
             
         _target = self.target
         if not targets:
-            targets = engine.getPlayers(self.position) # Get all creaturse in range
+            targets = getPlayers(self.position) # Get all creaturse in range
             if not targets:
                 self.target = None
                 self.targetMode = 0
@@ -373,17 +373,17 @@ class Monster(Creature):
             else:
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
-                    engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                             
         # Begin autowalking
         if bestDist > 1:
-            engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+            autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                     
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
             if self.target == who:                       
                 if self.canTarget(self.target.position):
-                    engine.autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
                 else:
                     self.target = None
                     self.targetMode = 0
@@ -501,7 +501,7 @@ class MonsterBase(object):
             
             if place:
                 # Vertify that there are no spectators if check = True
-                if check and engine.hasSpectators(position): 
+                if check and hasSpectators(position): 
                     # If so, try again in 10s
                     reactor.callLater(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
                     return
@@ -560,7 +560,7 @@ class MonsterBase(object):
                 monster.radiusTo = (position[0], position[1])
 
             if place and stackpos and stackpos < 10:
-                for player in engine.getPlayers(position):
+                for player in getPlayers(position):
                     stream = player.packet()
                     stream.addTileCreature(position, stackpos, monster, player)
                             
@@ -798,7 +798,7 @@ class MonsterBrain(object):
         
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
-            if check and not engine.hasSpectators(monster.position, (9, 7)):
+            if check and not hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
                 return False
             if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available

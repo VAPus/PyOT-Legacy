@@ -1,6 +1,5 @@
 from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
 from twisted.internet import reactor
-from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import game.const
@@ -8,6 +7,7 @@ import config
 import time
 import copy
 import game.scriptsystem
+import game.functions
 import inspect
 import game.errors
 import math
@@ -243,7 +243,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                 stream.send(spectator)
 
     def refreshOutfit(self):
-        for spectator in game.engine.getSpectators(self.position):
+        for spectator in getSpectators(self.position):
             stream = spectator.packet(0x8E)
             stream.uint32(self.clientId())
             stream.outfit(self.outfit, self.addon, self.mount if self.mounted else 0x00)
@@ -298,7 +298,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         else:
             ignore = ()
 
-        for spectator in game.engine.getSpectators(self.position, ignore=ignore):
+        for spectator in getSpectators(self.position, ignore=ignore):
             stream = spectator.packet(0x69)
             stream.position(self.position)
             stream.tileDescription(tile, spectator.player)
@@ -457,48 +457,48 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     # Global storage
     def setGlobal(self, field, value):
         try:
-            game.engine.globalStorage['storage'][field] = value
-            game.engine.saveGlobalStorage = True
+            game.functions.globalStorage['storage'][field] = value
+            game.functions.saveGlobalStorage = True
         except:
             return False
 
     def getGlobal(self, field, default=None):
         try:
-            return game.engine.globalStorage['storage'][field]
+            return game.functions.globalStorage['storage'][field]
         except:
             return default
 
     def removeGlobal(self, field):
         try:
-            del game.engine.globalStorage['storage'][field]
-            game.engine.saveGlobalStorage = True
+            del game.functions.globalStorage['storage'][field]
+            game.functions.saveGlobalStorage = True
         except:
             pass
 
     # Global object storage
     def setGlobalObject(self, field, value):
         try:
-            game.engine.globalStorage['objectStorage'][field] = value
-            game.engine.saveGlobalStorage = True
+            game.functions.globalStorage['objectStorage'][field] = value
+            game.functions.saveGlobalStorage = True
         except:
             return False
 
     def getGlobalObject(self, field, default=None):
         try:
-            return game.engine.globalStorage['objectStorage'][field]
+            return game.functions.globalStorage['objectStorage'][field]
         except:
             return default
 
     def removeGlobalObject(self, field):
         try:
-            del game.engine.globalStorage['objectStorage'][field]
-            game.engine.saveGlobalStorage = True
+            del game.functions.globalStorage['objectStorage'][field]
+            game.functions.saveGlobalStorage = True
         except:
             pass
 
     def __followCallback(self, who):
         if self.target == who:
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+            autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
 
     def follow(self, target):
@@ -509,7 +509,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
 
         self.target = target
         self.targetMode = 2
-        game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+        autoWalkCreatureTo(self, self.target.position, -1, True)
         self.target.scripts["onNextStep"].append(self.__followCallback)
 
     def cancelTarget(self):

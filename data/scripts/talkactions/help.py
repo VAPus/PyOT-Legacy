@@ -65,7 +65,7 @@ def tiler(creature, text):
         pos = Position(pos.x, pos.y-1, pos.z)
         getTile(pos).setThing(0, item)
 
-        game.engine.updateTile(pos, getTile(pos))
+        updateTile(pos, getTile(pos))
         creature.magicEffect(0x03, pos)
 
         return False
@@ -158,7 +158,7 @@ def spawnDepot(creature, text):
     position = creature.positionInDirection(creature.direction)
     tile = game.map.getTile(position)
     tile.placeItem(box)
-    game.engine.updateTile(position, tile)
+    updateTile(position, tile)
     
 
 @register('talkactionFirstWord', 'track')

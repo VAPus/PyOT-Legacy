@@ -38,7 +38,7 @@ class CreatureMovement(object):
                     stream.removeTileItem(oldPosition, oldStackpos)
                     stream.magicEffect(oldPosition, 0x02)
                     stream.send(spectator)
-                oldPosCreatures = game.engine.getCreatures(oldPosition)
+                oldPosCreatures = getCreatures(oldPosition)
             except:
                 pass # Just append creature
         
@@ -76,7 +76,7 @@ class CreatureMovement(object):
                 #stream.magicEffect(position, 0x02)
 
         self.position = position        
-        newPosCreatures = game.engine.getCreatures(position)
+        newPosCreatures = getCreatures(position)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:

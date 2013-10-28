@@ -725,7 +725,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     return thisSectorMap           
 ### End New Map Format ###
 
-def load(sectorX, sectorY, instanceId, sectorSum):
+def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
     """ Load sectorX.sectorY.sec. Returns True/False """
           
     t = time.time()
@@ -741,7 +741,8 @@ def load(sectorX, sectorY, instanceId, sectorSum):
         sectors.add(sectorSum)
         return False
         
-    print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
+    if verbose:
+        print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)

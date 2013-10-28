@@ -39,15 +39,12 @@ except:
     from StringIO import StringIO
 
 # Some half important constants
-IS_ONLINE = False
-IS_RUNNING = True
 globalStorage = {'storage':{}, 'objectStorage':{}}
 saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-serverStart = time.time() - config.tibiaTimeOffset
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
 
 # Just a inner funny call
 def looper(function, time):
@@ -578,7 +575,7 @@ def getTibiaTime():
     :rtype: tuple (hours, minutes, seconds).
     """
     
-    seconds = int((time.time() - serverStart) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
+    seconds = int((time.time() - SERVER_START) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
     hours = seconds // 3600
     seconds = seconds - (hours * 3600)
     minutes = seconds // 60
@@ -607,7 +604,7 @@ def getLightLevel():
             lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft)
             return config.tibiaFullDayLight - lightChange
         
-LIGHT_LEVEL = getLightLevel()
+LIGHT_LEVEL = config.tibiaFullDayLight
 
 def checkLightLevel():
     """ Check if the lightlevel have changed and send updates to the players.

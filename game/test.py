@@ -6,7 +6,7 @@ sys.path.insert(1, 'core')
 
 import config
 
-import game.engine
+import game.functions
 import game.map
 import game.errors
 from twisted.internet import reactor, threads, defer
@@ -14,9 +14,9 @@ from twisted.internet import reactor, threads, defer
 startTime = time.time()
 
 # Turn off looper call.
-game.engine.looper = lambda x,y: x()
+game.functions.looper = lambda x,y: x()
 
-game.engine.loader(startTime)
+game.functions.loader(startTime)
 
 # Clear reactor
 for i in reactor.getDelayedCalls():
@@ -39,37 +39,37 @@ class Packet(unittest.TestCase):
 class GameEngine(unittest.TestCase):
     def test_getSpectators(self):
         # Without players
-        self.assertEqual(game.engine.getSpectators([100,100,7]), set())
+        self.assertEqual(game.functions.getSpectators([100,100,7]), set())
 
         # TODO: With players
 
     def test_getPlayers(self):
         # Without players
-        self.assertEqual(game.engine.getPlayers([100,100,7]), set())
+        self.assertEqual(game.functions.getPlayers([100,100,7]), set())
 
         # TODO: With players
 
     def test_getCreatures(self):
         # Without players
-        self.assertEqual(game.engine.getCreatures([100,100,7]), set())
+        self.assertEqual(game.functions.getCreatures([100,100,7]), set())
 
         # TODO: With map sectors / creatures loaded
         
     def test_getSpectators_tuple(self):
         # Without players
-        self.assertEqual(game.engine.getSpectators((100,100,7)), set())
+        self.assertEqual(game.functions.getSpectators((100,100,7)), set())
 
         # TODO: With players
 
     def test_getPlayers_tuple(self):
         # Without players
-        self.assertEqual(game.engine.getPlayers((100,100,7)), set())
+        self.assertEqual(game.functions.getPlayers((100,100,7)), set())
 
         # TODO: With players
 
     def test_getCreatures_tuple(self):
         # Without players
-        self.assertEqual(game.engine.getCreatures((100,100,7)), set())
+        self.assertEqual(game.functions.getCreatures((100,100,7)), set())
 
         # TODO: With map sectors / creatures loaded
 

@@ -5,8 +5,8 @@ import sys
 import os
 sys.path.insert(0, '.')
 sys.path.insert(0, '..')
-sys.path.insert(1, 'core')
-sys.path.insert(2, '../core')
+sys.path.insert(1, 'game')
+sys.path.insert(2, '../game')
 import config
 import packet
 import random
@@ -15,7 +15,7 @@ from twisted.trial import unittest
 from twisted.test import proto_helpers
 from service.gameserver import GameFactory
 from twisted.python import log
-import game.engine
+import game.functions
 import game.loading
 import __builtin__
 __builtin__.IS_IN_TEST = True

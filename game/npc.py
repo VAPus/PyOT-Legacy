@@ -1,6 +1,6 @@
 from game.creature import Creature, uniqueId
 from game.monster import Monster, MonsterBrain
-import game.engine, game.map, game.scriptsystem
+import game.map, game.scriptsystem
 from packet import TibiaPacket
 import copy, random, time
 from twisted.internet import reactor
@@ -288,7 +288,7 @@ class NPCBase(object):
                         log.msg("Can't place creatures on a stackpos > 9")
                         return
                         
-                    for player in game.engine.getPlayers(position):
+                    for player in getPlayers(position):
                         if player.client and not npc.cid in player.knownCreatures:
                             stream = player.packet()
                             stream.addTileCreature(position, stackpos, npc, player)
@@ -625,7 +625,7 @@ class NPCBrain(MonsterBrain):
                 return True
                     
         # Are anyone watching?
-        if check and not game.engine.getSpectators(npc.position, (11, 9)):
+        if check and not getSpectators(npc.position, (11, 9)):
             npc.turnOffBrain()
             return False
             

@@ -10,7 +10,7 @@ from packet import TibiaPacket
 import sql
 import game.player
 from game.map import getTile,removeCreature
-from game.engine import updateTile
+from game.functions import updateTile
 import struct
 import time
 
@@ -266,7 +266,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     print op
                     if op == "CALL" and self.ready == 2:
                         print "do this"
-                        result = yield game.engine.executeCode(packet.string())
+                        result = yield game.functions.executeCode(packet.string())
                         
                         t.string(result)
                     elif op == "AUTH":

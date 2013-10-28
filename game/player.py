@@ -1,4 +1,3 @@
-from game import engine
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
 import config
@@ -339,7 +338,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshSkills(stream)
 
             stream.playerInfo(self)
-            stream.worldlight(game.engine.getLightLevel(), LIGHTCOLOR_DEFAULT)
+            stream.worldlight(getLightLevel(), LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
             
             if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
@@ -939,7 +938,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.modes[0] = attack
 
             if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
-                game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+                autoWalkCreatureTo(self, self.target.position, -1, True)
                 self.target.scripts["onNextStep"].append(self.followCallback)
 
             self.modes[1] = chase
@@ -1621,7 +1620,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 tile.removeCreature(self)
             except:
                 pass
-            for spectator in game.engine.getSpectators(self.position, ignore=[self]):
+            for spectator in getSpectators(self.position, ignore=[self]):
                 stream = spectator.packet(0x69)
                 stream.position(pos)
                 stream.tileDescription(tile)
@@ -1702,10 +1701,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Saving
     def pickleInventory(self):
-        return game.engine.fastPickler(self.inventory)
+        return fastPickler(self.inventory)
 
     def pickleDepot(self):
-        return game.engine.fastPickler(self.depot)
+        return fastPickler(self.depot)
 
     def _saveQuery(self, force=False):
         extraQuery = ""
@@ -1752,7 +1751,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 if not self.conditions[conId].length > 0:
                     del self.conditions[conId]
 
-            extras.append(game.engine.fastPickler(self.conditions))
+            extras.append(fastPickler(self.conditions))
             extraQuery += ", p.`conditions` = %s"
             self.saveCondition = False
 
@@ -1967,7 +1966,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     # Stuff from protocol:
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+            autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
     def setFollowTarget(self, cid):
@@ -1991,7 +1990,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.target = target
 
             self.targetMode = 2
-            game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
+            autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
         else:
             self.notPossible()
@@ -2171,7 +2170,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     @defer.inlineCallbacks
     def addVipByName(self, name):
-        result = yield game.engine.getPlayerIDByName(name)
+        result = yield getPlayerIDByName(name)
         if result:
             self.addVip(result)
 
@@ -2190,7 +2189,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     @defer.inlineCallbacks
     def removeVipByName(self, name):
-        result = yield game.engine.getPlayerIDByName(name)
+        result = yield getPlayerIDByName(name)
         if result:
             self.removeVip(result)
 
@@ -2603,14 +2602,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     ###### Group stuff
     def getGroupFlags(self, default={}):
         try:
-            return game.engine.groups[self.data["group_id"]][1]
+            return game.functions.groups[self.data["group_id"]][1]
         except:
             print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
             return default
             
     def hasGroupFlag(self, flag):
         try:
-            return flag in game.engine.groups[self.data["group_id"]][1]
+            return flag in game.functions.groups[self.data["group_id"]][1]
         except:
             print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
             return False

@@ -1,15 +1,7 @@
-import game.map
 import config
 
 # A cache, this can probably get pretty big, but right now it's not something I'll think about
 RouteCache = {} # {(FromX, FromY, ToZ, ToY, Z): [Route]}
-    
-def clear():
-    RouteCache = {}
-    
-# FIXME: Not make this a global...
-
-CACHE_CURRENT = config.pathfinderCache
 
 class Node(object):
     def __init__(self, x, y):
@@ -22,12 +14,11 @@ class Node(object):
         self.tileTried = False
                 
     def verify(self, z, instanceId, checkCreature):
-        global CACHE_CURRENT # XXX: Fixme!
         if self.tileTried:
             return self.state
         else:
             self.tileTried = True
-            tile = game.map.getTileConst(self.x, self.y, z, instanceId)
+            tile = getTileConst(self.x, self.y, z, instanceId)
             if tile:
                 for thing in tile.getItems():
                     if thing.solid:
@@ -48,8 +39,6 @@ class Node(object):
     
 class AStar(object):
     def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal):
-        global CACHE_CURRENT # XXX: fixme
-        CACHE_CURRENT = config.pathfinderCache
         self.nodes = {}
         self.openNodes = set()
         self.closedNodes = set() 
@@ -58,7 +47,6 @@ class AStar(object):
         self.found = True
         self.z = zStart
         self.instanceId = instanceId
-        self.cache = True
         
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
@@ -243,8 +231,9 @@ class AStar(object):
                     _openNodes.add(n)            
             
 def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal = False):
-    cachePoint = (xStart, yStart, xGoal, yGoal, zStart, instanceId, ignoreFinal)
-    if config.pathfinderCache:
+    cache = config.pathfinderCache
+    if cache:
+        cachePoint = (xStart, yStart, xGoal, yGoal, zStart, instanceId, ignoreFinal)
         try:
             return RouteCache[cachePoint]
         except:
@@ -268,11 +257,11 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ig
     aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal)
     
     if aStar.found:
-        if CACHE_CURRENT:
+        if cache:
             RouteCache[cachePoint] = aStar.result
         return aStar.result
     else:
-        if CACHE_CURRENT:
+        if cache:
             RouteCache[cachePoint] = None
         return None
     

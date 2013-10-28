@@ -1,6 +1,5 @@
 import game.scriptsystem # We use the talkactions from here
 import game.item
-import game.engine
 import game.map
 import game.const
 import random

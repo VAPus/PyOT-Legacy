@@ -17,8 +17,8 @@ class _TestDocumentation(FrameworkTestGame):
                     self.assertGreater(len(func.__doc__), 10)
 
 class TestModules(_TestDocumentation):
-    def test_engine(self):
-        self._test_module(game.engine)
+    def test_functions(self):
+        self._test_module(game.functions)
 
 class TestClasses(_TestDocumentation):
     def test_player(self):

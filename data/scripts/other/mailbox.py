@@ -24,7 +24,7 @@ def onSendParcelOrLetter(creature, position, thing, onThing, **k):
             creature.lmessage("Did you spell it right?", onPos=position)
             
         onThing.itemId = ITEM_LETTER_STAMPED # We need to change the Id before the placeInDepot takes place in case the player is offline, the data is saved right away
-        result = yield engine.placeInDepot(parse[0], parse[1], onThing)
+        result = yield placeInDepot(parse[0], parse[1], onThing)
         
         if not result:
             onThing.itemId = ITEM_LETTER # Convert the item back to it's original Id
@@ -48,7 +48,7 @@ def onSendParcelOrLetter(creature, position, thing, onThing, **k):
             creature.lmessage("Did you spell it right?", onPos=position)
             
         onThing.itemId = ITEM_PARCEL_STAMPED
-        result = yield engine.placeInDepot(parse[0], parse[1], onThing)
+        result = yield placeInDepot(parse[0], parse[1], onThing)
 
         if not result:
             onThing.itemId = ITEM_PARCEL # Convert the item back to it's original Id

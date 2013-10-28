@@ -638,7 +638,7 @@ class BaseProtocol(object):
 
     @packet(0x9A)
     def handleOpenPrivateChannel(self, player, packeet):
-        player.openPrivateChannel(game.engine.getPlayer(packet.string()))
+        player.openPrivateChannel(getPlayer(packet.string()))
 
     @packet(0x64)
     def handleAutoWalk(self, player, packet):
@@ -675,7 +675,7 @@ class BaseProtocol(object):
                 continue # We don't support them
         
         player.walkPattern = walkPattern
-        game.engine.autoWalkCreature(player)
+        autoWalkCreature(player)
 
     @packet(0x65)
     def handleWalkNorth(self, player, packet):
@@ -737,7 +737,7 @@ class BaseProtocol(object):
 
         player.lastClientMove = direction        
         player.walkPattern = deque((direction,))
-        game.engine.autoWalkCreature(player)
+        autoWalkCreature(player)
 
     @packet(0x78)
     @inlineCallbacks
@@ -794,7 +794,7 @@ class BaseProtocol(object):
                 # This means we need to walk to the item
                 if not player.inRange(fromPosition, 1, 1):
 
-                    walkPattern = game.engine.calculateWalkPattern(player, player.position, fromPosition, -1)
+                    walkPattern = calculateWalkPattern(player, player.position, fromPosition, -1)
 
                     # No walk pattern means impossible move.
                     if not walkPattern:
@@ -810,7 +810,7 @@ class BaseProtocol(object):
                     walking = [True]
                     scount = 0
                     player.walkPattern = deque(walkPattern)
-                    game.engine.autoWalkCreature(player, lambda: walking.pop())
+                    autoWalkCreature(player, lambda: walking.pop())
                     while walking and scount < 100:
                         yield sleep(0.1)
                         scount += 1
@@ -831,7 +831,7 @@ class BaseProtocol(object):
                     return
 
                 if fromPosition.x != 0xFFFF or toPosition != player.position:
-                    if not game.engine.allowProjectile(fromPosition if fromPosition.x != 0xFFFF else player.position, toPosition):
+                    if not allowProjectile(fromPosition if fromPosition.x != 0xFFFF else player.position, toPosition):
                         return
                 
             if player.canSee(fromPosition) and player.canSee(toPosition):
@@ -858,13 +858,13 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
             if abs(creature.position.x-player.position.x) > 1 or abs(creature.position.y-player.position.y) > 1:
-                walkPattern = game.engine.calculateWalkPattern(player, creature.position, toPosition)
+                walkPattern = calculateWalkPattern(player, creature.position, toPosition)
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
-                    game.engine.autoWalkCreatureTo(player, creature.position, -1, True, lambda: game.engine.autoWalkCreatureTo(creature, toPosition))
+                    autoWalkCreatureTo(player, creature.position, -1, True, lambda: autoWalkCreatureTo(creature, toPosition))
             else:
-                game.engine.autoWalkCreatureTo(creature, toPosition)
+                autoWalkCreatureTo(creature, toPosition)
         
     @packet(0x8C)    
     def handleLookAt(self, player, packet):
@@ -955,7 +955,7 @@ class BaseProtocol(object):
         if player.inRange(position, 1, 1):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
-                game.engine.transformItem(item, item.rotateTo, position, stackpos)
+                transformItem(item, item.rotateTo, position, stackpos)
             game.scriptsystem.get('rotate').runSync(item, player, end, position=position.setStackpos(stackpos))
             
     @packet(0xD2)
@@ -1008,7 +1008,7 @@ class BaseProtocol(object):
         
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
+                walkPattern = calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1023,7 +1023,7 @@ class BaseProtocol(object):
                     
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player)
+                autoWalkCreature(player)
                 while player.walkPattern and scount < 100:
                     yield sleep(0.1)
                     scount += 1
@@ -1086,7 +1086,7 @@ class BaseProtocol(object):
         
         if thing and onThing and ((position.z == player.position.z and player.canSee(position)) or position.x == 0xFFFF) and ((onPosition.z == player.position.z and player.canSee(onPosition)) or onPosition.x == 0xFFFF):
             if not onPosition.x == 0xFFFF and not player.inRange(onPosition, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player, player.position, onPosition, -1)
+                walkPattern = calculateWalkPattern(player, player.position, onPosition, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1102,7 +1102,7 @@ class BaseProtocol(object):
                 walking = [True]
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player, lambda: walking.pop())
+                autoWalkCreature(player, lambda: walking.pop())
                 while walking and scount < 100:
                     yield sleep(0.1)
                     scount += 1
@@ -1255,7 +1255,7 @@ class BaseProtocol(object):
         position = packet.position(player.position.instanceId)
         itemId = game.item.sid(packet.uint16())
         stackpos = packet.uint8()
-        player2 = game.engine.getCreatureByCreatureId(packet.uint32())
+        player2 = getCreatureByCreatureId(packet.uint32())
         
         if not player.inRange(player2.position, 2, 2):
             player.message("You need to move closer.")
@@ -1411,7 +1411,7 @@ class BaseProtocol(object):
         position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
         stackpos = packet.uint8()
-        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        creature = getCreatureByCreatureId(packet.uint32())
         hotkey = position.x == 0xFFFF and not position.y
         stackPosition = position.setStackpos(stackpos)
 
@@ -1452,7 +1452,7 @@ class BaseProtocol(object):
 
         if thing and (position.x == 0xFFFF or (position.z == player.position.z and player.canSee(position))):
             if not position.x == 0xFFFF and not player.inRange(position, 1, 1):
-                walkPattern = game.engine.calculateWalkPattern(player, player.position, position, -1)
+                walkPattern = calculateWalkPattern(player, player.position, position, -1)
 
                 # No walk pattern means impossible move.
                 if not walkPattern:
@@ -1468,7 +1468,7 @@ class BaseProtocol(object):
                 walking = [True]
                 scount = 0
                 player.walkPattern = deque(walkPattern)
-                game.engine.autoWalkCreature(player, lambda: walking.pop())
+                autoWalkCreature(player, lambda: walking.pop())
                 while walking and scount < 100:
                     yield sleep(0.1)
                     scount += 1
@@ -1479,7 +1479,7 @@ class BaseProtocol(object):
         
     @packet(0xA3)
     def handleInviteToParty(self, player, packet):
-        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        creature = getCreatureByCreatureId(packet.uint32())
         
         if creature.party():
             player.message("%s is already in a party." % creature.name())
@@ -1497,7 +1497,7 @@ class BaseProtocol(object):
         
     @packet(0xA4)
     def handleJoinParty(self, player, packet):
-        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        creature = getCreatureByCreatureId(packet.uint32())
 
         # Grab the party
         party = creature.party()
@@ -1508,7 +1508,7 @@ class BaseProtocol(object):
         
     @packet(0xA5)
     def handleRevokePartyInvite(self, player, packet):
-        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        creature = getCreatureByCreatureId(packet.uint32())
         myParty = player.party()
         
         if not myParty:
@@ -1526,7 +1526,7 @@ class BaseProtocol(object):
         
     @packet(0xA6)
     def handlePassPartyLeadership(self, player, packet):
-        creature = game.engine.getCreatureByCreatureId(packet.uint32())
+        creature = getCreatureByCreatureId(packet.uint32())
         
         if creature.party() != player.party():
             player.message("%s is not in your party." % creature.name())

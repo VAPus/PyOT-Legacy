@@ -49,6 +49,9 @@ except:
     
 MERCURIAL_REV = 0
 __builtin__.IS_IN_TEST = False
+__builtin__.SERVER_START = time.time() - config.tibiaTimeOffset
+IS_ONLINE = False
+IS_RUNNING = True
 
 # COLORS
 import platform
@@ -149,8 +152,8 @@ def loader(timer):
         if not "__" in i:
             setattr(__builtin__, i, getattr(sys.modules["game.errors"], i))
 
-    for i in sys.modules["game.engine"].globalize:
-        setattr(__builtin__, i, getattr(sys.modules["game.engine"], i))
+    for i in sys.modules["game.functions"].globalize:
+        setattr(__builtin__, i, getattr(sys.modules["game.functions"], i))
 
     print "%55s\n" % _txtColor("\t[DONE]", "blue")
 
@@ -166,7 +169,7 @@ def loader(timer):
     __builtin__.registerClass = game.scriptsystem.registerClass
     __builtin__.defer = defer
     __builtin__.reactor = reactor
-    __builtin__.engine = game.engine
+    __builtin__.functions = game.functions
     __builtin__.sys = sys
     __builtin__.math = math
     __builtin__.returnValue = returnValue
@@ -278,7 +281,6 @@ def loader(timer):
         chat = game.chat
         deathlist = game.deathlist
         ban = game.ban
-        engine = sys.modules["game.engine"] # For consistancy
         market = game.market
 
     __builtin__.game = Globalizer()
@@ -286,16 +288,16 @@ def loader(timer):
     print "> > Loading global data...",
     for x in (yield globalData):
         if x['type'] == 'json':
-            game.engine.globalStorage[x['key']] = otjson.loads(x['data'])
+            game.functions.globalStorage[x['key']] = otjson.loads(x['data'])
         elif x['type'] == 'pickle':
-            game.engine.globalStorage[x['key']] = pickle.loads(x['data'])
+            game.functions.globalStorage[x['key']] = pickle.loads(x['data'])
         else:
-            game.engine.globalStorage[x['key']] = x['data']
+            game.functions.globalStorage[x['key']] = x['data']
     print "%50s\n" % _txtColor("\t[DONE]", "blue")
 
     print "> > Loading groups...",
     for x in (yield groupData):
-        game.engine.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
+        game.functions.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
     print "%60s\n" % _txtColor("\t[DONE]", "blue")
 
     print "> > Loading guilds...",
@@ -333,13 +335,13 @@ def loader(timer):
             iX = x // game.map.sectorX
             iY = y // game.map.sectorY
             sectorSum = (iX << 11) + iY
-            game.map.load(x,y, 0, sectorSum)
+            game.map.load(x,y, 0, sectorSum, False)
 
         print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
         
     # Charge rent?
     def _charge(house):
-            callLater(config.chargeRentEvery, game.engine.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
+            callLater(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
             
     for house in game.house.houseData.values():
         if not house.rent or not house.owner: continue
@@ -368,12 +370,12 @@ def loader(timer):
     # Do we issue saves?
     if config.doSaveAll and not IS_IN_TEST:
         print "> > Schedule global save...",
-        reactor.callLater(config.saveEvery, game.engine.looper, game.engine.saveAll, config.saveEvery)
+        reactor.callLater(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
         
     # Do we save on shutdowns?
     if config.saveOnShutdown:
-        game.scriptsystem.get("shutdown").register(lambda **k: game.engine.saveAll(True), False)
+        game.scriptsystem.get("shutdown").register(lambda **k: game.functions.saveAll(True), False)
         
     # Reset online status on shutdown
     game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
@@ -382,15 +384,15 @@ def loader(timer):
         print "> > Turn world time and light on...",
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-        reactor.callLater(lightchecks, game.engine.looper, game.engine.checkLightLevel, lightchecks)
+        reactor.callLater(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
         print "%45s" % _txtColor("\t[DONE]", "blue")
     
-        reactor.callLater(60, game.engine.looper, pathfinder.clear, 60)
+        reactor.callLater(60, game.functions.looper, pathfinder.RouteCache.clear, 60)
 
     # Now we're online :)
     print _txtColor("Message of the Day: %s" % config.motd, "red")
     log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
-
-    game.engine.IS_ONLINE = True
+    global IS_ONLINE
+    IS_ONLINE = True
 
     print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")

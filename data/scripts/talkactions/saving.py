@@ -8,5 +8,5 @@ def saveMe(creature, text):
 @register("talkaction", 'saveall')
 @access("SAVEALL")
 def saveAll(creature, text):
-    engine.saveAll()
+    saveAll()
     return False

@@ -65,7 +65,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                         pkg.string(config.motd)
                         pkg.string(config.location)
                         pkg.string(config.url)
-                        pkg.uint64(time.time() - core.game.engine.serverStart + config.tibiaTimeOffset)
+                        pkg.uint64(time.time() - SERVER_START + config.tibiaTimeOffset)
 
                     if reqInfo & 0x08: # REQUEST_PLAYERS_INFO
                         pkg.uint8(0x20)
