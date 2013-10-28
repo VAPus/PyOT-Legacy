@@ -32,7 +32,6 @@ class Condition(object):
             elif type == CONDITION_DRUNK:
                 self.effect = self.effectDrunk
             else:
-                print "Condition got unknown effect", type
                 self.effect = self.effectNone
 
     def start(self, creature):
