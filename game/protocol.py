@@ -1,5 +1,5 @@
 from twisted.python import log
-import sys, os, glob
+import sys, os, glob, importlib
 
 protocolsAvailable = []
 for path in glob.iglob('game/protocols/*.py'):
@@ -26,8 +26,7 @@ def loadProtocol(version):
         log.msg("Protocol (Base) %d doesn't exist!" % version)
         return
         
-    protocol = __import__('game.protocols.%d' % version, globals(), locals())
-    protocol = sys.modules['game.protocols.%d' % version]
+    protocol = importlib.import_module('game.protocols.%d' % version)
             
     protocol.verify()
     protocolsUsed[version] = protocol.Protocol()

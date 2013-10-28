@@ -11,9 +11,10 @@ import struct
 import sys
 import itertools
 import gc
+import importlib
 try:
-    mapInfo = __import__('%s.%s' % (config.dataDirectory, config.mapDirectory), globals(), locals(), ['info'], -1).info
-except:
+    mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
+except ImportError:
     print "[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory)
     sys.exit()
 
