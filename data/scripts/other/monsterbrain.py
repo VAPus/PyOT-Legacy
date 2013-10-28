@@ -99,7 +99,7 @@ def defaultBrainFeaturePriority(monster):
                         if attack[3] and random.randint(0,99) < attack[4]:
                             monster.target.condition(attack[3], attack[5])
                             
-                        check = monster.target.onHit(monster, -random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
+                        check = monster.target.onHit(monster, -random.randint(0, round(attack[2] * config.monsterMeleeFactor)), PHYSICAL)
                         monster.lastMelee = _time
                         if check:
                             return True # If we do have a target and deals damage, we stop here
@@ -108,7 +108,7 @@ def defaultBrainFeaturePriority(monster):
                 elif monster.base.distanceAttacks:
                     distance = random.choice(monster.base.distanceAttacks)
                     if monster.lastDistance + distance[0] <= _time and distance[3](monster):
-                        check = monster.target.onHit(monster, -random.randint(0, round(distance[1] * config.monsterMeleeFactor)), game.enum.DISTANCE)
+                        check = monster.target.onHit(monster, -random.randint(0, round(distance[1] * config.monsterMeleeFactor)), DISTANCE)
                         monster.lastDistance = _time
                         if check:
                             monster.shoot(monster.position, monster.target.position, distance[2]) #not sure if this will work.
