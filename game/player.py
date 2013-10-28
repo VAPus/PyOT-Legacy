@@ -1454,7 +1454,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
         # And kill the readyness
-        self.client.ready = False
+        # self.client.ready = False
 
     def losePrecent(self, withBlessings=True):
         if not config.loseCutoff:
@@ -1488,8 +1488,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return (container, container / 10.0)
     
     def onDeath(self):
-        lastAttacker = self.getLastDamager()
-        lastDmgIsPlayer = lastAttacker.isPlayer()
+        try:
+            lastAttacker = self.getLastDamager()
+            lastDmgIsPlayer = lastAttacker.isPlayer()
+        except:
+            lastAttacker = self
+            lastDmgIsPlayer = False
         deathData = {}
         loseRate = self.losePrecent()
         itemLoseRate = self.itemLosePrecent()

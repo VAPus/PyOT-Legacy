@@ -379,6 +379,11 @@ def openMarket(creature, **k):
 def moveForward(creature, **k):
     creature.move(creature.direction)
     
+@register("talkaction", "die")
+@access("DEVELOPER")
+def moveForward(creature, **k):
+    creature.modifyHealth(-1000)
+
 @register("talkaction", "immune")
 @access("DEVELOPER")
 def makeImmune(creature, **k):
