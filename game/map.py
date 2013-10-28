@@ -20,6 +20,21 @@ except:
 sectorX, sectorY = mapInfo.sectorSize
 sectorShiftX = 0
 sectorShiftY = 0
+
+dummyItems = {}
+
+knownMap = {} # sectorSum -> {posSum}
+
+instances = {0: ''}
+
+houseTiles = {}
+
+houseDoors = {}
+
+dummyTiles = {}
+
+sectors = set()
+
 for n in xrange(12):
     if sectorX == 2**n:
         sectorShiftX = n
@@ -38,7 +53,7 @@ def __uid():
         yield idsTaken
 newInstanceId = __uid().next
 
-def getTile(pos):
+def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
     posSum = (pos.x,pos.y,pos.z,pos.instanceId)
     try:
@@ -47,7 +62,15 @@ def getTile(pos):
         if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
             return knownMap.get(posSum)
 
-def setTile(pos, tile):
+def getTileIfExist(pos, _knownMap=knownMap):
+    """ Returns the Tile on this position, but doesn't load non-existing tiles. """
+    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
+    try:
+        return _knownMap[posSum]
+    except KeyError:
+        return None
+
+def setTile(pos, tile, knownMap = knownMap):
     """ Set the tile on this position. """
     x = pos.x
     y = pos.y
@@ -334,20 +357,6 @@ class Tile(object):
 class HouseTile(Tile):
     __slots__ = ('houseId', 'position')
     
-
-dummyItems = {} 
-
-knownMap = {} # sectorSum -> {posSum}
-
-instances = {0: ''}
-
-houseTiles = {}
-
-houseDoors = {}
-
-dummyTiles = {}
-
-sectors = set()
 
 def loadTiles(x,y, instanceId, sectorSum):
     """ Load the sector witch holds this x,y position. Returns the result. """
@@ -772,7 +781,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
     else:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
-def unload(sectorX, sectorY, instanceId):
+def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     """ Unload sectorX.sectorY, loaded into instanceId """
     sectorSum = (instanceId, sectorX, sectorY)
     sectors.remove(sectorSum)
