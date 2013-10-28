@@ -11,7 +11,6 @@ import config
 import math
 import sql
 import otjson
-import game.enum
 import sys
 import random
 import game.vocation
@@ -20,7 +19,7 @@ import game.scriptsystem
 import game.errors
 import glob
 import game.protocol
-import core.logger
+import logger
 import game.chat
 import re
 import subprocess
@@ -701,7 +700,7 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
         stream.uint32(0)
         stream.string(senfrom)
         stream.uint16(level)
-        stream.uint8(stream.enum(messageType))
+        stream.uint8(stream.const(messageType))
         stream.string(message)
         stream.send(player.client)
         

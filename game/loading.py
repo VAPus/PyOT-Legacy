@@ -11,7 +11,7 @@ import userconfig
 import math
 import sql
 import otjson
-import game.enum
+import game.const
 import sys
 import random
 import game.vocation
@@ -20,7 +20,7 @@ import game.scriptsystem
 import game.errors
 import glob
 import game.protocol
-import core.logger
+import game.logger
 import game.chat
 import re
 import subprocess
@@ -33,7 +33,6 @@ import config
 import game.item
 import game.house, game.guild
 import language
-import game.enum
 import game.player, game.creature, game.npc, game.monster, game.spell, game.party
 import game.conditions
 import game.market
@@ -139,12 +138,12 @@ def loader(timer):
 
     # Globalize certain things
     print "> > Globalize data...",
-    enum = sys.modules["game.enum"]
-    __builtin__.enum = enum
+    const = sys.modules["game.const"]
+    __builtin__.const = const
 
-    for i in dir(enum):
+    for i in dir(const):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(enum, i))
+            setattr(__builtin__, i, getattr(const, i))
 
     for i in dir(sys.modules["game.errors"]):
         if not "__" in i:
@@ -194,7 +193,7 @@ def loader(timer):
     __builtin__.getHouseById = game.house.getHouseById
     __builtin__.getGuildById = game.guild.getGuildById
     __builtin__.getGuildByName = game.guild.getGuildByName
-    __builtin__.logger = sys.modules["core.logger"]
+    __builtin__.logger = sys.modules["game.logger"]
 
     # Resources
     __builtin__.genMonster = game.monster.genMonster
@@ -271,7 +270,7 @@ def loader(timer):
         spell = game.spell
         resource = game.resource
         vocation = game.vocation
-        enum = game.enum
+        const = game.const
         house = game.house
         guild = game.guild
         party = game.party

@@ -85,7 +85,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                     if reqInfo & 0x80:
                         pkg.uint8(0x23)
                         pkg.string("PyOT")
-                        pkg.string(game.enum.SERVER_VERSION)
+                        pkg.string(SERVER_VERSION)
                         pkg.string("%s-%s" % (config.versionMin, config.versionMax))
 
                     pkg.send(self)

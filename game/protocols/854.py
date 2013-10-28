@@ -3,7 +3,7 @@ import base
 from twisted.python import log
 import config
 import math
-import game.enum
+import game.const
 import game.item
 from struct import pack
 
@@ -46,7 +46,7 @@ class Packet(base.BasePacket):
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
     
-    def enum(self, key):
+    def const(self, key):
         return self.protocolEnums[key]
         
     def item(self, item, count=None):
@@ -180,7 +180,7 @@ class Packet(base.BasePacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             #self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]
@@ -214,7 +214,7 @@ class Packet(base.BasePacket):
         self.uint8(0x0B)
         self.uint8(flag)
 
-    def message(self, player, message, msgType=game.enum.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
+    def message(self, player, message, msgType=game.const.MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
         """if msgType in ('MSG_DAMAGE_DEALT', 'MSG_DAMAGE_RECEIVED', 'MSG_DAMAGE_OTHERS'):
             if pos:
@@ -229,7 +229,7 @@ class Packet(base.BasePacket):
                 self.position(self.position)
             self.uint8(color)
         else:"""
-        self.uint8(self.enum(msgType))
+        self.uint8(self.const(msgType))
         self.string(message)
         
     def skull(creatureId, skull):

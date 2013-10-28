@@ -33,7 +33,7 @@ def onUseWith(creature, thing, position, onThing, onPosition, **k):
         if not config.splashable:
             return False
 
-        splash = game.item.Item(enum.FULLSPLASH)
+        splash = Item(FULLSPLASH)
         splash.fluidSource = potion["splash"]
         splash.place(onPosition)
         splash.decay()

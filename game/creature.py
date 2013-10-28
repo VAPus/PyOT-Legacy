@@ -3,7 +3,7 @@ from twisted.internet import reactor
 from game.engine import getSpectators, getPlayers
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
-import enum as enum
+import game.const
 import config
 import time
 import copy
@@ -641,30 +641,30 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         pass
 
     # Conditions
-    def condition(self, condition, stackbehavior=enum.CONDITION_LATER, maxLength=0):
+    def condition(self, condition, stackbehavior=game.const.CONDITION_LATER, maxLength=0):
         try:
             oldCondition = self.conditions[condition.type]
             if not oldCondition.length:
                 raise
 
-            if stackbehavior == enum.CONDITION_IGNORE:
+            if stackbehavior == CONDITION_IGNORE:
                 return False
-            elif stackbehavior == enum.CONDITION_LATER:
+            elif stackbehavior == CONDITION_LATER:
                 return reactor.callLater(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
-            elif stackbehavior == enum.CONDITION_ADD:
+            elif stackbehavior == CONDITION_ADD:
                 if maxLength:
                     oldCondition.length = min(condition.length + oldCondition.length, maxLength)
                 else:
                     oldCondition.length += condition.length
 
-            elif stackbehavior == enum.CONDITION_MODIFY:
+            elif stackbehavior == CONDITION_MODIFY:
                 if maxLength:
                     condition.length = min(condition.length + oldCondition.length, maxLength)
                 else:
                     condition.length += oldCondition.length
 
                 self.conditions[condition.type] = condition
-            elif stackbehavior == enum.CONDITION_REPLACE:
+            elif stackbehavior == CONDITION_REPLACE:
                 oldCondition.stop()
                 condition.start(self)
                 self.conditions[condition.type] = condition
@@ -680,7 +680,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         try:
             stackbehavior = kwargs["stackbehavior"]
         except:
-            stackbehavior = enum.CONDITION_LATER
+            stackbehavior = CONDITION_LATER
 
         currCon = argc[0]
         for con in argc[1:]:

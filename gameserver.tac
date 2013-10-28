@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, '.')
-sys.path.insert(1, 'core')
+sys.path.insert(1, 'game')
 
 try:
     import config

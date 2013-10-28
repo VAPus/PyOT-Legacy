@@ -1,6 +1,5 @@
 from game.map import placeCreature, removeCreature, getTile
 from twisted.python import log
-import game.enum as enum
 import config
 
 class CreatureMovement(object):

@@ -1,18 +1,17 @@
-from game import enum
 import config
 
 class CreatureAttacks(object):
     def hitEffects(self):
-        if self.isPlayer() or self.base.blood == enum.FLUID_BLOOD:
-            return enum.COLOR_RED, enum.EFFECT_DRAWBLOOD
-        elif self.base.blood == enum.FLUID_SLIME:
-            return enum.COLOR_LIGHTGREEN, enum.EFFECT_HITBYPOISON
-        elif self.base.blood == enum.FLUID_ENERGY:
-            return enum.COLOR_PURPLE, enum.EFFECT_PURPLEENERGY
-        elif self.base.blood == enum.FLUID_UNDEAD:
-            return enum.COLOR_GREY, enum.EFFECT_HITAREA
-        elif self.base.blood == enum.FLUID_FIRE:
-            return enum.COLOR_ORANGE, enum.EFFECT_DRAWBLOOD
+        if self.isPlayer() or self.base.blood == FLUID_BLOOD:
+            return COLOR_RED, EFFECT_DRAWBLOOD
+        elif self.base.blood == LUID_SLIME:
+            return COLOR_LIGHTGREEN, EFFECT_HITBYPOISON
+        elif self.base.blood == FLUID_ENERGY:
+            return COLOR_PURPLE, EFFECT_PURPLEENERGY
+        elif self.base.blood == FLUID_UNDEAD:
+            return COLOR_GREY, EFFECT_HITAREA
+        elif self.base.blood == FLUID_FIRE:
+            return COLOR_ORANGE, EFFECT_DRAWBLOOD
 
     def damageToBlock(self, dmg, type):
         # Overrided to creatures.
@@ -20,47 +19,47 @@ class CreatureAttacks(object):
 
     def onHit(self, by, dmg, type, effect=None):
 
-        if not type == enum.DISTANCE:
+        if not type == DISTANCE:
             if by and not by.ignoreBlock and self.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(shielding+armor)
 
-        if type == enum.ICE:
-            textColor = enum.COLOR_TEAL
-            magicEffect = enum.EFFECT_ICEATTACK
+        if type == ICE:
+            textColor = COLOR_TEAL
+            magicEffect = EFFECT_ICEATTACK
 
-        elif type == enum.FIRE:
-            textColor = enum.COLOR_ORANGE
-            magicEffect = enum.EFFECT_HITBYFIRE
+        elif type == FIRE:
+            textColor = COLOR_ORANGE
+            magicEffect = EFFECT_HITBYFIRE
 
-        elif type == enum.EARTH:
-            textColor = enum.COLOR_LIGHTGREEN
-            magicEffect = enum.EFFECT_HITBYPOISON
+        elif type == EARTH:
+            textColor = COLOR_LIGHTGREEN
+            magicEffect = EFFECT_HITBYPOISON
 
-        elif type == enum.ENERGY:
-            textColor = enum.COLOR_PURPLE
-            magicEffect = enum.EFFECT_ENERGYHIT
+        elif type == ENERGY:
+            textColor = COLOR_PURPLE
+            magicEffect = EFFECT_ENERGYHIT
 
-        elif type == enum.HOLY:
-            textColor = enum.COLOR_YELLOW
-            magicEffect = enum.EFFECT_HOLYDAMAGE
+        elif type == HOLY:
+            textColor = COLOR_YELLOW
+            magicEffect = EFFECT_HOLYDAMAGE
 
-        elif type == enum.DEATH:
-            textColor = enum.COLOR_DARKRED
-            magicEffect = enum.EFFECT_SMALLCLOUDS
+        elif type == DEATH:
+            textColor = COLOR_DARKRED
+            magicEffect = EFFECT_SMALLCLOUDS
 
-        elif type == enum.DROWN:
-            textColor = enum.COLOR_LIGHTBLUE
-            magicEffect = enum.EFFECT_ICEATTACK
+        elif type == DROWN:
+            textColor = COLOR_LIGHTBLUE
+            magicEffect = EFFECT_ICEATTACK
 
-        elif type == enum.DISTANCE:
-            textColor, magicEffect = enum.COLOR_RED, None
+        elif type == DISTANCE:
+            textColor, magicEffect = COLOR_RED, None
             if by and not by.ignoreBlock and self.doBlock:
                 dmg = min(self.damageToBlock(dmg, type), 0) # Armor calculations(armor only. for now its the same function)
-        elif type == enum.LIFEDRAIN:
-            textColor = enum.COLOR_TEAL
-            magicEffect = enum.EFFECT_ICEATTACK
+        elif type == LIFEDRAIN:
+            textColor = COLOR_TEAL
+            magicEffect = EFFECT_ICEATTACK
 
-        else: ### type == enum.MELEE:
+        else: ### type == MELEE:
             textColor, magicEffect = self.hitEffects()
         if effect != None:
             magicEffect = effect
@@ -87,13 +86,13 @@ class CreatureAttacks(object):
                 if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                     tile.removeItem(item)
 
-            splash = game.item.Item(enum.SMALLSPLASH)
+            splash = Item(SMALLSPLASH)
 
             if self.isPlayer():
-                splash.fluidSource = enum.FLUID_BLOOD
+                splash.fluidSource = FLUID_BLOOD
             else:
                 splash.fluidSource = self.base.blood
-            if splash.fluidSource in (enum.FLUID_BLOOD, enum.FLUID_SLIME):
+            if splash.fluidSource in (FLUID_BLOOD, FLUID_SLIME):
                 splash.place(self.position)
 
                 # Start decay
@@ -159,7 +158,7 @@ class PlayerAttacks(CreatureAttacks):
         if dmg > 0:
             return int(dmg)
 
-        if type == enum.MELEE or type == enum.PHYSICAL:
+        if type == MELEE or type == PHYSICAL:
             # Armor and defence
             armor = 0
             defence = 0
@@ -173,19 +172,19 @@ class PlayerAttacks(CreatureAttacks):
                     if block:
                         dmg += (-dmg * block / 100.0)
 
-            if self.inventory[enum.SLOT_LEFT]:
-                defence = self.inventory[enum.SLOT_LEFT].defence
-            elif self.inventory[enum.SLOT_RIGHT]:
-                defence = self.inventory[enum.SLOT_RIGHT].defence
+            if self.inventory[SLOT_LEFT]:
+                defence = self.inventory[SLOT_LEFT].defence
+            elif self.inventory[SLOT_RIGHT]:
+                defence = self.inventory[SLOT_RIGHT].defence
 
             if not defence:
                 defence = 0
                 
             defence += extradef
             defRate = 1
-            if self.modes[1] == enum.OFFENSIVE:
+            if self.modes[1] == OFFENSIVE:
                 defRate = 0.5
-            elif self.modes[1] == enum.BALANCED:
+            elif self.modes[1] == BALANCED:
                 defRate = 0.75
 
             if random.randint(1, 100) <= defence * defRate:
@@ -201,7 +200,7 @@ class PlayerAttacks(CreatureAttacks):
                 return dmg
         else:
             # Damage types other than physical
-            attrs = { enum.FIRE: 'absorbPercentFire', enum.ICE: 'absorbPercentIce', enum.ENERGY: 'absorbPercentEnergy', enum.EARTH: 'absorbPercentEarth', enum.HOLY: 'absorbPercentHoly', enum.DEATH: 'absorbPercentDeath', enum.DROWN: 'absorbPercentDrown' }
+            attrs = { FIRE: 'absorbPercentFire', ICE: 'absorbPercentIce', ENERGY: 'absorbPercentEnergy', EARTH: 'absorbPercentEarth', HOLY: 'absorbPercentHoly', DEATH: 'absorbPercentDeath', DROWN: 'absorbPercentDrown' }
             absorb = 0
             if not type in attrs: return dmg # Not implanted, or something entierly custom?
             for item in self.inventory:
@@ -239,13 +238,13 @@ class PlayerAttacks(CreatureAttacks):
             else:
                 atkType = MELEE
                 factor = 1
-                if self.modes[1] == enum.BALANCED:
+                if self.modes[1] == BALANCED:
                     factor = 0.75
-                elif self.modes[1] == enum.DEFENSIVE:
+                elif self.modes[1] == DEFENSIVE:
                     factor = 0.5
 
                 if not self.inventory[5]:
-                    skillType = enum.SKILL_FIST
+                    skillType = SKILL_FIST
                     if dmg is None:
                         dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
 
@@ -322,7 +321,7 @@ class PlayerAttacks(CreatureAttacks):
                             self.cancelTarget()
                             self.cancelMessage(_l(self, "In order to engage in combat you and your target must be at least level %s." % config.protectionLevel))
                     else:
-                        self.target.onHit(self, dmg, enum.MELEE)
+                        self.target.onHit(self, dmg, MELEE)
                         self.skillAttempt(skillType)"""
                     
                     target.onHit(self, dmg, atkType)
@@ -335,21 +334,21 @@ class PlayerAttacks(CreatureAttacks):
                             weapon = self.inventory[SLOT_AMMO]
 
                         if weapon.elementFire:
-                            target.onHit(self, -weapon.elementFire, enum.FIRE)
+                            target.onHit(self, -weapon.elementFire, FIRE)
                         if weapon.elementIce:
-                            target.onHit(self, -weapon.elementIce, enum.ICE)
+                            target.onHit(self, -weapon.elementIce, ICE)
                         if weapon.elementEarth:
-                            target.onHit(self, -weapon.elementEarth, enum.EARTH)                        
+                            target.onHit(self, -weapon.elementEarth, EARTH)                        
                         if weapon.elementEnergy:
-                            target.onHit(self, -weapon.elementEnergy, enum.ENERGY)
+                            target.onHit(self, -weapon.elementEnergy, ENERGY)
                         if weapon.elementHoly:
-                            target.onHit(self, -weapon.elementHoly, enum.HOLY)
+                            target.onHit(self, -weapon.elementHoly, HOLY)
                         if weapon.elementDeath:
-                            target.onHit(self, -weapon.elementDeath, enum.DEATH)
+                            target.onHit(self, -weapon.elementDeath, DEATH)
                         if weapon.elementDrown:
-                            target.onHit(self, -weapon.elementDrown, enum.DROWN)
+                            target.onHit(self, -weapon.elementDrown, DROWN)
                         if weapon.elementLifedrain:
-                            target.onHit(self, -weapon.elementLifedrain, enum.LIFEDRAIN)
+                            target.onHit(self, -weapon.elementLifedrain, LIFEDRAIN)
                         
                     self.skillAttempt(skillType)
                 else:
@@ -439,7 +438,7 @@ class PlayerAttacks(CreatureAttacks):
             return self.notPossible()
 
 
-        if self.modes[1] == enum.CHASE:
+        if self.modes[1] == CHASE:
             print "did"
             game.engine.autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)

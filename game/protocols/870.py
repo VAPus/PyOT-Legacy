@@ -1,7 +1,7 @@
 # This is a shadow of the main branch, 9.1
 import base, sys
 import math
-import game.enum
+import game.const
 import game.item
 from struct import pack
 
@@ -58,11 +58,10 @@ class Packet(base.BasePacket):
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
     
-    def enum(self, key):
+    def const(self, key):
         return self.protocolEnums[key]
     # Couple of things from 8.6
     def item(self, item, count=None):
-        import game.item
         if isinstance(item, game.item.Item):
             cid = item.cid
             if cid > 11703:
@@ -167,7 +166,7 @@ class Packet(base.BasePacket):
         
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(game.enum.SKILL_FIRST, game.enum.SKILL_LAST+1):
+        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             currHits = player.data["skill_tries"][x]
             goalHits = player.skillGoals[x]
@@ -208,7 +207,7 @@ class Packet(base.BasePacket):
 
     def message(self, player, message, msgType=MSG_STATUS_DEFAULT, color=0, value=0, pos=None):
         self.uint8(0xB4)
-        self.uint8(self.enum(msgType))
+        self.uint8(self.const(msgType))
         self.string(message)
         
 class Protocol(base.BaseProtocol):

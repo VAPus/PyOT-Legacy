@@ -5,7 +5,7 @@ import copy, random, time
 from twisted.internet import reactor, defer
 from twisted.internet.task import LoopingCall
 from twisted.python import log
-import enum
+import game.const
 import errors
 import item
 import config
@@ -81,23 +81,23 @@ class Monster(Creature):
         return "<Monster (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
         
     def damageToBlock(self, dmg, type):
-        if type == enum.MELEE:
+        if type == MELEE:
             return dmg - self.base.armor
-        elif type == enum.PHYSICAL:
+        elif type == PHYSICAL:
             return dmg * self.base.physical
-        elif type == enum.FIRE:
+        elif type == FIRE:
             return dmg * self.base.fire
-        elif type == enum.EARTH:
+        elif type == EARTH:
             return dmg * self.base.earth
-        elif type == enum.ENERGY:
+        elif type == ENERGY:
             return dmg * self.base.energy
-        elif type == enum.ICE:
+        elif type == ICE:
             return dmg * self.base.ice
-        elif type == enum.HOLY:
+        elif type == HOLY:
             return dmg * self.base.holy
-        elif type == enum.DEATH:
+        elif type == DEATH:
             return dmg * self.base.death
-        elif type == enum.DROWN:
+        elif type == DROWN:
             return dmg * self.base.drown
         
         # What, no match?
@@ -236,11 +236,11 @@ class Monster(Creature):
         
         # Remove bpth small and full splashes on the tile.
         for item in tile.getItems():
-            if item.itemId in enum.SMALLSPLASHES or item.itemId in enum.FULLSPLASHES:
+            if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                 tile.removeItem(item)
         
         # Add full splash
-        splash = game.item.Item(enum.FULLSPLASH)
+        splash = Item(FULLSPLASH)
         splash.fluidSource = self.base.blood
         
         if corpse:
@@ -582,7 +582,7 @@ class MonsterBase(object):
         self.spawnTime = spawnTime
         
     def bloodType(self, color="blood"):
-        self.blood = getattr(enum, 'FLUID_'+color.upper())
+        self.blood = getattr(const, 'FLUID_'+color.upper())
 
     def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
         self.data["lookhead"] = lookhead
@@ -661,7 +661,7 @@ class MonsterBase(object):
     def setSkull(self, skull):
         self.skull = skull
         
-    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=enum.CONDITION_ADD):
+    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=game.const.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
         
     def regDistance(self, maxDamage, shooteffect, check=chance(10), interval=config.meleeAttackSpeed):

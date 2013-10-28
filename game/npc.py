@@ -6,8 +6,8 @@ import copy, random, time
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 from twisted.python import log
-import game.enum
 import game.errors
+import game.const
 import game.item
 import config
 import game.scriptsystem
@@ -77,7 +77,7 @@ class NPC(Creature):
     def playerSay(self, player, said, type, channel):
         game.scriptsystem.get('playerSayTo').runSync(self, player, None, said=said, channelType=type, channelId=channel)
 
-    def sayTo(self, to, text, messageType=game.enum.MSG_NPC_FROM):
+    def sayTo(self, to, text, messageType=game.const.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)
 
     def _onBuyerWalks(self, who):
@@ -319,7 +319,7 @@ class NPCBase(object):
         self.attackable = attackable
         
     def bloodType(self, color="blood"):
-        self.blood = getattr(game.enum, 'FLUID_'+color.upper())
+        self.blood = getattr(game.const, 'FLUID_'+color.upper())
         
     def setSpeed(self, speed):
         self.speed = speed

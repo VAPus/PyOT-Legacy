@@ -1,4 +1,4 @@
-import enum as enum
+import game.const as enum
 import config
 
 # Interface.
@@ -13,8 +13,8 @@ class CreatureTalking(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
+            assert stream.const(messageType) > 0
+            stream.uint8(stream.const(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(spectator)
@@ -28,8 +28,8 @@ class CreatureTalking(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
+            assert stream.const(messageType) > 0
+            stream.uint8(stream.const(messageType))
             stream.position(self.position)
             stream.string(message.upper())
             stream.send(spectator)
@@ -43,8 +43,8 @@ class CreatureTalking(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            assert stream.enum(messageType) > 0
-            stream.uint8(stream.enum(messageType))
+            assert stream.const(messageType) > 0
+            stream.uint8(stream.const(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(spectator)
@@ -54,7 +54,7 @@ class CreatureTalking(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(stream.enum(messageType))
+            stream.uint8(stream.const(messageType))
             stream.position(self.position)
             stream.string(config.whisperNoise)
             stream.send(spectator)
@@ -66,7 +66,7 @@ class CreatureTalking(object):
             stream.uint32(0)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"] if "level" in self.data else 0)
-            stream.uint8(stream.enum(messageType))
+            stream.uint8(stream.const(messageType))
             stream.position(self.position)
             stream.string(message)
             stream.send(player.client)
@@ -78,7 +78,7 @@ class CreatureTalking(object):
         stream.uint32(0)
         stream.string(self.data["name"])
         stream.uint16(self.data["level"] if "level" in self.data else 0)
-        stream.uint8(stream.enum(messageType))
+        stream.uint8(stream.const(messageType))
         stream.position(self.position)
         stream.string(message)
         stream.send(to.client)
@@ -286,7 +286,7 @@ class PlayerTalking(CreatureTalking):
                 stream.uint16(self.data["level"])
             else:
                 stream.uint16(0)
-            stream.uint8(stream.enum(channelType))
+            stream.uint8(stream.const(channelType))
             if channelType in (MSG_CHANNEL_MANAGEMENT, MSG_CHANNEL, MSG_CHANNEL_HIGHLIGHT):
                 stream.uint16(channelId)
 
@@ -303,7 +303,7 @@ class PlayerTalking(CreatureTalking):
             stream.uint32(1)
             stream.string(self.data["name"])
             stream.uint16(self.data["level"])
-            stream.uint8(stream.enum(channelType))
+            stream.uint8(stream.const(channelType))
             stream.string(text)
             stream.send(player.client)
 
