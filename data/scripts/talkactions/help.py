@@ -318,20 +318,22 @@ def testBoost(creature, **k):
     
 
 def walkRandomStep(creature, callback):
-    wait = creature.lastAction - time.time()
+    """wait = creature.lastAction - time.time()
     if wait > 0:
         callLater(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
-        return
+        return"""
     steps = [0,1,2,3]
     
     random.shuffle(steps)
     def _callback():
         try:
-            creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
+            creature.move(steps.pop(), callback=callback, failback=_callback)
         except:
-            callback()
+            if steps:
+                _callback()
+            
     try:
-        creature.move(steps.pop(), stopIfLock=True, callback=callback, failback=_callback)
+        creature.move(steps.pop(), callback=callback, failback=_callback)
     except:
         _callback()
 
@@ -339,7 +341,7 @@ def walkRandomStep(creature, callback):
 @access("DEVELOPER")
 def playerAI(creature, **k):
     creature.setSpeed(1500)
-    creature.raiseMessages = True
+    #creature.raiseMessages = True
     
     def _playerAI():
         if creature.data["health"] < 300:
@@ -357,10 +359,10 @@ def playerAI(creature, **k):
                         creature.target = thing
                         creature.targetMode = 1
                         creature.attackTarget()
-                        break
+                        return
                     elif isinstance(thing, Item) and thing.floorchange:
                         creature.use(thing)
-                        break
+                        return
             
         walkRandomStep(creature, _playerAI)
         

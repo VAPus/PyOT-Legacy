@@ -1,7 +1,7 @@
 In order to run PyOT you need:
 ================================
 
-* Python 2.7+ or Pypy 1.7+ (2.0+ are HIGHLY recommended)
+* Python 2.7+ or Pypy 1.7+ (2.2+ are HIGHLY recommended)
 
 * Twisted 10+ 
 
@@ -28,7 +28,7 @@ Grab zope.interface-4.0.2.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pyth
 
 and last
 
-Base-12.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
+Base-13.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
 
 note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of all the libs)
 
