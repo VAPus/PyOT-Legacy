@@ -160,7 +160,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         
         if config.letGameServerRunTheLoginServer:
             import game.scriptsystem
-            game.scriptsystem.get("preSendLogin").runSync(None, client=self, characters=characters, account=account, username=username, password=password)
+            yield game.scriptsystem.get("preSendLogin").run(None, client=self, characters=characters, account=account, username=username, password=password)
 
         # Send motd
         pkg.uint8(0x14)

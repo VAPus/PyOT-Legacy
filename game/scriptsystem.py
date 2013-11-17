@@ -454,9 +454,10 @@ def scriptInitPaths(base, subdir=True):
             paths.append(mod.split(os_seperator)[-2])
     return all, paths
     
+@defer.inlineCallbacks
 def reimporter():
     global globalEvents
-    process = get("reload").runSync()
+    process = yield get("reload").run()
     if process == False:
         print "[WARNING]: Reload cancelled."
         return
@@ -494,7 +495,7 @@ def reimporter():
     gc.collect()
     
     # postReload.
-    get("postReload").runSync()
+    yield get("postReload").run()
     
 def reimportCleanup():
     for script in globalScripts.itervalues():

@@ -748,7 +748,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=map, instanceId=instanceId)
+    scriptsystem.get('postLoadSector').run("%d.%d" % (sectorX, sectorY), None, None, sector=map, instanceId=instanceId)
     
     return True
 

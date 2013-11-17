@@ -133,7 +133,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for x in xrange(0, len(self.inventory)):
                 item = self.inventory[x]
                 if item:
-                    game.scriptsystem.get("equip").runSync(self, item,
+                    game.scriptsystem.get("equip").run(self, item,
                                                            slot = x+1)
 
         else:
@@ -703,7 +703,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         except:
             oldLevel = 0
         if oldLevel != level:
-            def endCallback():
+            def endCallback(res):
                 self.saveData = True
                 self.data["level"] = level
 
@@ -731,7 +731,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
                     self.refreshStatus()
 
-            game.scriptsystem.get("level").runSync(self, endCallback, fromLevel=oldLevel, toLevel=level)
+            game.scriptsystem.get("level").run(self, endCallback, fromLevel=oldLevel, toLevel=level)
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)
@@ -740,11 +740,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if not mod:
             return
         
-        def endCallback():
-            self.data["maglevel"] += mod
-            if self.data["maglevel"] < 0:
-                self.data["maglevel"] = 0
-            self.refreshStatus()
+        def endCallback(res):
+            if res != False:
+                self.data["maglevel"] += mod
+                if self.data["maglevel"] < 0:
+                    self.data["maglevel"] = 0
+                self.refreshStatus()
 
         game.scriptsystem.get("skill").runDefer(self, endCallback, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
@@ -830,7 +831,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Skills
     def addSkillLevel(self, skill, levels):
-        def endCallback():
+        def endCallback(res):
+            if res == False: return
+
             # Saved data
             self.data["skills"][skill] += levels
 
@@ -1256,6 +1259,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         return True
 
+    @inlineCallbacks
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
         stream = streamX
         update = False
@@ -1279,9 +1283,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for bag in bags:
                 for itemX in container.container:
                     if itemX.itemId == item.itemId and itemX.count < 100:
-                        _newItem = game.scriptsystem.get("stack").runSync(item, self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
+                        _newItem = yield game.scriptsystem.get("stack").run(item, self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
                         if _newItem == False:
-                            return self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
+                            ret = yield self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
+                            defer.returnValue(ret)
+                            return
                         elif isinstance(_newItem, Item):
                             self.itemToContainer(container, _newItem)
                             continue
@@ -1326,7 +1332,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             # Add item
             if update and (self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0):
                 self.tooHeavy()
-                return False
+                defer.returnValue(False)
+                return
 
             if recursive:
                 info = container.placeItemRecursive(item)
@@ -1334,7 +1341,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 info = container.placeItem(item)
 
             if info == None:
-                return False # Not possible
+                defer.returnValue(False) # Not possible
+                return
+
             if container.position.x == 0xFFFF and update:
                 item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info), self)
             else:
@@ -1361,7 +1370,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # HACK!!!
         self.updateContainer(container)
         
-        return True
+        defer.returnValue(True)
+        return
 
     def itemToUse(self, item):
         # Means, right hand, left hand, ammo or bag. Stackable only
@@ -1515,7 +1525,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 
             deathData["unjust"] = unjust
             
-        if game.scriptsystem.get("death").runSync(self, lastAttacker, corpse=corpse, deathData=deathData) == False:
+        if (yield game.scriptsystem.get("death").run(self, lastAttacker, corpse=corpse, deathData=deathData)) == False:
             return
 
         # Lose all conditions.
@@ -1644,7 +1654,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.data["health"] = self.data["healthmax"]
                 self.data["mana"] = self.data["manamax"]
             self.alive = True
-            game.scriptsystem.get("respawn").runSync(self)
+            game.scriptsystem.get("respawn").run(self)
             self.teleport(Position(*game.map.mapInfo.towns[self.data['town_id']][1]))
 
     # Loading:
@@ -1973,6 +1983,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
+    @inlineCallbacks
     def setFollowTarget(self, cid):
         if not cid: # or self.targetMode == 2
             #self.cancelWalk()
@@ -1985,7 +1996,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if cid in allCreatures:
             target = allCreatures[cid]
-            ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+            ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
             if ret == False:
                 return
             elif ret != None:
@@ -2057,12 +2068,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if config.sendTutorialSignalUponQuestLogUpdate:
             self.tutorial(3)
 
+    @inlineCallbacks
     def questLog(self):
         quests = self.getStorage('__quests')
         if not quests:
             quests = {}
 
-        game.scriptsystem.get("questLog").runSync(self, None, questLog=quests)
+        yield game.scriptsystem.get("questLog").run(self, None, questLog=quests)
 
         # Vertify the quests
         for quest in quests.copy():
