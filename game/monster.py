@@ -114,6 +114,7 @@ class Monster(Creature):
         
         self.brainEvent = None
         
+    @inlineCallbacks
     def onDeath(self):
         # Remove master summons
         isSummon = self.isSummon()
@@ -180,7 +181,7 @@ class Monster(Creature):
                         elif len(loot) == 4:
                             drops.append((loot[0], None, loot[4]))
                 
-                ret = scriptsystem.get("loot").runSync(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
+                ret = yield scriptsystem.get("loot").run(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
@@ -229,7 +230,7 @@ class Monster(Creature):
         else:
             corpse = None
             
-        scriptsystem.get("death").runSync(self, self.getLastDamager() if self.lastDamagers else None, corpse=corpse)
+        yield scriptsystem.get("death").run(self, self.getLastDamager() if self.lastDamagers else None, corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
             return
@@ -300,6 +301,7 @@ class Monster(Creature):
     def isAttackable(self, by):
         return self.base.attackable
 
+    @inlineCallbacks
     def targetCheck(self, targets=None):
         _time = time.time()
         if self.lastRetarget > _time - 7:
@@ -344,7 +346,7 @@ class Monster(Creature):
         if _target == target:
             return # We already have this target
         elif target:
-            ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+            ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
             
             if ret == False:
                 return
@@ -393,7 +395,8 @@ class Monster(Creature):
                     self.target.scripts["onNextStep"].append(__followCallback)
                             
         self.target.scripts["onNextStep"].append(__followCallback)
-        return True
+        defer.returnValue(True)
+        return
         
         
     def verifyMove(self, tile):

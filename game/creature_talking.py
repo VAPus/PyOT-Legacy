@@ -175,6 +175,7 @@ class PlayerTalking(CreatureTalking):
         self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
         
     # Channel system
+    @inlineCallbacks
     def openChannels(self):
         channels = game.chat.getChannels(self)
         
@@ -186,7 +187,7 @@ class PlayerTalking(CreatureTalking):
         if self.party():
             channels[CHANNEL_PARTY] = self.party().chatChannel
             
-        channels2 = game.scriptsystem.get("requestChannels").runSync(self, channels=channels)
+        channels2 = yield game.scriptsystem.get("requestChannels").run(self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
 
@@ -195,7 +196,7 @@ class PlayerTalking(CreatureTalking):
 
     def openChannel(self, id):
 
-        if game.scriptsystem.get("joinChannel").runSync(self, None, channelId=id):
+        if (yield game.scriptsystem.get("joinChannel").run(self, None, channelId=id)):
             if id == CHANNEL_GUILD:
                 # Guild channel.
                 channel  = self.guild().chatChannel
@@ -206,7 +207,8 @@ class PlayerTalking(CreatureTalking):
                 channel = game.chat.getChannel(id)
 
             if not channel:
-                return self.cancelMessage(_l(self, "Channel not found."))
+                self.cancelMessage(_l(self, "Channel not found."))
+                return
             
             stream = self.packet()
             stream.openChannel(channel)
@@ -252,6 +254,7 @@ class PlayerTalking(CreatureTalking):
         except:
             return False
 
+    @inlineCallbacks
     def channelMessage(self, text, channelType=enum.MSG_CHANNEL, channelId=0):
         if channelId == CHANNEL_GUILD:
             channel = self.guild().chatChannel
@@ -264,16 +267,18 @@ class PlayerTalking(CreatureTalking):
         except:
             members = []
 
-        members2 = game.scriptsystem.get("getChannelMembers").runSync(channelId, self, None, channelId=channelId, text=text, type=channelType, members=members)
+        members2 = yield game.scriptsystem.get("getChannelMembers").run(channelId, self, None, channelId=channelId, text=text, type=channelType, members=members)
         if not members and type(members2) != list:
-            return False
+            defer.returnValue(False)
+            return
 
         elif type(members2) == list:
             members = members2
 
         if not members:
-            return False # No members
-            
+            defer.returnValue(False) # No members
+            return
+
         # At to the channel archives:
         
         messageId = channel.addMessage(self, text, channelType)
@@ -294,7 +299,8 @@ class PlayerTalking(CreatureTalking):
             stream.send(player.client)
 
         
-        return True
+        defer.returnValue(True)
+        return
 
     def privateChannelMessage(self, text, receiver, channelType=enum.MSG_CHANNEL):
         player = getPlayer(receiver)
@@ -319,7 +325,8 @@ class PlayerTalking(CreatureTalking):
 
     def notifyPrivateSay(self, sayer, text):
         pass # Not supported yet
-        
+
+    @inlineCallbacks        
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
             self.message(_l(self, "Message too long"))
@@ -338,7 +345,7 @@ class PlayerTalking(CreatureTalking):
         doRegex = True
 
         if len(splits) > 1:
-            d = game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, text=' '.join(splits[1:]))
+            d = yield game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, text=' '.join(splits[1:]))
 
             if d != None:
                 doRegex = False
@@ -346,7 +353,7 @@ class PlayerTalking(CreatureTalking):
                 return
         
         
-        d = game.scriptsystem.get("talkaction").runSync(text, self, text=text)
+        d = yield game.scriptsystem.get("talkaction").run(text, self, text=text)
 
         if d != None:
             doRegex = False
@@ -354,7 +361,7 @@ class PlayerTalking(CreatureTalking):
             return
             
         if doRegex:
-            d = game.scriptsystem.get("talkactionRegex").runSync(text, self, text=text)
+            d = yield game.scriptsystem.get("talkactionRegex").run(text, self, text=text)
 
             if not d and d != None:
                 return

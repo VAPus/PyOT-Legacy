@@ -937,7 +937,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return False
 
     def setModes(self, attack, chase, secure):
-        def end():
+        def end(res):
+            if res == False: return
             self.modes[0] = attack
 
             if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
@@ -947,7 +948,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.modes[1] = chase
             self.modes[2] = secure
 
-        game.scriptsystem.get('modeChange').runDefer(self, end, attack=attack, chase=chase, secure=secure)
+        game.scriptsystem.get('modeChange').run(self, end, attack=attack, chase=chase, secure=secure)
 
 
 

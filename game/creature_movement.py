@@ -80,10 +80,10 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').runSync(creature2, self)
+            yield game.scriptsystem.get('disappear').run(creature2, self)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runSync(creature2, self)
+            yield game.scriptsystem.get('appear').run(creature2, self)
 
 
         if not invisible:
@@ -180,12 +180,14 @@ class CreatureMovement(object):
         if failback: reactor.callLater(0, failback)
         return False
         
+    @inlineCallbacks
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None, push=True):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback, push):
             return
 
         if not self.data["health"] or not self.canMove or not self.speed:
-            return False
+            defer.returnValue(False)
+            return
 
         oldPosition = self.position.copy()
 
@@ -229,7 +231,8 @@ class CreatureMovement(object):
         newTile = getTile(position)
         
         if not newTile:
-            return self.clearMove(direction, failback)
+            defer.returnValue(self.clearMove(direction, failback))
+            return
         
         # oldTile
         oldTile = getTile(oldPosition)
@@ -237,39 +240,42 @@ class CreatureMovement(object):
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
-        val = game.scriptsystem.get("move").runSync(self)
+        val = yield game.scriptsystem.get("move").run(self)
         if val == False:
-            return self.clearMove(direction, failback)
-
+            defer.returnValue(self.clearMove(direction, failback))
+            return
         try:
             oldStackpos = oldTile.findStackpos(self)
         except:
-            return self.clearMove(direction, failback)
+            defer.returnValue(self.clearMove(direction, failback))
+            return
 
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, position=oldPosition)
+            yield game.scriptsystem.get('walkOff').run(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
+            r = yield game.scriptsystem.get('preWalkOn').run(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                return self.clearMove(direction, failback)
-
+                defer.returnValue(self.clearMove(direction, failback))
+                return
         # PZ blocked?
         if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
-            return self.clearMove(direction, failback)
-            
+            defer.returnValue(self.clearMove(direction, failback))
+            return
+
         if newTile.ground.solid:
             self.notPossible()
-            return self.clearMove(direction, failback)
+            defer.returnValue(self.clearMove(direction, failback))
+            return
 
         if newTile.things:
             for thing in newTile.things:
                 if not self.isPlayer() and isinstance(thing, Item) and thing.teleport:
-                    return self.clearMove(direction, failback)
-
+                    defer.returnValue(self.clearMove(direction, failback))
+                    return
                 if thing.solid:
                     if level and isinstance(thing, Creature):
                         continue
@@ -295,7 +301,8 @@ class CreatureMovement(object):
 
                     #self.turn(direction) # Fix me?
                     self.notPossible()
-                    return self.clearMove(direction, failback)
+                    defer.returnValue(self.clearMove(direction, failback))
+                    return
 
         _time = time.time()
         self.lastStep = _time
@@ -432,7 +439,7 @@ class CreatureMovement(object):
 
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').runDeferNoReturn(item, self, None, position=position, fromPosition=oldPosition)
+            game.scriptsystem.get('walkOn').run(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
@@ -445,19 +452,20 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').runDeferNoReturn(creature2, self)
-            game.scriptsystem.get('disappear').runDeferNoReturn(self, creature2)
+            game.scriptsystem.get('disappear').run(creature2, self)
+            game.scriptsystem.get('disappear').run(self, creature2)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runDeferNoReturn(creature2, self)
-            game.scriptsystem.get('appear').runDeferNoReturn(self, creature2)
+            game.scriptsystem.get('appear').run(creature2, self)
+            game.scriptsystem.get('appear').run(self, creature2)
 
         # Stairhop delay
         if level and self.isPlayer():
-            self.lastStairHop = time.time()
+            self.lastStairHop = _time
 
         if self.isPlayer() and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
            
         if callback: reactor.callLater(0, callback)
-        return True
+        defer.returnValue(True)
+        return
