@@ -35,49 +35,26 @@ class Scripts(object):
             self.weaks.remove(callback)
    
     def run(self, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, creature, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
-
-    def runSync(self, creature, end=None, **kwargs):
-        return self._run(creature, end, **kwargs)
-
-    def runDefer(self, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, creature, end, **kwargs)
-        
-    def _run(self, creature, end=None, **kwargs):
-        ok = True
+        deferList = []
         for func in self.scripts:
-            ok = func(creature=creature, **kwargs)
-            if ok is False:
-                break
-                
-        if end and (ok or ok is None):
-            end()
-        else:
-            return ok
+            deferList.append(defer.maybeDeferred(func, creature=creature, **kwargs))
+            
+        d = defer.DeferredList(deferList)  
+        if end:
+            d.addCallback(end)
+        return d
 
 class NCScripts(Scripts):
     def run(self, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
-
-    def runSync(self, end=None, **kwargs):
-        return self._run(end, **kwargs)
-
-    def runDefer(self, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, end, **kwargs)
-
-    def _run(self, end=None, **kwargs):
-        ok = True
+        deferList = []
         for func in self.scripts:
-            ok = func(**kwargs)
-            if ok is False:
-                break
-                
-        if end and (ok or ok is None):
-            end()
-        else:
-            return ok
+            deferList.append(defer.maybeDeferred(func, **kwargs))
+              
+        d = defer.DeferredList(deferList)  
+        if end:
+            d.addCallback(end)
+        
+        return d
                 
 class TriggerScripts(object):
     __slots__ = ('scripts', 'parameters', 'weaks')
@@ -113,49 +90,46 @@ class TriggerScripts(object):
             self.weaks.remove((trigger, callback))
 
     def run(self, trigger, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
+        return defer.maybeDeferred(self._run, trigger, creature, end, kwargs)
 
-    def runSync(self, trigger, creature, end=None, **kwargs):
-        return self._run(trigger, creature, end, **kwargs)  
-                
-    def _run(self, trigger, creature, end, **kwargs):
-        ok = True
+    def run(self, trigger, creature, end=None, **kwargs):
+        deferList = []
 
         if not trigger in self.scripts:
-            return end() if end else None
-            
-        for func in self.scripts[trigger]:
-            ok = func(creature=creature, **kwargs)
-            if ok is False:
-                break
+            if end:
+                end()
+            return
 
+        for func in self.scripts[trigger]:
+            deferList.append(defer.maybeDeferred(func, creature=creature, **kwargs))
+            
+        d = defer.DeferredList(deferList)
         if end and (ok or ok is None):
-            end()
-        return ok
+            d.addCallback(end)
+        d.addErrback(log.err)
+        return d
 
 class NCTriggerScripts(TriggerScripts):
     """ Designed for webrequests. """
-    def runSync(self, trigger, end=None, **kwargs):
-        return self._run(trigger, end, **kwargs)
-
-    def _run(self, trigger, end, **kwargs):
+    def run(self, trigger, end=None, **kwargs):
         ok = True
 
         trig = self.scripts
         if not trigger in trig:
-            return end() if end else None
-
+            if end:
+                end()
+            return
+            
         trig = trig[trigger]
 
         if not trig:
-            return None
+            return
 
-        ok = trig[0](**kwargs)
+        d = defer.maybeDeferred(trig[0], **kwargs)
 
-        if end and (ok or ok is None):
-            end()
-        return ok
+        if end:
+            d.addCallback(end)
+        return d
 
 class RegexTriggerScripts(TriggerScripts):
     __slots__ = ('scripts', 'parameters', 'weaks')
@@ -184,8 +158,8 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    def _run(self, trigger, creature, end, **kwargs):
-        ok = True
+    def run(self, trigger, creature, end=None, **kwargs):
+        deferList = []
 
         """if not trigger in self.scripts:
             return end() if end else None"""
@@ -203,13 +177,13 @@ class RegexTriggerScripts(TriggerScripts):
                 for arg in kwargs:
                     args[arg] = kwargs[arg]
                           
-                ok = func(creature=creature, **args)
-                if ok is False:
-                    break
-                             
-        if end and (ok or ok is None):
-            end()
-        return ok
+                deferList.append(defer.maybeDeferred(func, creature=creature, **args))
+               
+        d = defer.DeferredList(deferList)
+        if end:
+            d.addCallback(end)
+        d.addErrback(log.err)
+        return d
 
         
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
@@ -292,70 +266,6 @@ class ThingScripts(object):
             pass
         
     def run(self, thing, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
-    
-    def runDefer(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._runDefer, thing, creature, end, True, **kwargs)
-
-    def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, thing, creature, end, False, **kwargs)
-        
-    def runSync(self, thing, creature, end=None, **kwargs):
-        return self._run(thing, creature, end, True, **kwargs)
-
-    def makeResult(self, obj):
-        def _handleResult(result):
-            cache = True
-            for value in result:
-                if value is False:
-                    cache = False
-                    break
-                else:
-                    cache = value
-            obj.value = cache
-        return _handleResult
-
-    def handleCallback(self, callback):
-        def _handleResult(result):
-            for value in result:
-                if value is False:
-                    return
-
-            callback()
-        return _handleResult
-        
-    def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = None
-        if thing in self.thingScripts:
-            for func in self.thingScripts[thing]:
-                ok = func(creature=creature, thing=thing, **kwargs)
-                if ok is False:
-                    break
-                    
-        thingId = thing.thingId()
-        
-        if thingId in self.scripts:
-            for func in self.scripts[thingId]:
-                ok = func(creature=creature, thing=thing, **kwargs)
-                if ok is False:
-                    break
-        for aid in thing.actionIds():
-            if aid in self.scripts:
-                for func in self.scripts[aid]:
-                    ok = func(creature=creature, thing=thing, **kwargs)
-                    if ok is False:
-                        break
-        if returnVal:
-            if end:
-                end()
-                
-            return ok if ok != True else None
-        elif end:
-            end()
-            
-    @defer.inlineCallbacks
-    def _runDefer(self, thing, creature, end, returnVal, **kwargs):
         deferList = []
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
@@ -371,47 +281,35 @@ class ThingScripts(object):
                 for func in self.scripts[aid]:
                     deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
             
-        if returnVal:
-            # This is actually blocking code, but is rarely used.
-            d = defer.gatherResults(deferList)
-        elif end:
-            d = defer.gatherResults(deferList)
-            d.addCallback(self.handleCallback(end))
-        else:
-            d = defer.DeferredList(deferList)
-            
+        d = defer.DeferredList(deferList)
+        if end:
+            d.addCallback(end)
         d.addErrback(log.err)  
-        yield d
+        return d
+
 class CreatureScripts(ThingScripts):
-    def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = True
-        
+    def run(self, thing, creature, end=None, **kwargs):
+        deferList = []
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-               ok = func(creature=creature, creature2=thing, **kwargs)
-               if ok is False:
-                   break
+                deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
 
         thingId = thing.thingId()
-        if ok and thingId in self.scripts:
+        if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                ok = func(creature=creature, creature2=thing, **kwargs)
-                if ok is False:
-                    break  
+                deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
 
-        if ok:
-            for aid in thing.actionIds():
-                if aid in self.scripts:
-                    for func in self.scripts[aid]:
-                        ok = func(creature=creature, creature2=thing, **kwargs)
-                        if ok is False:
-                            break
-                            
-        if not returnVal and end and ok is not False:
-            return end()
-        elif returnVal:
-            return ok if type(ok) != bool else None
-            
+        for aid in thing.actionIds():
+            if aid in self.scripts:
+                for func in self.scripts[aid]:
+                    deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
+
+        d = defer.DeferredList(deferList)
+        if end:
+            d.addCallback(end)
+        d.addErrback(log.err)
+        return d
+    
 # All global events can be initialized here
 globalScripts["talkaction"] = TriggerScripts(('creature', 'text'))
 globalScripts["talkactionFirstWord"] = TriggerScripts(('creature', 'text'))
@@ -487,7 +385,7 @@ def run():
     global IS_RUNNING
     IS_ONLINE = False
     IS_RUNNING = False
-    get('shutdown').runSync()
+    return get('shutdown').run()
     
 reactor.addSystemEventTrigger('before','shutdown',run)
 #reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)

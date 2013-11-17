@@ -320,7 +320,7 @@ def loader(timer):
     # Load scripts
     print "> > Loading scripts...",
     game.scriptsystem.importer()
-    game.scriptsystem.get("startup").runSync()
+    yield game.scriptsystem.get("startup").run()
     print "%55s\n" % _txtColor("\t[DONE]", "blue")
         
     # Load map (if configurated to do so)
