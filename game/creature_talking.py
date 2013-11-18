@@ -246,7 +246,7 @@ class PlayerTalking(CreatureTalking):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
 
-        game.scriptsystem.get("leaveChannel").runDefer(self, None, channelId=id)
+        game.scriptsystem.get("leaveChannel").run(self, None, channelId=id)
 
     def isChannelOpen(self, between):
         try:

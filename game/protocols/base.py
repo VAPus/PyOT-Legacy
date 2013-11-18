@@ -801,19 +801,10 @@ class BaseProtocol(object):
                         player.notPossible()
                         return
 
-                    # Some half sync yield -> sleep walking
-                    def sleep(seconds):
-                        d = Deferred()
-                        reactor.callLater(seconds, d.callback, seconds)
-                        return d
-                    
-                    walking = [True]
-                    scount = 0
+                    d = Deferred()
                     player.walkPattern = deque(walkPattern)
-                    autoWalkCreature(player, lambda: walking.pop())
-                    while walking and scount < 100:
-                        yield sleep(0.1)
-                        scount += 1
+                    autoWalkCreature(player, lambda: d.callback(True))
+                    yield d
 
                     # Vertify, we might have been stopped on the run
                     if not player.inRange(fromPosition, 1, 1):
@@ -913,7 +904,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True))
                     else:
                         player.message(thing.description())
-            game.scriptsystem.get('lookAt').runSync(thing, player, afterScript, position=stackPosition)
+            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=stackPosition)
         else:
             player.notPossible()
 
@@ -935,7 +926,7 @@ class BaseProtocol(object):
             else:
                 player.message(creature.description())
 
-        game.scriptsystem.get('lookAt').runSync(creature, player, afterScript, position=creature.position)
+        game.scriptsystem.get('lookAt').run(creature, player, afterScript, position=creature.position)
 
     @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
@@ -956,7 +947,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').runSync(item, player, end, position=position.setStackpos(stackpos))
+            game.scriptsystem.get('rotate').run(item, player, end, position=position.setStackpos(stackpos))
             
     @packet(0xD2)
     def handleRequestOutfit(self, player, packet):
@@ -1014,24 +1005,14 @@ class BaseProtocol(object):
                 if not walkPattern:
                     player.notPossible()
                     return
-
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
                     
-                scount = 0
+                d = Deferred()
                 player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player)
-                while player.walkPattern and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
-                # Add a short delay here. Kinda fix overuse of useDelay.
-                yield sleep(0.2)
-    
+                autoWalkCreature(player, lambda: d.callback(True))
+                yield d
+
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
+                game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
 
@@ -1093,23 +1074,14 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
-                    
-                walking = [True]
-                scount = 0
+                d = Deferred()
                 player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
+                autoWalkCreature(player, lambda: d.callback(True))
+                yield d
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
-                end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                end = lambda res: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
             else:
@@ -1365,7 +1337,7 @@ class BaseProtocol(object):
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description(player) + extra)
-            game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
+            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
         
     @packet(0x7F)    
     def handleAcceptTrade(self, player, packet):
@@ -1459,22 +1431,13 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
-                    
-                walking = [True]
-                scount = 0
+                d = Deferred()
                 player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
+                autoWalkCreature(player, lambda: d.callback(True))
+                yield d
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('useWith').runSync(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
+                game.scriptsystem.get('useWith').run(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
 
         
     @packet(0xA3)
@@ -1553,12 +1516,11 @@ class BaseProtocol(object):
         party.toggleShareExperience()
         
     @packet(0xE7)
-    @inlineCallbacks
     def handleThanks(self, player, packet):
         messageId = packet.uint32()
         message = game.chat.getMessage(messageId)
         
-        yield game.scriptsystem.get("thankYou").runDefer(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
+        game.scriptsystem.get("thankYou").run(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
 
     @packet(0xE8)
     def handleDebugAssert(self, player, packet):

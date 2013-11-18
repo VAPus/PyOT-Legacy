@@ -18,7 +18,6 @@ class InvalidScriptFunctionArgument(Exception):
     pass
 
 class Scripts(object):
-    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = []
         self.parameters = parameters
@@ -57,7 +56,6 @@ class NCScripts(Scripts):
         return d
                 
 class TriggerScripts(object):
-    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = parameters
@@ -90,9 +88,6 @@ class TriggerScripts(object):
             self.weaks.remove((trigger, callback))
 
     def run(self, trigger, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, trigger, creature, end, kwargs)
-
-    def run(self, trigger, creature, end=None, **kwargs):
         deferList = []
 
         if not trigger in self.scripts:
@@ -104,7 +99,7 @@ class TriggerScripts(object):
             deferList.append(defer.maybeDeferred(func, creature=creature, **kwargs))
             
         d = defer.DeferredList(deferList)
-        if end and (ok or ok is None):
+        if end:
             d.addCallback(end)
         d.addErrback(log.err)
         return d
@@ -112,7 +107,6 @@ class TriggerScripts(object):
 class NCTriggerScripts(TriggerScripts):
     """ Designed for webrequests. """
     def run(self, trigger, end=None, **kwargs):
-        ok = True
 
         trig = self.scripts
         if not trigger in trig:
@@ -132,8 +126,6 @@ class NCTriggerScripts(TriggerScripts):
         return d
 
 class RegexTriggerScripts(TriggerScripts):
-    __slots__ = ('scripts', 'parameters', 'weaks')
-
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = () # We can't have parameters
@@ -172,11 +164,9 @@ class RegexTriggerScripts(TriggerScripts):
                 continue
             else:
                 args = obj.groupdict()
-                
+            args.update(kwargs)
+                               
             for func in spectre[0]:
-                for arg in kwargs:
-                    args[arg] = kwargs[arg]
-                          
                 deferList.append(defer.maybeDeferred(func, creature=creature, **args))
                
         d = defer.DeferredList(deferList)
@@ -188,7 +178,6 @@ class RegexTriggerScripts(TriggerScripts):
         
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
-    __slots__ = ('scripts', 'thingScripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.thingScripts = {}
@@ -530,9 +519,7 @@ def reimportCleanup():
         script.weaks = set()
 
 # This is the function to get events, it should also be a getAll, and get(..., creature)
-def get(type):
-    return globalScripts[type]
-    
+get = globalScripts.get
 def register(type, *argc):
     def _wrapper(f):
         object = globalScripts[type]

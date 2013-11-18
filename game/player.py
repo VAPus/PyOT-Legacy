@@ -747,7 +747,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     self.data["maglevel"] = 0
                 self.refreshStatus()
 
-        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
+        game.scriptsystem.get("skill").run(self, endCallback, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
         exp = int(exp)
@@ -849,7 +849,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshSkills()
             self.saveSkills = True
 
-        game.scriptsystem.get("skill").runDefer(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
+        game.scriptsystem.get("skill").run(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
 
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill] = self.skills[skill] + level
@@ -1167,7 +1167,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if container.openIndex == None:
             return False
         
-        def end():
+        def end(res):
             try:
                 stream = self.packet(0x6F)
                 stream.uint8(container.openIndex)
@@ -1188,16 +1188,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 raise
                 pass
 
-        #def callOpen(): game.scriptsystem.get('use').runDefer(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
+        #def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
 
-        game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=container.openIndex)
+        game.scriptsystem.get('close').run(container, self, end, index=container.openIndex)
 
 
     def closeContainerId(self, openId):
         try:
             container = self.openContainers[openId]
 
-            def end():
+            def end(res):
                 stream = self.packet(0x6F)
                 stream.uint8(openId)
                 del self.openContainers[openId]
@@ -1213,7 +1213,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 del container.openIndex
                 stream.send(self.client)
 
-            game.scriptsystem.get('close').runDeferNoReturn(container, self, end, index=openId)
+            game.scriptsystem.get('close').run(container, self, end, index=openId)
             return True
 
         except:
@@ -1227,10 +1227,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             del bagFound.openIndex
             self.openContainers[openId] = bagFound.parent
 
-            def end():
+            def end(res):
                 self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
 
-            game.scriptsystem.get('close').runDeferNoReturn(bagFound, self, end, index=openId)
+            game.scriptsystem.get('close').run(bagFound, self, end, index=openId)
 
 
     # Item to container

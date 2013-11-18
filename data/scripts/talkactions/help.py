@@ -326,16 +326,9 @@ def walkRandomStep(creature, callback):
     
     random.shuffle(steps)
     def _callback():
-        try:
-            creature.move(steps.pop(), callback=callback, failback=_callback)
-        except:
-            if steps:
-                _callback()
-            
-    try:
         creature.move(steps.pop(), callback=callback, failback=_callback)
-    except:
-        _callback()
+    
+    creature.move(steps.pop(), callback=callback, failback=_callback)
 
 @register("talkaction", "aime")
 @access("DEVELOPER")

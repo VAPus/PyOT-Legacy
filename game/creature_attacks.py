@@ -17,6 +17,7 @@ class CreatureAttacks(object):
         # Overrided to creatures.
         return dmg
 
+    @inlineCallbacks
     def onHit(self, by, dmg, type, effect=None):
 
         if not type == DISTANCE:
@@ -68,7 +69,7 @@ class CreatureAttacks(object):
         if self.isPlayer() and (by and by.isPlayer()) and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
-        process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = yield game.scriptsystem.get("hit").run(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 
@@ -122,9 +123,9 @@ class CreatureAttacks(object):
                 if by.isPlayer():
                     by.cancelTarget()
 
-            return True
+            returnValue(True)
         else:
-            return False
+            returnValue(False)
 
     def onHeal(self, by, amount):
         if self.data["healthmax"] != self.data["health"]:
@@ -395,6 +396,7 @@ class PlayerAttacks(CreatureAttacks):
             if not streamX:
                 stream.send(self.client)
 
+    @inlineCallbacks
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
@@ -412,8 +414,9 @@ class PlayerAttacks(CreatureAttacks):
                 target = game.creature.allCreatures[cid]
                 if target.isPlayer() and self.modes[2]:
                     self.cancelTarget()
-                    return self.unmarkedPlayer()
-                ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+                    self.unmarkedPlayer()
+                    return
+                ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
                 if ret == False:
                    self.cancelTarget()
                    return
@@ -431,12 +434,12 @@ class PlayerAttacks(CreatureAttacks):
                 return
         else:
             self.cancelTarget()
-            return self.notPossible()
-
+            self.notPossible()
+            return
         if not self.target:
             self.cancelTarget()
-            return self.notPossible()
-
+            self.notPossible()
+            return
 
         if self.modes[1] == CHASE:
             print "did"

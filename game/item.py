@@ -359,6 +359,7 @@ class Item(object):
         else:
             return ()
   
+    @inlineCallbacks
     def place(self, position, creature=None):
         " Place this item onto position "
 
@@ -373,10 +374,10 @@ class Item(object):
         else:
             tile = position.getTile()
             for item in tile.getItems():
-                if game.scriptsystem.get('dropOnto').runSync(self, self.creature, position=None, onPosition=position, onThing=item) == False:
-                    return False
-                if game.scriptsystem.get('dropOnto').runSync(item, self.creature, position=None, onPosition=position, onThing=self) == False:
-                    return False
+                if (yield game.scriptsystem.get('dropOnto').run(self, self.creature, position=None, onPosition=position, onThing=item)) == False or \
+                   (yield game.scriptsystem.get('dropOnto').run(item, self.creature, position=None, onPosition=position, onThing=self)) == False:
+                    returnValue(False)
+                    return
 
             stackpos = tile.placeItem(self)
             position = position.setStackpos(stackpos)

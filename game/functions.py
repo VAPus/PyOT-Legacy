@@ -779,10 +779,12 @@ def loadPlayerById(playerId):
     game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
     returnValue(game.player.allPlayers[cd['name']])
 
+@inlineCallbacks
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
-        return True
+        returnValue(True)
+        return
 
     # TODO, script events.
     
@@ -806,11 +808,14 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if toPosition.x == 0xFFFF or isinstance(toPosition, StackPosition):
         destItem = player.findItem(toPosition)
     if not thing:
-        return False
+        returnValue(False)
+        return
     if thing.stackable and not count:
         count = thing.count
     if destItem and destItem == thing.inContainer:
-        return False
+        returnValue(False)
+        return
+
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
 
@@ -818,7 +823,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if destItem:
         itemContainer = thing.inContainer
         if destItem == itemContainer:
-            return False
+            returnValue(False)
+            return
 
     # Hacks.
     if fromPosition.x == 0xFFFF and not thing.creature:
@@ -832,15 +838,17 @@ def moveItem(player, fromPosition, toPosition, count=0):
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
         player.notPossible()
-        return False
+        returnValue(False)
     
     elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
         player.notPickupable()
-        return False
+        returnValue(False)
+        return
                     
     elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
         player.notPossible()
-        return False
+        returnValue(False)
+        return
     
     if destItem and (destItem.inContainer or destItem.container): # Recursive check.
         if destItem.container:
@@ -851,7 +859,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         while container:
             if container == thing:
                 player.notPossible()
-                return False #player.notPossible()
+                returnValue(False)
+                return
+
             container = container.inContainer
 
     slots = thing.slots()
@@ -863,35 +873,43 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 pass
             else:
                 player.notPossible()
-                return False
+                returnValue(False)
+                return
 
     if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and player.inventory[SLOT_RIGHT] and player.inventory[SLOT_RIGHT].slotType == "two-handed":
         player.notPossible()
-        return False
+        returnValue(False)
+        return
 
     elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and player.inventory[SLOT_LEFT]:
         player.notPossible()
-        return False
+        returnValue(False)
+        return
 
     if toPosition.x == 0xFFFF and player.freeCapacity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
-        return False
+        returnValue(False)
+        return
     
-    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1)) == False:
-        return False
-    elif toPosition.x == 0xFFFF and toPosition.y < 64 and game.scriptsystem.get("equip").runSync(player, thing, slot = (toPosition.y-1)) == False:
-        return False
+    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (yield game.scriptsystem.get("unequip").run(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False:
+        returnValue(False)
+        return
+    elif toPosition.x == 0xFFFF and toPosition.y < 64 and (yield game.scriptsystem.get("equip").run(player, thing, slot = (toPosition.y-1))) == False:
+        returnValue(False)
+        return
     
     # Special case when both items are the same and stackable.
     stacked = False
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
+        _newItem = yield game.scriptsystem.get("stack").run(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
             destItem.modify(newCount)
             thing.modify(-newCount)
             
-            return True
+            returnValue(True)
+            return
+
         elif isinstance(_newItem, Item):
             newItem = _newItem
             stacked = True
@@ -907,10 +925,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:
-        if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
-            return False
-        if game.scriptsystem.get('dropOnto').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-            return False
+        if (yield game.scriptsystem.get('dropOnto').run(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
+           (yield game.scriptsystem.get('dropOnto').run(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+            returnValue(False)
+            return
         
         if not thing.stackable:
             thing.remove()
@@ -927,10 +945,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
         thisTile = toPosition.getTile()
         
         for item in thisTile.getItems():
-            if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
-                return False
-            if game.scriptsystem.get('dropOnto').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                return False
+            if (yield game.scriptsystem.get('dropOnto').run(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
+               (yield game.scriptsystem.get('dropOnto').run(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+                returnValue(False)
+                return
 
         newItem.place(toPosition)
     else:
@@ -942,10 +960,10 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 container = player.getContainer(toPosition.y-64)
                 
-                if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
-                    return False
-                if game.scriptsystem.get('dropOnto').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-                    return False
+                if (yield game.scriptsystem.get('dropOnto').run(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
+                   (yield game.scriptsystem.get('dropOnto').run(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+                    returnValue(False)
+                    return
                 
                 #print "itemToContainer2"
                 player.itemToContainer(container, newItem)
@@ -975,7 +993,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
     #player.refreshStatus()
     
     # Done.
-    return True
+    returnValue(True)
+    return
     
 # Helper calls
 def summonCreature(name, position, master=None):
