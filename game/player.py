@@ -1461,7 +1461,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     # Death stuff
     def sendReloginWindow(self, percent=0):
         stream = self.packet(0x28)
-        stream.uint8(percent)
+        if self.client.version > 870: # XXX, when was this introduced?
+            stream.uint8(percent)
         stream.send(self.client)
 
         # And kill the readyness
@@ -1540,7 +1541,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         print "TODO: Unfair fight."
         if self.client:
             self.sendReloginWindow(100)
-
+        
         # Reduce experience, manaspent and total skill tries (ow my)
         if loseRate:
             self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
@@ -1558,7 +1559,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 level = int(config.skillTriesToLevel(self.getVocation().meleeSkill, tries))
                 
                 # Previous level skill tries.
-                prevTries = config.totalSkillFormula(level-1, self.getVocation().meleeSkill)
+                prevTries = int(config.totalSkillFormula(level-1, self.getVocation().meleeSkill))
                 
                 # Get the level goals.
                 goal = tries-prevTries
