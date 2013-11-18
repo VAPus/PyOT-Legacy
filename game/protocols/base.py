@@ -891,7 +891,7 @@ class BaseProtocol(object):
                         break       
         if thing:
             if isinstance(thing, Item):
-                def afterScript():
+                def afterScript(res):
                     extra = ""
                     # TODO propper description handling
                     if config.debugItems:
@@ -899,7 +899,7 @@ class BaseProtocol(object):
 
                     player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
-                def afterScript():
+                def afterScript(res):
                     if player == thing:
                         player.message(thing.description(True))
                     else:
@@ -920,7 +920,7 @@ class BaseProtocol(object):
         if not player.canSee(creature.position):
             return
 
-        def afterScript():
+        def afterScript(res):
             if player == creature:
                 player.message(creature.description(True))
             else:
@@ -1012,7 +1012,7 @@ class BaseProtocol(object):
                 yield d
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+                yield game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
 
@@ -1331,7 +1331,7 @@ class BaseProtocol(object):
                 pass
             
         if thing:
-            def afterScript():
+            def afterScript(res):
                 extra = ""
                 # TODO propper description handling
                 if config.debugItems:

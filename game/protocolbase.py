@@ -48,8 +48,7 @@ class TibiaProtocol(Protocol):
     def dataToPacket(self, data):
         if self.expect:
             if len(data) >= self.expect:
-                frame = data[:self.expect]
-                frame = ''.join(self.data) + frame
+                frame = "%s%s" % (''.join(self.data), data[:self.expect])
                 self.handlePacketFrame(frame)
                 self.data = []
                 self.expect = 0

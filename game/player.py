@@ -1498,6 +1498,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         return (container, container / 10.0)
     
+    @inlineCallbacks
     def onDeath(self):
         try:
             lastAttacker = self.getLastDamager()

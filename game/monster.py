@@ -376,7 +376,15 @@ class Monster(Creature):
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
                     autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
-                            
+                        
+        # XXX: Bug?
+        if isinstance(self.target, list):
+            try:
+                self.target = self.target.pop()
+            except:
+                self.target = None 
+                returnValue(False)
+                return   
         # Begin autowalking
         if bestDist > 1:
             autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
@@ -772,11 +780,12 @@ class MonsterBrain(object):
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
+    @inlineCallbacks
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()
-            return False # Stop looper
+            return # Stop looper
         
         if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
             # Find a random text
@@ -790,20 +799,20 @@ class MonsterBrain(object):
                     
         feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
-        ret = brainFeatures[feature](monster)
+        ret = yield brainFeatures[feature](monster)
         
         if ret == False:
             monster.turnOffBrain()
-            return False
+            return
         elif ret == True:
             monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
-            return True
+            return
         
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
             if check and not hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
-                return False
+                return
             if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 

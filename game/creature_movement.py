@@ -9,6 +9,7 @@ class CreatureMovement(object):
 
         return (ground.speed / self.speed) #- 0.05
     
+    @inlineCallbacks
     def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
             return False"""
@@ -439,7 +440,7 @@ class CreatureMovement(object):
 
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item, self, None, position=position, fromPosition=oldPosition)
+            yield game.scriptsystem.get('walkOn').run(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
@@ -452,12 +453,12 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').run(creature2, self)
-            game.scriptsystem.get('disappear').run(self, creature2)
+            yield game.scriptsystem.get('disappear').run(creature2, self)
+            yield game.scriptsystem.get('disappear').run(self, creature2)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').run(creature2, self)
-            game.scriptsystem.get('appear').run(self, creature2)
+            yield game.scriptsystem.get('appear').run(creature2, self)
+            yield game.scriptsystem.get('appear').run(self, creature2)
 
         # Stairhop delay
         if level and self.isPlayer():
