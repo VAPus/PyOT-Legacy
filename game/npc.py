@@ -75,7 +75,7 @@ class NPC(Creature):
         self.respawn = state
         
     def playerSay(self, player, said, type, channel):
-        return game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
+        return game.scriptsystem.get('playerSayTo').run(creature2=self, creature=player, said=said, channelType=type, channelId=channel)
 
     def sayTo(self, to, text, messageType=game.const.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)

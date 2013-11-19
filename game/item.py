@@ -374,8 +374,8 @@ class Item(object):
         else:
             tile = position.getTile()
             for item in tile.getItems():
-                if (yield game.scriptsystem.get('dropOnto').run(self, self.creature, position=None, onPosition=position, onThing=item)) == False or \
-                   (yield game.scriptsystem.get('dropOnto').run(item, self.creature, position=None, onPosition=position, onThing=self)) == False:
+                if (yield game.scriptsystem.get('dropOnto').run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
+                   (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
                     returnValue(False)
                     return
 

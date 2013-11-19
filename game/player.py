@@ -133,7 +133,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for x in xrange(0, len(self.inventory)):
                 item = self.inventory[x]
                 if item:
-                    game.scriptsystem.get("equip").run(self, item,
+                    game.scriptsystem.get("equip").run(creature=self, thing=item,
                                                            slot = x+1)
 
         else:
@@ -731,7 +731,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
                     self.refreshStatus()
 
-            game.scriptsystem.get("level").run(self, endCallback, fromLevel=oldLevel, toLevel=level)
+            game.scriptsystem.get("level").run(endCallback, creature=self, fromLevel=oldLevel, toLevel=level)
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)
@@ -747,7 +747,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     self.data["maglevel"] = 0
                 self.refreshStatus()
 
-        game.scriptsystem.get("skill").run(self, endCallback, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
+        game.scriptsystem.get("skill").run(endCallback, creature=self, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
 
     def modifyExperience(self, exp):
         exp = int(exp)
@@ -849,7 +849,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshSkills()
             self.saveSkills = True
 
-        game.scriptsystem.get("skill").run(self, endCallback, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
+        game.scriptsystem.get("skill").run(endCallback, creature=self, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
 
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill] = self.skills[skill] + level
@@ -948,7 +948,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.modes[1] = chase
             self.modes[2] = secure
 
-        game.scriptsystem.get('modeChange').run(self, end, attack=attack, chase=chase, secure=secure)
+        game.scriptsystem.get('modeChange').run(end, creature=self, attack=attack, chase=chase, secure=secure)
 
 
 
@@ -1190,7 +1190,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         #def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
 
-        game.scriptsystem.get('close').run(container, self, end, index=container.openIndex)
+        game.scriptsystem.get('close').run(end, thing=container, creature=self, index=container.openIndex)
 
 
     def closeContainerId(self, openId):
@@ -1213,7 +1213,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 del container.openIndex
                 stream.send(self.client)
 
-            game.scriptsystem.get('close').run(container, self, end, index=openId)
+            game.scriptsystem.get('close').run(end, creature=self, thing=container, index=openId)
             return True
 
         except:
@@ -1230,7 +1230,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             def end(res):
                 self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
 
-            game.scriptsystem.get('close').run(bagFound, self, end, index=openId)
+            game.scriptsystem.get('close').run(end, thing=bagFound, creature=self, index=openId)
 
 
     # Item to container
@@ -1284,7 +1284,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for bag in bags:
                 for itemX in container.container:
                     if itemX.itemId == item.itemId and itemX.count < 100:
-                        _newItem = yield game.scriptsystem.get("stack").run(item, self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
+                        _newItem = yield game.scriptsystem.get("stack").run(thing=item, creature=self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
                         if _newItem == False:
                             ret = yield self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
                             defer.returnValue(ret)
@@ -1528,7 +1528,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 
             deathData["unjust"] = unjust
             
-        if (yield game.scriptsystem.get("death").run(self, lastAttacker, corpse=corpse, deathData=deathData)) == False:
+        if (yield game.scriptsystem.get("death").run(creature=self, creature2=lastAttacker, corpse=corpse, deathData=deathData)) == False:
             return
 
         # Lose all conditions.
@@ -1657,7 +1657,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.data["health"] = self.data["healthmax"]
                 self.data["mana"] = self.data["manamax"]
             self.alive = True
-            game.scriptsystem.get("respawn").run(self)
+            game.scriptsystem.get("respawn").run(creature=self)
             self.teleport(Position(*game.map.mapInfo.towns[self.data['town_id']][1]))
 
     # Loading:
@@ -1999,7 +1999,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if cid in allCreatures:
             target = allCreatures[cid]
-            ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
+            ret = yield game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
             if ret == False:
                 return
             elif ret != None:
@@ -2077,7 +2077,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if not quests:
             quests = {}
 
-        yield game.scriptsystem.get("questLog").run(self, None, questLog=quests)
+        yield game.scriptsystem.get("questLog").run(creature=self, questLog=quests)
 
         # Vertify the quests
         for quest in quests.copy():

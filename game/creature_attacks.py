@@ -69,7 +69,7 @@ class CreatureAttacks(object):
         if self.isPlayer() and (by and by.isPlayer()) and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
-        process = yield game.scriptsystem.get("hit").run(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = yield game.scriptsystem.get("hit").run(creature2=self, creature=by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 
@@ -416,7 +416,7 @@ class PlayerAttacks(CreatureAttacks):
                     self.cancelTarget()
                     self.unmarkedPlayer()
                     return
-                ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
+                ret = yield game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
                 if ret == False:
                    self.cancelTarget()
                    return

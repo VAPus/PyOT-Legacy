@@ -181,7 +181,7 @@ class Monster(Creature):
                         elif len(loot) == 4:
                             drops.append((loot[0], None, loot[4]))
                 
-                ret = yield scriptsystem.get("loot").run(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
+                ret = yield scriptsystem.get("loot").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
@@ -230,7 +230,7 @@ class Monster(Creature):
         else:
             corpse = None
             
-        yield scriptsystem.get("death").run(self, self.getLastDamager() if self.lastDamagers else None, corpse=corpse)
+        yield scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print "[May bug] Death events brought us back to life?"
             return
@@ -346,7 +346,7 @@ class Monster(Creature):
         if _target == target:
             return # We already have this target
         elif target:
-            ret = yield game.scriptsystem.get('target').run(self, target, attack=True)
+            ret = yield game.scriptsystem.get('target').run(creature2=self, creature=target, attack=True)
             
             if ret == False:
                 return

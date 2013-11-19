@@ -187,7 +187,7 @@ class PlayerTalking(CreatureTalking):
         if self.party():
             channels[CHANNEL_PARTY] = self.party().chatChannel
             
-        channels2 = yield game.scriptsystem.get("requestChannels").run(self, channels=channels)
+        channels2 = yield game.scriptsystem.get("requestChannels").run(creature=self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
 
@@ -196,7 +196,7 @@ class PlayerTalking(CreatureTalking):
 
     def openChannel(self, id):
 
-        if (yield game.scriptsystem.get("joinChannel").run(self, None, channelId=id)):
+        if (yield game.scriptsystem.get("joinChannel").run(creature=self, channelId=id)):
             if id == CHANNEL_GUILD:
                 # Guild channel.
                 channel  = self.guild().chatChannel
@@ -246,7 +246,7 @@ class PlayerTalking(CreatureTalking):
         channel = game.chat.getChannel(id)
         channel.removeMember(self)
 
-        game.scriptsystem.get("leaveChannel").run(self, None, channelId=id)
+        game.scriptsystem.get("leaveChannel").run(creature=self, channelId=id)
 
     def isChannelOpen(self, between):
         try:
@@ -267,7 +267,7 @@ class PlayerTalking(CreatureTalking):
         except:
             members = []
 
-        members2 = yield game.scriptsystem.get("getChannelMembers").run(channelId, self, None, channelId=channelId, text=text, type=channelType, members=members)
+        members2 = yield game.scriptsystem.get("getChannelMembers").run(channelId, creature=self, channelId=channelId, text=text, type=channelType, members=members)
         if not members and type(members2) != list:
             defer.returnValue(False)
             return
@@ -345,7 +345,7 @@ class PlayerTalking(CreatureTalking):
         doRegex = True
 
         if len(splits) > 1:
-            d = yield game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, text=' '.join(splits[1:]))
+            d = yield game.scriptsystem.get("talkactionFirstWord").run(splits[0], creature=self, text=' '.join(splits[1:]))
 
             if d != None:
                 doRegex = False
@@ -353,7 +353,7 @@ class PlayerTalking(CreatureTalking):
                 return
         
         
-        d = yield game.scriptsystem.get("talkaction").run(text, self, text=text)
+        d = yield game.scriptsystem.get("talkaction").run(text, creature=self, text=text)
 
         if d != None:
             doRegex = False
@@ -361,7 +361,7 @@ class PlayerTalking(CreatureTalking):
             return
             
         if doRegex:
-            d = yield game.scriptsystem.get("talkactionRegex").run(text, self, text=text)
+            d = yield game.scriptsystem.get("talkactionRegex").run(text, creature=self, text=text)
 
             if not d and d != None:
                 return

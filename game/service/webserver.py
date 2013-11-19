@@ -13,7 +13,7 @@ default = Default()
 class Page(Resource):
     @inlineCallbacks
     def getChild(self, path, request):
-        req = yield game.scriptsystem.get("webPage").run(path, None, request=request)
+        req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:
             returnValue(req)
 
@@ -24,7 +24,7 @@ class Web(Resource):
 
     @inlineCallbacks
     def getChild(self, path, request):
-        req = yield game.scriptsystem.get("webPage").run(path, None, request=request)
+        req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:
             returnValue(req)
         else:

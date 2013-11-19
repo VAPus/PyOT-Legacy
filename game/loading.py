@@ -341,13 +341,13 @@ def loader(timer):
         
     # Charge rent?
     def _charge(house):
-            callLater(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(None, house=house))
+            callLater(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
             
     for house in game.house.houseData.values():
         if not house.rent or not house.owner: continue
             
         if house.paid < (timer - config.chargeRentEvery):
-            game.scriptsystem.get("chargeRent").run(None, house=house)
+            game.scriptsystem.get("chargeRent").run(house=house)
             _charge(house)
         else:
             callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)    

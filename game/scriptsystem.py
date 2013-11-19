@@ -1,6 +1,8 @@
 # The script system
 from twisted.internet import reactor, defer
-from twisted.python import log
+from twisted.internet.defer import succeed, fail
+from twisted.python import log, failure
+
 import config
 import sys
 import time
@@ -13,6 +15,20 @@ import inspect
 
 modPool = []
 globalScripts = {}
+
+def maybeDeferred(f, kwargs):
+    """ Similar to defer.maybeDeferred, but does not pass list arguments """
+    try:
+        result = f(**kwargs)
+    except:
+        return fail(failure.Failure(captureVars=Deferred.debug))
+
+    if isinstance(result, Deferred):
+        return result
+    elif isinstance(result, failure.Failure):
+        return fail(result)
+    else:
+        return succeed(result)
 
 class InvalidScriptFunctionArgument(Exception):
     pass
@@ -33,10 +49,10 @@ class Scripts(object):
         if callback in self.weaks:
             self.weaks.remove(callback)
    
-    def run(self, creature, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
         deferList = []
         for func in self.scripts:
-            deferList.append(defer.maybeDeferred(func, creature=creature, **kwargs))
+            deferList.append(maybeDeferred(func, kwargs))
             
         if not deferList: 
             if end: end(None)
@@ -51,7 +67,7 @@ class NCScripts(Scripts):
     def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
         deferList = []
         for func in self.scripts:
-            deferList.append(defer.maybeDeferred(func, **kwargs))
+            deferList.append(maybeDeferred(func, kwargs))
               
         if not deferList:
             if end: end(None)
@@ -95,7 +111,7 @@ class TriggerScripts(object):
         if (trigger, callback) in self.weaks:
             self.weaks.remove((trigger, callback))
 
-    def run(self, trigger, creature, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, trigger, end=None, _deferList=defer.DeferredList([]), **kwargs):
         if not trigger in self.scripts:
             if end:
                 end(None)
@@ -103,7 +119,7 @@ class TriggerScripts(object):
 
         deferList = []
         for func in self.scripts[trigger]:
-            deferList.append(defer.maybeDeferred(func, creature=creature, **kwargs))
+            deferList.append(maybeDeferred(func, kwargs))
             
         d = defer.DeferredList(deferList)
         if end:
@@ -126,7 +142,7 @@ class NCTriggerScripts(TriggerScripts):
         if not trig:
             return
 
-        d = defer.maybeDeferred(trig[0], **kwargs)
+        d = maybeDeferred(trig[0], kwargs)
 
         if end:
             d.addCallback(end)
@@ -157,7 +173,7 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    def run(self, trigger, creature, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, trigger, end=None, _deferList=defer.DeferredList([]), **kwargs):
         deferList = []
 
         """if not trigger in self.scripts:
@@ -174,7 +190,7 @@ class RegexTriggerScripts(TriggerScripts):
             args.update(kwargs)
                                
             for func in spectre[0]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, **args))
+                deferList.append(maybeDeferred(func, args))
                
         if not deferList:
             if end: end(None)
@@ -265,25 +281,26 @@ class ThingScripts(object):
         except:
             pass
         
-    def run(self, thing, creature, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
         deferList = []
+        thing = kwargs["thing"]
         try:
             for func in self.thingScripts[thing]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                deferList.append(maybeDeferred(func, kwargs))
         except:
             pass
 
         thingId = thing.thingId()
         try:
             for func in self.scripts[thingId]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
+                deferList.append(maybeDeferred(func, kwargs)) 
         except:
             pass
 
         for aid in thing.actionIds():
             try:
                 for func in self.scripts[aid]:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
+                    deferList.append(maybeDeferred(func, kwargs))
             except:
                 pass
 
@@ -298,25 +315,26 @@ class ThingScripts(object):
         return d
 
 class CreatureScripts(ThingScripts):
-    def run(self, thing, creature, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
         deferList = []
+        thing = kwargs["creature2"]
         try:
             for func in self.thingScripts[thing]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
+                deferList.append(maybeDeferred(func, kwargs))
         except:
             pass
 
         thingId = thing.thingId()
         try:
             for func in self.scripts[thingId]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
+                deferList.append(maybeDeferred(func, kwargs))
         except:
             pass
 
         for aid in thing.actionIds():
             try:
                 for func in self.scripts[aid]:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, creature2=thing, **kwargs))
+                    deferList.append(maybeDeferred(func, kwargs))
             except:
                 pass
 

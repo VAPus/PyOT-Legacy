@@ -904,7 +904,7 @@ class BaseProtocol(object):
                         player.message(thing.description(True))
                     else:
                         player.message(thing.description())
-            game.scriptsystem.get('lookAt').run(thing, player, afterScript, position=stackPosition)
+            game.scriptsystem.get('lookAt').run(afterScript, thing=thing, creature=creature, position=stackPosition)
         else:
             player.notPossible()
 
@@ -926,7 +926,7 @@ class BaseProtocol(object):
             else:
                 player.message(creature.description())
 
-        game.scriptsystem.get('lookAt').run(creature, player, afterScript, position=creature.position)
+        game.scriptsystem.get('lookAt').run(afterScript, creature2=creature, creature=player, position=creature.position)
 
     @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
@@ -947,7 +947,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').run(item, player, end, position=position.setStackpos(stackpos))
+            game.scriptsystem.get('rotate').run(end, thing=item, creature=player, position=position.setStackpos(stackpos))
             
     @packet(0xD2)
     def handleRequestOutfit(self, player, packet):
@@ -1012,7 +1012,7 @@ class BaseProtocol(object):
                 yield d
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                yield game.scriptsystem.get('use').run(thing, player, None, position=stackPosition, index=index)
+                yield game.scriptsystem.get('use').run(thing=thing, creature=player, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
 
@@ -1080,8 +1080,8 @@ class BaseProtocol(object):
                 yield d
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
-                end = lambda res: game.scriptsystem.get('useWith').run(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').run(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                end = lambda res: game.scriptsystem.get('useWith').run(thing=onThing, creature=player, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').run(end, thing=thing, creature=player, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
             else:
@@ -1337,7 +1337,7 @@ class BaseProtocol(object):
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description(player) + extra)
-            game.scriptsystem.get('lookAtTrade').run(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
+            game.scriptsystem.get('lookAtTrade').run(afterScript, thing=thing, creature=player, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
         
     @packet(0x7F)    
     def handleAcceptTrade(self, player, packet):
@@ -1437,7 +1437,7 @@ class BaseProtocol(object):
                 yield d
             
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('useWith').run(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
+                game.scriptsystem.get('useWith').run(thing=thing, creature=player, position=stackPosition, onThing=creature, onPosition=creature.position)
 
         
     @packet(0xA3)
@@ -1520,7 +1520,7 @@ class BaseProtocol(object):
         messageId = packet.uint32()
         message = game.chat.getMessage(messageId)
         
-        game.scriptsystem.get("thankYou").run(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
+        game.scriptsystem.get("thankYou").run(creature=player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
 
     @packet(0xE8)
     def handleDebugAssert(self, player, packet):
