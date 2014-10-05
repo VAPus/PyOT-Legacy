@@ -1,0 +1,11 @@
+Deathstrike = genMonster("Deathstrike", (500, 16091), "a Deathstrike") #mostly unknown
+Deathstrike.setHealth(250000)
+Deathstrike.bloodType("blood")
+Deathstrike.setDefense(armor=100, fire=0.5, earth=0, energy=0.6, ice=0.6, holy=0.8, death=0.6, physical=0.75, drown=0.75)
+Deathstrike.setExperience(40000)
+Deathstrike.setSpeed(700)
+Deathstrike.setBehavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+Deathstrike.walkAround(energy=0, fire=0, poison=0)
+Deathstrike.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+Deathstrike.voices("Deeestructiooon!", "Maaahhhrrr!", "I am carnage incarnate!", "I've seen the light! And it was all engulfing fire!", "Taaake... this!")
+Deathstrike.regMelee(2000)
