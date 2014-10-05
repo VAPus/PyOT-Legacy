@@ -93,7 +93,7 @@ class GuildRank(object):
         " Return the guild object for this rank. "
         return guilds[self.guild_id]
         
-@inlineCallbacks
+@gen.coroutine
 def load():
     " Initial load of the guilds. Shouldn't be used after loading. "
     # Guilds

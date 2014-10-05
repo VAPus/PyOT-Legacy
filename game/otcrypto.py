@@ -22,10 +22,10 @@ def decryptXTEA(stream, k):
     bstr = "<%dL" % length
     packs = list(unpack(bstr, stream))
 
-    for pos in xrange(0, length, 2):
+    for pos in range(0, length, 2):
         v0 = packs[pos]
         v1 = packs[pos+1]
-        for i in xrange(32):
+        for i in range(32):
             v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ k[63-i])) & 0xffffffff
             v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ k[31-i])) & 0xffffffff
         packs[pos] = v0
@@ -44,10 +44,10 @@ def encryptXTEA(stream, k, length):
     
     packs = list(unpack(bstr, stream))
 
-    for pos in xrange(0, length, 2):
+    for pos in range(0, length, 2):
         v0 = packs[pos]
         v1 = packs[pos+1]
-        for i in xrange(32):
+        for i in range(32):
             v0 = (v0 + (((v1<<4 ^ v1>>5) + v1) ^ k[i])) & 0xffffffff
             v1 = (v1 + (((v0<<4 ^ v0>>5) + v0) ^ k[32 + i])) & 0xffffffff
         packs[pos] = v0

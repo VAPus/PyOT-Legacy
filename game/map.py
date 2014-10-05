@@ -1,8 +1,6 @@
 from game.item import Item
 import game.item
-from twisted.internet import threads, reactor
-from twisted.python import log
-import scriptsystem
+from . import scriptsystem
 from collections import deque
 import config
 import time
@@ -15,7 +13,7 @@ import importlib
 try:
     mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
 except ImportError:
-    print "[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory)
+    print("[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory))
     sys.exit()
 
 sectorX, sectorY = mapInfo.sectorSize
@@ -36,14 +34,14 @@ dummyTiles = {}
 
 sectors = set()
 
-for n in xrange(12):
+for n in range(12):
     if sectorX == 2**n:
         sectorShiftX = n
     if sectorY == 2**n:
         sectorShiftY = n
 
 if sectorShiftX == sectorShiftY == 0:
-    print "Sector size (%d, %d) are not a power of two." % (sectorX, sectorY)
+    print("Sector size (%d, %d) are not a power of two." % (sectorX, sectorY))
     sys.exit()
 
 ##### Position class ####
@@ -52,7 +50,7 @@ def __uid():
     while True:
         idsTaken += 1
         yield idsTaken
-newInstanceId = __uid().next
+newInstanceId = __uid().__next__
 
 def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
@@ -503,7 +501,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
             centerPoint = l_Position(centerX, centerY, centerZ, instanceId)
                             
             # Here we use attrNr as a count for 
-            for numCreature in xrange(creatureCount):
+            for numCreature in range(creatureCount):
                 creatureType = lord(code[pos])
                 nameLength = lord(code[pos+1])
                 name = code[pos+2:pos+nameLength+2]
@@ -517,12 +515,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 if creature:
                     creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
-                    print "Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name)
+                    print("Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name))
                                     
             continue
         
         # Loop over the mapInfo.sectorSize[0] x rows
-        for xr in xrange(boundX):
+        for xr in range(boundX):
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
@@ -558,7 +556,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         elif attrNr:
                             pos += 3
                             attr = {}
-                            for n in xrange(attrNr):
+                            for n in range(attrNr):
                                 name = l_attributes[lord(code[pos])]
                                     
                                 opCode = code[pos+1]
@@ -580,7 +578,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     length = lord(code[pos])
 
                                     pos += 1
-                                    for i in xrange(length):
+                                    for i in range(length):
                                         opCode = code[pos]
                                         pos += 1
                                         if opCode == "i":
@@ -743,7 +741,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         return False
         
     if verbose:
-        print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
+        print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))    
     
     if config.performSectorUnload:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
@@ -762,7 +760,7 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     yMin = (sectorY << sectorShiftY) + 11
     yMax = (yMin + mapInfo.sectorSize[1]) + 11
     try:
-        for player in game.player.allPlayers.viewvalues():
+        for player in game.player.allPlayers.values():
             pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
             
             # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
@@ -774,12 +772,12 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     return True
     
 def _unloadMap(sectorX, sectorY, instanceId):
-    print "Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId)
+    print("Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId))
     t = time.time()
     if _unloadCheck(sectorX, sectorY, instanceId):
-        print "Unloading...."
+        print("Unloading....")
         unload(sectorX, sectorY, instanceId)
-        print "Unloading took: %f" % (time.time() - t)   
+        print("Unloading took: %f" % (time.time() - t))   
     else:
         reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
@@ -788,9 +786,9 @@ def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     sectorSum = (instanceId, sectorX, sectorY)
     sectors.remove(sectorSum)
 
-    for z in xrange(16):
-        for x in xrange(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
-            for y in xrange(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
+    for z in range(16):
+        for x in range(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
+            for y in range(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
                  try:
                      del knownMap[x,y,z,instanceId]
                  except:

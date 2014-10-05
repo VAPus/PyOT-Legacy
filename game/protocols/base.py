@@ -590,7 +590,7 @@ class BaseProtocol(object):
                     traceback.print_exc()
                     print "==============================\n"
         else:
-            log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+            print("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
             #self.transport.loseConnection()
 
  
@@ -740,7 +740,7 @@ class BaseProtocol(object):
         autoWalkCreature(player)
 
     @packet(0x78)
-    @inlineCallbacks
+    @gen.coroutine
     def handleMoveItem(self, player, packet):
         from game.item import items
         fromPosition = packet.position(player.position.instanceId)
@@ -979,7 +979,7 @@ class BaseProtocol(object):
                 player.outfitWindow()
     
     @packet(0x82)        
-    @inlineCallbacks        
+    @gen.coroutine        
     def handleUse(self, player, packet):
         position = packet.position(player.position.instanceId)
 
@@ -1017,7 +1017,7 @@ class BaseProtocol(object):
                     player.lastUsedObject = time.time()
 
     @packet(0x83)
-    @inlineCallbacks
+    @gen.coroutine
     def handleUseWith(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
@@ -1378,7 +1378,7 @@ class BaseProtocol(object):
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
         
     @packet(0x84)    
-    @inlineCallbacks        
+    @gen.coroutine        
     def handleUseBattleWindow(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()

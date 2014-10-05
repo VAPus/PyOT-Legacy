@@ -1,39 +1,38 @@
 from game.map import placeCreature, removeCreature, getTile
-from twisted.python import log
 import config
 from collections import deque
 import game.scriptsystem
 from game.item import Item
-from twisted.internet import reactor, defer
 from game.creature import Creature, uniqueId, allCreatures
 import time
 import game.party
 import game.resource
 import game.chat
 import game.protocol
-import sql
+from . import sql
 import game.vocation
 import random
 import math
-import otjson
+from . import otjson
 import datetime
 import language
 import copy
+from tornado import gen
 
 # Build class.
 from game.creature_talking import PlayerTalking
 from game.creature_attacks import PlayerAttacks
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except:
     import pickle
 
 allPlayers = {}
-allPlayersObject = allPlayers.viewvalues() # Quick speedup
+allPlayersObject = allPlayers.values() # Quick speedup
 
 if config.enableExtensionProtocol:
-    from service.extserver import IPS as MEDIA_IPS
+    from .service.extserver import IPS as MEDIA_IPS
     
 class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def __init__(self, client, data):
@@ -130,7 +129,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.unpickleInventory(self.data['inventory'])
 
             # Call on equip
-            for x in xrange(0, len(self.inventory)):
+            for x in range(0, len(self.inventory)):
                 item = self.inventory[x]
                 if item:
                     game.scriptsystem.get("equip").run(creature=self, thing=item,
@@ -371,7 +370,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             else:
                 stream = streamX
                 
-            for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
+            for slot in range(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
                 if self.inventory[slot-1]:
                     stream.uint8(0x78)
                     stream.uint8(slot)
@@ -623,7 +622,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return
 
     def removeCache(self, item):
-        print "removeCache"
+        print("removeCache")
         # Update cached data
         try:
             try:
@@ -635,7 +634,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             except:
                 pass
             
-            print "Modifying weight, removecache"
+            print("Modifying weight, removecache")
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
             weight = item.weight
@@ -713,7 +712,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
                 if self.data["manamax"] < config.minMana:
                     self.data["manamax"] = config.minMana
-                    print "[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"])
+                    print("[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"]))
                 
                 if self.data["healthmax"] < config.minHealth:
                     self.data["healthmax"] = config.minHealth
@@ -1081,7 +1080,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def updateContainer(self, container, parent=False, update=True):
         if parent and update:
             # Replace it in structure
-            for i in self.openContainers.items():
+            for i in list(self.openContainers.items()):
                 if i[1] == container:
                     self.openContainers[i[0]] = container
                     break
@@ -1091,7 +1090,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def updateAllContainers(self):
         if self.openContainers:
             stream = self.packet(0x6E)
-            for i in self.openContainers.items():
+            for i in list(self.openContainers.items()):
                 parent = False
                 try:
                     parent = bool(i[1].parent)
@@ -1111,7 +1110,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             stream = self.packet()
 
-        for slot in xrange(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
+        for slot in range(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
             if self.inventory[slot-1]:
                 stream.uint8(0x78)
                 stream.uint8(slot)
@@ -1125,7 +1124,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def openContainer(self, container, parent=False, update=False):
         containerId = None
 
-        if update or not container in self.openContainers.values():
+        if update or not container in list(self.openContainers.values()):
             stream = self.packet(0x6E)
 
             if not update:
@@ -1134,12 +1133,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 container.openIndex = containerId
                 self.openContainers[containerId] = container
             else:
-                for i in self.openContainers.items():
+                for i in list(self.openContainers.items()):
                     if i[1] == container:
                         containerId = i[0]
                         break
                 if containerId == None:
-                    print "problem!"
+                    print("problem!")
                     return False
 
             stream.uint8(containerId)
@@ -1175,7 +1174,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 if container.openIndex == self.lastOpenContainerId-1:
                     self.lastOpenContainerId -= 1
                     if self.lastOpenContainerId:
-                        for i in xrange(self.lastOpenContainerId-2, -1, -1):
+                        for i in range(self.lastOpenContainerId-2, -1, -1):
                             try:
                                 self.openContainers[i]
                                 break
@@ -1204,7 +1203,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 if openId == self.lastOpenContainerId-1:
                     self.lastOpenContainerId -= 1
                     if self.lastOpenContainerId:
-                        for i in xrange(self.lastOpenContainerId-2, -1, -1):
+                        for i in range(self.lastOpenContainerId-2, -1, -1):
                             try:
                                 self.openContainers[i]
                                 break
@@ -1260,7 +1259,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         return True
 
-    @inlineCallbacks
+    @gen.coroutine
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
         stream = streamX
         update = False
@@ -1325,7 +1324,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
                 slot = 0
 
-        print item.count, count
+        print(item.count, count)
         if count != item.count:
             item.count = count
 
@@ -1499,7 +1498,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         return (container, container / 10.0)
     
-    @inlineCallbacks
+    @gen.coroutine
     def onDeath(self):
         try:
             lastAttacker = self.getLastDamager()
@@ -1538,7 +1537,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         loseRate = deathData["loseRate"]
         itemLoseRate = deathData["itemLoseRate"]
         
-        print "TODO: Unfair fight."
+        print("TODO: Unfair fight.")
         if self.client:
             self.sendReloginWindow(100)
         
@@ -1547,7 +1546,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
             self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
             
-            for skill in xrange(SKILL_FIRST, SKILL_LAST):
+            for skill in range(SKILL_FIRST, SKILL_LAST):
                 # First, get total skill tries.
                 tries = config.totalSkillFormula(self.data["skills"][skill], self.getVocation().meleeSkill) + self.getSkillAttempts(skill)
                 
@@ -1574,9 +1573,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             if lastDamagerSkull == SKULL_ORANGE:
                 revengeEntry = death.findUnrevengeKill(lastAttacker.data["id"], self.data["id"])
                 if not revengeEntry:
-                    print "BUG: This was a revenge, but we can't find the revenge death entry..."
+                    print("BUG: This was a revenge, but we can't find the revenge death entry...")
                 elif revengeEntry.revenged == True:
-                    print "BUG: revenging a revenged kill."
+                    print("BUG: revenging a revenged kill.")
                 else:
                     revengeEntry.revenge()
             entry = deathlist.DeathEntry(lastAttacker.data["id"], self.data["id"], unjust)
@@ -1617,7 +1616,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.inventory[2] = None
             
         # Loop over each item in the inventory to see if we lose em.
-        for index in xrange(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
+        for index in range(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
             if self.inventory[index] and random.randint(1, 1000) < (itemLoseRate[1] * 10):
                 corpse.placeItem(self.inventory[index])
                 self.inventory[index] = None
@@ -1687,7 +1686,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         try:
             self.inventory = pickle.loads(inventoryData)
         except:
-            print "Broken inventory (blame MySQL, it usually means you killed the connection in the middle of a save)"
+            print("Broken inventory (blame MySQL, it usually means you killed the connection in the middle of a save)")
             purse = Item(1987)
             purse.name = "Purse"
             purse.addAction('purse')
@@ -1844,7 +1843,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             last = moneyItems[-1]
             count = 0
             currency = last[0].worth
-            for i in xrange(last[0].count):
+            for i in range(last[0].count):
                 removedMoney += currency
                 count += 1
                 if removedMoney >= amount:
@@ -1986,7 +1985,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
-    @inlineCallbacks
+    @gen.coroutine
     def setFollowTarget(self, cid):
         if not cid: # or self.targetMode == 2
             #self.cancelWalk()
@@ -2071,7 +2070,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if config.sendTutorialSignalUponQuestLogUpdate:
             self.tutorial(3)
 
-    @inlineCallbacks
+    @gen.coroutine
     def questLog(self):
         quests = self.getStorage('__quests')
         if not quests:
@@ -2084,7 +2083,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             try:
                 game.resource.getQuest(quest)
             except:
-                print "Debug, ending quest %s" % quest
+                print("Debug, ending quest %s" % quest)
                 del quests[quest]
                 self.setStorage('__quests', quests)
 
@@ -2110,8 +2109,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.uint16(game.resource.reverseQuests[questIdentifier]+1)
 
         stream.uint8(questObj.missions[quests[questIdentifier][0]-1][1] + questObj.missions[quests[questIdentifier][0]-1][2])
-        for i in xrange(quests[questIdentifier][0]):
-            for x in xrange(questObj.missions[i][1], questObj.missions[i][1]+questObj.missions[i][2]):
+        for i in range(quests[questIdentifier][0]):
+            for x in range(questObj.missions[i][1], questObj.missions[i][1]+questObj.missions[i][2]):
                 stream.string(questObj.missions[i][0] + (' (completed)' if quests[questIdentifier][1] > x else ''))
                 stream.string(questObj.descriptions[x])
 
@@ -2155,7 +2154,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return []
         return vips
 
-    @defer.inlineCallbacks
+    @gen.coroutine
     def sendVipList(self):
         vips = self.getStorage('__vips')
         if not vips:
@@ -2187,7 +2186,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.setStorage('__vips', vips)
         self.sendVipList()
 
-    @defer.inlineCallbacks
+    @gen.coroutine
     def addVipByName(self, name):
         result = yield getPlayerIDByName(name)
         if result:
@@ -2206,7 +2205,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.setStorage('__vips', vips)
         #self.sendVipList()
 
-    @defer.inlineCallbacks
+    @gen.coroutine
     def removeVipByName(self, name):
         result = yield getPlayerIDByName(name)
         if result:
@@ -2444,7 +2443,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         stream = self.packet()
         stream.uint8(0xF9)
-        print "itemId - marketOffers - ", itemId
+        print("itemId - marketOffers - ", itemId)
         stream.uint16(cid(itemId))
 
         buyOffers = self.market.getBuyOffers(itemId, self.data["id"])
@@ -2520,7 +2519,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if type == 1 and (not itemId in self.depotMarketCache[self.marketDepotId] or amount > self.depotMarketCache[self.marketDepotId][itemId] or self.getBalance() < fee):
             return self.notPossible()
         elif type == 0 and self.getBalance() < (amount*price)+fee:
-            print "XXX: Can't afford it."
+            print("XXX: Can't afford it.")
             return self.notPossible()
 
         
@@ -2572,7 +2571,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 stream.uint16(entry.amount)
                 stream.uint32(entry.price)
 
-    @inlineCallbacks
+    @gen.coroutine
     def marketHistory(self):
         counter = 0
         buyHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND h.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
@@ -2609,7 +2608,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.lc = lambda context, message: self.l(C % (context, message))
                 self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
             except:
-                print "WARNING: Language %s not loaded, falling back to defaults" % lang
+                print("WARNING: Language %s not loaded, falling back to defaults" % lang)
         else:
             self.l = lambda message: message
             self.lp = lambda s,p,n: s if n != 1 else p
@@ -2623,14 +2622,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         try:
             return game.functions.groups[self.data["group_id"]][1]
         except:
-            print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
+            print("Warning: GroupID %d doesnt exist!" % self.data["group_id"])
             return default
             
     def hasGroupFlag(self, flag):
         try:
             return flag in game.functions.groups[self.data["group_id"]][1]
         except:
-            print "Warning: GroupID %d doesnt exist!" % self.data["group_id"]
+            print("Warning: GroupID %d doesnt exist!" % self.data["group_id"])
             return False
             
     def hasGroupFlags(self, *flags):

@@ -1,8 +1,6 @@
 import protocolbase
 import game.protocol
 from collections import deque
-from twisted.internet.defer import inlineCallbacks
-from twisted.python import log
 import config
 import otcrypto
 import game.scriptsystem
@@ -13,6 +11,7 @@ from game.map import getTile,removeCreature
 from game.functions import updateTile
 import struct
 import time
+from tornado import gen
 
 waitingListIps = deque()
 lastChecks = {}
@@ -46,7 +45,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.send(self)
         self.loseConnection()
         
-    @inlineCallbacks
+    @gen.coroutine
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
         IN_TEST = False
@@ -66,10 +65,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
             self.protocol = game.protocol.getProtocol(version)
             self.version = version
-            print "Client protocol version %d" % version
+            print(("Client protocol version %d" % version))
 
             if not self.protocol:
-                log.msg("Trying to load a invalid protocol")
+                print("Trying to load a invalid protocol")
                 self.transport.loseConnection()
                 return
 
@@ -79,12 +78,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     packet.pos = 0 # Reset position
 
                 else:
-                    log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
+                    print("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
                     self.transport.loseConnection()
                     return
 
                 if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-                    log.msg("RSA, first char != 0")
+                    print("RSA, first char != 0")
                     self.transport.loseConnection()
                     return
 
@@ -92,7 +91,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
                 sum = 0
                 self.xtea = {}
-                for x in xrange(32):
+                for x in range(32):
                     self.xtea[x] = sum + k[sum & 3] & 0xffffffff
                     sum = (sum + 0x9E3779B9) & 0xffffffff
                     self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
@@ -263,14 +262,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
             try:
                 while True:
                     op = packet.string()
-                    print op
+                    print(op)
                     if op == "CALL" and self.ready == 2:
-                        print "do this"
+                        print("do this")
                         result = yield game.functions.executeCode(packet.string())
                         
                         t.string(result)
                     elif op == "AUTH":
-                        print "auth"
+                        print("auth")
                         result = packet.string() in config.executeProtocolAuthKeys
                         if result:
                             t.string("True")
@@ -288,10 +287,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
         return self.protocol.handle(self.player, packet)
 
 
-    @inlineCallbacks
+    @gen.coroutine
     def onConnectionLost(self):
         if self.player:
-            print "Lost connection on, ", self.player.position
+            print(("Lost connection on, ", self.player.position))
             self.player.client = None
             
             if self.player.alive and not self.player.prepareLogout():
@@ -301,7 +300,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             
             self.player.knownCreatures = set()
             self.player.knownBy = set()
-            for x in game.player.allPlayers.values():
+            for x in list(game.player.allPlayers.values()):
                 if x.client and self.player.data["id"] in x.getVips():
                     stream = x.packet()
                     stream.vipLogout(self.player.data["id"])

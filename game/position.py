@@ -64,8 +64,8 @@ class Position(object):
     def roundPoint(self, steps):
         """ Return a MultiPosition with all the steps away from this tile. """
         positions = []
-        for x in xrange(-steps, steps+1):
-            for y in xrange(-steps, steps+1):
+        for x in range(-steps, steps+1):
+            for y in range(-steps, steps+1):
                 positions.append((x+self.x,y+self.y,self.z))
                 
         return MultiPosition(self.instanceId, *positions)
@@ -121,7 +121,7 @@ class MultiPosition(Position):
     def __iter__(self):
         return self
         
-    def next(self):
+    def __next__(self):
         """ Increase the index, change to that position in the position list. """
         self.index += 1
         if self.index >= len(self.positions):

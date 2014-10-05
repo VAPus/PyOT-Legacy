@@ -4,7 +4,7 @@ import game.map
 import game.const
 import random
 import game.creature
-from twisted.internet import reactor
+import collections
 
 spells = {}
 fieldRunes = {}
@@ -546,7 +546,7 @@ class Spell(object):
                     target.condition(array[0].copy(), array[1])
 
             if self.targetType == TARGET_AREA:
-                area = self.targetArea(caster=creature) if callable(self.targetArea) else self.targetArea
+                area = self.targetArea(caster=creature) if isinstance(self.targetArea, collections.Callable) else self.targetArea
                 positions = calculateAreaDirection(creature.position, creature.direction, area)
                 targetGenerators = []
                 for pos in positions:
@@ -614,16 +614,16 @@ class Rune(Spell):
     def doEffect(self):
         # Stupid weakrefs can't deal with me directly since i can't be a strong ref. Yeye, I'll just cheat and wrap myself!
         def runeCallback(thing, creature, position, onPosition, onThing, strength=None, **k):
-            print "runeCallback"
+            print("runeCallback")
             target = creature
             if self.targetType == TARGET_TARGET:
                 target = onThing
                 if not isinstance(target, Creature):
                     if not isinstance(target, Creature):
-                        print onThing, onThing.position, onThing.position.getTile().getCreatureCount()
+                        print(onThing, onThing.position, onThing.position.getTile().getCreatureCount())
                         try:
                             target = onThing.position.getTile().topCreature()
-                            print target
+                            print(target)
                         except:
                             raise                    
                     if not target:
@@ -711,7 +711,7 @@ class Rune(Spell):
                     target.condition(array[0].copy(), array[1])
         
             else:
-                area = self.targetArea(caster=creature) if callable(self.targetArea) else self.targetArea
+                area = self.targetArea(caster=creature) if isinstance(self.targetArea, collections.Callable) else self.targetArea
                 positions = calculateAreaDirection(creature.position, creature.direction, area)
                 targetGenerators = []
                 for pos in positions:

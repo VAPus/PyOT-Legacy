@@ -1,16 +1,13 @@
-from creature import Creature, uniqueId, allCreatures
-import map, scriptsystem
-from packet import TibiaPacket
+from .creature import Creature, uniqueId, allCreatures
+from . import map, scriptsystem
+from .packet import TibiaPacket
 import copy, random, time
-from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall
-from twisted.python import log
 import game.const
-import errors
-import item
+from . import errors
+from . import item
 import config
 import game.errors
-
+from tornado import gen
 monsters = {}
 brainFeatures = {}
 
@@ -114,7 +111,7 @@ class Monster(Creature):
         
         self.brainEvent = None
         
-    @inlineCallbacks
+    @gen.coroutine
     def onDeath(self):
         # Remove master summons
         isSummon = self.isSummon()
@@ -162,7 +159,7 @@ class Monster(Creature):
                 except:
                     # Monsters with loot MUST have a container with some size in it.
                     if self.base.lootTable: 
-                        print "[WARNING] Monster %s got a bad corpse" % self.name()
+                        print("[WARNING] Monster %s got a bad corpse" % self.name())
                     maxSize = 0
                 drops = []
                 if maxSize:
@@ -224,7 +221,7 @@ class Monster(Creature):
                                 
 
                     if ret == None:
-                        log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
+                        print("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
                         break
 
         else:
@@ -232,7 +229,7 @@ class Monster(Creature):
             
         yield scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
         if self.alive or self.data["health"] > 0:
-            print "[May bug] Death events brought us back to life?"
+            print("[May bug] Death events brought us back to life?")
             return
         
         # Remove bpth small and full splashes on the tile.
@@ -301,7 +298,7 @@ class Monster(Creature):
     def isAttackable(self, by):
         return self.base.attackable
 
-    @inlineCallbacks
+    @gen.coroutine
     def targetCheck(self, targets=None):
         _time = time.time()
         if self.lastRetarget > _time - 7:
@@ -493,7 +490,7 @@ class MonsterBase(object):
             if place:
                 tile = position.getTile()
                 if not tile:
-                    log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
+                    print("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
                     return
 
             if not monster:
@@ -548,16 +545,16 @@ class MonsterBase(object):
                         if ok:
                             break
                     if not ok:
-                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
                 elif not tile.hasCreatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
                     try:
                         stackpos = tile.placeCreature(monster)
                     except:
-                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
                 else:
-                    log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                    print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                     return
                 
             monster.spawnTime = spawnTime
@@ -730,7 +727,7 @@ class MonsterBase(object):
                     try:
                         loot[0] = item.items[loot[0]]["name"]
                     except:
-                        print "ItemId %d not found in loot. Ignoring!" % loot[0]
+                        print("ItemId %d not found in loot. Ignoring!" % loot[0])
                         continue
                 cache.append(loot)  
                 
@@ -746,7 +743,7 @@ class MonsterBase(object):
                         if sid:
                             loot[0].append(sid)
                         else:
-                            print "Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"])
+                            print("Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"]))
                         
                 else:
                     loot = list(loot)
@@ -754,7 +751,7 @@ class MonsterBase(object):
                     if sid:
                         loot[0] = sid
                     else:
-                        print "Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"])
+                        print("Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"]))
                         
                 self.lootTable.append(loot)  
             
@@ -780,7 +777,7 @@ class MonsterBrain(object):
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
-    @inlineCallbacks
+    @gen.coroutine
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
@@ -885,4 +882,4 @@ def regBrainFeature(name, function):
     if not name in brainFeatures:
         brainFeatures[name] = function
     else:
-        print "Warning, brain feature %s exists!" % name
+        print("Warning, brain feature %s exists!" % name)

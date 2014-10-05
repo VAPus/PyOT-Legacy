@@ -1,5 +1,6 @@
 import game.const as enum
 import config
+from tornado import gen
 
 # Interface.
 class CreatureTalking(object):
@@ -175,7 +176,7 @@ class PlayerTalking(CreatureTalking):
         self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
         
     # Channel system
-    @inlineCallbacks
+    @gen.coroutine
     def openChannels(self):
         channels = game.chat.getChannels(self)
         
@@ -254,7 +255,7 @@ class PlayerTalking(CreatureTalking):
         except:
             return False
 
-    @inlineCallbacks
+    @gen.coroutine
     def channelMessage(self, text, channelType=enum.MSG_CHANNEL, channelId=0):
         if channelId == CHANNEL_GUILD:
             channel = self.guild().chatChannel
@@ -326,7 +327,7 @@ class PlayerTalking(CreatureTalking):
     def notifyPrivateSay(self, sayer, text):
         pass # Not supported yet
 
-    @inlineCallbacks        
+    @gen.coroutine        
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
             self.message(_l(self, "Message too long"))

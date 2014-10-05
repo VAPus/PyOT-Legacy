@@ -1,3 +1,4 @@
+from tornado import gen
 byKiller = {}
 byVictim = {}
 
@@ -30,7 +31,7 @@ class DeathEntry(object):
         " Make a save query (for saving). "
         return "(%s, %s, %s, %s, %s, %s)" % (self.killerId, self.victimId, self.unjustified, self.time, self.revenged, self.warId)
 
-@inlineCallbacks
+@gen.coroutine
 def loadDeathList(playerId):
     " Loads the deathentries for this `playerId` from the database. "
     global byVictim, byKiller, loadedDeathIds
@@ -79,10 +80,10 @@ def getSkull(playerId, targetId=None):
     redEntries = {}
     blackEntries = {}
     
-    for i in config.redSkullUnmarked.keys():
+    for i in list(config.redSkullUnmarked.keys()):
         redEntries[i] = 0
         
-    for i in config.blackSkullUnmarked.keys():
+    for i in list(config.blackSkullUnmarked.keys()):
         blackEntries[i] = 0
         
     # Try to check for white skull and sort entries in red and black.
@@ -127,7 +128,7 @@ def getSkull(playerId, targetId=None):
     return SKULL_NONE, 0
 
 
-@inlineCallbacks
+@gen.coroutine
 def _addEntryToDatabase(deathEntry):
     deathEntry.id = yield sql.runOperationLastId("INSERT INTO pvp_deaths(`killer_id`, `victim_id`, `unjust`, `time`, `revenged`, `war_id`) VALUES %s;" % deathEntry.saveQuery())
 

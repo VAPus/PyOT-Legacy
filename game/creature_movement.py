@@ -1,5 +1,5 @@
 from game.map import placeCreature, removeCreature, getTile
-from twisted.python import log
+from tornado import gen
 import config
 
 class CreatureMovement(object):
@@ -9,7 +9,7 @@ class CreatureMovement(object):
 
         return (ground.speed / self.speed) #- 0.05
     
-    @inlineCallbacks
+    @gen.coroutine
     def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
             return False"""
@@ -50,7 +50,7 @@ class CreatureMovement(object):
         removeCreature(self, oldPosition)
         
         if self.creatureType == 0 and self.client:
-            print "Good"
+            print("Good")
             with self.packet() as stream:
                 if oldStackpos: 
                    stream.removeTileItem(oldPosition, oldStackpos)
@@ -181,7 +181,7 @@ class CreatureMovement(object):
         if failback: reactor.callLater(0, failback)
         return False
         
-    @inlineCallbacks
+    @gen.coroutine
     def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None, push=True):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback, push):
             return
@@ -446,7 +446,7 @@ class CreatureMovement(object):
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
                     self.magicEffect(EFFECT_TELEPORT)
                 except:
-                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
+                    print("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
 
         # Deal with appear and disappear. Ahh the power of sets :)

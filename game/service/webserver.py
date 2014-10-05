@@ -11,7 +11,7 @@ class Default(Resource):
 default = Default()
 
 class Page(Resource):
-    @inlineCallbacks
+    @gen.coroutine
     def getChild(self, path, request):
         req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:
@@ -22,7 +22,7 @@ class Web(Resource):
         Resource.__init__(self)
         self.putChild("static", File("data/web_static"))
 
-    @inlineCallbacks
+    @gen.coroutine
     def getChild(self, path, request):
         req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:

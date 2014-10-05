@@ -1,4 +1,5 @@
 import config
+from tornado import gen
 
 class CreatureAttacks(object):
     def hitEffects(self):
@@ -17,7 +18,7 @@ class CreatureAttacks(object):
         # Overrided to creatures.
         return dmg
 
-    @inlineCallbacks
+    @gen.coroutine
     def onHit(self, by, dmg, type, effect=None):
 
         if not type == DISTANCE:
@@ -384,7 +385,7 @@ class PlayerAttacks(CreatureAttacks):
         else:
             stream = streamX
         if self.target:
-            self.target.scripts["onNextStep"] = filter(lambda a: a != self.followCallback, self.target.scripts["onNextStep"])
+            self.target.scripts["onNextStep"] = [a for a in self.target.scripts["onNextStep"] if a != self.followCallback]
             """try:
                 self.targetChecker.cancel()
             except:
@@ -396,7 +397,7 @@ class PlayerAttacks(CreatureAttacks):
             if not streamX:
                 stream.send(self.client)
 
-    @inlineCallbacks
+    @gen.coroutine
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
@@ -442,7 +443,7 @@ class PlayerAttacks(CreatureAttacks):
             return
 
         if self.modes[1] == CHASE:
-            print "did"
+            print("did")
             autoWalkCreatureTo(self, self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 

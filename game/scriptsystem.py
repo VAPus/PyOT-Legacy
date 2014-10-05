@@ -1,8 +1,4 @@
 # The script system
-from twisted.internet import reactor, defer
-from twisted.internet.defer import succeed, fail
-from twisted.python import log, failure
-
 import config
 import sys
 import time
@@ -12,6 +8,7 @@ from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
 import inspect
+from tornado import gen
 
 modPool = []
 globalScripts = {}
@@ -49,7 +46,7 @@ class Scripts(object):
         if callback in self.weaks:
             self.weaks.remove(callback)
    
-    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=[], **kwargs):
         deferList = []
         for func in self.scripts:
             deferList.append(maybeDeferred(func, kwargs))
@@ -64,7 +61,7 @@ class Scripts(object):
         return d
 
 class NCScripts(Scripts):
-    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=[], **kwargs):
         deferList = []
         for func in self.scripts:
             deferList.append(maybeDeferred(func, kwargs))
@@ -111,7 +108,7 @@ class TriggerScripts(object):
         if (trigger, callback) in self.weaks:
             self.weaks.remove((trigger, callback))
 
-    def run(self, trigger, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, trigger, end=None, _deferList=[], **kwargs):
         if not trigger in self.scripts:
             if end:
                 end(None)
@@ -173,7 +170,7 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    def run(self, trigger, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, trigger, end=None, _deferList=[], **kwargs):
         deferList = []
 
         """if not trigger in self.scripts:
@@ -217,7 +214,7 @@ class ThingScripts(object):
                 if i in self.scripts:
                     return True
                     
-        elif id in self.scripts or (type(id) not in (int, long, str) and id in self.thingScripts):
+        elif id in self.scripts or (type(id) not in (int, int, str) and id in self.thingScripts):
             return True
         else:
             return False
@@ -231,7 +228,7 @@ class ThingScripts(object):
                     self.scripts[xid].append(callback)   
                 if weakfunc:
                     self.weaks.add((xid, callback))                    
-        elif type(id) in (int, long, str):
+        elif type(id) in (int, int, str):
             if not id in self.scripts:
                 self.scripts[id] = [callback]
             else:
@@ -251,7 +248,7 @@ class ThingScripts(object):
                 else:
                     self.scripts[xid].insert(0, callback)  
                 self.weaks.add((xid, callback))
-        elif type(id) in (int, long, str):
+        elif type(id) in (int, int, str):
             if not id in self.scripts:
                 self.scripts[id] = [callback]
             else:
@@ -281,7 +278,7 @@ class ThingScripts(object):
         except:
             pass
         
-    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=[], **kwargs):
         deferList = []
         thing = kwargs["thing"]
         try:
@@ -315,7 +312,7 @@ class ThingScripts(object):
         return d
 
 class CreatureScripts(ThingScripts):
-    def run(self, end=None, _deferList=defer.DeferredList([]), **kwargs):
+    def run(self, end=None, _deferList=[], **kwargs):
         deferList = []
         thing = kwargs["creature2"]
         try:
@@ -424,9 +421,9 @@ def run():
     IS_ONLINE = False
     IS_RUNNING = False
     return get('shutdown').run()
-    
-reactor.addSystemEventTrigger('before','shutdown',run)
-#reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
+ 
+# XXX: port this. 
+#reactor.addSystemEventTrigger('before','shutdown',run)
 
 def handleModule(name):
     try:
@@ -437,19 +434,19 @@ def handleModule(name):
         tb_list = traceback.extract_tb(exc_traceback)
         tb_list = traceback.format_list(tb_list)
         
-        print "--------------------------"
+        print("--------------------------")
         # This may not be available.
         try:
-            print "EXCEPTION IN SCRIPT (%s):" % exc_value.filename
+            print(("EXCEPTION IN SCRIPT (%s):" % exc_value.filename))
         except AttributeError:
-            print "EXCEPTION IN SCRIPT:"
+            print("EXCEPTION IN SCRIPT:")
             
         for elt in tb_list[1:]:
-            print elt
+            print(elt)
         if exc_type == SyntaxError:
-            print ">>>", exc_value.text,
-        print "%s: %s" % (exc_type.__name__, exc_value)
-        print "--------------------------"
+            print(">>>", exc_value.text, end=' ')
+        print("%s: %s" % (exc_type.__name__, exc_value))
+        print("--------------------------")
         
         return
         
@@ -492,12 +489,12 @@ def scriptInitPaths(base, subdir=True):
             paths.append(mod.split(os_seperator)[-2])
     return all, paths
     
-@defer.inlineCallbacks
+@gen.coroutine
 def reimporter():
     global globalEvents
     process = yield get("reload").run()
     if process == False:
-        print "[WARNING]: Reload cancelled."
+        print("[WARNING]: Reload cancelled.")
         return
 
     # Unload all the global events
@@ -536,7 +533,7 @@ def reimporter():
     yield get("postReload").run()
     
 def reimportCleanup():
-    for script in globalScripts.itervalues():
+    for script in globalScripts.values():
         if isinstance(script, Scripts):
             for func in script.weaks:
                 script.scripts.remove(func)
@@ -671,10 +668,10 @@ def access(*groupFlags, **kwargs):
             else:
                 vars = "**k"
                 
-        exec """
+        exec("""
 def access_wrapper_inner(%s):
     %s
-    return f(%s)""" % (vars, '\n    '.join(checks), vars) in locals(), locals()
+    return f(%s)""" % (vars, '\n    '.join(checks), vars), locals(), locals())
         return access_wrapper_inner
     return _wrapper
 
@@ -685,8 +682,8 @@ def registerForAttr(type, attr, callback):
     postLoadEntries.setdefault(attr, []).append((type, callback))
 
 def handlePostLoadEntries():
-    _unpackPostLoad = postLoadEntries.items()
-    for id, attr in game.item.items.iteritems():
+    _unpackPostLoad = list(postLoadEntries.items())
+    for id, attr in game.item.items.items():
         for key, entries in _unpackPostLoad:
             if key in attr:
                 for entry in entries:
@@ -708,4 +705,4 @@ def registerClass(type, *argc):
         object.register(*argc, callback=function_class_wrapper)
         
 
-    return _wrapper
+    return 

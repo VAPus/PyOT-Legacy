@@ -1,9 +1,11 @@
-from twisted.enterprise import adbapi
-from twisted.internet.defer import inlineCallbacks
+#XXX Port this.
+#from twisted.enterprise import adbapi
+#from twisted.internet.defer import inlineCallbacks
 import config
-import __builtin__
-
-__builtin__.PYOT_RUN_SQLOPERATIONS = True
+import builtins
+from tornado.ioloop import IOLoop
+"""
+builtins.PYOT_RUN_SQLOPERATIONS = True
 # Our own methods.
 def runOperationLastId(self, *args, **kw):
     if PYOT_RUN_SQLOPERATIONS:
@@ -17,7 +19,7 @@ def _runOperationLastId(self, trans, *args, **kw):
 # Patch adbapi.ConnectionPool
 adbapi.ConnectionPool._runOperationLastId = _runOperationLastId
 adbapi.ConnectionPool.runOperationLastId = runOperationLastId
-
+"""
 # Connection function.
 def connect(module = config.sqlModule):
     if module == "MySQLdb":
@@ -51,7 +53,7 @@ def connect(module = config.sqlModule):
         try:
             import oursql
         except ImportError:
-            print "Falling oursql back to MySQLdb"
+            print("Falling oursql back to MySQLdb")
             return connect("MySQLdb")
 
         from MySQLdb.constants import FIELD_TYPE
@@ -71,13 +73,14 @@ def connect(module = config.sqlModule):
             import pymysql
             import pymysql.cursors
         except ImportError:
-            print "Falling pymysql back to MySQLdb"
+            print("Falling pymysql back to MySQLdb")
             return connect("MySQLdb")          
 
-        if config.sqlSocket:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
-        else:
-            return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
+        # XXX: Port.
+        #if config.sqlSocket:
+        #    return adbapi.ConnectionPool(module, host=config.sqlHost, unix_socket=config.sqlSocket, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
+        #else:
+        #    return adbapi.ConnectionPool(module, host=config.sqlHost, db=config.sqlDatabase, user=config.sqlUsername, passwd=config.sqlPassword, cp_min=config.sqlMinConnections, cp_max=config.sqlMaxConnections, cp_reconnect=True, cp_noisy=config.sqlDebug, cursorclass=pymysql.cursors.DictCursor)
     elif module == "sqlite3":
         raise Exception("TODO: dictcursor for sqlite3 required!")
         import sqlite3
@@ -89,9 +92,9 @@ def connect(module = config.sqlModule):
             args[0] = args[0].replace('%s', '?').replace('%f', '?').replace('%d', '?') # String, float and digit support
             args = tuple(args)
             return self.runInteraction(self._runQuery, *args)
-        adbapi.ConnectionPool.runQuery = runQuery
+        #adbapi.ConnectionPool.runQuery = runQuery
 
-        return adbapi.ConnectionPool(module, config.sqlDatabase, isolation_level=None, check_same_thread=False)
+        #return adbapi.ConnectionPool(module, config.sqlDatabase, isolation_level=None, check_same_thread=False)
 
     else:
         raise NameError("SQL module %s is invalid" % module)
@@ -111,18 +114,17 @@ def runOperationLastId(*argc, **kwargs):
     
 
 # Update max_allowed_packet for MySQL.
-from twisted.internet.reactor import callLater
 def _():
-    @inlineCallbacks
+    @gen.coroutine
     def x():
         d = yield runQuery("SHOW variables LIKE '%max_allowed_packet%';")
         if int(d[0]['Value']) < 128 * 1024 * 1024:
-            print """Warning: Set:
+            print("""Warning: Set:
 [mysqld]
 max_allowed_packet = 128M
 [client]
 max_allowed_packet = 128M
 
-in my.cnf (/etc/my.cnf or /etc/mysql/my.cnf on Linux, mysql install folder\\my.cnf on windows) and restart mysql and pyot is highly recommended!"""
+in my.cnf (/etc/my.cnf or /etc/mysql/my.cnf on Linux, mysql install folder\\my.cnf on windows) and restart mysql and pyot is highly recommended!""")
     x()
-callLater(2, _)
+IOLoop.instance().call_later(2, _)

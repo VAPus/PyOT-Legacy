@@ -1,16 +1,12 @@
 """A collection of functions that almost every other component requires"""
-import __builtin__
-from twisted.internet import reactor, threads, defer
-from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
-__builtin__.inlineCallbacks = inlineCallbacks
 from collections import deque
-from twisted.python import log
+from tornado import gen
 import time
 import game.map
 import config
 import math
-import sql
-import otjson
+from . import sql
+from . import otjson
 import sys
 import random
 import game.vocation
@@ -19,7 +15,7 @@ import game.scriptsystem
 import game.errors
 import glob
 import game.protocol
-import logger
+from . import logger
 import game.chat
 import re
 import subprocess
@@ -29,14 +25,14 @@ import game.deathlist
 import game.ban
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except:
     import pickle
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except:
-    from StringIO import StringIO
+    from io import StringIO
 
 # Some half important constants
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -491,7 +487,7 @@ def explainPacket(packet):
     
     #currPos = packet.pos
     #packet.pos = 0
-    log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.data)))) ))
+    print("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.data)))))) ))
     #packet.pos = currPos
 
 # Save system, async :)
@@ -500,7 +496,7 @@ def saveAll(force=False):
     commited = False
     
     t = time.time()
-    for player in game.player.allPlayers.values():
+    for player in list(game.player.allPlayers.values()):
         result = player._saveQuery(force)
         if result:
             sql.runOperation(*result)
@@ -524,13 +520,13 @@ def saveAll(force=False):
             
     # Houses
     if game.map.houseTiles:
-        for houseId, house in game.house.houseData.iteritems():
+        for houseId, house in game.house.houseData.items():
             # House is loaded?
             if houseId in game.map.houseTiles:
                 try:
                     items = house.data["items"].copy()
                 except:
-                    log.msg("House id %d have broken items!" % houseId)
+                    print("House id %d have broken items!" % houseId)
                     items = {} # Broken items
                     
                 for tile in game.map.houseTiles[houseId]:
@@ -555,18 +551,18 @@ def saveAll(force=False):
                     house.data["items"] = items
                     house.save = True # Force save
                 if house.save:
-                    log.msg("Saving house ", houseId)
+                    print("Saving house ", houseId)
                     sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data) if house.data else '', houseId))
                     house.save = False
                     commited = True
                 else:
-                    log.msg("Not saving house", houseId)
+                    print("Not saving house", houseId)
         
     if force:        
-        log.msg("Full (forced) save took: %f" % (time.time() - t))
+        print("Full (forced) save took: %f" % (time.time() - t))
 
     elif commited:       
-        log.msg("Full save took: %f" % (time.time() - t))
+        print("Full save took: %f" % (time.time() - t))
         
 # Time stuff
 def getTibiaTime():
@@ -622,7 +618,7 @@ def checkLightLevel():
         
 # Player lookup and mail
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok
-@inlineCallbacks
+@gen.coroutine
 def getPlayerIDByName(name):
     """ Returns the playerID based on the name.
     
@@ -701,7 +697,7 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
         stream.string(message)
         stream.send(player.client)
         
-@inlineCallbacks
+@gen.coroutine
 def placeInDepot(name, depotId, items):
     """ Place items into the depotId of player with a name. This can be used even if the player is offline.
     
@@ -745,7 +741,7 @@ def placeInDepot(name, depotId, items):
         else:
             returnValue(False)
             
-@inlineCallbacks
+@gen.coroutine
 def loadPlayer(playerName):
     """ Load player with name `playerName`, return result. """
     try:
@@ -761,7 +757,7 @@ def loadPlayer(playerName):
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         
-@inlineCallbacks
+@gen.coroutine
 def loadPlayerById(playerId):
     """ Load a player with id `playerId`. Return result. """
     # Quick look
@@ -779,7 +775,7 @@ def loadPlayerById(playerId):
     game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
     returnValue(game.player.allPlayers[cd['name']])
 
-@inlineCallbacks
+@gen.coroutine
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
@@ -982,7 +978,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
                     #print "itemToContainer4"
                     player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
             else:
-                print "XXX: In case of bug, do something here?"
+                print("XXX: In case of bug, do something here?")
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
         player.closeContainer(thing)
@@ -1033,7 +1029,7 @@ def Return(ret):
     """ Used in exec protocolfunctions to end the function, and give a return value. """
     raise ReturnValueExit(ret)
      
-@inlineCallbacks
+@gen.coroutine
 def executeCode(code):
     """ Used by execute protocol to run a piece of code """
     try:
@@ -1044,7 +1040,7 @@ def executeCode(code):
                 
                 
             exec("""
-@inlineCallbacks
+@gen.coroutine
 def _N():
 %s
 """ % '\n'.join(newcode))

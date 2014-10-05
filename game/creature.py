@@ -1,7 +1,5 @@
-from twisted.internet.defer import inlineCallbacks, Deferred, returnValue
-from twisted.internet import reactor
+
 from game.map import placeCreature, removeCreature, getTile
-from twisted.python import log
 import game.const
 import config
 import time
@@ -25,10 +23,10 @@ def __uid():
         idsTaken += 1
         yield idsTaken
 
-uniqueId = __uid().next
+uniqueId = __uid().__next__
 
 allCreatures = {}
-allCreaturesObject = allCreatures.viewvalues()
+allCreaturesObject = allCreatures.values()
 
 class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def __init__(self, data, position, cid=None):

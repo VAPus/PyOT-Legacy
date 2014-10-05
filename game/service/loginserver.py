@@ -1,6 +1,4 @@
 import protocolbase
-from twisted.internet.defer import inlineCallbacks
-from twisted.python import log
 from packet import TibiaPacket
 import os
 import sql
@@ -8,17 +6,17 @@ import otcrypto
 import config
 import socket
 import time
-import cPickle
+import pickle
 
 if os.path.exists('IP_CACHE') and os.path.getmtime('IP_CACHE') > time.time() - 2400:
-    IPS = cPickle.load(open('IP_CACHE', 'rb'))
+    IPS = pickle.load(open('IP_CACHE', 'rb'))
 else:
     IPS = {}
 
 class LoginProtocol(protocolbase.TibiaProtocol):
     tcpNoDelay = True
 
-    @inlineCallbacks
+    @gen.coroutine
     def onFirstPacket(self, packet):
         global IPS
         try:
@@ -108,12 +106,12 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             packet.pos = 0 # Reset position
 
         else:
-            log.msg("RSA, length != 128 (it's %d)" % (len(packet.data) - packet.pos))
+            print("RSA, length != 128 (it's %d)" % (len(packet.data) - packet.pos))
             self.transport.loseConnection()
             return
 
         if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-            log.msg("RSA, first char != 0")
+            print("RSA, first char != 0")
             self.transport.loseConnection()
             return
 
@@ -121,7 +119,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
         sum = 0
         self.xtea = {}
-        for x in xrange(32):
+        for x in range(32):
             self.xtea[x] = sum + k[sum & 3] & 0xffffffff
             sum = (sum + 0x9E3779B9) & 0xffffffff
             self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
@@ -185,9 +183,9 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                 ip = socket.gethostbyname(ip)
                 IPS[_ip] = ip
             else:
-                import urllib2
+                import urllib.request, urllib.error, urllib.parse
                 try:
-                    ip = urllib2.urlopen("http://vapus.net/ip.php").read()
+                    ip = urllib.request.urlopen("http://vapus.net/ip.php").read()
                 except:
                     ip = ""
 
@@ -197,7 +195,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                     
                 IPS['auto'] = ip
                 # Save IPS here.
-                cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
+                pickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
 
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
