@@ -16,5 +16,5 @@ class SQL(WebPage):
         request.finish()
 
     def render_GET(self, request):
-        callLater(5, self._delayedRender, request)
+        call_later(5, self._delayedRender, request)
         return NOT_DONE_YET

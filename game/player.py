@@ -356,12 +356,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     if self.data["stamina"] < 0:
                         self.data["stamina"] = 0
                     else:
-                        reactor.callLater(self.rates[1], loseStamina)
+                        reactor.call_later(self.rates[1], loseStamina)
 
                     if self.data["stamina"] < (42*3600):
                         self.refreshStatus()
 
-            reactor.callLater(self.rates[1], loseStamina)
+            reactor.call_later(self.rates[1], loseStamina)
         
     def refreshInventory(self, streamX = None):
         if self.client:
@@ -890,7 +890,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         def doSoulGain(gainOverX):
             self.modifySoul(1)
             if self.doingSoulGain - gainOverX >= time.time():
-                reactor.callLater(gainOverX, doSoulGain, gainOverX)
+                reactor.call_later(gainOverX, doSoulGain, gainOverX)
             else:
                 self.doingSoulGain = False
 
@@ -899,7 +899,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             self.doingSoulGain = time.time() + (config.soulGain)
             gainTime = self.getVocation().soulticks * self.getRegainRate()
-            reactor.callLater(gainTime, doSoulGain, gainTime)
+            reactor.call_later(gainTime, doSoulGain, gainTime)
     # Spells
     def cooldownSpell(self, icon, group, cooldown, groupCooldown=None):
         if groupCooldown == None: groupCooldown = cooldown
@@ -2160,7 +2160,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if not vips:
             return
 
-        result = yield sql.conn.runQuery("SELECT `id`, `name` FROM players WHERE `id` IN (%s)" % (tuple(vips)))
+        result = yield sql.runQuery("SELECT `id`, `name` FROM players WHERE `id` IN (%s)" % (tuple(vips)))
         if result:
             stream = self.packet()
             for player in result:
@@ -2674,7 +2674,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
             
             if self.skullTimeout and not self._checkSkulls:
-                self._checkSkulls = callLater(self.skullTimeout - time.time(), self.verifySkulls)
+                self._checkSkulls = call_later(self.skullTimeout - time.time(), self.verifySkulls)
                 
         return self.skull
     

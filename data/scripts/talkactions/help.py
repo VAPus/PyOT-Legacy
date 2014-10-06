@@ -320,7 +320,7 @@ def testBoost(creature, **k):
 def walkRandomStep(creature, callback):
     """wait = creature.lastAction - time.time()
     if wait > 0:
-        callLater(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
+        call_later(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
         return"""
     steps = [0,1,2,3]
     
@@ -409,7 +409,7 @@ def dialog(creature, **k):
 def delayWalk(creature, **k):
     creature.delayWalk(50)
     creature.lmessage("Ow no, your stuck!")
-    callLater(10, lambda: creature.lmessage("You may walk again!"))
+    call_later(10, lambda: creature.lmessage("You may walk again!"))
     
 @register("talkaction", "newinventory")
 @access("DEVELOPER")

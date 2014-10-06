@@ -1,5 +1,5 @@
 import builtins
-from tornado import gen
+from tornado import gen, ioloop
 builtins.gen = gen
 from collections import deque
 import time
@@ -129,13 +129,13 @@ def loader(timer):
     
     # Reset online status
     print("> > Reseting players online status...", end=' ')
-    sql.conn.runOperation("UPDATE players SET online = 0")
+    sql.runOperation("UPDATE players SET online = 0")
     print("%40s\n" % _txtColor("\t[DONE]", "blue"))
     
    
-    globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
-    groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
-    houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
+    globalData = sql.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
+    groupData = sql.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
+    houseData = sql.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
 
     # Globalize certain things
     print("> > Globalize data...", end=' ')
@@ -144,18 +144,28 @@ def loader(timer):
 
     for i in dir(const):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(const, i))
+            setattr(builtins, i, getattr(const, i))
 
     for i in dir(sys.modules["game.errors"]):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(sys.modules["game.errors"], i))
+            setattr(builtins, i, getattr(sys.modules["game.errors"], i))
 
     for i in sys.modules["game.functions"].globalize:
-        setattr(__builtin__, i, getattr(sys.modules["game.functions"], i))
+        setattr(builtins, i, getattr(sys.modules["game.functions"], i))
 
     print("%55s\n" % _txtColor("\t[DONE]", "blue"))
 
-    builtins.sql = sql.conn
+    # Tornado features.
+    builtins.ioloop_ins = ioloop.IOLoop.instance()
+    builtins.call_later = builtins.ioloop_ins.call_later
+    builtins.call_at = builtins.ioloop_ins.call_at
+    builtins.remove_timeout = builtins.ioloop_ins.remove_timeout
+    builtins.add_callback = builtins.ioloop_ins.add_callback
+    builtins.add_future = builtins.ioloop_ins.add_future
+    builtins.PeriodicCallback = ioloop.PeriodicCallback
+    
+    # Important builtins.
+    builtins.sql = sql
     builtins.config = config
     builtins.userconfig = userconfig
 
@@ -165,19 +175,14 @@ def loader(timer):
     builtins.registerFirst = game.scriptsystem.registerFirst
     builtins.registerForAttr = game.scriptsystem.registerForAttr
     builtins.registerClass = game.scriptsystem.registerClass
-    builtins.defer = defer
-    builtins.reactor = reactor
     builtins.functions = game.functions
     builtins.sys = sys
     builtins.math = math
-    builtins.returnValue = returnValue
-    builtins.Deferred = Deferred
     builtins.deque = deque
     builtins.random = random
     builtins.time = time
     builtins.re = re
     builtins.spell = game.spell # Simplefy spell making
-    builtins.callLater = reactor.callLater
     builtins.Item = game.item.Item
     builtins.itemAttribute = game.item.attribute
     builtins.cid = game.item.cid
@@ -284,9 +289,9 @@ def loader(timer):
     builtins.game = Globalizer()
 
     print("> > Loading global data...", end=' ')
-    for x in (yield globalData):
+    for x in ( yield globalData):
         if x['type'] == 'json':
-            game.functions.globalStorage[x['key']] = otjson.loads(x['data'])
+            game.functions.globalStorage[x['key']] = otjson.loads(x['data'].decode("utf-8")) # JSON must be utf-8
         elif x['type'] == 'pickle':
             game.functions.globalStorage[x['key']] = pickle.loads(x['data'])
         else:
@@ -307,13 +312,16 @@ def loader(timer):
     print("%60s\n" % _txtColor("\t[DONE]", "blue"))
 
     print("> > Loading market...", end=' ')
-    game.market.load()
+    game.market.load() # Fails to load?
     print("%55s\n" % _txtColor("\t[DONE]", "blue"))
-        
-    print("> > Loading house data...", end=' ')
-    for x in (yield houseData):
-        game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
-    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
+    print("----------------------------")
+    # Fix house loading, this hangs.
+    #print("> > Loading house data...", end=' ')
+    #y = yield houseData
+    #print(y)
+    #for x in (y):
+    #    game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
+    #print("%55s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Load scripts
     print("> > Loading scripts...", end=' ')
@@ -339,7 +347,7 @@ def loader(timer):
         
     # Charge rent?
     def _charge(house):
-            callLater(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
+            call_later(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
             
     for house in list(game.house.houseData.values()):
         if not house.rent or not house.owner: continue
@@ -348,7 +356,7 @@ def loader(timer):
             game.scriptsystem.get("chargeRent").run(house=house)
             _charge(house)
         else:
-            callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)    
+            call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)    
     
     # Loading languages
     if config.enableTranslations:
@@ -368,7 +376,7 @@ def loader(timer):
     # Do we issue saves?
     if config.doSaveAll and not IS_IN_TEST:
         print("> > Schedule global save...", end=' ')
-        reactor.callLater(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
+        reactor.call_later(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
         print("%50s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Do we save on shutdowns?
@@ -376,16 +384,16 @@ def loader(timer):
         game.scriptsystem.get("shutdown").register(lambda **k: game.functions.saveAll(True), False)
         
     # Reset online status on shutdown
-    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
+    game.scriptsystem.get("shutdown").register(lambda **k: sql.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
     if not IS_IN_TEST:
         print("> > Turn world time and light on...", end=' ')
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-        reactor.callLater(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
+        reactor.call_later(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
         print("%45s" % _txtColor("\t[DONE]", "blue"))
     
-        reactor.callLater(60, game.functions.looper, pathfinder.RouteCache.clear, 60)
+        reactor.call_later(60, game.functions.looper, pathfinder.RouteCache.clear, 60)
 
     # Now we're online :)
     print(_txtColor("Message of the Day: %s" % config.motd, "red"))

@@ -97,7 +97,7 @@ def refresh():
     
 
     if config.refreshBans:
-        callLater(config.refreshBans, refresh)
+        call_later(config.refreshBans, refresh)
         
     banAccounts = _banAccounts
     banPlayers = _banPlayers

@@ -39,7 +39,7 @@ class TestCondition(FrameworkTestGame):
         def revert():
             self.assertEqual(self.player.speed, originalSpeed)
             
-        return callLater(0.3, revert)
+        return call_later(0.3, revert)
         
     def test_multiboost(self):
         boost = Boost(["health", "healthmax"], [1000, 1000], 0.2)
@@ -56,7 +56,7 @@ class TestCondition(FrameworkTestGame):
             self.assertEqual(self.player.data["health"], originalHealth)
             self.assertEqual(self.player.data["healthmax"], originalHealthMax)
             
-        return callLater(0.3, revert)
+        return call_later(0.3, revert)
         
     def test_boostskill(self):
         boost = Boost(SKILL_SWORD, 10, 0.2)
@@ -70,7 +70,7 @@ class TestCondition(FrameworkTestGame):
         def revert():
             self.assertEqual(self.player.getActiveSkill(SKILL_SWORD), originalSkill)
             
-        return callLater(0.3, revert)
+        return call_later(0.3, revert)
 
     def test_process(self):
         condition = Condition(CONDITION_FIRE, length=10, every=2, damage=1)

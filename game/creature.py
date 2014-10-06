@@ -102,7 +102,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
                 return False
             else:
-                reactor.callLater(self.lastAction - _time, *argc, **kwargs)
+                reactor.call_later(self.lastAction - _time, *argc, **kwargs)
             return False
         else:
             self.lastAction = _time
@@ -210,12 +210,12 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         try:
             if self.respawn:
                 if self.spawnTime:
-                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition)
+                    reactor.call_later(self.spawnTime, self.base.spawn, self.spawnPosition)
                 elif self.spawnTime == 0:
                     return
 
                 else:
-                    reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+                    reactor.call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:
             pass
 
@@ -589,9 +589,9 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                 stream.send(creature.client)
                 
         if self.trackSkulls:
-            self._checkSkulls = callLater(5, self.verifySkulls)
+            self._checkSkulls = call_later(5, self.verifySkulls)
         elif self.skull:
-            self._checkSkulls = callLater(self.skullTimeout - _time, self.verifySkulls)
+            self._checkSkulls = call_later(self.skullTimeout - _time, self.verifySkulls)
         else:
             self._checkSkulls = None
             
@@ -630,7 +630,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             stream.send(creature.client)
             
         if not self._checkSkulls:
-            self._checkSkulls = callLater(0, self.verifySkulls)
+            self._checkSkulls = call_later(0, self.verifySkulls)
             
     def getSkull(self, creature=None):
         return self.skull # TODO
@@ -648,7 +648,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             if stackbehavior == CONDITION_IGNORE:
                 return False
             elif stackbehavior == CONDITION_LATER:
-                return reactor.callLater(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
+                return reactor.call_later(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
             elif stackbehavior == CONDITION_ADD:
                 if maxLength:
                     oldCondition.length = min(condition.length + oldCondition.length, maxLength)

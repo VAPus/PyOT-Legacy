@@ -68,7 +68,7 @@ class CreatureMovement(object):
                     self.cancelTarget(stream)
                     self.target = None
                     if self.isPlayer() and self.mounted:
-                        callLater(0, self.changeMountStatus, False)
+                        call_later(0, self.changeMountStatus, False)
 
                 elif not pzStatus and pzIcon:
                     self.removeIcon(CONDITION_PROTECTIONZONE)
@@ -178,7 +178,7 @@ class CreatureMovement(object):
     def clearMove(self, direction, failback):
         self.cancelWalk(direction % 4)
         self.walkPattern = []
-        if failback: reactor.callLater(0, failback)
+        if failback: reactor.call_later(0, failback)
         return False
         
     @gen.coroutine
@@ -376,7 +376,7 @@ class CreatureMovement(object):
                     self.cancelTarget(stream)
                     self.target = None
                 if self.isPlayer() and self.mounted:
-                    callLater(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
+                    call_later(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
 
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
@@ -467,6 +467,6 @@ class CreatureMovement(object):
         if self.isPlayer() and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
            
-        if callback: reactor.callLater(0, callback)
+        if callback: reactor.call_later(0, callback)
         defer.returnValue(True)
         return

@@ -30,7 +30,7 @@ __builtin__.PYOT_RUN_SQLOPERATIONS = False
 # Async sleeper.
 def asyncWait():
     d = defer.Deferred()
-    reactor.callLater(0.01, d.callback, True) # a number >= 10ms will do. It's 5-6 sql queries.
+    reactor.call_later(0.01, d.callback, True) # a number >= 10ms will do. It's 5-6 sql queries.
     return d
 
 class Client(proto_helpers.StringTransport):

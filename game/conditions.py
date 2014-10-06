@@ -163,12 +163,12 @@ class Condition(object):
 
         if self.check: # This is what we do if we got a check function, independantly of the length
             if self.check(self.creature):
-                self.tickEvent = reactor.callLater(self.every, self.tick)
+                self.tickEvent = reactor.call_later(self.every, self.tick)
             else:
                 self.finish()
 
         elif self.length > 0:
-            self.tickEvent = reactor.callLater(self.every, self.tick)
+            self.tickEvent = reactor.call_later(self.every, self.tick)
         else:
             self.finish()
 
@@ -259,7 +259,7 @@ class Boost(Condition):
                     self.creature.data[ptype] = pvalue
             pid += 1
 
-        self.tickEvent = reactor.callLater(self.length, self.finish)
+        self.tickEvent = reactor.call_later(self.length, self.finish)
 
         self.creature.refreshStatus()
     def callback(self):
@@ -362,7 +362,7 @@ class CountdownCondition(Condition):
             self.length = 0
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = reactor.call_later(2, self.tick)
             
 class PercentCondition(Condition): #under 100% it will decrase in percentages
     def __init__(self, type, startdmg, percent, rptcount=False, subtype=""):
@@ -410,7 +410,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         if self.count <= 0 or self.damage <= 0.27:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = reactor.call_later(2, self.tick)
             
 
 class RepeatCondition(Condition):
@@ -458,4 +458,4 @@ class RepeatCondition(Condition):
         if self.count <= 0:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = reactor.call_later(2, self.tick)

@@ -29,7 +29,7 @@ if config.enableWarSystem:
             # When to cancel war.
             length = (self.started + self.duration) - time.time()
             if length > 0:
-                callLater(length, cancelWar, self)
+                call_later(length, cancelWar, self)
             else:
                 # War might be over already.
                 cancelWar(self)
@@ -174,7 +174,7 @@ if config.enableWarSystem:
                 entry.setStatus(GUILD_WAR_ACTIVE)
                 
             
-        callLater(3600, checkPayments) # Try once per hour to check for payments.
+        call_later(3600, checkPayments) # Try once per hour to check for payments.
     
     def findInvite(creature, guild):
         try:

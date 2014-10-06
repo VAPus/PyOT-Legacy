@@ -14,7 +14,7 @@ class Promotion(game.npc.ClassAction):
         if word in accept:
             if player.data["vocation"] < 4 and player.data["level"] > 20:
                 if player.removeMoney(20000):
-                    sql.conn.runOperation("UPDATE `players` SET `vocation` = %s WHERE `id` = %s", (player.data["vocation"] + 4, player.data["id"]))
+                    sql.runOperation("UPDATE `players` SET `vocation` = %s WHERE `id` = %s", (player.data["vocation"] + 4, player.data["id"]))
                     player.data["vocation"] += 4
                     npc.sayTo(player, "Congratulations! You are now promoted.")
                 else:

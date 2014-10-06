@@ -403,13 +403,13 @@ globalEvents = []
 # Events
 def callEvent(time, func):
     func()
-    globalEvents.append(reactor.callLater(time, callEvent, time, func))
+    globalEvents.append(reactor.call_later(time, callEvent, time, func))
     
 def callEventDate(date, func):
     import dateutil.parser.parse as parse
     import datetime.datetime.now as now
     func()
-    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, func))
+    globalEvents.append(reactor.call_later(parse(date) - now(), callEventDate, date, func))
     
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 """scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
@@ -626,12 +626,12 @@ def registerFirst(type, *argc):
     return _wrapper
     
 def regEvent(timeleap, callback):
-    globalEvents.append(reactor.callLater(timeleap, callEvent, timeleap, callback))
+    globalEvents.append(reactor.call_later(timeleap, callEvent, timeleap, callback))
     
 def regEventTime(date, callback):
     import dateutil.parser.parse as parse
     import datetime.datetime.now as now
-    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, callback))
+    globalEvents.append(reactor.call_later(parse(date) - now(), callEventDate, date, callback))
     
 # Another cool decorator
 def access(*groupFlags, **kwargs):

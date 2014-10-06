@@ -1,13 +1,9 @@
 In order to run PyOT you need:
 ================================
 
-* Python 2.7+ or Pypy 1.7+ (2.2+ are HIGHLY recommended)
+* Python 3.4+ or (pypy currently NOT supported until they get python 3.4 support ATM on 3.2)
 
-* Twisted 10+ 
-
-* zope.interface (any version that works with your twisted version, PyOT does't directly depend on this)
-
-* MySQLdb 1.2.3+ (or pymysql) (1.2.4+ recommended)
+* Tornado 4+
 
 * Optional: cjson/usjon/simplejson (gives a speedup to saving and loading of players when your using CPython)
 
@@ -16,21 +12,11 @@ In order to run PyOT you need:
 Links for Windows:
 ------------------
 
-http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
+https://www.python.org/ftp/python/3.4.1/python-3.4.1.amd64.msi
 
-Grab MySQL-python-1.2.4c1.win32.py2.7.exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
+Tornado 4.0.2 (TODO: Find 64bit build link)
 
-http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.3.0.win32-py2.7.msi
-
-http://sourceforge.net/projects/pywin32/files/pywin32/Build%20218/pywin32-218.win32-py2.7.exe/download
-
-Grab zope.interface-4.0.2.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
-
-and last
-
-Base-13.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
-
-note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of all the libs)
+http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py3.4.exe/download
 
 
 Installation

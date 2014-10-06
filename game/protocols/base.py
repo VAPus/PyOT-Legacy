@@ -100,7 +100,7 @@ class BasePacket(TibiaPacket):
             step = 1
 
         # Run the steps by appending the floor
-        for z in xrange(start, (end+step), step):
+        for z in range(start, (end+step), step):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
@@ -110,8 +110,8 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
         
-        for x in xrange(_x + offset, _x + width + offset):
-            for y in xrange(_y + offset, _y + height + offset):
+        for x in range(_x + offset, _x + width + offset):
+            for y in range(_y + offset, _y + height + offset):
                 tile = getTileConst(x, y, _z, instanceId)
 
                 if tile:
@@ -403,7 +403,7 @@ class BasePacket(TibiaPacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
+        for x in range(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]
@@ -528,7 +528,7 @@ class BasePacket(TibiaPacket):
             self.string(title)
             self.string(message)
             self.uint8(len(buttons))
-            for button in xrange(len(buttons)):
+            for button in range(len(buttons)):
                 self.string(buttons[button])
                 self.uint8(button)
                 
@@ -586,11 +586,11 @@ class BaseProtocol(object):
                 if IS_IN_TEST:
                     raise
                 else:
-                    print "\n\n[UNHANDLED CORE EXCEPTION!]"
+                    print("\n\n[UNHANDLED CORE EXCEPTION!]")
                     traceback.print_exc()
-                    print "==============================\n"
+                    print("==============================\n")
         else:
-            print("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+            print(("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.getData())))))) )))
             #self.transport.loseConnection()
 
  
@@ -653,7 +653,7 @@ class BaseProtocol(object):
         steps = packet.uint8()
 
         walkPattern = deque()
-        for x in xrange(0, steps):
+        for x in range(0, steps):
             direction = packet.uint8()
             if direction == 1:
                 walkPattern.append(1) # East
@@ -1031,7 +1031,7 @@ class BaseProtocol(object):
         stackPosition2 = onPosition.setStackpos(onStack)
         
         if hotkey:
-            print clientId, game.item.sid(clientId)
+            print(clientId, game.item.sid(clientId))
             if not config.enableHotkey: 
                 player.message("Hotkeys are disabled.")
                 return
@@ -1543,11 +1543,11 @@ class BaseProtocol(object):
         id = packet.uint16()
 
         if id == 0xFFFE:
-            print "Req own offers"
+            print("Req own offers")
             player.marketOwnOffers()
 
         elif id == 0xFFFF:
-            print "Req own history"
+            print("Req own history")
             player.marketHistory()
 
         else:
@@ -1575,7 +1575,7 @@ class BaseProtocol(object):
         expire = packet.uint32()
         counter = packet.uint16()
 
-        print expire, counter
+        print(expire, counter)
         
         offer = player.market.findOffer(expire, counter)
         if offer:
@@ -1593,11 +1593,11 @@ class BaseProtocol(object):
 
         offer = player.market.findOffer(expire, counter)
         if not offer:
-            print "Offer not found"
-            print expire, expire-config.marketOfferExpire, counter
+            print("Offer not found")
+            print(expire, expire-config.marketOfferExpire, counter)
             return
         if offer.amount < amount:
-            print "Too much, reducing offer"
+            print("Too much, reducing offer")
             player.marketOffers(offer.itemId)
             amount = offer.amount
 

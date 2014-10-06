@@ -295,7 +295,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             
             if self.player.alive and not self.player.prepareLogout():
                 logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
-                callLater(logoutBlock.length, self.onConnectionLost)
+                call_later(logoutBlock.length, self.onConnectionLost)
                 return
             
             self.player.knownCreatures = set()

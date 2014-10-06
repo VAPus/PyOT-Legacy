@@ -47,7 +47,7 @@ def looper(function, time):
     """Looper decorator"""
     
     function()
-    reactor.callLater(time, looper, function, time)
+    reactor.call_later(time, looper, function, time)
     
 # The action decorator :)
 def action(forced=False, delay=0):
@@ -70,9 +70,9 @@ def action(forced=False, delay=0):
                     pass
                 f(creature, *args, **argw)
             elif not forced and creature.action and creature.action.active():
-                reactor.callLater(0.05, new_f, creature, *args, **argw)
+                reactor.call_later(0.05, new_f, creature, *args, **argw)
             elif delay and creature.action:
-                reactor.callLater(delay, f, creature, *args, **argw)
+                reactor.call_later(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
         _new_f.__doc__ = f.__doc__
@@ -90,10 +90,10 @@ def loopDecorator(time):
     def _decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
-                reactor.callLater(time, new_f, *args, **kwargs)
+                reactor.call_later(time, new_f, *args, **kwargs)
         
         def _first(*args, **kwargs):
-            reactor.callLater(0, new_f, *args, **kwargs)
+            reactor.call_later(0, new_f, *args, **kwargs)
         _first.__doc__ = f.__doc__
         return _first
     return _decor
@@ -113,7 +113,7 @@ def autoWalkCreature(creature, callback=None):
     """
     
     try:
-        creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
+        creature.action = reactor.call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
@@ -166,7 +166,7 @@ def handleAutoWalking(creature, callback=None, level=0):
     if creature.walkPattern:
         def mcallback():
             try:
-                creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
+                creature.action = reactor.call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
             except IndexError:
                 return
 
@@ -629,7 +629,7 @@ def getPlayerIDByName(name):
     try:
         returnValue(game.player.allPlayers[name].data["id"])
     except:
-        d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
+        d = yield sql.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
             returnValue(d[0]['id'])
         else:
@@ -728,7 +728,7 @@ def placeInDepot(name, depotId, items):
             game.player.allPlayers[name].depot[depotId] = items
         returnValue(True)
     else:
-        result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
+        result = yield sql.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
             result = pickle.loads(result[0]['depot'])
             try:
@@ -736,7 +736,7 @@ def placeInDepot(name, depotId, items):
             except:
                 result[depotId] = items
             result = fastPickler(result)
-            sql.conn.runOperation("UPDATE `players` SET `depot` = %s", result)
+            sql.runOperation("UPDATE `players` SET `depot` = %s", result)
             returnValue(True)
         else:
             returnValue(False)
@@ -748,7 +748,7 @@ def loadPlayer(playerName):
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
     except KeyError:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", (playerName, config.worldId))
+        character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", (playerName, config.worldId))
         if not character:
             returnValue(None)
             return
@@ -766,7 +766,7 @@ def loadPlayerById(playerId):
             returnValue(player)
             return
     
-    character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
+    character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
     if not character:
         returnValue(None)
         return

@@ -460,7 +460,7 @@ class Item(object):
                 pass # I don't exist here anymore.
         
         if duration:
-            self.executeDecay = reactor.callLater(duration, executeDecay)
+            self.executeDecay = reactor.call_later(duration, executeDecay)
         else:
             executeDelay()
             

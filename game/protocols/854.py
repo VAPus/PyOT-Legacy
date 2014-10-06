@@ -1,5 +1,5 @@
 # This is a shadow of the main branch, 9.1. TODO: Update for 8.54 changes
-import base
+from . import base
 from twisted.python import log
 import config
 import math
@@ -180,7 +180,7 @@ class Packet(base.BasePacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
+        for x in range(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             #self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]

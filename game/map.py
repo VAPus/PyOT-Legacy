@@ -744,7 +744,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))    
     
     if config.performSectorUnload:
-        reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        reactor.call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
     scriptsystem.get('postLoadSector').run("%d.%d" % (sectorX, sectorY), sector=map, instanceId=instanceId)
     
@@ -779,7 +779,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
         unload(sectorX, sectorY, instanceId)
         print("Unloading took: %f" % (time.time() - t))   
     else:
-        reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        reactor.call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     """ Unload sectorX.sectorY, loaded into instanceId """

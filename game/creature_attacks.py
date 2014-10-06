@@ -281,7 +281,7 @@ class PlayerAttacks(CreatureAttacks):
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
-                        self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+                        self.targetChecker = reactor.call_later(config.meleeAttackSpeed, self.attackTarget)
                         return
                     
                     minDmg = config.minDistanceDamage(self.data["level"])
@@ -374,7 +374,7 @@ class PlayerAttacks(CreatureAttacks):
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
-            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+            self.targetChecker = reactor.call_later(config.meleeAttackSpeed, self.attackTarget)
 
     def criticalHit(self):
         self.message(_l(self, "You strike a critical hit!"), MSG_STATUS_CONSOLE_RED)
