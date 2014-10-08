@@ -102,7 +102,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             if "stopIfLock" in kwargs and kwargs["stopIfLock"]:
                 return False
             else:
-                reactor.call_later(self.lastAction - _time, *argc, **kwargs)
+                call_later(self.lastAction - _time, *argc, **kwargs)
             return False
         else:
             self.lastAction = _time
@@ -210,12 +210,12 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         try:
             if self.respawn:
                 if self.spawnTime:
-                    reactor.call_later(self.spawnTime, self.base.spawn, self.spawnPosition)
+                    call_later(self.spawnTime, self.base.spawn, self.spawnPosition)
                 elif self.spawnTime == 0:
                     return
 
                 else:
-                    reactor.call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition)
+                    call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition)
         except:
             pass
 
@@ -648,7 +648,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
             if stackbehavior == CONDITION_IGNORE:
                 return False
             elif stackbehavior == CONDITION_LATER:
-                return reactor.call_later(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
+                return call_later(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
             elif stackbehavior == CONDITION_ADD:
                 if maxLength:
                     oldCondition.length = min(condition.length + oldCondition.length, maxLength)

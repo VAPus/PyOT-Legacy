@@ -285,7 +285,7 @@ class Market(object):
 @gen.coroutine
 def load():
     global Markets
-    print("A")
+    
     expired = time.time() - config.marketOfferExpire
     x = yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))
     for entry in (x):

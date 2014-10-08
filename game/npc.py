@@ -269,7 +269,7 @@ class NPCBase(object):
 
     def spawn(self, position, place=True, spawnDelay=0.1, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
-            return reactor.call_later(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
+            return call_later(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:
             npc = NPC(self, position, None)
             npc.radius = radius
@@ -609,7 +609,7 @@ class NPCBrain(MonsterBrain):
                 npc.turnOffBrain()
                 return False
             elif ret == True:
-                npc.brainEvent = reactor.call_later(2, self.handleThink, npc)
+                npc.brainEvent = call_later(2, self.handleThink, npc)
                 return True
 
         for feature in npc.base.brainFeatures:
@@ -619,7 +619,7 @@ class NPCBrain(MonsterBrain):
                 npc.turnOffBrain()
                 return False
             elif ret == True:
-                npc.brainEvent = reactor.call_later(2, self.handleThink, npc)
+                npc.brainEvent = call_later(2, self.handleThink, npc)
                 return True
                     
         # Are anyone watching?
@@ -630,7 +630,7 @@ class NPCBrain(MonsterBrain):
         if npc.base.walkable and not npc.focus and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
             self.walkRandomStep(npc) # Walk a random step
 
-        npc.brainEvent = reactor.call_later(2, self.handleThink, npc)
+        npc.brainEvent = call_later(2, self.handleThink, npc)
 brain = NPCBrain()
 def genNPC(name, look, description=""):
     # First build the common creature data

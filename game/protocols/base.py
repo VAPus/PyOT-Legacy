@@ -1,8 +1,5 @@
 # This is the "common protocol" in which all other sub protocols is based upon
 from packet import TibiaPacket
-from twisted.internet.defer import Deferred, inlineCallbacks
-from twisted.internet import defer, reactor
-from twisted.python import log
 import game.const
 import game.map
 import math

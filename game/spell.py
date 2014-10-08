@@ -296,7 +296,7 @@ class Spell(object):
             spells[name] = (self.func, words, level, mana)
         
         # Delay the input a little.
-        reactor.call_later(0.1, l)
+        call_later(0.1, l)
         spells[name] = (self.func,)
         if words:
             game.scriptsystem.get("talkaction").register(words, self.func)
@@ -737,7 +737,7 @@ class Rune(Spell):
                     
         if config.runeCastDelay:
             def castDelay(*a, **k):
-                reactor.call_later(config.runeCastDelay, runeCallback, *a, **k)
+                call_later(config.runeCastDelay, runeCallback, *a, **k)
                 
             return castDelay
             

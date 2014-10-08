@@ -54,7 +54,8 @@ newInstanceId = __uid().__next__
 
 def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
-    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
+    # XXX: Store this sum in the Position itself, and kill the x,y,z sets. They are rarely accessed. Would give a slight speedup and memory improvement.
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return knownMap[posSum]
     except KeyError:
@@ -63,7 +64,7 @@ def getTile(pos, knownMap=knownMap):
 
 def getTileIfExist(pos, _knownMap=knownMap):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
-    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return _knownMap[posSum]
     except KeyError:
@@ -74,7 +75,7 @@ def setTile(pos, tile, knownMap = knownMap):
     x = pos.x
     y = pos.y
 
-    posSum = (x,y,pos.z,pos.instanceId)
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
 
     try:
         knownMap[posSum] = tile
@@ -88,7 +89,7 @@ def setTile(pos, tile, knownMap = knownMap):
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
-    posSum = (x,y,z,instanceId)
+    posSum = instanceId << 40 | x << 24 | y << 8 | z
     try:
         return knownMap[posSum]
     except KeyError:
@@ -644,7 +645,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     # otherwise it should be ",", we don't need to verify this.
 
                 if ground:
-                    ySum = (xr + baseX), (yr + baseY), level, instanceId
+                    ySum = instanceId << 40 | (xr + baseX) << 24 | (yr + baseY) << 8 | level
+                    
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if globalProtection and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -744,7 +746,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))    
     
     if config.performSectorUnload:
-        reactor.call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
     scriptsystem.get('postLoadSector').run("%d.%d" % (sectorX, sectorY), sector=map, instanceId=instanceId)
     
@@ -779,7 +781,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
         unload(sectorX, sectorY, instanceId)
         print("Unloading took: %f" % (time.time() - t))   
     else:
-        reactor.call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     """ Unload sectorX.sectorY, loaded into instanceId """
@@ -790,6 +792,6 @@ def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
         for x in range(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
             for y in range(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
                  try:
-                     del knownMap[x,y,z,instanceId]
+                     del knownMap[instanceId << 40 | x << 24 | y << 8 | z]
                  except:
                      pass

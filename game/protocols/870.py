@@ -1,5 +1,6 @@
 # This is a shadow of the main branch, 9.1
-from . import base, sys
+from . import base
+import sys
 import math
 import game.const
 import game.item

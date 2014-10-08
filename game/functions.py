@@ -47,7 +47,7 @@ def looper(function, time):
     """Looper decorator"""
     
     function()
-    reactor.call_later(time, looper, function, time)
+    call_later(time, looper, function, time)
     
 # The action decorator :)
 def action(forced=False, delay=0):
@@ -70,9 +70,9 @@ def action(forced=False, delay=0):
                     pass
                 f(creature, *args, **argw)
             elif not forced and creature.action and creature.action.active():
-                reactor.call_later(0.05, new_f, creature, *args, **argw)
+                call_later(0.05, new_f, creature, *args, **argw)
             elif delay and creature.action:
-                reactor.call_later(delay, f, creature, *args, **argw)
+                call_later(delay, f, creature, *args, **argw)
             else:
                 f(creature, *args, **argw)
         _new_f.__doc__ = f.__doc__
@@ -90,10 +90,10 @@ def loopDecorator(time):
     def _decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
-                reactor.call_later(time, new_f, *args, **kwargs)
+                call_later(time, new_f, *args, **kwargs)
         
         def _first(*args, **kwargs):
-            reactor.call_later(0, new_f, *args, **kwargs)
+            call_later(0, new_f, *args, **kwargs)
         _first.__doc__ = f.__doc__
         return _first
     return _decor
@@ -113,7 +113,7 @@ def autoWalkCreature(creature, callback=None):
     """
     
     try:
-        creature.action = reactor.call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
+        creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
     except:
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
@@ -166,7 +166,7 @@ def handleAutoWalking(creature, callback=None, level=0):
     if creature.walkPattern:
         def mcallback():
             try:
-                creature.action = reactor.call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
+                creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
             except IndexError:
                 return
 

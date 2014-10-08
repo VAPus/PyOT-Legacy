@@ -283,11 +283,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    reactor.call_later(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
+                    call_later(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
                 else:
                     return
             else:
-                reactor.call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
+                call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
@@ -485,7 +485,7 @@ class MonsterBase(object):
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
         if spawnDelay:
-            return reactor.call_later(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
+            return call_later(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
         else:
             if place:
                 tile = position.getTile()
@@ -511,7 +511,7 @@ class MonsterBase(object):
                 # Vertify that there are no spectators if check = True
                 if check and hasSpectators(position): 
                     # If so, try again in 10s
-                    reactor.call_later(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
+                    call_later(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
                     return
                     
                 elif tile.hasCreatures() and config.tryToSpawnCreaturesNextToEachother:
@@ -773,7 +773,7 @@ class MonsterBase(object):
 class MonsterBrain(object):
     def beginThink(self, monster, check=False):
         if not monster.brainEvent:
-            monster.brainEvent = reactor.call_later(0, self.handleThink, monster, check)
+            monster.brainEvent = call_later(0, self.handleThink, monster, check)
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
@@ -802,7 +802,7 @@ class MonsterBrain(object):
             monster.turnOffBrain()
             return
         elif ret == True:
-            monster.brainEvent = reactor.call_later(1, self.handleThink, monster)
+            monster.brainEvent = call_later(1, self.handleThink, monster)
             return
         
         # Are anyone watching?
@@ -813,7 +813,7 @@ class MonsterBrain(object):
             if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
-        monster.brainEvent = reactor.call_later(1, self.handleThink, monster)
+        monster.brainEvent = call_later(1, self.handleThink, monster)
         
     def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:

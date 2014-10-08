@@ -82,10 +82,10 @@ def tilerE(creature, text):
 @register("talkaction", 'mypos')
 def mypos(creature, text):
     creature.lmessage("Your position is: "+str(creature.position))
-    print creature.position.getTile()
+    print (creature.position.getTile())
     if isinstance(creature.position.getTile(), game.map.HouseTile):
-        print creature.position.getTile().houseId
-    print str(creature.position) # Print to console to be sure
+        print (creature.position.getTile().houseId)
+    print(str(creature.position)) # Print to console to be sure
 
 @register("talkactionFirstWord", 'speed')
 @access("SPEED")
@@ -102,7 +102,7 @@ def speedsetter(creature, text):
 def reimporter(creature, text):
     start = time.time()
     game.scriptsystem.reimporter()
-    print "Full reload took: ", (time.time() - start)
+    print ("Full reload took: ", (time.time() - start))
     return False
     
 # Tester of container functions
@@ -127,7 +127,7 @@ def modexp(creature, text):
 @register("talkactionFirstWord", 's')
 @access("SPAWN")
 def creatureSpawn(creature, text):
-    print "Spawner called"
+    print("Spawner called")
     pos = creature.position.copy()
     pos.y += 2
     try:
@@ -141,7 +141,7 @@ def creatureSpawn(creature, text):
 @register("talkactionFirstWord", 'n')
 @access("SPAWN")
 def npcSpawn(creature, text):
-    print "Spawner called"
+    print("Spawner called")
     pos = creature.position.copy()
     pos.y += 2
     try:
@@ -272,7 +272,7 @@ def setowner(creature,text):
 @access("DEVELOPER")
 def poisonme(creature, **k):
     creature.condition(CountdownCondition(CONDITION_POISON, 10))
-    print "Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON)
+    print("Condition state (POISON): %d" % creature.hasCondition(CONDITION_POISON))
     
 
 @register("talkaction", "conditionme")

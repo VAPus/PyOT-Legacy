@@ -1,4 +1,4 @@
-@inlineCallbacks
+@gen.coroutine
 def defaultBrainFeaturePriority(monster):
         # Walking
         if monster.target: # We need a target for this code check to run
@@ -69,7 +69,7 @@ def defaultBrainFeaturePriority(monster):
                             try:
                                 creature = monster.summon(summon[0], monster.positionInDirection(random.randint(0,3)))
                             except:
-                                print "%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0])
+                                print("%s tries to summon a invalid monster '%s'" % (monster.name(), summon[0]))
                                 
                             break
                 """else:
@@ -121,7 +121,7 @@ def defaultBrainFeaturePriority(monster):
 
 
 
-@inlineCallbacks
+@gen.coroutine
 def defaultBrainFeature(monster):
         ret = yield defaultBrainFeaturePriority(monster)
         if ret is not None:

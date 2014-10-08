@@ -460,7 +460,7 @@ class Item(object):
                 pass # I don't exist here anymore.
         
         if duration:
-            self.executeDecay = reactor.call_later(duration, executeDecay)
+            self.executeDecay = call_later(duration, executeDecay)
         else:
             executeDelay()
             
@@ -988,9 +988,8 @@ def loadItems():
     """
 
     # JSON format.
-    jsonItems = json.loads(_open(config.itemFile, 'r').read())
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
-    for item in jsonItems:
+    def _decoder(item):
         flags = item.get('flags')
         if flags and not isinstance(flags, int):
             item['flags'] = flagTree[flags]
@@ -1011,7 +1010,7 @@ def loadItems():
 
         del item['id']
         if not isinstance(id, int):
-            start, end = list(map(int, id.split('-')))
+            start, end = map(int, id.split('-'))
             fixCid = isinstance(cid, str)
             if fixCid:
                 bCid = int(cid.split('-')[0])
@@ -1045,6 +1044,9 @@ def loadItems():
                     idNameCache[name] = id
             except:
                 pass
+
+    # Perform loading.
+    json.load(_open(config.itemFile, 'r'), object_hook=_decoder)
 
     print("\n> > Items (%s) loaded..." % len(loadItems), end=' ')
     print("%45s\n" % "\t[DONE]")

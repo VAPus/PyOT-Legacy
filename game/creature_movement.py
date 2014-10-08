@@ -178,7 +178,7 @@ class CreatureMovement(object):
     def clearMove(self, direction, failback):
         self.cancelWalk(direction % 4)
         self.walkPattern = []
-        if failback: reactor.call_later(0, failback)
+        if failback: call_later(0, failback)
         return False
         
     @gen.coroutine
@@ -467,6 +467,6 @@ class CreatureMovement(object):
         if self.isPlayer() and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
            
-        if callback: reactor.call_later(0, callback)
+        if callback: call_later(0, callback)
         defer.returnValue(True)
         return

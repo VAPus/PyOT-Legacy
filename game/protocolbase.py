@@ -113,7 +113,7 @@ class TibiaProtocol:
     #### Some simplefiers ####
     def loseConnection(self):
         self.onConnectionLost()
-        reactor.call_later(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
+        call_later(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
 class TibiaFactory(TCPServer):
     #__slots__ = 'clientCount'

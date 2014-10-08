@@ -43,7 +43,7 @@ def runQuery(*argc, **kwargs):
     cursor = conn.cursor()
 
     stat = yield cursor.execute(*argc, **kwargs)
-    print(stat)
+    
     data = cursor.fetchall()
     
     # XXX: Not sure we should do these things....

@@ -1,6 +1,5 @@
 # This is a shadow of the main branch, 9.1. TODO: Update for 8.54 changes
 from . import base
-from twisted.python import log
 import config
 import math
 import game.const
