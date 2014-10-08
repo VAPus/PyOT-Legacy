@@ -1,6 +1,7 @@
 from game.map import placeCreature, removeCreature, getTile
 from tornado import gen
 import config
+import traceback
 
 class CreatureMovement(object):
     def stepDuration(self, ground):
@@ -182,13 +183,12 @@ class CreatureMovement(object):
         return False
         
     @gen.coroutine
-    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None, push=True):
-        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback, push):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):
+        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, failback, push):
             return
 
         if not self.data["health"] or not self.canMove or not self.speed:
-            defer.returnValue(False)
-            return
+            return False
 
         oldPosition = self.position.copy()
 
@@ -232,8 +232,7 @@ class CreatureMovement(object):
         newTile = getTile(position)
         
         if not newTile:
-            defer.returnValue(self.clearMove(direction, failback))
-            return
+            return self.clearMove(direction, failback)
         
         # oldTile
         oldTile = getTile(oldPosition)
@@ -243,13 +242,11 @@ class CreatureMovement(object):
 
         val = yield game.scriptsystem.get("move").run(creature=self)
         if val == False:
-            defer.returnValue(self.clearMove(direction, failback))
-            return
+            return self.clearMove(direction, failback)
         try:
             oldStackpos = oldTile.findStackpos(self)
         except:
-            defer.returnValue(self.clearMove(direction, failback))
-            return
+            return self.clearMove(direction, failback)
 
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -259,24 +256,21 @@ class CreatureMovement(object):
         for item in newTile.getItems():
             r = yield game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                defer.returnValue(self.clearMove(direction, failback))
-                return
+                return self.clearMove(direction, failback)
         # PZ blocked?
         if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
-            defer.returnValue(self.clearMove(direction, failback))
-            return
+            return self.clearMove(direction, failback)
 
         if newTile.ground.solid:
             self.notPossible()
-            defer.returnValue(self.clearMove(direction, failback))
-            return
+            return self.clearMove(direction, failback)
 
         if newTile.things:
             for thing in newTile.things:
                 if not self.isPlayer() and isinstance(thing, Item) and thing.teleport:
-                    defer.returnValue(self.clearMove(direction, failback))
-                    return
+                    return self.clearMove(direction, failback)
+                    
                 if thing.solid:
                     if level and isinstance(thing, Creature):
                         continue
@@ -302,8 +296,7 @@ class CreatureMovement(object):
 
                     #self.turn(direction) # Fix me?
                     self.notPossible()
-                    defer.returnValue(self.clearMove(direction, failback))
-                    return
+                    return self.clearMove(direction, failback)
 
         _time = time.time()
         self.lastStep = _time
@@ -466,7 +459,5 @@ class CreatureMovement(object):
 
         if self.isPlayer() and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
-           
-        if callback: call_later(0, callback)
-        defer.returnValue(True)
-        return
+
+        return True

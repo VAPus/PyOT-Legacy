@@ -101,7 +101,8 @@ class BasePacket(TibiaPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.uint16(skip << 8 | 0xff)
+            self.uint8(skip)
+            self.uint8(0xff)
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):

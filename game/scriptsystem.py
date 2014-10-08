@@ -170,7 +170,7 @@ class ThingScripts(object):
         self.weaks = set()
         
     def haveScripts(self, id):
-        if hasattr(id, '__iter__'): #type(id) in (list, tuple, set, dict_keys):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (list, tuple, set, dict_keys):
             for i in id:
                 if i in self.scripts:
                     return True
@@ -181,7 +181,7 @@ class ThingScripts(object):
             return False
             
     def register(self, id, callback, weakfunc=True):
-        if hasattr(id, '__iter__'): #type(id) in (tuple, list, set):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [callback]
@@ -202,7 +202,7 @@ class ThingScripts(object):
                 self.thingScripts[id].append(callback)
                 
     def registerFirst(self, id, callback, weakfunc=True):
-        if hasattr(id, '__iter__'): #type(id) in (tuple, list, set):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [callback]
@@ -243,27 +243,24 @@ class ThingScripts(object):
     def run(self, end=None, **kwargs):
         res = None
         thing = kwargs["thing"]
-        if thingId in self.thingScripts:
+        if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
                 res = yield (gen.maybe_future(func(**kwargs)))
-        
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
                 res = yield (gen.maybe_future(func(**kwargs)))
-        
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
                     res = yield (gen.maybe_future(func(**kwargs)))
-            
 
         
         if end:
             return end(res)
-        return res
+        return None
 
 class CreatureScripts(ThingScripts):
     def run(self, end=None, **kwargs):

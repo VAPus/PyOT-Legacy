@@ -100,7 +100,7 @@ def loopDecorator(time):
     
 # First order of buisness, the autoWalker
 @action(True)
-def autoWalkCreature(creature, callback=None):
+def autoWalkCreature(creature):
     """Autowalk the creature using the walk patterns. This binds the action slot.
     
     :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
@@ -113,7 +113,7 @@ def autoWalkCreature(creature, callback=None):
     """
     
     try:
-        creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
+        creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature)
     except:
         # Just have to assume he goes down?
         """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
@@ -122,7 +122,7 @@ def autoWalkCreature(creature, callback=None):
         pass
         
 # This one calculate the tiles on the way
-def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
+def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True):
     """Autowalk the creature using the walk patterns. This binds the action slot.
     
     :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
@@ -149,28 +149,25 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None)
     
     if pattern:
         creature.walkPattern = deque(pattern)
-        autoWalkCreature(creature, callback)
-    elif callback:
-        callback(None)
+        autoWalkCreature(creature)
 
     
 #@action()
-def handleAutoWalking(creature, callback=None, level=0):
+def handleAutoWalking(creature, level=0):
     """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
     if not creature.walkPattern:
         return
         
     direction = creature.walkPattern.popleft()
 
-    mcallback=callback
-    if creature.walkPattern:
+    """if creature.walkPattern:
         def mcallback():
             try:
                 creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
             except IndexError:
-                return
+                return"""
 
-    creature.move(direction, level=level, stopIfLock=True, callback=mcallback)
+    creature.move(direction, level=level, stopIfLock=True)
     
 
 # Calculate walk patterns
