@@ -5,7 +5,6 @@ import config
 import otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
-import sql
 import game.player
 from game.map import getTile,removeCreature
 from game.functions import updateTile
@@ -45,7 +44,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.send(self)
         self.loseConnection()
         
-    @gen.coroutine
+    @gen.engine
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
         IN_TEST = False
@@ -97,7 +96,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
                     
 
-            ip = self.transport.getPeer().host
+            ip = self.address
             
             # Ban check.
             if game.ban.ipIsBanned(ip):
@@ -151,7 +150,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
+            account = yield sql.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", username, password)
 
             if not account:
                 account = yield game.scriptsystem.get("loginAccountFailed").run(client=self, username=username, password=password)
@@ -171,7 +170,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 language = account['language']
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (account['id'], characterName, config.worldId))
+            character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", account['id'], characterName, config.worldId)
 
             if not character:
                 character = yield game.scriptsystem.get("loginCharacterFailed").run(client=self, account=account, name=characterName)
@@ -237,7 +236,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     updateTile(self.player.position, tile)
                         
                 # Update last login
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character['id']))
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()

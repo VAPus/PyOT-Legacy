@@ -731,7 +731,7 @@ class MonsterBase(object):
                         continue
                 cache.append(loot)  
                 
-            cache.sort(reverse=True)    
+            cache.reverse() 
             
             for loot in cache[:]:
                 if type(loot[0]) == tuple:

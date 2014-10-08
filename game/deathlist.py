@@ -35,7 +35,7 @@ class DeathEntry(object):
 def loadDeathList(playerId):
     " Loads the deathentries for this `playerId` from the database. "
     global byVictim, byKiller, loadedDeathIds
-    query = yield sql.runQuery("SELECT death_id, killer_id, victim_id, unjust, `time`, revenged, war_id FROM pvp_deaths WHERE killer_id = %s OR victim_id = %s AND `time` >= %s", (playerId, playerId, int(time.time() - (config.deathListCutoff * 3600 * 24))))
+    query = yield sql.runQuery("SELECT death_id, killer_id, victim_id, unjust, `time`, revenged, war_id FROM pvp_deaths WHERE killer_id = %s OR victim_id = %s AND `time` >= %s", playerId, playerId, int(time.time() - (config.deathListCutoff * 3600 * 24)))
     
     if not query:
         return

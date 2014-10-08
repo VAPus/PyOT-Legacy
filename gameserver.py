@@ -28,14 +28,15 @@ startTime = time.time()
 # Game Server
 gameServer = GameFactory()
 gameServer.bind(config.gamePort, config.gameInterface)
-
+gameServer.start()
 
 # (optionally) buildt in login server.
 if config.letGameServerRunTheLoginServer:
     from service.loginserver import LoginFactory
     loginServer= LoginFactory()
     loginServer.bind(config.loginPort, config.loginInterface)
-
+    loginServer.start()
+    
 # (optional) built in extension server.
 # XXX Port later.
 #if config.enableExtensionProtocol:

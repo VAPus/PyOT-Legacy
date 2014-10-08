@@ -10,6 +10,7 @@ import sys
 import itertools
 import gc
 import importlib
+
 try:
     mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
 except ImportError:
@@ -452,7 +453,6 @@ _spawn_unpack = struct.Struct("<HHBBB").unpack
 def loadSectorMap(code, instanceId, baseX, baseY):
     """ Parse the `code` (sector data) starting at baseX,baseY. Returns the sector. """
     global dummyItems, dummyTiles
-
     thisSectorMap = {}
     pos = 0
     codeLength = len(code)
@@ -474,7 +474,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_getMonster = game.monster.getMonster
 
     # Local reference (for CPython)
-    lord = ord
+    lord = int
     l_unpack = _l_unpack
     long_unpack = _long_unpack
     creature_unpack = _creature_unpack
@@ -491,11 +491,11 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     while pos < codeLength:
         # First byte where we're at.
         level = lord(code[pos])
+
         pos += 1
         
         if level == 60:
             centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
-            
             pos += 7
                             
             # Mark a position
@@ -504,8 +504,10 @@ def loadSectorMap(code, instanceId, baseX, baseY):
             # Here we use attrNr as a count for 
             for numCreature in range(creatureCount):
                 creatureType = lord(code[pos])
+
                 nameLength = lord(code[pos+1])
-                name = code[pos+2:pos+nameLength+2]
+
+                name = code[pos+2:pos+nameLength+2].decode('utf-8')
                 pos += 8 + nameLength
                 spawnX, spawnY, spawnTime = creature_unpack(code[pos-6:pos])
                 
@@ -545,6 +547,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             flags = long_unpack(code[pos:pos+4])[0]
+
                             pos += 5
                         
                         # HouseId?
@@ -552,6 +555,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
+
                             pos += 5
                             
                         elif attrNr:
@@ -559,22 +563,23 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             attr = {}
                             for n in range(attrNr):
                                 name = l_attributes[lord(code[pos])]
+
                                     
                                 opCode = code[pos+1]
                                 pos += 2
-                                
-                                if opCode == "i":
+                                value = None
+                                if opCode == 105: # = i
                                     pos += 4
                                     value = long_unpack(code[pos-4:pos])[0]
-                                elif opCode == "s":
+                                elif opCode == 115: # = s
                                     valueLength = long_unpack(code[pos:pos+4])[0]
                                     pos += valueLength + 4
                                     value = code[pos-valueLength:pos]
-                                elif opCode == "T":
+                                elif opCode == 84: # = T
                                     value = True
-                                elif opCode == "F":
+                                elif opCode == 70: # = F
                                     value = False
-                                elif opCode == "l":
+                                elif opCode == 108: # = l
                                     value = []
                                     length = lord(code[pos])
 
@@ -582,19 +587,20 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     for i in range(length):
                                         opCode = code[pos]
                                         pos += 1
-                                        if opCode == "i":
+                                        if opCode == 105: # = i
                                             pos += 4
                                             item = long_unpack(code[pos-4:pos])[0]
-                                        elif opCode == "s":
+                                        elif opCode == 115: # = s
                                             valueLength = long_unpack(code[pos:pos+4])[0]
                                             pos += valueLength + 4
                                             item = code[pos-valueLength:pos]
-                                        elif opCode == "T":
+                                        elif opCode ==84:  # = T
                                             item = True
-                                        elif opCode == "F":
+                                        elif opCode == 70: # = F
                                             item = False
                                         value.append(item)
-                                        
+                                else:
+                                    raise Exception("attr opCode %d not found!" % opCode)
                                 attr[name] = value
                                 
                             pos += 1
@@ -631,13 +637,13 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     
                         
                     v = code[pos-1]
-                    if v == ';': break
-                    elif v == '|':
+                    if v == 59: break # v == ;
+                    elif v ==124: # v == |
                         skip = True
                         if attrNr:
                             xr += attrNr -1
                         break
-                    elif v == '!':
+                    elif v == 33: # v == !
                         skip = True
                         skip_remaining = True
                         break
@@ -646,7 +652,6 @@ def loadSectorMap(code, instanceId, baseX, baseY):
 
                 if ground:
                     ySum = instanceId << 40 | (xr + baseX) << 24 | (yr + baseY) << 8 | level
-                    
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if globalProtection and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -723,7 +728,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 skip_remaining = False
                 break
                 
-    return thisSectorMap           
+    return thisSectorMap                         
 ### End New Map Format ###
 
 def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):

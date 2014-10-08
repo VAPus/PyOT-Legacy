@@ -101,7 +101,7 @@ class BasePacket(TibiaPacket):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.raw("%s\xFF" % chr(skip))
+            self.uint16(skip << 8 | 0xff)
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
@@ -113,29 +113,31 @@ class BasePacket(TibiaPacket):
 
                 if tile:
                     if skip >= 0:
-                        self.raw("%s\xFF" % chr(skip))
+                        self.uint8(skip)
+                        self.uint8(0xFF)
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
                     skip += 1
                     if skip == 0xFF:
-                        self.raw("\xFF\xFF")
+                        self.uint16(0xffff)
                         skip = -1
         return skip
 
     def tileDescription(self, tile, player):
-        self.raw("\x00\x00")
+        assert False
+        self.uint16(0)
         count = 0
         
         for item in tile.topItems():  
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
-                self.raw(chr(item.count or 1))
+                self.uint8(item.count or 1)
             elif item.type in (11,12):
-                self.raw(chr(item.fluidSource or 0))
+                self.uint8(item.fluidSource or 0)
             if item.animation:
-                self.raw('\xFE')
+                self.uint8(0xFE)
             count += 1
             if count == 10:
                 return
@@ -180,11 +182,11 @@ class BasePacket(TibiaPacket):
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
-                self.raw(chr(item.count or 1))
+                self.uint8(item.count or 1)
             elif item.type in (11,12):
-                self.raw(chr(item.fluidSource or 0))
+                self.uint8(item.fluidSource or 0)
             if item.animation:
-                self.raw('\xFE')
+                self.uint8(0xFE)
             count += 1
             if count == 10:
                 return

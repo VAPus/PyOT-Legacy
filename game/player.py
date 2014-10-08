@@ -47,6 +47,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         data["manaspent"] = int(data["manaspent"])
         data["balance"] = int(data["balance"])
         data["health"] = int(data["health"])
+        data["mana"] = int(data["mana"])
         
         if not data['instanceId']:
             data['instanceId'] = 0
@@ -179,7 +180,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                                      self.getVocation().meleeSkill)
 
         if self.data["storage"]:
-            self.storage = otjson.loads(self.data["storage"])
+            self.storage = otjson.loads(self.data["storage"].decode('utf-8'))
 
         else:
             self.storage = {}

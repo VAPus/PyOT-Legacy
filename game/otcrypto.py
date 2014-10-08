@@ -1,21 +1,21 @@
 import config
 from struct import pack, unpack
-
+import codecs
 D = int(config.RSAKeys["d"])
 N = int(config.RSAKeys["n"])
 
 def bytes( long_int ):
-    bytes = []
+    bytes = bytearray()
     while long_int != 0:
         b = long_int & 255
-        bytes.append( chr(b) )
+        bytes.append( b )
         long_int >>= 8
-    bytes.append( "\x00" )
+    bytes.append( 0 )
     bytes.reverse()
-    return ''.join(bytes)
+    return bytes
 
 def decryptRSA(stream):
-    return bytes(pow(int(stream.encode("hex"), 16), D, N))
+    return bytes(pow(int.from_bytes(stream, 'big'), D, N))
 
 def decryptXTEA(stream, k):
     length = len(stream) >> 2
@@ -36,10 +36,13 @@ def decryptXTEA(stream, k):
 def encryptXTEA(stream, k, length):
     pad = 8 - (length & 7)
     if pad:
-        stream.append("\x33" * pad)
+        stream.append(b"\x33" * pad)
     length += pad
     length >>= 2
-    stream = ''.join(stream)
+    try:
+        stream = b''.join(stream)
+    except:
+        print(stream)
     bstr = "<%dL" % length
     
     packs = list(unpack(bstr, stream))

@@ -342,7 +342,7 @@ def loader(timer):
             game.map.load(x,y, 0, sectorSum, False)
 
         print("%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue"))
-        
+
     # Charge rent?
     def _charge(house):
             call_later(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
