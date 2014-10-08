@@ -1,68 +1,66 @@
-#XXX Port this.
-#from twisted.enterprise import adbapi
-#from twisted.internet.defer import inlineCallbacks
 import config
 import builtins
 from tornado import gen
-if config.sqlModule == "tormysql":
-    import tormysql
-    pool = tormysql.ConnectionPool(max_connections = 80,
-    host = config.sqlHost,
-    user = config.sqlUsername,
-    passwd = config.sqlPassword,
-    db = config.sqlDatabase,
-    no_delay = True,
-    charset = "utf8",
-    cursorclass = tormysql.cursor.DictCursor # XXX: best would be to use SSDictCursor. This require us to kill fetchall tho.
-    )
+import queue
+
+connections = queue.Queue(5)
+
+if config.sqlModule == "mysql":
+    @gen.coroutine
+    def connect():
+        import asynctorndb
+        # Make connection pool.
+        for x in range(5):
+            conn = asynctorndb.Connect(user=config.sqlUsername, passwd=config.sqlPassword, database=config.sqlDatabase, no_delay = True, charset='utf8')
+            connections.put_nowait(conn)
+            yield conn.connect()
 else:
     raise ImportError("Unsupported sqlModule!");
-    
-from tornado.ioloop import IOLoop
 
 builtins.PYOT_RUN_SQLOPERATIONS = True
 
 @gen.coroutine
-def runOperation(*argc, **kwargs):
-    """ Like runQuery, except no fetching, or returning. """
-    conn = yield pool.Connection()
-    cursor = conn.cursor()
-    stat = yield cursor.execute(*argc, **kwargs)
-
-    #data = cursor.fetchall()
+def runOperation(*argc):
+    # Get a connection.
+    conn = None
+    while not conn:
+        conn = connections.get_nowait()
+        if not conn:
+            yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+            
+    yield conn.execute(*argc)
     
-    # XXX: Not sure we should do these things....
-    yield cursor.close()
-    conn.close()
+    # Put connection back
+    connections.put_nowait(conn)
 
-    #return data
-    
 @gen.coroutine
-def runQuery(*argc, **kwargs):
-    conn = yield pool.Connection()
-    cursor = conn.cursor()
+def runQuery(*argc):
+    # Get a connection.
+    conn = None
+    while not conn:
+        conn = connections.get_nowait()
+        if not conn:
+            yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+            
+    res = (yield conn.query(*argc))
+    
+    # Put connection back
+    connections.put_nowait(conn)
+    
+    return res
 
-    stat = yield cursor.execute(*argc, **kwargs)
-    
-    data = cursor.fetchall()
-    
-    # XXX: Not sure we should do these things....
-    yield cursor.close()
-    conn.close()
-
-    return data
-    
-# A custom call we got. Not in the twisted standard.
 @gen.coroutine
-def runOperationLastId(*argc, **kwargs):
-    conn = yield pool.Connection()
-    cursor = conn.cursor()
-    yield cursor.execute(*argc, **kwargs)
-    lastId = cursor.lastrowid
+def runOperationLastId(*argc):
+    # Get a connection.
+    conn = None
+    while not conn:
+        conn = connections.get_nowait()
+        if not conn:
+            yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+            
+    res = yield conn.execute_lastrowid(*argc)
     
-    # XXX: Not sure we should do these things....
-    yield cursor.close()
-    conn.close()
-
-    return lastid
+    # Put connection back
+    connections.put_nowait(conn)
     
+    return res

@@ -127,12 +127,14 @@ def loader(timer):
     # Begin loading items
     sys.modules["game.item"].loadItems()
     
+    # Initialize SQL
+    yield sql.connect()
+    
     # Reset online status
     print("> > Reseting players online status...", end=' ')
     sql.runOperation("UPDATE players SET online = 0")
     print("%40s\n" % _txtColor("\t[DONE]", "blue"))
     
-   
     globalData = sql.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
     groupData = sql.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
     houseData = sql.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
@@ -289,7 +291,7 @@ def loader(timer):
     builtins.game = Globalizer()
 
     print("> > Loading global data...", end=' ')
-    for x in ( yield globalData):
+    for x in ( yield globalData ):
         if x['type'] == 'json':
             game.functions.globalStorage[x['key']] = otjson.loads(x['data'].decode("utf-8")) # JSON must be utf-8
         elif x['type'] == 'pickle':
@@ -314,14 +316,10 @@ def loader(timer):
     print("> > Loading market...", end=' ')
     game.market.load() # Fails to load?
     print("%55s\n" % _txtColor("\t[DONE]", "blue"))
-    print("----------------------------")
-    # Fix house loading, this hangs.
-    #print("> > Loading house data...", end=' ')
-    #y = yield houseData
-    #print(y)
-    #for x in (y):
-    #    game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
-    #print("%55s\n" % _txtColor("\t[DONE]", "blue"))
+    print("> > Loading house data...", end=' ')
+    for x in (yield houseData):
+        game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
+    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Load scripts
     print("> > Loading scripts...", end=' ')

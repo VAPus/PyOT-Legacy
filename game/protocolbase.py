@@ -2,6 +2,7 @@ from tornado.tcpserver import *
 from packet import TibiaPacketReader
 import config
 from struct import unpack
+import socket
 
 if config.checkAdler32:
     from zlib import adler32
@@ -23,16 +24,14 @@ class TibiaProtocol:
         # Register disconnect callback.
         self.transport.set_close_callback(self.connectionLost)
         
+        self.connectionMade()
+        
     def connectionMade(self):
         print("Connection made from {0}".format(self.address))
         
-        if self.tcpNoDelay:
-            try:
-                # Enable TCP_NO_DELAY
-                self.transport.setTcpNoDelay(True)
-            except:
-                # May not always work.
-                pass
+        # Enable TCP_NO_DELAY
+        self.transport.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
+        self.transport.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 
         # Inform the Protocol that we had a connection
         self.onConnect()
