@@ -69,34 +69,6 @@ def loopDecorator(time):
     return _decor
     
 # This one calculate the tiles on the way
-def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True):
-    """Autowalk the creature using the walk patterns. This binds the action slot.
-    
-    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
-    :type creature: :class:`game.creature.Creature`.
-    
-    :param to: Destination position.
-    :type to: list or tuple.
-    
-    :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
-    :type skipFields: int.
-    
-    :param diagonal: Allow diagonal walking?
-    :type diagonal: bool.
-    
-    :param callback: Call this function when the creature reach it's destination.
-    :type callback: function.
-    
-    """
-    if creature.position.z != to.z:
-        creature.message("Change floor")
-        return
-        
-    pattern = calculateWalkPattern(creature, creature.position, to, skipFields, diagonal)
-    
-    if pattern:
-        creature.autoWalk(pattern)    
-
 # Calculate walk patterns
 def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     """Calculate the route from ``fromPos`` to ``to``.
@@ -396,7 +368,7 @@ def relocate(fromPos, toPos):
 
     for creature in tile.creatures():
         if creature.distanceStepsTo(toPos) == 1:
-            autoWalkCreatureTo(creature, toPos)
+            creature.walkTo(toPos)
         else:
             creature.teleport(toPos)
 

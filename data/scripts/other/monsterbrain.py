@@ -15,14 +15,14 @@ def defaultBrainFeaturePriority(monster):
                 if monster.master:
                     monster.target = monster.master
                     monster.targetMode = 2
-                    #autoWalkCreatureTo(monster, monster.master.position, -1, False)
+                    #monster.walk_to(monster.master.position, -1, False)
                     return
                 else:
                     monster.target = None
                     monster.targetMode = 0
                 
                 if config.monsterWalkBack:
-                    autoWalkCreatureTo(monster, monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
+                    monster.walk_to(monster.spawnPosition, 0, True) # Yes, last step might be diagonal to speed it up
                 elif not hasSpectators(monster.position, (15, 15)):
                     call_later(2, monster.teleport, monster.spawnPosition)
                     
@@ -42,7 +42,7 @@ def defaultBrainFeaturePriority(monster):
                         monster.turnAgainst(monster.target.position)
                             
                 # Begin autowalking
-                autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
             elif monster.targetMode == 1:
                 # First stratigic manuver
@@ -145,20 +145,20 @@ def defaultBrainFeature(monster):
                         if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                             monster.turnAgainst(monster.target.position)
                         elif monster.canTarget(monster.target.position):
-                            autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                             
                     # Begin autowalking
-                    autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                    monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                     # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                     def __followCallback(who):
                         if monster.target == who:
                             # Steps below is the old way of doing it, slow and ugly!
                             """monster.stopAction()
-                            autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                            monster.walk_to(monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                             """
                             if monster.canTarget(monster.target.position):
-                                autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                                monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                             else:
                                 monster.target = None
                                 monster.targetMode = 0
@@ -182,23 +182,23 @@ def defaultBrainFeature(monster):
                     if monster.distanceStepsTo(monster.target.position) <= monster.base.targetDistance:
                         monster.turnAgainst(monster.target.position)
                     elif monster.canTarget(monster.target.position):
-                        autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                        monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                     else:
                         monster.target = None
                         monster.targetMode = 0
                         
                 # Begin autowalking
-                autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                     
                 # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
                 def __followCallback(who):
                     if monster.target == who:
                         # Steps below is the old way of doing it, slow and ugly!
                         """monster.stopAction()
-                        autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
+                        monster.walk_to(monster.target.position, -monster.base.targetDistance, lambda x: monster.turnAgainst(monster.target.position))
                         """
                         if monster.canTarget(monster.target.position):
-                            autoWalkCreatureTo(monster, monster.target.position, -monster.base.targetDistance, __walkComplete)
+                            monster.walk_to(monster.target.position, -monster.base.targetDistance, __walkComplete)
                         else:
                             monster.target = None
                             monster.targetMode = 0

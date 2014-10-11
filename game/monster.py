@@ -372,7 +372,7 @@ class Monster(Creature):
             else:
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
-                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                         
         # XXX: Bug?
         if isinstance(self.target, list):
@@ -383,13 +383,13 @@ class Monster(Creature):
                 return False
         # Begin autowalking
         if bestDist > 1:
-            autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+            self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                     
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
             if self.target == who:                       
                 if self.canTarget(self.target.position):
-                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                 else:
                     self.target = None
                     self.targetMode = 0
@@ -808,7 +808,7 @@ class MonsterBrain(object):
             if check and not hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
                 return
-            if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = call_later(1, self.handleThink, monster)

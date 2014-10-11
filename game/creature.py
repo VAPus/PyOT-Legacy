@@ -496,7 +496,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
 
     def __followCallback(self, who):
         if self.target == who:
-            autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.__followCallback)
 
     def follow(self, target):
@@ -507,7 +507,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
 
         self.target = target
         self.targetMode = 2
-        autoWalkCreatureTo(self, self.target.position, -1, True)
+        self.walk_to(self.target.position, -1, True)
         self.target.scripts["onNextStep"].append(self.__followCallback)
 
     def cancelTarget(self):

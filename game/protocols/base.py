@@ -847,9 +847,9 @@ class BaseProtocol(object):
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
-                    autoWalkCreatureTo(player, creature.position, -1, True, lambda: autoWalkCreatureTo(creature, toPosition))
+                    player.walk_to(creature.position, -1, True, lambda: creature.walk_to(toPosition))
             else:
-                autoWalkCreatureTo(creature, toPosition)
+                creature.walk_to(toPosition)
         
     @packet(0x8C)
     @gen.coroutine

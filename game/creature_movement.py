@@ -189,13 +189,44 @@ class CreatureMovement(object):
         if(pattern):
             self.walkPattern = pattern
         if delay:
+            if(self.action):
+                self.action.cancel()
             self.action = call_later(delay, self.handleAutoWalking, 0, callback)
         else:
             self.handleAutoWalking(0, callback)
+          
+    def walk_to(self, to, skipFields=0, diagonal=True):
+        """Autowalk the creature using the walk patterns. This binds the action slot.
+
+        :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+        :type creature: :class:`game.creature.Creature`.
+
+        :param to: Destination position.
+        :type to: list or tuple.
+
+        :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
+        :type skipFields: int.
+
+        :param diagonal: Allow diagonal walking?
+        :type diagonal: bool.
+
+        :param callback: Call this function when the creature reach it's destination.
+        :type callback: function.
+
+        """
+        if self.position.z != to.z:
+            self.message("Change floor")
+            return
+            
+        pattern = calculateWalkPattern(self, self.position, to, skipFields, diagonal)
+
+        if pattern:
+            self.autoWalk(pattern)    
             
     @gen.coroutine
     def handleAutoWalking(self, level=0, callback=None):
         """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
+        self.action = None
         if not self.walkPattern:
             return
             

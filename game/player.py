@@ -942,7 +942,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.modes[0] = attack
 
             if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
-                autoWalkCreatureTo(self, self.target.position, -1, True)
+                self.walk_to(self.target.position, -1, True)
                 self.target.scripts["onNextStep"].append(self.followCallback)
 
             self.modes[1] = chase
@@ -1979,7 +1979,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     # Stuff from protocol:
     def followCallback(self, who):
         if self.target == who and self.targetMode > 0:
-            autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
     @gen.coroutine
@@ -2004,7 +2004,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.target = target
 
             self.targetMode = 2
-            autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
         else:
             self.notPossible()

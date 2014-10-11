@@ -246,6 +246,7 @@ class ThingScripts(object):
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
                 res = yield (gen.maybe_future(func(**kwargs)))
+                
 
         thingId = thing.thingId()
         if thingId in self.scripts:
@@ -263,6 +264,7 @@ class ThingScripts(object):
         return None
 
 class CreatureScripts(ThingScripts):
+    @gen.coroutine
     def run(self, end=None, **kwargs):
         res = None
         thing = kwargs["creature2"]

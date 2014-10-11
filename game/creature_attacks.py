@@ -444,7 +444,7 @@ class PlayerAttacks(CreatureAttacks):
 
         if self.modes[1] == CHASE:
             print("did")
-            autoWalkCreatureTo(self, self.target.position, -1, True)
+            self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
         if not self.targetChecker or not self.targetChecker.active():
