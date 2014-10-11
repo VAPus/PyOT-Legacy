@@ -1287,8 +1287,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         _newItem = yield game.scriptsystem.get("stack").run(thing=item, creature=self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
                         if _newItem == False:
                             ret = yield self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
-                            defer.returnValue(ret)
-                            return
+                            return ret
                         elif isinstance(_newItem, Item):
                             self.itemToContainer(container, _newItem)
                             continue
@@ -1333,8 +1332,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             # Add item
             if update and (self.freeCapacity() - ((item.weight or 0) * (item.count or 1)) < 0):
                 self.tooHeavy()
-                defer.returnValue(False)
-                return
+                return False
 
             if recursive:
                 info = container.placeItemRecursive(item)
@@ -1342,8 +1340,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 info = container.placeItem(item)
 
             if info == None:
-                defer.returnValue(False) # Not possible
-                return
+                return False # Not possible
 
             if container.position.x == 0xFFFF and update:
                 item.setPosition(Position(0xFFFF, DYNAMIC_CONTAINER, info), self)
@@ -1370,9 +1367,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             
         # HACK!!!
         self.updateContainer(container)
-        
-        defer.returnValue(True)
-        return
+
+        return True
 
     def itemToUse(self, item):
         # Means, right hand, left hand, ammo or bag. Stackable only

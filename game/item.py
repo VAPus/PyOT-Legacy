@@ -374,8 +374,7 @@ class Item(object):
             for item in tile.getItems():
                 if (yield game.scriptsystem.get('dropOnto').run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
                    (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
-                    returnValue(False)
-                    return
+                    return False
 
             stackpos = tile.placeItem(self)
             position = position.setStackpos(stackpos)

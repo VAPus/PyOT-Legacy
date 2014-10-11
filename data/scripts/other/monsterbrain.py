@@ -6,8 +6,8 @@ def defaultBrainFeaturePriority(monster):
             if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth and monster.distanceStepsTo(monster.target.position) > 1:
                 yield monster.targetCheck()
                 if not monster.target:
-                    returnValue(True)
-                    return
+                    
+                    return True
                 
             # If target is out of sight, stop following it and begin moving back to base position
             if not monster.canTarget(monster.target.position) or monster.target.data["health"] < 1 or not monster.target.alive or monster.data["health"] <= monster.base.runOnHealth:
@@ -58,9 +58,7 @@ def defaultBrainFeaturePriority(monster):
                                 spell[1](monster, spell[3])
                                 
                             monster.intervals[key] = _time
-
-                            returnValue(True) # Until next brain tick
-                            return
+                            return True # Until next brain tick
                 
                 # Summons
                 if len(monster.activeSummons) < monster.base.maxSummon:
@@ -93,8 +91,7 @@ def defaultBrainFeaturePriority(monster):
                                 
                             monster.intervals[key] = _time
                             if check:
-                                returnValue(True) # Until next brain tick
-                                return  
+                                return  True  # Until next brain tick
                             
                 # Melee attacks
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
@@ -106,8 +103,7 @@ def defaultBrainFeaturePriority(monster):
                         check = monster.target.onHit(monster, -random.randint(0, round(attack[2] * config.monsterMeleeFactor)), PHYSICAL)
                         monster.lastMelee = _time
                         if check:
-                            returnValue(True) # If we do have a target and deals damage, we stop here
-                            return	
+                            return True	 # If we do have a target and deals damage, we stop here
                 # Distance attacks
                 elif monster.base.distanceAttacks:
                     distance = random.choice(monster.base.distanceAttacks)
@@ -116,8 +112,7 @@ def defaultBrainFeaturePriority(monster):
                         monster.lastDistance = _time
                         if check:
                             monster.shoot(monster.position, monster.target.position, distance[2]) #not sure if this will work.
-                            returnValue(True) # If we do have a target, we stop here
-                            return
+                            return True # If we do have a target, we stop here
 
 
 
@@ -125,15 +120,14 @@ def defaultBrainFeaturePriority(monster):
 def defaultBrainFeature(monster):
         ret = yield defaultBrainFeaturePriority(monster)
         if ret is not None:
-            returnValue(False if ret == False else None)
-            return
+            return False if ret == False else None
 
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
             if not monster.target and monster.base.hostile and monster.data["health"] > monster.base.runOnHealth:
                 yield monster.targetCheck()
                 if monster.target:
-                    returnValue(True) # Prevent random walking
+                    return True # Prevent random walking
                 
             return
         else:
@@ -174,7 +168,7 @@ def defaultBrainFeature(monster):
                                 monster.target.scripts["onNextStep"].append(__followCallback)
                             
                     monster.target.scripts["onNextStep"].append(__followCallback)
-                    returnValue(True) # Prevent random walking
+                    return True
                 
                 return
             elif not monster.inRange(monster.master.position, 1, 1):
@@ -214,6 +208,6 @@ def defaultBrainFeature(monster):
                             monster.target.scripts["onNextStep"].append(__followCallback)
                             
                 monster.target.scripts["onNextStep"].append(__followCallback)
-                returnValue(True) # Prevent random walking                
+                return True # Prevent random walking                
 
 game.monster.regBrainFeature("default", defaultBrainFeature)

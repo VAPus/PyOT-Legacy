@@ -270,15 +270,13 @@ class PlayerTalking(CreatureTalking):
 
         members2 = yield game.scriptsystem.get("getChannelMembers").run(channelId, creature=self, channelId=channelId, text=text, type=channelType, members=members)
         if not members and type(members2) != list:
-            defer.returnValue(False)
-            return
+            return False
 
         elif type(members2) == list:
             members = members2
 
         if not members:
-            defer.returnValue(False) # No members
-            return
+            return False # No members
 
         # At to the channel archives:
         
@@ -299,9 +297,7 @@ class PlayerTalking(CreatureTalking):
             stream.string(text)
             stream.send(player.client)
 
-        
-        defer.returnValue(True)
-        return
+        return True
 
     def privateChannelMessage(self, text, receiver, channelType=enum.MSG_CHANNEL):
         player = getPlayer(receiver)

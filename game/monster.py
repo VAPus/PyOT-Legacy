@@ -380,8 +380,7 @@ class Monster(Creature):
                 self.target = self.target.pop()
             except:
                 self.target = None 
-                returnValue(False)
-                return   
+                return False
         # Begin autowalking
         if bestDist > 1:
             autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
@@ -400,8 +399,7 @@ class Monster(Creature):
                     self.target.scripts["onNextStep"].append(__followCallback)
                             
         self.target.scripts["onNextStep"].append(__followCallback)
-        defer.returnValue(True)
-        return
+        return True
         
         
     def verifyMove(self, tile):
@@ -779,6 +777,7 @@ class MonsterBrain(object):
         
     @gen.coroutine
     def handleThink(self, monster, check=True):
+        print("Handle think!")
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()

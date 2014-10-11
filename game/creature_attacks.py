@@ -124,9 +124,9 @@ class CreatureAttacks(object):
                 if by.isPlayer():
                     by.cancelTarget()
 
-            returnValue(True)
+            return True
         else:
-            returnValue(False)
+            return False
 
     def onHeal(self, by, amount):
         if self.data["healthmax"] != self.data["health"]:

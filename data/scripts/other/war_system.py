@@ -122,7 +122,7 @@ if config.enableWarSystem:
     @gen.coroutine
     def warFrags(warId, guild1, guild2):
         entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s)))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s))))", (warId, guild2, warId, guild1))
-        returnValue(entry[0].values())
+        return entry[0].values()
     
     @gen.coroutine
     def decideWinner(entry):
