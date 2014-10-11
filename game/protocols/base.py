@@ -797,10 +797,8 @@ class BaseProtocol(object):
                         player.notPossible()
                         return
 
-                    d = Deferred()
                     player.walkPattern = deque(walkPattern)
-                    autoWalkCreature(player, lambda: d.callback(True))
-                    yield d
+                    yield player.autoWalk(player)
 
                     # Vertify, we might have been stopped on the run
                     if not player.inRange(fromPosition, 1, 1):
@@ -856,6 +854,7 @@ class BaseProtocol(object):
     @packet(0x8C)
     @gen.coroutine
     def handleLookAt(self, player, packet):
+        print("Calling lookAt")
         from game.item import items
         position = packet.position(player.position.instanceId)
         
@@ -900,6 +899,7 @@ class BaseProtocol(object):
                     player.message(thing.description(True))
                 else:
                     player.message(thing.description())
+                    print(thing.brainEvent)
         else:
             player.notPossible()
 
@@ -915,14 +915,12 @@ class BaseProtocol(object):
         if not player.canSee(creature.position):
             return
 
-        def afterScript(res):
-            if player == creature:
-                player.message(creature.description(True))
-            else:
-                player.message(creature.description())
-
-        game.scriptsystem.get('lookAt').run(afterScript, creature2=creature, creature=player, position=creature.position)
-
+        yield game.scriptsystem.get('lookAt').run(afterScript, creature2=creature, creature=player, position=creature.position)
+        if player == creature:
+            player.message(creature.description(True))
+        else:
+            player.message(creature.description())
+            
     @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
         clientId = packet.uint16()
@@ -1001,10 +999,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
                     
-                d = Deferred()
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: d.callback(True))
-                yield d
+                yield player.autoWalk(walkPattern)
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 yield game.scriptsystem.get('use').run(thing=thing, creature=player, position=stackPosition, index=index)
@@ -1069,10 +1064,7 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                d = Deferred()
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: d.callback(True))
-                yield d
+                yield player.autoWalk(walkpattern)
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
                 end = lambda res: game.scriptsystem.get('useWith').run(thing=onThing, creature=player, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
@@ -1426,11 +1418,9 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                d = Deferred()
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: d.callback(True))
-                yield d
-            
+
+                yield autoWalk(walkPattern)
+
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 game.scriptsystem.get('useWith').run(thing=thing, creature=player, position=stackPosition, onThing=creature, onPosition=creature.position)
 

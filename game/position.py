@@ -90,12 +90,7 @@ class Position(object):
 
     def exists(self):
         """ Check if this position exists (holds a tile) """
-        tile = game.map.knownMap.get((self.x, self.y, self.z, self.instanceId), False)
-
-        if tile:
-            return True
-        else:
-            return False
+        return (self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z) in game.map.knownMap
 
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):

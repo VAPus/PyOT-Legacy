@@ -777,7 +777,6 @@ class MonsterBrain(object):
         
     @gen.coroutine
     def handleThink(self, monster, check=True):
-        print("Handle think!")
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()
