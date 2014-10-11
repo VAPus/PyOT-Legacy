@@ -648,8 +648,6 @@ class BaseProtocol(object):
             player.cancelTarget()
 
         player.stopAction()  
-        player.walkPattern = deque()
-        
         steps = packet.uint8()
 
         walkPattern = deque()
@@ -673,9 +671,8 @@ class BaseProtocol(object):
                 walkPattern.append(5) # Southeast           
             else:
                 continue # We don't support them
-        
-        player.walkPattern = walkPattern
-        autoWalkCreature(player)
+
+        player.autoWalk(walkPattern)
 
     @packet(0x65)
     def handleWalkNorth(self, player, packet):
@@ -736,8 +733,7 @@ class BaseProtocol(object):
             player.targetMode = 0
 
         player.lastClientMove = direction        
-        player.walkPattern = deque((direction,))
-        autoWalkCreature(player)
+        player.autoWalk(deque((direction,)))
 
     @packet(0x78)
     @gen.coroutine
@@ -857,7 +853,8 @@ class BaseProtocol(object):
             else:
                 autoWalkCreatureTo(creature, toPosition)
         
-    @packet(0x8C)    
+    @packet(0x8C)
+    @gen.coroutine
     def handleLookAt(self, player, packet):
         from game.item import items
         position = packet.position(player.position.instanceId)
@@ -890,21 +887,19 @@ class BaseProtocol(object):
                         thing = thing2
                         break       
         if thing:
+            yield game.scriptsystem.get('lookAt').run(thing=thing, creature=player, position=stackPosition)
             if isinstance(thing, Item):
-                def afterScript(res):
-                    extra = ""
-                    # TODO propper description handling
-                    if config.debugItems:
-                        extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+                extra = ""
+                # TODO propper description handling
+                if config.debugItems:
+                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
 
-                    player.message(thing.description(player) + extra)
+                player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
-                def afterScript(res):
-                    if player == thing:
-                        player.message(thing.description(True))
-                    else:
-                        player.message(thing.description())
-            game.scriptsystem.get('lookAt').run(afterScript, thing=thing, creature=creature, position=stackPosition)
+                if player == thing:
+                    player.message(thing.description(True))
+                else:
+                    player.message(thing.description())
         else:
             player.notPossible()
 

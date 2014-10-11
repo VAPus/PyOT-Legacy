@@ -178,9 +178,33 @@ class CreatureMovement(object):
 
     def clearMove(self, direction, failback):
         self.cancelWalk(direction % 4)
-        self.walkPattern = []
+        self.walkPattern.clear()
         if failback: call_later(0, failback)
         return False
+        
+    def autoWalk(self, pattern=None):
+        """Autowalk the creature using the walk patterns. This binds the action slot."""
+        
+        delay = max(self.lastAction - time.time(), 0)
+        if(pattern):
+            self.walkPattern = pattern
+        if delay:
+            self.action = call_later(delay, self.handleAutoWalking)
+        else:
+            self.handleAutoWalking()
+            
+    @gen.coroutine
+    def handleAutoWalking(self, level=0):
+        """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
+        if not self.walkPattern:
+            return
+            
+        direction = self.walkPattern.popleft()
+
+        res = yield self.move(direction, level=level, stopIfLock=True)
+        
+        if self.walkPattern:
+            self.autoWalk()
         
     @gen.coroutine
     def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):

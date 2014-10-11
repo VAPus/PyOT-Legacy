@@ -40,7 +40,7 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
 
 # Just a inner funny call
 def looper(function, time):
@@ -48,36 +48,6 @@ def looper(function, time):
     
     function()
     call_later(time, looper, function, time)
-    
-# The action decorator :)
-def action(forced=False, delay=0):
-    """Action decorator.
-    
-    :param forced: Supress any other action.
-    :type forced: bool.
-    :param delay: Delay the start this action.
-    :type delay: float (seconds).
-    
-    """
-    
-    def _decor(f):
-        " Wrapper function "
-        def _new_f(creature, *args, **argw):
-            if creature.action and forced:
-                try:
-                    creature.action.cancel()
-                except:
-                    pass
-                f(creature, *args, **argw)
-            elif not forced and creature.action and creature.action.active():
-                call_later(0.05, new_f, creature, *args, **argw)
-            elif delay and creature.action:
-                call_later(delay, f, creature, *args, **argw)
-            else:
-                f(creature, *args, **argw)
-        _new_f.__doc__ = f.__doc__
-        return _new_f
-    return _decor
 
 def loopDecorator(time):
     """Loop function decorator.
@@ -98,29 +68,6 @@ def loopDecorator(time):
         return _first
     return _decor
     
-# First order of buisness, the autoWalker
-@action(True)
-def autoWalkCreature(creature):
-    """Autowalk the creature using the walk patterns. This binds the action slot.
-    
-    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
-    :type creature: :class:`game.creature.Creature`.
-    :param walkPatterns: List of steps to take.
-    :type walkPatterns: :class:`collections.deque`.
-    :param callback: Call this function when the creature reach it's destination.
-    :type callback: function.
-    
-    """
-    
-    try:
-        creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature)
-    except:
-        # Just have to assume he goes down?
-        """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
-        pos[2] += 1
-        creature.teleport(pos)"""
-        pass
-        
 # This one calculate the tiles on the way
 def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True):
     """Autowalk the creature using the walk patterns. This binds the action slot.
@@ -148,27 +95,7 @@ def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True):
     pattern = calculateWalkPattern(creature, creature.position, to, skipFields, diagonal)
     
     if pattern:
-        creature.walkPattern = deque(pattern)
-        autoWalkCreature(creature)
-
-    
-#@action()
-def handleAutoWalking(creature, level=0):
-    """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
-    if not creature.walkPattern:
-        return
-        
-    direction = creature.walkPattern.popleft()
-
-    """if creature.walkPattern:
-        def mcallback():
-            try:
-                creature.action = call_later(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
-            except IndexError:
-                return"""
-
-    creature.move(direction, level=level, stopIfLock=True)
-    
+        creature.autoWalk(pattern)    
 
 # Calculate walk patterns
 def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
@@ -234,7 +161,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
             pattern.append(last)"""
     if skipFields != 0:
         pattern = pattern[:skipFields]
-    return pattern
+    return deque(pattern)
 
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=()):
@@ -776,8 +703,7 @@ def loadPlayerById(playerId):
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
-        returnValue(True)
-        return
+        return True
 
     # TODO, script events.
     
@@ -801,13 +727,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if toPosition.x == 0xFFFF or isinstance(toPosition, StackPosition):
         destItem = player.findItem(toPosition)
     if not thing:
-        returnValue(False)
-        return
+        return False
     if thing.stackable and not count:
         count = thing.count
     if destItem and destItem == thing.inContainer:
-        returnValue(False)
-        return
+        return False
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
@@ -816,8 +740,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if destItem:
         itemContainer = thing.inContainer
         if destItem == itemContainer:
-            returnValue(False)
-            return
+            return False
 
     # Hacks.
     if fromPosition.x == 0xFFFF and not thing.creature:
@@ -831,17 +754,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
         player.notPossible()
-        returnValue(False)
+        return False
     
     elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
         player.notPickupable()
-        returnValue(False)
-        return
+        return False
                     
     elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
         player.notPossible()
-        returnValue(False)
-        return
+        return False
     
     if destItem and (destItem.inContainer or destItem.container): # Recursive check.
         if destItem.container:
@@ -866,30 +787,23 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 pass
             else:
                 player.notPossible()
-                returnValue(False)
-                return
+                return False
 
     if toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_LEFT and player.inventory[SLOT_RIGHT] and player.inventory[SLOT_RIGHT].slotType == "two-handed":
         player.notPossible()
-        returnValue(False)
-        return
+        return False
 
     elif toPosition.x == 0xFFFF and toPosition.y-1 == SLOT_RIGHT and thing.slotType == "two-handed" and player.inventory[SLOT_LEFT]:
         player.notPossible()
-        returnValue(False)
-        return
+        return False
 
     if toPosition.x == 0xFFFF and player.freeCapacity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
-        returnValue(False)
-        return
+        return False
     
-    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (yield game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False:
-        returnValue(False)
-        return
-    elif toPosition.x == 0xFFFF and toPosition.y < 64 and (yield game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
-        returnValue(False)
-        return
+    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (yield game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False \
+        or toPosition.x == 0xFFFF and toPosition.y < 64 and (yield game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
+        return False
     
     # Special case when both items are the same and stackable.
     stacked = False
@@ -899,9 +813,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
             newCount = min(100, destItem.count + count) - destItem.count
             destItem.modify(newCount)
             thing.modify(-newCount)
-            
-            returnValue(True)
-            return
+
+            return True
 
         elif isinstance(_newItem, Item):
             newItem = _newItem
@@ -920,8 +833,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if destItem and destItem.containerSize:
         if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
            (yield game.scriptsystem.get('dropOnto').run(thing=destItem, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
-            returnValue(False)
-            return
+
+            return False
         
         if not thing.stackable:
             thing.remove()
@@ -940,8 +853,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         for item in thisTile.getItems():
             if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
                (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
-                returnValue(False)
-                return
+                return False
 
         newItem.place(toPosition)
     else:
@@ -955,8 +867,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
                 
                 if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
                    (yield game.scriptsystem.get('dropOnto').run(thing=container, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
-                    returnValue(False)
-                    return
+                    return False
                 
                 #print "itemToContainer2"
                 player.itemToContainer(container, newItem)
@@ -986,8 +897,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
     #player.refreshStatus()
     
     # Done.
-    returnValue(True)
-    return
+    return True
     
 # Helper calls
 def summonCreature(name, position, master=None):
