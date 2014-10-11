@@ -316,26 +316,34 @@ def testBoost(creature, **k):
     # Give a +1000 to health and maxhealth too for 20s
     creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
     
-
+@gen.coroutine
 def walkRandomStep(creature, callback):
-    """wait = creature.lastAction - time.time()
+    wait = creature.lastAction - time.time()
     if wait > 0:
-        call_later(wait*1.2, walkRandomStep, creature, callback) # Twisted have a slight rounding issue <15ms, it shouldn't affect the movement speed.
-        return"""
+        call_later(wait+0.015, walkRandomStep, creature, callback) # slight delay
+        return
     steps = [0,1,2,3]
-    
     random.shuffle(steps)
-    def _callback():
-        creature.move(steps.pop(), callback=callback, failback=_callback)
+    @gen.coroutine
+    def intcallback():
+        res = yield creature.move(steps.pop())
+        if res == False:
+            intcallback()
+        else:
+            callback()
     
-    creature.move(steps.pop(), callback=callback, failback=_callback)
+    res = yield creature.move(steps.pop())
+    if res == False:
+        intcallback()
+    else:
+        callback()
 
 @register("talkaction", "aime")
 @access("DEVELOPER")
 def playerAI(creature, **k):
     creature.setSpeed(1500)
     #creature.raiseMessages = True
-    
+    @gen.coroutine
     def _playerAI():
         if creature.data["health"] < 300:
             creature.modifyHealth(10000)
@@ -352,12 +360,12 @@ def playerAI(creature, **k):
                         creature.target = thing
                         creature.targetMode = 1
                         creature.attackTarget()
-                        return
+                        break
                     elif isinstance(thing, Item) and thing.floorchange:
                         creature.use(thing)
-                        return
+                        break
             
-        walkRandomStep(creature, _playerAI)
+        yield walkRandomStep(creature, _playerAI)
         
     _playerAI()
 
