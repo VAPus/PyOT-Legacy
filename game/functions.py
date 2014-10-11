@@ -23,6 +23,7 @@ import platform
 import os
 import game.deathlist
 import game.ban
+import itertools
 
 try:
     import pickle as pickle
@@ -70,7 +71,7 @@ def loopDecorator(time):
     
 # This one calculate the tiles on the way
 # Calculate walk patterns
-def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
+def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
     """Calculate the route from ``fromPos`` to ``to``.
     
     :param fromPos: Start position.
@@ -86,17 +87,38 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
-    pattern = []
+    pattern = deque()
     currPos = fromPos
+    fpX = fromPos.x
+    fpY = fromPos.y
+    tX = to.x
+    tY = to.y
+    direction = None
     # First diagonal if possible
-    if abs(fromPos.x - to.x) == 1 and abs(fromPos.y - to.y) == 1:
-        if fromPos.y > to.y:
-            base = 6
+    if abs(fpX - tX) == 1 and abs(fpY - tY) == 1:
+        if fpY > fpY:
+            direction = 6
         else:
-            base = 4
+            direction = 4
             
-        if fromPos.x < to.x:
-            base += 1
+        if fpX < fpX:
+            direction += 1
+
+    elif fpY == tY and abs(fpX - tX) == 1:
+        diff = fpX - tX
+        if diff == 1:
+            direction = WEST
+        elif diff == -1:
+            direction = EAST
+    elif fpX == tX and abs(fpY - tY) == 1:
+        diff = fpY - tY
+        if diff == 1:
+            direction = NORTH
+        elif diff == -1:
+            direction = SOUTH
+
+
+    if direction != None:
         newPos = positionInDirection(currPos, base)
         
         isOk = True
@@ -107,10 +129,10 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
                 
         if isOk:
             currPos = newPos
-            pattern.append(base)
-    
+            pattern.append(direction)
+            
     if not pattern:
-        # Try a straight line
+        # Try pathfinder.
         pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId, True if skipFields else False)
         #print pattern
         if not pattern:
@@ -131,9 +153,13 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
             elif last == 3: # last = west, last2 must be 
                 last = 0 + (6 if last2 == 0 else 4)
             pattern.append(last)"""
-    if skipFields != 0:
-        pattern = pattern[:skipFields]
-    return deque(pattern)
+    if skipFields < 0:
+        for x in range(skipFields):
+            pattern.pop()
+    elif skipFields < 0:
+        for x in range(-skipFields):
+            pattern.popleft()
+    return pattern
 
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=()):
@@ -164,7 +190,7 @@ def hasSpectators(pos, radius=(8,6), ignore=()):
         
     return False
     
-def getCreatures(pos, radius=(8,6), ignore=()):
+def getCreatures(pos, radius=(8,6), ignore={}):
     """Gives you the creatures in the area.
     
     :param pos: Position of the center point.
@@ -227,7 +253,8 @@ def positionInDirection(nposition, direction, amount=1):
     
     """
     
-    position = nposition.copy() # Important not to remove the : here, we don't want a reference!
+    position = nposition.copy() # Make a copy of current position.
+    
     if direction == 0:
         position.y = nposition.y - amount
     elif direction == 1:

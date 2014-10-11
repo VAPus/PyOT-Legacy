@@ -12,7 +12,8 @@ class Node(object):
         self.parent = None
         self.state = True
         self.tileTried = False
-                
+        self.hasCreature = False
+        
     def verify(self, z, instanceId, checkCreature):
         if self.tileTried:
             return self.state
@@ -20,17 +21,25 @@ class Node(object):
             self.tileTried = True
             tile = getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                for thing in tile.getItems():
-                    if thing.solid:
-                        self.state = False
-                        break
-                if self.state and checkCreature:
-                    state = checkCreature.verifyMove(tile)
-                    if isinstance(state, int):
-                        self.cost += state
-                        self.state = True
-                    else:
-                        self.state = state    
+                if not tile.things:
+                    self.state = True
+                else:
+                    for thing in tile.things:
+                        if isinstance(thing, Item):
+                            if thing.solid:
+                                self.state = False
+                                break
+                        elif isinstance(thing, Creature):
+                            self.hasCreature = True
+                            
+                            
+                    if self.state and checkCreature:
+                        state = checkCreature.verifyMove(tile)
+                        if isinstance(state, int):
+                            self.cost += state
+                            self.state = True
+                        else:
+                            self.state = state    
             else:
                 self.state = False
                 
@@ -38,6 +47,7 @@ class Node(object):
             
     
 class AStar(object):
+    
     def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal):
         self.nodes = {}
         self.openNodes = set()
@@ -47,12 +57,13 @@ class AStar(object):
         self.found = True
         self.z = zStart
         self.instanceId = instanceId
+        self.hasCreature = False
         
         self.startNode = self.getNode(xStart, yStart)
         currentNode = self.startNode
         
         if not ignoreFinal and not self.final.verify(zStart, instanceId, None):
-            self.result = []
+            self.result = deque()
             self.found = False
             return
         
@@ -89,23 +100,28 @@ class AStar(object):
         n = currentNode
         
         try:
-            _result = [n.step]
+            _result = deque([n.step])
         except:
-            _result = []
+            _result = deque()
 
         prev = n
         n = n.parent
         if not n:
             self.result = _result
             return
-            
+ 
         while n.parent != None:
+
             _result.append(n.step)
 
+            if n.hasCreature:
+                self.hasCreature = True
+                
             prev = n
             n = n.parent
             if not n:
                 break
+
         _result.reverse()
         
         self.result = _result
@@ -256,12 +272,18 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ig
 
     aStar = AStar(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal)
     
-    if aStar.found:
-        if cache:
+    if not aStar.hasCreature and cache:
+        if aStar.found:
             RouteCache[cachePoint] = aStar.result
-        return aStar.result
-    else:
-        if cache:
+            
+        else:
             RouteCache[cachePoint] = None
-        return None
+    if aStar.found:
+        return aStar.result
+        
+    return None
+    
+def clear():
+    # Clear the cache entries.
+    RouteCache.clear()
     

@@ -39,10 +39,7 @@ def encryptXTEA(stream, k, length):
         stream.append(b"\x33" * pad)
     length += pad
     length >>= 2
-    try:
-        stream = b''.join(stream)
-    except:
-        print(stream)
+    stream = b''.join(stream)
     bstr = "<%dL" % length
     
     packs = list(unpack(bstr, stream))

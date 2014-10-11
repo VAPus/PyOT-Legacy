@@ -26,8 +26,8 @@ class TibiaProtocol:
         
         self.connectionMade()
         
-        # Handle reading.
-        self.transport.read_until_close(self.connectionLost, self.handlePacketFrame)
+        # Start Handle reading. First one uint16_t for length of the packet.
+        self.transport.read_bytes(2, self.handlePacketLength)
         
     def connectionMade(self):
         print("Connection made from {0}".format(self.address))
@@ -44,42 +44,15 @@ class TibiaProtocol:
         
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
-
-    def dataToPacket(self, data):
-        if self.expect:
-            if len(data) >= self.expect:
-                frame = "%s%s" % (''.join(self.data), data[:self.expect])
-                self.handlePacketFrame(frame)
-                self.data = []
-                self.expect = 0
-                
-                remains = data[self.expect:]
-                if remains:
-                    self.dataToPacket(remains)
-                
-                
-            else:
-                self.data.append(data)
-                self.expect -= len(data)
-        else:
-            expect = unpack("<H", data[:2])[0]
-            recevied = len(data) - 2
-            if recevied == expect:
-                self.handlePacketFrame(data[2:])
-            elif recevied > expect:
-                self.handlePacketFrame(data[2:2+expect])
-                self.dataToPacket(data[2+expect:])
-            else:
-                self.expect = expect-recevied
-                self.data.append(data)  
-                
-    def _handle_read(self, data):
-        self.dataToPacket(data)
             
-        
-    def handlePacketFrame(self, packetData):
-        # XXX: Kill first two bytes in dataToPacket.
-        packet = TibiaPacketReader(packetData[2:])
+    def handlePacketLength(self, packetData):
+        length = unpack("<H", packetData)[0]
+
+        # Read this packet upto length.
+        self.transport.read_bytes(length, self.handlePacketData)
+            
+    def handlePacketData(self, packetData):
+        packet = TibiaPacketReader(packetData)
         # Adler32:
         if config.checkAdler32:
             adler = packet.uint32()
@@ -97,6 +70,9 @@ class TibiaProtocol:
         else:
             self.gotFirst = True
             self.onFirstPacket(packet)
+            
+        # Start Handle reading for the next packet.
+        self.transport.read_bytes(2, self.handlePacketLength)
         
     #### Protocol spesific, to be overwritten ####
     def onConnect(self):

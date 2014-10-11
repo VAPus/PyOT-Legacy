@@ -1,3 +1,4 @@
+
 from game.map import placeCreature, removeCreature, getTile
 from tornado import gen
 import config

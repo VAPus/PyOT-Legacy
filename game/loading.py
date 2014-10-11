@@ -391,7 +391,7 @@ def loader(timer):
         call_later(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
         print("%45s" % _txtColor("\t[DONE]", "blue"))
     
-        call_later(60, game.functions.looper, pathfinder.RouteCache.clear, 60)
+        call_later(60, game.functions.looper, pathfinder.clear, 60)
 
     # Now we're online :)
     print(_txtColor("Message of the Day: %s" % config.motd, "red"))

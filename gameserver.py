@@ -23,8 +23,12 @@ import tornado.gen
 from service.gameserver import GameFactory
 import time
 import game.loading
-IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
-
+try:
+    import asyncio
+    IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
+except:
+    pass # Asyncio not found. Ow well, not a crysis.
+    
 startTime = time.time()
 # Game Server
 gameServer = GameFactory()
