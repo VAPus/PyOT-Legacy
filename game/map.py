@@ -25,7 +25,7 @@ dummyItems = {}
 
 knownMap = {} # sectorSum -> {posSum}
 
-instances = {0: ''}
+instances = {}
 
 houseTiles = {}
 
@@ -59,7 +59,7 @@ def getTile(pos, knownMap=knownMap):
     posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return knownMap[posSum]
-    except KeyError:
+    except:
         if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
             return knownMap.get(posSum)
 
@@ -68,7 +68,7 @@ def getTileIfExist(pos, _knownMap=knownMap):
     posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return _knownMap[posSum]
-    except KeyError:
+    except:
         return None
 
 def setTile(pos, tile, knownMap = knownMap):
@@ -81,7 +81,7 @@ def setTile(pos, tile, knownMap = knownMap):
     try:
         knownMap[posSum] = tile
         return True
-    except KeyError:
+    except:
         if loadTiles(x, y, pos.instanceId, (pos.instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             knownMap[posSum] = tile
             return True
@@ -93,7 +93,7 @@ def getTileConst(x,y,z,instanceId):
     posSum = instanceId << 40 | x << 24 | y << 8 | z
     try:
         return knownMap[posSum]
-    except KeyError:
+    except:
         if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             return knownMap.get(posSum)
         
@@ -738,7 +738,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
     
     # Attempt to load a sector file
     try:
-        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances[instanceId], sectorX, sectorY), "rb") as f:
+        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances.get(instanceId, ''), sectorX, sectorY), "rb") as f:
             map = loadSectorMap(f.read(), instanceId, sectorX << sectorShiftX, sectorY << sectorShiftY)
             knownMap.update(map)
         sectors.add(sectorSum)

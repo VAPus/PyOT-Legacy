@@ -35,9 +35,10 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(found)
         
         self.player.toggleRaiseMessages()
+    
     @async_test       
     def test_bug59(self):
-        """ Issue #59 part 2. http://vapus.net/forum/project.php?issueid=59 """
+        " Issue #59 part 2. http://vapus.net/forum/project.php?issueid=59 "
         
         # Make some gold
         item = Item(idByName('gold coin'), 100)
@@ -58,7 +59,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(item.count, 50)
     @async_test    
     def test_stack(self):
-        """ Reverse of the above. """
+        " Reverse of the above. "
         
         # Make some gold
         item = Item(idByName('gold coin'), 50)
@@ -181,7 +182,7 @@ class TestMoveItem(FrameworkTestGame):
         self.player.itemToInventory(bag, SLOT_BACKPACK)
 
         # Item to bag.
-        self.player.itemToContainer(bag, item)
+        yield self.player.itemToContainer(bag, item)
 
         # Open bag.
         self.player.openContainer(bag)
@@ -208,7 +209,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertFalse((yield moveItem(self.player, item.position, Position(0xFFFF, SLOT_LEFT-1, 0))))
     @async_test
     def test_courpse_to_corpse_stack(self):
-        """ Bug #78 """
+        " Bug #78 "
         # Set meat to 100%.
         wolf = getMonster("Wolf")
         if not wolf.prepared:
@@ -253,7 +254,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(item.itemId, idByName('meat'))
     @async_test
     def test_courpse_to_corpse_specific_stack(self):
-        """ Bug #78 """
+        " Bug #78 "
 
         # Set meat to 100%.
         wolf = getMonster("Wolf")
@@ -347,7 +348,7 @@ class TestMoveItem(FrameworkTestGame):
 
     @async_test
     def test_117_p9(self):
-        """ http://vapus.net/forum/project.php?issueid=117 """
+        " http://vapus.net/forum/project.php?issueid=117 "
 
         coin = Item(idByName('gold coin'), 70)
 
@@ -355,10 +356,10 @@ class TestMoveItem(FrameworkTestGame):
 
         bag = Item(idByName('bag'))
         self.player.inventory[SLOT_BACKPACK] = bag
-
+        
         # Move coins to bag.
-        self.player.addItem(coin)
-        self.player.addItem(coin2)
+        yield self.player.addItem(coin)
+        yield self.player.addItem(coin2)
         
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[1].count, 100)
@@ -378,7 +379,7 @@ class TestMoveItem(FrameworkTestGame):
 
     @async_test
     def test_bug119(self):
-        """ http://vapus.net/forum/project.php?issueid=119 """
+        " http://vapus.net/forum/project.php?issueid=119 "
 
         bag = Item(idByName('bag'))
         bag.position = Position(0xFFFF,SLOT_BACKPACK+1, 0)
@@ -421,7 +422,7 @@ class TestMoveItem(FrameworkTestGame):
 
     @async_test
     def test_groundstack(self):
-        """ http://vapus.net/forum/distributions-227/%5B8-6-9-71%5D-pyot-v1-0-alpha3-6061-6/#post32628 """
+        " http://vapus.net/forum/distributions-227/%5B8-6-9-71%5D-pyot-v1-0-alpha3-6061-6/#post32628 "
 
 
         gold1 = Item(idByName("gold coin"), 10)
@@ -434,3 +435,4 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertEqual(gold1.count, 20)
         self.assertNotIn(gold2, gold1.position.getTile().things)
+    

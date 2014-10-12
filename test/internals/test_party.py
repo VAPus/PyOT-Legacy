@@ -278,13 +278,13 @@ class TestParty(FrameworkTestGame):
         self.player.ignoreBlock = True
         self.player.target = monster
         self.player.targetMode = 1
-        yield self.player.attackTarget(-5)
+        self.player.attackTarget(-5)
         
         # Attack.
         member.ignoreBlock = True
         member.target = monster
         member.targetMode = 1
-        yield member.attackTarget(-5)
+        member.attackTarget(-5)
         
         # Check experience.
         self.assertGreater(self.player.data["experience"], member1Exp)

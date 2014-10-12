@@ -19,6 +19,7 @@ class CreatureMovement(object):
         
         # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position.copy()
+        target = self.target
 
         newTile = getTile(position)
         oldPosCreatures = set()
@@ -52,7 +53,6 @@ class CreatureMovement(object):
         removeCreature(self, oldPosition)
         
         if self.creatureType == 0 and self.client:
-            print("Good")
             with self.packet() as stream:
                 if oldStackpos: 
                    stream.removeTileItem(oldPosition, oldStackpos)
@@ -96,7 +96,7 @@ class CreatureMovement(object):
                 stream.magicEffect(position, 0x02)
                 stream.send(spectator)
 
-        if self.target and not self.canSee(self.target.position):
+        if target and not self.canSee(target.position):
             self.cancelTarget()
             self.target = None
             self.targetMode = 0
@@ -104,7 +104,7 @@ class CreatureMovement(object):
         # Stairhop delay
         if self.isPlayer():
             self.lastStairHop = time.time()
-            if self.target and not self.canSee(self.target.position):
+            if target and not self.canSee(target.position):
                 self.cancelTarget()
             
     def turn(self, direction):

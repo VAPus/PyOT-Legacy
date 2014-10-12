@@ -42,11 +42,15 @@ class TestPlayer(FrameworkTestGame):
         """ A test for this bug (#75): http://vapus.net/forum/project.php?issueid=75 """
         target = self.setupPlayer()
 
+        self.assertTrue(target)
+
         self.player.target = target
         self.player.targetMode = 2
 
-        yield self.player.teleport(Position(1015, 1000, 7), force=True)
+        pos = Position(1015, 1000, 7)
+        yield self.player.teleport(pos, force=True)
 
+        self.assertEqual(self.player.position, pos)
         self.assertEqual(self.player.target, None)
         self.assertEqual(self.player.targetMode, 0)
 

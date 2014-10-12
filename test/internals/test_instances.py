@@ -1,10 +1,10 @@
-from test.framework import FrameworkTestGame
+from test.framework import FrameworkTestGame, async_test
 
 class TestInstances(FrameworkTestGame):
     def init(self):
         # Turn off protection zones.
         self.overrideConfig("protectedZones", False)
-    
+
     def test_newinstance(self):
         # Make a instance.
         instanceId = game.map.newInstance()
@@ -17,19 +17,24 @@ class TestInstances(FrameworkTestGame):
         
         #self.assertIn(instanceId, game.map.knownMap)
     
+    @async_test
     def test_item_on_instance(self):
         # Make a item
         item  = Item(7449)
         
         # Place on a instance.
         instanceId = game.map.newInstance()
+        self.assertNotEqual(instanceId, 0)
+
         position = Position(1000,1001,7,instanceId)
         
-        item.place(position)
-        
+        status = yield item.place(position)
+        self.assertTrue(status)
+
         self.assertIn(item, position.getTile().things)
-        self.assertNotIn(item, Position(1000, 1001, 7).getTile().things)
-        
+        self.assertNotIn(item, (Position(1000, 1001, 7).getTile().things or []))
+    
+    @async_test
     def test_can_notsee(self):
         # Make a item
         item  = Item(7449)
@@ -38,10 +43,12 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7,instanceId)
         
-        item.place(position)
+        yield item.place(position)
         
         self.assertFalse(self.player.canSee(position))
-        
+    
+    
+    @async_test
     def test_can_notsee_reverse(self):
         # Make a item
         item  = Item(7449)
@@ -50,11 +57,12 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7)
         
-        item.place(position)
+        yield item.place(position)
         
         self.player.setInstance(instanceId)
         self.assertFalse(self.player.canSee(position))
-        
+    
+    @async_test
     def test_cansee(self):
         # Make a item
         item  = Item(7449)
@@ -63,22 +71,24 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7,instanceId)
         
-        item.place(position)
+        yield item.place(position)
         
         self.player.setInstance(instanceId)
         
         self.assertTrue(self.player.canSee(position))
-        
+    
+    @async_test
     def test_move_across_instances(self):
         # Make a item
         item  = Item(7449)
         
         # Place on a instance.
         instanceId = game.map.newInstance()
+        
         position = Position(1000,1001,7)
         iPosition = Position(1000,1001,7,instanceId)
         
-        item.place(position)
+        yield item.place(position)
         
         self.player.setInstance(instanceId)
         
@@ -89,8 +99,9 @@ class TestInstances(FrameworkTestGame):
         self.assertTrue(self.player.canSee(iPosition))
         
         self.assertIn(item, iPosition.getTile().things)
-        self.assertNotIn(item, position.getTile().things)
+        self.assertNotIn(item, (position.getTile().things or []))
 
+    
     def test_monster_spawn_pos(self):
         # Instance.
         instanceId = game.map.newInstance()
@@ -111,3 +122,4 @@ class TestInstances(FrameworkTestGame):
         wolf.despawn()
 
         
+    

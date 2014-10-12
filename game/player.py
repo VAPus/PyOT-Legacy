@@ -259,7 +259,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def getIP(self):
         if self.client:
-            return self.client.transport.getPeer().host
+            return self.client.address
 
     def refreshViewWindow(self, stream=None):
         if stream:
@@ -1235,11 +1235,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
 
     # Item to container
+    @gen.coroutine
     def addItem(self, item, placeOnGround=True):
         ret = False
         if self.inventory[2]:
             try:
-                ret = self.itemToContainer(self.inventory[2], item)
+                ret = yield self.itemToContainer(self.inventory[2], item)
             except:
                 pass
         
@@ -1254,8 +1255,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 item.decay()
                 return True
         if ret == False and placeOnGround:
-            item.place(self.position)
-            return True
+            return (yield item.place(self.position))
+            
         elif ret == False:
             return False
 

@@ -381,6 +381,7 @@ class Item(object):
             self.setPosition(position)
             updateTile(position, tile)
             self.decay()
+        return True
 
     def setPosition(self, position, creature=None):
         " Set the position for this items. This is not a move event! But called internally after the item is moved. "

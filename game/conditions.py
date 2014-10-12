@@ -64,7 +64,7 @@ class Condition(object):
     def stop(self):
         """ Stops the condition."""
         try:
-            self.tickEvent.cancel()
+            ioloop_ins.remove_timeout(self.tickEvent)
         except:
             pass
 
@@ -225,6 +225,7 @@ class Boost(Condition):
 
     def init(self):
         """ Initialize the Boost, this function sets the boosting."""
+        
         pid = 0
         for ptype in self.ptype:
             # Apply
@@ -293,7 +294,8 @@ class Boost(Condition):
                 self.creature.setSpeed(pvalue)
             elif isinstance(ptype, int):
                 #  Skills.
-                self.creature.tempAddSkillLevel(ptype, -(int(pvalue - self.creature.getActiveSkill(ptype))))
+                # pvalue is already negative.
+                self.creature.tempAddSkillLevel(ptype, (int(pvalue - self.creature.getActiveSkill(ptype))))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)

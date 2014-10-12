@@ -17,6 +17,21 @@ class TestFramework(framework.FrameworkTest):
         self.tr.sendPacket('bb', 0, 0)
         self.assertTrue(self.client._data)
 
+    @framework.async_test
+    def test__async(self):
+        t = False
+
+        @gen.coroutine
+        def call(): 
+            self.assertTrue(t)
+            return t
+        t = True
+        res = yield gen.Task(call)
+        t = False
+        
+        self.assertNotEqual(t, res)
+        self.ranOk = True
+
 # Test the virtual player
 class TestVirtualPlayer(framework.FrameworkTestGame):
     def test_existance(self):

@@ -26,12 +26,13 @@ builtins.PYOT_RUN_SQLOPERATIONS = False
 
 import os, time, functools, types, unittest
 io_loop = ioloop.IOLoop().instance()
+builtins.IOLoop = io_loop
 
 def async_test(func):
     def _async_test(self):
         loop = ioloop.IOLoop.instance()
-
-        loop.run_sync(lambda: gen.coroutine(func), 3)
+             
+        loop.run_sync(lambda: gen.coroutine(func)(self), 3)
     return _async_test
  
 async_test.__test__ = False # Nose otherwise mistakes it for a test

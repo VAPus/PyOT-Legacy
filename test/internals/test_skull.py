@@ -46,7 +46,7 @@ class TestAttackSkulls(FrameworkTestGame):
         self.player.attackTarget(-10)
         
         self.assertEqual(self.player.getSkull(target), SKULL_WHITE)
-    @async_test       
+           
     def test_orangeskull(self):
         # Create player to attack.
         target = self.setupPlayer()
@@ -60,7 +60,7 @@ class TestAttackSkulls(FrameworkTestGame):
         self.player.ignoreBlock = True
         
         # Kill him.
-        yield self.player.attackTarget(-1000)
+        self.player.attackTarget(-1000)
         self.assertFalse(target.alive)
         
         self.assertEqual(self.player.getSkull(None), SKULL_WHITE)
