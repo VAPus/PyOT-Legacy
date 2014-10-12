@@ -4,20 +4,15 @@ class TestRaiseMessages(FrameworkTestGame):
     def init(self):
         # Turn off protection zones.
         self.overrideConfig("protectedZones", False)
-            
+        self.player.raiseMessages = True
+        
+    def cleanup(self):
+        self.player.raiseMessages = False
+        
     def test_raise(self):
-        # Simplest test.
-        # Turn on raise messages
-        self.player.toggleRaiseMessages()
-
         self.assertRaises(MsgNotPossible, self.player.notPossible)
 
-        self.player.toggleRaiseMessages()
-
     def test_unmarked(self):
-        # Turn on raise messages
-        self.player.toggleRaiseMessages()
-
         # Make target
         target = self.setupPlayer()
 
@@ -25,8 +20,23 @@ class TestRaiseMessages(FrameworkTestGame):
         self.player.modes[2] = True
         
         self.assertTrue(self.player.raiseMessages)
-        # Should raise MsgUnmarkedPlayer
-        self.assertRaises(MsgUnmarkedPlayer, self.player.setAttackTarget, (target.cid))
         
-        # Cleanup. Good practice.
+        # Run setAttackTarget.
+        future = self.player.setAttackTarget(target.cid)
+        yield future
+        
+        # Should raise MsgUnmarkedPlayer
+        self.assertEqual(MsgUnmarkedPlayer, future)
+
+    def test_toggleraisemessages(self):
+        self.player.raiseMessages = False
         self.player.toggleRaiseMessages()
+        self.assertEqual(self.player.raiseMessages, True)
+
+        self.assertRaises(MsgNotPossible, self.player.notPossible)
+
+        self.player.toggleRaiseMessages()
+        self.assertEqual(self.player.raiseMessages, False)
+        
+        # Cleanup.
+        self.player.raiseMessages = True

@@ -58,7 +58,8 @@ class Condition(object):
             creature.setSpeed(100)
 
         self.init()
-        self.tick()
+        
+        self.tickEvent = call_later(self.every, self.tick)
 
     def stop(self):
         """ Stops the condition."""
@@ -79,6 +80,7 @@ class Condition(object):
 
     def finish(self):
         """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
+        self.tickEvent = None
         try:
             del self.creature.conditions[self.type]
         except:
@@ -173,10 +175,10 @@ class Condition(object):
             self.finish()
 
     def process(self):
-        """ Mustly useful in tests. This repeats the tick process of this Condition until the Condition is finished without waiting. """
+        """ Mostly useful in tests. This repeats the tick process of this Condition until the Condition is finished without waiting. """
         if self.tickEvent:
-            while self.tickEvent.active():
-                self.tickEvent.cancel()
+            while self.tickEvent:
+                ioloop_ins.remove_timeout(self.tickEvent)
                 self.tick()
 
     def copy(self):

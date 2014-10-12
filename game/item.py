@@ -1045,7 +1045,8 @@ def loadItems():
                 pass
 
     # Perform loading.
-    json.load(_open(config.itemFile, 'r'), object_hook=_decoder)
+    with _open(config.itemFile, 'r') as f:
+        json.load(f, object_hook=_decoder)
 
     print("\n> > Items (%s) loaded..." % len(loadItems), end=' ')
     print("%45s\n" % "\t[DONE]")

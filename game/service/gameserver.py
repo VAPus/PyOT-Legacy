@@ -253,7 +253,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         waitingListIps.remove(entry)
                         del lastChecks[entry]
                         
-        elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
+        elif packetType == 0x00 and self.transport.address in config.executeProtocolIps:
             self.gotFirst = False
             t = TibiaPacket()
             if not config.executeProtocolAuthKeys:

@@ -44,9 +44,6 @@ class Packet(base.BasePacket):
     
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
-    
-    def const(self, key):
-        return self.protocolEnums[key]
         
     def item(self, item, count=None):
         if isinstance(item, game.item.Item):

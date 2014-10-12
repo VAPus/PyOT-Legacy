@@ -23,24 +23,33 @@ class BasePacket(TibiaPacket):
     maxMounts = 25
     protocolEnums = {}
     _ok_ = []
-    """protocolEnums["MSG_NONE"] = 0
-    protocolEnums["MSG_SPEAK_SAY"] = 0x01
-    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
-    protocolEnums["MSG_SPEAK_YELL"] = 0x03
-    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
-    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    protocolEnums["_MSG_NONE"] = 0
+    protocolEnums["_MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["_MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["_MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["_MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["_MSG_SPEAK_MONSTER_YELL"] = 0x14
     
-    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
-    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
-    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
-    protocolEnums["MSG_STATUS_WARNING"] = 0x15
-    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
-    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
-    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
-    protocolEnums["MSG_INFO_DESCR"] = 0x19
-    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
-    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B""" # TODO fix this!
+    protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["_MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["_MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["_MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["_MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["_MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["_MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["_MSG_INFO_DESCR"] = 0x19
+    protocolEnums["_MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x1B # TODO fix this!
 
+    # Alias
+    protocolEnums['_MSG_DAMAGE_RECEIVED'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_DAMAGE_DEALT'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_LOOT'] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums['_MSG_EXPERIENCE'] = protocolEnums["_MSG_EVENT_ADVANCE"]
+    
+    def const(self, key):
+        return self.protocolEnums[key]
+        
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
@@ -59,7 +68,7 @@ class BasePacket(TibiaPacket):
 
     # speed
     def speed(self, speed):
-        self.uint16(speed)
+        self.uint16(int(speed))
 
     def money(self, money):
         self.uint32(min(0xFFFFFFFE, money))
@@ -126,7 +135,6 @@ class BasePacket(TibiaPacket):
         return skip
 
     def tileDescription(self, tile, player):
-        assert False
         self.uint16(0)
         count = 0
         

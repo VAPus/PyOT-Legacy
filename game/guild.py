@@ -93,6 +93,14 @@ class GuildRank(object):
         " Return the guild object for this rank. "
         return guilds[self.guild_id]
         
+def make_guild(name, motd='', balance=0, _id=1):
+    # TODO: SQL Query!
+    guild = Guild(_id, name, motd, balance)
+    guilds[_id] = guild
+    guild_names[name] = guild
+    
+    return guild
+    
 @gen.coroutine
 def load():
     " Initial load of the guilds. Shouldn't be used after loading. "

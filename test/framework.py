@@ -1,6 +1,4 @@
-from twisted.internet import reactor,protocol,defer
 import time
-from twisted.application import internet, service
 import sys
 import os
 sys.path.insert(0, '.')
@@ -11,29 +9,47 @@ import config
 import packet
 import random
 import string
-from twisted.trial import unittest
-from twisted.test import proto_helpers
-from service.gameserver import GameFactory
-from twisted.python import log
 import game.functions
 import game.loading
-import __builtin__
-__builtin__.IS_IN_TEST = True
-
+import builtins
+from tornado import gen
+from game.service import gameserver
+from tornado import gen, ioloop
+builtins.IS_IN_TEST = True
 # Some config.
 SERVER = None
 TEST_PROTOCOL = 963
 TEST_PLAYER_ID = random.randint(10, 0x7FFFFFFF)
 TEST_PLAYER_NAME = "__TEST__"
 
-__builtin__.PYOT_RUN_SQLOPERATIONS = False
-# Async sleeper.
-def asyncWait():
-    d = defer.Deferred()
-    call_later(0.01, d.callback, True) # a number >= 10ms will do. It's 5-6 sql queries.
-    return d
+builtins.PYOT_RUN_SQLOPERATIONS = False
 
-class Client(proto_helpers.StringTransport):
+import os, time, functools, types, unittest
+io_loop = ioloop.IOLoop().instance()
+
+def async_test(func):
+    def _async_test(self):
+        loop = ioloop.IOLoop.instance()
+
+        loop.run_sync(lambda: gen.coroutine(func), 3)
+    return _async_test
+ 
+async_test.__test__ = False # Nose otherwise mistakes it for a test
+
+class Client:
+    """ This is both the transport, and the connection for tests. """
+    def __init__(self):
+        self.server = self
+        self.xtea = None
+        self.address = '127.0.0.1'
+        self.connected = True
+        self._packets = []
+        self.socket = DummySocket()
+        self.transport = self
+        self.ready = True
+        self.protocol = game.protocol.getProtocol(TEST_PROTOCOL)
+        self.version = TEST_PROTOCOL
+        
     def sendPacket(self, format, *argc, **kwargs):
         import packet as p
         import otcrypto
@@ -64,54 +80,65 @@ class Client(proto_helpers.StringTransport):
 
         if self.client.xtea:
             length = sum(map(len, packet.data))
-            packet.data[0] = length
+            packet.data[0] = bytes(str(length))
             data = otcrypto.encryptXTEA(packet.data, self.client.xtea, length)
         else:
-            data = ''.join(packet.data)
-        self.client._packets.append(packet)
-        self.client._data = pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data
+            packet.data[0] = b''
+            try:
+                data = b''.join(packet.data)
+            except:
+                print((packet.data))
+                
+        data = pack("<I", adler32(data) & 0xffffffff)+data
         if kwargs:
-            return p.TibiaPacketReader(packet.data[1:])
+            return p.TibiaPacketReader(data)
         else:
-            self.client.dataReceived(self.client._data[1:])
+            self.client.handlePacketData(data)
                 
     def write(self, data):
         # From server. Never use directly on the test side!
         self._data = data
         self._packets.append(packet.TibiaPacketReader(data))
         self._packets[-1].pos += 8
+
         
-        proto_helpers.StringTransport.write(self, data)
+    def set_close_callback(self, callback):
+        pass # Ignore.
         
+    def read_bytes(*argc):
+        pass 
+
+class DummySocket:
+    def setsockopt(*argc):
+        pass        
 class FrameworkTest(unittest.TestCase):
     def setUp(self):
         self._overrideConfig = {}
-        d = self.initializeEngine()
         self.initializeClient()
-        self.addCleanup(self.clearDelayedCalls)
+        io_loop.run_sync(self.initializeEngine)
         self.addCleanup(self.clear)
         self.addCleanup(self.restoreConfig)
         
         self.init()
-        
-        return d
+
+    def get_new_ioloop(self):
+        return ioloop.IOLoop.instance()
     
     def init(self):
         pass
-    
+    def cleanup(self):
+        pass
     def initializeClient(self):
-        self.tr = Client()
-        self.tr._packets = []
-        self.client = self.server.buildProtocol(self.tr)
-        self.client._packets = []
-        self.tr.client = self.client
-        self.client.makeConnection(self.tr)
-    
+        self.client = Client()
+        
+        self.tr = self.client
     def clear(self):
         # Clear all players.
-        for player in game.player.allPlayers.values():
+        for player in list(game.player.allPlayers.values()):
             self.destroyPlayer(player)
             
+        self.cleanup()
+        
     def overrideConfig(self, name, value):
         self._overrideConfig[name] = getattr(config, name)
         
@@ -124,31 +151,20 @@ class FrameworkTest(unittest.TestCase):
             for key in self._overrideConfig:
                 setattr(config, key, self._overrideConfig[key])
             
-    def clearDelayedCalls(self):
-        for call in reactor.getDelayedCalls():
-            try:
-                call.cancel()
-            except:
-                pass
-            
+    @gen.coroutine
     def initializeEngine(self):
         global SERVER
         if not SERVER:
             startTime = time.time()
-
-            # Game Server
-            SERVER = GameFactory()
-            gameServer = internet.TCPServer(config.gamePort, SERVER, interface=config.gameInterface)
+            
             # Load the core stuff!
             # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
-            self.server = SERVER
-            d = game.loading.loader(startTime)
-            
-            # Kinda necessary if any scripts use load events from say SQL. 
-            d.addCallback(lambda x: asyncWait())
-            return d
-        self.server = SERVER
-        
+            SERVER = gameserver.GameProtocol
+            self.server = SERVER(self.client, '127.0.0.1', None)
+            yield game.loading.loader(startTime)
+
+        self.server = SERVER(self.client, '127.0.0.1', None)
+        self.client.client = self.server
     def destroyPlayer(self, player):
         # Despawn.
         player.despawn()
@@ -157,25 +173,47 @@ class FrameworkTest(unittest.TestCase):
         del game.creature.allCreatures[player.cid]
         
         try:
-            self._trackPlayers.remove(player)
+            self.trackPlayers.remove(player)
         except:
             pass
         
-class FrameworkTestGame(FrameworkTest):
+class FrameworkTestGame(unittest.TestCase):
+    destroyPlayer = FrameworkTest.destroyPlayer
+    initializeEngine = FrameworkTest.initializeEngine
+    restoreConfig = FrameworkTest.restoreConfig
+    overrideConfig = FrameworkTest.overrideConfig
+    clear = FrameworkTest.clear
+    initializeClient = FrameworkTest.initializeClient
+    
+    
+    def get_new_ioloop(self):
+        return ioloop.IOLoop.instance()
+        
+    def init(self):
+        pass
+    def cleanup(self):
+        pass
     def setUp(self):
+        self.initializeClient()
         self.player = None
-        self._trackPlayers = []
-        d = defer.maybeDeferred(FrameworkTest.setUp, self) 
-        d.addCallback(lambda x: self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True))
-        d.addCallback(lambda x: self.fixConnection)        
+        io_loop.run_sync(self.initializeEngine)
+        self.trackPlayers = []
+        self.fixConnection()
+        self.setupPlayer(TEST_PLAYER_ID, TEST_PLAYER_NAME, True)
+        
 
-        return d
+        
+        self._overrideConfig = {}
+        self.addCleanup(self.clear)
+        self.addCleanup(self.restoreConfig)
+        
+        self.init()
 
     def clear(self, recreate = False):
         if self.player: # Tests might clear us already. Etc to test clearing!
             self.destroyPlayer(self.player)
 
-        for player in self._trackPlayers[:]:
+        for player in self.trackPlayers[:]:
             self.destroyPlayer(player)
         
         # Clear deathlists.
@@ -218,8 +256,10 @@ class FrameworkTestGame(FrameworkTest):
                     pass
 
         # Clear open bags.
-        self.player.openContainers.clear()
-
+        try:
+            self.player.openContainers.clear()
+        except:
+            pass
     def virtualPlayer(self, id, name):
         # Setup a virtual player.
         # No network abilities, or spawning or such.
@@ -228,6 +268,10 @@ class FrameworkTestGame(FrameworkTest):
         data = {"id": id, "name": name, "world_id": 0, "group_id": 6, "account_id": 0, "vocation": 6, "health": 100, "mana": 100, "soul": 100, "manaspent": 10000, "experience": 5000, "posx": 1000, "posy": 1000, "posz": 7, "instanceId": None, "sex": 0, "looktype": 100, "lookhead": 100, "lookbody": 100, "looklegs": 100, "lookfeet": 100, "lookaddons": 0, "lookmount": 100, "town_id": 1, "skull": 0, "stamina": 100000, "storage": "", "inventory": "", "depot": "", "conditions": "", 'fist': 10, 'sword': 10, 'club': 10, 'axe': 10, 'distance': 10, 'shield': 10, 'fishing': 10, 'fist_tries': 0, 'sword_tries': 0, 'club_tries': 0, 'axe_tries': 0, 'distance_tries': 0, 'shield_tries': 0, 'fishing_tries': 0, "language":"en_EN", "guild_id":0, "guild_rank":0, "balance":0}
 
         # Add player as if he was online.
+        try:
+            self.client
+        except:
+            self.initializeClient()
         player = game.player.Player(self.client, data)
         game.player.allPlayers[name] = player
 
@@ -252,10 +296,12 @@ class FrameworkTestGame(FrameworkTest):
         # Game server does this.
         if clientPlayer:
             self.player = player
-            self.client.packet = player.packet
-
+            self.client.packet = self.player.packet
+            self.player._packet = self.client.protocol.Packet()
+            self.client.player = player
+            
         # Track it.
-        self._trackPlayers.append(player)
+        self.trackPlayers.append(player)
         
         # Note, we do not send firstLoginPacket, or even packet for our spawning. Thats for a test to do.
         
@@ -263,8 +309,8 @@ class FrameworkTestGame(FrameworkTest):
         
     def fixConnection(self):
         # Imagine we already sent the login packet. And all is well.
-        self.client.gotFirst = True
-        self.client.player = self.player
-        self.client.ready = True
-        self.client.version = TEST_PROTOCOL
-        self.client.protocol = game.protocol.getProtocol(TEST_PROTOCOL)
+        self.server.gotFirst = True
+        self.server.player = self.player
+        self.server.ready = True
+        self.server.version = TEST_PROTOCOL
+        self.server.protocol = game.protocol.getProtocol(TEST_PROTOCOL)

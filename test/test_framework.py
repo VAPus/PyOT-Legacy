@@ -15,7 +15,6 @@ class TestFramework(framework.FrameworkTest):
         
     def test_canReadWrite(self):
         self.tr.sendPacket('bb', 0, 0)
-        self.assertTrue(self.tr.value())
         self.assertTrue(self.client._data)
 
 # Test the virtual player
@@ -36,7 +35,7 @@ class TestVirtualPlayer(framework.FrameworkTestGame):
     def test_multiplayers(self):
         player = self.setupPlayer(randint(1, 0x7FFFFFFF), "__TEST2__")
         
-        players = game.creature.getPlayers(player.position)
+        players = getPlayers(player.position)
 
         self.assertTrue(players)
         self.assertEqual(len(players), 2)

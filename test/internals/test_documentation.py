@@ -1,5 +1,6 @@
 from test.framework import FrameworkTestGame
-
+import game.functions as gfunctions
+import collections
 class _TestDocumentation(FrameworkTestGame):
     def _test_module(self, module):
         ignore = ["StringIO"]
@@ -10,7 +11,7 @@ class _TestDocumentation(FrameworkTestGame):
 
             # Is it a function. We don't care for variable documentation, really.
             func = getattr(module, name)
-            if callable(func):
+            if isinstance(func, collections.Callable):
                 if not func.__doc__:
                     self.fail("%s.%s - Missing documentation" % (module.__name__, name))
                 else:
@@ -18,7 +19,7 @@ class _TestDocumentation(FrameworkTestGame):
 
 class TestModules(_TestDocumentation):
     def test_functions(self):
-        self._test_module(game.functions)
+        self._test_module(gfunctions)
 
 class TestClasses(_TestDocumentation):
     def test_player(self):

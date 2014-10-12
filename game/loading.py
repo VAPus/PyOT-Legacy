@@ -84,9 +84,7 @@ def windowsLoading():
 def loader(timer):
     # XXX: Remember, game.XXX -> sys.modules["game.XXX"] because game is set later on. And somehow this causes weird behavior :/
     
-    IS_IN_TEST = "trial_temp" in os.getcwd()
     if IS_IN_TEST:
-        os.chdir("..")
         # Also ugly hack.
         sys.stdout = StringIO()
         
@@ -159,7 +157,10 @@ def loader(timer):
 
     # Tornado features.
     builtins.ioloop_ins = ioloop.IOLoop.instance()
+    #if not IS_IN_TEST:
     builtins.call_later = builtins.ioloop_ins.call_later
+    #else:
+    #    builtins.call_later = lambda *a, **b: None
     builtins.call_at = builtins.ioloop_ins.call_at
     builtins.remove_timeout = builtins.ioloop_ins.remove_timeout
     builtins.add_callback = builtins.ioloop_ins.add_callback
@@ -354,7 +355,8 @@ def loader(timer):
             game.scriptsystem.get("chargeRent").run(house=house)
             _charge(house)
         else:
-            call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)    
+            if not IS_IN_TEST:
+                call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)    
     
     # Loading languages
     if config.enableTranslations:

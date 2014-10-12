@@ -1,4 +1,4 @@
-from test.framework import FrameworkTestGame
+from test.framework import FrameworkTestGame, async_test
 
 class TestParty(FrameworkTestGame):
     def test_create_party(self):
@@ -248,6 +248,7 @@ class TestParty(FrameworkTestGame):
         del game.monster.monsters["__TEST__"]
         self.restoreConfig("protectedZones")
         
+    @async_test      
     def test_share_experience(self):
         # Turn of protection zone
         self.overrideConfig("protectedZones", False)
@@ -277,13 +278,13 @@ class TestParty(FrameworkTestGame):
         self.player.ignoreBlock = True
         self.player.target = monster
         self.player.targetMode = 1
-        self.player.attackTarget(-5)
+        yield self.player.attackTarget(-5)
         
         # Attack.
         member.ignoreBlock = True
         member.target = monster
         member.targetMode = 1
-        member.attackTarget(-5)
+        yield member.attackTarget(-5)
         
         # Check experience.
         self.assertGreater(self.player.data["experience"], member1Exp)
