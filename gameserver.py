@@ -43,7 +43,7 @@ if config.letGameServerRunTheLoginServer:
     loginServer.start()
     
 # (optional) built in extension server.
-# XXX Port later.
+# XXX Port later or kill?
 #if config.enableExtensionProtocol:
 #    from service.extserver import ExtFactory
 #    extFactory = ExtFactory()
