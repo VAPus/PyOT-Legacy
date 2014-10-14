@@ -11,22 +11,24 @@ class Default(Resource):
 default = Default()
 
 class Page(Resource):
+    @gen.coroutine
     def getChild(self, path, request):
-        req = game.scriptsystem.get("webPage").runSync(path, None, request=request)
+        req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:
-            return req
+            returnValue(req)
 
 class Web(Resource):
     def __init__(self):
         Resource.__init__(self)
         self.putChild("static", File("data/web_static"))
 
+    @gen.coroutine
     def getChild(self, path, request):
-        req = game.scriptsystem.get("webPage").runSync(path, None, request=request)
+        req = yield game.scriptsystem.get("webPage").run(path, request=request)
         if req:
-            return req
+            returnValue(req)
         else:
-            return default
+            returnValue(default)
 
 class WebFactory(Site):
     pass

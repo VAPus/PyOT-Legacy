@@ -1,5 +1,6 @@
 # This is a shadow of the main branch, 9.1
-import base, sys
+from . import base
+import sys
 import math
 import game.const
 import game.item
@@ -166,7 +167,7 @@ class Packet(base.BasePacket):
         
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
+        for x in range(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             currHits = player.data["skill_tries"][x]
             goalHits = player.skillGoals[x]

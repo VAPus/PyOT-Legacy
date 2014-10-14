@@ -91,7 +91,7 @@ class Shop(ClassAction):
 
         # verify.
         if name not in game.item.items:
-            print "[WARNING] %s is not a valid shop item." % name
+            print("[WARNING] %s is not a valid shop item." % name)
             return
             
         self.on.offers.append( (name, sellPrice, buyPrice, subtype) )

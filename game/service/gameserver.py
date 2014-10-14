@@ -1,18 +1,16 @@
 import protocolbase
 import game.protocol
 from collections import deque
-from twisted.internet.defer import inlineCallbacks
-from twisted.python import log
 import config
 import otcrypto
 import game.scriptsystem
 from packet import TibiaPacket
-import sql
 import game.player
 from game.map import getTile,removeCreature
 from game.functions import updateTile
 import struct
 import time
+from tornado import gen
 
 waitingListIps = deque()
 lastChecks = {}
@@ -46,7 +44,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.send(self)
         self.loseConnection()
         
-    @inlineCallbacks
+    @gen.engine
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
         IN_TEST = False
@@ -66,10 +64,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
             self.protocol = game.protocol.getProtocol(version)
             self.version = version
-            print "Client protocol version %d" % version
+            print(("Client protocol version %d" % version))
 
             if not self.protocol:
-                log.msg("Trying to load a invalid protocol")
+                print("Trying to load a invalid protocol")
                 self.transport.loseConnection()
                 return
 
@@ -79,12 +77,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     packet.pos = 0 # Reset position
 
                 else:
-                    log.msg("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
+                    print("RSA, length != 128 (it's %d)" % (packet.length - packet.pos))
                     self.transport.loseConnection()
                     return
 
                 if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-                    log.msg("RSA, first char != 0")
+                    print("RSA, first char != 0")
                     self.transport.loseConnection()
                     return
 
@@ -92,13 +90,13 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
                 sum = 0
                 self.xtea = {}
-                for x in xrange(32):
+                for x in range(32):
                     self.xtea[x] = sum + k[sum & 3] & 0xffffffff
                     sum = (sum + 0x9E3779B9) & 0xffffffff
                     self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
                     
 
-            ip = self.transport.getPeer().host
+            ip = self.address
             
             # Ban check.
             if game.ban.ipIsBanned(ip):
@@ -152,10 +150,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
+            account = yield sql.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", username, password)
 
             if not account:
-                account = game.scriptsystem.get("loginAccountFailed").runSync(None, client=self, username=username, password=password)
+                account = yield game.scriptsystem.get("loginAccountFailed").run(client=self, username=username, password=password)
                 if not account or account == True:
                     self.exitWithError("Invalid username or password")
                     return
@@ -172,10 +170,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 language = account['language']
                 
-            character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", (account['id'], characterName, config.worldId))
+            character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", account['id'], characterName, config.worldId)
 
             if not character:
-                character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
+                character = yield game.scriptsystem.get("loginCharacterFailed").run(client=self, account=account, name=characterName)
                 if not character or character == True:
                     self.exitWithError("Character can't be loaded")
                     return
@@ -238,14 +236,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     updateTile(self.player.position, tile)
                         
                 # Update last login
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", (int(time.time()), character['id']))
+                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()
             self.ready = True # We can now accept other packages
 
             # Call the login script
-            game.scriptsystem.get("login").runSync(self.player)
+            yield game.scriptsystem.get("login").run(creature=self.player)
             
             # If we got a waiting list, now is a good time to verify the list
             if lastChecks:
@@ -255,7 +253,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                         waitingListIps.remove(entry)
                         del lastChecks[entry]
                         
-        elif packetType == 0x00 and self.transport.getPeer().host in config.executeProtocolIps:
+        elif packetType == 0x00 and self.transport.address in config.executeProtocolIps:
             self.gotFirst = False
             t = TibiaPacket()
             if not config.executeProtocolAuthKeys:
@@ -263,14 +261,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
             try:
                 while True:
                     op = packet.string()
-                    print op
+                    print(op)
                     if op == "CALL" and self.ready == 2:
-                        print "do this"
+                        print("do this")
                         result = yield game.functions.executeCode(packet.string())
                         
                         t.string(result)
                     elif op == "AUTH":
-                        print "auth"
+                        print("auth")
                         result = packet.string() in config.executeProtocolAuthKeys
                         if result:
                             t.string("True")
@@ -288,25 +286,26 @@ class GameProtocol(protocolbase.TibiaProtocol):
         return self.protocol.handle(self.player, packet)
 
 
+    @gen.coroutine
     def onConnectionLost(self):
         if self.player:
-            print "Lost connection on, ", self.player.position
+            print(("Lost connection on, ", self.player.position))
             self.player.client = None
             
             if self.player.alive and not self.player.prepareLogout():
                 logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
-                callLater(logoutBlock.length, self.onConnectionLost)
+                call_later(logoutBlock.length, self.onConnectionLost)
                 return
             
             self.player.knownCreatures = set()
             self.player.knownBy = set()
-            for x in game.player.allPlayers.values():
+            for x in list(game.player.allPlayers.values()):
                 if x.client and self.player.data["id"] in x.getVips():
                     stream = x.packet()
                     stream.vipLogout(self.player.data["id"])
                     stream.send(x.client)
             
-            game.scriptsystem.get("logout").runSync(self.player)
+            yield game.scriptsystem.get("logout").run(creature=self.player)
             self.player.despawn()
             
     """def packet(self, type=None):

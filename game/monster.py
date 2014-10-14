@@ -1,16 +1,13 @@
-from creature import Creature, uniqueId, allCreatures
-import map, scriptsystem
-from packet import TibiaPacket
+from .creature import Creature, uniqueId, allCreatures
+from . import map, scriptsystem
+from .packet import TibiaPacket
 import copy, random, time
-from twisted.internet import reactor, defer
-from twisted.internet.task import LoopingCall
-from twisted.python import log
 import game.const
-import errors
-import item
+from . import errors
+from . import item
 import config
 import game.errors
-
+from tornado import gen
 monsters = {}
 brainFeatures = {}
 
@@ -114,6 +111,7 @@ class Monster(Creature):
         
         self.brainEvent = None
         
+    @gen.coroutine
     def onDeath(self):
         # Remove master summons
         isSummon = self.isSummon()
@@ -143,7 +141,7 @@ class Monster(Creature):
             def _move_corpse():
                 corpse.movable = True
 
-            callLater(config.moveCorpseAfter, _move_corpse)
+            call_later(config.moveCorpseAfter, _move_corpse)
 
             # Set owner.
             if self.lastDamagers:
@@ -154,14 +152,14 @@ class Monster(Creature):
                         del corpse.owners
                 
                     # Callback to remove owner after config.privateLootFor seconds
-                    callLater(config.privateLootFor, _clear_private_loot)
+                    call_later(config.privateLootFor, _clear_private_loot)
             if not isSummon and not self.lastDamagers or self.getLastDamager() != self.master:
                 try:
                     maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                 except:
                     # Monsters with loot MUST have a container with some size in it.
                     if self.base.lootTable: 
-                        print "[WARNING] Monster %s got a bad corpse" % self.name()
+                        print("[WARNING] Monster %s got a bad corpse" % self.name())
                     maxSize = 0
                 drops = []
                 if maxSize:
@@ -180,7 +178,7 @@ class Monster(Creature):
                         elif len(loot) == 4:
                             drops.append((loot[0], None, loot[4]))
                 
-                ret = scriptsystem.get("loot").runSync(self, self.getLastDamager() if self.lastDamagers else None, loot=drops, maxSize=maxSize)
+                ret = yield scriptsystem.get("loot").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
@@ -223,15 +221,15 @@ class Monster(Creature):
                                 
 
                     if ret == None:
-                        log.msg("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
+                        print("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
                         break
 
         else:
             corpse = None
             
-        scriptsystem.get("death").runSync(self, self.getLastDamager() if self.lastDamagers else None, corpse=corpse)
+        yield scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
         if self.alive or self.data["health"] > 0:
-            print "[May bug] Death events brought us back to life?"
+            print("[May bug] Death events brought us back to life?")
             return
         
         # Remove bpth small and full splashes on the tile.
@@ -285,11 +283,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    reactor.callLater(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
+                    call_later(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
                 else:
                     return
             else:
-                reactor.callLater(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
+                call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
@@ -300,6 +298,7 @@ class Monster(Creature):
     def isAttackable(self, by):
         return self.base.attackable
 
+    @gen.coroutine
     def targetCheck(self, targets=None):
         _time = time.time()
         if self.lastRetarget > _time - 7:
@@ -344,7 +343,7 @@ class Monster(Creature):
         if _target == target:
             return # We already have this target
         elif target:
-            ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+            ret = yield game.scriptsystem.get('target').run(creature2=self, creature=target, attack=True)
             
             if ret == False:
                 return
@@ -373,17 +372,24 @@ class Monster(Creature):
             else:
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
-                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
-                            
+                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
+                        
+        # XXX: Bug?
+        if isinstance(self.target, list):
+            try:
+                self.target = self.target.pop()
+            except:
+                self.target = None 
+                return False
         # Begin autowalking
         if bestDist > 1:
-            autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+            self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                     
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
             if self.target == who:                       
                 if self.canTarget(self.target.position):
-                    autoWalkCreatureTo(self, self.target.position, -self.base.targetDistance, __walkComplete)
+                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                 else:
                     self.target = None
                     self.targetMode = 0
@@ -477,12 +483,12 @@ class MonsterBase(object):
         
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
         if spawnDelay:
-            return reactor.callLater(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
+            return call_later(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
         else:
             if place:
                 tile = position.getTile()
                 if not tile:
-                    log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
+                    print("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
                     return
 
             if not monster:
@@ -503,7 +509,7 @@ class MonsterBase(object):
                 # Vertify that there are no spectators if check = True
                 if check and hasSpectators(position): 
                     # If so, try again in 10s
-                    reactor.callLater(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
+                    call_later(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
                     return
                     
                 elif tile.hasCreatures() and config.tryToSpawnCreaturesNextToEachother:
@@ -537,16 +543,16 @@ class MonsterBase(object):
                         if ok:
                             break
                     if not ok:
-                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
                 elif not tile.hasCreatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
                     try:
                         stackpos = tile.placeCreature(monster)
                     except:
-                        log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                        print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
                 else:
-                    log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
+                    print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                     return
                 
             monster.spawnTime = spawnTime
@@ -719,11 +725,11 @@ class MonsterBase(object):
                     try:
                         loot[0] = item.items[loot[0]]["name"]
                     except:
-                        print "ItemId %d not found in loot. Ignoring!" % loot[0]
+                        print("ItemId %d not found in loot. Ignoring!" % loot[0])
                         continue
                 cache.append(loot)  
                 
-            cache.sort(reverse=True)    
+            cache.reverse() 
             
             for loot in cache[:]:
                 if type(loot[0]) == tuple:
@@ -735,7 +741,7 @@ class MonsterBase(object):
                         if sid:
                             loot[0].append(sid)
                         else:
-                            print "Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"])
+                            print("Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"]))
                         
                 else:
                     loot = list(loot)
@@ -743,7 +749,7 @@ class MonsterBase(object):
                     if sid:
                         loot[0] = sid
                     else:
-                        print "Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"])
+                        print("Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"]))
                         
                 self.lootTable.append(loot)  
             
@@ -765,15 +771,16 @@ class MonsterBase(object):
 class MonsterBrain(object):
     def beginThink(self, monster, check=False):
         if not monster.brainEvent:
-            monster.brainEvent = reactor.callLater(0, self.handleThink, monster, check)
+            monster.brainEvent = call_later(0, self.handleThink, monster, check)
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
+    @gen.coroutine
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()
-            return False # Stop looper
+            return # Stop looper
         
         if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
             # Find a random text
@@ -787,24 +794,24 @@ class MonsterBrain(object):
                     
         feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
-        ret = brainFeatures[feature](monster)
+        ret = yield brainFeatures[feature](monster)
         
         if ret == False:
             monster.turnOffBrain()
-            return False
+            return
         elif ret == True:
-            monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
-            return True
+            monster.brainEvent = call_later(1, self.handleThink, monster)
+            return
         
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
             if check and not hasSpectators(monster.position, (9, 7)):
                 monster.turnOffBrain()
-                return False
-            if not monster.walkPattern and monster.canWalk and (not monster.action or not monster.action.active()) and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+                return
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
                 self.walkRandomStep(monster) # Walk a random step
 
-        monster.brainEvent = reactor.callLater(1, self.handleThink, monster)
+        monster.brainEvent = call_later(1, self.handleThink, monster)
         
     def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:
@@ -873,4 +880,4 @@ def regBrainFeature(name, function):
     if not name in brainFeatures:
         brainFeatures[name] = function
     else:
-        print "Warning, brain feature %s exists!" % name
+        print("Warning, brain feature %s exists!" % name)

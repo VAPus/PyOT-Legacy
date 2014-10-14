@@ -1,4 +1,5 @@
 import config
+from tornado import gen
 
 class CreatureAttacks(object):
     def hitEffects(self):
@@ -17,6 +18,7 @@ class CreatureAttacks(object):
         # Overrided to creatures.
         return dmg
 
+    @gen.coroutine
     def onHit(self, by, dmg, type, effect=None):
 
         if not type == DISTANCE:
@@ -68,7 +70,7 @@ class CreatureAttacks(object):
         if self.isPlayer() and (by and by.isPlayer()) and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
-        process = game.scriptsystem.get("hit").runSync(self, by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = yield game.scriptsystem.get("hit").run(creature2=self, creature=by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 
@@ -279,7 +281,7 @@ class PlayerAttacks(CreatureAttacks):
                     
                     if chance < random.randint(1,100):
                         self.message("You missed!")
-                        self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+                        self.targetChecker = call_later(config.meleeAttackSpeed, self.attackTarget)
                         return
                     
                     minDmg = config.minDistanceDamage(self.data["level"])
@@ -372,7 +374,7 @@ class PlayerAttacks(CreatureAttacks):
                         self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
-            self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
+            self.targetChecker = call_later(config.meleeAttackSpeed, self.attackTarget)
 
     def criticalHit(self):
         self.message(_l(self, "You strike a critical hit!"), MSG_STATUS_CONSOLE_RED)
@@ -383,7 +385,7 @@ class PlayerAttacks(CreatureAttacks):
         else:
             stream = streamX
         if self.target:
-            self.target.scripts["onNextStep"] = filter(lambda a: a != self.followCallback, self.target.scripts["onNextStep"])
+            self.target.scripts["onNextStep"] = [a for a in self.target.scripts["onNextStep"] if a != self.followCallback]
             """try:
                 self.targetChecker.cancel()
             except:
@@ -395,6 +397,7 @@ class PlayerAttacks(CreatureAttacks):
             if not streamX:
                 stream.send(self.client)
 
+    @gen.coroutine
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
@@ -412,8 +415,9 @@ class PlayerAttacks(CreatureAttacks):
                 target = game.creature.allCreatures[cid]
                 if target.isPlayer() and self.modes[2]:
                     self.cancelTarget()
-                    return self.unmarkedPlayer()
-                ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
+                    self.unmarkedPlayer()
+                    return
+                ret = yield game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
                 if ret == False:
                    self.cancelTarget()
                    return
@@ -431,16 +435,16 @@ class PlayerAttacks(CreatureAttacks):
                 return
         else:
             self.cancelTarget()
-            return self.notPossible()
-
+            self.notPossible()
+            return
         if not self.target:
             self.cancelTarget()
-            return self.notPossible()
-
+            self.notPossible()
+            return
 
         if self.modes[1] == CHASE:
-            print "did"
-            autoWalkCreatureTo(self, self.target.position, -1, True)
+            print("did")
+            self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
         if not self.targetChecker or not self.targetChecker.active():

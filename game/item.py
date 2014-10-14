@@ -1,17 +1,15 @@
-from twisted.internet.defer import inlineCallbacks
-from twisted.internet import reactor
-import sql
-from twisted.python import log
+from . import sql
 from collections import deque, namedtuple
 import game.const
 import config
 import copy
 import time
 import marshal
-import inflect
+from . import inflect
 import gc
 import xml.etree.cElementTree as ET
-import otjson as json
+from . import otjson as json
+from tornado import gen
 
 INFLECT = inflect.engine()
 
@@ -35,7 +33,7 @@ class Item(object):
         #itemId = 106
         attr = items.get(itemId)
         if not attr:
-            print "ItemId %d doesn't exist!" % itemId
+            print("ItemId %d doesn't exist!" % itemId)
             itemId = 100
             attr = items[100]
             
@@ -124,7 +122,7 @@ class Item(object):
                 if len(container.container) > pos.z and container.container[pos.z] == self:
                     return pos
                 else:
-                    for z in xrange(len(container.container)):
+                    for z in range(len(container.container)):
                         if container.container[z] == self:
                             pos.z = z
                             return pos
@@ -143,7 +141,7 @@ class Item(object):
             return False # Not on this tile
             
         elif isinstance(pos, StackPosition):
-            for z in xrange(len(tile.things)+1):
+            for z in range(len(tile.things)+1):
                 if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
@@ -195,7 +193,7 @@ class Item(object):
                 return _items.get(name)
             
                        
-        raise AttributeError, name
+        raise AttributeError(name)
     
     def formatName(self, player=None):
         " Returns a formated name, singular or plural with count "
@@ -359,6 +357,7 @@ class Item(object):
         else:
             return ()
   
+    @gen.coroutine
     def place(self, position, creature=None):
         " Place this item onto position "
 
@@ -373,9 +372,8 @@ class Item(object):
         else:
             tile = position.getTile()
             for item in tile.getItems():
-                if game.scriptsystem.get('dropOnto').runSync(self, self.creature, position=None, onPosition=position, onThing=item) == False:
-                    return False
-                if game.scriptsystem.get('dropOnto').runSync(item, self.creature, position=None, onPosition=position, onThing=self) == False:
+                if (yield game.scriptsystem.get('dropOnto').run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
+                   (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
                     return False
 
             stackpos = tile.placeItem(self)
@@ -383,6 +381,7 @@ class Item(object):
             self.setPosition(position)
             updateTile(position, tile)
             self.decay()
+        return True
 
     def setPosition(self, position, creature=None):
         " Set the position for this items. This is not a move event! But called internally after the item is moved. "
@@ -461,7 +460,7 @@ class Item(object):
                 pass # I don't exist here anymore.
         
         if duration:
-            self.executeDecay = reactor.callLater(duration, executeDecay)
+            self.executeDecay = call_later(duration, executeDecay)
         else:
             executeDelay()
             
@@ -804,7 +803,7 @@ class Item(object):
 
         if not position:
             position = self.verifyPosition()
-        print "Removing", position
+        print("Removing", position)
         
         if not position:
             raise Exception("BUG: Item position cannot be verified! %s" % self.position)
@@ -823,7 +822,7 @@ class Item(object):
 
         # Option 2, the inventory
         elif position.y < 64:
-            print "Remove2"
+            print("Remove2")
             creature = self.creature
             if creature.removeCache(self):
                 creature.refreshStatus()
@@ -917,13 +916,13 @@ def loadItems():
     global idByNameCache
     global cidToSid
 
-    print "> > Loading items..."
+    print("> > Loading items...")
     
     if config.itemCache:
         try:
             with _open("%s/cache/items.cache" % config.dataDirectory, "rb") as f:
                 items, idByNameCache, cidToSid = marshal.loads(f.read())
-            log.msg("%d Items loaded (from cache)" % len(items))
+            print("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
             pass    
@@ -989,9 +988,8 @@ def loadItems():
     """
 
     # JSON format.
-    jsonItems = json.loads(_open(config.itemFile, 'r').read())
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
-    for item in jsonItems:
+    def _decoder(item):
         flags = item.get('flags')
         if flags and not isinstance(flags, int):
             item['flags'] = flagTree[flags]
@@ -1013,13 +1011,13 @@ def loadItems():
         del item['id']
         if not isinstance(id, int):
             start, end = map(int, id.split('-'))
-            fixCid = isinstance(cid, basestring)
+            fixCid = isinstance(cid, str)
             if fixCid:
                 bCid = int(cid.split('-')[0])
             elif cid != None:
                 _cidToSid[cid] = item
 
-            for id in xrange(start, end+1):
+            for id in range(start, end+1):
                 if fixCid:
                     _newItem = item.copy()
                     _newItem['cid'] = bCid
@@ -1047,8 +1045,12 @@ def loadItems():
             except:
                 pass
 
-    print "\n> > Items (%s) loaded..." % len(loadItems),
-    print "%45s\n" % "\t[DONE]"
+    # Perform loading.
+    with _open(config.itemFile, 'r') as f:
+        json.load(f, object_hook=_decoder)
+
+    print("\n> > Items (%s) loaded..." % len(loadItems), end=' ')
+    print("%45s\n" % "\t[DONE]")
 
     # Replace the existing items
     items = loadItems

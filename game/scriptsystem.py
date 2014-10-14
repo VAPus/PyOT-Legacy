@@ -1,6 +1,4 @@
 # The script system
-from twisted.internet import reactor, defer
-from twisted.python import log
 import config
 import sys
 import time
@@ -10,6 +8,7 @@ from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
 import inspect
+from tornado import gen
 
 modPool = []
 globalScripts = {}
@@ -18,7 +17,6 @@ class InvalidScriptFunctionArgument(Exception):
     pass
 
 class Scripts(object):
-    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = []
         self.parameters = parameters
@@ -33,54 +31,19 @@ class Scripts(object):
         self.scripts.remove(callback)
         if callback in self.weaks:
             self.weaks.remove(callback)
-   
-    def run(self, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, creature, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
 
-    def runSync(self, creature, end=None, **kwargs):
-        return self._run(creature, end, **kwargs)
-
-    def runDefer(self, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, creature, end, **kwargs)
-        
-    def _run(self, creature, end=None, **kwargs):
-        ok = True
-        for func in self.scripts:
-            ok = func(creature=creature, **kwargs)
-            if ok is False:
-                break
-                
-        if end and (ok or ok is None):
-            end()
-        else:
-            return ok
-
-class NCScripts(Scripts):
+    @gen.coroutine   
     def run(self, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
-
-    def runSync(self, end=None, **kwargs):
-        return self._run(end, **kwargs)
-
-    def runDefer(self, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, end, **kwargs)
-
-    def _run(self, end=None, **kwargs):
-        ok = True
+        res = True
         for func in self.scripts:
-            ok = func(**kwargs)
-            if ok is False:
-                break
-                
-        if end and (ok or ok is None):
-            end()
-        else:
-            return ok
+            res = yield (gen.maybe_future(func(**kwargs)))
+            if res == False:
+                break 
+
+        if end: end(res)
+        return res
                 
 class TriggerScripts(object):
-    __slots__ = ('scripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = parameters
@@ -112,54 +75,43 @@ class TriggerScripts(object):
         if (trigger, callback) in self.weaks:
             self.weaks.remove((trigger, callback))
 
-    def run(self, trigger, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
-
-    def runSync(self, trigger, creature, end=None, **kwargs):
-        return self._run(trigger, creature, end, **kwargs)  
-                
-    def _run(self, trigger, creature, end, **kwargs):
-        ok = True
-
+    @gen.coroutine
+    def run(self, trigger, end=None, **kwargs):
+        res = None
         if not trigger in self.scripts:
-            return end() if end else None
-            
-        for func in self.scripts[trigger]:
-            ok = func(creature=creature, **kwargs)
-            if ok is False:
-                break
+            if end:
+                return end(None)
+            return None
 
-        if end and (ok or ok is None):
-            end()
-        return ok
+        for func in self.scripts[trigger]:
+            res = yield (gen.maybe_future(func(**kwargs)))
+            
+        if end:
+            return end(res)
+        return res
 
 class NCTriggerScripts(TriggerScripts):
     """ Designed for webrequests. """
-    def runSync(self, trigger, end=None, **kwargs):
-        return self._run(trigger, end, **kwargs)
-
-    def _run(self, trigger, end, **kwargs):
-        ok = True
+    def run(self, trigger, end=None, **kwargs):
 
         trig = self.scripts
         if not trigger in trig:
-            return end() if end else None
-
+            if end:
+                end(None)
+            return
+            
         trig = trig[trigger]
 
         if not trig:
-            return None
+            return
 
-        ok = trig[0](**kwargs)
+        d = maybeDeferred(trig[0], kwargs)
 
-        if end and (ok or ok is None):
-            end()
-        return ok
+        if end:
+            d.addCallback(end)
+        return d
 
 class RegexTriggerScripts(TriggerScripts):
-    __slots__ = ('scripts', 'parameters', 'weaks')
-
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.parameters = () # We can't have parameters
@@ -184,9 +136,10 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    def _run(self, trigger, creature, end, **kwargs):
-        ok = True
+    @gen.coroutine
+    def run(self, trigger, end=None, **kwargs):
 
+        res = None
         """if not trigger in self.scripts:
             return end() if end else None"""
         for scriptTrigger in self.scripts:
@@ -198,23 +151,18 @@ class RegexTriggerScripts(TriggerScripts):
                 continue
             else:
                 args = obj.groupdict()
-                
+            args.update(kwargs)
+                               
             for func in spectre[0]:
-                for arg in kwargs:
-                    args[arg] = kwargs[arg]
-                          
-                ok = func(creature=creature, **args)
-                if ok is False:
-                    break
-                             
-        if end and (ok or ok is None):
-            end()
-        return ok
+                res = yield (gen.maybe_future(func(**args)))
+               
+        
+        if end: return end(None)
+        return res
 
         
 # Thing scripts is a bit like triggerscript except it might use id ranges etc
 class ThingScripts(object):
-    __slots__ = ('scripts', 'thingScripts', 'parameters', 'weaks')
     def __init__(self, parameters = ()):
         self.scripts = {}
         self.thingScripts = {}
@@ -222,18 +170,18 @@ class ThingScripts(object):
         self.weaks = set()
         
     def haveScripts(self, id):
-        if type(id) in (list, tuple, set):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (list, tuple, set, dict_keys):
             for i in id:
                 if i in self.scripts:
                     return True
                     
-        elif id in self.scripts or (type(id) not in (int, long, str) and id in self.thingScripts):
+        elif id in self.scripts or (type(id) not in (int, int, str) and id in self.thingScripts):
             return True
         else:
             return False
             
     def register(self, id, callback, weakfunc=True):
-        if type(id) in (tuple, list, set):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [callback]
@@ -241,7 +189,7 @@ class ThingScripts(object):
                     self.scripts[xid].append(callback)   
                 if weakfunc:
                     self.weaks.add((xid, callback))                    
-        elif type(id) in (int, long, str):
+        elif type(id) in (int, str):
             if not id in self.scripts:
                 self.scripts[id] = [callback]
             else:
@@ -254,14 +202,14 @@ class ThingScripts(object):
                 self.thingScripts[id].append(callback)
                 
     def registerFirst(self, id, callback, weakfunc=True):
-        if type(id) in (tuple, list, set):
+        if hasattr(id, '__iter__') and not type(id) == str: #type(id) in (tuple, list, set):
             for xid in id:
                 if not xid in self.scripts:
                     self.scripts[xid] = [callback]
                 else:
                     self.scripts[xid].insert(0, callback)  
                 self.weaks.add((xid, callback))
-        elif type(id) in (int, long, str):
+        elif type(id) in (int, str):
             if not id in self.scripts:
                 self.scripts[id] = [callback]
             else:
@@ -290,135 +238,64 @@ class ThingScripts(object):
             del self.scripts[id]
         except:
             pass
-        
-    def run(self, thing, creature, end=None, **kwargs):
-        #scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
-        raise Exception("Threaded script is not allowed in this branch!")
     
-    def runDefer(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._runDefer, thing, creature, end, True, **kwargs)
-
-    def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, thing, creature, end, False, **kwargs)
-        
-    def runSync(self, thing, creature, end=None, **kwargs):
-        return self._run(thing, creature, end, True, **kwargs)
-
-    def makeResult(self, obj):
-        def _handleResult(result):
-            cache = True
-            for value in result:
-                if value is False:
-                    cache = False
-                    break
-                else:
-                    cache = value
-            obj.value = cache
-        return _handleResult
-
-    def handleCallback(self, callback):
-        def _handleResult(result):
-            for value in result:
-                if value is False:
-                    return
-
-            callback()
-        return _handleResult
-        
-    def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = None
+    @gen.coroutine    
+    def run(self, end=None, **kwargs):
+        res = None
+        thing = kwargs["thing"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                ok = func(creature=creature, thing=thing, **kwargs)
-                if ok is False:
-                    break
-                    
-        thingId = thing.thingId()
-        
-        if thingId in self.scripts:
-            for func in self.scripts[thingId]:
-                ok = func(creature=creature, thing=thing, **kwargs)
-                if ok is False:
-                    break
-        for aid in thing.actionIds():
-            if aid in self.scripts:
-                for func in self.scripts[aid]:
-                    ok = func(creature=creature, thing=thing, **kwargs)
-                    if ok is False:
-                        break
-        if returnVal:
-            if end:
-                end()
+                res = yield (gen.maybe_future(func(**kwargs)))
                 
-            return ok if ok != True else None
-        elif end:
-            end()
-            
-    @defer.inlineCallbacks
-    def _runDefer(self, thing, creature, end, returnVal, **kwargs):
-        deferList = []
-        if thing in self.thingScripts:
-            for func in self.thingScripts[thing]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
-        
+
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs)) 
-        
+                res = yield (gen.maybe_future(func(**kwargs)))
+
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    deferList.append(defer.maybeDeferred(func, creature=creature, thing=thing, **kwargs))
-            
-        if returnVal:
-            # This is actually blocking code, but is rarely used.
-            d = defer.gatherResults(deferList)
-        elif end:
-            d = defer.gatherResults(deferList)
-            d.addCallback(self.handleCallback(end))
-        else:
-            d = defer.DeferredList(deferList)
-            
-        d.addErrback(log.err)  
-        yield d
-class CreatureScripts(ThingScripts):
-    def _run(self, thing, creature, end, returnVal, **kwargs):
-        ok = True
+                    res = yield (gen.maybe_future(func(**kwargs)))
+
         
+        if end:
+            return end(res)
+        return None
+
+class CreatureScripts(ThingScripts):
+    @gen.coroutine
+    def run(self, end=None, **kwargs):
+        res = None
+        thing = kwargs["creature2"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-               ok = func(creature=creature, creature2=thing, **kwargs)
-               if ok is False:
-                   break
+                res = yield(gen.maybe_future(func(**kwargs)))
+        
 
         thingId = thing.thingId()
-        if ok and thingId in self.scripts:
+        if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                ok = func(creature=creature, creature2=thing, **kwargs)
-                if ok is False:
-                    break  
+                res = yield (gen.maybe_future(func(**kwargs)))
+        
 
-        if ok:
-            for aid in thing.actionIds():
-                if aid in self.scripts:
-                    for func in self.scripts[aid]:
-                        ok = func(creature=creature, creature2=thing, **kwargs)
-                        if ok is False:
-                            break
-                            
-        if not returnVal and end and ok is not False:
-            return end()
-        elif returnVal:
-            return ok if type(ok) != bool else None
-            
+        for aid in thing.actionIds():
+            if aid in self.scripts:
+                for func in self.scripts[aid]:
+                    res = yield (gen.maybe_future(func(**kwargs)))
+           
+
+        if end:
+            return end(res)
+        return res
+    
 # All global events can be initialized here
 globalScripts["talkaction"] = TriggerScripts(('creature', 'text'))
 globalScripts["talkactionFirstWord"] = TriggerScripts(('creature', 'text'))
 globalScripts["talkactionRegex"] = RegexTriggerScripts(('creature', 'text'))
 globalScripts["login"] = Scripts(('creature',))
-globalScripts["loginAccountFailed"] = NCScripts()
-globalScripts["loginCharacterFailed"] = NCScripts()
+globalScripts["loginAccountFailed"] = Scripts()
+globalScripts["loginCharacterFailed"] = Scripts()
 globalScripts["logout"] = Scripts(('creature',))
 globalScripts["use"] = ThingScripts(('creature', 'thing', 'position', 'index'))
 globalScripts["useWith"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition'))
@@ -436,10 +313,10 @@ globalScripts["close"] = ThingScripts(('creature', 'thing', 'index'))
 globalScripts["hit"] = CreatureScripts(('creature', 'creature2', 'damage', 'type', 'textColor', 'magicEffect'))
 globalScripts["death"] = CreatureScripts(('creature', 'creature2', 'deathData', 'corpse'))
 globalScripts["respawn"] = Scripts(('creature',))
-globalScripts["reload"] = NCScripts()
-globalScripts["postReload"] = NCScripts()
-globalScripts["startup"] = NCScripts()
-globalScripts["shutdown"] = NCScripts()
+globalScripts["reload"] = Scripts()
+globalScripts["postReload"] = Scripts()
+globalScripts["startup"] = Scripts()
+globalScripts["shutdown"] = Scripts()
 globalScripts["move"] = Scripts(('creature',))
 globalScripts["appear"] = CreatureScripts()
 globalScripts["disappear"] = CreatureScripts()
@@ -448,7 +325,7 @@ globalScripts["target"] = CreatureScripts()
 globalScripts["thankYou"] = Scripts()
 globalScripts["modeChange"] = Scripts()
 globalScripts["questLog"] = Scripts()
-globalScripts["chargeRent"] = NCScripts()
+globalScripts["chargeRent"] = Scripts()
 globalScripts["equip"] = globalScripts["dress"] = globalScripts["wield"] = ThingScripts()
 globalScripts["unequip"] = globalScripts["undress"] = globalScripts["unwield"] =ThingScripts()
 globalScripts["requestChannels"] = Scripts()
@@ -463,20 +340,20 @@ globalScripts["webPage"] = NCTriggerScripts(('request'))
 
 # Login stuff
 if config.letGameServerRunTheLoginServer:
-    globalScripts["preSendLogin"] = NCScripts()
+    globalScripts["preSendLogin"] = Scripts()
     
 globalEvents = []
 
 # Events
 def callEvent(time, func):
     func()
-    globalEvents.append(reactor.callLater(time, callEvent, time, func))
+    globalEvents.append(call_later(time, callEvent, time, func))
     
 def callEventDate(date, func):
     import dateutil.parser.parse as parse
     import datetime.datetime.now as now
     func()
-    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, func))
+    globalEvents.append(call_later(parse(date) - now(), callEventDate, date, func))
     
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
 """scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
@@ -487,33 +364,34 @@ def run():
     global IS_RUNNING
     IS_ONLINE = False
     IS_RUNNING = False
-    get('shutdown').runSync()
-    
-reactor.addSystemEventTrigger('before','shutdown',run)
-#reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
+    return get('shutdown').run()
+ 
+# XXX: port this. 
+#reactor.addSystemEventTrigger('before','shutdown',run)
 
 def handleModule(name):
     try:
-        modules = __import__('%s.%s' % (config.dataDirectory, name), globals(), locals(), ["*"], -1)
+        modules = __import__('%s.%s' % (config.dataDirectory, name), globals(), locals(), ["*"], 0)
     except:
         (exc_type, exc_value, exc_traceback) = sys.exc_info()
 
-        tb_list = traceback.extract_tb(exc_traceback)
-        tb_list = traceback.format_list(tb_list)
+        #tb_list = traceback.extract_tb(exc_traceback)
+        #tb_list = traceback.format_list(tb_list)
         
-        print "--------------------------"
+        print("--------------------------")
         # This may not be available.
         try:
-            print "EXCEPTION IN SCRIPT (%s):" % exc_value.filename
+            print(("EXCEPTION IN SCRIPT (%s):" % exc_value.filename))
         except AttributeError:
-            print "EXCEPTION IN SCRIPT:"
+            print("EXCEPTION IN SCRIPT:")
             
-        for elt in tb_list[1:]:
-            print elt
-        if exc_type == SyntaxError:
-            print ">>>", exc_value.text,
-        print "%s: %s" % (exc_type.__name__, exc_value)
-        print "--------------------------"
+        #for elt in tb_list[1:]:
+        #    print(elt)
+        #traceback.print_last()#exc_traceback)
+        traceback.print_exception(exc_type, exc_value, exc_traceback)
+        
+        
+        print("--------------------------")
         
         return
         
@@ -556,11 +434,12 @@ def scriptInitPaths(base, subdir=True):
             paths.append(mod.split(os_seperator)[-2])
     return all, paths
     
+@gen.coroutine
 def reimporter():
     global globalEvents
-    process = get("reload").runSync()
+    process = yield get("reload").run()
     if process == False:
-        print "[WARNING]: Reload cancelled."
+        print("[WARNING]: Reload cancelled.")
         return
 
     # Unload all the global events
@@ -596,10 +475,10 @@ def reimporter():
     gc.collect()
     
     # postReload.
-    get("postReload").runSync()
+    yield get("postReload").run()
     
 def reimportCleanup():
-    for script in globalScripts.itervalues():
+    for script in globalScripts.values():
         if isinstance(script, Scripts):
             for func in script.weaks:
                 script.scripts.remove(func)
@@ -631,9 +510,7 @@ def reimportCleanup():
         script.weaks = set()
 
 # This is the function to get events, it should also be a getAll, and get(..., creature)
-def get(type):
-    return globalScripts[type]
-    
+get = globalScripts.get
 def register(type, *argc):
     def _wrapper(f):
         object = globalScripts[type]
@@ -694,12 +571,12 @@ def registerFirst(type, *argc):
     return _wrapper
     
 def regEvent(timeleap, callback):
-    globalEvents.append(reactor.callLater(timeleap, callEvent, timeleap, callback))
+    globalEvents.append(call_later(timeleap, callEvent, timeleap, callback))
     
 def regEventTime(date, callback):
     import dateutil.parser.parse as parse
     import datetime.datetime.now as now
-    globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, callback))
+    globalEvents.append(call_later(parse(date) - now(), callEventDate, date, callback))
     
 # Another cool decorator
 def access(*groupFlags, **kwargs):
@@ -713,34 +590,25 @@ def access(*groupFlags, **kwargs):
     for arg in kwargs:
         if arg == "isPlayer":
             isPlayer = kwargs[arg]
-            if isPlayer:
-                check.append("if not creature.isPlayer() or not creature.hasGroupFlags(*%s): return" % groupFlags)
-        elif arg == "isMonster":
-            isMonster = kwargs[arg]
-            if isMonster:
-                checks.append("if not creature.isMonster(): return")
-        elif arg == "isNPC":
-            isNPC = kwargs[arg]
-            if isNPC:
-                checks.append("if not creature.isNPC(): return")
+            #if isPlayer:
+            #    #check.append("if not creature.isPlayer() or not creature.hasGroupFlags(*%s): return" % groupFlags)
         else:
             raise TypeError("Calling scriptsystem.access() with invalid parameter %s" % arg)
             
     # Notice: We may make a optimized wrapper call when len(groupFlags) == 1 using creature.hasGroupFlag(unwrapperGroupFlag).
     def _wrapper(f):
-        iargs = inspect.getargspec(f)
+        """iargs = inspect.getargspec(f)
         vars = ", ".join(iargs[0])
         if iargs[2]:
             if vars:
                 vars += ", **k"
             else:
                 vars = "**k"
-                
-        exec """
-def access_wrapper_inner(%s):
-    %s
-    return f(%s)""" % (vars, '\n    '.join(checks), vars) in locals(), locals()
-        return access_wrapper_inner
+        """
+        def inner(**k):
+            if k['creature'].isPlayer() and k['creature'].hasGroupFlags(*groupFlags):
+                return f(**k)
+        return inner
     return _wrapper
 
 # A special post-loading cache thingy.
@@ -750,8 +618,8 @@ def registerForAttr(type, attr, callback):
     postLoadEntries.setdefault(attr, []).append((type, callback))
 
 def handlePostLoadEntries():
-    _unpackPostLoad = postLoadEntries.items()
-    for id, attr in game.item.items.iteritems():
+    _unpackPostLoad = list(postLoadEntries.items())
+    for id, attr in game.item.items.items():
         for key, entries in _unpackPostLoad:
             if key in attr:
                 for entry in entries:
@@ -773,4 +641,4 @@ def registerClass(type, *argc):
         object.register(*argc, callback=function_class_wrapper)
         
 
-    return _wrapper
+    return 

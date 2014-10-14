@@ -1,0 +1,7 @@
+# The server have high CPU load for one/few requests
+* The server use a reactor design, polling technics is by far the heaviest load, but the load is mostly in the kernel. One user (running at maximum speed, server sending), this does NOT scale linearly, it takes cPython about 2%, while 30 takes about 8%.
+  This evens out.
+  See: http://monkey.org/~provos/libevent/libevent-benchmark.jpg
+
+# Unloading does not free memory
+* Deleting memory /freeing in Python does not release the memory to the operating system. It's reused internally.

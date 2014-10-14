@@ -1,5 +1,5 @@
 # This is a shadow of 9.7
-#import base
+#from . import base
 from struct import pack
 
 base = sys.modules["game.protocols.970"]

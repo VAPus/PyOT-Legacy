@@ -11,7 +11,7 @@ def container(creature, thing, position, index, **k):
         bagFound = creature.getContainer(index)
             
         if bagFound:
-            print "ok --", index
+            print ("ok --", index)
             # Virtual close
             del creature.openContainers[index].openIndex
                 

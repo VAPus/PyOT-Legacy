@@ -1,36 +1,26 @@
 In order to run PyOT you need:
 ================================
 
-* Python 2.7+ or Pypy 1.7+ (2.2+ are HIGHLY recommended)
+* Python 3.4+ or (pypy currently NOT supported until they get python 3.4 support ATM on 3.2)
 
-* Twisted 10+ 
+* Tornado 4+
 
-* zope.interface (any version that works with your twisted version, PyOT does't directly depend on this)
+* pymysql
 
-* MySQLdb 1.2.3+ (or pymysql) (1.2.4+ recommended)
-
-* Optional: cjson/usjon/simplejson (gives a speedup to saving and loading of players when your using CPython)
-
-* Optional: pywin32 if you intend to use IOCP (default on windows)
+* Optional: pywin32 may give a better eventloop on windows
 
 Links for Windows:
 ------------------
 
-http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
+https://www.python.org/ftp/python/3.4.1/python-3.4.1.amd64.msi
 
-Grab MySQL-python-1.2.4c1.win32.py2.7.exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#tornado (tornado-4.0.2-win-amd64-py3.4.exe)
 
-http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.3.0.win32-py2.7.msi
+Open cmd and run:
+c:\Python34\Scripts\easy_install.exe pymysql
 
-http://sourceforge.net/projects/pywin32/files/pywin32/Build%20218/pywin32-218.win32-py2.7.exe/download
-
-Grab zope.interface-4.0.2.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
-
-and last
-
-Base-13.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
-
-note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of all the libs)
+Optional:
+http://sourceforge.net/projects/pywin32/files/pywin32/Build%20219/pywin32-219.win-amd64-py3.4.exe/download
 
 
 Installation
@@ -38,43 +28,22 @@ Installation
 
 Copy "config.py.dist" to "config.py" and edit it to match your database settings.
 
-Archlinux:
-----------
-
-pacman -S python2 mysql-python twisted python-cjson python-distribute
+Import SQL sheets to the database.
 
 
-
-Ubuntu(10.10+) or Debian 6 wheezy (testing)+:
+Linux (any distro)
 ---------------------------------------------
 
-apt-get install python-twisted python-setuptools python-cjson python-mysqldb python2.7
+Install python3.3+ from package management. You may loop for tornado4 and pymysql there as well.
+Otherwise:
 
-An alternative method is required on older versions of Ubuntu and Debian, since those versions only have python 2.6
-or below as standard support. 
+pip install tornado
+pip install pymysql
 
+or
 
-
-Debian 6 Squeeze:
------------------
-
-The easy way will be to update your debian sources to get Python 2.7, like this:
-
-nano (or vi) /etc/apt/sources.list
-
-add this line in the end of the document:
-
-deb http://ftp.no.debian.org/debian/ testing main contrib
-
-and save (nano = ctrl + O, followed up by CTRL + X to quit), (vi = ESC :w, followed up by :quit)
-
-apt-get update
-
-apt-get upgrade
-
-Then follow the Debian Wheezy installation instructions above.
-
-
+pip3 install tornado
+pip3 install pymysql 
 
 
 Documentation

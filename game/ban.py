@@ -1,5 +1,7 @@
 import datetime
+from tornado import gen
 
+# XXX: Kill these globals, move into BanEntry.
 banAccounts = {}
 banPlayers = {}
 banIps = {}
@@ -54,7 +56,7 @@ class BanEntry(object):
         sql.runOperation("DELETE FROM bans WHERE ban_id = %s", self.id)
         
             
-@inlineCallbacks    
+@gen.coroutine    
 def refresh():
     global banAccounts, banPlayers, banIps
     _banAccounts = {}
@@ -95,7 +97,7 @@ def refresh():
     
 
     if config.refreshBans:
-        callLater(config.refreshBans, refresh)
+        call_later(config.refreshBans, refresh)
         
     banAccounts = _banAccounts
     banPlayers = _banPlayers
@@ -141,7 +143,7 @@ def accountIsBanned(account):
         
     return False
 
-@inlineCallbacks
+@gen.coroutine
 def addBan(by, type, data, reason, expire):
     global banAccounts, banPlayers, banIps
     

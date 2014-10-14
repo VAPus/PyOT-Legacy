@@ -1,5 +1,5 @@
 # This is a shadow of the main branch, 9.44
-import base
+from . import base
 
 provide = []
 

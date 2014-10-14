@@ -1,7 +1,7 @@
 import game.player
 import re
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except:
     import pickle
     
@@ -27,7 +27,7 @@ class House(object):
             try:
                 self.data = pickle.loads(data)
             except:
-                print "[WARNING] Broken house data. House ID %d" % self.id
+                print("[WARNING] Broken house data. House ID %d" % self.id)
                 self.data = {"items":{}, "subowners": [], "guests": [], "doors":{}}
                 self.save = True
                 

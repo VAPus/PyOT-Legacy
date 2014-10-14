@@ -19,7 +19,7 @@ class TibiaPacketReader(object):
     # 8bit - 1byte, C type: char
     def uint8(self):
         self.pos += 1
-        return ord(self.data[self.pos-1])
+        return self.data[self.pos-1]
     def int8(self):
         self.pos += 1
         return unpack("<b", self.data[self.pos-1])[0]
@@ -62,7 +62,7 @@ class TibiaPacketReader(object):
         length = self.uint16()
         self.pos += length
         #return ''.join(map(str, unpack("%ds" % length, self.data[self.pos-length:self.pos])))
-        return self.data[self.pos-length:self.pos]
+        return self.data[self.pos-length:self.pos].decode("utf8")
 
     def getX(self, size):
         self.pos += size
@@ -96,8 +96,8 @@ class TibiaPacket(object):
         self.raw = self.data.append
         
     # 8bit - 1byte, C type: char
-    def uint8(self, data, chr=chr):
-        self.raw(chr(data))
+    def uint8(self, data, pack = pack):
+        self.raw(pack("<B", data))
     def int8(self, data, pack=pack):
         self.raw(pack("<b", data))
         
@@ -124,13 +124,14 @@ class TibiaPacket(object):
         
     def string(self, string, pack=pack):
         # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
-        try:
+        """try:
             string = string.decode("utf-8").encode('iso8859-1')
         except UnicodeDecodeError:
             pass # From client or translated source
-            
+        """
         length = len(string)
-        self.raw(pack("<H", length) + string)
+        self.uint16(length)
+        self.raw(string.encode('iso8859-1'))
         
     def put(self, string):
         self.raw(str(string))
@@ -145,7 +146,8 @@ class TibiaPacket(object):
         if stream.xtea:
             data = encryptXTEA(self.data, stream.xtea, length+2)
         else:
-            data = ''.join(self.data)
+            data = b''.join(self.data)
+
         stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
         self.data = None
         
@@ -161,11 +163,11 @@ class TibiaPacket(object):
         for client in list:
             if not client:
                 continue
-            
+
             if client.xtea:
                 data = encryptXTEA(self.data, client.xtea, length+2)
             else:
-                data = ''.join(self.data)
+                data = b''.join(self.data)
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
             
     # For use with with statement. Easier :)

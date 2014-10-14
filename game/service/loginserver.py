@@ -1,24 +1,22 @@
 import protocolbase
-from twisted.internet.defer import inlineCallbacks
-from twisted.python import log
 from packet import TibiaPacket
 import os
-import sql
 import otcrypto
 import config
 import socket
 import time
-import cPickle
+import pickle
+import sys
 
 if os.path.exists('IP_CACHE') and os.path.getmtime('IP_CACHE') > time.time() - 2400:
-    IPS = cPickle.load(open('IP_CACHE', 'rb'))
+    IPS = pickle.load(open('IP_CACHE', 'rb'))
 else:
     IPS = {}
 
 class LoginProtocol(protocolbase.TibiaProtocol):
     tcpNoDelay = True
 
-    @inlineCallbacks
+    @gen.engine
     def onFirstPacket(self, packet):
         global IPS
         try:
@@ -26,7 +24,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         except:
             return
 
-        
+
         if config.letGameServerRunTheLoginServer:
             pos = packet.pos
             packet.pos = 0
@@ -104,24 +102,24 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         packet.pos += 12 # Checksum for files
         
         if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
-            packet.data = otcrypto.decryptRSA(packet.getData()) # NOTICE: We don't have to yield this since we are already in a seperate thread?
+            packet.data = otcrypto.decryptRSA(packet.getData())
             packet.pos = 0 # Reset position
 
         else:
-            log.msg("RSA, length != 128 (it's %d)" % (len(packet.data) - packet.pos))
+            print("RSA, length != 128 (it's %d)" % (len(packet.data) - packet.pos))
             self.transport.loseConnection()
             return
 
-        if not packet.data or packet.uint8(): # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
-            log.msg("RSA, first char != 0")
+        v = packet.uint8()
+        if not len(packet.data) or v != 0: # RSA needs to decrypt just fine, so we get the data, and the first byte should be 0
+            print("RSA, first char != 0 ")
             self.transport.loseConnection()
             return
-
         # Set the XTEA key
         k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
         sum = 0
         self.xtea = {}
-        for x in xrange(32):
+        for x in range(32):
             self.xtea[x] = sum + k[sum & 3] & 0xffffffff
             sum = (sum + 0x9E3779B9) & 0xffffffff
             self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
@@ -130,9 +128,12 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         # Check if version is correct
         if version > config.versionMax or version < config.versionMin:
             self.exitWithError(config.versionError)
+            print("Version incorrect")
             return
-
+            
+            
         # Check if there is a username (and a password)
+        
         username = packet.string()
         password = packet.string()
 
@@ -145,10 +146,10 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
         if username:
             # Our funny way of doing async SQL
-            account = yield sql.conn.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", (username, password))
+            account = yield sql.runQuery("SELECT `id`, `premdays` FROM `accounts` WHERE `name` = %s AND `password` = SHA1(CONCAT(`salt`, %s))", username, password)
 
             if account:
-                characters = yield sql.conn.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", (account[0]['id']))
+                characters = yield sql.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", account[0]['id'])
      
         if not username or not account:
             if config.anyAccountWillDo:
@@ -160,7 +161,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         
         if config.letGameServerRunTheLoginServer:
             import game.scriptsystem
-            game.scriptsystem.get("preSendLogin").runSync(None, client=self, characters=characters, account=account, username=username, password=password)
+            yield game.scriptsystem.get("preSendLogin").run(client=self, characters=characters, account=account, username=username, password=password)
 
         # Send motd
         pkg.uint8(0x14)
@@ -176,7 +177,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             if ':' in ip:
                 ip, port = ip.split(':')
                 port = int(port)
-            if self.transport.getPeer().host == '127.0.0.1':
+            if self.address == '127.0.0.1':
                 ip = '127.0.0.1'
             elif ip in IPS:
                 ip = IPS[ip]
@@ -185,9 +186,9 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                 ip = socket.gethostbyname(ip)
                 IPS[_ip] = ip
             else:
-                import urllib2
+                import urllib.request, urllib.error, urllib.parse
                 try:
-                    ip = urllib2.urlopen("http://vapus.net/ip.php").read()
+                    ip = urllib.request.urlopen("http://vapus.net/ip.php").read()
                 except:
                     ip = ""
 
@@ -197,11 +198,11 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                     
                 IPS['auto'] = ip
                 # Save IPS here.
-                cPickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
+                pickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
 
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
-            pkg.raw(socket.inet_aton(ip))
+            pkg.raw(socket.inet_aton(ip.decode('utf-8')))
             pkg.uint16(port)
             
             if version >= 980:

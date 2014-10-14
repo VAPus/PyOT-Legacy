@@ -12,7 +12,9 @@ class TestGuild(FrameworkTestGame):
         self.player.data["guild_id"] = 1
         
         # Virtual guild rank.
+        genguild = game.guild.make_guild("__TEST_GUILD__")
         guild = self.player.guild()
+        self.assertEqual(genguild, guild)
         guild.ranks[1] = game.guild.GuildRank(1, 1, "Test", 0xFFFFFFFF)
         self.player.data["guild_rank"] = 1
         

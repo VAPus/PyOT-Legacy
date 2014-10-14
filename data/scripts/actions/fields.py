@@ -7,7 +7,7 @@ def _verify(creature, thing, position):
             creature.condition(PercentCondition(getattr(game.const, 'CONDITION_%s' % (thing.field.upper())), startdmg=thing.fieldStart, percent=0.933)) # Magic constant. I dunno, seems ok for fields hehe.
         else:
             creature.condition(Condition(getattr(game.const, 'CONDITION_%s' % (thing.field.upper())), length=every * (thing.fieldCount or 1), every=every, damage=thing.fieldDamage))
-    callLater((thing.fieldTicks or 2000)/1000, _verify, creature, thing, position)
+    call_later((thing.fieldTicks or 2000)/1000, _verify, creature, thing, position)
 
 def callback(creature, thing, position, **k):
     if thing.fieldDamage:
@@ -16,6 +16,6 @@ def callback(creature, thing, position, **k):
             creature.condition(PercentCondition(getattr(game.const, 'CONDITION_%s' % (thing.field.upper())), startdmg=thing.fieldStart, percent=0.933)) # Magick constant. Seems ok for poison fields.
         else:
             creature.condition(Condition(getattr(game.const, 'CONDITION_%s' % (thing.field.upper())), length=every * (thing.fieldCount or 1), every=every, damage=thing.fieldDamage))
-        callLater(every, _verify, creature, thing, position)
+        call_later(every, _verify, creature, thing, position)
     
 registerForAttr('walkOn', 'fieldDamage', callback)

@@ -64,8 +64,8 @@ class Position(object):
     def roundPoint(self, steps):
         """ Return a MultiPosition with all the steps away from this tile. """
         positions = []
-        for x in xrange(-steps, steps+1):
-            for y in xrange(-steps, steps+1):
+        for x in range(-steps, steps+1):
+            for y in range(-steps, steps+1):
                 positions.append((x+self.x,y+self.y,self.z))
                 
         return MultiPosition(self.instanceId, *positions)
@@ -90,12 +90,7 @@ class Position(object):
 
     def exists(self):
         """ Check if this position exists (holds a tile) """
-        tile = game.map.knownMap.get((self.x, self.y, self.z, self.instanceId), False)
-
-        if tile:
-            return True
-        else:
-            return False
+        return (self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z) in game.map.knownMap
 
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):
@@ -121,7 +116,7 @@ class MultiPosition(Position):
     def __iter__(self):
         return self
         
-    def next(self):
+    def __next__(self):
         """ Increase the index, change to that position in the position list. """
         self.index += 1
         if self.index >= len(self.positions):

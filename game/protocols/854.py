@@ -1,6 +1,5 @@
 # This is a shadow of the main branch, 9.1. TODO: Update for 8.54 changes
-import base
-from twisted.python import log
+from . import base
 import config
 import math
 import game.const
@@ -45,9 +44,6 @@ class Packet(base.BasePacket):
     
     # Skulls
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
-    
-    def const(self, key):
-        return self.protocolEnums[key]
         
     def item(self, item, count=None):
         if isinstance(item, game.item.Item):
@@ -180,7 +176,7 @@ class Packet(base.BasePacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
+        for x in range(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             #self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]

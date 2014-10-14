@@ -1,8 +1,9 @@
 # Setup
 import os, os.path, glob
-import __builtin__
 import gettext
 import config
+import builtins
+
 
 __all__ = []
 LANGUAGES = {}
@@ -60,8 +61,8 @@ else:
     _lc = lambda cr,c,m: m
     _lcp = lambda cr,c,s,p,n: p if n != 1 else s
 
-__builtin__._l = _l
-__builtin__._lc = _lc
-__builtin__._lp = _lp
-__builtin__._lcp = _lcp
-__builtin__._ = lambda m: m
+builtins._l = _l
+builtins._lc = _lc
+builtins._lp = _lp
+builtins._lcp = _lcp
+builtins._ = lambda m: m
