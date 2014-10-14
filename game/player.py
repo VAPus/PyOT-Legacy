@@ -18,6 +18,7 @@ from . import otjson
 import datetime
 import language
 import copy
+from tornado import gen
 
 # Build class.
 from game.creature_talking import PlayerTalking

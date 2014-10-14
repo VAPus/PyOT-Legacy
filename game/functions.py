@@ -119,7 +119,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
 
 
     if direction != None:
-        newPos = positionInDirection(currPos, base)
+        newPos = positionInDirection(currPos, direction)
         
         isOk = True
         for item in game.map.getTile(newPos).getItems():

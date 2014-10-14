@@ -5,7 +5,7 @@ class CreatureAttacks(object):
     def hitEffects(self):
         if self.isPlayer() or self.base.blood == FLUID_BLOOD:
             return COLOR_RED, EFFECT_DRAWBLOOD
-        elif self.base.blood == LUID_SLIME:
+        elif self.base.blood == FLUID_SLIME:
             return COLOR_LIGHTGREEN, EFFECT_HITBYPOISON
         elif self.base.blood == FLUID_ENERGY:
             return COLOR_PURPLE, EFFECT_PURPLEENERGY
