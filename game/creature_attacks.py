@@ -18,7 +18,6 @@ class CreatureAttacks(object):
         # Overrided to creatures.
         return dmg
 
-    @gen.coroutine
     def onHit(self, by, dmg, type, effect=None):
 
         if not type == DISTANCE:
@@ -70,7 +69,7 @@ class CreatureAttacks(object):
         if self.isPlayer() and (by and by.isPlayer()) and (not config.blackSkullFullDamage or by.getSkull() != SKULL_BLACK):
             dmg = int(dmg * config.pvpDamageFactor)
             
-        process = yield game.scriptsystem.get("hit").run(creature2=self, creature=by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
+        process = game.scriptsystem.get("hit").run(creature2=self, creature=by, damage=dmg, type=type, textColor=textColor, magicEffect=magicEffect)
         if process == False:
             return
 
@@ -397,7 +396,6 @@ class PlayerAttacks(CreatureAttacks):
             if not streamX:
                 stream.send(self.client)
 
-    @gen.coroutine
     def setAttackTarget(self, cid):
         if self.targetMode == 1 and self.target:
             self.targetMode = 0
@@ -417,7 +415,7 @@ class PlayerAttacks(CreatureAttacks):
                     self.cancelTarget()
                     self.unmarkedPlayer()
                     return
-                ret = yield game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
+                ret = game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
                 if ret == False:
                    self.cancelTarget()
                    return

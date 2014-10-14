@@ -18,7 +18,6 @@ from . import otjson
 import datetime
 import language
 import copy
-from tornado import gen
 
 # Build class.
 from game.creature_talking import PlayerTalking
@@ -1235,12 +1234,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
 
     # Item to container
-    @gen.coroutine
     def addItem(self, item, placeOnGround=True):
         ret = False
         if self.inventory[2]:
             try:
-                ret = yield self.itemToContainer(self.inventory[2], item)
+                ret = self.itemToContainer(self.inventory[2], item)
             except:
                 pass
         
@@ -1255,14 +1253,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 item.decay()
                 return True
         if ret == False and placeOnGround:
-            return (yield item.place(self.position))
+            return item.place(self.position)
             
         elif ret == False:
             return False
 
         return True
 
-    @gen.coroutine
     def itemToContainer(self, container, item, count=None, recursive=True, stack=True, placeOnGround=True, streamX=None):
         stream = streamX
         update = False
@@ -1286,9 +1283,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             for bag in bags:
                 for itemX in container.container:
                     if itemX.itemId == item.itemId and itemX.count < 100:
-                        _newItem = yield game.scriptsystem.get("stack").run(thing=item, creature=self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
+                        _newItem = game.scriptsystem.get("stack").run(thing=item, creature=self, position=item.position, onThing=itemX, onPosition=itemX.position, count=count, end=False)
                         if _newItem == False:
-                            ret = yield self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
+                            ret = self.itemToContainer(container, item, stack=False, recursive=recursive, streamX=streamX)
                             return ret
                         elif isinstance(_newItem, Item):
                             self.itemToContainer(container, _newItem)
@@ -1497,7 +1494,6 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         return (container, container / 10.0)
     
-    @gen.coroutine
     def onDeath(self):
         try:
             lastAttacker = self.getLastDamager()
@@ -1526,7 +1522,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 
             deathData["unjust"] = unjust
             
-        if (yield game.scriptsystem.get("death").run(creature=self, creature2=lastAttacker, corpse=corpse, deathData=deathData)) == False:
+        if (game.scriptsystem.get("death").run(creature=self, creature2=lastAttacker, corpse=corpse, deathData=deathData)) == False:
             return
 
         # Lose all conditions.
@@ -1984,7 +1980,6 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.walk_to(self.target.position, -1, True)
             self.target.scripts["onNextStep"].append(self.followCallback)
 
-    @gen.coroutine
     def setFollowTarget(self, cid):
         if not cid: # or self.targetMode == 2
             #self.cancelWalk()
@@ -1997,7 +1992,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if cid in allCreatures:
             target = allCreatures[cid]
-            ret = yield game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
+            ret = game.scriptsystem.get('target').run(creature=self, creature2=target, attack=True)
             if ret == False:
                 return
             elif ret != None:
@@ -2069,13 +2064,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if config.sendTutorialSignalUponQuestLogUpdate:
             self.tutorial(3)
 
-    @gen.coroutine
     def questLog(self):
         quests = self.getStorage('__quests')
         if not quests:
             quests = {}
 
-        yield game.scriptsystem.get("questLog").run(creature=self, questLog=quests)
+        game.scriptsystem.get("questLog").run(creature=self, questLog=quests)
 
         # Vertify the quests
         for quest in quests.copy():

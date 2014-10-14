@@ -252,7 +252,7 @@ class ThingScripts(object):
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    res = gen.maybe_future(func(**kwargs)
+                    res = func(**kwargs)
 
         
         if end:
@@ -260,7 +260,6 @@ class ThingScripts(object):
         return None
 
 class CreatureScripts(ThingScripts):
-    @gen.coroutine
     def run(self, end=None, **kwargs):
         res = None
         thing = kwargs["creature2"]

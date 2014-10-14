@@ -11,7 +11,6 @@ class CreatureMovement(object):
 
         return (ground.speed / self.speed) #- 0.05
     
-    @gen.coroutine
     def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
             return False"""
@@ -83,10 +82,10 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            yield game.scriptsystem.get('disappear').run(creature2=creature2, creature=self)
+            game.scriptsystem.get('disappear').run(creature2=creature2, creature=self)
 
         for creature2 in appearTo:
-            yield game.scriptsystem.get('appear').run(creature2=creature2, creature=self)
+            game.scriptsystem.get('appear').run(creature2=creature2, creature=self)
 
 
         if not invisible:
@@ -224,7 +223,6 @@ class CreatureMovement(object):
         if pattern:
             self.autoWalk(pattern)    
             
-    @gen.coroutine
     def handleAutoWalking(self, level=0, callback=None):
         """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
         self.action = None
@@ -233,7 +231,7 @@ class CreatureMovement(object):
             
         direction = self.walkPattern.popleft()
 
-        res = yield self.move(direction, level=level, stopIfLock=True)
+        res = self.move(direction, level=level, stopIfLock=True)
         
         if self.walkPattern:
             self.autoWalk()
@@ -298,7 +296,7 @@ class CreatureMovement(object):
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
-        val = yield game.scriptsystem.get("move").run(creature=self)
+        val = game.scriptsystem.get("move").run(creature=self)
         if val == False:
             return self.clearMove(direction, failback)
         try:
@@ -308,11 +306,11 @@ class CreatureMovement(object):
 
         # Deal with walkOff
         for item in oldTile.getItems():
-            yield game.scriptsystem.get('walkOff').run(thing=item, creature=self, position=oldPosition)
+            game.scriptsystem.get('walkOff').run(thing=item, creature=self, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            r = yield game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
+            r = game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
                 return self.clearMove(direction, failback)
         # PZ blocked?
@@ -491,7 +489,7 @@ class CreatureMovement(object):
 
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            yield game.scriptsystem.get('walkOn').run(thing=item, creature=self, position=position, fromPosition=oldPosition)
+            game.scriptsystem.get('walkOn').run(thing=item, creature=self, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
@@ -504,12 +502,14 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            yield game.scriptsystem.get('disappear').run(creature=creature2, creature2=self)
-            yield game.scriptsystem.get('disappear').run(creature=self, creature2=creature2)
+            disappear_event = game.scriptsystem.get('disappear')
+            disappear_event.run(creature=creature2, creature2=self)
+            disappear_event.run(creature=self, creature2=creature2)
 
         for creature2 in appearTo:
-            yield game.scriptsystem.get('appear').run(creature=creature2, creature2=self)
-            yield game.scriptsystem.get('appear').run(creature=self, creature2=creature2)
+            appear_event = game.scriptsystem.get('appear')
+            appear_event.run(creature=creature2, creature2=self)
+            appear_event.run(creature=self, creature2=creature2)
 
         # Stairhop delay
         if level and self.isPlayer():
