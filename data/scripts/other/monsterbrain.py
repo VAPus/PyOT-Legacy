@@ -1,10 +1,9 @@
-@gen.coroutine
 def defaultBrainFeaturePriority(monster):
         # Walking
         if monster.target: # We need a target for this code check to run
             # Chance of retargeting?
             if monster.base.targetChange and random.randint(0, 99) < monster.base.targetChance and monster.data["health"] > monster.base.runOnHealth and monster.distanceStepsTo(monster.target.position) > 1:
-                yield monster.targetCheck()
+                monster.targetCheck()
                 if not monster.target:
                     
                     return True
@@ -115,17 +114,15 @@ def defaultBrainFeaturePriority(monster):
                             return True # If we do have a target, we stop here
 
 
-
-@gen.coroutine
 def defaultBrainFeature(monster):
-        ret = yield defaultBrainFeaturePriority(monster)
+        ret = defaultBrainFeaturePriority(monster)
         if ret is not None:
             return False if ret == False else None
 
         # Only run this check if there is no target, we are hostile and targetChance checksout
         if not monster.master:
             if not monster.target and monster.base.hostile and monster.data["health"] > monster.base.runOnHealth:
-                yield monster.targetCheck()
+                monster.targetCheck()
                 if monster.target:
                     return True # Prevent random walking
                 

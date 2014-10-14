@@ -5,7 +5,6 @@ class TestMoveItem(FrameworkTestGame):
         # Turn off ammo slot only for ammo.
         self.overrideConfig("ammoSlotOnlyForAmmo", False)
         
-    @async_test
     def test_bug992(self):
         """ Aga bug #992. Drop item from ammo slot. http://vapus.net/forum/pyot-opentibia-server-287/debug-serious-bugs-thread-2925-100/#post31503 """
         
@@ -24,7 +23,7 @@ class TestMoveItem(FrameworkTestGame):
         
         # Move to ground.
         newPosition = self.player.positionInDirection(SOUTH)
-        self.assertTrue((yield moveItem(self.player, position, newPosition)))
+        self.assertTrue(moveItem(self.player, position, newPosition))
         
         # Is it there?
         found = False
@@ -35,8 +34,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(found)
         
         self.player.toggleRaiseMessages()
-    
-    @async_test       
+       
     def test_bug59(self):
         " Issue #59 part 2. http://vapus.net/forum/project.php?issueid=59 "
         
@@ -50,14 +48,14 @@ class TestMoveItem(FrameworkTestGame):
         # Move to ground.
         position = Position(0xFFFF, SLOT_AMMO+1, 0)
         
-        self.assertTrue((yield moveItem(self.player, position, self.player.position, 50)))
+        self.assertTrue(moveItem(self.player, position, self.player.position, 50))
         
         # Is it still there?
         self.assertEqual(self.player.inventory[SLOT_AMMO], item)
         
         # Correct count?
         self.assertEqual(item.count, 50)
-    @async_test    
+  
     def test_stack(self):
         " Reverse of the above. "
         
@@ -74,7 +72,7 @@ class TestMoveItem(FrameworkTestGame):
         # Move stack from ground to inventory.
         position = Position(0xFFFF, SLOT_AMMO+1, 0)
         
-        self.assertTrue((yield moveItem(self.player, groundPosition, position, 50)))
+        self.assertTrue(moveItem(self.player, groundPosition, position, 50))
         
         # Is it still there?
         self.assertEqual(self.player.inventory[SLOT_AMMO], item)
@@ -85,14 +83,14 @@ class TestMoveItem(FrameworkTestGame):
         # Correct count?
         self.assertEqual(item.count, 100)
         
-    @async_test
+
     def test_move_ground(self):
         # Make some gold.
         item = Item(idByName('gold coin'), 10)
         item.place(self.player.position)
         
         # Move.
-        self.assertTrue((yield moveItem(self.player, item.position, self.player.positionInDirection(SOUTH), 10)))
+        self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH), 10))
 
         things = self.player.position.getTile().things
         self.assertNotIn(item, things)
@@ -103,7 +101,7 @@ class TestMoveItem(FrameworkTestGame):
                 ok = True
                 
         self.assertTrue(ok)
-    @async_test    
+   
     def test_closebag(self):
         # Make a bag.
         item = Item(idByName('bag'))
@@ -115,9 +113,9 @@ class TestMoveItem(FrameworkTestGame):
         # Move to ground.
         newPosition = self.player.position.copy()
         newPosition.x += 2
-        self.assertTrue((yield moveItem(self.player, Position(0xFFFF, SLOT_BACKPACK+1, 0), newPosition)))
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, SLOT_BACKPACK+1, 0), newPosition))
         self.assertFalse(item.openIndex)
-    @async_test    
+
     def test_move_ground_no_count(self):
         # Make some gold.
         item = Item(idByName('gold coin'), 10)
@@ -126,7 +124,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(self.player.position, item.position)
         
         # Move.
-        self.assertTrue((yield moveItem(self.player, item.position, self.player.positionInDirection(SOUTH))))
+        self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH)))
 
         things = self.player.position.getTile().things
         self.assertNotIn(item, things)
@@ -138,7 +136,7 @@ class TestMoveItem(FrameworkTestGame):
                 
         self.assertTrue(ok)
 
-    @async_test
+
     def test_move_ammo_bag_ground(self):
         self.player.toggleRaiseMessages()
 
@@ -159,18 +157,18 @@ class TestMoveItem(FrameworkTestGame):
         position = Position(0xFFFF, SLOT_AMMO+1, 0)
         bagPosition = Position(0xFFFF, SLOT_BACKPACK+1, 0)
 
-        self.assertTrue((yield moveItem(self.player, position, bagPosition, 100)))
+        self.assertTrue(moveItem(self.player, position, bagPosition, 100))
 
         self.assertFalse(config.ammoSlotOnlyForAmmo)
 
         # Move to ground.
-        self.assertTrue((yield moveItem(self.player, Position(0xFFFF, bag.openIndex+64,0), self.player.position)))
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, bag.openIndex+64,0), self.player.position))
 
         # Is it still there?
         self.assertEqual(self.player.inventory[SLOT_AMMO], None)
 
         self.player.toggleRaiseMessages()
-    @async_test
+
     def test_move_to_self(self):
         # Make a gold coin 
         item = Item(idByName('gold coin'), 1)
@@ -182,14 +180,14 @@ class TestMoveItem(FrameworkTestGame):
         self.player.itemToInventory(bag, SLOT_BACKPACK)
 
         # Item to bag.
-        yield self.player.itemToContainer(bag, item)
+        self.player.itemToContainer(bag, item)
 
         # Open bag.
         self.player.openContainer(bag)
 
         # Move to bag.
-        self.assertFalse((yield moveItem(self.player, Position(0xFFFF, bag.openIndex+64, 0), Position(0xFFFF, SLOT_BACKPACK+1, 0))))
-    @async_test
+        self.assertFalse(moveItem(self.player, Position(0xFFFF, bag.openIndex+64, 0), Position(0xFFFF, SLOT_BACKPACK+1, 0)))
+
     def test_dual_handed(self):
         # Make a dual handed sword
         item = Item(7449)
@@ -206,8 +204,8 @@ class TestMoveItem(FrameworkTestGame):
         item.place(self.player.position)
 
         # Move it. Shouldn't work.
-        self.assertFalse((yield moveItem(self.player, item.position, Position(0xFFFF, SLOT_LEFT-1, 0))))
-    @async_test
+        self.assertFalse(moveItem(self.player, item.position, Position(0xFFFF, SLOT_LEFT-1, 0)))
+
     def test_courpse_to_corpse_stack(self):
         " Bug #78 "
         # Set meat to 100%.
@@ -243,7 +241,7 @@ class TestMoveItem(FrameworkTestGame):
                 break
 
         # Move
-        self.assertTrue((yield moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, 3))))
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, 3)))
 
         # Find new meat.
         for item in corpse2.container:
@@ -252,7 +250,7 @@ class TestMoveItem(FrameworkTestGame):
                 break
 
         self.assertEqual(item.itemId, idByName('meat'))
-    @async_test
+
     def test_courpse_to_corpse_specific_stack(self):
         " Bug #78 "
 
@@ -294,7 +292,7 @@ class TestMoveItem(FrameworkTestGame):
 
         # Move
         try:
-            self.assertTrue((yield moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, index2))))
+            self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, index), Position(0xFFFF, 65, index2)))
         except:
             self.fail("Corpse Indexes failed.")
 
@@ -306,7 +304,6 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertEqual(item.itemId, idByName('meat'))
 
-    @async_test
     def test_bug93(self):
         # Make two bags. Place them on the ground.
         bag1 = Item(idByName('bag'))
@@ -332,10 +329,10 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(bag1, bag1Pos.getTile().getThing(bag1Pos.stackpos))
 
         # Move bag1 into bag2. This works.
-        self.assertTrue((yield moveItem(self.player, bag1Pos, Position(0xFFFF, 64 + id2, 0))))
+        self.assertTrue(moveItem(self.player, bag1Pos, Position(0xFFFF, 64 + id2, 0)))
 
         # Move bag2 into bag1. This shouldn't work.
-        self.assertFalse((yield moveItem(self.player, bag2Pos, Position(0xFFFF, 64 + id1, 0))))
+        self.assertFalse(moveItem(self.player, bag2Pos, Position(0xFFFF, 64 + id1, 0)))
 
     def test_relocate(self):
         coin = Item(idByName('gold coin'))
@@ -346,7 +343,6 @@ class TestMoveItem(FrameworkTestGame):
 
         self.assertIn(coin, Position(1001, 1000, 7).getTile().things)
 
-    @async_test
     def test_117_p9(self):
         " http://vapus.net/forum/project.php?issueid=117 "
 
@@ -358,8 +354,8 @@ class TestMoveItem(FrameworkTestGame):
         self.player.inventory[SLOT_BACKPACK] = bag
         
         # Move coins to bag.
-        yield self.player.addItem(coin)
-        yield self.player.addItem(coin2)
+        self.player.addItem(coin)
+        self.player.addItem(coin2)
         
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[1].count, 100)
@@ -371,13 +367,13 @@ class TestMoveItem(FrameworkTestGame):
         bag.creature = self.player
         self.player.use(bag)
 
-        self.assertTrue((yield moveItem(self.player, Position(0xFFFF, 64, 0), Position(0xFFFF, 64, 1))))
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, 0), Position(0xFFFF, 64, 1)))
 
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[1].count, 100)
         self.assertEqual(bag.container[0].count, 10)
 
-    @async_test
+
     def test_bug119(self):
         " http://vapus.net/forum/project.php?issueid=119 "
 
@@ -398,11 +394,11 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(bag.size(), 2)
         self.assertEqual(bag.container[0].name, "rope")
 
-        self.assertTrue((yield moveItem(self.player, Position(0xFFFF, 64, 1), Position(0xFFFF, 64, 0))))
+        self.assertTrue(moveItem(self.player, Position(0xFFFF, 64, 1), Position(0xFFFF, 64, 0)))
 
         self.assertEqual(bag.size(), 2)
 
-    @async_test
+
     def test_consistant_weight(self):
 
         self.player.toggleRaiseMessages()
@@ -415,12 +411,12 @@ class TestMoveItem(FrameworkTestGame):
 
         weight = self.player.inventoryWeight
 
-        self.assertTrue((yield moveItem(self.player, bag.position, Position(0xFFFF, SLOT_BACKPACK+1, 0))))
+        self.assertTrue(moveItem(self.player, bag.position, Position(0xFFFF, SLOT_BACKPACK+1, 0)))
 
         self.assertEqual(weight, self.player.inventoryWeight)
         self.player.toggleRaiseMessages()
 
-    @async_test
+
     def test_groundstack(self):
         " http://vapus.net/forum/distributions-227/%5B8-6-9-71%5D-pyot-v1-0-alpha3-6061-6/#post32628 "
 
@@ -431,7 +427,7 @@ class TestMoveItem(FrameworkTestGame):
         gold1.place(Position(1000, 1001, 7))
         gold2.place(Position(1001, 1000, 7))
 
-        self.assertTrue((yield moveItem(self.player, gold2.position, gold1.position)))
+        self.assertTrue(moveItem(self.player, gold2.position, gold1.position))
 
         self.assertEqual(gold1.count, 20)
         self.assertNotIn(gold2, gold1.position.getTile().things)
