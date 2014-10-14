@@ -247,8 +247,7 @@ class TestParty(FrameworkTestGame):
         # Cleanups
         del game.monster.monsters["__TEST__"]
         self.restoreConfig("protectedZones")
-        
-    @async_test      
+           
     def test_share_experience(self):
         # Turn of protection zone
         self.overrideConfig("protectedZones", False)

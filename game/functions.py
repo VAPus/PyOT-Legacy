@@ -119,7 +119,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
 
 
     if direction != None:
-        newPos = positionInDirection(currPos, base)
+        newPos = positionInDirection(currPos, direction)
         
         isOk = True
         for item in game.map.getTile(newPos).getItems():
@@ -695,7 +695,6 @@ def loadPlayerById(playerId):
     game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
     return game.player.allPlayers[cd['name']]
 
-@gen.coroutine
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
@@ -796,14 +795,14 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.tooHeavy()
         return False
     
-    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (yield game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False \
-        or toPosition.x == 0xFFFF and toPosition.y < 64 and (yield game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
+    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False \
+        or toPosition.x == 0xFFFF and toPosition.y < 64 and (game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
         return False
     
     # Special case when both items are the same and stackable.
     stacked = False
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        _newItem = yield game.scriptsystem.get("stack").run(thing=thing, creature=player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
+        _newItem = game.scriptsystem.get("stack").run(thing=thing, creature=player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
             destItem.modify(newCount)
@@ -826,8 +825,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:
-        if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
-           (yield game.scriptsystem.get('dropOnto').run(thing=destItem, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+        if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
+           (game.scriptsystem.get('dropOnto').run(thing=destItem, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
 
             return False
         
@@ -846,8 +845,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         thisTile = toPosition.getTile()
         
         for item in thisTile.getItems():
-            if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
-               (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+            if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
+               (game.scriptsystem.get('dropOnto').run(thing=item, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
                 return False
 
         newItem.place(toPosition)
@@ -860,8 +859,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 container = player.getContainer(toPosition.y-64)
                 
-                if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
-                   (yield game.scriptsystem.get('dropOnto').run(thing=container, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+                if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
+                   (game.scriptsystem.get('dropOnto').run(thing=container, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
                     return False
                 
                 #print "itemToContainer2"

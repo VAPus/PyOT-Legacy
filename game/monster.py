@@ -110,8 +110,6 @@ class Monster(Creature):
             pass
         
         self.brainEvent = None
-        
-    @gen.coroutine
     def onDeath(self):
         # Remove master summons
         isSummon = self.isSummon()
@@ -178,7 +176,7 @@ class Monster(Creature):
                         elif len(loot) == 4:
                             drops.append((loot[0], None, loot[4]))
                 
-                ret = yield scriptsystem.get("loot").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), loot=drops, maxSize=maxSize)
+                ret = scriptsystem.get("loot").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
 
@@ -227,7 +225,7 @@ class Monster(Creature):
         else:
             corpse = None
             
-        yield scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
+        scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print("[May bug] Death events brought us back to life?")
             return
@@ -298,7 +296,6 @@ class Monster(Creature):
     def isAttackable(self, by):
         return self.base.attackable
 
-    @gen.coroutine
     def targetCheck(self, targets=None):
         _time = time.time()
         if self.lastRetarget > _time - 7:
@@ -343,7 +340,7 @@ class Monster(Creature):
         if _target == target:
             return # We already have this target
         elif target:
-            ret = yield game.scriptsystem.get('target').run(creature2=self, creature=target, attack=True)
+            ret = game.scriptsystem.get('target').run(creature2=self, creature=target, attack=True)
             
             if ret == False:
                 return
@@ -775,7 +772,6 @@ class MonsterBrain(object):
         else:
             raise Exception("Attempting to start a brain of a active monster!")
         
-    @gen.coroutine
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
@@ -794,7 +790,7 @@ class MonsterBrain(object):
                     
         feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
-        ret = yield brainFeatures[feature](monster)
+        ret = brainFeatures[feature](monster)
         
         if ret == False:
             monster.turnOffBrain()
