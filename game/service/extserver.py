@@ -1,6 +1,4 @@
 import protocolbase
-from twisted.internet.defer import inlineCallbacks
-from twisted.python import log
 from packet import TibiaPacket, TibiaPacketReader
 import sql
 import otcrypto
@@ -76,7 +74,7 @@ class extProtocol(protocolbase.TibiaProtocol):
             
             if not resource in self.files:
                 # Requesting unknown resource.
-                print "Unknown resource.", resource
+                print(("Unknown resource.", resource))
                 return
                 
             p = SimplePacket(0x05)

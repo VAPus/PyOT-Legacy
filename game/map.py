@@ -1,8 +1,6 @@
 from game.item import Item
 import game.item
-from twisted.internet import threads, reactor
-from twisted.python import log
-import scriptsystem
+from . import scriptsystem
 from collections import deque
 import config
 import time
@@ -12,10 +10,11 @@ import sys
 import itertools
 import gc
 import importlib
+
 try:
     mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
 except ImportError:
-    print "[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory)
+    print("[ERROR] Map got no info.py file in %s/%s/" % (config.dataDirectory, config.mapDirectory))
     sys.exit()
 
 sectorX, sectorY = mapInfo.sectorSize
@@ -26,7 +25,7 @@ dummyItems = {}
 
 knownMap = {} # sectorSum -> {posSum}
 
-instances = {0: ''}
+instances = {}
 
 houseTiles = {}
 
@@ -36,14 +35,14 @@ dummyTiles = {}
 
 sectors = set()
 
-for n in xrange(12):
+for n in range(12):
     if sectorX == 2**n:
         sectorShiftX = n
     if sectorY == 2**n:
         sectorShiftY = n
 
 if sectorShiftX == sectorShiftY == 0:
-    print "Sector size (%d, %d) are not a power of two." % (sectorX, sectorY)
+    print("Sector size (%d, %d) are not a power of two." % (sectorX, sectorY))
     sys.exit()
 
 ##### Position class ####
@@ -52,23 +51,24 @@ def __uid():
     while True:
         idsTaken += 1
         yield idsTaken
-newInstanceId = __uid().next
+newInstanceId = __uid().__next__
 
 def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
-    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
+    # XXX: Store this sum in the Position itself, and kill the x,y,z sets. They are rarely accessed. Would give a slight speedup and memory improvement.
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return knownMap[posSum]
-    except KeyError:
+    except:
         if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
             return knownMap.get(posSum)
 
 def getTileIfExist(pos, _knownMap=knownMap):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
-    posSum = (pos.x,pos.y,pos.z,pos.instanceId)
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
     try:
         return _knownMap[posSum]
-    except KeyError:
+    except:
         return None
 
 def setTile(pos, tile, knownMap = knownMap):
@@ -76,12 +76,12 @@ def setTile(pos, tile, knownMap = knownMap):
     x = pos.x
     y = pos.y
 
-    posSum = (x,y,pos.z,pos.instanceId)
+    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
 
     try:
         knownMap[posSum] = tile
         return True
-    except KeyError:
+    except:
         if loadTiles(x, y, pos.instanceId, (pos.instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             knownMap[posSum] = tile
             return True
@@ -90,10 +90,10 @@ def setTile(pos, tile, knownMap = knownMap):
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
-    posSum = (x,y,z,instanceId)
+    posSum = instanceId << 40 | x << 24 | y << 8 | z
     try:
         return knownMap[posSum]
-    except KeyError:
+    except:
         if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             return knownMap.get(posSum)
         
@@ -453,7 +453,6 @@ _spawn_unpack = struct.Struct("<HHBBB").unpack
 def loadSectorMap(code, instanceId, baseX, baseY):
     """ Parse the `code` (sector data) starting at baseX,baseY. Returns the sector. """
     global dummyItems, dummyTiles
-
     thisSectorMap = {}
     pos = 0
     codeLength = len(code)
@@ -475,7 +474,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_getMonster = game.monster.getMonster
 
     # Local reference (for CPython)
-    lord = ord
+    lord = int
     l_unpack = _l_unpack
     long_unpack = _long_unpack
     creature_unpack = _creature_unpack
@@ -492,21 +491,23 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     while pos < codeLength:
         # First byte where we're at.
         level = lord(code[pos])
+
         pos += 1
         
         if level == 60:
             centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
-            
             pos += 7
                             
             # Mark a position
             centerPoint = l_Position(centerX, centerY, centerZ, instanceId)
                             
             # Here we use attrNr as a count for 
-            for numCreature in xrange(creatureCount):
+            for numCreature in range(creatureCount):
                 creatureType = lord(code[pos])
+
                 nameLength = lord(code[pos+1])
-                name = code[pos+2:pos+nameLength+2]
+
+                name = code[pos+2:pos+nameLength+2].decode('utf-8')
                 pos += 8 + nameLength
                 spawnX, spawnY, spawnTime = creature_unpack(code[pos-6:pos])
                 
@@ -517,12 +518,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 if creature:
                     creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
-                    print "Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name)
+                    print("Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name))
                                     
             continue
         
         # Loop over the mapInfo.sectorSize[0] x rows
-        for xr in xrange(boundX):
+        for xr in range(boundX):
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
             
@@ -546,6 +547,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             flags = long_unpack(code[pos:pos+4])[0]
+
                             pos += 5
                         
                         # HouseId?
@@ -553,49 +555,52 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             pos += 2
                             # int32
                             houseId = long_unpack(code[pos:pos+4])[0]
+
                             pos += 5
                             
                         elif attrNr:
                             pos += 3
                             attr = {}
-                            for n in xrange(attrNr):
+                            for n in range(attrNr):
                                 name = l_attributes[lord(code[pos])]
+
                                     
                                 opCode = code[pos+1]
                                 pos += 2
-                                
-                                if opCode == "i":
+                                value = None
+                                if opCode == 105: # = i
                                     pos += 4
                                     value = long_unpack(code[pos-4:pos])[0]
-                                elif opCode == "s":
+                                elif opCode == 115: # = s
                                     valueLength = long_unpack(code[pos:pos+4])[0]
                                     pos += valueLength + 4
                                     value = code[pos-valueLength:pos]
-                                elif opCode == "T":
+                                elif opCode == 84: # = T
                                     value = True
-                                elif opCode == "F":
+                                elif opCode == 70: # = F
                                     value = False
-                                elif opCode == "l":
+                                elif opCode == 108: # = l
                                     value = []
                                     length = lord(code[pos])
 
                                     pos += 1
-                                    for i in xrange(length):
+                                    for i in range(length):
                                         opCode = code[pos]
                                         pos += 1
-                                        if opCode == "i":
+                                        if opCode == 105: # = i
                                             pos += 4
                                             item = long_unpack(code[pos-4:pos])[0]
-                                        elif opCode == "s":
+                                        elif opCode == 115: # = s
                                             valueLength = long_unpack(code[pos:pos+4])[0]
                                             pos += valueLength + 4
                                             item = code[pos-valueLength:pos]
-                                        elif opCode == "T":
+                                        elif opCode ==84:  # = T
                                             item = True
-                                        elif opCode == "F":
+                                        elif opCode == 70: # = F
                                             item = False
                                         value.append(item)
-                                        
+                                else:
+                                    raise Exception("attr opCode %d not found!" % opCode)
                                 attr[name] = value
                                 
                             pos += 1
@@ -632,13 +637,13 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     
                         
                     v = code[pos-1]
-                    if v == ';': break
-                    elif v == '|':
+                    if v == 59: break # v == ;
+                    elif v ==124: # v == |
                         skip = True
                         if attrNr:
                             xr += attrNr -1
                         break
-                    elif v == '!':
+                    elif v == 33: # v == !
                         skip = True
                         skip_remaining = True
                         break
@@ -646,7 +651,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     # otherwise it should be ",", we don't need to verify this.
 
                 if ground:
-                    ySum = (xr + baseX), (yr + baseY), level, instanceId
+                    ySum = instanceId << 40 | (xr + baseX) << 24 | (yr + baseY) << 8 | level
                     # For the PvP configuration option, yet allow scriptability. Add/Remove the flag.
                     if globalProtection and not flags & TILEFLAGS_PROTECTIONZONE:
                         flags += TILEFLAGS_PROTECTIONZONE
@@ -723,7 +728,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 skip_remaining = False
                 break
                 
-    return thisSectorMap           
+    return thisSectorMap                         
 ### End New Map Format ###
 
 def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
@@ -733,7 +738,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
     
     # Attempt to load a sector file
     try:
-        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances[instanceId], sectorX, sectorY), "rb") as f:
+        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances.get(instanceId, ''), sectorX, sectorY), "rb") as f:
             map = loadSectorMap(f.read(), instanceId, sectorX << sectorShiftX, sectorY << sectorShiftY)
             knownMap.update(map)
         sectors.add(sectorSum)
@@ -743,12 +748,12 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         return False
         
     if verbose:
-        print "Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t)    
+        print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))    
     
     if config.performSectorUnload:
-        reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
-    scriptsystem.get('postLoadSector').runSync("%d.%d" % (sectorX, sectorY), None, None, sector=map, instanceId=instanceId)
+    scriptsystem.get('postLoadSector').run("%d.%d" % (sectorX, sectorY), sector=map, instanceId=instanceId)
     
     return True
 
@@ -762,7 +767,7 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     yMin = (sectorY << sectorShiftY) + 11
     yMax = (yMin + mapInfo.sectorSize[1]) + 11
     try:
-        for player in game.player.allPlayers.viewvalues():
+        for player in game.player.allPlayers.values():
             pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
             
             # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
@@ -774,24 +779,24 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     return True
     
 def _unloadMap(sectorX, sectorY, instanceId):
-    print "Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId)
+    print("Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId))
     t = time.time()
     if _unloadCheck(sectorX, sectorY, instanceId):
-        print "Unloading...."
+        print("Unloading....")
         unload(sectorX, sectorY, instanceId)
-        print "Unloading took: %f" % (time.time() - t)   
+        print("Unloading took: %f" % (time.time() - t))   
     else:
-        reactor.callLater(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
+        call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
     
 def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     """ Unload sectorX.sectorY, loaded into instanceId """
     sectorSum = (instanceId, sectorX, sectorY)
     sectors.remove(sectorSum)
 
-    for z in xrange(16):
-        for x in xrange(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
-            for y in xrange(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
+    for z in range(16):
+        for x in range(sectorX << sectorShiftX, (sectorX + 1) << sectorShiftX):
+            for y in range(sectorY << sectorShiftY, (sectorY + 1) << sectorShiftY):
                  try:
-                     del knownMap[x,y,z,instanceId]
+                     del knownMap[instanceId << 40 | x << 24 | y << 8 | z]
                  except:
                      pass

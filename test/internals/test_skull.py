@@ -1,4 +1,4 @@
-from test.framework import FrameworkTestGame
+from test.framework import FrameworkTestGame, async_test
 
 class TestAttackSkulls(FrameworkTestGame):
     def init(self):
@@ -46,7 +46,7 @@ class TestAttackSkulls(FrameworkTestGame):
         self.player.attackTarget(-10)
         
         self.assertEqual(self.player.getSkull(target), SKULL_WHITE)
-        
+           
     def test_orangeskull(self):
         # Create player to attack.
         target = self.setupPlayer()
@@ -84,7 +84,7 @@ class TestAttackSkulls(FrameworkTestGame):
         self.player.ignoreBlock = True
         
         # Kill him enough times.
-        for n in xrange(config.redSkullUnmarked.values()[0]+1):
+        for n in range(list(config.redSkullUnmarked.values())[0]+1):
             # Set target
             # Avoid auto attacks.
             self.player.target = target
@@ -116,7 +116,7 @@ class TestAttackSkulls(FrameworkTestGame):
         self.player.ignoreBlock = True
         
         # Kill him enough times.
-        for n in xrange(config.blackSkullUnmarked.values()[0]+1):
+        for n in range(list(config.blackSkullUnmarked.values())[0]+1):
             # Create player to attack.
             target = self.setupPlayer()
             

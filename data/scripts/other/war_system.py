@@ -29,7 +29,7 @@ if config.enableWarSystem:
             # When to cancel war.
             length = (self.started + self.duration) - time.time()
             if length > 0:
-                callLater(length, cancelWar, self)
+                call_later(length, cancelWar, self)
             else:
                 # War might be over already.
                 cancelWar(self)
@@ -93,7 +93,7 @@ if config.enableWarSystem:
             if self.status != status:
                 sql.runOperation("UPDATE guild_wars SET status = %s WHERE war_id = %s", (status, warId))
         
-        @inlineCallbacks
+        @gen.coroutine
         def insert(self):
             self.warId = yield sql.runOperationLastId("INSERT INTO guild_wars(guild_id, guild_id2, started, duration, frags, stakes, `status`) VALUES(%s, %s, %s, %s, %s, %s, %s)", (self.guild1, self.guild2, self.started, self.duration, self.frags, self.stakes, self.status))
             
@@ -119,12 +119,12 @@ if config.enableWarSystem:
         # Call default function.
         return _oldGetEmblem(self, creature)
 
-    @inlineCallbacks
+    @gen.coroutine
     def warFrags(warId, guild1, guild2):
         entry = yield sql.runQuery("SELECT COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s)))), COUNT((SELECT 1 FROM pvp_deaths d WHERE d.war_id = %s AND (SELECT 1 FROM players p WHERE d.victim_id = p.id AND p.id IN (SELECT player_id FROM player_guild WHERE guild_id = %s))))", (warId, guild2, warId, guild1))
-        returnValue(entry[0].values())
+        return entry[0].values()
     
-    @inlineCallbacks
+    @gen.coroutine
     def decideWinner(entry):
         guild1_frags, guild2_frags = yield warFrags(entry.warId, entry.guild1, entry.guild2)
         guild1 = getGuildById(entry.guild1)
@@ -174,7 +174,7 @@ if config.enableWarSystem:
                 entry.setStatus(GUILD_WAR_ACTIVE)
                 
             
-        callLater(3600, checkPayments) # Try once per hour to check for payments.
+        call_later(3600, checkPayments) # Try once per hour to check for payments.
     
     def findInvite(creature, guild):
         try:
@@ -193,7 +193,7 @@ if config.enableWarSystem:
             pass
         
     # Loader.
-    @inlineCallbacks
+    @gen.coroutine
     def loadGuildWars():
         for entry in (yield sql.runQuery("SELECT w.war_id, w.guild_id, w.guild_id2, w.started, w.duration, w.frags, w.stakes, w.status FROM guild_wars w WHERE (SELECT 1 FROM guilds g WHERE g.world_id = %s AND g.guild_id = w.guild_id) AND w.status IN (0, 2, 4)", config.worldId)):
             warEntry = WarEntry(entry['war_id'], entry['guild_id'], entry['guild_id2'], entry['started'], entry['duration'], entry['frags'], entry['stakes'])

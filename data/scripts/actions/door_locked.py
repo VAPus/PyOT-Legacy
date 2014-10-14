@@ -7,7 +7,7 @@ keys = range(2086, 2092+1)
 def onUseDoor(creature, thing, position, **k):
     if not thing.actions:
         # Shouldn't happend
-        print "Bad door on %s. It might bug" % str(position)
+        print("Bad door on %s. It might bug" % str(position))
         thing.transform(thing.itemId+2)
     else:
         if thing.hasAction("houseDoor"):

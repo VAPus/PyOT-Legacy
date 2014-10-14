@@ -17,11 +17,11 @@ class Offer(object):
         self.expireCallback = None
         expireIn = expire - time.time()
         if expireIn <= 0:
-            print "Expired offer"
+            print("Expired offer")
         else:
             self.expireCallback = callLater(expireIn, self.expireOffer)
 
-    @inlineCallbacks
+    @gen.coroutine
     def insert(self):
         self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, 1 if self.playerName == "Anonymous" else 0, self.type))
         self.counter = self.id & 0xFFFF
@@ -35,7 +35,7 @@ class Offer(object):
     def player(self):
         return loadPlayerById(self.playerId)
 
-    @inlineCallbacks
+    @gen.coroutine
     def expireOffer(self):
         # Already expired?
         if self.type == 0: return
@@ -65,9 +65,9 @@ class Offer(object):
                     depot.append(Item(self.itemId))
                     count -= 1
 
-    @inlineCallbacks
+    @gen.coroutine
     def handleBuy(self, seller, amount):
-        print "handleBuy"
+        print("handleBuy")
 
         # Verify item.
         if not self.itemId in seller.depotMarketCache[seller.marketDepotId] or not seller.depotMarketCache[seller.marketDepotId][self.itemId] >= amount:
@@ -120,9 +120,9 @@ class Offer(object):
                     depot.append(Item(self.itemId))
                     amount -= 1
         
-    @inlineCallbacks
+    @gen.coroutine
     def handleSell(self, buyer, amount):
-        print "handleSell"
+        print("handleSell")
 
         # Verify money.
         if not buyer.getBalance() >= amount * self.price:
@@ -282,15 +282,15 @@ class Market(object):
         # Insert SQL.
         sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", (offer.id, who.data["id"], count, time.time(), MARKET_OFFER_BUY))
 
-@inlineCallbacks
+@gen.coroutine
 def load():
     global Markets
+    
     expired = time.time() - config.marketOfferExpire
-
-    for entry in (yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))):
+    x = yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))
+    for entry in (x):
         if not entry["market_id"] in Markets:
             Markets[entry["market_id"]] = Market(entry["market_id"])
-            
         market = Markets[entry["market_id"]]
         offer = Offer(entry["player_id"], entry["item_id"], entry["price"], entry["created"]+config.marketOfferExpire,entry["amount"], entry["type"])
 

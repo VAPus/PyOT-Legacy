@@ -1,16 +1,12 @@
 """A collection of functions that almost every other component requires"""
-import __builtin__
-from twisted.internet import reactor, threads, defer
-from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
-__builtin__.inlineCallbacks = inlineCallbacks
 from collections import deque
-from twisted.python import log
+from tornado import gen
 import time
 import game.map
 import config
 import math
-import sql
-import otjson
+from . import sql
+from . import otjson
 import sys
 import random
 import game.vocation
@@ -19,7 +15,7 @@ import game.scriptsystem
 import game.errors
 import glob
 import game.protocol
-import logger
+from . import logger
 import game.chat
 import re
 import subprocess
@@ -27,16 +23,17 @@ import platform
 import os
 import game.deathlist
 import game.ban
+import itertools
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except:
     import pickle
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except:
-    from StringIO import StringIO
+    from io import StringIO
 
 # Some half important constants
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -44,44 +41,14 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "autoWalkCreature", "autoWalkCreatureTo", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
 
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""
     
     function()
-    reactor.callLater(time, looper, function, time)
-    
-# The action decorator :)
-def action(forced=False, delay=0):
-    """Action decorator.
-    
-    :param forced: Supress any other action.
-    :type forced: bool.
-    :param delay: Delay the start this action.
-    :type delay: float (seconds).
-    
-    """
-    
-    def _decor(f):
-        " Wrapper function "
-        def _new_f(creature, *args, **argw):
-            if creature.action and forced:
-                try:
-                    creature.action.cancel()
-                except:
-                    pass
-                f(creature, *args, **argw)
-            elif not forced and creature.action and creature.action.active():
-                reactor.callLater(0.05, new_f, creature, *args, **argw)
-            elif delay and creature.action:
-                reactor.callLater(delay, f, creature, *args, **argw)
-            else:
-                f(creature, *args, **argw)
-        _new_f.__doc__ = f.__doc__
-        return _new_f
-    return _decor
+    call_later(time, looper, function, time)
 
 def loopDecorator(time):
     """Loop function decorator.
@@ -94,91 +61,17 @@ def loopDecorator(time):
     def _decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
-                reactor.callLater(time, new_f, *args, **kwargs)
+                call_later(time, new_f, *args, **kwargs)
         
         def _first(*args, **kwargs):
-            reactor.callLater(0, new_f, *args, **kwargs)
+            call_later(0, new_f, *args, **kwargs)
         _first.__doc__ = f.__doc__
         return _first
     return _decor
     
-# First order of buisness, the autoWalker
-@action(True)
-def autoWalkCreature(creature, callback=None):
-    """Autowalk the creature using the walk patterns. This binds the action slot.
-    
-    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
-    :type creature: :class:`game.creature.Creature`.
-    :param walkPatterns: List of steps to take.
-    :type walkPatterns: :class:`collections.deque`.
-    :param callback: Call this function when the creature reach it's destination.
-    :type callback: function.
-    
-    """
-    
-    try:
-        creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
-    except:
-        # Just have to assume he goes down?
-        """pos = positionInDirection(creature.position, creature.walkPattern[0], 2)
-        pos[2] += 1
-        creature.teleport(pos)"""
-        pass
-        
 # This one calculate the tiles on the way
-def autoWalkCreatureTo(creature, to, skipFields=0, diagonal=True, callback=None):
-    """Autowalk the creature using the walk patterns. This binds the action slot.
-    
-    :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
-    :type creature: :class:`game.creature.Creature`.
-    
-    :param to: Destination position.
-    :type to: list or tuple.
-    
-    :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
-    :type skipFields: int.
-    
-    :param diagonal: Allow diagonal walking?
-    :type diagonal: bool.
-    
-    :param callback: Call this function when the creature reach it's destination.
-    :type callback: function.
-    
-    """
-    if creature.position.z != to.z:
-        creature.message("Change floor")
-        return
-        
-    pattern = calculateWalkPattern(creature, creature.position, to, skipFields, diagonal)
-    
-    if pattern:
-        creature.walkPattern = deque(pattern)
-        autoWalkCreature(creature, callback)
-    elif callback:
-        callback(None)
-
-    
-#@action()
-def handleAutoWalking(creature, callback=None, level=0):
-    """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
-    if not creature.walkPattern:
-        return
-        
-    direction = creature.walkPattern.popleft()
-
-    mcallback=callback
-    if creature.walkPattern:
-        def mcallback():
-            try:
-                creature.action = reactor.callLater(max(creature.lastAction - time.time(), 0), handleAutoWalking, creature, callback)
-            except IndexError:
-                return
-
-    creature.move(direction, level=level, stopIfLock=True, callback=mcallback)
-    
-
 # Calculate walk patterns
-def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
+def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
     """Calculate the route from ``fromPos`` to ``to``.
     
     :param fromPos: Start position.
@@ -194,17 +87,38 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
     :type diagonal: bool.
     
     """
-    pattern = []
+    pattern = deque()
     currPos = fromPos
+    fpX = fromPos.x
+    fpY = fromPos.y
+    tX = to.x
+    tY = to.y
+    direction = None
     # First diagonal if possible
-    if abs(fromPos.x - to.x) == 1 and abs(fromPos.y - to.y) == 1:
-        if fromPos.y > to.y:
-            base = 6
+    if abs(fpX - tX) == 1 and abs(fpY - tY) == 1:
+        if fpY > fpY:
+            direction = 6
         else:
-            base = 4
+            direction = 4
             
-        if fromPos.x < to.x:
-            base += 1
+        if fpX < fpX:
+            direction += 1
+
+    elif fpY == tY and abs(fpX - tX) == 1:
+        diff = fpX - tX
+        if diff == 1:
+            direction = WEST
+        elif diff == -1:
+            direction = EAST
+    elif fpX == tX and abs(fpY - tY) == 1:
+        diff = fpY - tY
+        if diff == 1:
+            direction = NORTH
+        elif diff == -1:
+            direction = SOUTH
+
+
+    if direction != None:
         newPos = positionInDirection(currPos, base)
         
         isOk = True
@@ -215,10 +129,10 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
                 
         if isOk:
             currPos = newPos
-            pattern.append(base)
-    
+            pattern.append(direction)
+            
     if not pattern:
-        # Try a straight line
+        # Try pathfinder.
         pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId, True if skipFields else False)
         #print pattern
         if not pattern:
@@ -239,8 +153,12 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=None, diagonal=True):
             elif last == 3: # last = west, last2 must be 
                 last = 0 + (6 if last2 == 0 else 4)
             pattern.append(last)"""
-    if skipFields != 0:
-        pattern = pattern[:skipFields]
+    if skipFields < 0:
+        for x in range(skipFields):
+            pattern.pop()
+    elif skipFields < 0:
+        for x in range(-skipFields):
+            pattern.popleft()
     return pattern
 
 # Spectator list
@@ -272,7 +190,7 @@ def hasSpectators(pos, radius=(8,6), ignore=()):
         
     return False
     
-def getCreatures(pos, radius=(8,6), ignore=()):
+def getCreatures(pos, radius=(8,6), ignore={}):
     """Gives you the creatures in the area.
     
     :param pos: Position of the center point.
@@ -335,7 +253,8 @@ def positionInDirection(nposition, direction, amount=1):
     
     """
     
-    position = nposition.copy() # Important not to remove the : here, we don't want a reference!
+    position = nposition.copy() # Make a copy of current position.
+    
     if direction == 0:
         position.y = nposition.y - amount
     elif direction == 1:
@@ -476,7 +395,7 @@ def relocate(fromPos, toPos):
 
     for creature in tile.creatures():
         if creature.distanceStepsTo(toPos) == 1:
-            autoWalkCreatureTo(creature, toPos)
+            creature.walkTo(toPos)
         else:
             creature.teleport(toPos)
 
@@ -491,7 +410,7 @@ def explainPacket(packet):
     
     #currPos = packet.pos
     #packet.pos = 0
-    log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.data)))) ))
+    print("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.data)))))) ))
     #packet.pos = currPos
 
 # Save system, async :)
@@ -500,7 +419,7 @@ def saveAll(force=False):
     commited = False
     
     t = time.time()
-    for player in game.player.allPlayers.values():
+    for player in list(game.player.allPlayers.values()):
         result = player._saveQuery(force)
         if result:
             sql.runOperation(*result)
@@ -524,13 +443,13 @@ def saveAll(force=False):
             
     # Houses
     if game.map.houseTiles:
-        for houseId, house in game.house.houseData.iteritems():
+        for houseId, house in game.house.houseData.items():
             # House is loaded?
             if houseId in game.map.houseTiles:
                 try:
                     items = house.data["items"].copy()
                 except:
-                    log.msg("House id %d have broken items!" % houseId)
+                    print("House id %d have broken items!" % houseId)
                     items = {} # Broken items
                     
                 for tile in game.map.houseTiles[houseId]:
@@ -555,18 +474,18 @@ def saveAll(force=False):
                     house.data["items"] = items
                     house.save = True # Force save
                 if house.save:
-                    log.msg("Saving house ", houseId)
+                    print("Saving house ", houseId)
                     sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data) if house.data else '', houseId))
                     house.save = False
                     commited = True
                 else:
-                    log.msg("Not saving house", houseId)
+                    print("Not saving house", houseId)
         
     if force:        
-        log.msg("Full (forced) save took: %f" % (time.time() - t))
+        print("Full (forced) save took: %f" % (time.time() - t))
 
     elif commited:       
-        log.msg("Full save took: %f" % (time.time() - t))
+        print("Full save took: %f" % (time.time() - t))
         
 # Time stuff
 def getTibiaTime():
@@ -622,7 +541,7 @@ def checkLightLevel():
         
 # Player lookup and mail
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok
-@inlineCallbacks
+@gen.coroutine
 def getPlayerIDByName(name):
     """ Returns the playerID based on the name.
     
@@ -631,13 +550,13 @@ def getPlayerIDByName(name):
     """
     
     try:
-        returnValue(game.player.allPlayers[name].data["id"])
+        return game.player.allPlayers[name].data["id"]
     except:
-        d = yield sql.conn.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
+        d = yield sql.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            returnValue(d[0]['id'])
+            return d[0]['id']
         else:
-            returnValue(None)
+            return
 
 def getPlayer(playerName):
     """ Returns the player with name `playerName`, this function only works for already loaded players. """
@@ -701,7 +620,7 @@ def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level
         stream.string(message)
         stream.send(player.client)
         
-@inlineCallbacks
+@gen.coroutine
 def placeInDepot(name, depotId, items):
     """ Place items into the depotId of player with a name. This can be used even if the player is offline.
     
@@ -730,9 +649,9 @@ def placeInDepot(name, depotId, items):
             __inPlace(game.player.allPlayers[name].depot[depotId])
         except:
             game.player.allPlayers[name].depot[depotId] = items
-        returnValue(True)
+        return True
     else:
-        result = yield sql.conn.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
+        result = yield sql.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
             result = pickle.loads(result[0]['depot'])
             try:
@@ -740,45 +659,43 @@ def placeInDepot(name, depotId, items):
             except:
                 result[depotId] = items
             result = fastPickler(result)
-            sql.conn.runOperation("UPDATE `players` SET `depot` = %s", result)
-            returnValue(True)
+            sql.runOperation("UPDATE `players` SET `depot` = %s", result)
+            return True
         else:
-            returnValue(False)
+            return False
             
-@inlineCallbacks
+@gen.coroutine
 def loadPlayer(playerName):
     """ Load player with name `playerName`, return result. """
     try:
         # Quick load :p
-        returnValue(game.player.allPlayers[playerName])
+        return game.player.allPlayers[playerName]
     except KeyError:
-        character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", (playerName, config.worldId))
+        character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", (playerName, config.worldId))
         if not character:
-            returnValue(None)
             return
         cd = character[0]
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
-        returnValue(game.player.allPlayers[playerName])
+        return game.player.allPlayers[playerName]
         
-@inlineCallbacks
+@gen.coroutine
 def loadPlayerById(playerId):
     """ Load a player with id `playerId`. Return result. """
     # Quick look
     for player in game.player.allPlayersObject:
         if player.data["id"] == playerId:
-            returnValue(player)
-            return
+            return player
     
-    character = yield sql.conn.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
+    character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", (playerId, config.worldId))
     if not character:
-        returnValue(None)
         return
     cd = character[0]
     deathlist.loadDeathList(cd['id'])
     game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
-    returnValue(game.player.allPlayers[cd['name']])
+    return game.player.allPlayers[cd['name']]
 
+@gen.coroutine
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
     if fromPosition == toPosition:
@@ -811,6 +728,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         count = thing.count
     if destItem and destItem == thing.inContainer:
         return False
+
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1):
         player.closeContainer(thing)
 
@@ -851,7 +769,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         while container:
             if container == thing:
                 player.notPossible()
-                return False #player.notPossible()
+                return False
+
             container = container.inContainer
 
     slots = thing.slots()
@@ -877,21 +796,21 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.tooHeavy()
         return False
     
-    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and game.scriptsystem.get("unequip").runSync(player, player.inventory[fromPosition.y-1], slot = (fromPosition.y-1)) == False:
-        return False
-    elif toPosition.x == 0xFFFF and toPosition.y < 64 and game.scriptsystem.get("equip").runSync(player, thing, slot = (toPosition.y-1)) == False:
+    if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (yield game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False \
+        or toPosition.x == 0xFFFF and toPosition.y < 64 and (yield game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
         return False
     
     # Special case when both items are the same and stackable.
     stacked = False
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
-        _newItem = game.scriptsystem.get("stack").runSync(thing, player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
+        _newItem = yield game.scriptsystem.get("stack").run(thing=thing, creature=player, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if _newItem == None:
             newCount = min(100, destItem.count + count) - destItem.count
             destItem.modify(newCount)
             thing.modify(-newCount)
-            
+
             return True
+
         elif isinstance(_newItem, Item):
             newItem = _newItem
             stacked = True
@@ -907,9 +826,9 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing # Easy enough.
         
     if destItem and destItem.containerSize:
-        if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
-            return False
-        if game.scriptsystem.get('dropOnto').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+        if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
+           (yield game.scriptsystem.get('dropOnto').run(thing=destItem, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
+
             return False
         
         if not thing.stackable:
@@ -927,9 +846,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         thisTile = toPosition.getTile()
         
         for item in thisTile.getItems():
-            if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=item) == False:
-                return False
-            if game.scriptsystem.get('dropOnto').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+            if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
+               (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
                 return False
 
         newItem.place(toPosition)
@@ -942,9 +860,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
             else:
                 container = player.getContainer(toPosition.y-64)
                 
-                if game.scriptsystem.get('dropOnto').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
-                    return False
-                if game.scriptsystem.get('dropOnto').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+                if (yield game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
+                   (yield game.scriptsystem.get('dropOnto').run(thing=container, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
                     return False
                 
                 #print "itemToContainer2"
@@ -964,7 +881,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
                     #print "itemToContainer4"
                     player.itemToContainer(player.inventory[SLOT_BACKPACK], destItem)
             else:
-                print "XXX: In case of bug, do something here?"
+                print("XXX: In case of bug, do something here?")
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
         player.closeContainer(thing)
@@ -1001,22 +918,13 @@ def getHouseByPos(pos):
 
 # Speed pickler
 def fastPickler(obj):
-    """ Just a allias for pickle.dumps with protocol 2"""
-    return pickle.dumps(obj, 2)
-    
-# Protocol 0x00:
-class ReturnValueExit(Exception):
-    " A special exception used by :func:`game.engine.Return` "
-    def __init__(self, value=""):
-        self.value = value
-        
-def Return(ret):
-    """ Used in exec protocolfunctions to end the function, and give a return value. """
-    raise ReturnValueExit(ret)
+    """ Just a allias for pickle.dumps with protocol highest protocol """
+    return pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
      
-@inlineCallbacks
+@gen.coroutine
 def executeCode(code):
     """ Used by execute protocol to run a piece of code """
+    raise Exception("Need PY3 support...")
     try:
         if "yield " in code:
             newcode = []
@@ -1025,15 +933,15 @@ def executeCode(code):
                 
                 
             exec("""
-@inlineCallbacks
+@gen.coroutine
 def _N():
 %s
 """ % '\n'.join(newcode))
-            returnValue(otjson.dumps((yield _N())))
+            return otjson.dumps((yield _N()))
         else:
             exec(code)
-    except ReturnValueExit as e:
-        returnValue(otjson.dumps(e.value))
+    except Exception as e:
+        return otjson.dumps(e.value)
     else:
         yield defer.maybeDeferred()
 

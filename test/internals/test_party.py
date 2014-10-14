@@ -1,4 +1,4 @@
-from test.framework import FrameworkTestGame
+from test.framework import FrameworkTestGame, async_test
 
 class TestParty(FrameworkTestGame):
     def test_create_party(self):
@@ -248,6 +248,7 @@ class TestParty(FrameworkTestGame):
         del game.monster.monsters["__TEST__"]
         self.restoreConfig("protectedZones")
         
+    @async_test      
     def test_share_experience(self):
         # Turn of protection zone
         self.overrideConfig("protectedZones", False)

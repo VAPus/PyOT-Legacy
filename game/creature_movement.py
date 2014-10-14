@@ -1,6 +1,8 @@
+
 from game.map import placeCreature, removeCreature, getTile
-from twisted.python import log
+from tornado import gen
 import config
+import traceback
 
 class CreatureMovement(object):
     def stepDuration(self, ground):
@@ -9,6 +11,7 @@ class CreatureMovement(object):
 
         return (ground.speed / self.speed) #- 0.05
     
+    @gen.coroutine
     def teleport(self, position, force=False):
         """if not self.actionLock(self.teleport, position):
             return False"""
@@ -16,6 +19,7 @@ class CreatureMovement(object):
         
         # 4 steps, remove item (creature), send new map and cords, and effects
         oldPosition = self.position.copy()
+        target = self.target
 
         newTile = getTile(position)
         oldPosCreatures = set()
@@ -49,7 +53,6 @@ class CreatureMovement(object):
         removeCreature(self, oldPosition)
         
         if self.creatureType == 0 and self.client:
-            print "Good"
             with self.packet() as stream:
                 if oldStackpos: 
                    stream.removeTileItem(oldPosition, oldStackpos)
@@ -67,7 +70,7 @@ class CreatureMovement(object):
                     self.cancelTarget(stream)
                     self.target = None
                     if self.isPlayer() and self.mounted:
-                        callLater(0, self.changeMountStatus, False)
+                        call_later(0, self.changeMountStatus, False)
 
                 elif not pzStatus and pzIcon:
                     self.removeIcon(CONDITION_PROTECTIONZONE)
@@ -80,10 +83,10 @@ class CreatureMovement(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').runSync(creature2, self)
+            yield game.scriptsystem.get('disappear').run(creature2=creature2, creature=self)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runSync(creature2, self)
+            yield game.scriptsystem.get('appear').run(creature2=creature2, creature=self)
 
 
         if not invisible:
@@ -93,7 +96,7 @@ class CreatureMovement(object):
                 stream.magicEffect(position, 0x02)
                 stream.send(spectator)
 
-        if self.target and not self.canSee(self.target.position):
+        if target and not self.canSee(target.position):
             self.cancelTarget()
             self.target = None
             self.targetMode = 0
@@ -101,7 +104,7 @@ class CreatureMovement(object):
         # Stairhop delay
         if self.isPlayer():
             self.lastStairHop = time.time()
-            if self.target and not self.canSee(self.target.position):
+            if target and not self.canSee(target.position):
                 self.cancelTarget()
             
     def turn(self, direction):
@@ -176,12 +179,70 @@ class CreatureMovement(object):
 
     def clearMove(self, direction, failback):
         self.cancelWalk(direction % 4)
-        self.walkPattern = []
-        if failback: reactor.callLater(0, failback)
+        self.walkPattern = None
+        if failback: call_later(0, failback)
         return False
         
-    def move(self, direction, spectators=None, level=0, stopIfLock=False, callback=None, failback=None, push=True):
-        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, callback, failback, push):
+    def autoWalk(self, pattern=None, callback=None):
+        """Autowalk the creature using the walk patterns. This binds the action slot."""
+        
+        delay = max(self.lastAction - time.time(), 0)
+        if(pattern):
+            self.walkPattern = pattern
+        if delay:
+            if(self.action):
+                self.action.cancel()
+            self.action = call_later(delay, self.handleAutoWalking, 0, callback)
+        else:
+            self.handleAutoWalking(0, callback)
+          
+    def walk_to(self, to, skipFields=0, diagonal=True):
+        """Autowalk the creature using the walk patterns. This binds the action slot.
+
+        :param creature: The creature to autowalk of type :class:`game.creature.Creature` or any subclass of it.
+        :type creature: :class:`game.creature.Creature`.
+
+        :param to: Destination position.
+        :type to: list or tuple.
+
+        :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
+        :type skipFields: int.
+
+        :param diagonal: Allow diagonal walking?
+        :type diagonal: bool.
+
+        :param callback: Call this function when the creature reach it's destination.
+        :type callback: function.
+
+        """
+        if self.position.z != to.z:
+            self.message("Change floor")
+            return
+            
+        pattern = calculateWalkPattern(self, self.position, to, skipFields, diagonal)
+
+        if pattern:
+            self.autoWalk(pattern)    
+            
+    @gen.coroutine
+    def handleAutoWalking(self, level=0, callback=None):
+        """ This handles the actual step by step walking of the autowalker functions. Rarely called directly. """
+        self.action = None
+        if not self.walkPattern:
+            return
+            
+        direction = self.walkPattern.popleft()
+
+        res = yield self.move(direction, level=level, stopIfLock=True)
+        
+        if self.walkPattern:
+            self.autoWalk()
+        elif callback:
+            callback()
+        
+    @gen.coroutine
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):
+        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, failback, push):
             return
 
         if not self.data["health"] or not self.canMove or not self.speed:
@@ -237,10 +298,9 @@ class CreatureMovement(object):
             # This always raise
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
-        val = game.scriptsystem.get("move").runSync(self)
+        val = yield game.scriptsystem.get("move").run(creature=self)
         if val == False:
             return self.clearMove(direction, failback)
-
         try:
             oldStackpos = oldTile.findStackpos(self)
         except:
@@ -248,19 +308,18 @@ class CreatureMovement(object):
 
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').runSync(item, self, None, position=oldPosition)
+            yield game.scriptsystem.get('walkOff').run(thing=item, creature=self, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
-            r = game.scriptsystem.get('preWalkOn').runSync(item, self, None, oldTile=oldTile, newTile=newTile, position=position)
+            r = yield game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
                 return self.clearMove(direction, failback)
-
         # PZ blocked?
         if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
             return self.clearMove(direction, failback)
-            
+
         if newTile.ground.solid:
             self.notPossible()
             return self.clearMove(direction, failback)
@@ -269,7 +328,7 @@ class CreatureMovement(object):
             for thing in newTile.things:
                 if not self.isPlayer() and isinstance(thing, Item) and thing.teleport:
                     return self.clearMove(direction, failback)
-
+                    
                 if thing.solid:
                     if level and isinstance(thing, Creature):
                         continue
@@ -368,7 +427,7 @@ class CreatureMovement(object):
                     self.cancelTarget(stream)
                     self.target = None
                 if self.isPlayer() and self.mounted:
-                    callLater(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
+                    call_later(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
 
             elif not pzStatus and pzIcon:
                 self.removeIcon(CONDITION_PROTECTIONZONE)
@@ -432,32 +491,31 @@ class CreatureMovement(object):
 
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').runDeferNoReturn(item, self, None, position=position, fromPosition=oldPosition)
+            yield game.scriptsystem.get('walkOn').run(thing=item, creature=self, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
                     self.magicEffect(EFFECT_TELEPORT)
                 except:
-                    log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
+                    print("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
 
         # Deal with appear and disappear. Ahh the power of sets :)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').runDeferNoReturn(creature2, self)
-            game.scriptsystem.get('disappear').runDeferNoReturn(self, creature2)
+            yield game.scriptsystem.get('disappear').run(creature=creature2, creature2=self)
+            yield game.scriptsystem.get('disappear').run(creature=self, creature2=creature2)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').runDeferNoReturn(creature2, self)
-            game.scriptsystem.get('appear').runDeferNoReturn(self, creature2)
+            yield game.scriptsystem.get('appear').run(creature=creature2, creature2=self)
+            yield game.scriptsystem.get('appear').run(creature=self, creature2=creature2)
 
         # Stairhop delay
         if level and self.isPlayer():
-            self.lastStairHop = time.time()
+            self.lastStairHop = _time
 
         if self.isPlayer() and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
-           
-        if callback: reactor.callLater(0, callback)
+
         return True

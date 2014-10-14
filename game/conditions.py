@@ -58,12 +58,13 @@ class Condition(object):
             creature.setSpeed(100)
 
         self.init()
-        self.tick()
+        
+        self.tickEvent = call_later(self.every, self.tick)
 
     def stop(self):
         """ Stops the condition."""
         try:
-            self.tickEvent.cancel()
+            ioloop_ins.remove_timeout(self.tickEvent)
         except:
             pass
 
@@ -79,6 +80,7 @@ class Condition(object):
 
     def finish(self):
         """ Called when the condition finishes. Etc, when :func:`conditions.Condition.stop` is called. Or we're out of ticks. """
+        self.tickEvent = None
         try:
             del self.creature.conditions[self.type]
         except:
@@ -163,20 +165,20 @@ class Condition(object):
 
         if self.check: # This is what we do if we got a check function, independantly of the length
             if self.check(self.creature):
-                self.tickEvent = reactor.callLater(self.every, self.tick)
+                self.tickEvent = call_later(self.every, self.tick)
             else:
                 self.finish()
 
         elif self.length > 0:
-            self.tickEvent = reactor.callLater(self.every, self.tick)
+            self.tickEvent = call_later(self.every, self.tick)
         else:
             self.finish()
 
     def process(self):
-        """ Mustly useful in tests. This repeats the tick process of this Condition until the Condition is finished without waiting. """
+        """ Mostly useful in tests. This repeats the tick process of this Condition until the Condition is finished without waiting. """
         if self.tickEvent:
-            while self.tickEvent.active():
-                self.tickEvent.cancel()
+            while self.tickEvent:
+                ioloop_ins.remove_timeout(self.tickEvent)
                 self.tick()
 
     def copy(self):
@@ -223,6 +225,7 @@ class Boost(Condition):
 
     def init(self):
         """ Initialize the Boost, this function sets the boosting."""
+        
         pid = 0
         for ptype in self.ptype:
             # Apply
@@ -259,7 +262,7 @@ class Boost(Condition):
                     self.creature.data[ptype] = pvalue
             pid += 1
 
-        self.tickEvent = reactor.callLater(self.length, self.finish)
+        self.tickEvent = call_later(self.length, self.finish)
 
         self.creature.refreshStatus()
     def callback(self):
@@ -291,7 +294,8 @@ class Boost(Condition):
                 self.creature.setSpeed(pvalue)
             elif isinstance(ptype, int):
                 #  Skills.
-                self.creature.tempAddSkillLevel(ptype, -(int(pvalue - self.creature.getActiveSkill(ptype))))
+                # pvalue is already negative.
+                self.creature.tempAddSkillLevel(ptype, (int(pvalue - self.creature.getActiveSkill(ptype))))
             else:
                 if inStruct == 0:
                     setattr(self.creature, ptype, pvalue)
@@ -362,7 +366,7 @@ class CountdownCondition(Condition):
             self.length = 0
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = call_later(2, self.tick)
             
 class PercentCondition(Condition): #under 100% it will decrase in percentages
     def __init__(self, type, startdmg, percent, rptcount=False, subtype=""):
@@ -410,7 +414,7 @@ class PercentCondition(Condition): #under 100% it will decrase in percentages
         if self.count <= 0 or self.damage <= 0.27:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = call_later(2, self.tick)
             
 
 class RepeatCondition(Condition):
@@ -458,4 +462,4 @@ class RepeatCondition(Condition):
         if self.count <= 0:
             self.finish()
         else:
-            self.tickEvent = reactor.callLater(2, self.tick)
+            self.tickEvent = call_later(2, self.tick)

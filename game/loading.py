@@ -1,16 +1,14 @@
-import __builtin__
-from twisted.internet import reactor, threads, defer
-from twisted.internet.defer import inlineCallbacks, returnValue, Deferred
-__builtin__.inlineCallbacks = inlineCallbacks
+import builtins
+from tornado import gen, ioloop
+builtins.gen = gen
 from collections import deque
-from twisted.python import log
 import time
 import game.map
 import config
 import userconfig
 import math
-import sql
-import otjson
+from . import sql
+from . import otjson
 import game.const
 import sys
 import random
@@ -38,18 +36,18 @@ import game.conditions
 import game.market
 
 try:
-    import cPickle as pickle
+    import pickle as pickle
 except:
     import pickle
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except:
-    from StringIO import StringIO
+    from io import StringIO
     
 MERCURIAL_REV = 0
-__builtin__.IS_IN_TEST = False
-__builtin__.SERVER_START = time.time() - config.tibiaTimeOffset
+builtins.IS_IN_TEST = False
+builtins.SERVER_START = time.time() - config.tibiaTimeOffset
 IS_ONLINE = False
 IS_RUNNING = True
 
@@ -82,13 +80,11 @@ def windowsLoading():
         os.system("color %s" % config.consoleColor)
 
 # The loader rutines, async loading :)
-@inlineCallbacks
+@gen.coroutine
 def loader(timer):
     # XXX: Remember, game.XXX -> sys.modules["game.XXX"] because game is set later on. And somehow this causes weird behavior :/
     
-    IS_IN_TEST = "trial_temp" in os.getcwd()
     if IS_IN_TEST:
-        os.chdir("..")
         # Also ugly hack.
         sys.stdout = StringIO()
         
@@ -101,7 +97,7 @@ def loader(timer):
             
             MERCURIAL_REV = (os.path.getsize(".hg/store/00changelog.i") // 64) - 1 # Since mercurial start on rev 0, we need to -1 to get the rev number.
             #MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
-            log.msg("Begin loading (PyOT r%s)" % MERCURIAL_REV)
+            print("Begin loading (PyOT r%s)" % MERCURIAL_REV)
             if platform.system() == "Windows":
                 os.system("title PyOT r%s" % MERCURIAL_REV)
                 windowsLoading()
@@ -110,7 +106,7 @@ def loader(timer):
 
         except (OSError, subprocess.CalledProcessError):
             # hg not in space.
-            log.msg("Begin loading...")
+            print("Begin loading...")
             if platform.system() == "Windows":
                 os.system("title PyOT")
                 windowsLoading()
@@ -118,7 +114,7 @@ def loader(timer):
                 sys.stdout.write("\x1b]2;PyOT\x07")
     else:
         MERCURIAL_REV = "unknown"
-        log.msg("Begin loading...")
+        print("Begin loading...")
         if platform.system() == "Windows":
             os.system("title PyOT")
             windowsLoading()
@@ -129,137 +125,147 @@ def loader(timer):
     # Begin loading items
     sys.modules["game.item"].loadItems()
     
-    # Reset online status
-    print "> > Reseting players online status...",
-    sql.conn.runOperation("UPDATE players SET online = 0")
-    print "%40s\n" % _txtColor("\t[DONE]", "blue")
+    # Initialize SQL
+    yield sql.connect()
     
-   
-    globalData = sql.conn.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
-    groupData = sql.conn.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
-    houseData = sql.conn.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
+    # Reset online status
+    print("> > Reseting players online status...", end=' ')
+    sql.runOperation("UPDATE players SET online = 0")
+    print("%40s\n" % _txtColor("\t[DONE]", "blue"))
+    
+    globalData = sql.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
+    groupData = sql.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
+    houseData = sql.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
 
     # Globalize certain things
-    print "> > Globalize data...",
+    print("> > Globalize data...", end=' ')
     const = sys.modules["game.const"]
-    __builtin__.const = const
+    builtins.const = const
 
     for i in dir(const):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(const, i))
+            setattr(builtins, i, getattr(const, i))
 
     for i in dir(sys.modules["game.errors"]):
         if not "__" in i:
-            setattr(__builtin__, i, getattr(sys.modules["game.errors"], i))
+            setattr(builtins, i, getattr(sys.modules["game.errors"], i))
 
     for i in sys.modules["game.functions"].globalize:
-        setattr(__builtin__, i, getattr(sys.modules["game.functions"], i))
+        setattr(builtins, i, getattr(sys.modules["game.functions"], i))
 
-    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
 
-    __builtin__.sql = sql.conn
-    __builtin__.config = config
-    __builtin__.userconfig = userconfig
+    # Tornado features.
+    builtins.ioloop_ins = ioloop.IOLoop.instance()
+    #if not IS_IN_TEST:
+    builtins.call_later = builtins.ioloop_ins.call_later
+    #else:
+    #    builtins.call_later = lambda *a, **b: None
+    builtins.call_at = builtins.ioloop_ins.call_at
+    builtins.remove_timeout = builtins.ioloop_ins.remove_timeout
+    builtins.add_callback = builtins.ioloop_ins.add_callback
+    builtins.add_future = builtins.ioloop_ins.add_future
+    builtins.PeriodicCallback = ioloop.PeriodicCallback
+    
+    # Important builtins.
+    builtins.sql = sql
+    builtins.config = config
+    builtins.userconfig = userconfig
 
     import game.pathfinder
 
-    __builtin__.register = game.scriptsystem.register
-    __builtin__.registerFirst = game.scriptsystem.registerFirst
-    __builtin__.registerForAttr = game.scriptsystem.registerForAttr
-    __builtin__.registerClass = game.scriptsystem.registerClass
-    __builtin__.defer = defer
-    __builtin__.reactor = reactor
-    __builtin__.functions = game.functions
-    __builtin__.sys = sys
-    __builtin__.math = math
-    __builtin__.returnValue = returnValue
-    __builtin__.Deferred = Deferred
-    __builtin__.deque = deque
-    __builtin__.random = random
-    __builtin__.time = time
-    __builtin__.re = re
-    __builtin__.spell = game.spell # Simplefy spell making
-    __builtin__.callLater = reactor.callLater
-    __builtin__.Item = game.item.Item
-    __builtin__.itemAttribute = game.item.attribute
-    __builtin__.cid = game.item.cid
-    __builtin__.idByName = game.item.idByName
-    __builtin__.getTile = game.map.getTile
-    __builtin__.setTile = game.map.setTile
-    __builtin__.getTileConst = game.map.getTileConst
-    __builtin__.Boost = game.conditions.Boost
-    __builtin__.MultiCondition = game.conditions.MultiCondition
-    __builtin__.itemAttribute = game.item.attribute
-    __builtin__.getHouseId = game.map.getHouseId
-    __builtin__.Position = game.position.Position
-    __builtin__.StackPosition = game.position.StackPosition
-    __builtin__.getHouseById = game.house.getHouseById
-    __builtin__.getGuildById = game.guild.getGuildById
-    __builtin__.getGuildByName = game.guild.getGuildByName
-    __builtin__.logger = sys.modules["game.logger"]
+    builtins.register = game.scriptsystem.register
+    builtins.registerFirst = game.scriptsystem.registerFirst
+    builtins.registerForAttr = game.scriptsystem.registerForAttr
+    builtins.registerClass = game.scriptsystem.registerClass
+    builtins.functions = game.functions
+    builtins.sys = sys
+    builtins.math = math
+    builtins.deque = deque
+    builtins.random = random
+    builtins.time = time
+    builtins.re = re
+    builtins.spell = game.spell # Simplefy spell making
+    builtins.Item = game.item.Item
+    builtins.itemAttribute = game.item.attribute
+    builtins.cid = game.item.cid
+    builtins.idByName = game.item.idByName
+    builtins.getTile = game.map.getTile
+    builtins.setTile = game.map.setTile
+    builtins.getTileConst = game.map.getTileConst
+    builtins.Boost = game.conditions.Boost
+    builtins.MultiCondition = game.conditions.MultiCondition
+    builtins.itemAttribute = game.item.attribute
+    builtins.getHouseId = game.map.getHouseId
+    builtins.Position = game.position.Position
+    builtins.StackPosition = game.position.StackPosition
+    builtins.getHouseById = game.house.getHouseById
+    builtins.getGuildById = game.guild.getGuildById
+    builtins.getGuildByName = game.guild.getGuildByName
+    builtins.logger = sys.modules["game.logger"]
 
     # Resources
-    __builtin__.genMonster = game.monster.genMonster
-    __builtin__.genNPC = game.npc.genNPC
-    __builtin__.genQuest = game.resource.genQuest
-    __builtin__.genOutfit = game.resource.genOutfit
-    __builtin__.genMount = game.resource.genMount
-    __builtin__.regVocation = game.vocation.regVocation
+    builtins.genMonster = game.monster.genMonster
+    builtins.genNPC = game.npc.genNPC
+    builtins.genQuest = game.resource.genQuest
+    builtins.genOutfit = game.resource.genOutfit
+    builtins.genMount = game.resource.genMount
+    builtins.regVocation = game.vocation.regVocation
 
     # Spells
-    __builtin__.typeToEffect = game.spell.typeToEffect
+    builtins.typeToEffect = game.spell.typeToEffect
 
     # Grab them
-    __builtin__.getNPC = game.npc.getNPC
-    __builtin__.getMonster = game.monster.getMonster
+    builtins.getNPC = game.npc.getNPC
+    builtins.getMonster = game.monster.getMonster
 
     # Used alot in monster and npcs
-    __builtin__.chance = game.monster.chance
+    builtins.chance = game.monster.chance
 
     # We use this in the import system
-    __builtin__.scriptInitPaths = game.scriptsystem.scriptInitPaths
+    builtins.scriptInitPaths = game.scriptsystem.scriptInitPaths
 
     # Access
-    __builtin__.access = game.scriptsystem.access
+    builtins.access = game.scriptsystem.access
     
     # Conditions
-    __builtin__.Condition = game.conditions.Condition
-    __builtin__.Boost = game.conditions.Boost
-    __builtin__.CountdownCondition = game.conditions.CountdownCondition
-    __builtin__.PercentCondition = game.conditions.PercentCondition
-    __builtin__.MultiCondition = game.conditions.MultiCondition
-    __builtin__.RepeatCondition = game.conditions.RepeatCondition
+    builtins.Condition = game.conditions.Condition
+    builtins.Boost = game.conditions.Boost
+    builtins.CountdownCondition = game.conditions.CountdownCondition
+    builtins.PercentCondition = game.conditions.PercentCondition
+    builtins.MultiCondition = game.conditions.MultiCondition
+    builtins.RepeatCondition = game.conditions.RepeatCondition
 
     # Pathfinder
-    __builtin__.pathfinder = game.pathfinder
+    builtins.pathfinder = game.pathfinder
 
     # Deathlist
-    __builtin__.deathlist = game.deathlist
+    builtins.deathlist = game.deathlist
 
     # Bans
-    __builtin__.ipIsBanned = game.ban.ipIsBanned
-    __builtin__.playerIsBanned = game.ban.playerIsBanned
-    __builtin__.accountIsBanned = game.ban.accountIsBanned
-    __builtin__.addBan = game.ban.addBan
+    builtins.ipIsBanned = game.ban.ipIsBanned
+    builtins.playerIsBanned = game.ban.playerIsBanned
+    builtins.accountIsBanned = game.ban.accountIsBanned
+    builtins.addBan = game.ban.addBan
 
     # Market
-    __builtin__.getMarket = game.market.getMarket
-    __builtin__.newMarket = game.market.newMarket
+    builtins.getMarket = game.market.getMarket
+    builtins.newMarket = game.market.newMarket
 
     # Creature and Player class. Mainly for test and savings.
-    __builtin__.Creature = game.creature.Creature
-    __builtin__.Player = game.player.Player
-    __builtin__.Monster = game.monster.Monster
+    builtins.Creature = game.creature.Creature
+    builtins.Player = game.player.Player
+    builtins.Monster = game.monster.Monster
 
     # JSON
-    __builtin__.json = otjson
+    builtins.json = otjson
 
     # Web
     if config.enableWebProtocol:
         import core.service.webserver
-        __builtin__.WebPage = core.service.webserver.Page
+        builtins.WebPage = core.service.webserver.Page
         from twisted.web.server import NOT_DONE_YET
-        __builtin__.NOT_DONE_YET = NOT_DONE_YET
+        builtins.NOT_DONE_YET = NOT_DONE_YET
 
     class Globalizer(object):
         __slots__ = ()
@@ -283,49 +289,48 @@ def loader(timer):
         ban = game.ban
         market = game.market
 
-    __builtin__.game = Globalizer()
+    builtins.game = Globalizer()
 
-    print "> > Loading global data...",
-    for x in (yield globalData):
+    print("> > Loading global data...", end=' ')
+    for x in ( yield globalData ):
         if x['type'] == 'json':
-            game.functions.globalStorage[x['key']] = otjson.loads(x['data'])
+            game.functions.globalStorage[x['key']] = otjson.loads(x['data'].decode("utf-8")) # JSON must be utf-8
         elif x['type'] == 'pickle':
             game.functions.globalStorage[x['key']] = pickle.loads(x['data'])
         else:
             game.functions.globalStorage[x['key']] = x['data']
-    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    print("%50s\n" % _txtColor("\t[DONE]", "blue"))
 
-    print "> > Loading groups...",
+    print("> > Loading groups...", end=' ')
     for x in (yield groupData):
         game.functions.groups[x['group_id']] = (x['group_name'], otjson.loads(x['group_flags']))
-    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    print("%60s\n" % _txtColor("\t[DONE]", "blue"))
 
-    print "> > Loading guilds...",
+    print("> > Loading guilds...", end=' ')
     game.guild.load()
-    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    print("%60s\n" % _txtColor("\t[DONE]", "blue"))
         
-    print "> > Loading bans...",
+    print("> > Loading bans...", end=' ')
     game.ban.refresh()
-    print "%60s\n" % _txtColor("\t[DONE]", "blue")
+    print("%60s\n" % _txtColor("\t[DONE]", "blue"))
 
-    print "> > Loading market...",
-    game.market.load()
-    print "%55s\n" % _txtColor("\t[DONE]", "blue")
-        
-    print "> > Loading house data...",
+    print("> > Loading market...", end=' ')
+    game.market.load() # Fails to load?
+    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
+    print("> > Loading house data...", end=' ')
     for x in (yield houseData):
         game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
-    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Load scripts
-    print "> > Loading scripts...",
+    print("> > Loading scripts...", end=' ')
     game.scriptsystem.importer()
-    game.scriptsystem.get("startup").runSync()
-    print "%55s\n" % _txtColor("\t[DONE]", "blue")
+    yield game.scriptsystem.get("startup").run()
+    print("%55s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Load map (if configurated to do so)
     if config.loadEntierMap:
-        print "> > Loading the entier map...",
+        print("> > Loading the entier map...", end=' ')
         begin = time.time()
         files = glob.glob('%s/%s/*.sec' % (config.dataDirectory, config.mapDirectory))
         for fileSec in files:
@@ -337,62 +342,63 @@ def loader(timer):
             sectorSum = (iX << 11) + iY
             game.map.load(x,y, 0, sectorSum, False)
 
-        print "%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue")
-        
+        print("%50s\n" % _txtColor("\t[DONE, took: %f]" % (time.time() - begin), "blue"))
+
     # Charge rent?
     def _charge(house):
-            callLater(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
+            call_later(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
             
-    for house in game.house.houseData.values():
+    for house in list(game.house.houseData.values()):
         if not house.rent or not house.owner: continue
             
         if house.paid < (timer - config.chargeRentEvery):
-            game.scriptsystem.get("chargeRent").runSync(None, house=house)
+            game.scriptsystem.get("chargeRent").run(house=house)
             _charge(house)
         else:
-            callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)    
+            if not IS_IN_TEST:
+                call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)    
     
     # Loading languages
     if config.enableTranslations:
-        print "> > Loading languages... ",
+        print("> > Loading languages... ", end=' ')
         if language.LANGUAGES:
-            print "%s\n" % _txtColor(language.LANGUAGES.keys(), "yellow")
+            print("%s\n" % _txtColor(list(language.LANGUAGES.keys()), "yellow"))
         else:
-            print "%s\n" % _txtColor("No languages found, falling back to defaults!", "red")
+            print("%s\n" % _txtColor("No languages found, falling back to defaults!", "red"))
                 
     
     # Load protocols
-    print "> > Loading game protocols...",
+    print("> > Loading game protocols...", end=' ')
     for version in config.supportProtocols:
         game.protocol.loadProtocol(version)
-    print "%50s\n" % _txtColor("\t[DONE]", "blue")
+    print("%50s\n" % _txtColor("\t[DONE]", "blue"))
     
     # Do we issue saves?
     if config.doSaveAll and not IS_IN_TEST:
-        print "> > Schedule global save...",
-        reactor.callLater(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
-        print "%50s\n" % _txtColor("\t[DONE]", "blue")
+        print("> > Schedule global save...", end=' ')
+        call_later(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
+        print("%50s\n" % _txtColor("\t[DONE]", "blue"))
         
     # Do we save on shutdowns?
     if config.saveOnShutdown:
         game.scriptsystem.get("shutdown").register(lambda **k: game.functions.saveAll(True), False)
         
     # Reset online status on shutdown
-    game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
+    game.scriptsystem.get("shutdown").register(lambda **k: sql.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
     if not IS_IN_TEST:
-        print "> > Turn world time and light on...",
+        print("> > Turn world time and light on...", end=' ')
         lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-        reactor.callLater(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
-        print "%45s" % _txtColor("\t[DONE]", "blue")
+        call_later(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
+        print("%45s" % _txtColor("\t[DONE]", "blue"))
     
-        reactor.callLater(60, game.functions.looper, pathfinder.RouteCache.clear, 60)
+        call_later(60, game.functions.looper, pathfinder.clear, 60)
 
     # Now we're online :)
-    print _txtColor("Message of the Day: %s" % config.motd, "red")
-    log.msg("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
+    print(_txtColor("Message of the Day: %s" % config.motd, "red"))
+    print("Loading complete in %fs, everything is ready to roll" % (time.time() - timer))
     global IS_ONLINE
     IS_ONLINE = True
 
-    print "\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green")
+    print("\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green"))

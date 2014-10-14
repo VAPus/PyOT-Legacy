@@ -1,4 +1,3 @@
-from twisted.python import log
 import sys, os, glob, importlib
 
 protocolsAvailable = []
@@ -15,7 +14,7 @@ def getProtocol(version):
     try:
         return protocolsUsed[version]
     except:
-        log.msg("Protocol %d unsupported" % version)
+        print("Protocol %d unsupported" % version)
     return None
 
 def loadProtocol(version):
@@ -23,7 +22,7 @@ def loadProtocol(version):
         os.chdir("..")
         
     if not version in protocolsAvailable:
-        log.msg("Protocol (Base) %d doesn't exist!" % version)
+        print("Protocol (Base) %d doesn't exist!" % version)
         return
         
     protocol = importlib.import_module('game.protocols.%d' % version)

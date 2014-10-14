@@ -1,17 +1,19 @@
-from twisted.internet.protocol import Protocol, Factory
-from twisted.internet import reactor
-from twisted.python import log
+from tornado.tcpserver import *
 from packet import TibiaPacketReader
 import config
 from struct import unpack
+import socket
 
 if config.checkAdler32:
     from zlib import adler32
   
-class TibiaProtocol(Protocol):
+class TibiaProtocol:
     #__slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
     enableTcpNoDelay = False
-    def __init__(self):
+    def __init__(self, stream, address, server):
+        self.transport = stream
+        self.address = address
+        self.server = server
         self.gotFirst = False
         self.xtea = None
         self.onInit()
@@ -19,83 +21,58 @@ class TibiaProtocol(Protocol):
         self.expect = 0
         self.player = None
         
+        # Register disconnect callback.
+        self.transport.set_close_callback(self.connectionLost)
+        
+        self.connectionMade()
+        
+        # Start Handle reading. First one uint16_t for length of the packet.
+        self.transport.read_bytes(2, self.handlePacketLength)
+        
     def connectionMade(self):
-        peer = self.transport.getPeer()
-        log.msg("Connection made from {0}:{1}".format(peer.host, peer.port))
+        print("Connection made from {0}".format(self.address))
         
-        if self.tcpNoDelay:
-            try:
-                # Enable TCP_NO_DELAY
-                self.transport.setTcpNoDelay(True)
-            except:
-                # May not always work.
-                pass
-        
-        # Add self to a queue
-        self.factory.addClient(self)
-
+        # Enable TCP_NO_DELAY
+        self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
+        self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                
         # Inform the Protocol that we had a connection
         self.onConnect()
 
-    def connectionLost(self, reason):
-        peer = self.transport.getPeer()
-        log.msg("Connection lost from {0}:{1}".format(peer.host, peer.port))
-        self.factory.removeClient(self)
+    def connectionLost(self, reason=None):
+        print("Connection lost from {0}".format(self.address))
         
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
-
-    def dataToPacket(self, data):
-        if self.expect:
-            if len(data) >= self.expect:
-                frame = data[:self.expect]
-                frame = ''.join(self.data) + frame
-                self.handlePacketFrame(frame)
-                self.data = []
-                self.expect = 0
-                
-                remains = data[self.expect:]
-                if remains:
-                    self.dataToPacket(remains)
-                
-                
-            else:
-                self.data.append(data)
-                self.expect -= len(data)
-        else:
-            expect = unpack("<H", data[:2])[0]
-            recevied = len(data) - 2
-            if recevied == expect:
-                self.handlePacketFrame(data[2:])
-            elif recevied > expect:
-                self.handlePacketFrame(data[2:2+expect])
-                self.dataToPacket(data[2+expect:])
-            else:
-                self.expect = expect-recevied
-                self.data.append(data)  
-                
-    def dataReceived(self, data):
-        self.dataToPacket(data)
             
-        
-    def handlePacketFrame(self, packetData):
+    def handlePacketLength(self, packetData):
+        length = unpack("<H", packetData)[0]
+
+        # Read this packet upto length.
+        self.transport.read_bytes(length, self.handlePacketData)
+            
+    def handlePacketData(self, packetData):
         packet = TibiaPacketReader(packetData)
         # Adler32:
         if config.checkAdler32:
             adler = packet.uint32()
             calcAdler = adler32(packet.getData()) & 0xffffffff
             if adler != calcAdler:
-                log.msg("Adler32 missmatch, it's %s, should be: %s" % (calcAdler, adler))
-                self.transport.loseConnection()
+                print("Adler32 missmatch, it's %s, should be: %s" % (calcAdler, adler))
+                self.transport.close()
                 return
         else:
             packet.pos += 4
 
+            
         if self.gotFirst:
             self.onPacket(packet)
         else:
             self.gotFirst = True
             self.onFirstPacket(packet)
+            
+        # Start Handle reading for the next packet.
+        self.transport.read_bytes(2, self.handlePacketLength)
         
     #### Protocol spesific, to be overwritten ####
     def onConnect(self):
@@ -116,21 +93,12 @@ class TibiaProtocol(Protocol):
     #### Some simplefiers ####
     def loseConnection(self):
         self.onConnectionLost()
-        reactor.callLater(1, self.transport.loseConnection) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
+        call_later(1, self.transport.close) # We add a 1sec delay to the lose to prevent unfinished writtings from happending
 
-class TibiaFactory(Factory):
+class TibiaFactory(TCPServer):
     #__slots__ = 'clientCount'
     protocol = None # This HAVE to be overrided!
-    def __init__(self):
-        #self.clients = []
-        self.clientCount = 0
 
-    def addClient(self, client):
-        #self.clients.append(client)
-        self.clientCount = self.clientCount + 1
-        
-
-    def removeClient(self, client):
-        #if client in self.clients:
-        #    self.clients.remove(client)
-        self.clientCount = self.clientCount - 1
+    def handle_stream(self, stream, address):
+        """Called when new IOStream object is ready for usage"""
+        self.protocol(stream, address, self)

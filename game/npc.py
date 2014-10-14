@@ -1,11 +1,7 @@
 from game.creature import Creature, uniqueId
 from game.monster import Monster, MonsterBrain
 import game.map, game.scriptsystem
-from packet import TibiaPacket
 import copy, random, time
-from twisted.internet import reactor
-from twisted.internet.task import LoopingCall
-from twisted.python import log
 import game.errors
 import game.const
 import game.item
@@ -13,7 +9,9 @@ import config
 import game.scriptsystem
 from packet import TibiaPacket
 from inspect import isfunction
+import collections
 
+# XXX Kill these, move directly to NPC.
 npcs = {}
 brainFeatures = ({},{})
 classActions = {}
@@ -75,7 +73,7 @@ class NPC(Creature):
         self.respawn = state
         
     def playerSay(self, player, said, type, channel):
-        game.scriptsystem.get('playerSayTo').runSync(self, player, None, said=said, channelType=type, channelId=channel)
+        return game.scriptsystem.get('playerSayTo').run(creature2=self, creature=player, said=said, channelType=type, channelId=channel)
 
     def sayTo(self, to, text, messageType=game.const.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)
@@ -271,7 +269,7 @@ class NPCBase(object):
 
     def spawn(self, position, place=True, spawnDelay=0.1, spawnTime=60, radius=5, radiusTo=None):
         if spawnDelay:
-            return reactor.callLater(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
+            return call_later(spawnDelay, self.spawn, position, place, 0, spawnTime, radius, radiusTo)
         else:
             npc = NPC(self, position, None)
             npc.radius = radius
@@ -285,7 +283,7 @@ class NPCBase(object):
                 try:
                     stackpos = game.map.getTile(position).placeCreature(npc)
                     if stackpos > 9:
-                        log.msg("Can't place creatures on a stackpos > 9")
+                        print("Can't place creatures on a stackpos > 9")
                         return
                         
                     for player in getPlayers(position):
@@ -295,7 +293,7 @@ class NPCBase(object):
                         
                             stream.send(player.client)
                 except:
-                    log.msg("Spawning of npc('%s') on %s failed" % (self.data["name"], str(position)))
+                    print("Spawning of npc('%s') on %s failed" % (self.data["name"], str(position)))
             return npc    
 
     def setHealth(self, health, healthmax=None):
@@ -379,8 +377,8 @@ class NPCBase(object):
 
     def speakTree(self, tree, farewell=None):
         # Register the opening stuff.
-        greet = tree.keys()[0]
-        if callable(greet) or type(greet) == str:
+        greet = list(tree.keys())[0]
+        if isinstance(greet, collections.Callable) or type(greet) == str:
             self.greet(greet)
         else:
             self.speakTreeGreet = greet
@@ -407,7 +405,7 @@ class NPCBase(object):
                                 
                     
                 # Function
-                elif callable(greet):
+                elif isinstance(greet, collections.Callable):
                     greet(npc=npc, player=player)
                         
                 # Route simply just ends
@@ -445,7 +443,7 @@ class NPCBase(object):
                     # Proceed with next level.
                     if type(nextElm) == dict:
                         prevElm = currElm # Store this
-                        key = nextElm.keys()[0]
+                        key = list(nextElm.keys())[0]
                         currElm = nextElm[key]
                         npc.sayTo(player, key)
                             
@@ -457,10 +455,10 @@ class NPCBase(object):
                     # Walk one level down.
                     elif nextElm == -1:
                         currElm = prevElm
-                        npc.sayTo(player, currElm.keys()[0])
+                        npc.sayTo(player, list(currElm.keys())[0])
                     
                     # Function
-                    elif callable(nextElm):
+                    elif isinstance(nextElm, collections.Callable):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -485,7 +483,7 @@ class NPCBase(object):
                     # Proceed with next level.
                     if type(nextElm) == dict:
                         prevElm = currElm # Store this
-                        key = nextElm.keys()[0]
+                        key = list(nextElm.keys())[0]
                         currElm = nextElm[key]
                         npc.sayTo(player, key)
                             
@@ -497,10 +495,10 @@ class NPCBase(object):
                     # Walk one level down.
                     elif nextElm == -1:
                         currElm = prevElm
-                        npc.sayTo(player, currElm.keys()[0])
+                        npc.sayTo(player, list(currElm.keys())[0])
                     
                     # Function
-                    elif callable(nextElm):
+                    elif isinstance(nextElm, collections.Callable):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -525,7 +523,7 @@ class NPCBase(object):
                     # Proceed with next level.
                     if type(nextElm) == dict:
                         prevElm = currElm # Store this
-                        key = nextElm.keys()[0]
+                        key = list(nextElm.keys())[0]
                         currElm = nextElm[key]
                         npc.sayTo(player, key)
                             
@@ -537,10 +535,10 @@ class NPCBase(object):
                     # Walk one level down.
                     elif nextElm == -1:
                         currElm = prevElm
-                        npc.sayTo(player, currElm.keys()[0])
+                        npc.sayTo(player, list(currElm.keys())[0])
                     
                     # Function
-                    elif callable(nextElm):
+                    elif isinstance(nextElm, collections.Callable):
                         nextElm(npc=npc, player=player)
                         
                     # Route simply just ends
@@ -552,7 +550,7 @@ class NPCBase(object):
         
         # Register farewell
         if farewell:
-            if callable(farewell) or type(farewell) == str:
+            if isinstance(farewell, collections.Callable) or type(farewell) == str:
                 self.farewell(farewell)
             else:
                 self.speakTreeFarewell = farewell
@@ -579,7 +577,7 @@ class NPCBase(object):
                                     
                         
                     # Function
-                    elif callable(farewell):
+                    elif isinstance(farewell, collections.Callable):
                         farewell(npc=npc, player=player)
                             
                     # Route simply just ends
@@ -611,7 +609,7 @@ class NPCBrain(MonsterBrain):
                 npc.turnOffBrain()
                 return False
             elif ret == True:
-                npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
+                npc.brainEvent = call_later(2, self.handleThink, npc)
                 return True
 
         for feature in npc.base.brainFeatures:
@@ -621,7 +619,7 @@ class NPCBrain(MonsterBrain):
                 npc.turnOffBrain()
                 return False
             elif ret == True:
-                npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
+                npc.brainEvent = call_later(2, self.handleThink, npc)
                 return True
                     
         # Are anyone watching?
@@ -632,7 +630,7 @@ class NPCBrain(MonsterBrain):
         if npc.base.walkable and not npc.focus and not npc.action and time.time() - npc.lastStep > npc.walkPer: # If no other action is available
             self.walkRandomStep(npc) # Walk a random step
 
-        npc.brainEvent = reactor.callLater(2, self.handleThink, npc)
+        npc.brainEvent = call_later(2, self.handleThink, npc)
 brain = NPCBrain()
 def genNPC(name, look, description=""):
     # First build the common creature data
@@ -664,7 +662,7 @@ def regBrainFeature(name, function, priority=1):
     if not name in brainFeatures[priority]:
         brainFeatures[priority][name] = function
     else:
-        print "Warning, brain feature %s exists!" % name
+        print("Warning, brain feature %s exists!" % name)
         
 def regClassAction(name, myClass):
     classActions[name] = myClass

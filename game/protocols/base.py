@@ -1,8 +1,5 @@
 # This is the "common protocol" in which all other sub protocols is based upon
 from packet import TibiaPacket
-from twisted.internet.defer import Deferred, inlineCallbacks
-from twisted.internet import defer, reactor
-from twisted.python import log
 import game.const
 import game.map
 import math
@@ -26,24 +23,33 @@ class BasePacket(TibiaPacket):
     maxMounts = 25
     protocolEnums = {}
     _ok_ = []
-    """protocolEnums["MSG_NONE"] = 0
-    protocolEnums["MSG_SPEAK_SAY"] = 0x01
-    protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
-    protocolEnums["MSG_SPEAK_YELL"] = 0x03
-    protocolEnums["MSG_SPEAK_MONSTER_SAY"] = 0x13
-    protocolEnums["MSG_SPEAK_MONSTER_YELL"] = 0x14
+    protocolEnums["_MSG_NONE"] = 0
+    protocolEnums["_MSG_SPEAK_SAY"] = 0x01
+    protocolEnums["_MSG_SPEAK_WHISPER"] = 0x02
+    protocolEnums["_MSG_SPEAK_YELL"] = 0x03
+    protocolEnums["_MSG_SPEAK_MONSTER_SAY"] = 0x13
+    protocolEnums["_MSG_SPEAK_MONSTER_YELL"] = 0x14
     
-    protocolEnums["MSG_STATUS_CONSOLE_RED"] = 0x12
-    protocolEnums["MSG_EVENT_ORANGE"] = 0x13
-    protocolEnums["MSG_STATUS_CONSOLE_ORANGE"] = 0x14
-    protocolEnums["MSG_STATUS_WARNING"] = 0x15
-    protocolEnums["MSG_EVENT_ADVANCE"] = 0x16
-    protocolEnums["MSG_EVENT_DEFAULT"] = 0x17
-    protocolEnums["MSG_STATUS_DEFAULT"] = 0x18
-    protocolEnums["MSG_INFO_DESCR"] = 0x19
-    protocolEnums["MSG_STATUS_SMALL"] = 0x1A
-    protocolEnums["MSG_STATUS_CONSOLE_BLUE"] = 0x1B""" # TODO fix this!
+    protocolEnums["_MSG_STATUS_CONSOLE_RED"] = 0x12
+    protocolEnums["_MSG_EVENT_ORANGE"] = 0x13
+    protocolEnums["_MSG_STATUS_CONSOLE_ORANGE"] = 0x14
+    protocolEnums["_MSG_STATUS_WARNING"] = 0x15
+    protocolEnums["_MSG_EVENT_ADVANCE"] = 0x16
+    protocolEnums["_MSG_EVENT_DEFAULT"] = 0x17
+    protocolEnums["_MSG_STATUS_DEFAULT"] = 0x18
+    protocolEnums["_MSG_INFO_DESCR"] = 0x19
+    protocolEnums["_MSG_STATUS_SMALL"] = 0x1A
+    protocolEnums["_MSG_STATUS_CONSOLE_BLUE"] = 0x1B # TODO fix this!
 
+    # Alias
+    protocolEnums['_MSG_DAMAGE_RECEIVED'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_DAMAGE_DEALT'] = protocolEnums["_MSG_EVENT_DEFAULT"]
+    protocolEnums['_MSG_LOOT'] = protocolEnums["_MSG_INFO_DESCR"]
+    protocolEnums['_MSG_EXPERIENCE'] = protocolEnums["_MSG_EVENT_ADVANCE"]
+    
+    def const(self, key):
+        return self.protocolEnums[key]
+        
     # Position
     # Parameters is list(x,y,z)
     def position(self, position):
@@ -62,7 +68,7 @@ class BasePacket(TibiaPacket):
 
     # speed
     def speed(self, speed):
-        self.uint16(speed)
+        self.uint16(int(speed))
 
     def money(self, money):
         self.uint32(min(0xFFFFFFFE, money))
@@ -100,45 +106,47 @@ class BasePacket(TibiaPacket):
             step = 1
 
         # Run the steps by appending the floor
-        for z in xrange(start, (end+step), step):
+        for z in range(start, (end+step), step):
             skip = self.floorDescription(position.x, position.y, z, width, height, position.z - z, skip, player)
 
         if skip >= 0:
-            self.raw("%s\xFF" % chr(skip))
+            self.uint8(skip)
+            self.uint8(0xff)
             
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
         
-        for x in xrange(_x + offset, _x + width + offset):
-            for y in xrange(_y + offset, _y + height + offset):
+        for x in range(_x + offset, _x + width + offset):
+            for y in range(_y + offset, _y + height + offset):
                 tile = getTileConst(x, y, _z, instanceId)
 
                 if tile:
                     if skip >= 0:
-                        self.raw("%s\xFF" % chr(skip))
+                        self.uint8(skip)
+                        self.uint8(0xFF)
                     skip = 0
                     self.tileDescription(tile, player)
                 else:
                     skip += 1
                     if skip == 0xFF:
-                        self.raw("\xFF\xFF")
+                        self.uint16(0xffff)
                         skip = -1
         return skip
 
     def tileDescription(self, tile, player):
-        self.raw("\x00\x00")
+        self.uint16(0)
         count = 0
         
         for item in tile.topItems():  
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
-                self.raw(chr(item.count or 1))
+                self.uint8(item.count or 1)
             elif item.type in (11,12):
-                self.raw(chr(item.fluidSource or 0))
+                self.uint8(item.fluidSource or 0)
             if item.animation:
-                self.raw('\xFE')
+                self.uint8(0xFE)
             count += 1
             if count == 10:
                 return
@@ -183,11 +191,11 @@ class BasePacket(TibiaPacket):
             self.raw(pack("<H", item.cid))
                     
             if item.stackable:
-                self.raw(chr(item.count or 1))
+                self.uint8(item.count or 1)
             elif item.type in (11,12):
-                self.raw(chr(item.fluidSource or 0))
+                self.uint8(item.fluidSource or 0)
             if item.animation:
-                self.raw('\xFE')
+                self.uint8(0xFE)
             count += 1
             if count == 10:
                 return
@@ -403,7 +411,7 @@ class BasePacket(TibiaPacket):
 
     def skills(self, player):
         self.uint8(0xA1) # Skill type
-        for x in xrange(SKILL_FIRST, SKILL_LAST+1):
+        for x in range(SKILL_FIRST, SKILL_LAST+1):
             self.uint8(player.skills[x]) # Value / Level
             self.uint8(player.data["skills"][x]) # Base
             currHits = player.data["skill_tries"][x]
@@ -528,7 +536,7 @@ class BasePacket(TibiaPacket):
             self.string(title)
             self.string(message)
             self.uint8(len(buttons))
-            for button in xrange(len(buttons)):
+            for button in range(len(buttons)):
                 self.string(buttons[button])
                 self.uint8(button)
                 
@@ -586,11 +594,11 @@ class BaseProtocol(object):
                 if IS_IN_TEST:
                     raise
                 else:
-                    print "\n\n[UNHANDLED CORE EXCEPTION!]"
+                    print("\n\n[UNHANDLED CORE EXCEPTION!]")
                     traceback.print_exc()
-                    print "==============================\n"
+                    print("==============================\n")
         else:
-            log.msg("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
+            print(("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.getData())))))) )))
             #self.transport.loseConnection()
 
  
@@ -648,12 +656,10 @@ class BaseProtocol(object):
             player.cancelTarget()
 
         player.stopAction()  
-        player.walkPattern = deque()
-        
         steps = packet.uint8()
 
         walkPattern = deque()
-        for x in xrange(0, steps):
+        for x in range(0, steps):
             direction = packet.uint8()
             if direction == 1:
                 walkPattern.append(1) # East
@@ -673,9 +679,8 @@ class BaseProtocol(object):
                 walkPattern.append(5) # Southeast           
             else:
                 continue # We don't support them
-        
-        player.walkPattern = walkPattern
-        autoWalkCreature(player)
+
+        player.autoWalk(walkPattern)
 
     @packet(0x65)
     def handleWalkNorth(self, player, packet):
@@ -736,11 +741,10 @@ class BaseProtocol(object):
             player.targetMode = 0
 
         player.lastClientMove = direction        
-        player.walkPattern = deque((direction,))
-        autoWalkCreature(player)
+        player.autoWalk(deque((direction,)))
 
     @packet(0x78)
-    @inlineCallbacks
+    @gen.coroutine
     def handleMoveItem(self, player, packet):
         from game.item import items
         fromPosition = packet.position(player.position.instanceId)
@@ -801,19 +805,8 @@ class BaseProtocol(object):
                         player.notPossible()
                         return
 
-                    # Some half sync yield -> sleep walking
-                    def sleep(seconds):
-                        d = Deferred()
-                        reactor.callLater(seconds, d.callback, seconds)
-                        return d
-                    
-                    walking = [True]
-                    scount = 0
                     player.walkPattern = deque(walkPattern)
-                    autoWalkCreature(player, lambda: walking.pop())
-                    while walking and scount < 100:
-                        yield sleep(0.1)
-                        scount += 1
+                    yield player.autoWalk(player)
 
                     # Vertify, we might have been stopped on the run
                     if not player.inRange(fromPosition, 1, 1):
@@ -862,12 +855,14 @@ class BaseProtocol(object):
                 if len(walkPattern) > 1:
                     player.outOfRange()
                 else:
-                    autoWalkCreatureTo(player, creature.position, -1, True, lambda: autoWalkCreatureTo(creature, toPosition))
+                    player.walk_to(creature.position, -1, True, lambda: creature.walk_to(toPosition))
             else:
-                autoWalkCreatureTo(creature, toPosition)
+                creature.walk_to(toPosition)
         
-    @packet(0x8C)    
+    @packet(0x8C)
+    @gen.coroutine
     def handleLookAt(self, player, packet):
+        print("Calling lookAt")
         from game.item import items
         position = packet.position(player.position.instanceId)
         
@@ -899,21 +894,20 @@ class BaseProtocol(object):
                         thing = thing2
                         break       
         if thing:
+            yield game.scriptsystem.get('lookAt').run(thing=thing, creature=player, position=stackPosition)
             if isinstance(thing, Item):
-                def afterScript():
-                    extra = ""
-                    # TODO propper description handling
-                    if config.debugItems:
-                        extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
+                extra = ""
+                # TODO propper description handling
+                if config.debugItems:
+                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, clientId)
 
-                    player.message(thing.description(player) + extra)
+                player.message(thing.description(player) + extra)
             elif isinstance(thing, Creature):
-                def afterScript():
-                    if player == thing:
-                        player.message(thing.description(True))
-                    else:
-                        player.message(thing.description())
-            game.scriptsystem.get('lookAt').runSync(thing, player, afterScript, position=stackPosition)
+                if player == thing:
+                    player.message(thing.description(True))
+                else:
+                    player.message(thing.description())
+                    print(thing.brainEvent)
         else:
             player.notPossible()
 
@@ -929,14 +923,12 @@ class BaseProtocol(object):
         if not player.canSee(creature.position):
             return
 
-        def afterScript():
-            if player == creature:
-                player.message(creature.description(True))
-            else:
-                player.message(creature.description())
-
-        game.scriptsystem.get('lookAt').runSync(creature, player, afterScript, position=creature.position)
-
+        yield game.scriptsystem.get('lookAt').run(afterScript, creature2=creature, creature=player, position=creature.position)
+        if player == creature:
+            player.message(creature.description(True))
+        else:
+            player.message(creature.description())
+            
     @packet(0x79) # This is in stores. 
     def handleLookAtTrade(self, player, packet):
         clientId = packet.uint16()
@@ -956,7 +948,7 @@ class BaseProtocol(object):
             item = game.map.getTile(position).getThing(stackpos)
             def end():
                 transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').runSync(item, player, end, position=position.setStackpos(stackpos))
+            game.scriptsystem.get('rotate').run(end, thing=item, creature=player, position=position.setStackpos(stackpos))
             
     @packet(0xD2)
     def handleRequestOutfit(self, player, packet):
@@ -988,7 +980,7 @@ class BaseProtocol(object):
                 player.outfitWindow()
     
     @packet(0x82)        
-    @inlineCallbacks        
+    @gen.coroutine        
     def handleUse(self, player, packet):
         position = packet.position(player.position.instanceId)
 
@@ -1014,29 +1006,16 @@ class BaseProtocol(object):
                 if not walkPattern:
                     player.notPossible()
                     return
-
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
                     
-                scount = 0
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player)
-                while player.walkPattern and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
-                # Add a short delay here. Kinda fix overuse of useDelay.
-                yield sleep(0.2)
-    
+                yield player.autoWalk(walkPattern)
+
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('use').runSync(thing, player, None, position=stackPosition, index=index)
+                yield game.scriptsystem.get('use').run(thing=thing, creature=player, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
 
     @packet(0x83)
-    @inlineCallbacks
+    @gen.coroutine
     def handleUseWith(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
@@ -1050,7 +1029,7 @@ class BaseProtocol(object):
         stackPosition2 = onPosition.setStackpos(onStack)
         
         if hotkey:
-            print clientId, game.item.sid(clientId)
+            print(clientId, game.item.sid(clientId))
             if not config.enableHotkey: 
                 player.message("Hotkeys are disabled.")
                 return
@@ -1093,23 +1072,11 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
-                    
-                walking = [True]
-                scount = 0
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
+                yield player.autoWalk(walkpattern)
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
-                end = lambda: game.scriptsystem.get('useWith').runDeferNoReturn(onThing, player, None, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').runDeferNoReturn(thing, player, end, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                end = lambda res: game.scriptsystem.get('useWith').run(thing=onThing, creature=player, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
+                game.scriptsystem.get('useWith').run(end, thing=thing, creature=player, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
             else:
@@ -1359,13 +1326,13 @@ class BaseProtocol(object):
                 pass
             
         if thing:
-            def afterScript():
+            def afterScript(res):
                 extra = ""
                 # TODO propper description handling
                 if config.debugItems:
                     extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
                 player.message(thing.description(player) + extra)
-            game.scriptsystem.get('lookAtTrade').runSync(thing, player, afterScript, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
+            game.scriptsystem.get('lookAtTrade').run(afterScript, thing=thing, creature=player, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
         
     @packet(0x7F)    
     def handleAcceptTrade(self, player, packet):
@@ -1406,7 +1373,7 @@ class BaseProtocol(object):
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
         
     @packet(0x84)    
-    @inlineCallbacks        
+    @gen.coroutine        
     def handleUseBattleWindow(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
@@ -1459,22 +1426,11 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                # Some half sync yield -> sleep walking
-                def sleep(seconds):
-                    d = Deferred()
-                    reactor.callLater(seconds, d.callback, seconds)
-                    return d
-                    
-                walking = [True]
-                scount = 0
-                player.walkPattern = deque(walkPattern)
-                autoWalkCreature(player, lambda: walking.pop())
-                while walking and scount < 100:
-                    yield sleep(0.1)
-                    scount += 1
-            
+
+                yield autoWalk(walkPattern)
+
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                game.scriptsystem.get('useWith').runSync(thing, player, None, position=stackPosition, onThing=creature, onPosition=creature.position)
+                game.scriptsystem.get('useWith').run(thing=thing, creature=player, position=stackPosition, onThing=creature, onPosition=creature.position)
 
         
     @packet(0xA3)
@@ -1553,12 +1509,11 @@ class BaseProtocol(object):
         party.toggleShareExperience()
         
     @packet(0xE7)
-    @inlineCallbacks
     def handleThanks(self, player, packet):
         messageId = packet.uint32()
         message = game.chat.getMessage(messageId)
         
-        yield game.scriptsystem.get("thankYou").runDefer(player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
+        game.scriptsystem.get("thankYou").run(creature=player, messageId = messageId, author = message[0], channelType = message[3], channel = message[1], text = message[2])
 
     @packet(0xE8)
     def handleDebugAssert(self, player, packet):
@@ -1581,11 +1536,11 @@ class BaseProtocol(object):
         id = packet.uint16()
 
         if id == 0xFFFE:
-            print "Req own offers"
+            print("Req own offers")
             player.marketOwnOffers()
 
         elif id == 0xFFFF:
-            print "Req own history"
+            print("Req own history")
             player.marketHistory()
 
         else:
@@ -1613,7 +1568,7 @@ class BaseProtocol(object):
         expire = packet.uint32()
         counter = packet.uint16()
 
-        print expire, counter
+        print(expire, counter)
         
         offer = player.market.findOffer(expire, counter)
         if offer:
@@ -1631,11 +1586,11 @@ class BaseProtocol(object):
 
         offer = player.market.findOffer(expire, counter)
         if not offer:
-            print "Offer not found"
-            print expire, expire-config.marketOfferExpire, counter
+            print("Offer not found")
+            print(expire, expire-config.marketOfferExpire, counter)
             return
         if offer.amount < amount:
-            print "Too much, reducing offer"
+            print("Too much, reducing offer")
             player.marketOffers(offer.itemId)
             amount = offer.amount
 

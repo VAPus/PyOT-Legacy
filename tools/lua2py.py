@@ -297,7 +297,7 @@ doAddCondition = re.compile(r"doAddCondition\((?P<creature>[^,]+), (?P<condition
 file = doAddCondition.sub("""\g<creature>.condition(<Add a PyOT compatible condition replacement for "\g<condition>" here ! >)""", file)
 
 addEvent = re.compile(r"addEvent\((?P<callback>\w+), (?P<time>[^,]+)(?P<param>(.*))\)")
-file = addEvent.sub("callLater(\g<time>/1000.0, \g<callback>\g<param>)", file)
+file = addEvent.sub("call_later(\g<time>/1000.0, \g<callback>\g<param>)", file)
 
 doRemoveCreature = re.compile(r"doRemoveCreature\((?P<creature>[^,]+).uid\)")
 file = doRemoveCreature.sub("\g<creature>.despawn()", file)
