@@ -704,35 +704,35 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         except:
             oldLevel = 0
         if oldLevel != level:
-            def endCallback(res):
-                self.saveData = True
-                self.data["level"] = level
+            res = game.scriptsystem.get("level").run(creature=self, fromLevel=oldLevel, toLevel=level)
+            if res == False:
+                return False
+            self.saveData = True
+            self.data["level"] = level
 
-                self.data["healthmax"] = vocation.maxHP(level)
-                self.data["manamax"] = vocation.maxMana(level)
-                self.data["capacity"] = vocation.maxCapacity(level) * 100
+            self.data["healthmax"] = vocation.maxHP(level)
+            self.data["manamax"] = vocation.maxMana(level)
+            self.data["capacity"] = vocation.maxCapacity(level) * 100
 
-                if self.data["manamax"] < config.minMana:
-                    self.data["manamax"] = config.minMana
-                    print("[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"]))
+            if self.data["manamax"] < config.minMana:
+                self.data["manamax"] = config.minMana
+                print("[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"]))
+            
+            if self.data["healthmax"] < config.minHealth:
+                self.data["healthmax"] = config.minHealth
                 
-                if self.data["healthmax"] < config.minHealth:
-                    self.data["healthmax"] = config.minHealth
-                    
-                if self.data["health"] > self.data["healthmax"]:
-                    self.data["health"] = self.data["healthmax"]
+            if self.data["health"] > self.data["healthmax"]:
+                self.data["health"] = self.data["healthmax"]
 
-                if self.data["mana"] > self.data["manamax"]:
-                    self.data["mana"] = self.data["manamax"]
+            if self.data["mana"] > self.data["manamax"]:
+                self.data["mana"] = self.data["manamax"]
 
-                if send:
-                    if level > oldLevel:
-                        self.message("You advanced from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
-                    elif level < oldLevel:
-                        self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
-                    self.refreshStatus()
-
-            game.scriptsystem.get("level").run(endCallback, creature=self, fromLevel=oldLevel, toLevel=level)
+            if send:
+                if level > oldLevel:
+                    self.message("You advanced from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
+                elif level < oldLevel:
+                    self.message("You were downgraded from level %d to Level %d." % (oldLevel, level), MSG_EVENT_ADVANCE)
+                self.refreshStatus()
 
     def modifyLevel(self, mod):
         self.setLevel(self.data["level"] + mod)
@@ -741,15 +741,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if not mod:
             return
         
-        def endCallback(res):
-            if res != False:
-                self.data["maglevel"] += mod
-                if self.data["maglevel"] < 0:
-                    self.data["maglevel"] = 0
-                self.refreshStatus()
 
-        game.scriptsystem.get("skill").run(endCallback, creature=self, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
-
+        res = game.scriptsystem.get("skill").run(creature=self, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
+        
+        if res != False:
+            self.data["maglevel"] += mod
+            if self.data["maglevel"] < 0:
+                self.data["maglevel"] = 0
+            self.refreshStatus()
     def modifyExperience(self, exp):
         exp = int(exp)
         
@@ -832,26 +831,24 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     # Skills
     def addSkillLevel(self, skill, levels):
-        def endCallback(res):
-            if res == False: return
+        res = game.scriptsystem.get("skill").run(creature=self, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
+        if res == False: return
 
-            # Saved data
-            self.data["skills"][skill] += levels
+        # Saved data
+        self.data["skills"][skill] += levels
 
-            # Active data
-            self.skills[skill] += levels
+        # Active data
+        self.skills[skill] += levels
 
-            # Update goals
-            goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
-            self.setStorage('__skill%d' % skill, 0)
-            self.data["skill_tries"][skill] = 0
-            self.skillGoals[skill] = goal
+        # Update goals
+        goal = config.skillFormula(self.skills[skill], self.getVocation().meleeSkill)
+        self.setStorage('__skill%d' % skill, 0)
+        self.data["skill_tries"][skill] = 0
+        self.skillGoals[skill] = goal
 
-            self.refreshSkills()
-            self.saveSkills = True
-
-        game.scriptsystem.get("skill").run(endCallback, creature=self, skill=skill, fromLevel=self.skills[skill], toLevel=self.skills[skill] + levels)
-
+        self.refreshSkills()
+        self.saveSkills = True
+        
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill] = self.skills[skill] + level
         self.refreshSkills()
@@ -938,20 +935,17 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return False
 
     def setModes(self, attack, chase, secure):
-        def end(res):
-            if res == False: return
-            self.modes[0] = attack
+        res = game.scriptsystem.get('modeChange').run(creature=self, attack=attack, chase=chase, secure=secure)
 
-            if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
-                self.walk_to(self.target.position, -1, True)
-                self.target.scripts["onNextStep"].append(self.followCallback)
+        if res == False: return
+        self.modes[0] = attack
 
-            self.modes[1] = chase
-            self.modes[2] = secure
+        if self.target and self.targetMode == 1 and self.modes[1] != 1 and chase == 1:
+            self.walk_to(self.target.position, -1, True)
+            self.target.scripts["onNextStep"].append(self.followCallback)
 
-        game.scriptsystem.get('modeChange').run(end, creature=self, attack=attack, chase=chase, secure=secure)
-
-
+        self.modes[1] = chase
+        self.modes[2] = secure
 
     def setTarget(self, target):
         stream = self.packet(0xA3)
@@ -1167,54 +1161,51 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if container.openIndex == None:
             return False
-        
-        def end(res):
-            try:
-                stream = self.packet(0x6F)
-                stream.uint8(container.openIndex)
-                del self.openContainers[container.openIndex]
-                if container.openIndex == self.lastOpenContainerId-1:
-                    self.lastOpenContainerId -= 1
-                    if self.lastOpenContainerId:
-                        for i in range(self.lastOpenContainerId-2, -1, -1):
-                            try:
-                                self.openContainers[i]
-                                break
-                            except:
-                                self.lastOpenContainerId -= 1
-
-                del container.openIndex
-                stream.send(self.client)
-            except:
-                raise
-                pass
 
         #def callOpen(): game.scriptsystem.get('use').run(container, self, end, position=StackPosition(0xFFFF, 0, 0, 0), index=index)
 
-        game.scriptsystem.get('close').run(end, thing=container, creature=self, index=container.openIndex)
+        res = game.scriptsystem.get('close').run(thing=container, creature=self, index=container.openIndex)
+        if res == False:
+            return False
+            
+        stream = self.packet(0x6F)
+        stream.uint8(container.openIndex)
+        del self.openContainers[container.openIndex]
+        if container.openIndex == self.lastOpenContainerId-1:
+            self.lastOpenContainerId -= 1
+            if self.lastOpenContainerId:
+                for i in range(self.lastOpenContainerId-2, -1, -1):
+                    try:
+                        self.openContainers[i]
+                        break
+                    except:
+                        self.lastOpenContainerId -= 1
 
+        del container.openIndex
+        stream.send(self.client)
 
     def closeContainerId(self, openId):
         try:
             container = self.openContainers[openId]
 
-            def end(res):
-                stream = self.packet(0x6F)
-                stream.uint8(openId)
-                del self.openContainers[openId]
-                if openId == self.lastOpenContainerId-1:
-                    self.lastOpenContainerId -= 1
-                    if self.lastOpenContainerId:
-                        for i in range(self.lastOpenContainerId-2, -1, -1):
-                            try:
-                                self.openContainers[i]
-                                break
-                            except:
-                                self.lastOpenContainerId -= 1
-                del container.openIndex
-                stream.send(self.client)
-
-            game.scriptsystem.get('close').run(end, creature=self, thing=container, index=openId)
+            res = game.scriptsystem.get('close').run(creature=self, thing=container, index=openId)
+            if res == False:
+                return False
+                
+            stream = self.packet(0x6F)
+            stream.uint8(openId)
+            del self.openContainers[openId]
+            if openId == self.lastOpenContainerId-1:
+                self.lastOpenContainerId -= 1
+                if self.lastOpenContainerId:
+                    for i in range(self.lastOpenContainerId-2, -1, -1):
+                        try:
+                            self.openContainers[i]
+                            break
+                        except:
+                            self.lastOpenContainerId -= 1
+            del container.openIndex
+            stream.send(self.client)
             return True
 
         except:
@@ -1228,11 +1219,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             del bagFound.openIndex
             self.openContainers[openId] = bagFound.parent
 
-            def end(res):
-                self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
-
-            game.scriptsystem.get('close').run(end, thing=bagFound, creature=self, index=openId)
-
+            game.scriptsystem.get('close').run(thing=bagFound, creature=self, index=openId)
+            if res == False:
+                return False
+                
+            self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
 
     # Item to container
     def addItem(self, item, placeOnGround=True):

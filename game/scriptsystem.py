@@ -32,14 +32,12 @@ class Scripts(object):
         if callback in self.weaks:
             self.weaks.remove(callback)
    
-    def run(self, end=None, **kwargs):
+    def run(self, **kwargs):
         res = True
         for func in self.scripts:
             res = func(**kwargs)
             if res == False:
                 break 
-
-        if end: end(res)
         return res
                 
 class TriggerScripts(object):
@@ -74,23 +72,19 @@ class TriggerScripts(object):
         if (trigger, callback) in self.weaks:
             self.weaks.remove((trigger, callback))
 
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
         res = None
         if not trigger in self.scripts:
-            if end:
-                return end(None)
             return None
 
         for func in self.scripts[trigger]:
             res = func(**kwargs)
             
-        if end:
-            return end(res)
         return res
 
 class NCTriggerScripts(TriggerScripts):
     """ Designed for webrequests. """
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
 
         trig = self.scripts
         if not trigger in trig:
@@ -105,8 +99,6 @@ class NCTriggerScripts(TriggerScripts):
 
         d = maybeDeferred(trig[0], kwargs)
 
-        if end:
-            d.addCallback(end)
         return d
 
 class RegexTriggerScripts(TriggerScripts):
@@ -134,7 +126,7 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
 
         res = None
         """if not trigger in self.scripts:
@@ -153,8 +145,7 @@ class RegexTriggerScripts(TriggerScripts):
             for func in spectre[0]:
                 res = func(**args)
                
-        
-        if end: return end(None)
+
         return res
 
         
@@ -236,7 +227,7 @@ class ThingScripts(object):
         except:
             pass
        
-    def run(self, end=None, **kwargs):
+    def run(self, **kwargs):
         res = None
         thing = kwargs["thing"]
         if thing in self.thingScripts:
@@ -255,12 +246,10 @@ class ThingScripts(object):
                     res = func(**kwargs)
 
         
-        if end:
-            return end(res)
         return None
 
 class CreatureScripts(ThingScripts):
-    def run(self, end=None, **kwargs):
+    def run(self, **kwargs):
         res = None
         thing = kwargs["creature2"]
         if thing in self.thingScripts:
@@ -280,8 +269,6 @@ class CreatureScripts(ThingScripts):
                     res = func(**kwargs)
            
 
-        if end:
-            return end(res)
         return res
     
 # All global events can be initialized here
