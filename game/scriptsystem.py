@@ -246,7 +246,7 @@ class ThingScripts(object):
                     res = func(**kwargs)
 
         
-        return None
+        return res
 
 class CreatureScripts(ThingScripts):
     def run(self, **kwargs):
