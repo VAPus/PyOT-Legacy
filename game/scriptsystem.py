@@ -31,16 +31,13 @@ class Scripts(object):
         self.scripts.remove(callback)
         if callback in self.weaks:
             self.weaks.remove(callback)
-
-    @gen.coroutine   
-    def run(self, end=None, **kwargs):
+   
+    def run(self, **kwargs):
         res = True
         for func in self.scripts:
-            res = yield (gen.maybe_future(func(**kwargs)))
+            res = func(**kwargs)
             if res == False:
                 break 
-
-        if end: end(res)
         return res
                 
 class TriggerScripts(object):
@@ -75,24 +72,19 @@ class TriggerScripts(object):
         if (trigger, callback) in self.weaks:
             self.weaks.remove((trigger, callback))
 
-    @gen.coroutine
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
         res = None
         if not trigger in self.scripts:
-            if end:
-                return end(None)
             return None
 
         for func in self.scripts[trigger]:
-            res = yield (gen.maybe_future(func(**kwargs)))
+            res = func(**kwargs)
             
-        if end:
-            return end(res)
         return res
 
 class NCTriggerScripts(TriggerScripts):
     """ Designed for webrequests. """
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
 
         trig = self.scripts
         if not trigger in trig:
@@ -107,8 +99,6 @@ class NCTriggerScripts(TriggerScripts):
 
         d = maybeDeferred(trig[0], kwargs)
 
-        if end:
-            d.addCallback(end)
         return d
 
 class RegexTriggerScripts(TriggerScripts):
@@ -136,8 +126,7 @@ class RegexTriggerScripts(TriggerScripts):
             
             self.scripts[trigger][0].insert(0, callback)
 
-    @gen.coroutine
-    def run(self, trigger, end=None, **kwargs):
+    def run(self, trigger, **kwargs):
 
         res = None
         """if not trigger in self.scripts:
@@ -154,10 +143,9 @@ class RegexTriggerScripts(TriggerScripts):
             args.update(kwargs)
                                
             for func in spectre[0]:
-                res = yield (gen.maybe_future(func(**args)))
+                res = func(**args)
                
-        
-        if end: return end(None)
+
         return res
 
         
@@ -238,55 +226,49 @@ class ThingScripts(object):
             del self.scripts[id]
         except:
             pass
-    
-    @gen.coroutine    
-    def run(self, end=None, **kwargs):
+       
+    def run(self, **kwargs):
         res = None
         thing = kwargs["thing"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                res = yield (gen.maybe_future(func(**kwargs)))
+                res = func(**kwargs)
                 
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                res = yield (gen.maybe_future(func(**kwargs)))
+                res = func(**kwargs)
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    res = yield (gen.maybe_future(func(**kwargs)))
+                    res = func(**kwargs)
 
         
-        if end:
-            return end(res)
-        return None
+        return res
 
 class CreatureScripts(ThingScripts):
-    @gen.coroutine
-    def run(self, end=None, **kwargs):
+    def run(self, **kwargs):
         res = None
         thing = kwargs["creature2"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                res = yield(gen.maybe_future(func(**kwargs)))
+                res = func(**kwargs)
         
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                res = yield (gen.maybe_future(func(**kwargs)))
+                res = func(**kwargs)
         
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    res = yield (gen.maybe_future(func(**kwargs)))
+                    res = func(**kwargs)
            
 
-        if end:
-            return end(res)
         return res
     
 # All global events can be initialized here
@@ -434,7 +416,6 @@ def scriptInitPaths(base, subdir=True):
             paths.append(mod.split(os_seperator)[-2])
     return all, paths
     
-@gen.coroutine
 def reimporter():
     global globalEvents
     process = yield get("reload").run()
@@ -475,7 +456,7 @@ def reimporter():
     gc.collect()
     
     # postReload.
-    yield get("postReload").run()
+    get("postReload").run()
     
 def reimportCleanup():
     for script in globalScripts.values():

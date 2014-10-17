@@ -118,13 +118,16 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         # Set the XTEA key
         k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
         sum = 0
-        self.xtea = {}
+        self.xtea = [0] * 64
         for x in range(32):
             self.xtea[x] = sum + k[sum & 3] & 0xffffffff
             sum = (sum + 0x9E3779B9) & 0xffffffff
             self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
                 
-
+        # If cffi, cast this.
+        if otcrypto.ffi:
+            self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
+            
         # Check if version is correct
         if version > config.versionMax or version < config.versionMin:
             self.exitWithError(config.versionError)
@@ -161,7 +164,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         
         if config.letGameServerRunTheLoginServer:
             import game.scriptsystem
-            yield game.scriptsystem.get("preSendLogin").run(client=self, characters=characters, account=account, username=username, password=password)
+            game.scriptsystem.get("preSendLogin").run(client=self, characters=characters, account=account, username=username, password=password)
 
         # Send motd
         pkg.uint8(0x14)

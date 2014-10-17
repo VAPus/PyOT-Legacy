@@ -744,7 +744,6 @@ class BaseProtocol(object):
         player.autoWalk(deque((direction,)))
 
     @packet(0x78)
-    @gen.coroutine
     def handleMoveItem(self, player, packet):
         from game.item import items
         fromPosition = packet.position(player.position.instanceId)
@@ -806,7 +805,7 @@ class BaseProtocol(object):
                         return
 
                     player.walkPattern = deque(walkPattern)
-                    yield player.autoWalk(player)
+                    player.autoWalk(player)
 
                     # Vertify, we might have been stopped on the run
                     if not player.inRange(fromPosition, 1, 1):
@@ -860,7 +859,6 @@ class BaseProtocol(object):
                 creature.walk_to(toPosition)
         
     @packet(0x8C)
-    @gen.coroutine
     def handleLookAt(self, player, packet):
         print("Calling lookAt")
         from game.item import items
@@ -894,7 +892,7 @@ class BaseProtocol(object):
                         thing = thing2
                         break       
         if thing:
-            yield game.scriptsystem.get('lookAt').run(thing=thing, creature=player, position=stackPosition)
+            game.scriptsystem.get('lookAt').run(thing=thing, creature=player, position=stackPosition)
             if isinstance(thing, Item):
                 extra = ""
                 # TODO propper description handling
@@ -923,7 +921,7 @@ class BaseProtocol(object):
         if not player.canSee(creature.position):
             return
 
-        yield game.scriptsystem.get('lookAt').run(afterScript, creature2=creature, creature=player, position=creature.position)
+        game.scriptsystem.get('lookAt').run(creature2=creature, creature=player, position=creature.position)
         if player == creature:
             player.message(creature.description(True))
         else:
@@ -946,10 +944,11 @@ class BaseProtocol(object):
         
         if player.inRange(position, 1, 1):
             item = game.map.getTile(position).getThing(stackpos)
-            def end():
-                transformItem(item, item.rotateTo, position, stackpos)
-            game.scriptsystem.get('rotate').run(end, thing=item, creature=player, position=position.setStackpos(stackpos))
-            
+
+            res = game.scriptsystem.get('rotate').run(thing=item, creature=player, position=position.setStackpos(stackpos))
+            if res == False:
+                return
+            transformItem(item, item.rotateTo, position, stackpos)    
     @packet(0xD2)
     def handleRequestOutfit(self, player, packet):
         player.outfitWindow()
@@ -979,8 +978,7 @@ class BaseProtocol(object):
             else:
                 player.outfitWindow()
     
-    @packet(0x82)        
-    @gen.coroutine        
+    @packet(0x82)              
     def handleUse(self, player, packet):
         position = packet.position(player.position.instanceId)
 
@@ -1007,15 +1005,14 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
                     
-                yield player.autoWalk(walkPattern)
+                player.autoWalk(walkPattern)
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
-                yield game.scriptsystem.get('use').run(thing=thing, creature=player, position=stackPosition, index=index)
+                game.scriptsystem.get('use').run(thing=thing, creature=player, position=stackPosition, index=index)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
 
     @packet(0x83)
-    @gen.coroutine
     def handleUseWith(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientId = packet.uint16() # Junk I tell you :p
@@ -1072,11 +1069,11 @@ class BaseProtocol(object):
                     player.notPossible()
                     return
 
-                yield player.autoWalk(walkpattern)
+                player.autoWalk(walkpattern)
 
             if (position.x == 0xFFFF or player.inRange(position, 1, 1)) and (onPosition.x == 0xFFFF or player.canSee(onPosition)):
-                end = lambda res: game.scriptsystem.get('useWith').run(thing=onThing, creature=player, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
-                game.scriptsystem.get('useWith').run(end, thing=thing, creature=player, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                game.scriptsystem.get('useWith').run(thing=thing, creature=player, position=stackPosition1, onPosition=stackPosition2, onThing=onThing)
+                game.scriptsystem.get('useWith').run(thing=onThing, creature=player, position=stackPosition2, onPosition=stackPosition1, onThing=thing)
                 if config.useDelay:
                     player.lastUsedObject = time.time()
             else:
@@ -1326,14 +1323,12 @@ class BaseProtocol(object):
                 pass
             
         if thing:
-            def afterScript(res):
-                extra = ""
-                # TODO propper description handling
-                if config.debugItems:
-                    extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
-                player.message(thing.description(player) + extra)
-            game.scriptsystem.get('lookAtTrade').run(afterScript, thing=thing, creature=player, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
-        
+            game.scriptsystem.get('lookAtTrade').run(thing=thing, creature=player, position=game.map.StackPosition(0xFFFE, counter, 0, stackpos))
+            extra = ""
+            # TODO propper description handling
+            if config.debugItems:
+                extra = "(ItemId: %d, Cid: %d)" % (thing.itemId, thing.cid)
+            player.message(thing.description(player) + extra)        
     @packet(0x7F)    
     def handleAcceptTrade(self, player, packet):
         if player.isTradingWith.tradeAccepted:
@@ -1372,8 +1367,7 @@ class BaseProtocol(object):
             player.tradeAccepted = True
             player.isTradingWith.message("Offer accepted. Whats your take on this?")
         
-    @packet(0x84)    
-    @gen.coroutine        
+    @packet(0x84)          
     def handleUseBattleWindow(self, player, packet):
         position = packet.position(player.position.instanceId)
         clientItemId = packet.uint16()
@@ -1427,7 +1421,7 @@ class BaseProtocol(object):
                     return
 
 
-                yield autoWalk(walkPattern)
+                autoWalk(walkPattern)
 
             if position.x == 0xFFFF or player.inRange(position, 1, 1):
                 game.scriptsystem.get('useWith').run(thing=thing, creature=player, position=stackPosition, onThing=creature, onPosition=creature.position)

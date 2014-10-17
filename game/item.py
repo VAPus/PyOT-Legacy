@@ -9,7 +9,6 @@ from . import inflect
 import gc
 import xml.etree.cElementTree as ET
 from . import otjson as json
-from tornado import gen
 
 INFLECT = inflect.engine()
 
@@ -357,7 +356,6 @@ class Item(object):
         else:
             return ()
   
-    @gen.coroutine
     def place(self, position, creature=None):
         " Place this item onto position "
 
@@ -372,8 +370,9 @@ class Item(object):
         else:
             tile = position.getTile()
             for item in tile.getItems():
-                if (yield game.scriptsystem.get('dropOnto').run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
-                   (yield game.scriptsystem.get('dropOnto').run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
+                dropOnto_event = game.scriptsystem.get('dropOnto')
+                if (dropOnto_event.run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
+                   (dropOnto_event.run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
                     return False
 
             stackpos = tile.placeItem(self)

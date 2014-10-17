@@ -1,6 +1,6 @@
 import config
 import builtins
-from tornado import gen
+from tornado import gen, ioloop
 from collections import deque
 import random
 
@@ -21,8 +21,11 @@ else:
 
 
 
-@gen.coroutine
 def runOperation(*argc):
+    ioloop.IOLoop.instance().add_callback(_runOperation, *argc)
+
+@gen.coroutine
+def _runOperation(*argc):
     if PYOT_RUN_SQLOPERATIONS:
         # Get a connection.
         conn = None

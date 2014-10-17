@@ -17,7 +17,6 @@ class TestInstances(FrameworkTestGame):
         
         #self.assertIn(instanceId, game.map.knownMap)
     
-    @async_test
     def test_item_on_instance(self):
         # Make a item
         item  = Item(7449)
@@ -28,13 +27,13 @@ class TestInstances(FrameworkTestGame):
 
         position = Position(1000,1001,7,instanceId)
         
-        status = yield item.place(position)
+        status = item.place(position)
         self.assertTrue(status)
 
         self.assertIn(item, position.getTile().things)
         self.assertNotIn(item, (Position(1000, 1001, 7).getTile().things or []))
     
-    @async_test
+
     def test_can_notsee(self):
         # Make a item
         item  = Item(7449)
@@ -43,12 +42,12 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7,instanceId)
         
-        yield item.place(position)
+        item.place(position)
         
         self.assertFalse(self.player.canSee(position))
     
     
-    @async_test
+
     def test_can_notsee_reverse(self):
         # Make a item
         item  = Item(7449)
@@ -57,12 +56,11 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7)
         
-        yield item.place(position)
+        item.place(position)
         
         self.player.setInstance(instanceId)
         self.assertFalse(self.player.canSee(position))
     
-    @async_test
     def test_cansee(self):
         # Make a item
         item  = Item(7449)
@@ -71,13 +69,12 @@ class TestInstances(FrameworkTestGame):
         instanceId = game.map.newInstance()
         position = Position(1000,1001,7,instanceId)
         
-        yield item.place(position)
+        item.place(position)
         
         self.player.setInstance(instanceId)
         
         self.assertTrue(self.player.canSee(position))
     
-    @async_test
     def test_move_across_instances(self):
         # Make a item
         item  = Item(7449)
@@ -88,7 +85,7 @@ class TestInstances(FrameworkTestGame):
         position = Position(1000,1001,7)
         iPosition = Position(1000,1001,7,instanceId)
         
-        yield item.place(position)
+        item.place(position)
         
         self.player.setInstance(instanceId)
         

@@ -176,7 +176,6 @@ class PlayerTalking(CreatureTalking):
         self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
         
     # Channel system
-    @gen.coroutine
     def openChannels(self):
         channels = game.chat.getChannels(self)
         
@@ -188,7 +187,7 @@ class PlayerTalking(CreatureTalking):
         if self.party():
             channels[CHANNEL_PARTY] = self.party().chatChannel
             
-        channels2 = yield game.scriptsystem.get("requestChannels").run(creature=self, channels=channels)
+        channels2 = game.scriptsystem.get("requestChannels").run(creature=self, channels=channels)
         if type(channels2) is dict:
             channels = channels2
 
@@ -197,7 +196,7 @@ class PlayerTalking(CreatureTalking):
 
     def openChannel(self, id):
 
-        if (yield game.scriptsystem.get("joinChannel").run(creature=self, channelId=id)):
+        if (game.scriptsystem.get("joinChannel").run(creature=self, channelId=id)):
             if id == CHANNEL_GUILD:
                 # Guild channel.
                 channel  = self.guild().chatChannel
@@ -255,7 +254,6 @@ class PlayerTalking(CreatureTalking):
         except:
             return False
 
-    @gen.coroutine
     def channelMessage(self, text, channelType=enum.MSG_CHANNEL, channelId=0):
         if channelId == CHANNEL_GUILD:
             channel = self.guild().chatChannel
@@ -268,7 +266,7 @@ class PlayerTalking(CreatureTalking):
         except:
             members = []
 
-        members2 = yield game.scriptsystem.get("getChannelMembers").run(channelId, creature=self, channelId=channelId, text=text, type=channelType, members=members)
+        members2 = game.scriptsystem.get("getChannelMembers").run(channelId, creature=self, channelId=channelId, text=text, type=channelType, members=members)
         if not members and type(members2) != list:
             return False
 
@@ -322,8 +320,7 @@ class PlayerTalking(CreatureTalking):
 
     def notifyPrivateSay(self, sayer, text):
         pass # Not supported yet
-
-    @gen.coroutine        
+        
     def handleSay(self, channelType, channelId, reciever, text):
         if len(text) > config.maxLengthOfSay:
             self.message(_l(self, "Message too long"))
@@ -342,7 +339,7 @@ class PlayerTalking(CreatureTalking):
         doRegex = True
 
         if len(splits) > 1:
-            d = yield game.scriptsystem.get("talkactionFirstWord").run(splits[0], creature=self, text=' '.join(splits[1:]))
+            d = game.scriptsystem.get("talkactionFirstWord").run(splits[0], creature=self, text=' '.join(splits[1:]))
 
             if d != None:
                 doRegex = False
@@ -350,7 +347,7 @@ class PlayerTalking(CreatureTalking):
                 return
         
         
-        d = yield game.scriptsystem.get("talkaction").run(text, creature=self, text=text)
+        d = game.scriptsystem.get("talkaction").run(text, creature=self, text=text)
 
         if d != None:
             doRegex = False
@@ -358,7 +355,7 @@ class PlayerTalking(CreatureTalking):
             return
             
         if doRegex:
-            d = yield game.scriptsystem.get("talkactionRegex").run(text, creature=self, text=text)
+            d = game.scriptsystem.get("talkactionRegex").run(text, creature=self, text=text)
 
             if not d and d != None:
                 return
