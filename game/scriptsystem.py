@@ -79,6 +79,8 @@ class TriggerScripts(object):
 
         for func in self.scripts[trigger]:
             res = func(**kwargs)
+            if res == False:
+                return False
             
         return res
 
@@ -144,7 +146,8 @@ class RegexTriggerScripts(TriggerScripts):
                                
             for func in spectre[0]:
                 res = func(**args)
-               
+                if res == False:
+                    return False
 
         return res
 
@@ -233,18 +236,22 @@ class ThingScripts(object):
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
                 res = func(**kwargs)
-                
+                if res == False:
+                    return False
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
                 res = func(**kwargs)
+                if res == False:
+                    return False
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
                     res = func(**kwargs)
-
+                    if res == False: 
+                        return False
         
         return res
 
@@ -255,19 +262,22 @@ class CreatureScripts(ThingScripts):
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
                 res = func(**kwargs)
-        
+                if res == False:
+                    return False
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
                 res = func(**kwargs)
-        
+                if res == False:
+                    return False
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
                     res = func(**kwargs)
-           
+                    if res == False:
+                        return False
 
         return res
     
