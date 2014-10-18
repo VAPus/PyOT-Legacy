@@ -438,7 +438,7 @@ def saveAll(force=False):
             else:
                 data = globalStorage[field]
                 
-            sql.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", (field, data, type, data))
+            sql.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", field, data, type, data)
             commited = True
             
     # Houses

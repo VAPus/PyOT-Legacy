@@ -30,12 +30,24 @@ def _runOperation(*argc):
         # Get a connection.
         conn = None
         while not conn:
-            conn = connections.popleft()
+            try:
+                conn = connections.popleft()
+            except:
+                conn = None
+
             if not conn:
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
                 
-        yield conn.execute(*argc)
-        
+        future = conn.execute(*argc)
+        try:
+            yield future 
+        except:
+            pass
+
+        exc = future.exc_info()
+        if exc:
+            print(exc[0].__name__, exc[1], 'from query:', argc[0])
+            
         # Put connection back
         connections.append(conn)
 
@@ -45,11 +57,26 @@ def runQuery(*argc):
         # Get a connection.
         conn = None
         while not conn:
-            conn = connections.popleft()
+            try:
+                conn = connections.popleft()
+            except:
+                conn = None
+
             if not conn:
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
 
-        res = (yield conn.query(*argc))
+        future = conn.query(*argc)
+        try:
+            res = yield future
+        except:
+            res = None
+
+        exc = future.exc_info()
+        if exc:
+            print(exc[0].__class__.__name__, exc[1], 'from query:', argc[0])
+        exc = future.exception()
+        
+     
         
         # Put connection back
         connections.append(conn)
@@ -63,12 +90,23 @@ def runOperationLastId(*argc):
         # Get a connection.
         conn = None
         while not conn:
-            conn = connections.popleft()
+            try:
+                conn = connections.popleft()
+            except:
+                conn = None
+
             if not conn:
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
 
-        res = yield conn.execute_lastrowid(*argc)
+        future = conn.execute_lastrowid(*argc)
         
+        try:
+            res = yield future
+        except:
+            res = None
+        exc = future.exc_info()
+        if exc:
+            print(exc[0].__class__.__name__, exc[1], 'from query:', argc[0])
         # Put connection back
         connections.append(conn)
         
