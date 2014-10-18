@@ -33,6 +33,9 @@ loginServer= LoginFactory()
 loginServer.bind(config.loginPort, config.loginInterface)
 loginServer.start()
 
+# Fix logging machinery.
+IOLoop.instance().add_future(fut, lambda fut: fut.result())
+
 # Start reactor. This will call the above.
 IOLoop.instance().start()
             

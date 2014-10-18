@@ -1,4 +1,4 @@
-import sys
+import sys, signal
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
@@ -15,6 +15,13 @@ if config.tryCython:
         pyximport.install(pyimport = True)
     except:
         pass # No cython / old cython
+
+# Fix log machinery by replacing tornado.concurrent.
+# XXX: This might be tornado 4 specific. Be aware of bugs.
+import game.hack_concurrent
+#del sys.modules['tornado.concurrent']
+sys.modules['tornado.concurrent'] = game.hack_concurrent
+
 
 #### Import the tornado ####
 from tornado.tcpserver import *
@@ -62,5 +69,7 @@ if config.letGameServerRunTheLoginServer:
 IOLoop.instance().add_callback(game.loading.loader, startTime)
 
 # Start reactor. This will call the above.
+signal.signal(signal.SIGINT, game.scriptsystem.shutdown)
+signal.signal(signal.SIGTERM, game.scriptsystem.shutdown)
 IOLoop.instance().start()
-            
+

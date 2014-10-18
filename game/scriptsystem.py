@@ -4,6 +4,7 @@ import sys
 import time
 import traceback
 import gc
+import tornado.ioloop
 from os import sep as os_seperator
 from os.path import split as os_path_split
 from glob import glob
@@ -346,20 +347,30 @@ def callEventDate(date, func):
     import datetime.datetime.now as now
     func()
     globalEvents.append(call_later(parse(date) - now(), callEventDate, date, func))
-    
-# Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
-"""scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
-scriptPool.start()"""
 
-def run():
+def shutdown(sig, frame):
     global IS_ONLINE
     global IS_RUNNING
     IS_ONLINE = False
     IS_RUNNING = False
-    return get('shutdown').run()
+    get('shutdown').run()
+    # Perform clean shutdown.
+    io_loop = tornado.ioloop.IOLoop.instance()
  
-# XXX: port this. 
-#reactor.addSystemEventTrigger('before','shutdown',run)
+    deadline = time.time() + 30
+ 
+    def stop_loop():
+        now = time.time()
+        try:
+            if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                io_loop.add_timeout(now + 1, stop_loop)
+            else:
+                io_loop.stop()
+                # Success!
+        except:
+            io_loop.add_timeout(now + 2, io_loop.stop)
+            # Asyncio success.
+    stop_loop()
 
 def handleModule(name):
     try:
