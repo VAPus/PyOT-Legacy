@@ -11,11 +11,41 @@ if config.sqlModule == "mysql":
     def connect():
         if PYOT_RUN_SQLOPERATIONS:
             import asynctorndb
-            # Make connection pool.
-            for x in range(10):
-                conn = asynctorndb.Connect(user=config.sqlUsername, passwd=config.sqlPassword, database=config.sqlDatabase, no_delay = True, charset='utf8')
+            # Try one connection first.
+            conn = asynctorndb.Connect(host = config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, database=config.sqlDatabase, no_delay = True, charset='utf8')
+            spawn = config.sqlConnections
+            future = conn.connect()
+            try:
+                yield future
+            except:
+                pass
+
+            if future.exception():
+                print("SQL Connection to localhost failed, trying 127.0.0.1")
+                if config.sqlHost == "localhost":
+                    config.sqlHost = "127.0.0.1"
+                    print("SQL Connection with localhost failed, trying 127.0.0.1")
+            else:
+                spawn -= 1
                 connections.append(conn)
-                yield conn.connect()
+
+
+            # Make connection pool.
+            for x in range(spawn):
+                conn = asynctorndb.Connect(host = config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, database=config.sqlDatabase, no_delay = True, charset='utf8')
+                
+                future = conn.connect()
+                try:
+                    yield future
+                except:
+                    pass
+
+                if future.exception():
+                    print("SQL Connection failed", sql.exception(), "check settings")
+                    sys.exit()
+                else:
+                    connections.append(conn)
+
 else:
     raise ImportError("Unsupported sqlModule!");
 
