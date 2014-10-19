@@ -46,37 +46,31 @@ class Packet(base.BasePacket):
     protocolEnums['SKULL_ORANGE'] = 0 # Don't send orange skulls
         
     def item(self, item, count=None):
-        if isinstance(item, game.item.Item):
-            cid = item.cid
-            if cid > 11703:
-                if item.solid:
-                    self.uint16(100)
-                elif item.pickable and item.movable:
-                    if item.containerSize:
-                        self.uint16(1987)
-                    elif item.weaponType:
-                        self.uint16(3264)
-                    elif item.usable:
-                        self.uint16(110)
-                    else:
-                        self.uint16(1780)
+        cid = item.cid
+        if cid > 11703:
+            if item.solid:
+                self.uint16(100)
+            elif item.pickable and item.movable:
+                if item.containerSize:
+                    self.uint16(1987)
+                elif item.weaponType:
+                    self.uint16(3264)
+                elif item.usable:
+                    self.uint16(110)
                 else:
-                    self.uint16(104)
+                    self.uint16(1780)
+            else:
+                self.uint16(104)
                     
-            else:    
-                self.uint16(cid)
+        else:    
+            self.uint16(cid)
 
-                #Client Charges enters here too(?)
-                if item.stackable:
-                    self.uint8(item.count or 1)
-                elif item.type == 11 or item.type == 12:
-                    self.uint8(item.fluidSource or 0)
+            #Client Charges enters here too(?)
+            if item.stackable:
+                self.uint8(item.count or 1)
+            elif item.type in (11, 12):
+                self.uint8(item.fluidSource or 0)
             
-        else:
-            self.uint16(item)
-            if count:
-                self.uint8(count)
-   
     def tileDescription(self, tile, player):
         count = 0
         for item in tile.topItems():  

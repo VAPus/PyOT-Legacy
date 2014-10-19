@@ -324,15 +324,19 @@ def walkRandomStep(creature, callback):
         return
     steps = [0,1,2,3]
     random.shuffle(steps)
-    @gen.coroutine
+    
     def intcallback():
-        res = yield creature.move(steps.pop())
+        try:
+            res = creature.move(steps.pop())
+        except:
+            # No where to go.
+            creature.teleport(Position(1000, 1000, 7), True)
         if res == False:
             intcallback()
         else:
             callback()
     
-    res = yield creature.move(steps.pop())
+    res = creature.move(steps.pop())
     if res == False:
         intcallback()
     else:

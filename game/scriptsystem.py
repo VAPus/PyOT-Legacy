@@ -368,7 +368,7 @@ def shutdown(sig, frame):
                 io_loop.stop()
                 # Success!
         except:
-            io_loop.add_timeout(now + 2, io_loop.stop)
+            io_loop.add_timeout(now + 1, io_loop.stop)
             # Asyncio success.
     stop_loop()
 

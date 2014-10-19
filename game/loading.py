@@ -193,6 +193,7 @@ def loader(timer):
     builtins.getTile = game.map.getTile
     builtins.setTile = game.map.setTile
     builtins.getTileConst = game.map.getTileConst
+    builtins.getTileConst2 = game.map.getTileConst2
     builtins.Boost = game.conditions.Boost
     builtins.MultiCondition = game.conditions.MultiCondition
     builtins.itemAttribute = game.item.attribute

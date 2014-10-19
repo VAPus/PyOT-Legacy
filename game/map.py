@@ -97,6 +97,14 @@ def getTileConst(x,y,z,instanceId):
         if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             return knownMap.get(posSum)
         
+def getTileConst2(posSum, secSum, x, y, instanceId):
+    """ Used by floorDescription """
+    try:
+        return knownMap[posSum]
+    except:
+        if loadTiles(x, y, instanceId, secSum):
+            return knownMap.get(posSum)
+
 def getHouseId(pos):
     """ Returns the houseId on this position, or False if none """
     try:

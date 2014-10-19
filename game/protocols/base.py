@@ -74,23 +74,18 @@ class BasePacket(TibiaPacket):
         self.uint32(min(0xFFFFFFFE, money))
  
     # Item
-    # Parameters is of class Item or ItemID
+    # Parameters is of class Item
     def item(self, item, count=None):
-        if isinstance(item, game.item.Item):
-            self.uint16(item.cid)
+        self.uint16(item.cid)
                 
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type in (11,12):
-                self.uint8(item.fluidSource or 0)
-            if item.animation:
-                self.uint8(0xFE)
+        if item.stackable:
+            self.uint8(item.count or 1)
+        elif item.type in (11,12):
+            self.uint8(item.fluidSource or 0)
+        if item.animation:
+            self.uint8(0xFE)
             
-        else:
-            self.uint16(item)
-            if count:
-                self.uint8(count)
-        
+             
     # Map Description (the entier visible map)
     # Isn't "Description" a bad word for it?
     def mapDescription(self, position, width, height, player):
@@ -116,10 +111,16 @@ class BasePacket(TibiaPacket):
     # Floor Description (the entier floor)
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
+        base = instanceId << 40 | _z
         
         for x in range(_x + offset, _x + width + offset):
+            baseX = base | x << 24
+            secX = x >> game.map.sectorShiftX
             for y in range(_y + offset, _y + height + offset):
-                tile = getTileConst(x, y, _z, instanceId)
+                baseY = baseX | y << 8
+                secY = y >> game.map.sectorShiftY
+
+                tile = getTileConst2(baseY, (instanceId, secX, secY), x, y, instanceId)
 
                 if tile:
                     if skip >= 0:
