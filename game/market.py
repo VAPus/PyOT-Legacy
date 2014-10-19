@@ -23,14 +23,14 @@ class Offer(object):
 
     @gen.coroutine
     def insert(self):
-        self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, 1 if self.playerName == "Anonymous" else 0, self.type))
+        self.id = yield sql.runOperationLastId("INSERT INTO `market_offers`(`world_id`, `market_id`, `player_id`, `item_id`, `amount`, `created`, `price`, `anonymous`, `type`) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", config.worldId, self.marketId, self.playerId, self.itemId, self.amount, self.expire-config.marketOfferExpire, self.price, 1 if self.playerName == "Anonymous" else 0, self.type)
         self.counter = self.id & 0xFFFF
 
     def save(self):
         if not self.id:
             self.insert()
         else:
-            sql.runOperation("UPDATE market_offers SET `player_id` = %s, `item_id` = %s, `amount` = %s, `price` = %s, `type` = %s WHERE `id` = %s", (self.playerId, self.itemId, self.amount, self.price, self.type, self.id))
+            sql.runOperation("UPDATE market_offers SET `player_id` = %s, `item_id` = %s, `amount` = %s, `price` = %s, `type` = %s WHERE `id` = %s", self.playerId, self.itemId, self.amount, self.price, self.type, self.id)
 
     def player(self):
         return loadPlayerById(self.playerId)
@@ -265,7 +265,7 @@ class Market(object):
             self.saleStatistics[offer.itemId] = [count, offer.price*count, offer.price, offer.price]
 
         # Insert SQL.
-        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", (offer.id, who.data["id"], count, time.time(), MARKET_OFFER_SALE))
+        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", offer.id, who.data["id"], count, time.time(), MARKET_OFFER_SALE)
 
     def buyTransaction(self, offer, who, count):
         try:
@@ -280,14 +280,14 @@ class Market(object):
             self.buyStatistics[offer.itemId] = [count, offer.price*count, offer.price, offer.price]
 
         # Insert SQL.
-        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", (offer.id, who.data["id"], count, time.time(), MARKET_OFFER_BUY))
+        sql.runOperation("INSERT INTO market_history(`offer_id`, `player_id`, `amount`, `time`, `type`) VALUES(%s, %s, %s, %s, %s)", offer.id, who.data["id"], count, time.time(), MARKET_OFFER_BUY)
 
 @gen.coroutine
 def load():
     global Markets
     
     expired = time.time() - config.marketOfferExpire
-    x = yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", (config.worldId))
+    x = yield sql.runQuery("SELECT mo.`id`, mo.`market_id`, mo.`player_id`, mo.`item_id`, mo.`amount`, mo.`created`, mo.`price`, mo.`anonymous`, mo.`type`, (SELECT `name` FROM players p WHERE p.`id` = mo.`player_id`) as `player_name` FROM `market_offers` mo WHERE mo.`world_id` = %s AND mo.`type` != 0", config.worldId)
     for entry in (x):
         if not entry["market_id"] in Markets:
             Markets[entry["market_id"]] = Market(entry["market_id"])

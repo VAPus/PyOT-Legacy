@@ -65,7 +65,7 @@ def refresh():
     
     _time = time.time()
     
-    for entry in (yield sql.runQuery("SELECT ban_id, ban_type, ban_by, ban_data, ban_reason, ban_expire FROM bans WHERE ban_expire > %s", (_time))):
+    for entry in (yield sql.runQuery("SELECT ban_id, ban_type, ban_by, ban_data, ban_reason, ban_expire FROM bans WHERE ban_expire > %s", _time)):
         banEntry = BanEntry(entry[0], entry[3], entry[5], entry[4])
         
         if entry[1] == BAN_ACCOUNT:
@@ -171,5 +171,5 @@ def addBan(by, type, data, reason, expire):
             if player.getIP() == data:
                 player.exit("Your ip have been banned! \n%s" % banEntry.message())
                 
-    banEntry.id = yield sql.runOperationLastId("INSERT INTO bans (ban_type, ban_by, ban_data, ban_reason, ban_expire) VALUES(%s, %s, %s, %s, %s)", (type, by, data, reason, expire))
+    banEntry.id = yield sql.runOperationLastId("INSERT INTO bans (ban_type, ban_by, ban_data, ban_reason, ban_expire) VALUES(%s, %s, %s, %s, %s)", type, by, data, reason, expire)
         

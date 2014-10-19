@@ -35,7 +35,7 @@ class Guild(object):
     def setMoney(self, amount):
         " Set the guild balance to `amount` "
         self.balance = amount
-        sql.runOperation("UPDATE guilds SET balance = %sd WHERE guild_id = %s", (amount, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %sd WHERE guild_id = %s", amount, self.id)
         
     def getMoney(self):
         " Return the guild balance. "
@@ -44,22 +44,22 @@ class Guild(object):
     def removeMoney(self, amount):
         " Remove `amount` from the guild balance. "
         self.balance -= amount
-        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", (self.balance, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", self.balance, self.id)
         
     def addMoney(self, amount):
         " Add `amount` to the guild balance. "
         self.balance += amount
-        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", (self.balance, self.id))
+        sql.runOperation("UPDATE guilds SET balance = %s WHERE guild_id = %s", self.balance, self.id)
         
     def setMotd(self, motd):
         " Set the guild motd. "
         self.motd = motd
-        sql.runOperation("UPDATE guilds SET motd = %s WHERE guild_id = %s", (motd, self.id))
+        sql.runOperation("UPDATE guilds SET motd = %s WHERE guild_id = %s", motd, self.id)
         
     def setName(self, name):
         " Set guild name. "
         self.name = name
-        sql.runOperation("UPDATE guilds SET name = %s WHERE guild_id = %s", (name, self.id))
+        sql.runOperation("UPDATE guilds SET name = %s WHERE guild_id = %s", name, self.id)
         
     def rank(self, rankId):
         " Return guild rank based on id. "

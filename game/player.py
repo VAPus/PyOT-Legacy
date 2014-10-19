@@ -1762,7 +1762,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         extras.append(self.data["id"])
 
         if self.saveData or extraQuery or force: # Don't save if we 1. Change position, or 2. Just have stamina countdown
-            return ("UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s, p.`balance` = %s"+extraQuery+" WHERE p.`id` = %s"), [self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.position.x, self.position.y, self.position.z, self.position.instanceId, self.data["balance"]]+extras
+            return ["UPDATE "+tables+" SET p.`experience` = %s, p.`manaspent` = %s, p.`mana`= %s, p.`health` = %s, p.`soul` = %s, p.`stamina` = %s, p.`posx` = %s, p.`posy` = %s, p.`posz` = %s, p.`instanceId` = %s, p.`balance` = %s"+extraQuery+" WHERE p.`id` = %s", self.data["experience"], self.data["manaspent"], self.data["mana"], self.data["health"], self.data["soul"], self.data["stamina"] * 1000, self.position.x, self.position.y, self.position.z, self.position.instanceId, self.data["balance"]]+extras
 
     def save(self, force=False):
         if self.doSave:
@@ -1773,15 +1773,15 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
 
     def saveSkills(self):
-        sql.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", (otjson.dumps(self.skills), self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `skills`= %s WHERE `id` = %d", otjson.dumps(self.skills), self.data["id"])
 
 
     def saveExperience(self):
-        sql.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", (self.data["experience"], self.data["manaspent"], self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `experience`= %d, `manaspent` = %d WHERE `id` = %d", self.data["experience"], self.data["manaspent"], self.data["id"])
 
 
     def saveStorage(self):
-        sql.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", (otjson.dumps(self.storage), self.data["id"]))
+        sql.runOperation("UPDATE `players` SET `storage`= %s WHERE `id` = %d", otjson.dumps(self.storage), self.data["id"])
 
     # Shopping
     def setTrade(self, npc):
@@ -2559,8 +2559,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     @gen.coroutine
     def marketHistory(self):
         counter = 0
-        buyHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND h.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
-        saleHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND o.`player_id` = %s AND o.`market_id` = %s", (self.data["id"], self.market.id))
+        buyHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND h.`player_id` = %s AND o.`market_id` = %s", self.data["id"], self.market.id)
+        saleHistory = yield sql.runQuery("SELECT h.`time`, o.`item_id`, h.`amount`, o.`price` FROM `market_history` h, `market_offers` o WHERE h.`offer_id` = o.`id` AND o.`player_id` = %s AND o.`market_id` = %s", self.data["id"], self.market.id)
         with self.packet(0xF9) as stream:
             stream.uint16(0xFFFF)
 
