@@ -34,14 +34,14 @@ allPlayersObject = allPlayers.values() # Quick speedup
 
 if config.enableExtensionProtocol:
     from .service.extserver import IPS as MEDIA_IPS
-    
+
 class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def __init__(self, client, data):
         # XXX: Hack.
         # TODO: Rewrite this to save memory. And to simplefy lookups later on.
         data["skills"] = {SKILL_FIST: data['fist'], SKILL_SWORD: data['sword'], SKILL_CLUB: data['club'], SKILL_AXE: data['axe'], SKILL_DISTANCE: data['distance'], SKILL_SHIELD: data['shield'], SKILL_FISH: data['fishing']}
         data["skill_tries"] =  {SKILL_FIST: data['fist_tries'], SKILL_SWORD: data['sword_tries'], SKILL_CLUB: data['club_tries'], SKILL_AXE: data['axe_tries'], SKILL_DISTANCE: data['distance_tries'], SKILL_SHIELD: data['shield_tries'], SKILL_FISH: data['fishing_tries']}
-        
+
         # Explicit. Decimal to int (XXX: Restructure database?)
         data["experience"] = int(data["experience"])
         data["balance"] = int(data["balance"])
@@ -49,7 +49,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         data["balance"] = int(data["balance"])
         data["health"] = int(data["health"])
         data["mana"] = int(data["mana"])
-        
+
         if not data['instanceId']:
             data['instanceId'] = 0
         Creature.__init__(self, data, Position(int(data['posx']),
@@ -69,7 +69,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.data["stamina"] = self.data["stamina"] / 1000
 
         self.lastDmgPlayer = 0
-        
+
         self.targetChecker = None
         self._openChannels = {}
         self.idMap = []
@@ -84,12 +84,12 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         self.windowHandlers = {}
         self.partyObj = None
         self.solid = not config.playerWalkthrough
-        
+
         self.blessings = 0
         self.deathPenalityFactor = 1
 
         self.lastStairHop = 0
-        
+
         self.lastUsedObject = 0
 
         self.market = None
@@ -99,21 +99,21 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         """# Light stuff
         self.lightLevel = 0x7F
         self.lightColor = 27"""
-        
+
         # Cache a protocol packet instance
         try:
             self._packet = self.client.protocol.Packet()
         except:
             self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
-        
+
         self._packet.stream = self.client
-        
+
         # Extra icons
         self.extraIcons = 0
 
         # Send premium code
         self.sendPremium = config.sendPremium
-        
+
         # Rates
         # 0 => Experience rate, 1 => Stamina loose rate, 2 => drop rate,
         # 3 => drop rate (max items), 4 => regain rate
@@ -142,7 +142,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             purse.name = "Purse"
             purse.addAction('purse')
             self.inventory = [None, None, None, None, None, None, None, None, None, None, purse] # Last item XXX is purse.
-            
+
         #del self.data['inventory']
 
         # Depot, (yes, we load it here)
@@ -175,13 +175,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 self.data["skills"][x] = config.defaultSkillLevel
                 if self.data["skill_tries"][x] == None:
                     self.data["skill_tries"][x] = 0
-                
-                
+
+
             self.skillGoals[x] = config.skillFormula(self.skills[x],
                                                      self.getVocation().meleeSkill)
 
         if self.data["storage"]:
-            self.storage = otjson.loads(self.data["storage"].decode('utf-8'))
+            self.storage = otjson.loads(str(self.data["storage"]))
 
         else:
             self.storage = {}
@@ -204,7 +204,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         if self.data["language"] != "en_EN":
             self.setLanguage(self.data["language"])
-        
+
     def generateClientID(self):
         return 0x10000000 + uniqueId()
 
@@ -219,7 +219,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def __repr__(self):
         return "<Player (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
-        
+
     def sexPrefix(self):
         # TODO: Can be dropped now that we are going for context stuff
         if self.data["sex"] == 1:
@@ -278,7 +278,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def defaultSpeed(self):
         # Low:
         lowLevel = max(self.data['level'], config.playerSpeedLowCut)
-        speed = config.playerBaseSpeed + (config.playerSpeedLowIncrease * lowLevel) 
+        speed = config.playerBaseSpeed + (config.playerSpeedLowIncrease * lowLevel)
 
         # High
         highLevel = self.data['level'] - lowLevel
@@ -301,21 +301,21 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self._packet = self.client.protocol.Packet()
         except:
             self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
-        
+
         self._packet.stream = self.client
-        
+
         if self.client.version >= 980:
-            
+
             with self.packet(0x0A) as stream:
                 stream.uint8(0x17)
                 stream.uint32(self.clientId()) # Cid
                 stream.uint16(0x32) # Drawing delay.
-                
+
                 # New speed formula thingy.
                 stream.double(857.36)
                 stream.double(261.29)
                 stream.double(-4795.01)
- 
+
                 stream.uint8(1) # Rule violations?
 
         with self.packet() as stream:
@@ -333,7 +333,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.mapDescription(Position(self.position.x - 8, self.position.y - 6,
                                         self.position.z),
                                 18, 14, self)
-            
+
             self.refreshInventory(stream)
             self.refreshStatus(stream)
             self.refreshSkills(stream)
@@ -341,7 +341,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.playerInfo(self)
             stream.worldlight(getLightLevel(), LIGHTCOLOR_DEFAULT)
             stream.creaturelight(self.cid, self.lightLevel, self.lightColor)
-            
+
             if self.position.getTile().getFlags() & TILEFLAGS_PROTECTIONZONE:
                 self.setIcon(CONDITION_PROTECTIONZONE)
             self.refreshConditions(stream)
@@ -364,14 +364,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         self.refreshStatus()
 
             call_later(self.rates[1], loseStamina)
-        
+
     def refreshInventory(self, streamX = None):
         if self.client:
             if not streamX:
                 stream = self.packet()
             else:
                 stream = streamX
-                
+
             for slot in range(SLOT_CLIENT_FIRST,SLOT_CLIENT_FIRST+SLOT_CLIENT_SLOTS):
                 if self.inventory[slot-1]:
                     stream.uint8(0x78)
@@ -381,7 +381,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 else:
                     stream.uint8(0x79)
                     stream.uint8(slot)
-                    
+
             if not streamX:
                 stream.send(self.client)
     def refreshStatus(self, stream=None):
@@ -402,7 +402,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                         send += conId
                 except:
                     pass
-                
+
             if stream:
                 stream.icons(send)
             else:
@@ -413,7 +413,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         for player in getPlayers(self.position):
             with player.packet() as stream:
                 stream.shield(self.cid, self.getShield(player))
-                
+
     def setIcon(self, icon):
         if not self.hasIcon(icon):
             self.extraIcons += icon
@@ -433,14 +433,14 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             else:
                 with self.packet() as stream:
                     stream.skills(self)
-                
+
     def refreshSkull(self, stream=None):
         for player in getPlayers(self.position):
             stream = player.packet(0x90)
             stream.uint32(self.cid)
             stream.uint8(self.getSkull(player))
             stream.send(player.client)
-                
+
     def pong(self):
         self.packet(0x1E).send(self.client)
 
@@ -475,7 +475,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     bag = self.openContainers[position.y - 64]
                 except:
                     return
-                
+
                 item = bag.getThing(position.z)
                 return item or bag
 
@@ -635,7 +635,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 del item.creature
             except:
                 pass
-            
+
             print("Modifying weight, removecache")
             self.inventoryCache[item.itemId].remove(item)
             self.inventoryCache[item.itemId][0] -= item.count or 1
@@ -717,10 +717,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             if self.data["manamax"] < config.minMana:
                 self.data["manamax"] = config.minMana
                 print("[WARNING] Player %s (ID:%d) is likely promoted to a higher vocation then his level allows, manamax < config.minMana!" % (self.name(), self.data["id"]))
-            
+
             if self.data["healthmax"] < config.minHealth:
                 self.data["healthmax"] = config.minHealth
-                
+
             if self.data["health"] > self.data["healthmax"]:
                 self.data["health"] = self.data["healthmax"]
 
@@ -740,10 +740,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def modifyMagicLevel(self, mod):
         if not mod:
             return
-        
+
 
         res = game.scriptsystem.get("skill").run(creature=self, skill=MAGIC_LEVEL, fromLevel=self.data["maglevel"], toLevel=self.data["maglevel"] + mod)
-        
+
         if res != False:
             self.data["maglevel"] += mod
             if self.data["maglevel"] < 0:
@@ -751,7 +751,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshStatus()
     def modifyExperience(self, exp):
         exp = int(exp)
-        
+
         up = True
         if exp < 0:
             up = False
@@ -795,10 +795,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def modifySpentMana(self, mana, refresh=False):
         self.data["manaspent"] += mana
-        
+
         if self.data["manaspent"] < 0:
             self.data["manspent"] = 0
-            
+
         self.saveData = True
         modify = 0
         maglevel = self.data["maglevel"]
@@ -806,13 +806,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             while self.data["manaspent"] > int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
                 modify += 1
                 maglevel += 1
-                
-            
+
+
         else:
             while self.data["manaspent"] < int(config.magicLevelFormula(maglevel, self.getVocation().mlevel)):
                 modify -= 1
                 maglevel -= 1
-                
+
         self.modifyMagicLevel(modify)
         if refresh:
             self.refreshStatus()
@@ -848,7 +848,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
         self.refreshSkills()
         self.saveSkills = True
-        
+
     def tempAddSkillLevel(self, skill, level):
         self.skills[skill] = self.skills[skill] + level
         self.refreshSkills()
@@ -1056,7 +1056,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.dialog(self, self.windowTextId, title, message, buttons, defaultEnter, defaultExit)
         stream.send(self.client)
         return self.windowTextId
-    
+
     def houseWindow(self, text):
         stream = self.packet(0x97)
         self.windowTextId += 1
@@ -1167,7 +1167,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         res = game.scriptsystem.get('close').run(thing=container, creature=self, index=container.openIndex)
         if res == False:
             return False
-            
+
         stream = self.packet(0x6F)
         stream.uint8(container.openIndex)
         del self.openContainers[container.openIndex]
@@ -1191,7 +1191,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             res = game.scriptsystem.get('close').run(creature=self, thing=container, index=openId)
             if res == False:
                 return False
-                
+
             stream = self.packet(0x6F)
             stream.uint8(openId)
             del self.openContainers[openId]
@@ -1222,7 +1222,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             game.scriptsystem.get('close').run(thing=bagFound, creature=self, index=openId)
             if res == False:
                 return False
-                
+
             self.updateContainer(self.openContainers[openId], True if self.openContainers[openId].parent else False)
 
     # Item to container
@@ -1233,7 +1233,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 ret = self.itemToContainer(self.inventory[2], item)
             except:
                 pass
-        
+
         if ret == False and not self.inventory[9]:
             if self.addCache(item) != False:
                 self.inventory[9] = item
@@ -1246,7 +1246,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                 return True
         if ret == False and placeOnGround:
             return item.place(self.position)
-            
+
         elif ret == False:
             return False
 
@@ -1349,13 +1349,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             if update:
                 self.addCache(item, container)
 
-        
-        
+
+
         if not streamX:
             if update:
                 self.refreshStatus(stream)
             stream.send(self.client)
-            
+
         # HACK!!!
         self.updateContainer(container)
 
@@ -1458,21 +1458,21 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def losePrecent(self, withBlessings=True):
         if not config.loseCutoff:
             return 0
-        
+
         elif self.data["level"] < config.loseCutoff:
             lose = config.loseConstant
         else:
             lose = config.loseFormula(self.data["level"]) / self.data["experience"]
-            
+
         if withBlessings and self.blessings:
             lose *= 0.92 ** self.blessings
-            
+
         return int(lose * self.deathPenalityFactor)
-            
+
     def itemLosePrecent(self):
         if self.getSkull() in (SKULL_BLACK, SKULL_RED) and config.redSkullLoseRate:
             return (config.redSkullLoseRate, config.redSkullLoseRate)
-        
+
         # This is constants it would seem.
         container = 100
         if self.blessings == 1:
@@ -1485,7 +1485,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             container = 10
 
         return (container, container / 10.0)
-    
+
     def onDeath(self):
         try:
             lastAttacker = self.getLastDamager()
@@ -1496,24 +1496,24 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         deathData = {}
         loseRate = self.losePrecent()
         itemLoseRate = self.itemLosePrecent()
-        
+
         if self.getSkull() in (SKULL_RED, SKULL_BLACK):
             itemLoseRate = config.redSkullLoseRate, config.redSkullLoseRate
-            
+
         deathData["loseRate"] = loseRate
         deathData["itemLoseRate"] = itemLoseRate
         deathData["unjust"] = False
         corpse = Item(HUMAN_CORPSE)
-        
+
         lastDamagerSkull = self.getSkull(lastAttacker)
         if lastDmgIsPlayer:
             # Just or unjust?
             unjust = True
             if self.getSkull() or lastDamagerSkull in (SKULL_ORANGE, SKULL_YELLOW, SKULL_GREEN):
                 unjust = False
-                
+
             deathData["unjust"] = unjust
-            
+
         if (game.scriptsystem.get("death").run(creature=self, creature2=lastAttacker, corpse=corpse, deathData=deathData)) == False:
             return
 
@@ -1523,37 +1523,37 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         unjust = deathData["unjust"]
         loseRate = deathData["loseRate"]
         itemLoseRate = deathData["itemLoseRate"]
-        
+
         print("TODO: Unfair fight.")
         if self.client:
             self.sendReloginWindow(100)
-        
+
         # Reduce experience, manaspent and total skill tries (ow my)
         if loseRate:
             self.modifyExperience(-int(self.data["experience"] * (loseRate/100.0)))
             self.modifySpentMana(-int(self.data["manaspent"] * (loseRate/100.0)))
-            
+
             for skill in range(SKILL_FIRST, SKILL_LAST):
                 # First, get total skill tries.
                 tries = config.totalSkillFormula(self.data["skills"][skill], self.getVocation().meleeSkill) + self.getSkillAttempts(skill)
-                
+
                 # Reduce them.
                 tries /= 1 + (loseRate/100.0)
                 tries = int(tries)
-                
+
                 # Skill tries to level.
                 level = int(config.skillTriesToLevel(self.getVocation().meleeSkill, tries))
-                
+
                 # Previous level skill tries.
                 prevTries = int(config.totalSkillFormula(level-1, self.getVocation().meleeSkill))
-                
+
                 # Get the level goals.
                 goal = tries-prevTries
-                
+
                 # Set new level.
                 self.addSkillLevel(skill, level - self.data["skills"][skill])
                 self.skillAttempt(skill, goal)
-            
+
         # PvP experience and death entries.
         if lastDmgIsPlayer:
             # Was this revenge?
@@ -1567,19 +1567,19 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     revengeEntry.revenge()
             entry = deathlist.DeathEntry(lastAttacker.data["id"], self.data["id"], unjust)
             deathlist.addEntry(entry)
-            
+
             # Resend attackers skull.
             # Trick to destroy cache:
             lastAttacker.skull = 0
             lastAttacker.refreshSkull()
-            
+
             # PvP Experience.
             lastAttacker.modifyExperience(config.pvpExpFormula(lastAttacker.data["level"], self.data["level"], self.data["experience"]))
-         
+
         #if temp skull remove it on death
         if self.getSkull() in (SKULL_WHITE, SKULL_YELLOW, SKULL_GREEN):
             self.setSkull(SKULL_NONE)
-		 
+
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
@@ -1590,18 +1590,18 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         tile = game.map.getTile(self.position)
 
         self.despawn()
-        
+
         # Set position
         self.position = Position(*game.map.mapInfo.towns[self.data["town_id"]][1])
         self.data["health"] = self.data["healthmax"]
         self.data["mana"] = self.data["manamax"]
-        
+
         # Are we suppose to lose the container?
         itemLoseRate = self.itemLosePrecent()
         if self.inventory[2] and random.randint(1, 100) < itemLoseRate[0]:
             corpse.placeItem(self.inventory[2])
             self.inventory[2] = None
-            
+
         # Loop over each item in the inventory to see if we lose em.
         for index in range(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
             if self.inventory[index] and random.randint(1, 1000) < (itemLoseRate[1] * 10):
@@ -1918,7 +1918,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             return self._getDepotItemCount(depot)
         else:
             return 0
-    
+
     def _depotMarketCache(self, cache, items):
         for item in items:
             if item.duration or (item.charges and item.charges != game.item.items[item.itemId]["charges"]):
@@ -1958,9 +1958,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                     return _count
 
         return _count
-                
+
     def removeFromDepot(self, depotId, itemId, count=1):
-        depot = self.getDepot(depotId) 
+        depot = self.getDepot(depotId)
         if not depot:
             return 0
 
@@ -2009,7 +2009,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def beginQuest(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         if not quests:
             quests = {}
@@ -2024,7 +2024,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def progressQuest(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1
         self.setStorage('__quests', quests)
@@ -2035,7 +2035,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def progressQuestMission(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         quests[questIdentifier][0] += 1
         self.setStorage('__quests', quests)
@@ -2046,7 +2046,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def finishQuest(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         quests[questIdentifier][1] += 1 # Finish the last step
         quests[questIdentifier][2] = True
@@ -2087,7 +2087,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def questLine(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         questObj = game.resource.getQuest(questIdentifier)
         stream = self.packet(0xF1)
@@ -2104,7 +2104,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def questProgress(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][1]
@@ -2114,7 +2114,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def questStarted(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         try:
             quests[questIdentifier]
@@ -2125,7 +2125,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def questCompleted(self, questIdentifier):
         if isinstance(questIdentifier, game.resource.Quest):
             questIdentifier = questIdentifier.name
-            
+
         quests = self.getStorage('__quests')
         try:
             return quests[questIdentifier][2]
@@ -2209,7 +2209,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     # Exit
     def exit(self, message):
         self.prepareLogout(True)
-        
+
         stream = self.packet()
         stream.exit(message)
         stream.send(self.client)
@@ -2231,9 +2231,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # Clear party.
         if self.party():
             self.leaveParty()
-            
+
         #self.remove(False)
-        
+
         return True
 
     # Cleanup the knownCreatures
@@ -2319,7 +2319,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         guild = self.guild()
         if guild:
             return guild.rank(self.data["guild_rank"])
-        
+
     def party(self):
         # We use party() here because we might need to check for things. this is a TODO or to-be-refactored.
         return self.partyObj
@@ -2331,11 +2331,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def leaveParty(self):
         if self.partyObj:
             self.partyObj.removeMember(self)
-            
+
     def setParty(self, partyObj):
         if self.partyObj:
             raise Exception("You got to leave the party before you can join another one")
-        
+
         self.partyObj = partyObj
     # Trade
     def tradeItemRequest(self, between, items, confirm=False):
@@ -2381,7 +2381,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         for spell in game.spell.spells:
             if self.canUseSpell(spell):
                 spells.append(spell)
-                
+
         return spells
 
     # Market
@@ -2398,10 +2398,10 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # XXX: Some older than 9.7 version needed this.
         # stream.uint8(self.getVocation().clientId)
         stream.uint8(len(market.saleOffers(self))) # Active offers
-        
+
         if not self.marketDepotId in self.depotMarketCache:
             self.depotMarketCache[self.marketDepotId] = self.getDepotMarketCache(self.marketDepotId)
-        
+
         stream.uint16(len(self.depotMarketCache[self.marketDepotId]))
         for entry in self.depotMarketCache[self.marketDepotId]:
             stream.uint16(cid(entry))
@@ -2453,11 +2453,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         stream.send(self.client)
 
         self.marketDetails(itemId)
-    
+
     def marketDetails(self, itemId):
         # Lazy.
         item = Item(itemId)
-        
+
         with self.packet(0xF8) as stream:
             stream.uint16(item.cid)
             stream.string(str(item.armor or ""))
@@ -2479,7 +2479,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.string(str(item.charges or ""))
             stream.string(item.weaponType or "")
             stream.string(str(item.weight or ""))
-            
+
             if itemId in self.market.buyStatistics:
                 stream.uint8(1)
                 stream.uint32(self.market.buyStatistics[itemId][0])
@@ -2507,7 +2507,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             print("XXX: Can't afford it.")
             return self.notPossible()
 
-        
+
         offer = game.market.Offer(self.data["id"], itemId, price, int(time.time() + config.marketOfferExpire), amount, type=MARKET_OFFER_BUY if type == 0 else MARKET_OFFER_SALE)
         if anonymous:
             offer.playerName = "Anonymous"
@@ -2536,7 +2536,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def marketOwnOffers(self):
         with self.packet(0xF9) as stream:
             stream.uint16(0xFFFE)
-            
+
             buyOffers = self.market.buyOffers(self)
             saleOffers = self.market.saleOffers(self)
 
@@ -2601,7 +2601,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.lcp = lambda c, s, p, n: s if n != 1 else p
 
         self.data["language"] = lang
-        
+
     ###### Group stuff
     def getGroupFlags(self, default={}):
         try:
@@ -2609,33 +2609,33 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         except:
             print("Warning: GroupID %d doesnt exist!" % self.data["group_id"])
             return default
-            
+
     def hasGroupFlag(self, flag):
         try:
             return flag in game.functions.groups[self.data["group_id"]][1]
         except:
             print("Warning: GroupID %d doesnt exist!" % self.data["group_id"])
             return False
-            
+
     def hasGroupFlags(self, *flags):
         g = self.getGroupFlags()
 
         for flag in flags:
             if not flag in g:
                 return False
-                
+
         return True
-        
+
     # "Premium" stuff
     def togglePremium(self):
         self.sendPremium = not self.sendPremium
         with self.packet() as stream:
             stream.playerInfo(self)
-        
+
     def delayWalk(self, delay):
         with self.packet() as stream:
             stream.delayWalk(delay)
-            
+
     # Skull stuff
     def getSkull(self, creature=None):
         if creature and creature.isPlayer():
@@ -2643,26 +2643,26 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             myParty = self.party()
             if myParty and creature.party() == myParty:
                 return SKULL_GREEN
-                
+
             elif creature in self.trackSkulls:
                 if self.trackSkulls[creature][1] >= time.time():
                     return self.trackSkulls[creature][0]
                 del self.trackSkulls[creature]
 
             skull = deathlist.getSkull(self.data["id"], creature.data["id"])
-            
+
             if skull[0]:
                 self.trackSkulls[creature] = skull
                 return skull[0]
 
         if self.skull == 0:
             self.skull, self.skullTimeout = deathlist.getSkull(self.data["id"])
-            
+
             if self.skullTimeout and not self._checkSkulls:
                 self._checkSkulls = call_later(self.skullTimeout - time.time(), self.verifySkulls)
-                
+
         return self.skull
-    
+
     # Shield
     def setShield(self, shield):
         raise Exception("NOT AVAILABLE ON PLAYERS.")
@@ -2670,7 +2670,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     def getShield(self, creature):
         myParty = self.party()
         reqParty = creature.party()
-        
+
         if myParty:
             return myParty.getShield(self, creature)
         elif reqParty:
@@ -2681,17 +2681,17 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
     # Balance stuff
     def getBalance(self):
         return self.data["balance"]
-    
+
     def setBalance(self, balance):
         self.data["balance"] = balance
-        
+
     def modifyBalance(self, modBalance):
         self.data["balance"] += modBalance
-        
+
     def media(self):
         if not config.enableExtensionProtocol:
             raise Exception("ExtensionPorotocol is not enabled")
-            
+
         ip = self.getIP()
         if ip in MEDIA_IPS:
             return MEDIA_IPS[ip]

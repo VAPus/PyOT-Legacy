@@ -23,7 +23,7 @@ gameMaxConnections = 100
 # SQL:
 sqlModule = "mysql" # Can be "mysql"
 sqlUsername = "root"
-sqlPassword = ""
+sqlPassword = "9428806lol"
 sqlDatabase = "pyot" # Either a DB name, or file for sqlite3
 sqlHost = "localhost"
 
@@ -145,7 +145,7 @@ loseConstant = 10 # For players with level < loseCutoff. Otherwise we use loseFo
 lootDropRate = 1
 lootMaxRate = 1
 lootInAlphabeticalOrder = True # Order loot in alphabetical order just like real tibia
-stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically. 
+stockLootInBagsIfNeeded = True # If amount of items > corpseSize, then append a bag, note: bags does stack as the first items, not alphabetically.
 stockLootBagId = 1987 # Id of the bags to append
 privateLootFor = 10 # How long only you and your party can access the loot.
 moveCorpseAfter = 15 # How long is a corpse unmovable?

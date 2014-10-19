@@ -39,7 +39,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
                         data = ""
                         # TODO: Send XML format.
-  
+
                 elif packetType == 0x01:
                     # Silly status protocol. No multi world support...
                     reqInfo = packet.uint16()
@@ -52,12 +52,12 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                         pkg.string(config.server[0][1])
                         pkg.uint16(4)
                         pkg.uint32(config.loginPort)
-   
+
                     if reqInfo & 0x02: # REQUEST_SERVER_OWNER_INFO
                         pkg.uint8(0x11)
                         pkg.string(config.ownerName)
                         pkg.string(config.ownerEmail)
-                
+
                     if reqInfo & 0x04: # REQUEST_MISC_SERVER_INFO
                         pkg.uint8(0x12)
                         pkg.string(config.motd)
@@ -100,7 +100,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             packet.uint8() # Client type.
 
         packet.pos += 12 # Checksum for files
-        
+
         if (len(packet.data) - packet.pos) == 128: # RSA 1024 is always 128
             packet.data = otcrypto.decryptRSA(packet.getData())
             packet.pos = 0 # Reset position
@@ -123,20 +123,20 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             self.xtea[x] = sum + k[sum & 3] & 0xffffffff
             sum = (sum + 0x9E3779B9) & 0xffffffff
             self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
-                
+
         # If cffi, cast this.
         if otcrypto.ffi:
             self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
-            
+
         # Check if version is correct
         if version > config.versionMax or version < config.versionMin:
             self.exitWithError(config.versionError)
             print("Version incorrect")
             return
-            
-            
+
+
         # Check if there is a username (and a password)
-        
+
         username = packet.string()
         password = packet.string()
 
@@ -153,15 +153,15 @@ class LoginProtocol(protocolbase.TibiaProtocol):
 
             if account:
                 characters = yield sql.runQuery("SELECT `name`,`world_id` FROM `players` WHERE account_id = %s", account[0]['id'])
-     
+
         if not username or not account:
             if config.anyAccountWillDo:
                 account = ((0,0),)
                 characters = config.anyAccountPlayerMap
             else:
                 self.exitWithError("Invalid username or password")
-                return 
-        
+                return
+
         if config.letGameServerRunTheLoginServer:
             import game.scriptsystem
             game.scriptsystem.get("preSendLogin").run(client=self, characters=characters, account=account, username=username, password=password)
@@ -198,16 +198,16 @@ class LoginProtocol(protocolbase.TibiaProtocol):
                 if not ip:
                     raise Exception("[ERROR] Automatic IP service is down!")
 
-                    
+
                 IPS['auto'] = ip
                 # Save IPS here.
                 pickle.dump(IPS, open('IP_CACHE', 'wb'), 2)
 
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
-            pkg.raw(socket.inet_aton(ip.decode('utf-8')))
+            pkg.raw(socket.inet_aton(ip))
             pkg.uint16(port)
-            
+
             if version >= 980:
                 pkg.uint8(0)
         # Add premium days

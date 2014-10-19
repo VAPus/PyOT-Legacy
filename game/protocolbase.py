@@ -6,7 +6,7 @@ import socket
 
 if config.checkAdler32:
     from zlib import adler32
-  
+
 class TibiaProtocol:
     #__slots__ = 'gotFirst', 'xtea', 'buffer', 'nextPacketLength', 'bufferLength'
     enableTcpNoDelay = False
@@ -20,37 +20,37 @@ class TibiaProtocol:
         self.data = []
         self.expect = 0
         self.player = None
-        
+
         # Register disconnect callback.
         self.transport.set_close_callback(self.connectionLost)
-        
+
         self.connectionMade()
-        
+
         # Start Handle reading. First one uint16_t for length of the packet.
         self.transport.read_bytes(2, self.handlePacketLength)
-        
+
     def connectionMade(self):
         print("Connection made from {0}".format(self.address))
-        
+
         # Enable TCP_NO_DELAY
         self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
         self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-                
+
         # Inform the Protocol that we had a connection
         self.onConnect()
 
     def connectionLost(self, reason=None):
         print("Connection lost from {0}".format(self.address))
-        
+
         # Inform the Protocol that we lost a connection
         self.onConnectionLost()
-            
+
     def handlePacketLength(self, packetData):
         length = unpack("<H", packetData)[0]
 
         # Read this packet upto length.
         self.transport.read_bytes(length, self.handlePacketData)
-            
+
     def handlePacketData(self, packetData):
         packet = TibiaPacketReader(packetData)
         # Adler32:
@@ -64,16 +64,16 @@ class TibiaProtocol:
         else:
             packet.pos += 4
 
-            
+
         if self.gotFirst:
             self.onPacket(packet)
         else:
             self.gotFirst = True
             self.onFirstPacket(packet)
-            
+
         # Start Handle reading for the next packet.
         self.transport.read_bytes(2, self.handlePacketLength)
-        
+
     #### Protocol spesific, to be overwritten ####
     def onConnect(self):
         pass

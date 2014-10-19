@@ -23,7 +23,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         self.protocol = None
         self.ready = False
         self.version = 0
-        
+
     def onConnect(self):
         pkg = TibiaPacket()
         pkg.uint8(0x1F)
@@ -43,7 +43,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         packet.uint8(15 + (2 * slot))
         packet.send(self)
         self.loseConnection()
-        
+
     @gen.engine
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
@@ -52,12 +52,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if packetType == 0xFF:
             # Special case for tests.
             IN_TEST = True
-            
+
         if packetType == 0x0A and not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
-            #packet.uint16() 
+            #packet.uint16()
             version = packet.uint16() # Version int
-            
+
             if version >= 972:
                 version = packet.uint32()
                 packet.uint8() # Client type.
@@ -94,31 +94,31 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.xtea[x] = sum + k[sum & 3] & 0xffffffff
                     sum = (sum + 0x9E3779B9) & 0xffffffff
                     self.xtea[32 + x] = sum + k[sum>>11 & 3] & 0xffffffff
-                    
+
 
                 # If cffi, cast this.
                 if otcrypto.ffi:
                     self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
-                    
+
             ip = self.address
-            
+
             # Ban check.
             if game.ban.ipIsBanned(ip):
                 self.exitWithError("Your ip is banned.\n %s" % game.ban.banIps[ip].message())
-                return 
-        
+                return
+
             if config.gameMaxConnections <= (self.connections + len(waitingListIps)):
                 if ip in waitingListIps:
                     i = waitingListIps.index(ip) + 1
                     lastChecks[ip] = time.time()
                     # Note: Everyone below this threshhold might connect. So even if your #1 on the list and there is two free slots, you can be unlucky and don't get them.
                     if i + self.connections > config.gameMaxConnections:
-                        self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % i, i) 
+                        self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % i, i)
                         return
                 else:
                     waitingListIps.append(ip)
                     lastChecks[ip] = time.time()
-                    self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % len(waitingListIps), len(waitingListIps)) 
+                    self.exitWaitingList("Too many players online. You are at place %d on the waiting list." % len(waitingListIps), len(waitingListIps))
                     return
             self.connections += 1
             try:
@@ -126,7 +126,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 del lastChecks[ip]
             except:
                 pass
-            
+
             # "Gamemaster" mode?
             gamemaster = packet.uint8()
 
@@ -163,17 +163,17 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     return
 
             account = account[0]
-            
+
             # Ban check.
             if game.ban.accountIsBanned(account['id']):
                 self.exitWithError("Your account is banned.\n %s" % game.ban.banAccounts[account['id']].message())
-                return 
-            
+                return
+
             if not len(account) >= 2 or not account['language']:
                 language = config.defaultLanguage
             else:
                 language = account['language']
-                
+
             character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", account['id'], characterName, config.worldId)
 
             if not character:
@@ -181,7 +181,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if not character or character == True:
                     self.exitWithError("Character can't be loaded")
                     return
-                
+
             character = character[0]
             if gamemaster and character['group_id'] < 3:
                 self.exitWithError("You are not gamemaster! Turn off gamemaster mode in your IP changer.")
@@ -191,11 +191,11 @@ class GameProtocol(protocolbase.TibiaProtocol):
             if isinstance(character, game.player.Player):
                 if game.ban.playerIsBanned(character):
                     self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character.data["id"]].message())
-                    return 
+                    return
             elif game.ban.playerIsBanned(character['id']):
                 self.exitWithError("Your player is banned.\n %s" % game.ban.banAccounts[character['id']].message())
-                return 
-            
+                return
+
             # If we "made" a new character in a script, character = the player.
             player = None
             if isinstance(character, game.player.Player):
@@ -207,7 +207,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     self.exitWithError("This character is already logged in!")
                     return
                 sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character['id']))
-            if player:    
+            if player:
                 self.player = player
                 if self.player.data["health"] <= 0:
                     self.player.onSpawn()
@@ -216,7 +216,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 tile.placeCreature(self.player)
                 # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                 updateTile(self.player.position, tile)
-                
+
             else:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 yield deathlist.loadDeathList(character['id'])
@@ -231,14 +231,14 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     tile.placeCreature(self.player)
                     # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                     updateTile(self.player.position, tile)
-                        
+
                 except AttributeError:
                     self.player.position = Position(*game.map.mapInfo.towns[1][1])
                     tile = getTile(self.player.position)
                     tile.placeCreature(self.player)
                     # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                     updateTile(self.player.position, tile)
-                        
+
                 # Update last login
                 sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
 
@@ -248,7 +248,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
             # Call the login script
             game.scriptsystem.get("login").run(creature=self.player)
-            
+
             # If we got a waiting list, now is a good time to verify the list
             if lastChecks:
                 checkTime = time.time()
@@ -256,7 +256,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     if checkTime - lastChecks[entry] > 3600:
                         waitingListIps.remove(entry)
                         del lastChecks[entry]
-                        
+
         elif packetType == 0x00 and self.transport.address in config.executeProtocolIps:
             self.gotFirst = False
             t = TibiaPacket()
@@ -269,7 +269,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     if op == "CALL" and self.ready == 2:
                         print("do this")
                         result = yield game.functions.executeCode(packet.string())
-                        
+
                         t.string(result)
                     elif op == "AUTH":
                         print("auth")
@@ -293,12 +293,12 @@ class GameProtocol(protocolbase.TibiaProtocol):
         if self.player:
             print(("Lost connection on, ", self.player.position))
             self.player.client = None
-            
+
             if self.player.alive and not self.player.prepareLogout():
                 logoutBlock = self.player.getCondition(CONDITION_INFIGHT)
                 call_later(logoutBlock.length, self.onConnectionLost)
                 return
-            
+
             self.player.knownCreatures = set()
             self.player.knownBy = set()
             for x in list(game.player.allPlayers.values()):
@@ -306,10 +306,10 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     stream = x.packet()
                     stream.vipLogout(self.player.data["id"])
                     stream.send(x.client)
-            
+
             game.scriptsystem.get("logout").run(creature=self.player)
             self.player.despawn()
-            
+
     """def packet(self, type=None):
         if self.player:
             return (type)"""

@@ -33,7 +33,7 @@ if config.sqlModule == "mysql":
             # Make connection pool.
             for x in range(spawn):
                 conn = asynctorndb.Connect(host = config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, database=config.sqlDatabase, no_delay = True, charset='utf8')
-                
+
                 future = conn.connect()
                 try:
                     yield future
@@ -67,18 +67,18 @@ def _runOperation(*argc):
 
             if not conn:
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
-                
+
         future = conn.execute(*argc)
         try:
-            yield future 
+            yield future
         except:
             pass
 
-       
+
         exc = future.exc_info()
         if exc:
             print(exc[0].__name__, exc[1], 'from query:', argc[0])
-            
+
         # Put connection back
         connections.append(conn)
 
@@ -106,12 +106,12 @@ def runQuery(*argc):
         if exc:
             print(exc[0].__class__.__name__, exc[1], 'from query:', argc[0])
         exc = future.exception()
-        
-     
-        
+
+
+
         # Put connection back
         connections.append(conn)
-        
+
         return res
     return {}
 
@@ -130,7 +130,7 @@ def runQueryWithException(*argc):
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
 
         future = conn.query(*argc)
-        
+
         yield future
         # Put connection back
         connections.append(conn)
@@ -153,7 +153,7 @@ def runOperationLastId(*argc):
                 yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
 
         future = conn.execute_lastrowid(*argc)
-        
+
         try:
             res = yield future
         except:
@@ -163,6 +163,6 @@ def runOperationLastId(*argc):
             print(exc[0].__class__.__name__, exc[1], 'from query:', argc[0])
         # Put connection back
         connections.append(conn)
-        
+
         return res
     return random.randint(1, 10000)

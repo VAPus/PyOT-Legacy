@@ -16,7 +16,7 @@ class Reader(object):
     def uint8(self):
         self.pos += 1
         return ord(self.data[self.pos-1])
-        
+
     def peekUint8(self):
         try:
             return ord(self.data[self.pos])
@@ -72,10 +72,10 @@ class Reader(object):
     def getXString(self, size):
         self.pos += size
         return ''.join(map(str, struct.unpack("%ds" % size, self.data[self.pos-size:self.pos])))
-        
+
     def getData(self):
         return self.data[self.pos:]
-    
+
 class Item(object):
     def __init__(self):
         self.type = 0
@@ -102,14 +102,14 @@ class Node(object):
                 if LEVEL < 0:
                     print "DEBUG!"
                 break
-                
+
             elif byte == 0xFD and not nextIsEscaped:
                 nextIsEscaped = True
-                
+
             else:
-                nextIsEscaped = False 
+                nextIsEscaped = False
                 self.data += struct.pack("<B", byte)
-                
+
             byte = otb.uint8()
         self.data = Reader(self.data)
     def handleBlock(self, otb):
@@ -118,13 +118,13 @@ class Node(object):
         node = Node(otb)
         self.nodes.append(node)
         return node
-        
+
     def next(self):
         if self.nodes:
             return self.nodes.pop(0)
         else:
             return None
-            
+
 otbFile = io.open("items.otb", 'rb')
 otb = Reader(otbFile.read())
 
@@ -185,7 +185,7 @@ while child:
         datalen = child.data.uint16()
         if attr is 0x10:
             item.sid = child.data.uint16()
-                    
+
         elif attr is 0x11:
             item.cid = child.data.uint16()
         elif attr == 0x12:
@@ -193,14 +193,14 @@ while child:
 
         elif attr is 0x14:
             item.attr["speed"] = child.data.uint16()
-            
+
         elif attr is 0x2B:
             item.attr["order"] = child.data.uint8()
 
         elif attr == 0x2C:
-            item.attr["wareid"] = child.data.uint16()            
+            item.attr["wareid"] = child.data.uint16()
         else:
-            child.data.pos += datalen        
+            child.data.pos += datalen
 
     if item.cid:
         items[item.sid] = item
@@ -270,7 +270,7 @@ if __name__ == "__main__":
                 except:
                     pass # Fields are reset so...
                 attribute.tag = key
-                
+
         id = int(item.get("id").split("-")[0]) if item.get("id") else int(item.get("fromid"))
         if id > removeStart and id < removeStop: #or id not in items:
             item.clear()
@@ -321,16 +321,16 @@ if __name__ == "__main__":
                 for id in xrange(orgId+1, toId+1):
                     # Split items.
                     newItem = copy.deepcopy(item)
-                
+
                     newItem.set("id", str(id))
                     newItem.set("cid", str(items[id].cid))
                     if items[id].flags:
                         newItem.set("flags", str(items[id].flags))
                     root.insert(index+1, newItem)
-                    
+
                     index += 1
                 item.set("id", str(orgId))
-                item.set("cid", str(orgCid))                    
+                item.set("cid", str(orgCid))
         elif "fromid" in item.attrib:
             # No toid. Rewrite.
             orgId = item.attrib["fromid"]
@@ -345,8 +345,8 @@ if __name__ == "__main__":
     for item in root.findall("item"):
         # First some name checking.
         if "name" in items[topId(item)].attr and items[topId(item)].attr["name"] != item.get("name"):
-            print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[topId(item)].attr["name"].decode('utf-8')))
-            item.set("name", items[topId(item)].attr["name"].decode('utf-8'))
+            print (u"WARNING: Rewritting name of %s from %s to %s" % (item.get("id"), item.get("name"), items[topId(item)].attr["name"]))
+            item.set("name", items[topId(item)].attr["name"])
 
         flags = items[topId(item)].flags
         if flags:
@@ -386,7 +386,7 @@ if __name__ == "__main__":
             if "speed" in item.attr and item.attr["speed"] > 0 and item.attr["speed"] != 100:
                 elm.set('speed', str(item.attr["speed"]))
             if "name" in item.attr:
-                elm.set('name', item.attr["name"].decode('utf-8'))
+                elm.set('name', item.attr["name"])
 
             ids.add(item.sid)
 
@@ -435,11 +435,11 @@ if __name__ == "__main__":
                 return False
 
         return True
-    # Needs fixes. Skip.     
+    # Needs fixes. Skip.
     for elem in container[:]:
         id = elem.get("id")
         if "-" in id: continue
-        
+
         id = int(id)
         cid = items[id].cid
 
@@ -459,9 +459,9 @@ if __name__ == "__main__":
         currFlags = elem.get("flags")
         currName = elem.get("name")
         count = 0
-                
+
     tree.write("out.xml")
- 
+
     data = parse("out.xml").toprettyxml(encoding="utf-8", newl="\n")
     with open("out.xml", 'w') as f:
         data = data.replace("\t\t<attribute/>\n", "\t")
@@ -471,14 +471,14 @@ if __name__ == "__main__":
         data = data.replace("\t\t\t", "\t\t").replace("\t\t\t", "\t\t") # We do this twice.
         f.write(data)
 
-        
-    
+
+
     # JSON
     import json
     _items = []
     for item in container:
         attr = item.attrib
-        
+
         try:
             attr['__id'] = int(attr['id'])
         except:

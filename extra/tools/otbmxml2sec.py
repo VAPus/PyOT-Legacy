@@ -17,7 +17,7 @@ except:
 # Config
 # MUST BE A POWER OF TWO!!!
 SECTOR_SIZE = (32, 32)
-#SECTOR_SIZE = (50000, 50000)    
+#SECTOR_SIZE = (50000, 50000)
 # The reader class:
 class Reader(object):
     __slots__ = ('pos', 'data')
@@ -33,7 +33,7 @@ class Reader(object):
     def uint8(self):
         self.pos += 1
         return ord(self.data[self.pos-1])
-        
+
     def peekUint8(self):
         try:
             return ord(self.data[self.pos])
@@ -43,7 +43,7 @@ class Reader(object):
     def uint16(self):
         self.pos += 2
         return unpack("<H", self.data[self.pos-2:self.pos])[0]
- 
+
     # 32bit - 4bytes, C type: int
     def uint32(self):
         self.pos += 4
@@ -79,12 +79,12 @@ class Reader(object):
     def getXString(self, size):
         self.pos += size
         return ''.join(map(str, unpack("%ds" % size, self.data[self.pos-size:self.pos])))
-        
+
     def getData(self):
         return self.data[self.pos:]
 
 LEVEL = 1
-      
+
 class Node(object):
     __slots_ = ('data', 'nodes', 'begin', 'size')
     def __init__(self, begin, size=None):
@@ -110,21 +110,21 @@ class Node(object):
                 if LEVEL < 0:
                     print("DEBUG!")
                 break
-                
+
             elif byte == "\xFD" and not nextIsEscaped:
                 nextIsEscaped = True
-                
+
             else:
-                nextIsEscaped = False 
+                nextIsEscaped = False
                 data += byte
-                
+
             byte = otbm.byte()
         self.data = Reader(data)
 
     def sizer(self):
         oldPos = otbm.pos
         subLevels = 1
-        
+
         byte = otbm.uint8()
         nextIsEscaped = False
         while byte != None:
@@ -135,14 +135,14 @@ class Node(object):
                 subLevels -= 1
                 if subLevels == 0:
                     break
-                    
+
             elif byte == 0xFD and not nextIsEscaped:
                 nextIsEscaped = True
-                    
+
             else:
-                nextIsEscaped = False 
-                    
-            byte = otbm.uint8()            
+                nextIsEscaped = False
+
+            byte = otbm.uint8()
 
         size = otbm.pos - oldPos
         otbm.pos = oldPos
@@ -154,7 +154,7 @@ class Node(object):
         node = Node(begin, size)
         self.nodes.append(node)
         return node
-        
+
     def next(self):
         if self.index < len(self.nodes):
             try:
@@ -191,7 +191,7 @@ height = root.data.uint16()
 majorVersionItems = root.data.uint32()
 minorVersionItems = root.data.uint32()
 
-print("OTBM v%d, %dx%d" % (version, width, height)) 
+print("OTBM v%d, %dx%d" % (version, width, height))
 
 print ("--Generating the map layout with no filling (gad this takes alot of memory)")
 m = Map(width,height,None,15)
@@ -214,7 +214,7 @@ while nodes.data.peekUint8():
     attr = nodes.data.uint8()
     if attr == 1:
         description += nodes.data.string()+"\n"
-        
+
     elif attr == 11:
         spawns = nodes.data.string()
         print("--Using spawns: %s" % spawns)
@@ -223,7 +223,7 @@ while nodes.data.peekUint8():
         print("--Using houses: %s" % houses)
     else:
         print("Unknown nodes data")
-        
+
 m.description(description)
 print (description)
 node = nodes.next()
@@ -239,39 +239,39 @@ while node:
         baseX = node.data.uint16()
         baseY = node.data.uint16()
         baseZ = node.data.uint8()
-        
+
         tile = node.next()
         while tile:
             tileType = tile.data.uint8()
             if tileType == 5 or tileType == 14: # Tile
                 tileX = tile.data.uint8() + baseX
                 tileY = tile.data.uint8() + baseY
-                    
+
                 houseId = 0
                 if tileType == 14:
                     houseId = tile.data.uint32()
                 _render_ = False
                 _itemG_ = None
                 flags = 0
-                
+
                 # Attributes
                 while tile.data.peekUint8():
                     attr = tile.data.uint8()
                     if attr == 3: # OTBM_ATTR_TILE_FLAGS
                         flags = tile.data.uint32()
-                        
+
                     elif attr == 9: # ITEM, ground item
                         _itemG_ = genItem(tile.data.uint16())
                         _render_ = True
-                        
+
                     else:
                         print("Unknown tile attrubute")
-                        
+
                 _tile_ = []
                 if _itemG_:
                     _tile_.append(_itemG_)
 
-                
+
                 item = tile.next()
                 while item:
                     if item.data.uint8() == 6: # more items
@@ -291,7 +291,7 @@ while node:
                             elif attr == 14: # houseDoorId
                                 safe = False
                                 currItem.attribute("doorId",item.data.uint8())
-                                
+
                                 currItem.action('houseDoor')
                             elif attr == 20: # Sleeperguid
                                 item.data.uint32() # TODO: care?
@@ -337,9 +337,9 @@ while node:
                                 break # All after this is container items
                             else:
                                 print("Unknown item attribute %d" % attr)
-                            
+
                         _render_ = True
-                        
+
                         _tile_.append(currItem)
                     else:
                         print("Unknown item header")
@@ -348,7 +348,7 @@ while node:
                 print("Unknown tile node")
             if _render_:
                 at(tileX,tileY,_tile_, baseZ)
-                
+
                 if houseId:
                     m.houses[(tileX, tileY, baseZ)]=houseId
                 if flags:
@@ -358,10 +358,10 @@ while node:
                 lastPrint += 2000
                 print("---%d tiles done" % (lastPrint))
             tile = node.next()
-            
+
     elif type == 12: # Towns
         town = node.next()
-        
+
         while town:
             townType = town.data.uint8()
             if townType == 13:
@@ -371,13 +371,13 @@ while node:
                 m.town(townId, townName, temple)
             else:
                 print("Unknown town node")
-                
+
             town = node.next()
-            
-            
+
+
     elif type == 15 and version >= 2: # Waypoints
         waypoint = node.next()
-        
+
         while waypoint:
             waypointType = waypoint.data.uint8()
             if waypointType == 16:
@@ -409,7 +409,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
     spawn = "s = Spawn(%d, (%d, %d))" % (radius, baseX, baseY)
     spawnSectors = []
     spawnData = {}
-    
+
 
     for xMonster in xSpawn.getElementsByTagName("monster"):
         monsterX = int(xMonster.getAttribute("x"))
@@ -425,8 +425,8 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         if not sector in spawnSectors:
             spawnSectors.append(sector)
             spawnData[sector] = []
-        
-        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d, %s)" % (monsterName, monsterX, monsterY, monsterZ, xMonster.getAttribute("spawntime")))    
+
+        spawnData[sector].append("s.monster(\"%s\", %d, %d, %d, %s)" % (monsterName, monsterX, monsterY, monsterZ, xMonster.getAttribute("spawntime")))
 
     for xMonster in xSpawn.getElementsByTagName("npc"):
         npcX = int(xMonster.getAttribute("x"))
@@ -434,15 +434,15 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         npcZ  = int(xMonster.getAttribute("z"))
         if npcZ != baseZ:
             print("UNSUPPORTED spawns!")
-        
+
         npcName = ' '.join([s[0].upper() + s[1:] for s in xMonster.getAttribute("name").split(' ')]).replace(" Of ", " of ")
 
         sector = (int((baseX+npcX)/32), int((baseY+npcY)/32))
         if not sector in spawnSectors:
             spawnSectors.append(sector)
             spawnData[sector] = []
-        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d, %s)" % (npcName, npcX, npcY, npcZ, xMonster.getAttribute("spawntime")))  
-        
+        spawnData[sector].append("s.npc(\"%s\", %d, %d, %d, %s)" % (npcName, npcX, npcY, npcZ, xMonster.getAttribute("spawntime")))
+
     for entry in spawnSectors:
         x = (entry[0]*32)+16
         y = (entry[1]*32)+16
@@ -450,7 +450,7 @@ for xSpawn in dom.getElementsByTagName("spawn"):
         exec("""%s
 %s
 at(%d, %d, s, %d)""" % (spawn,'\n'.join(spawnData[entry]),x,y,baseZ))
-        
+
 print("---Done with spawns")
 
 print("---Begin houses")
@@ -460,7 +460,7 @@ houses = []
 for xHouse in dom.getElementsByTagName("house"):
     houses.append("('%s', '%s', '%s', '%s', '%s')" % (xHouse.getAttribute("houseid"),xHouse.getAttribute("name"),xHouse.getAttribute("townid"),xHouse.getAttribute("size"),xHouse.getAttribute("rent")))
 if houses:
-    print ("---Writing houses.sql")    
+    print ("---Writing houses.sql")
     open("houses.sql", "wb").write(housesql + ','.join(houses) + ";")
 
     print("---Done houses")

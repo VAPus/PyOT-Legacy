@@ -74,33 +74,33 @@ class TibiaPacketReader(object):
 
     def position(self, instance=None):
         self.pos += 5
-        x,y,z = unpack("<HHB", self.data[self.pos - 5:self.pos]) 
+        x,y,z = unpack("<HHB", self.data[self.pos - 5:self.pos])
         return Position(x, y, z, instance)
-        
+
     def stackPosition(self, instance=None):
         self.pos += 6
-        x,y,z, stackPos = unpack("<HHBB", self.data[self.pos - 6:self.pos]) 
+        x,y,z, stackPos = unpack("<HHBB", self.data[self.pos - 6:self.pos])
         return StackPosition(x, y, z, stackPos, instance)
-        
+
 class TibiaPacket(object):
     __slots__ = ('data', 'stream', 'raw')
     def __init__(self, header=None):
         self.data = [""]
         self.stream = None
-        self.raw = self.data.append        
+        self.raw = self.data.append
         if header:
             self.uint8(header)
-            
+
     def clear(self):
         self.data = [""]
         self.raw = self.data.append
-        
+
     # 8bit - 1byte, C type: char
     def uint8(self, data, pack = pack):
         self.raw(pack("<B", data))
     def int8(self, data, pack=pack):
         self.raw(pack("<b", data))
-        
+
     # 16bit - 2bytes, C type: short
     def uint16(self, data, pack=pack):
         self.raw(pack("<H", data))
@@ -121,7 +121,7 @@ class TibiaPacket(object):
     def double(self, data):
         self.uint8(3)
         self.uint32((round(data, 3) * 1000) + 0x7FFFFFFF)
-        
+
     def string(self, string, pack=pack):
         # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
         """try:
@@ -132,10 +132,10 @@ class TibiaPacket(object):
         length = len(string)
         self.uint16(length)
         self.raw(string.encode('iso8859-1'))
-        
+
     def put(self, string):
         self.raw(str(string))
-        
+
     def send(self, stream, pack=pack, len=len, adler32=adler32, encryptXTEA=encryptXTEA, sum=sum, map=map):
         if not stream or len(self.data) < 2: return
 
@@ -148,14 +148,14 @@ class TibiaPacket(object):
         else:
             data = b''.join(self.data)
 
-        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
+        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
         self.data = None
-        
+
     #@inThread
     def sendto(self, list):
         if not list or not self.data:
             return # Noone to send to
-        
+
         length = sum(map(len, self.data))
         self.data[0] = pack("<H", length)
 
@@ -169,7 +169,7 @@ class TibiaPacket(object):
             else:
                 data = b''.join(self.data)
             client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
-            
+
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):
         if not type:

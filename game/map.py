@@ -96,7 +96,7 @@ def getTileConst(x,y,z,instanceId):
     except:
         if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
             return knownMap.get(posSum)
-        
+
 def getTileConst2(posSum, secSum, x, y, instanceId):
     """ Used by floorDescription """
     try:
@@ -111,20 +111,20 @@ def getHouseId(pos):
         return getTile(pos).houseId
     except:
         return False
-        
+
 def placeCreature(creature, pos):
     """ Place a creature on this position. """
     try:
         return getTile(pos).placeCreature(creature)
     except:
         return False
-        
+
 def removeCreature(creature, pos):
     """ Remove the creature on this position. """
     try:
         return getTile(pos).removeCreature(creature)
     except:
-        return False  
+        return False
 
 def newInstance(base=None):
     """ Returns a new instanceId """
@@ -133,7 +133,7 @@ def newInstance(base=None):
         instances[instance] = base + '/'
     else:
         instances[instance] = ''
-        
+
     return instance
 
 class Tile(object):
@@ -142,7 +142,7 @@ class Tile(object):
         self.ground = ground
 
         self.things = items or None
-        
+
         self.flags = flags
 
     def getCreatureCount(self):
@@ -155,13 +155,13 @@ class Tile(object):
                 count += 1
 
         return count
-    
+
     def getItemCount(self):
         """ Returns the number of items (:class:`game.item.Item`) (minus the ground) on this tile. """
         if not self.things: return 0
 
         return len(self.things) - self.getCreatureCount()
-        
+
     def getTopItemCount(self):
         """ Return the number of ontop items (:class:`game.item.Item`) (minus the ground) on this tile. """
         if not self.things: return 0
@@ -191,7 +191,7 @@ class Tile(object):
     def getFlags(self):
         """ Return the tile flags """
         return self.flags or 0
-        
+
     def setFlag(self, flag):
         """ Set a flag on the tile """
         flags = self.getFlags()
@@ -202,28 +202,28 @@ class Tile(object):
         """ Unset a flag on the tile """
         if self.getFlags() & flag:
             self.flags -= flag
-            
+
     def placeCreature(self, creature):
         """ Place a Creature (subclass of :class:`game.creature.Creature`) on the tile. """
- 
+
         if not self.things:
             self.things = [creature]
             return 1
 
         pos = len(self.things) - self.getBottomItemCount()
-        
+
         self.things.insert(pos, creature)
 
         return pos+1
-        
+
     def removeCreature(self,creature):
         """ Remove a Creature (subclass of (:class:`game.creature.Creature`) on the tile. """
- 
+
         self.things.remove(creature)
-        
+
     def placeItem(self, item):
         """ Place an Item (:class:`game.item.Item`) on the tile. This automatically deals with ontop etc. """
- 
+
         assert isinstance(item, Item)
         if not self.things:
             self.things = [item]
@@ -236,7 +236,7 @@ class Tile(object):
             pos = self.getTopItemCount() + self.getCreatureCount() #len(self.things)
             self.things.insert(pos, item)
         return pos+1
-    
+
     def placeItemEnd(self, item):
         """ Place an idea at the end of the item stack. This function should NOT usually be used with ontop items. """
         if not self.things:
@@ -245,7 +245,7 @@ class Tile(object):
 
         self.things.append(item)
         return len(self.things)
-        
+
     def bottomItems(self):
         """ Returns a list or tuple with bottom items. """
         if not self.things: return ()
@@ -254,7 +254,7 @@ class Tile(object):
             return ()
 
         return self.things[len(self.things) - bottomItems:]
-        
+
     def topItems(self):
         """ Returns an iterator over top items (including the ground). """
         yield self.ground
@@ -265,7 +265,7 @@ class Tile(object):
                 yield thing
             else:
                 break
-            
+
     def getItems(self):
         """ Returns an iterator over all items on this tile. """
         yield self.ground
@@ -276,7 +276,7 @@ class Tile(object):
         for thing in self.things:
             if isinstance(thing, Item):
                 yield thing
- 
+
     def creatures(self):
         """ Returns an iterator over all creatures on this tile. """
         if not self.things:
@@ -285,7 +285,7 @@ class Tile(object):
         for thing in self.things:
             if isinstance(thing, Creature):
                 yield thing
-                
+
     def hasCreatures(self):
         """ Returns True if the tile holds any creatures (:class:`game.creature.Creature`). """
         if not self.things:
@@ -294,7 +294,7 @@ class Tile(object):
         for thing in self.things:
             if isinstance(thing, Creature):
                 return True
-        
+
     def topCreature(self):
         """ Returns the top (first) creature (subclass of :class:`game.creature.Creature`) on the tile. """
         if not self.things:
@@ -308,14 +308,14 @@ class Tile(object):
         """ Remove the `item` (:class:`game.item.Item`)  from the tile. """
         item.stopDecay()
         self.things.remove(item)
-        
+
     def removeItemWithId(self, itemId):
         """ Remove items with id equal `itemId` on this tile. """
         for i in self.getItems():
             if i.itemId == itemId:
                 self.removeItem(i)
-                
-        
+
+
     def getThing(self, stackpos):
         """ Returns the thing on this stack position. """
         if stackpos == 0: return self.ground
@@ -323,11 +323,11 @@ class Tile(object):
             return self.things[stackpos-1]
         except:
             return None
-    
+
     def setThing(self, stackpos, item):
         """ Set the item (can be either a creature or a item) to this stack position. stackpos is one less due to ground. """
         self.things[stackpos] = item
-        
+
     def findItem(self, itemId):
         """ returns the first item with id equal to `itemId` """
         for x in self.bottomItems():
@@ -338,7 +338,7 @@ class Tile(object):
         """ Returns the stackposition of that `thing` on this tile. """
         if thing == self.ground: return 0
         return self.things.index(thing)+1
-        
+
     def findClientItem(self, cid, stackpos=None):
         """ (DON'T USE THIS) """
         for x in self.bottomItems():
@@ -346,7 +346,7 @@ class Tile(object):
                 if stackpos:
                     return (self.things.index(x), x)
                 return x
-                
+
 
     def copy(self):
         """ Returns a copy of this tile. Used internally for unstacking. """
@@ -365,14 +365,14 @@ class Tile(object):
 
 class HouseTile(Tile):
     __slots__ = ('houseId', 'position')
-    
+
 
 def loadTiles(x,y, instanceId, sectorSum):
     """ Load the sector witch holds this x,y position. Returns the result. """
     if sectorSum in sectors: return None
     if x > mapInfo.height or y > mapInfo.width or x < 0 or y < 0:
         return None
-    
+
     return load(sectorSum[1], sectorSum[2], instanceId, sectorSum)
 
 ### Start New Map Format ###
@@ -388,7 +388,7 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 
         <uint16>itemId
         <uint8>attributeCount / other
-        
+
         itemId >= 100:
             every attributeCount (
                 See attribute format
@@ -396,20 +396,20 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
 
         itemId == 50:
             <int32> Tile flags
-            
+
         itemId == 51:
             <uint32> houseId
-            
+
         itemId == 0:
             skip attributeCount fields
-            
+
         {
             ; -> go to next tile
             | -> skip the remaining y tiles (if itemId = 0, and attrNr, skip attrNr x tiles)
             ! -> skip the remaining x and y tiles
             , -> more items
         }
-        
+
     floorLevel == 60:
         <uint16>center X
         <uint16>center Y
@@ -419,16 +419,16 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
             <uint8> type (61 for Monster, 62 for NPC)
             <uint8> nameLength
             <string> Name
-             
+
             <int8> X from center
             <int8> Y from center
-                
+
             <uint16> spawntime in seconds
-                       
+
             }
         )
     Attribute format:
-    
+
     {
         <uint8>attributeId
         <char>attributeType
@@ -448,8 +448,8 @@ attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usabl
                 <repeat this block for listItems times> -> value
             )
         }
-        
-        
+
+
     }
 """
 
@@ -466,7 +466,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     codeLength = len(code)
     skip = False
     skip_remaining = False
-    houseId = 0 
+    houseId = 0
 
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
@@ -476,7 +476,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     l_HouseTile = HouseTile
     l_Position = Position
     l_attributes = attributeIds
-    
+
     # Spawn commands
     l_getNPC = game.npc.getNPC
     l_getMonster = game.monster.getMonster
@@ -501,24 +501,24 @@ def loadSectorMap(code, instanceId, baseX, baseY):
         level = lord(code[pos])
 
         pos += 1
-        
+
         if level == 60:
             centerX, centerY, centerZ, centerRadius, creatureCount = spawn_unpack(code[pos:pos+7])
             pos += 7
-                            
+
             # Mark a position
             centerPoint = l_Position(centerX, centerY, centerZ, instanceId)
-                            
-            # Here we use attrNr as a count for 
+
+            # Here we use attrNr as a count for
             for numCreature in range(creatureCount):
                 creatureType = lord(code[pos])
 
                 nameLength = lord(code[pos+1])
 
-                name = code[pos+2:pos+nameLength+2].decode('utf-8')
+                name = code[pos+2:pos+nameLength+2]
                 pos += 8 + nameLength
                 spawnX, spawnY, spawnTime = creature_unpack(code[pos-6:pos])
-                
+
                 if creatureType == 61:
                     creature = l_getMonster(name)
                 else:
@@ -527,14 +527,14 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                     creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
                     print("Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name))
-                                    
+
             continue
-        
+
         # Loop over the mapInfo.sectorSize[0] x rows
         for xr in range(boundX):
             # Since we need to deal with skips we need to deal with counts and not a static loop (pypy will have a problem unroll this hehe)
             yr = 0
-            
+
             while yr < boundY:
                 # The items array and the flags for the Tile.
                 items = []
@@ -557,7 +557,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             flags = long_unpack(code[pos:pos+4])[0]
 
                             pos += 5
-                        
+
                         # HouseId?
                         elif itemId == 51:
                             pos += 2
@@ -565,14 +565,14 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             houseId = long_unpack(code[pos:pos+4])[0]
 
                             pos += 5
-                            
+
                         elif attrNr:
                             pos += 3
                             attr = {}
                             for n in range(attrNr):
                                 name = l_attributes[lord(code[pos])]
 
-                                    
+
                                 opCode = code[pos+1]
                                 pos += 2
                                 value = None
@@ -610,7 +610,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 else:
                                     raise Exception("attr opCode %d not found!" % opCode)
                                 attr[name] = value
-                                
+
                             pos += 1
                             item = l_Item(itemId, **attr)
                             item.fromMap = True
@@ -634,16 +634,16 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     ground = item
                                 else:
                                     items_append(item)
-                                
-                                    
+
+
 
                     else:
                         pos += 4
                         if attrNr:
                             yr += attrNr -1
-                        
-                    
-                        
+
+
+
                     v = code[pos-1]
                     if v == 59: break # v == ;
                     elif v ==124: # v == |
@@ -670,12 +670,12 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         # Fix flags if necessary, TODO: Move this to map maker!
                         if protectedZones and not flags & TILEFLAGS_PROTECTIONZONE:
                             flags += TILEFLAGS_PROTECTIONZONE
-                            
+
                         tile = l_HouseTile(ground, items, flags)
                         tile.houseId = houseId
                         tile.position = ySum
-                        
-                        
+
+
                         # Find and cache doors
                         for i in tile.getItems():
                             if i.hasAction("houseDoor"):
@@ -684,19 +684,19 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                     break
                                 except:
                                     houseDoors[houseId] = [ySum]
-                                
-                        
+
+
                         if houseId in houseTiles:
                             houseTiles[houseId].append(tile)
                         else:
                             houseTiles[houseId] = [tile]
-                        
+
                         try:
                             for item in l_houseData[houseId].data["items"][ySum]:
                                 tile.placeItem(item)
                         except KeyError:
                             pass
-    
+
                         houseId = 0
                         thisSectorMap[ySum] = tile
 
@@ -713,7 +713,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 hash = ground, tuple(items)
                             else:
                                 hash = ground
-                            
+
                             try:
                                 thisSectorMap[ySum] = _dummyTiles[hash]
                             except:
@@ -735,15 +735,15 @@ def loadSectorMap(code, instanceId, baseX, baseY):
             if skip_remaining:
                 skip_remaining = False
                 break
-                
-    return thisSectorMap                         
+
+    return thisSectorMap
 ### End New Map Format ###
 
 def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
     """ Load sectorX.sectorY.sec. Returns True/False """
-          
+
     t = time.time()
-    
+
     # Attempt to load a sector file
     try:
         with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances.get(instanceId, ''), sectorX, sectorY), "rb") as f:
@@ -754,22 +754,22 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         # No? Mark it as empty
         sectors.add(sectorSum)
         return False
-        
+
     if verbose:
-        print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))    
-    
+        print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))
+
     if config.performSectorUnload:
         call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
-    
+
     scriptsystem.get('postLoadSector').run("%d.%d" % (sectorX, sectorY), sector=map, instanceId=instanceId)
-    
+
     return True
 
 # Map cleaner
 def _unloadCheck(sectorX, sectorY, instanceId):
     # Calculate the x->x and y->y ranges
-    # We're using a little higher values here to avoid reloading again 
-    
+    # We're using a little higher values here to avoid reloading again
+
     xMin = (sectorX << sectorShiftX) + 14
     xMax = (xMin + mapInfo.sectorSize[0]) + 14
     yMin = (sectorY << sectorShiftY) + 11
@@ -777,25 +777,25 @@ def _unloadCheck(sectorX, sectorY, instanceId):
     try:
         for player in game.player.allPlayers.values():
             pos = player.position # Pre get this one for sake of speed, saves us a total of 4 operations per player
-            
+
             # Two cases have to match, the player got to be within the field, or be able to see either end (x or y)
             if instanceId == pos.instanceId and (pos[0] < xMax or pos[0] > xMin) and (pos[1] < yMax or pos[1] > yMin):
                 return False # He can see us, cancel the unloading
     except:
         return False # Players was changed.
-        
+
     return True
-    
+
 def _unloadMap(sectorX, sectorY, instanceId):
     print("Checking %d.%d.sec (instanceId %s)" % (sectorX, sectorY, instanceId))
     t = time.time()
     if _unloadCheck(sectorX, sectorY, instanceId):
         print("Unloading....")
         unload(sectorX, sectorY, instanceId)
-        print("Unloading took: %f" % (time.time() - t))   
+        print("Unloading took: %f" % (time.time() - t))
     else:
         call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
-    
+
 def unload(sectorX, sectorY, instanceId, knownMap=knownMap):
     """ Unload sectorX.sectorY, loaded into instanceId """
     sectorSum = (instanceId, sectorX, sectorY)

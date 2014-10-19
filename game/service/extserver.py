@@ -9,7 +9,7 @@ from struct import pack
 class SimplePacket(TibiaPacket):
     def send(self, stream):
         if not stream or not self.data: return
-        stream.transport.write(self.data)   
+        stream.transport.write(self.data)
 
 IPS = {}
 
@@ -44,7 +44,7 @@ IPS = {}
 # Some ideas:
 # Load custom client or custom item data.
 
-# TODO: 
+# TODO:
 # * Support in vapus custom client generator.
 # * Authorization.
 
@@ -59,31 +59,31 @@ class extProtocol(protocolbase.TibiaProtocol):
     def dataReceived(self, data):
         packet = TibiaPacketReader(data)
         self.onPacket(packet)
-    
+
     def onConnect(self):
         self.ip = self.transport.getPeer().host
         IPS[self.ip] = self
-        
+
     def onPacket(self, packet):
         type = packet.uint8()
-        
+
         if type == 0x00:
             self.loading = False
         if type == 0x01:
             resource = packet.string()
-            
+
             if not resource in self.files:
                 # Requesting unknown resource.
                 print(("Unknown resource.", resource))
                 return
-                
+
             p = SimplePacket(0x05)
             data = self.files[resource].read()
             p.string(resource)
             p.uint32(len(data))
             p.raw(data)
             p.send(self)
-    
+
     def _load(self, res):
         self.loading = True
         if not res in self.files:
@@ -94,16 +94,16 @@ class extProtocol(protocolbase.TibiaProtocol):
         p.uint8(0x00)
         p.string(res)
         p.send(self)
-        
+
     def play(self, res, loop=False):
         if not res in self.files:
             if res[:4] == "data":
                 self.files[res] = open(res)
-            
+
         p = SimplePacket(0x02 if loop else 0x01)
         p.string(res)
         p.send(self)
-        
+
     def stop(self, res=None):
         if not res:
             p = SimplePacket(0x03)
@@ -111,34 +111,34 @@ class extProtocol(protocolbase.TibiaProtocol):
             # Assume resource IS loaded.
             p = SimplePacket(0x02)
             p.string(res)
-            
+
         p.send(self)
-        
+
     def destroy(self):
         p = SimplePacket(0x04)
         p.send(self)
-    
+
     def seek(self, res, seek):
         p = SimplePacket(0x06)
         p.string(res)
         p.uint16(seek)
         p.send(self)
-        
+
     def volume(self, res, volume):
         p = SimplePacket(0x07)
         p.string(res)
         p.uint8(volume)
         p.send(self)
-        
+
     def onConnectionLost(self):
         if self.player:
             pass
-            
+
         del IPS[self.ip]
-        
+
     def resource(self, res, data):
         self.files[res] = data
-        
+
 class ExtFactory(protocolbase.TibiaFactory):
     __slots__ = ()
     protocol = extProtocol

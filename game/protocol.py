@@ -20,13 +20,13 @@ def getProtocol(version):
 def loadProtocol(version):
     if "_trial_temp" in os.getcwd():
         os.chdir("..")
-        
+
     if not version in protocolsAvailable:
         print("Protocol (Base) %d doesn't exist!" % version)
         return
-        
+
     protocol = importlib.import_module('game.protocols.%d' % version)
-            
+
     protocol.verify()
     protocolsUsed[version] = protocol.Protocol()
     for x in protocol.provide:

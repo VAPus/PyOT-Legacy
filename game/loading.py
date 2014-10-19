@@ -44,7 +44,7 @@ try:
     from io import StringIO
 except:
     from io import StringIO
-    
+
 MERCURIAL_REV = 0
 builtins.IS_IN_TEST = False
 builtins.SERVER_START = time.time() - config.tibiaTimeOffset
@@ -58,7 +58,7 @@ if platform.system() == "Windows":
     _txtColor = lambda x, c: x
 else:
     def _txtColor(text, color):
-        
+
         if color == "blue":
             color = 34
         elif color == "red":
@@ -71,8 +71,8 @@ else:
         COLOR_SEQ = "\033[1;%dm"
 
         return "%s%s%s" % (COLOR_SEQ % color, text, RESET_SEQ)
-    
-    
+
+
 def windowsLoading():
     if config.consoleColumns:
         os.system("mode con cols=%d" % config.consoleColumns)
@@ -83,18 +83,18 @@ def windowsLoading():
 @gen.coroutine
 def loader(timer):
     # XXX: Remember, game.XXX -> sys.modules["game.XXX"] because game is set later on. And somehow this causes weird behavior :/
-    
+
     if IS_IN_TEST:
         # Also ugly hack.
         sys.stdout = StringIO()
-        
+
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
             # This will work independantly of the OS (no need to have mercurial installed!
             # Not sure if it's 100% accurate, be aware that this is not the active rev, but the latest fetched one.
             # Downloaded packages doesn't have this file, thats why we keep in in a try, it will raise.
-            
+
             MERCURIAL_REV = (os.path.getsize(".hg/store/00changelog.i") // 64) - 1 # Since mercurial start on rev 0, we need to -1 to get the rev number.
             #MERCURIAL_REV = subprocess.check_output(["hg", "parents", "--template={rev}"])
             print("Begin loading (PyOT r%s)" % MERCURIAL_REV)
@@ -119,15 +119,15 @@ def loader(timer):
             os.system("title PyOT")
             windowsLoading()
         else:
-            sys.stdout.write("\x1b]2;PyOT\x07")      
-            
-    
+            sys.stdout.write("\x1b]2;PyOT\x07")
+
+
     # Begin loading items
     sys.modules["game.item"].loadItems()
-    
+
     # Initialize SQL
     yield sql.connect()
-    
+
     # Does this database have tables?
     # Check one, etc players.
     future = sql.runQueryWithException("SELECT 1 FROM `players`")
@@ -137,12 +137,12 @@ def loader(timer):
         pass
     if future.exception():
         yield install_tables()
-              
+
     # Reset online status
     print("> > Reseting players online status...", end=' ')
     sql.runOperation("UPDATE players SET online = 0")
     print("%40s\n" % _txtColor("\t[DONE]", "blue"))
-    
+
     globalData = sql.runQuery("SELECT `key`, `data`, `type` FROM `globals` WHERE `world_id` = %s" % config.worldId)
     groupData = sql.runQuery("SELECT `group_id`, `group_name`, `group_flags` FROM `groups`")
     houseData = sql.runQuery("SELECT `id`,`owner`,`guild`,`paid`,`name`,`town`,`size`,`rent`,`data` FROM `houses` WHERE `world_id` = %s" % config.worldId)
@@ -176,7 +176,7 @@ def loader(timer):
     builtins.add_callback = builtins.ioloop_ins.add_callback
     builtins.add_future = builtins.ioloop_ins.add_future
     builtins.PeriodicCallback = ioloop.PeriodicCallback
-    
+
     # Important builtins.
     builtins.sql = sql
     builtins.config = config
@@ -238,7 +238,7 @@ def loader(timer):
 
     # Access
     builtins.access = game.scriptsystem.access
-    
+
     # Conditions
     builtins.Condition = game.conditions.Condition
     builtins.Boost = game.conditions.Boost
@@ -320,7 +320,7 @@ def loader(timer):
     print("> > Loading guilds...", end=' ')
     game.guild.load()
     print("%60s\n" % _txtColor("\t[DONE]", "blue"))
-        
+
     print("> > Loading bans...", end=' ')
     game.ban.refresh()
     print("%60s\n" % _txtColor("\t[DONE]", "blue"))
@@ -332,13 +332,13 @@ def loader(timer):
     for x in (yield houseData):
         game.house.houseData[int(x['id'])] = game.house.House(int(x['id']), int(x['owner']),x['guild'],x['paid'],x['name'],x['town'],x['size'],x['rent'],x['data'])
     print("%55s\n" % _txtColor("\t[DONE]", "blue"))
-        
+
     # Load scripts
     print("> > Loading scripts...", end=' ')
     game.scriptsystem.importer()
     game.scriptsystem.get("startup").run()
     print("%55s\n" % _txtColor("\t[DONE]", "blue"))
-        
+
     # Load map (if configurated to do so)
     if config.loadEntierMap:
         print("> > Loading the entier map...", end=' ')
@@ -358,17 +358,17 @@ def loader(timer):
     # Charge rent?
     def _charge(house):
             call_later(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
-            
+
     for house in list(game.house.houseData.values()):
         if not house.rent or not house.owner: continue
-            
+
         if house.paid < (timer - config.chargeRentEvery):
             game.scriptsystem.get("chargeRent").run(house=house)
             _charge(house)
         else:
             if not IS_IN_TEST:
-                call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)    
-    
+                call_later((timer - house.paid) % config.chargeRentEvery, _charge, house)
+
     # Loading languages
     if config.enableTranslations:
         print("> > Loading languages... ", end=' ')
@@ -376,24 +376,24 @@ def loader(timer):
             print("%s\n" % _txtColor(list(game.language.LANGUAGES.keys()), "yellow"))
         else:
             print("%s\n" % _txtColor("No languages found, falling back to defaults!", "red"))
-                
-    
+
+
     # Load protocols
     print("> > Loading game protocols...", end=' ')
     for version in config.supportProtocols:
         game.protocol.loadProtocol(version)
     print("%50s\n" % _txtColor("\t[DONE]", "blue"))
-    
+
     # Do we issue saves?
     if config.doSaveAll and not IS_IN_TEST:
         print("> > Schedule global save...", end=' ')
         call_later(config.saveEvery, game.functions.looper, game.functions.saveAll, config.saveEvery)
         print("%50s\n" % _txtColor("\t[DONE]", "blue"))
-        
+
     # Do we save on shutdowns?
     if config.saveOnShutdown:
         game.scriptsystem.get("shutdown").register(lambda **k: game.functions.saveAll(True), False)
-        
+
     # Reset online status on shutdown
     game.scriptsystem.get("shutdown").register(lambda **k: sql.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
@@ -403,7 +403,7 @@ def loader(timer):
 
         call_later(lightchecks, game.functions.looper, game.functions.checkLightLevel, lightchecks)
         print("%45s" % _txtColor("\t[DONE]", "blue"))
-    
+
         call_later(60, game.functions.looper, pathfinder.clear, 60)
 
     # Now we're online :)
@@ -424,7 +424,7 @@ def install_tables():
          if query.strip():
              print(query)
              yield sql._runOperation(query.strip())
-    
+
     queries = open("extra/sql/houses.sql", 'r').read().split(';')
     print("\n\nRunning house installer queries...")
     for query in queries:
