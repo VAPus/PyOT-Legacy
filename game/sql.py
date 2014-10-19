@@ -2,7 +2,7 @@ import config
 import builtins
 from tornado import gen, ioloop
 from collections import deque
-import random
+import random, sys
 
 connections = deque(maxlen=10)
 builtins.PYOT_RUN_SQLOPERATIONS = True
@@ -41,7 +41,7 @@ if config.sqlModule == "mysql":
                     pass
 
                 if future.exception():
-                    print("SQL Connection failed", sql.exception(), "check settings")
+                    print("SQL Connection failed", future.exception(), "check SQL settings in config.py!")
                     sys.exit()
                 else:
                     connections.append(conn)
