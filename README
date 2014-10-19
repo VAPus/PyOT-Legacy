@@ -29,7 +29,8 @@ Installation
 ============
 
 Copy "config.py.dist" to "config.py" and edit it to match your database settings.
-Import database if needed (latest_sql.sql).
+
+Run gameserver.py, it will automatically set up your database :)
 
 Linux (any distro)
 ---------------------------------------------
