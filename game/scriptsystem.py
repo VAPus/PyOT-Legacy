@@ -363,12 +363,12 @@ def shutdown(sig, frame):
         now = time.time()
         try:
             if now < deadline and (io_loop._callbacks or io_loop._timeouts):
-                io_loop.add_timeout(now + 1, stop_loop)
+                io_loop.add_timeout(now + 0.5, stop_loop)
             else:
                 io_loop.stop()
                 # Success!
         except:
-            io_loop.add_timeout(now + 1, io_loop.stop)
+            io_loop.add_timeout(now + 0.5, io_loop.stop)
             # Asyncio success.
     stop_loop()
 

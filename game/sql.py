@@ -74,6 +74,7 @@ def _runOperation(*argc):
         except:
             pass
 
+       
         exc = future.exc_info()
         if exc:
             print(exc[0].__name__, exc[1], 'from query:', argc[0])
@@ -112,6 +113,29 @@ def runQuery(*argc):
         connections.append(conn)
         
         return res
+    return {}
+
+@gen.coroutine
+def runQueryWithException(*argc):
+    if PYOT_RUN_SQLOPERATIONS:
+        # Get a connection.
+        conn = None
+        while not conn:
+            try:
+                conn = connections.popleft()
+            except:
+                conn = None
+
+            if not conn:
+                yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+
+        future = conn.query(*argc)
+        
+        yield future
+        # Put connection back
+        connections.append(conn)
+
+        return future
     return {}
 
 @gen.coroutine

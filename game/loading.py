@@ -30,7 +30,7 @@ import game.position
 import config
 import game.item
 import game.house, game.guild
-import language
+import game.language
 import game.player, game.creature, game.npc, game.monster, game.spell, game.party
 import game.conditions
 import game.market
@@ -128,6 +128,16 @@ def loader(timer):
     # Initialize SQL
     yield sql.connect()
     
+    # Does this database have tables?
+    # Check one, etc players.
+    future = sql.runQueryWithException("SELECT 1 FROM `players`")
+    try:
+        yield future
+    except:
+        pass
+    if future.exception():
+        yield install_tables()
+              
     # Reset online status
     print("> > Reseting players online status...", end=' ')
     sql.runOperation("UPDATE players SET online = 0")
@@ -362,8 +372,8 @@ def loader(timer):
     # Loading languages
     if config.enableTranslations:
         print("> > Loading languages... ", end=' ')
-        if language.LANGUAGES:
-            print("%s\n" % _txtColor(list(language.LANGUAGES.keys()), "yellow"))
+        if game.language.LANGUAGES:
+            print("%s\n" % _txtColor(list(game.language.LANGUAGES.keys()), "yellow"))
         else:
             print("%s\n" % _txtColor("No languages found, falling back to defaults!", "red"))
                 
@@ -403,3 +413,40 @@ def loader(timer):
     IS_ONLINE = True
 
     print("\n\t\t%s\n" % _txtColor("[SERVER IS NOW OPEN!]", "green"))
+
+
+@gen.coroutine
+def install_tables():
+    print("\nRUNNING INSTALLER\n=================")
+    print("Running installer queries...")
+    queries = open("extra/sql/installer.sql", 'r').read().split(';')
+    for query in queries:
+         if query.strip():
+             print(query)
+             yield sql._runOperation(query.strip())
+    
+    queries = open("extra/sql/houses.sql", 'r').read().split(';')
+    print("\n\nRunning house installer queries...")
+    for query in queries:
+         if query.strip():
+             yield sql._runOperation(query.strip())
+
+    # Install accounts:
+    print("\nFirst account,")
+
+    username = None
+    while not username:
+        username = input("Accountname: ")
+
+    password = None
+    while not password:
+         password = input("Password: ")
+
+    # Leave demo to en_EN for now.
+    language = "en_EN"
+    """language = input("Language [en_EN]? ")
+    if not language:
+         language = "en_EN"""
+
+    # This is without salt, but is just a demo anyway.
+    yield sql._runOperation("INSERT INTO `accounts` VALUES (1, %s, SHA1(%s), '', 65535, %s, 0, 1)", username, password, language)

@@ -8,3 +8,5 @@ syntax: glob
 *.log
 .svn
 config.py
+__pycache__
+IP_CACHE

@@ -9,18 +9,16 @@ __all__ = []
 LANGUAGES = {}
 
 if config.enableTranslations:
-    base = os.path.split(__file__)[0] # Remove the ending of the paths!
-
-    for mod in glob.glob("%s/*.mo" % base):
+    for mod in glob.glob(config.dataDirectory + "/language/*.mo"):
         modm = mod.split(os.sep)[-1].replace('.mo', '')
         if modm == "__init__":
             continue
-
+        
         __all__.append(modm)
 
     # Initialize GNUTranslations (regular gettext is singel language only :()
     for language in __all__:
-        LANGUAGES[language] = gettext.GNUTranslations(open("%s/%s.mo" % (base, language), 'rb'))
+        LANGUAGES[language] = gettext.GNUTranslations(open(config.dataDirectory + "/language/%s.mo" % language, 'rb'))
 
 
 # Functions

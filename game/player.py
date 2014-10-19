@@ -16,7 +16,7 @@ import random
 import math
 from . import otjson
 import datetime
-import language
+import game.language
 import copy
 from tornado import gen
 
@@ -2588,8 +2588,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         if lang != 'en_EN':
             C = "%s\x04%s"
             try:
-                self.l = language.LANGUAGES[lang].gettext
-                self.lp = language.LANGUAGES[lang].ngettext
+                self.l = game.language.LANGUAGES[lang].gettext
+                self.lp = game.language.LANGUAGES[lang].ngettext
                 self.lc = lambda context, message: self.l(C % (context, message))
                 self.lcp = lambda context, message: self.lcp(C % (context, singular), C % (context, plural), n)
             except:
