@@ -89,7 +89,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 # Set the XTEA key
                 k = (packet.uint32(), packet.uint32(), packet.uint32(), packet.uint32())
                 sum = 0
+                
                 self.xtea = [0] * 64
+                
                 for x in range(32):
                     self.xtea[x] = sum + k[sum & 3] & 0xffffffff
                     sum = (sum + 0x9E3779B9) & 0xffffffff
@@ -97,7 +99,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
 
                 # If cffi, cast this.
-                if otcrypto.ffi:
+                if otcrypto.ffi and False:
                     self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
 
             ip = self.address

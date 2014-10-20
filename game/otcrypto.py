@@ -48,7 +48,7 @@ def bytes( long_int ):
 def decryptRSA(stream):
     return bytes(pow(int.from_bytes(stream, 'big'), D, N))
 
-if ffi:
+if ffi and False:
     def decryptXTEA(stream, k):
         length = len(stream) >> 2
         bstr = "<%dL" % length
@@ -96,7 +96,7 @@ else:
                 v1 = (v1 - (((v0<<4 ^ v0>>5) + v0) ^ k[63-i])) & 0xffffffff
                 v0 = (v0 - (((v1<<4 ^ v1>>5) + v1) ^ k[31-i])) & 0xffffffff
             packs[pos] = v0
-            packs[pos] = v1
+            packs[pos+1] = v1
 
         return pack(bstr, *packs)
 
