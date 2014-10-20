@@ -99,7 +99,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
 
                 # If cffi, cast this.
-                if otcrypto.ffi and False:
+                if otcrypto.ffi:
                     self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
 
             ip = self.address
@@ -156,7 +156,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             packet.pos += 6 # I don't know what this is
 
             # Our funny way of doing async SQL
-            account = yield sql.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = {0} AND `password` = SHA1(CONCAT(`salt`, {1}))".fromat(username, password))
+            account = yield sql.runQuery("SELECT `id`,`language` FROM `accounts` WHERE `name` = {0} AND `password` = SHA1(CONCAT(`salt`, {1}))".format(username, password))
 
             if not account:
                 account = game.scriptsystem.get("loginAccountFailed").run(client=self, username=username, password=password)
