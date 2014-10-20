@@ -598,8 +598,8 @@ class BaseProtocol(object):
                     print("\n\n[UNHANDLED CORE EXCEPTION!]")
                     traceback.print_exc()
                     print("==============================\n")
-        #else:
-            #print(("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.getData())))))) )))
+        else:
+            print(("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, int(packet.getData()))))))) )))
             #self.transport.loseConnection()
 
 
