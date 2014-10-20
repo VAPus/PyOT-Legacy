@@ -97,25 +97,33 @@ class TibiaPacket(object):
 
     # 8bit - 1byte, C type: char
     def uint8(self, data, pack = pack):
+        data = int(data)
         self.raw(pack("<B", data))
     def int8(self, data, pack=pack):
+        data = int(data)
         self.raw(pack("<b", data))
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data, pack=pack):
+        data = int(data)
         self.raw(pack("<H", data))
     def int16(self, data, pack=pack):
+        data = int(data)
         self.raw(pack("<h", data))
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data, pack=pack):
+        data = int(data)
         self.raw(pack("<I", data))
     def int32(self, data):
+        data = int(data)
         self.raw(pack("<i", data))
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
+        data = int(data)
         self.raw(pack("<Q", data))
     def int64(self, data):
+        data = int(data)
         self.raw(pack("<q", data))
 
     def double(self, data):

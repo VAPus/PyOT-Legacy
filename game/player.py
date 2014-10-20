@@ -181,7 +181,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
                                                      self.getVocation().meleeSkill)
 
         if self.data["storage"]:
-            self.storage = otjson.loads(str(self.data["storage"]))
+            self.storage = otjson.loads(self.data["storage"].decode('utf-8'))
 
         else:
             self.storage = {}
