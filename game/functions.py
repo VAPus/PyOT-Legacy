@@ -46,46 +46,46 @@ globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "plac
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""
-    
+
     function()
     call_later(time, looper, function, time)
 
 def loopDecorator(time):
     """Loop function decorator.
-    
+
     :param time: Run the function every ``time`` seconds.
     :type time: float (seconds).
 
     """
-    
+
     def _decor(f):
         def new_f(*args, **kwargs):
             if f(*args, **kwargs) != False:
                 call_later(time, new_f, *args, **kwargs)
-        
+
         def _first(*args, **kwargs):
             call_later(0, new_f, *args, **kwargs)
         _first.__doc__ = f.__doc__
         return _first
     return _decor
-    
+
 # This one calculate the tiles on the way
 # Calculate walk patterns
 def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
     """Calculate the route from ``fromPos`` to ``to``.
-    
+
     :param fromPos: Start position.
     :type fromPos: list or tuple.
-    
+
     :param to: Destination position.
     :type to: list or tuple.
-    
+
     :param skipFields: Don't walk the last steps to the destination. Useful if you intend to walk close to a target.
     :type skipFields: int or None.
-    
+
     :param diagonal: Allow diagonal walking?
     :type diagonal: bool.
-    
+
     """
     pattern = deque()
     currPos = fromPos
@@ -100,7 +100,7 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
             direction = 6
         else:
             direction = 4
-            
+
         if fpX < fpX:
             direction += 1
 
@@ -120,24 +120,24 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
 
     if direction != None:
         newPos = positionInDirection(currPos, direction)
-        
+
         isOk = True
         for item in game.map.getTile(newPos).getItems():
             if item.solid:
                 isOk = False
                 break
-                
+
         if isOk:
             currPos = newPos
             pattern.append(direction)
-            
+
     if not pattern:
         # Try pathfinder.
         pattern = pathfinder.findPath(creature, fromPos.z, fromPos.x, fromPos.y, to.x, to.y, fromPos.instanceId, True if skipFields else False)
         #print pattern
         if not pattern:
             return None
-                
+
     # Fix for diagonal things like items
     """if len(pattern) > 2 and diagonal == True:
         last, last2 = pattern[len(pattern)-2:len(pattern)]
@@ -147,10 +147,10 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
                 last = 6 + (0 if last2 == 3 else 1)
             elif last == 2: # last = south, last2 must be east/west
                 last = 4 + (0 if last2 == 3 else 1)
-                
-            elif last == 1: # last = east, last2 must be 
+
+            elif last == 1: # last = east, last2 must be
                 last = 1 + (6 if last2 == 0 else 4)
-            elif last == 3: # last = west, last2 must be 
+            elif last == 3: # last = west, last2 must be
                 last = 0 + (6 if last2 == 0 else 4)
             pattern.append(last)"""
     if skipFields < 0:
@@ -164,97 +164,97 @@ def calculateWalkPattern(creature, fromPos, to, skipFields=0, diagonal=True):
 # Spectator list
 def getSpectators(pos, radius=(8,6), ignore=()):
     """Gives you the spectators (:class:`service.gameserver.GameProtocol`) in the area.
-    
+
     :param pos: Position of the center point.
     :type pos: list or tuple.
     :param radius: Radius from center point to check for players.
     :type radius: list or tuple.
     :param ignore: known spectators to ignore in the set.
     :type ignore: list, tuple or set.
-    
+
     :rtype: set of :class:`service.gameserver.GameProtocol`
-    
+
     """
-    
-    players = set()   
+
+    players = set()
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player.client and player.client.ready and player not in ignore:
             players.add(player.client)
-        
+
     return players
 
 def hasSpectators(pos, radius=(8,6), ignore=()):
     """ Returns True if anyone can see the position, otherwise False. """
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore: return True
-        
+
     return False
-    
+
 def getCreatures(pos, radius=(8,6), ignore={}):
     """Gives you the creatures in the area.
-    
+
     :param pos: Position of the center point.
     :type pos: list or tuple.
     :param radius: Radius from center point to check for creatures.
     :type radius: list or tuple.
     :param ignore: known creatures to ignore in the set.
     :type ignore: list, tuple or set.
-    
+
     :rtype: set of :class:`game.creature.Creature` compatible objects
-    
+
     """
-    
+
     creatures = set()
-                
+
     for creature in game.creature.allCreaturesObject:
         if creature.canSee(pos, radius) and creature not in ignore:
             creatures.add(creature)
     return creatures
-        
+
 
 def getPlayers(pos, radius=(8,6), ignore=()):
     """Gives you the players in the area.
-    
+
     :param pos: Position of the center point.
     :type pos: list or tuple.
     :param radius: Radius from center point to check for players.
     :type radius: list or tuple.
     :param ignore: known players to ignore in the set.
     :type ignore: list, tuple or set.
-    
+
     :rtype: set of :class:`game.player.Player` compatible objects
-    
+
     """
-    
+
     players = set()
-              
+
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore:
             players.add(player)
-    
+
     return players
-        
+
 
 # Calculate new position by direction
 def positionInDirection(nposition, direction, amount=1):
     """Gives the position in a direction
-    
+
     :param nposition: Current position.
     :type nposition: list.
-    
+
     :param direction: The direction.
     :type direction: int (range 0-7).
-    
+
     :param amount: Amount of steps in that direction.
     :type amount: int.
-    
+
     :rtype: list.
     :returns: New position.
-    
+
     """
-    
+
     position = nposition.copy() # Make a copy of current position.
-    
+
     if direction == 0:
         position.y = nposition.y - amount
     elif direction == 1:
@@ -276,18 +276,18 @@ def positionInDirection(nposition, direction, amount=1):
         position.y = nposition.y - amount
         position.x = nposition.x + amount
     return position
-    
+
 def updateTile(pos, tile):
     """ Send the update to a tile to all who can see the position.
     *Note that this function does NOT replace the known tile in :mod:`game.map`'s knownMap array.*
-    
+
     :param pos: Position of tile.
     :type pos: list or tuple.
     :param tile: The tile that replace the currently known tile at the position.
     :type tile: Tile of type :class:`game.map.Tile`.
-    
+
     """
-    
+
     for spectator in getSpectators(pos):
         stream = spectator.packet(0x69)
         stream.position(pos)
@@ -298,40 +298,40 @@ def updateTile(pos, tile):
 
 def transformItem(item, transformTo):
     """ Transform item to a new Id.
-    
+
     :param item: The item you want to transform.
     :type item: Object of type :class:`game.item.Item`.
-    
+
     :param transformTo: New itemID. Leave to 0 or None to delete the item.
     :type transformTo: int or None.
-    
+
     """
     return item.transform(transformTo)
 
 def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
-    
+
     :param item: The item you want to transform.
     :type item: :class:`game.item.Item`
-    
+
     :param fromPos: From this position
     :type fromPos: :func:`tuple` or :func:`list`
-    
+
     :param toPos: To this position
     :type toPos: :func:`tuple` or :func:`list`
-    
-    
+
+
     :rtype: :func:`int`
     :returns: New stack position
-    
-    
+
+
     """
     if fromPos.x != 0xFFFF:
         try:
             tile = fromPos.getTile()
             if not isinstance(fromPos, StackPosition):
                 fromPos = fromPos.setStackpos(tile.findStackpos(item))
-                
+
             tile.removeItem(item)
             for spectator in getSpectators(fromPos):
                 stream = spectator.packet()
@@ -339,31 +339,31 @@ def teleportItem(item, fromPos, toPos):
                 stream.send(spectator)
         except:
             pass
-              
+
     newTile = toPos.getTile()
     if item.decayPosition:
             item.decayPosition = toPos
     toStackPos = newTile.placeItem(item)
-        
+
     for spectator in getSpectators(toPos):
         stream = spectator.packet()
         stream.addTileItem(toPos, toStackPos, item)
         stream.send(spectator)
-        
+
     return toStackPos
-        
+
 def placeItem(item, position):
     """ Place a item to a position
-    
+
     :param item: The item to place.
     :type item: Object of type :class:`game.item.Item`.
-    
+
     :param position: The position to place the item on.
     :type position: list or tuple.
-    
+
     :rtype: int.
     :returns: Stack position of item.
-    
+
     """
     #print "placeItem"
     stackpos = position.getTile().placeItem(item)
@@ -380,16 +380,16 @@ def relocate(fromPos, toPos):
     items = []
     for item in tile.getItems():
         if not item.movable: continue
-        
+
         if item.position:
             item.position = toPos
-            
+
         stackpos = toTile.placeItem(item)
         items.append(item)
-        
-    for item in items:    
+
+    for item in items:
         tile.removeItem(item)
-    
+
     updateTile(fromPos, tile)
     updateTile(toPos, toTile)
 
@@ -402,12 +402,12 @@ def relocate(fromPos, toPos):
 # The development debug system
 def explainPacket(packet):
     """ Explains the packet structure in hex
-    
+
     :param packet: Packet to explain.
     :type packet: subclass of :class:`core.packet.TibiaPacket`.
-    
+
     """
-    
+
     #currPos = packet.pos
     #packet.pos = 0
     print("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.data)))))) ))
@@ -417,7 +417,7 @@ def explainPacket(packet):
 def saveAll(force=False):
     """ Save everything, players, houses, global storage etc. """
     commited = False
-    
+
     t = time.time()
     for player in list(game.player.allPlayers.values()):
         result = player._saveQuery(force)
@@ -437,10 +437,10 @@ def saveAll(force=False):
                 type = "pickle"
             else:
                 data = globalStorage[field]
-                
+
             sql.runOperation("INSERT INTO `globals` (`key`, `data`, `type`) VALUES(%s, %s, %s) ON DUPLICATE KEY UPDATE `data` = %s", field, data, type, data)
             commited = True
-            
+
     # Houses
     if game.map.houseTiles:
         for houseId, house in game.house.houseData.items():
@@ -451,7 +451,7 @@ def saveAll(force=False):
                 except:
                     print("House id %d have broken items!" % houseId)
                     items = {} # Broken items
-                    
+
                 for tile in game.map.houseTiles[houseId]:
                     _items = []
                     lastItem = None
@@ -467,7 +467,7 @@ def saveAll(force=False):
                             if ic or ic == None:
                                 _items.append(item)
                                 lastItem = item
-                    _items.reverse()                    
+                    _items.reverse()
                     items[tile.position] = _items
 
                 if items != house.data["items"]:
@@ -480,34 +480,34 @@ def saveAll(force=False):
                     commited = True
                 else:
                     print("Not saving house", houseId)
-        
-    if force:        
+
+    if force:
         print("Full (forced) save took: %f" % (time.time() - t))
 
-    elif commited:       
+    elif commited:
         print("Full save took: %f" % (time.time() - t))
-        
+
 # Time stuff
 def getTibiaTime():
     """ Return the Time inside the game.
-    
+
     :rtype: tuple (hours, minutes, seconds).
     """
-    
+
     seconds = int((time.time() - SERVER_START) % config.tibiaDayLength) * ((24*60*60) // config.tibiaDayLength)
     hours = seconds // 3600
     seconds = seconds - (hours * 3600)
     minutes = seconds // 60
     seconds = seconds % 60
-    
+
     return (hours, minutes, seconds)
-    
+
 def getLightLevel():
     """ Get the light level relevant to the time of the day.
-    
+
     :rtype: int.
     """
-    
+
     tibiaTime = getTibiaTime()
     light = 0
     if tibiaTime[0] >= config.tibiaDayFullLightStart and tibiaTime[0] < config.tibiaDayFullLightEnds:
@@ -518,16 +518,16 @@ def getLightLevel():
 
         if hoursleft >= 12:
             lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft-12)
-            return config.tibiaNightLight + lightChange            
+            return config.tibiaNightLight + lightChange
         else:
             lightChange = ((config.tibiaFullDayLight - config.tibiaNightLight) // dayHours) * (hoursleft)
             return config.tibiaFullDayLight - lightChange
-        
+
 LIGHT_LEVEL = config.tibiaFullDayLight
 
 def checkLightLevel():
     """ Check if the lightlevel have changed and send updates to the players.
-    
+
     """
     global LIGHT_LEVEL
     light = getLightLevel()
@@ -538,17 +538,17 @@ def checkLightLevel():
                 stream.worldlight(light, LIGHTCOLOR_DEFAULT)
 
         LIGHT_LEVEL = light
-        
+
 # Player lookup and mail
 # Usually blocking calls, but we're only called from scripts so i suppose it's ok
 @gen.coroutine
 def getPlayerIDByName(name):
     """ Returns the playerID based on the name.
-    
+
     :rtype: int or None.
-    
+
     """
-    
+
     try:
         return game.player.allPlayers[name].data["id"]
     except:
@@ -570,14 +570,14 @@ def getCreatureByCreatureId(cid):
     for creature in game.creature.allCreaturesObject:
         if creature.cid == cid:
             return creature
-            
+
 def townNameToId(name):
     """ Return the townID based on town name.
-    
+
     :rtype: int or None.
-    
+
     """
-    
+
     for id in game.map.mapInfo.towns:
         if game.map.mapInfo.towns[id][0] == name:
             return id
@@ -596,54 +596,54 @@ def townIdToName(id):
 
 def townPosition(id):
     """ Returns the position of a town passed by id
-    
+
     :rtype: list
-    
+
     """
 
     return game.map.mapInfo.towns[id][1]
 
 def broadcast(message, type='MSG_GAMEMASTER_BROADCAST', sendfrom="SYSTEM", level=0):
     """ Broadcasts a message to every player
-    
+
     """
     for player in game.player.allPlayersObject:
         stream = player.packet(0xAA)
-        
+
         # Make sure this player actually is online. TODO: Track them in a seperate list?
         if not stream: continue
-        
+
         stream.uint32(0)
         stream.string(senfrom)
         stream.uint16(level)
         stream.uint8(stream.const(messageType))
         stream.string(message)
         stream.send(player.client)
-        
+
 @gen.coroutine
 def placeInDepot(name, depotId, items):
     """ Place items into the depotId of player with a name. This can be used even if the player is offline.
-    
+
     :param name: Player name.
     :type name: str.
-    
+
     :param depotId: DepotID to place items into.
     :type depotId: int or str.
-    
+
     :param items: Either one Item or a list of items to place into the depot.
     :type items: Either one object of type :class:`game.item.Item`, or a list of objects.
-    
+
     :rtype: bool.
     :returns: True on success, False otherwise.
-    
+
     """
     if not type(items) == list:
         items = [items]
-        
+
     def __inPlace(place):
         for i in items:
             place.append(i)
-            
+
     if name in game.player.allPlayers:
         try:
             __inPlace(game.player.allPlayers[name].depot[depotId])
@@ -663,7 +663,7 @@ def placeInDepot(name, depotId, items):
             return True
         else:
             return False
-            
+
 @gen.coroutine
 def loadPlayer(playerName):
     """ Load player with name `playerName`, return result. """
@@ -678,7 +678,7 @@ def loadPlayer(playerName):
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         return game.player.allPlayers[playerName]
-        
+
 @gen.coroutine
 def loadPlayerById(playerId):
     """ Load a player with id `playerId`. Return result. """
@@ -686,7 +686,7 @@ def loadPlayerById(playerId):
     for player in game.player.allPlayersObject:
         if player.data["id"] == playerId:
             return player
-    
+
     character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", playerId, config.worldId)
     if not character:
         return
@@ -701,7 +701,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         return True
 
     # TODO, script events.
-    
+
     # Analyse a little.
     fromMap = False
     toMap = False
@@ -712,11 +712,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
 
     if toPosition.x != 0xFFFF:
         toMap = True
-        
+
     oldItem = None
     renew = False
     stack = True
-        
+
     thing = player.findItem(fromPosition)
     destItem = None
     if toPosition.x == 0xFFFF or isinstance(toPosition, StackPosition):
@@ -750,21 +750,21 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if thing.stackable and count and count > thing.count:
         player.notPossible()
         return False
-    
+
     elif not thing.movable or (toPosition.x == 0xFFFF and not thing.pickable):
         player.notPickupable()
         return False
-                    
+
     elif thing.openIndex != None and thing.openIndex == toPosition.y-64: # Moving into self
         player.notPossible()
         return False
-    
+
     if destItem and (destItem.inContainer or destItem.container): # Recursive check.
         if destItem.container:
             container = destItem
         else:
             container = destItem.inContainer
-            
+
         while container:
             if container == thing:
                 player.notPossible()
@@ -773,7 +773,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             container = container.inContainer
 
     slots = thing.slots()
-    
+
     # Can it be placed there?
     if (not destItem or destItem.container == None) and toPosition.x == 0xFFFF and toPosition.y < 64:
         if (toPosition.y-1) not in slots:
@@ -794,11 +794,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
     if toPosition.x == 0xFFFF and player.freeCapacity() - ((thing.weight or 0) * (thing.count or 1)) < 0:
         player.tooHeavy()
         return False
-    
+
     if fromPosition.x == 0xFFFF and fromPosition.y < 64 and (game.scriptsystem.get("unequip").run(creature=player, thing=player.inventory[fromPosition.y-1], slot = (fromPosition.y-1))) == False \
         or toPosition.x == 0xFFFF and toPosition.y < 64 and (game.scriptsystem.get("equip").run(creature=player, thing=thing, slot = (toPosition.y-1))) == False:
         return False
-    
+
     # Special case when both items are the same and stackable.
     stacked = False
     if destItem and destItem.itemId == thing.itemId and destItem.stackable:
@@ -813,37 +813,37 @@ def moveItem(player, fromPosition, toPosition, count=0):
         elif isinstance(_newItem, Item):
             newItem = _newItem
             stacked = True
-        
+
     # remove from fromPosition.
     if not stacked and count and thing.stackable:
         newItem = thing.copy()
         newItem.count = count
-        
+
         thing.modify(-count)
-        
+
     elif not stacked:
         newItem = thing # Easy enough.
-        
+
     if destItem and destItem.containerSize:
         if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=destItem)) == False or \
            (game.scriptsystem.get('dropOnto').run(thing=destItem, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
 
             return False
-        
+
         if not thing.stackable:
             thing.remove()
-        
+
         #print "itemToContainer1"
         player.itemToContainer(destItem, newItem)
     else:
         if not thing.stackable:
             thing.remove()
-        
+
     if toMap:
         #print "toMap called"
         # Place to ground.
         thisTile = toPosition.getTile()
-        
+
         for item in thisTile.getItems():
             if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=item)) == False or \
                (game.scriptsystem.get('dropOnto').run(thing=item, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
@@ -855,19 +855,19 @@ def moveItem(player, fromPosition, toPosition, count=0):
             if toPosition.y < 64:
                 # Inventory.
                 player.itemToInventory(newItem, toPosition.y-1)
-                
+
             else:
                 container = player.getContainer(toPosition.y-64)
-                
+
                 if (game.scriptsystem.get('dropOnto').run(thing=newItem, creature=player, position=fromPosition, onPosition=toPosition, onThing=container)) == False or \
                    (game.scriptsystem.get('dropOnto').run(thing=container, creature=player, position=toPosition, onPosition=fromPosition, onThing=newItem)) == False:
                     return False
-                
+
                 #print "itemToContainer2"
                 player.itemToContainer(container, newItem)
 
             #if destItem and itemContainer:
-            #    player.itemToContainer(itemContainer, destItem)    
+            #    player.itemToContainer(itemContainer, destItem)
         elif not destItem.containerSize:
             # Move destItem.
             #print "destItem no container branch"
@@ -884,15 +884,15 @@ def moveItem(player, fromPosition, toPosition, count=0):
 
     if thing.openIndex != None and not player.inRange(toPosition, 1, 1) and not toPosition.z == thing.position.z:
         player.closeContainer(thing)
-    
+
     # Update everything. Lazy.
     #player.refreshInventory()
     #player.updateAllContainers()
     #player.refreshStatus()
-    
+
     # Done.
     return True
-    
+
 # Helper calls
 def summonCreature(name, position, master=None):
     """ Summons a monster with `name` on position, set master to `master`. """
@@ -903,7 +903,7 @@ def summonCreature(name, position, master=None):
     else:
         creature.setRespawn(False)
     return creature
-    
+
 def magicEffect(pos, type):
     """ Send a magic effect `type` on this position. """
     for spectator in getSpectators(pos):
@@ -919,7 +919,7 @@ def getHouseByPos(pos):
 def fastPickler(obj):
     """ Just a allias for pickle.dumps with protocol highest protocol """
     return pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
-     
+
 @gen.coroutine
 def executeCode(code):
     """ Used by execute protocol to run a piece of code """
@@ -929,8 +929,8 @@ def executeCode(code):
             newcode = []
             for p in code.split("\n"):
                 newcode.append("    " + p)
-                
-                
+
+
             exec("""
 @gen.coroutine
 def _N():
@@ -969,7 +969,7 @@ def mail(toPlayer, package, message="", town=0, ignoreLimits=True):
 
         town = townNameToId(lines[1])
         if package.itemId != ITEM_PARCEL_STAMPED:
-            package.itemId = ITEM_PARCEL_STAMPED            
+            package.itemId = ITEM_PARCEL_STAMPED
         pack = package
 
     elif isinstance(package, list):

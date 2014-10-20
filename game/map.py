@@ -515,14 +515,14 @@ def loadSectorMap(code, instanceId, baseX, baseY):
 
                 nameLength = lord(code[pos+1])
 
-                name = code[pos+2:pos+nameLength+2]
+                name = code[pos+2:pos+nameLength+2].decode('utf-8')
                 pos += 8 + nameLength
                 spawnX, spawnY, spawnTime = creature_unpack(code[pos-6:pos])
 
                 if creatureType == 61:
-                    creature = l_getMonster(name.decode('utf-8'))
+                    creature = l_getMonster(name)
                 else:
-                    creature = l_getNPC(name.decode('utf-8'))
+                    creature = l_getNPC(name)
                 if creature:
                     creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:

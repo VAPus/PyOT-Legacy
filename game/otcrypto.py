@@ -28,10 +28,10 @@ try:
     """, extra_compile_args=["-Ofast", "-march=native"])
 except:
     print("No CFFI")
-    
+
 if ffi and not lib:
     ffi = None
-    
+
 D = int(config.RSAKeys["d"])
 N = int(config.RSAKeys["n"])
 
@@ -62,7 +62,7 @@ if ffi and False:
             repacks.append(res)
 
         return pack("<%dQ" % len(repacks), *repacks)
-        
+
     def encryptXTEA(stream, k, length):
         pad = 8 - (length & 7)
         if pad:
@@ -71,7 +71,7 @@ if ffi and False:
         length >>= 2
         stream = b''.join(stream)
         bstr = "<%dL" % length
-        
+
         packs = unpack(bstr, stream)
         repacks = []
 
@@ -88,7 +88,7 @@ else:
         length = len(stream) >> 2
         bstr = "<%dL" % length
         packs = list(unpack(bstr, stream))
-        
+
         for pos in range(0, length, 2):
             v0 = packs[pos]
             v1 = packs[pos+1]
@@ -108,7 +108,7 @@ else:
         length >>= 2
         stream = b''.join(stream)
         bstr = "<%dL" % length
-        
+
         packs = list(unpack(bstr, stream))
 
         for pos in range(0, length, 2):

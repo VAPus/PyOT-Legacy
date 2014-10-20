@@ -17,9 +17,9 @@ try:
     _open = io.open
 except:
     _open = open # Less than 2.7
-    
+
 items = None
-            
+
 ### Item ###
 class Item(object):
     attributes = {'solid':1, 'blockprojectile': 1 << 1, 'blockpath': 1 << 2, 'hasheight': 1 << 3, 'usable': 1 << 4, 'pickable': 1 << 5,
@@ -35,7 +35,7 @@ class Item(object):
             print("ItemId %d doesn't exist!" % itemId)
             itemId = 100
             attr = items[100]
-            
+
         self.itemId = itemId
 
         if actions:
@@ -52,7 +52,7 @@ class Item(object):
                 raise Exception("Supplied count to Item() is not a number.")
 
             self.count = count
-            
+
         # Extend items such as containers
         try:
             self.container = deque(maxlen=attr["containerSize"])
@@ -67,7 +67,7 @@ class Item(object):
     def isNPC(self):
         " Returns False "
         return False
-        
+
     def isMonster(self):
         " Returns False "
         return False
@@ -75,7 +75,7 @@ class Item(object):
     def isItem(self):
         " Returns True "
         return True
-        
+
     def thingId(self):
         " Returns the itemId. Used by scripts for compatibility with Creatures. "
         return self.itemId # Used for scripts
@@ -83,11 +83,11 @@ class Item(object):
     def register(self, event, func, **kwargs):
         " Register a script event on this item. See :func:`game.scriptsystem.register` "
         game.scriptsystem.get(event).register(self, func, **kwargs)
-        
+
     def registerAll(self, event, func, **kwargs):
         " Register a script event for all items of this type. See :func:`game.scriptsystem.register` "
         game.scriptsystem.get(event).register(self.itemId, func, **kwargs)
-        
+
     def verifyPosition(self):
         " Returns a verified (valid) position for this object. Or False if we can't find it. May raise an Exception too! "
         pos = self.position
@@ -99,7 +99,7 @@ class Item(object):
         if pos.x == 0xFFFF:
             if not creature and not self.inContainer:
                 raise Exception("Cannot verify Position inside inventory when creature == None and inContainer == None!")
-            
+
             if creature and pos.y < 64:
                 ### One of these should go.
                 if creature.inventory[pos.y-1] == self:
@@ -108,7 +108,7 @@ class Item(object):
                     return pos
                 else:
                     return False # We cant assume that inventory items move
-                    
+
             else:
                 container = self.inContainer
                 if not container:
@@ -129,7 +129,7 @@ class Item(object):
 
         tile = pos.getTile()
 
-        # Might fail. Since we might move to position with creature, and the creature move. Not to worry.        
+        # Might fail. Since we might move to position with creature, and the creature move. Not to worry.
         try:
             if isinstance(pos, StackPosition) and tile.getThing(pos.stackpos) == self:
                 return pos
@@ -138,21 +138,21 @@ class Item(object):
 
         if not self in tile.things:
             return False # Not on this tile
-            
+
         elif isinstance(pos, StackPosition):
             for z in range(len(tile.things)+1):
                 if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
-        
-        return pos            
-        
+
+        return pos
+
     def actionIds(self):
         " Return bound events. "
         if not self.itemId: return ()
 
         return self.actions or ('item')
-    
+
     def hasAction(self, name):
         " Returns True if name is in our actions, else False "
         if name == "item":
@@ -161,28 +161,28 @@ class Item(object):
             return False
         else:
             return name in self.actions
-        
+
     def addAction(self, name):
         " Add an action `name` to our actions list. "
         if self.actions is None:
             self.actions = [name]
         else:
             self.actions.append(name)
-            
+
     def removeAction(self, name):
         " Remove `name` from our actions. May raise if it's not there. "
         self.actions.remove(name)
-    
+
     @property
     def type(self):
         " Returns the type attribute. This is readonly. "
         return items[self.itemId].get("type", 0)
-    
+
     @property
     def cid(self):
         " Returns the cid attribute. This is readonly. "
         return items[self.itemId].get('cid', self.itemId)
-        
+
     def __getattr__(self, name):
         if not "__" in name:
             _items = items[self.itemId]
@@ -190,20 +190,20 @@ class Item(object):
                 return _items['flags'] & self.attributes[name]
             except:
                 return _items.get(name)
-            
-                       
+
+
         raise AttributeError(name)
-    
+
     def formatName(self, player=None):
         " Returns a formated name, singular or plural with count "
         if not player:
             raise Exception("We need to have a player when asking for a items name now apperently!")
-            
-        if self.count > 1:
+
+        if isinstance(self.count, int) and self.count > 1:
             return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(self.name))}
-            
+
         return _l(player, INFLECT.a(self.name))
-    
+
     def useCharge(self):
         " Use a charge. If charges hits 0 or below the item will be removed. May raise on non-charge items. "
         self.charges -= 1
@@ -252,14 +252,14 @@ class Item(object):
             if self.__getattr__('absorbPercentAll'):
                 morearm = _l(player, ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain') % {"all":self.__getattr__('absorbPercentAll')}
 
-            
+
             # Step one, names to dict with value
             bonuses = {}
             for bns in bonus:
                 data = self.__getattr__(bns)
                 if data:
                     bonuses[bns] = data
-            
+
             # Step two, sorting the dict
             for w in sorted(bonuses, key=bonuses.get, reverse=True):
                 pre = w[len("absorbPercent"):]
@@ -292,25 +292,25 @@ class Item(object):
             extra += _l(player, "\nYou Read: %s") % self.text
 
         return "%s%s\n" % (description, extra)
-        
+
     def rawName(self):
         " Returns the raw singular or plural name. "
 
         if self.count:
             return INFLECT.plural(self.name.title())
         return self.name.title()
-        
+
     def reduceCount(self, count):
         " Reduce count. May raise on non-count items. "
         self.count -= count
-            
+
     def modify(self, mod):
         " Modify count by `mod`. If counts are non-or below 0 item is removed. "
         count = self.count
         if count == None and mod < 0:
             self.remove()
-        
-        
+
+
         if count <= 0:
             count = 1
 
@@ -324,7 +324,7 @@ class Item(object):
             self.refresh()
         else:
             self.remove()
-            
+
     def slots(self):
         " Return valid inventory slot constants for this item. "
         slot = self.slotType
@@ -355,7 +355,7 @@ class Item(object):
             return SLOT_RIGHT,
         else:
             return ()
-  
+
     def place(self, position, creature=None):
         " Place this item onto position "
 
@@ -401,10 +401,10 @@ class Item(object):
 
         if to == None:
             to = self.decayTo
-        
+
         if self.itemId == to:
             return # Not decay to self
-            
+
         if duration == None:
             duration = self.duration
             if not duration:
@@ -419,22 +419,22 @@ class Item(object):
         position = self.verifyPosition()
 
         if not position:
-            raise Exception("BUG: Item position cannot be verified!") 
-        
+            raise Exception("BUG: Item position cannot be verified!")
+
         # Store position:
         def executeDecay():
             try:
                 if self.creature:
                     # Remove cache
                     self.creature.removeCache(self)
-                    
+
                     # Change itemId
                     if to:
                         self.itemid = to
-                    
+
                         # Add cache
                         self.creature.addCache(self)
-                    
+
                         # We can assume the bag is open. And the inventory is always visible.
                         if position.y < 64:
                             stream = self.decayCreature.packet()
@@ -442,27 +442,27 @@ class Item(object):
                             stream.send(self.decayCreature.client)
                         else:
                             self.decayCreature.updateAllContainers()
-                            
+
                     else:
                         self.remove()
-                        
+
                 else:
                     self.transform(self.decayTo)
-                
+
                 # Hack for chained decay
                 if self.itemId and self.decayTo != None:
                     self.decay(self.decayTo, callback=callback)
-                    
+
                 if self.itemId and callback:
                     callback(self)
             except:
                 pass # I don't exist here anymore.
-        
+
         if duration:
             self.executeDecay = call_later(duration, executeDecay)
         else:
             executeDelay()
-            
+
     def stopDecay(self):
         " Stop item from decaying. "
 
@@ -471,12 +471,12 @@ class Item(object):
                 self.executeDecay.cancel()
             except:
                 pass
-    
+
     def cleanParams(self):
         " Returns a clean set of parameters (for saving and copying). "
 
         params = self.__dict__.copy()
-        
+
         try:
             del params["creature"]
         except:
@@ -497,7 +497,7 @@ class Item(object):
             del params["inContainer"]
         except:
             pass
-                    
+
         try:
             del params["openIndex"]
         except:
@@ -507,48 +507,48 @@ class Item(object):
             del params["parent"]
         except:
             pass
-                
+
         try:
             del params["inTrade"]
         except:
             pass
-                    
+
         try:
             del params["executeDecay"]
         except:
             pass
-        
+
         return params
     def __getstate__(self):
         params = self.cleanParams()
-            
+
         if self.executeDecay:
             delay = round(self.executeDecay.getTime() - time.time(), 1)
             if delay > 0:
                 return (params, delay)
-                
+
         return params
-    
+
     def __setstate__(self, state):
         if isinstance(state, tuple):
             self.__dict__ = state[0]
             self.decay(self.decayPosition, duration=state[1])
         else:
             self.__dict__ = state
-            
+
 
     def copy(self):
         " Returns a unplaced copy of the item. Also kills tileStacking attributes. "
 
         newItem = Item(self.itemId)
         newItem.__dict__ = self.cleanParams()
-        
+
         try:
             del newItem.tileStacked
         except:
             pass
         return newItem
-        
+
     def transform(self, toId, position=None):
         " Transform this item into toId. This is the proper way to change the itemId of a item. "
 
@@ -557,7 +557,7 @@ class Item(object):
 
         if not position:
             raise Exception("BUG: Item position cannot be verified!")
-        
+
         if position.x != 0xFFFF:
             tile = position.getTile()
 
@@ -569,14 +569,14 @@ class Item(object):
                 position.setTile(tile)
                 item = tile.getThing(stackPos)
                 return item.transform(toId, position)
-    
+
             # Hack.
             if stackPos != 0:
                 tile.removeItem(self)
             item = self
             if item.tileStacked:
                 item = item.copy()
-                item.position = self.position                
+                item.position = self.position
             item.itemId = toId
             if toId:
                 if stackPos == 0:
@@ -595,13 +595,13 @@ class Item(object):
                 stream.removeTileItem(position, stackPos)
                 if toId:
                     stream.addTileItem(position, newStackpos, item)
-                    
+
                 stream.send(spectator)
             return item
         else:
             if self.tileStacked:
                 self = self.copy()
-                
+
             self.itemId = toId
             self.decay()
             self.refresh(position)
@@ -622,15 +622,15 @@ class Item(object):
         if position.x != 0xFFFF:
             tile = position.getTile()
             stackPos = tile.findStackpos(self)
-            
+
             for spectator in getSpectators(position):
                 stream = spectator.packet()
-                
+
                 if self.itemId:
                     stream.updateTileItem(position, stackPos, self)
                 else:
                     stream.removeTileItem(position, stackPos)
-                    
+
                 stream.send(spectator)
         else:
 
@@ -643,7 +643,7 @@ class Item(object):
                     # Update cached data
                     if creature.removeCache(currItem):
                         sendUpdate = True
-                        
+
                 ret = creature.addCache(self)
                 if ret:
                     sendUpdate = True
@@ -653,13 +653,13 @@ class Item(object):
                     tile = game.map.getTile(creature.position)
                     tile.placeItem(self)
                     creature.tooHeavy()
-                    
+
                 if sendUpdate:
                     creature.refreshStatus()
-                
+
                 creature.updateInventory(position.y)
                 creature.updateInventory(position.y-1)
-            
+
             # Option 3, the bags, if there is one ofcource
             else:
                 update = False
@@ -674,7 +674,7 @@ class Item(object):
                 except:
                     bag = self.inContainer
 
-                
+
                 for creature in creatures:
                     try:
                         creature.inventoryCache[bag.itemId].index(bag)
@@ -683,11 +683,11 @@ class Item(object):
                             if currItem:
                                 if creature.removeCache(currItem):
                                     update = True
-                    
+
                             ret = creature.addCache(self, bag)
                             if ret == False:
                                 del bag.container[position.z]
-                            elif ret == True:    
+                            elif ret == True:
                                 update = True
                                 bag.container[position.z] = self
                         for index in creature.openContainers:
@@ -704,10 +704,10 @@ class Item(object):
                         stream = creature.packet()
                         stream.updateContainerItem(index, position.z, self)
                         stream.send(creature.client)
-                    
+
     def __repr__(self):
         return "<Item (%s) at %s>" % (self.__dict__, hex(id(self)))
-    
+
     ##### Container stuff ####
     def placeItem(self, item):
         " (For containers) Place `item` into container. Return stackposition (0) if sucessful, or None if failed."
@@ -730,7 +730,7 @@ class Item(object):
     def size(self):
         " (For containers) return the amount of (top level) items in container. "
         return len(self.container)
-    
+
     def containerWeight(self):
         " (For containers) Return the recursive weight of the container. "
         weight = 0
@@ -738,28 +738,28 @@ class Item(object):
             iweight = item.weight
             if iweight:
                 weight += iweight * (item.count or 1)
-                
+
         return weight
-        
+
     def removeItem(self, item):
         " (For containers) Remove `item` from container. "
         if item.inContainer == self:
            del item.inContainer
 
         return self.container.remove(item)
-        
+
     def getThing(self, pos):
         " (For containers) Return the `item` in `pos` stackposition. "
         try:
             return self.container[pos]
         except:
             return None
-    
+
     def getRecursive(self, items = None):
         " (For containers) Returns a generator with every recursive item in the container. "
         if items == None:
             items = self.container
-            
+
         for item in items:
             yield item
             if item != self and item.containerSize:
@@ -770,17 +770,17 @@ class Item(object):
         " (For containers) Similar to getRecursive, but also includes the bag and stackposition. "
         if not items:
             items = self.container
-            
+
         for pos, item in enumerate(items):
             yield (item, self, pos)
             if item.containerSize:
                 for i in self.getRecursiveWithBag(item.container):
                     yield i
-                    
+
     def findSlot(self, item):
         " (For containers) Return stackposition of `item` "
         return self.container.index(item)
-    
+
     def move(self, newPosition):
         " Move a placed item to newPosition. "
 
@@ -796,14 +796,14 @@ class Item(object):
             raise Exception("Use moveItem(<Player>, item.position, newPosition) instead")
         else:
             moveItem(self.creature, self.verifyPosition(), newPosition)
-        
+
     def remove(self, position=None):
         " Remove the placed item. "
 
         if not position:
             position = self.verifyPosition()
         print("Removing", position)
-        
+
         if not position:
             raise Exception("BUG: Item position cannot be verified! %s" % self.position)
 
@@ -883,7 +883,7 @@ def idByName(name):
     # Item names. That would require a loop anyway.
     # This is (sadly) much slower...
     global idByNameCache
-    
+
     name = name.upper()
     try:
         return idByNameCache[name]
@@ -897,17 +897,17 @@ def sid(cid):
 def cid(sid):
     " Return the cid based on `sid` "
     return items[sid].get('cid', sid)
-        
+
 def attribute(itemId, attr):
     " Return the attribute for itemId, similar to Item(itemId).<attr>, but does not have to create the item. "
     try:
         if attr in Item.attributes:
             return items[itemId]['flags'] & Item.attribute[attr]
-            
+
         return items[itemId][attr]
     except:
         return
-        
+
 def loadItems():
     " Load or refresh items. "
 
@@ -916,7 +916,7 @@ def loadItems():
     global cidToSid
 
     print("> > Loading items...")
-    
+
     if config.itemCache:
         try:
             with _open("%s/cache/items.cache" % config.dataDirectory, "rb") as f:
@@ -924,15 +924,15 @@ def loadItems():
             print("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
-            pass    
-    
+            pass
+
     # Make three new values while we are loading
     loadItems = {}
     idNameCache = {}
     _cidToSid = {}
 
     """tree = ET.parse("%s/items.xml" % config.dataDirectory)
-    flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}    
+    flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
     for item in tree.getroot():
         _item = item.attrib
 
@@ -968,14 +968,14 @@ def loadItems():
                 _item[key] = val
                 attr.clear()
 
-             
+
         id = _item["id"]
         if "-" in id:
             start, end = map(int, id.split('-'))
             for id in xrange(start, end+1):
                 loadItems[id] = _item
-        else:        
-            id = int(id)    
+        else:
+            id = int(id)
             loadItems[id] = _item
             try:
                 # XXX: Ranged items are usually ground stuff witch we never reference by name.
@@ -983,7 +983,7 @@ def loadItems():
             except:
                 pass
         del _item["id"]
-        item.clear()        
+        item.clear()
     """
 
     # JSON format.
@@ -1032,11 +1032,11 @@ def loadItems():
                     idNameCache[name] = start
             except:
                 pass
-                 
+
         else:
             loadItems[id] = item
             if cid != id:
-                _cidToSid[cid] = id            
+                _cidToSid[cid] = id
             try:
                 name = item["name"].upper()
                 if not name in idNameCache:
