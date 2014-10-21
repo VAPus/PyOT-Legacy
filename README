@@ -9,6 +9,8 @@ In order to run PyOT you need:
 
 * Optional: pywin32 may give a better eventloop on windows
 
+* Optional: cffi enable some C extension for better performance.
+
 Links for Windows:
 ------------------
 
@@ -17,6 +19,7 @@ https://www.python.org/ftp/python/3.4.1/python-3.4.1.amd64.msi
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#tornado (tornado-4.0.2-win-amd64-py3.4.exe)
 
 =======
+
 Open cmd and run:
 c:\Python34\Scripts\easy_install.exe pymysql
 
