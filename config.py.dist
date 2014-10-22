@@ -21,7 +21,7 @@ loginMaxConnections = 20
 gameMaxConnections = 100
 
 # SQL:
-sqlModule = "mysql" # Can be "mysql"
+sqlModule = "mysql" # # Can be "mysql" or "tornado-mysql".
 sqlUsername = "root"
 sqlPassword = ""
 sqlDatabase = "pyot" # Either a DB name, or file for sqlite3
