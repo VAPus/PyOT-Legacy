@@ -1,6 +1,10 @@
 import tornado.web
 import builtins
+import config
 
-Web = tornado.web.Application([(r'/static/', tornado.web.StaticFileHandler)]);
-builtins.Web = Web
+try:
+    Web
+except:
+    Web = tornado.web.Application([(r'/static/(.*)$', tornado.web.StaticFileHandler, {'path': config.dataDirectory + '/web_static/'})]);
+    builtins.Web = Web
 
