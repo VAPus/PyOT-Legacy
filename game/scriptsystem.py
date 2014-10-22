@@ -85,25 +85,6 @@ class TriggerScripts(object):
             
         return res
 
-class NCTriggerScripts(TriggerScripts):
-    """ Designed for webrequests. """
-    def run(self, trigger, **kwargs):
-
-        trig = self.scripts
-        if not trigger in trig:
-            if end:
-                end(None)
-            return
-            
-        trig = trig[trigger]
-
-        if not trig:
-            return
-
-        d = maybeDeferred(trig[0], kwargs)
-
-        return d
-
 class RegexTriggerScripts(TriggerScripts):
     def __init__(self, parameters = ()):
         self.scripts = {}
@@ -328,8 +309,6 @@ globalScripts["getChannelMembers"] = TriggerScripts()
 globalScripts["level"] = Scripts()
 globalScripts["skill"] = Scripts()
 
-# Web stuff.
-globalScripts["webPage"] = NCTriggerScripts(('request'))
 
 # Login stuff
 if config.letGameServerRunTheLoginServer:
@@ -630,17 +609,10 @@ def handlePostLoadEntries():
 
     postLoadEntries.clear()
 
-# A register function for classes. It's cool, because it keeps state. No param vertification tho.
-def registerClass(type, *argc):
-    def _wrapper(c):
-        assert isinstance(c, type)
-
-        object = globalScripts[type]
-
-        _class_ = c()        
-        def function_class_wrapper(*a, **k): return _class_
-
-        object.register(*argc, callback=function_class_wrapper)
-        
-
-    return 
+if config.enableWebProtocol:
+    # To register web sites.
+    def registerWeb(url):
+        def _(cls):
+            Web.add_handlers('.*$', ((url, cls),))
+            return cls
+        return _

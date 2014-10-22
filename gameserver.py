@@ -59,11 +59,12 @@ if config.letGameServerRunTheLoginServer:
 
 # (optional) built in extension server.
 # XXX: Port later...
-#if config.enableExtensionProtocol:
-#    from service.webserver import WebFactory, Web
-#    webFactory = WebFactory(Web())
-#    tcpService = internet.TCPServer(config.webPort, webFactory, interface=config.webInterface)
-#    tcpService.setServiceParent(topService)
+if config.enableWebProtocol:
+    from service.webserver import Web
+    from tornado import httpserver
+    webServer = tornado.httpserver.HTTPServer(Web)
+    webServer.bind(config.webPort, config.webInterface)
+    webServer.start()
 
 # Load the core stuff!
 IOLoop.instance().add_callback(game.loading.loader, startTime)

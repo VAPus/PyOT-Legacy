@@ -187,7 +187,7 @@ def loader(timer):
     builtins.register = game.scriptsystem.register
     builtins.registerFirst = game.scriptsystem.registerFirst
     builtins.registerForAttr = game.scriptsystem.registerForAttr
-    builtins.registerClass = game.scriptsystem.registerClass
+    
     builtins.functions = game.functions
     builtins.sys = sys
     builtins.math = math
@@ -273,11 +273,10 @@ def loader(timer):
 
     # Web
     if config.enableWebProtocol:
-        import core.service.webserver
-        builtins.WebPage = core.service.webserver.Page
-        from twisted.web.server import NOT_DONE_YET
-        builtins.NOT_DONE_YET = NOT_DONE_YET
-
+        import tornado.web
+        builtins.RequestHandler = tornado.web.RequestHandler
+        builtins.registerWeb = game.scriptsystem.registerWeb
+  
     class Globalizer(object):
         __slots__ = ()
         monster = game.monster
