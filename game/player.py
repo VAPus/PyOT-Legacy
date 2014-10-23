@@ -2698,3 +2698,16 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         else:
             return None
 
+    # Extended opcode
+    def getOSType(self):
+        return self.client.OSType
+
+    def sendExtendedOpcode(self, opcode, buffer):
+        if self.client and self.getOSType() >= 0x0A:
+            stream = self.packet(0x32)
+            stream.uint8(opcode)
+            stream.string(str(buffer))
+            stream.send(self.client)
+
+        else:
+            raise Exception("Extended protocol is not enabled")

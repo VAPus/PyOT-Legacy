@@ -1604,3 +1604,9 @@ class BaseProtocol(object):
     @packet(0x0F)
     def handleUnknownPacket(self, player, packet):
         pass # Silence the console. If we want 9.71 support, declear version 980 here.
+        
+    @packet(0x32)
+    def extendedProtocol(self, player, packet):
+        opcode = packet.uint8()
+        buffer = packet.string()
+        game.scriptsystem.get("extendedProtocol").run(player = player, opcode = opcode, buffer = buffer)        

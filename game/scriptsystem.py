@@ -308,6 +308,7 @@ globalScripts["leaveChannel"] = Scripts()
 globalScripts["getChannelMembers"] = TriggerScripts()
 globalScripts["level"] = Scripts()
 globalScripts["skill"] = Scripts()
+globalScripts["extendedProtocol"] = Scripts(('player', 'opcode', 'buffer',))
 
 
 # Login stuff

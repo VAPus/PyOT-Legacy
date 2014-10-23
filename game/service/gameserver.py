@@ -244,6 +244,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 # Update last login
                 sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
 
+            #notifies to otclient that this server can receive extended game protocol opcodes
+            self.player.sendExtendedOpcode(0x00, "")
+
             self.packet = self.player.packet
             self.player.sendFirstPacket()
             self.ready = True # We can now accept other packages
