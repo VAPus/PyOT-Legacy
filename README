@@ -11,6 +11,8 @@ In order to run PyOT you need:
 
 * Optional: cffi enable some C extension for better performance.
 
+* lrparsing (install using pip3) to use lua2py
+
 Links for Windows:
 ------------------
 
