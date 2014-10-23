@@ -2709,5 +2709,4 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.string(str(buffer))
             stream.send(self.client)
 
-        else:
-            raise Exception("Extended protocol is not enabled")
+        # Else, just ignore.
