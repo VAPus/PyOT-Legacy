@@ -140,14 +140,8 @@ class BasePacket(TibiaPacket):
         count = 0
 
         for item in tile.topItems():
-            self.raw(pack("<H", item.cid))
-
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type in (11,12):
-                self.uint8(item.fluidSource or 0)
-            if item.animation:
-                self.uint8(0xFE)
+            self.item(item)
+            
             count += 1
             if count == 10:
                 return
@@ -155,7 +149,7 @@ class BasePacket(TibiaPacket):
         if not tile.things: return
 
         for creature in tile.creatures():
-            if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
+            if creature.hasCondition(CONDITION_INVISIBLE):
                 continue
             known = False
             removeKnown = 0
@@ -189,14 +183,8 @@ class BasePacket(TibiaPacket):
                 return
 
         for item in tile.bottomItems():
-            self.raw(pack("<H", item.cid))
-
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type in (11,12):
-                self.uint8(item.fluidSource or 0)
-            if item.animation:
-                self.uint8(0xFE)
+            self.item(item)
+            
             count += 1
             if count == 10:
                 return
