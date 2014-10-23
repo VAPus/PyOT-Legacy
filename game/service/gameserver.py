@@ -176,7 +176,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             else:
                 language = account['language']
 
-            character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %s AND p.`name` = %s AND p.`world_id` = %s", account['id'], characterName, config.worldId)
+            character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.account_id = %d AND p.`name` = %s AND p.`world_id` = %d", account['id'], characterName, config.worldId)
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").run(client=self, account=account, name=characterName)
@@ -208,7 +208,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if player.client:
                     self.exitWithError("This character is already logged in!")
                     return
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s, `online` = 1 WHERE `id` = %s", (int(time.time()), character['id']))
             if player:
                 self.player = player
                 if self.player.data["health"] <= 0:
@@ -220,7 +219,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 updateTile(self.player.position, tile)
 
             else:
-                # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
+                # Load deathlist.
                 yield deathlist.loadDeathList(character['id'])
                 character["language"] = language
                 game.player.allPlayers[character['name']] = game.player.Player(self, character)
@@ -241,8 +240,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     # Send update tile to refresh all players. We use refresh because it fixes the order of things as well.
                     updateTile(self.player.position, tile)
 
-                # Update last login
-                sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
+            # Update last login
+            sql.runOperation("UPDATE `players` SET `lastlogin` = %s WHERE `id` = %s", int(time.time()), character['id'])
 
             self.packet = self.player.packet
             self.player.sendFirstPacket()
