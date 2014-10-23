@@ -1597,4 +1597,4 @@ class BaseProtocol(object):
     def extendedProtocol(self, player, packet):
         opcode = packet.uint8()
         buffer = packet.string()
-        game.scriptsystem.get("extendedProtocol").run(player = player, opcode = opcode, buffer = buffer)        
+        game.scriptsystem.get("extendedProtocol").run(opcode, player = player, opcode = opcode, buffer = buffer)        
