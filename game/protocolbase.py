@@ -32,10 +32,17 @@ class TibiaProtocol:
     def connectionMade(self):
         print("Connection made from {0}".format(self.address))
 
-        # Enable TCP_NO_DELAY
-        self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
-        self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-
+        # Enable TCP_NO_DELAY and keepalive.
+        try:
+            self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.SO_KEEPALIVE, 1)
+        except:
+            pass # This might fail on windows.
+            
+        try:
+            self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        except:
+            pass # This might fail on some systems too. Kernel params etc.
+            
         # Inform the Protocol that we had a connection
         self.onConnect()
 
