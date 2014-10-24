@@ -705,12 +705,11 @@ class Lua52Node(tuple):
             exp_list, tail_node = exp_list.data.exp_list, exp_list.data.tail
             tail_compiled = tail_node and tail_node.compiled
         nones = name_count - len(exp_list)
-        if nones <= 0:
-            padding = ()
-        elif nones > len(NONE):
+
+        padding = ()
+            
+        if nones > 2:
             padding = '+ (' + ', '.join(("None",) * nones) + ')'
-        else:
-            padding = '+ _lua52.NONE%d' % nones
         exp_list_compiled = [(compiled, '?,') for compiled in exp_list]
         if exp_list_compiled:
             exp_list_compiled[-1] = exp_list_compiled[-1][0]
@@ -728,10 +727,11 @@ class Lua52Node(tuple):
                 exp_list_compiled = ('(?', exp_list_compiled, '?) +')
             if name_count == 0:
                 return (exp_list_compiled, tail_compiled)
+            if name_count == 1:
+                return (exp_list_compiled, tail_compiled)
             exp_list_compiled = (
                 '(?', exp_list_compiled, tail_compiled, padding, '?)')
-            if name_count == 1:
-                return (exp_list_compiled, '?[0]')
+
             return (exp_list_compiled, '?[:%d]' % name_count)
         if name_count == 0:
             if len(exp_list_compiled) == 1:
@@ -1178,9 +1178,14 @@ class Lua52Node(tuple):
         else:
             exp_step_compiled = self.rhs[6].compiled
         self._set_data(python_name=compiler.python_name(name))
-        return ("_lua52.luarange(?",
-                exp_start.compiled, "?,",
-                exp_stop.compiled, "?,", exp_step_compiled, "?)")
+        if exp_step_compiled[0] != '1':
+            return ("range(?",
+                    exp_start.compiled[0].replace('.0', ''), "?,",
+                    exp_stop.compiled[0].replace('.0', ''), "?,", exp_step_compiled.replace('.0', ''), "?)")
+        return ("range(?",
+            exp_start.compiled[0].replace('.0', ''), "?,",
+            exp_stop.compiled[0].replace('.0', ''), "?)")
+
 
     def for_step_st(self, compiler):
         begin_loop_scope, for_steps, block = (
