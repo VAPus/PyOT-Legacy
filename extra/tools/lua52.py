@@ -54,11 +54,15 @@ import collections
 ##### PyOT conversion config. #####
 # Etc, function onUse -> @register('onUse', ???)
 function_name_to_register = {
-    "onUse" : 'onUse'
+    "onUse" : 'use'
 }
 # Arg rewrite
 function_arg_rewrite = {
-    "item.uid" : 'item'
+    "item.uid" : 'item',
+    "cid" : 'creature',
+    "item" : 'thing',
+    "fromPosition" : 'position',
+    "toPosition" : None
 }
 # Etc, doRemoveItem(item.uid) -> item.remove()
 function_rewrite_to = {
@@ -1117,8 +1121,16 @@ class Lua52Node(tuple):
         for v in parameter_list.data.params:
             if len(params) > 2:
                 params += ", "
-            params += str(v) + " = None"
-        params += ")"    
+            string = str(v)
+            if string in function_arg_rewrite:
+                string = function_arg_rewrite[string]
+            if string is type(tuple):
+                params += string[0] + (" = " + string[1]) if string[1] else ''
+            elif string == None:
+                pass
+            else:
+                params += string + " = None"
+        params += ", **k)"    
             
         function_definition = (
             ["def", scope.function_name, params, "?:"],
