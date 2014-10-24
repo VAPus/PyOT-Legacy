@@ -56,6 +56,14 @@ import collections
 function_name_to_register = {
     "onUse" : 'onUse'
 }
+# Arg rewrite
+function_arg_rewrite = {
+    "item.uid" : 'item'
+}
+# Etc, doRemoveItem(item.uid) -> item.remove()
+function_rewrite_to = {
+    "doRemoveItem" : ('{0}.remove', 1, None)
+}
 
 #
 # The complete Lua52 grammar.
@@ -1035,6 +1043,23 @@ class Lua52Node(tuple):
     def function_call(self, compiler):
         prefix_exp = self.rhs[0]
         function_args = self.rhs[-1]
+        func = (str(prefix_exp.compiled[0]))
+        
+        # Start with args rewriter.
+        # TODO.
+
+        # Then function rewriter.
+        if func in function_rewrite_to:
+            args = []
+            for x in function_args.compiled:
+                string = str(x[0])
+                if "['uid']" in string:
+                    string = string.replace("['uid']", '')
+                args.append(string)
+            func_rewritten = function_rewrite_to[func][0].format(*args)
+            print(func_rewritten)
+            return func_rewritten, '?(?', function_args.compiled[function_rewrite_to[func][1]:function_rewrite_to[func][2]], '?)'
+
         if len(self.rhs) == 2:
             if prefix_exp.rhs[0].rule is not Lua52Grammar.adjusted_exp:
                 return (prefix_exp.compiled, '?(?', function_args.compiled, '?)')
