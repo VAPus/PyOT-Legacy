@@ -102,7 +102,7 @@ def subownerList(creature, **k):
     return False
 
 # Is he allowed to enter the house?
-@registerFirst("preWalkOn", "houseDoor")
+@registerFirst("preWalkOn", b"houseDoor")
 def guestListCheck(creature, thing, newTile, **k):
     try:
         house = getHouseById(newTile.houseId)
@@ -118,7 +118,7 @@ def guestListCheck(creature, thing, newTile, **k):
         return True # Not a house. Mapping bug.
 
 # Close door?
-@registerFirst("use", "houseDoor")
+@registerFirst("use", b"houseDoor")
 def houseDoorUseCheck(creature, thing, position, **k):
     try:
         if not thing.doorId:

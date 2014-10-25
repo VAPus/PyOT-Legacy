@@ -340,7 +340,7 @@ if config.enableWarSystem:
         if not text:
             creature.lmessage("Guild balance is %d." % guild.getMoney())
         
-    @register("death", 'player')
+    @register("death", b'player')
     def fragCounter(creature, creature2, deathData, **k):
         # If creature is in war with creature2.
         if creature.isPlayer() and creature2.isPlayer():

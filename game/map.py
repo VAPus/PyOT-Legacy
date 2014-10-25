@@ -612,8 +612,8 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                                 attr[name] = value
 
                             pos += 1
+                            attr['fromMap'] = True
                             item = l_Item(itemId, **attr)
-                            item.fromMap = True
                             if not ground:
                                 ground = item
                             else:
@@ -678,7 +678,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
 
                         # Find and cache doors
                         for i in tile.getItems():
-                            if i.hasAction("houseDoor"):
+                            if i.hasAction(b"houseDoor"):
                                 try:
                                     houseDoors[houseId].append(ySum)
                                     break

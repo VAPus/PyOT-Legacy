@@ -39,7 +39,10 @@ class Item(object):
         self.itemId = itemId
 
         if actions:
-            self.actions = actions
+            _actions = []
+            for action in actions:
+                _actions.append(action if type(action) == bytes else str.encode(action))
+            self.actions = _actions
 
         if kwargs:
             for k in kwargs:
@@ -151,11 +154,15 @@ class Item(object):
         " Return bound events. "
         if not self.itemId: return ()
 
-        return self.actions or ('item')
+        return self.actions or (b'item')
 
     def hasAction(self, name):
         " Returns True if name is in our actions, else False "
-        if name == "item":
+        # Str -> bytes.
+        if type(name) == str:
+            name = str.encode(name)
+            
+        if name == b"item":
             return True
         elif self.actions is None:
             return False
@@ -164,6 +171,9 @@ class Item(object):
 
     def addAction(self, name):
         " Add an action `name` to our actions list. "
+        # Str -> bytes.
+        if type(name) == str:
+            name = str.encode(name)
         if self.actions is None:
             self.actions = [name]
         else:
@@ -171,6 +181,9 @@ class Item(object):
 
     def removeAction(self, name):
         " Remove `name` from our actions. May raise if it's not there. "
+        # Str -> bytes.
+        if type(name) == str:
+            name = str.encode(name)
         self.actions.remove(name)
 
     @property

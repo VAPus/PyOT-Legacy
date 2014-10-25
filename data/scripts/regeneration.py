@@ -7,7 +7,7 @@ if config.regenerationTresshold > 0:
         if check(player):
             player.setHealth(config.regenerationTresshold)
 
-    @register('hit', 'player')
+    @register('hit', b'player')
     def regen(creature, creature2, damage, **k):
         if check(creature2, damage):
             call_later(config.regenerationDelay, regenerator, creature2)

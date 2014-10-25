@@ -5,7 +5,7 @@ farwells = ('bye', 'farewell', 'cya')
 offers = ('offer', 'trade')
 
 # Have to apply on all prestores
-@register("playerSayTo", 'npc')
+@register("playerSayTo", b'npc')
 def saidTo(creature, creature2, said, channelType, channelId, **k):
     if not creature2.isNPC():
         return # We got nothing todo
