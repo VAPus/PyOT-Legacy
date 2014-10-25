@@ -5,12 +5,9 @@ import config
 import copy
 import time
 import marshal
-from . import inflect
 import gc
 import xml.etree.cElementTree as ET
 from . import otjson as json
-
-INFLECT = inflect.engine()
 
 try:
     import io # Python 2.7+
@@ -213,9 +210,9 @@ class Item(object):
             raise Exception("We need to have a player when asking for a items name now apperently!")
 
         if isinstance(self.count, int) and self.count > 1:
-            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(self.name))}
+            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, inflect.plural(self.name))}
 
-        return _l(player, INFLECT.a(self.name))
+        return _l(player, inflect.a(self.name))
 
     def useCharge(self):
         " Use a charge. If charges hits 0 or below the item will be removed. May raise on non-charge items. "
@@ -310,7 +307,7 @@ class Item(object):
         " Returns the raw singular or plural name. "
 
         if self.count:
-            return INFLECT.plural(self.name.title())
+            return inflect.plural(self.name.title())
         return self.name.title()
 
     def reduceCount(self, count):

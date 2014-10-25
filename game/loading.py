@@ -34,6 +34,7 @@ import game.language
 import game.player, game.creature, game.npc, game.monster, game.spell, game.party
 import game.conditions
 import game.market
+from . import inflect
 
 try:
     import pickle as pickle
@@ -167,10 +168,9 @@ def loader(timer):
 
     # Tornado features.
     builtins.ioloop_ins = ioloop.IOLoop.instance()
-    #if not IS_IN_TEST:
+
     builtins.call_later = builtins.ioloop_ins.call_later
-    #else:
-    #    builtins.call_later = lambda *a, **b: None
+
     builtins.call_at = builtins.ioloop_ins.call_at
     builtins.remove_timeout = builtins.ioloop_ins.remove_timeout
     builtins.add_callback = builtins.ioloop_ins.add_callback
@@ -182,6 +182,9 @@ def loader(timer):
     builtins.config = config
     builtins.userconfig = userconfig
 
+    # Inflect support in scripts.
+    builtins.inflect = inflect.engine()
+    
     import game.pathfinder
 
     builtins.register = game.scriptsystem.register
