@@ -25,15 +25,7 @@ import game.deathlist
 import game.ban
 import itertools
 
-try:
-    import pickle as pickle
-except:
-    import pickle
-
-try:
-    from io import StringIO
-except:
-    from io import StringIO
+import pickle
 
 # Some half important constants
 globalStorage = {'storage':{}, 'objectStorage':{}}
