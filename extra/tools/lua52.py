@@ -62,12 +62,28 @@ function_arg_rewrite = {
     "cid" : 'creature',
     "item" : 'thing',
     "fromPosition" : 'position',
-    "toPosition" : None
+    "toPosition" : None,
 }
 # Etc, doRemoveItem(item.uid) -> item.remove()
 function_rewrite_to = {
-    "doRemoveItem" : ('{0}.remove', 1, None)
+    "doRemoveItem" : ('{0}.remove', 1, None, True),
+    "doSendMagicEffect" : ('{0}.magicEffect', 1, None, True),
+    "getThingPos" : ('{0}.position', 1, None, False),
+    "doPlayerSendTextMessage" : ('{0}.message({2}, {1})', 2, None, False),
+    "doCreatureSay" : ('{0}.say({1}, {2})', 2, None, False),
+    "getCreatureStorage" : ('{0}.getStorage', 1, None, True),
+    "doCreatureSetStorage" : ('{0}.setStorage', 1, None, True)
+    
 }
+
+# Etc, creature.position.magicEffect -> creature.magicEffect
+# TODO: Regex support.
+function_simplefy = {
+    "doSendMagicEffect" : {
+        "creature.position" : "creature"
+    }
+}
+
 
 #
 # The complete Lua52 grammar.
@@ -827,7 +843,7 @@ class Lua52Node(tuple):
                 return result
             return result(data[1:])
         self._set_data(klass=str)
-        return (repr(self.LUA_SHORT_STRING_RE.sub(lua_sub, self.token)[1:-1]),)
+        return (repr(self.LUA_SHORT_STRING_RE.sub(lua_sub, self.token)[1:-1]).replace('\\\\', '\\'),)
 
     _string_decimal = lambda data: chr(int(data[1:], 10))
     LUA_SHORT_STRING_RE = re.compile(r"(?s)\\[a-v]|\\z\w*|\\[0-9]+|\\x..")
@@ -847,8 +863,12 @@ class Lua52Node(tuple):
         return (repr(self.token[marker_len:-marker_len]),)
 
     def decimal_number(self, compiler):
-        self._set_data(klass=float)
-        return (repr(float(self.token)),)
+        if "." in self.token:
+            self._set_data(klass=float)
+            return (repr(float(self.token)),)
+        
+        self._set_data(klass=int)
+        return (repr(int(self.token)),)
 
     def hex_number(self, node, compiler):
         toks = self.token.lower().split("p")
@@ -1056,12 +1076,42 @@ class Lua52Node(tuple):
         if func in function_rewrite_to:
             args = []
             for x in function_args.compiled:
-                string = str(x[0])
-                if "['uid']" in string:
-                    string = string.replace("['uid']", '')
+                # Don't stringify tuples. Keep call graph.
+                if type(x[0]) == tuple:
+                    string = x[0]
+                else:
+                    string = str(x[0])
+                    if "['uid']" in string:
+                        string = string.replace("['uid']", '')
+                    
+                if string in function_arg_rewrite:
+                    string = function_arg_rewrite[string]
+                    
                 args.append(string)
+                
+            # XXX: Hacks for rewrite.
+            i = 0
+            for x in args:
+                if type(x) == tuple:
+                    args[i] = x[0]
+
+                    # Might be unsafe too?
+                    if type(args[i]) == PythonName:
+                        args[i] = args[i]._PythonName__table_path
+                        
+                    if args[i] in function_arg_rewrite:
+                        args[i] = function_arg_rewrite[args[i]]
+                        
+
+                if func in function_simplefy and args[i] in function_simplefy[func]:
+                    args[i] = function_simplefy[func][args[i]]
+                        
+                i += 1
+
             func_rewritten = function_rewrite_to[func][0].format(*args)
-            print(func_rewritten)
+            if function_rewrite_to[func][3] == False:
+                return func_rewritten
+
             return func_rewritten, '?(?', function_args.compiled[function_rewrite_to[func][1]:function_rewrite_to[func][2]], '?)'
 
         if len(self.rhs) == 2:
@@ -1196,6 +1246,13 @@ class Lua52Node(tuple):
             kwd, condition, scope = (
                 self.rhs[i], self.rhs[i + 1], self.rhs[i + 3])
             ife = "if" if kwd.token == "if" else "elif"
+            
+            # Patch away.
+            if condition.compiled[-1][-1] == '?)':
+                condition.compiled = list(condition.compiled)
+                condition.compiled[-1] = condition.compiled[-1][:-1]
+                condition.compiled = tuple(condition.compiled)
+                
             compiled.extend([
                 [ife, self._coerce(condition, bool, 0), '?:'],
                 self.INDENT, scope.compiled, self.OUTDENT])
@@ -2744,9 +2801,9 @@ class Lua52StandardLibrary(PythonTable):
     @classmethod
     def tonumber(cls, obj, base=None):
         if base is not None:
-            return float(int(coerce2string(obj), int(base)))
+            return int(coerce2string(obj), int(base))
         try:
-            return (coerce2float(obj),)
+            return obj,
         except ValueError:
             return NONE1
 
