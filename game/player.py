@@ -782,6 +782,11 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshStatus()
 
     # Mana & soul
+    def getMana(self):
+        return self.data['mana']
+    def getMaxMana(self):
+        return self.data['manamax']
+
     def setMana(self, mana):
         if self.data["health"] > 0:
             self.saveData = True
@@ -818,6 +823,8 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             self.refreshStatus()
 
 
+    def getSoul(self):
+        return self.data['soul']
     def setSoul(self, soul):
         if self.data["health"] > 0:
             self.saveData = True

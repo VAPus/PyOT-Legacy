@@ -334,6 +334,12 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def onSpawn(self):
         pass # To be overrided
 
+    def getHealth(self):
+        return self.data['health']
+
+    def getMaxHealth(self):
+        return self.data['healthmax']
+
     def setHealth(self, health):
         if self.data["health"] == 0 and health:
             self.alive = True

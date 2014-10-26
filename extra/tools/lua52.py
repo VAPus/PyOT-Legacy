@@ -50,6 +50,7 @@ from lrparsing import (
     THIS, Token, Tokens, TokenRegistry)
 import collections
 
+NO_WRAP = 2
 
 ##### PyOT conversion config. #####
 # Etc, function onUse -> @register('onUse', ???)
@@ -61,10 +62,16 @@ function_arg_rewrite = {
     "item.uid" : 'item',
     "cid" : 'creature',
     "item" : 'thing',
-    "fromPosition" : 'position',
-    "toPosition" : None,
+    "fromPosition" : 'position'
 }
+
+# Unindexed values.
+# Etc x,y,z,stackpos,itemId...
+unindexed_values = {'x', 'y', 'z', 'stackpos', 'itemId'}
+index_rewrite = {'itemid' : 'itemId'}
+exception_unindexed = {'config'} # Allows config.itemId to exist.
 # Etc, doRemoveItem(item.uid) -> item.remove()
+# (to, skipArg, toArgs, keepFunctionCall[, post call])
 function_rewrite_to = {
     "doRemoveItem" : ('{0}.remove', 1, None, True),
     "doSendMagicEffect" : ('{0}.magicEffect', 1, None, True),
@@ -72,7 +79,25 @@ function_rewrite_to = {
     "doPlayerSendTextMessage" : ('{0}.message({2}, {1})', 2, None, False),
     "doCreatureSay" : ('{0}.say({1}, {2})', 2, None, False),
     "getCreatureStorage" : ('{0}.getStorage', 1, None, True),
-    "doCreatureSetStorage" : ('{0}.setStorage', 1, None, True)
+    "doCreatureSetStorage" : ('{0}.setStorage', 1, None, True),
+    "doDecayItem" : ('{0}.decay', 1, None, True),
+    "doTransformItem" : ('{0}.transform', 1, None, True),
+    "doPlayerAddMana" : ('{0}.modifyMana', 1, 2, True),
+    "doPlayerAddHealth" : ('{0}.modifyHealth', 1, None, True),
+    "doPlayerAddSoul" : ('{0}.modifySoul', 1, None, True),
+    "doPlayerAddSpentMana" : ('{0}.modifySpentMana', 1, None, True),
+    "getPlayerMana" : ('{0}.getMana', 1, None, True),
+    "getPlayerHealth" : ('{0}.getHealth', 1, None, True),
+    "getPlayerSoul" : ('{0}.getSoul', 1, None, True),
+    "isInArray" : ('{1} in ', -1, None, NO_WRAP),
+    "isPlayer" : ('{0}.isPlayer', 1, None, True),
+    "isCreature" : ('{0}.isCreature', 1, None, True),
+    "isNPC" : ('{0}.isNPC', 1, None, True),
+    "isMonster" : ('{0}.isMonster', 1, None, True),
+    "addEvent" : ('call_later({1}, {0}, ', 2, None, NO_WRAP, '?)'),
+    "getThingFromPos" : (' ', 0, None, NO_WRAP, '?.getThing()'),
+    "doCreateItem" : ('placeItem', 0, None, True)
+    
     
 }
 
@@ -277,9 +302,23 @@ class PythonName(object):
                 names[0] = self.__variable.escape(names[0])
             else:
                 names[0] = "_l%d_%s" % (self.__variable.declare_scope.seq, names[0])
-        return '.'.join(names) + ''.join("[%r]" % i for i in reversed(indexed))
+        
+        if names[0] in exception_unindexed:
+            return '.'.join(names) + ''.join("[%r]" % i for i in reversed(indexed))
+        elif indexed:
+            str = ""
+            for i in reversed(indexed):
+                if i in index_rewrite:
+                    i = index_rewrite[i]
+                    
+                if i in unindexed_values:
+                    str += ".%s" % i
+                else:
+                    str += "[%r]" % i
 
-
+            return '.'.join(names) + str
+        else:
+            return '.'.join(names)
 #
 # Information we keep about a variable declaration.
 #
@@ -780,7 +819,7 @@ class Lua52Node(tuple):
     def _function_args(self, exp_list):
         compiled = [(compiled, '?,') for compiled in exp_list.data.exp_list]
         if exp_list.data.tail:
-            compiled.append(('*?', exp_list.data.tail.compiled))
+            compiled.append(exp_list.data.tail.compiled)
         else:
             compiled[-1] = compiled[-1][0]
         return tuple(compiled)
@@ -941,7 +980,7 @@ class Lua52Node(tuple):
             compiled = operand.compiled
             prio = operand.data.prio
         if coerce is not None and operand.data.klass != coerce:
-            return ('%s(?' % self.COERCE_TYPE[coerce], compiled, '?)')
+            return compiled
         else:
             if self_prio is None:
                 self_prio = self.data.prio
@@ -950,9 +989,9 @@ class Lua52Node(tuple):
         return compiled
 
     COERCE_TYPE = {
-        bool: '_lua52.coerce2bool',
-        float: "_lua52.coerce2float",
-        str: "_lua52.coerce2string",
+        bool: '',
+        float: "",
+        str: "",
     }
 
     def exp(self, compiler):
@@ -966,7 +1005,7 @@ class Lua52Node(tuple):
             prio, klass, coerce, op = self.UNARY_OP[self.rhs[0].token]
             self._set_data(prio=prio, klass=klass)
             if op[-1] == "?":
-                return (op, self.rhs[1].compiled, '?)')
+                return (op, self.rhs[1].compiled)
             return (op, self._coerce(self.rhs[1], coerce))
         prio, klass, coerce, op = self.BINARY_OP[self.rhs[1].token]
         self._set_data(prio=prio, klass=klass)
@@ -1038,7 +1077,7 @@ class Lua52Node(tuple):
             args.append("?,")
         if args:
             del args[-1]
-        return ("_lua52.LuaTable(?", tuple(args), "?)")
+        return (tuple(args))
 
     def block(self, compiler):
         return tuple(
@@ -1083,7 +1122,6 @@ class Lua52Node(tuple):
                     string = str(x[0])
                     if "['uid']" in string:
                         string = string.replace("['uid']", '')
-                    
                 if string in function_arg_rewrite:
                     string = function_arg_rewrite[string]
                     
@@ -1094,10 +1132,13 @@ class Lua52Node(tuple):
             for x in args:
                 if type(x) == tuple:
                     args[i] = x[0]
-
+                    
                     # Might be unsafe too?
                     if type(args[i]) == PythonName:
                         args[i] = args[i]._PythonName__table_path
+                    
+                    if ".uid" in args[i]:
+                        args[i] = args[i].replace('.uid', '')
                         
                     if args[i] in function_arg_rewrite:
                         args[i] = function_arg_rewrite[args[i]]
@@ -1108,11 +1149,31 @@ class Lua52Node(tuple):
                         
                 i += 1
 
-            func_rewritten = function_rewrite_to[func][0].format(*args)
+            print(function_rewrite_to[func][0], args)
+            func_rewritten = function_rewrite_to[func][0].format(*(args or tuple()))
             if function_rewrite_to[func][3] == False:
                 return func_rewritten
 
-            return func_rewritten, '?(?', function_args.compiled[function_rewrite_to[func][1]:function_rewrite_to[func][2]], '?)'
+            if function_rewrite_to[func][1] < 0:
+                args = function_args.compiled[:function_rewrite_to[func][1]]
+            else:
+                args = function_args.compiled[function_rewrite_to[func][1]:function_rewrite_to[func][2]]
+            
+            # "Badly" formated lua code.
+            if len(args) > 0 and args[-1] == '?,':
+                args = args[:-1]
+            if len(args) == 1 and type(args[0]) == tuple and len(args[0]) > 0 and args[0][-1] == '?,':
+                args = list(args)
+                args[0] = args[0][:-1]
+                args = tuple(args)
+               
+            if function_rewrite_to[func][3] == NO_WRAP:
+                if len(function_rewrite_to[func]) < 5:
+                    return func_rewritten + '?', args
+                else:
+                    return func_rewritten + '?', args, function_rewrite_to[func][4]
+            else:
+                return func_rewritten, '?(?', args, '?)'
 
         if len(self.rhs) == 2:
             if prefix_exp.rhs[0].rule is not Lua52Grammar.adjusted_exp:
@@ -2878,8 +2939,24 @@ def main(argv=sys.argv):
         sys.stdout.write(compile_lua52(sys.stdin.read()))
     else:
         input_filename = argv[i]
-        compiled = compile_lua52(open(input_filename).read())
+        code = open(input_filename).read()
+        # PyOT.
+        # Before processing regex patching here.
+        # Dict based position to class.
+        luaPosition = re.compile(r"{x=(?P<x>[^,}]+),([ \t]*)y=(?P<y>[^,}]+),([ \t]*)z=(?P<z>[^,}]+),([ \t]*)stackpos=(?P<stackpos>[^]}]+)}")
+        code = luaPosition.sub("StackPosition(\g<x>, \g<y>, \g<z>, \g<stackpos>)", code)
+        luaPosition = re.compile(r"{x=(?P<x>[^,}]+),([ \t]*)y=(?P<y>[^,}]+),([ \t]*)z=(?P<z>[^,}]+),([ \t]*)}")
+        code = luaPosition.sub("Position(\g<x>, \g<y>, \g<z>)", code)
+
+        # Do lua parsing.
+        compiled = compile_lua52(code)
         output_filename = os.path.splitext(input_filename)[0] + ".py"
+        
+        # PyOT.
+        # Lua regex patching here.
+        compiled = compiled.replace("CONST_", "")
+        compiled = compiled.replace("['uid'] > 0", "").replace("['uid'] != None", "")
+        
         open(output_filename, "w").write(compiled)
         mode = stat.S_IMODE(os.stat(input_filename).st_mode)
         try:
