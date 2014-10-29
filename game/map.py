@@ -347,6 +347,12 @@ class Tile(object):
                     return (self.things.index(x), x)
                 return x
 
+    def findItem(self, id):
+        for x in self.getItems():
+            if x.itemId == id:
+                return x
+
+
 
     def copy(self):
         """ Returns a copy of this tile. Used internally for unstacking. """

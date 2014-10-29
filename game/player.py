@@ -614,8 +614,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
             stream.send(self.client)
             return newItem
 
-    def removeItem(self, thing):
-        return thing.remove()
+    #def findItem(self, itemId, count):
+    #    return self.findItemById(itemId, count, False)
+
+    def removeItem(self, item, count=1):
+        if type(itemId) == Item:
+            item.remove()
+        return self.findItemById(item, count, True)
 
     def getContainer(self, openId):
         try:
@@ -868,6 +873,9 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def getActiveSkill(self, skill):
         return self.skills[skill]
+
+    def getSkill(self, skill):
+        return self.data["skills"][skill]
 
     def skillAttempt(self, skillType, amount = 1):
         try:

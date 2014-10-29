@@ -24,11 +24,7 @@ def broadcastMessageAnonymously(creature, text):
     except:
         pass
         
-    for name in game.player.allPlayers:
-        player = game.player.allPlayers[name]
-        if player.alive and player.client.ready:
-            player.message(msg, msgclass)
-    return False
+    broadcastMessage(msg, msgclass)
 
 @register("talkactionFirstWord", "/b")
 @access("TALK_RED")

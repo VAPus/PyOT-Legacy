@@ -25,15 +25,7 @@ import game.deathlist
 import game.ban
 import itertools
 
-try:
-    import pickle as pickle
-except:
-    import pickle
-
-try:
-    from io import StringIO
-except:
-    from io import StringIO
+import pickle
 
 # Some half important constants
 globalStorage = {'storage':{}, 'objectStorage':{}}
@@ -41,7 +33,7 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler", "setStorage", "getStorage", "broadcastMessage"]
 
 # Just a inner funny call
 def looper(function, time):
@@ -1049,3 +1041,14 @@ def allowProjectile(position, position2, blockWindow = False):
             return False
 
     return True
+
+def setStorage(key, value):
+    globalStorage["storage"][key] = value
+    
+def getStorage(key):
+    return globalStorage["storage"][key]
+    
+def broadcastMessage(msg, msgclass):
+    for player in game.player.allPlayersObject:
+        if player.alive and player.client.ready:
+            player.message(msg, msgclass)

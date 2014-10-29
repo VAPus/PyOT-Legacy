@@ -73,13 +73,14 @@ exception_unindexed = {'config'} # Allows config.itemId to exist.
 # Etc, doRemoveItem(item.uid) -> item.remove()
 # (to, skipArg, toArgs, keepFunctionCall[, post call])
 function_rewrite_to = {
-    "doRemoveItem" : ('{0}.remove', 1, None, True),
+    "doRemoveItem" : ('{0}.modify', 1, None, True),
     "doSendMagicEffect" : ('{0}.magicEffect', 1, None, True),
     "getThingPos" : ('{0}.position', 1, None, False),
     "doPlayerSendTextMessage" : ('{0}.message({2}, {1})', 2, None, False),
     "doCreatureSay" : ('{0}.say({1}, {2})', 2, None, False),
     "getCreatureStorage" : ('{0}.getStorage', 1, None, True),
     "doCreatureSetStorage" : ('{0}.setStorage', 1, None, True),
+    "setPlayerStorageValue" : ('{0}.setStorage', 1, None, True),
     "doDecayItem" : ('{0}.decay', 1, None, True),
     "doTransformItem" : ('{0}.transform', 1, None, True),
     "doPlayerAddMana" : ('{0}.modifyMana', 1, 2, True),
@@ -94,9 +95,28 @@ function_rewrite_to = {
     "isCreature" : ('{0}.isCreature', 1, None, True),
     "isNPC" : ('{0}.isNPC', 1, None, True),
     "isMonster" : ('{0}.isMonster', 1, None, True),
-    "addEvent" : ('call_later({1}, {0}, ', 2, None, NO_WRAP, '?)'),
-    "getThingFromPos" : (' ', 0, None, NO_WRAP, '?.getThing()'),
-    "doCreateItem" : ('placeItem', 0, None, True)
+    "addEvent" : ('call_later({1} / 1000, {0}, ', 2, None, NO_WRAP, '?)'),
+    "getThingFromPos" : ('', 0, None, NO_WRAP, '?.getThing()'),
+    "doCreateItem" : ('placeItem', 0, None, True),
+    "doPlayerAddItem" : ('{0}.addItem(Item(', 1, None, NO_WRAP, '?))'),
+    "doPlayerSendCancel" : ('{0}.message({1}, MSG_STATUS_SMALL)', 1, None, False),
+    "doPlayerRemoveItem" : ('{0}.removeItem', 1, None, True),
+    "doPlayerAddSkillTry" : ("{0}.skillAttempt", 1, None, True),
+    "doCreateMonster" : ("getMonster({0}).spawn({1})", 2, 2, False),
+    "getPlayerSkill" : ("{0}.getSkill", 1, None, True),
+    "getBooleanFromString": ("", 0, None, NO_WRAP),
+    "doTeleportThing": ('{0}.teleport', 1, None, True),
+    "getTileItemById": ("{0}.getTile().findItem({1})", 0, None, NO_WRAP),
+    "getItemAttribute": ('{0}.{1}', 2, None, False),
+    "doItemSetAttribute": ('{0}.{1} = {2}', 3, None, False),
+    "doSetStorage": ('setStorage', 0, None, True),
+    "doSetGlobalStorage": ('setStorage', 0, None, True),
+    "setGlobalStorageValue": ('setStorage', 0, None, True),
+    "getStorage": ('getStorage', 0, None, True),
+    "getPlayersOnline": ('game.players.allPlayers', 0, None, False),
+    "doBroadcastMessage": ('broadcastMessage', 0, None, True),
+    "getItemInfo": ('item.items[{0}]', 0, None, False),
+    "getCreatureName": ('{0}.name()', 0, None, False),
     
     
 }
@@ -1002,14 +1022,31 @@ class Lua52Node(tuple):
             self._set_data(prio=10, klass=klass)
             return _atom.compiled
         if len(self.rhs) == 2:
+
             prio, klass, coerce, op = self.UNARY_OP[self.rhs[0].token]
+            
             self._set_data(prio=prio, klass=klass)
+            if self.rhs[0].token == "#":
+                return (op, self.rhs[1].compiled, '?)')
             if op[-1] == "?":
                 return (op, self.rhs[1].compiled)
+
+            
             return (op, self._coerce(self.rhs[1], coerce))
         prio, klass, coerce, op = self.BINARY_OP[self.rhs[1].token]
         self._set_data(prio=prio, klass=klass)
         exp0, exp1 = self.rhs[0], self.rhs[2]
+        if op[0] == "*":
+            list = []
+            pure = True
+            for i in range(len(self.rhs)):
+                if type(self.rhs[i].compiled[0]) != str:
+                    pure = False
+
+                list.append(self.rhs[i].compiled[0])
+
+            if pure:
+                return (" ".join(list),)
         if op[-1] == '?':
             return (op, exp0.compiled, '?,',  exp1.compiled, '?)')
         if op == '==' and self._nested_rule(exp1, Lua52Grammar.constant):
@@ -1019,7 +1056,7 @@ class Lua52Node(tuple):
         return (self._coerce(exp0, coerce), op, self._coerce(exp1, coerce))
 
     UNARY_OP = {
-        '#': (8, float, None, "_lua52.lualen(?"),
+        '#': (8, float, None, "len(?"),
         '-': (8, float, float, '-?'),
         'not': (8, bool, bool, 'not'),
     }
@@ -1029,7 +1066,7 @@ class Lua52Node(tuple):
         '*': (7, float, float, '*'),
         '/': (7, float, float, '/'),
         '%': (7, float, float, '%'),
-        '..': (6, str, None, '_lua52.luaconcat(?'),
+        '..': (6, str, None, '+'),
         '+': (5, float, float, '+'),
         '-': (5, float, float, '-'),
         '<': (4, bool, None, '<'),
@@ -1150,7 +1187,26 @@ class Lua52Node(tuple):
                 i += 1
 
             print(function_rewrite_to[func][0], args)
-            func_rewritten = function_rewrite_to[func][0].format(*(args or tuple()))
+            if function_rewrite_to[func][0]:
+                print(args)
+                if(type(args[0]) == tuple):
+                    # Be gentle about patching.
+                    parts = []
+                    func_p = function_rewrite_to[func][0]
+                    for x in range(len(args)):
+                        print( func_p.split("{"+str(x)+"}"))
+                        part = func_p.split("{"+str(x)+"}")
+                        if len(part) > 1:
+                            func_p = part[1]
+
+                        parts.append(part[0])
+                        parts.append(args[x])
+                        
+                    func_rewritten = tuple(parts)
+                else:
+                    func_rewritten = function_rewrite_to[func][0].format(*(args or tuple()))
+            else:
+                func_rewritten = ""
             if function_rewrite_to[func][3] == False:
                 return func_rewritten
 
@@ -1335,11 +1391,11 @@ class Lua52Node(tuple):
         self._set_data(python_name=compiler.python_name(name))
         if exp_step_compiled[0] != '1':
             return ("range(?",
-                    exp_start.compiled[0].replace('.0', ''), "?,",
-                    exp_stop.compiled[0].replace('.0', ''), "?,", exp_step_compiled.replace('.0', ''), "?)")
+                    exp_start.compiled, "?,",
+                    exp_stop.compiled, "?,", exp_step_compiled.replace('.0', ''), "?)")
         return ("range(?",
-            exp_start.compiled[0].replace('.0', ''), "?,",
-            exp_stop.compiled[0].replace('.0', ''), "?)")
+            exp_start.compiled, "?,",
+            exp_stop.compiled, "?)")
 
 
     def for_step_st(self, compiler):
@@ -2947,6 +3003,7 @@ def main(argv=sys.argv):
         code = luaPosition.sub("StackPosition(\g<x>, \g<y>, \g<z>, \g<stackpos>)", code)
         luaPosition = re.compile(r"{x=(?P<x>[^,}]+),([ \t]*)y=(?P<y>[^,}]+),([ \t]*)z=(?P<z>[^,}]+),([ \t]*)}")
         code = luaPosition.sub("Position(\g<x>, \g<y>, \g<z>)", code)
+        code = code.replace("doPlayerSendDefaultCancel(cid, RETURNVALUE_NOTPOSSIBLE)", "creature.notPossible()")
 
         # Do lua parsing.
         compiled = compile_lua52(code)
@@ -2956,6 +3013,11 @@ def main(argv=sys.argv):
         # Lua regex patching here.
         compiled = compiled.replace("CONST_", "")
         compiled = compiled.replace("['uid'] > 0", "").replace("['uid'] != None", "")
+        compiled = compiled.replace("65535", "0xFFFF")
+        compiled = compiled.replace("db['executeQuery'](", "runOperation(")
+        
+        # Simplefy ms -> s convertion.
+        compiled = compiled.replace(" * 1000 / 1000", "")
         
         open(output_filename, "w").write(compiled)
         mode = stat.S_IMODE(os.stat(input_filename).st_mode)
