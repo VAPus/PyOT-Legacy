@@ -117,8 +117,14 @@ function_rewrite_to = {
     "doBroadcastMessage": ('broadcastMessage', 0, None, True),
     "getItemInfo": ('item.items[{0}]', 0, None, False),
     "getCreatureName": ('{0}.name()', 0, None, False),
-    
-    
+    "getPlayerLookDir": ('{0}.direction', 0, None, False),
+    "Player": ('{0}', 0, None, False),
+    "getConfigValue": ('config.{0}', 0, None, False),
+    "getItemWeight", ('{0}.weight()', 0, None, False),
+    "getItemParent", ('{0}.parent', 0, None, False),
+    "doSaveServer": ('saveAll', 0, None, True),
+    "getItemIdByName": ('idByName', 0, None, True),
+    "isContainer": ('{0}.container', 0, None, False),
 }
 
 # Etc, creature.position.magicEffect -> creature.magicEffect
@@ -1238,10 +1244,11 @@ class Lua52Node(tuple):
         name = self.rhs[2]
         if self._nested_rule(prefix_exp, Lua52Grammar.T.name):
             if not function_args.compiled:
-                args = ('(?', prefix_exp.compiled, '?)')
+                args = ('(?', '?)')
             else:
-                args = ('(?', prefix_exp.compiled, '?,', function_args.compiled, '?)')
-            return (prefix_exp.compiled, '?[%r]?' % name.token, args)
+                args = ('(?', function_args.compiled, '?)')
+            
+            return (prefix_exp.compiled, '?.%s?' % name.token, args)
         if not function_args.compiled:
             args = '(m)'
         else:
