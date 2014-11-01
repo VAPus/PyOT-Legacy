@@ -34,11 +34,16 @@ class Scripts(object):
             self.weaks.remove(callback)
    
     def run(self, **kwargs):
-        res = True
+        res = None
         for func in self.scripts:
-            res = func(**kwargs)
-            if res == False:
-                break 
+            try:
+                res = func(**kwargs)
+            except:
+                handle_script_exception()
+            else:
+                if res == False:
+                    return False
+
         return res
                 
 class TriggerScripts(object):
@@ -79,10 +84,13 @@ class TriggerScripts(object):
             return None
 
         for func in self.scripts[trigger]:
-            res = func(**kwargs)
-            if res == False:
-                return False
-            
+            try:
+                res = func(**kwargs)
+            except:
+                handle_script_exception()
+            else:
+                if res == False:
+                    return False
         return res
 
 class RegexTriggerScripts(TriggerScripts):
@@ -125,11 +133,15 @@ class RegexTriggerScripts(TriggerScripts):
             else:
                 args = obj.groupdict()
             args.update(kwargs)
-                               
+
             for func in spectre[0]:
-                res = func(**args)
-                if res == False:
-                    return False
+                try:
+                    res = func(**kwargs)
+                except:
+                    handle_script_exception()
+                else:
+                    if res == False:
+                        return False
 
         return res
 
@@ -148,7 +160,7 @@ class ThingScripts(object):
                 if i in self.scripts:
                     return True
                     
-        elif id in self.scripts or (type(id) not in (int, int, str) and id in self.thingScripts):
+        elif id in self.scripts or (type(id) not in (int, str) and id in self.thingScripts):
             return True
         else:
             return False
@@ -217,23 +229,38 @@ class ThingScripts(object):
         thing = kwargs["thing"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                res = func(**kwargs)
-                if res == False:
-                    return False
+                try:
+                    res = func(**kwargs)
+                except:
+                    handle_script_exception()
+                else:
+                    if res == False:
+                        return False
+
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                res = func(**kwargs)
-                if res == False:
-                    return False
+                try:
+                    res = func(**kwargs)
+                except:
+                    handle_script_exception()
+                else:
+                    if res == False:
+                        return False
+
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    res = func(**kwargs)
-                    if res == False: 
-                        return False
+                    try:
+                        res = func(**kwargs)
+                    except:
+                        handle_script_exception()
+                    else:
+                        if res == False:
+                            return False
+
         
         return res
 
@@ -243,23 +270,35 @@ class CreatureScripts(ThingScripts):
         thing = kwargs["creature2"]
         if thing in self.thingScripts:
             for func in self.thingScripts[thing]:
-                res = func(**kwargs)
-                if res == False:
-                    return False
+                try:
+                    res = func(**kwargs)
+                except:
+                    handle_script_exception()
+                else:
+                    if res == False:
+                        return False
 
         thingId = thing.thingId()
         if thingId in self.scripts:
             for func in self.scripts[thingId]:
-                res = func(**kwargs)
-                if res == False:
-                    return False
+                try:
+                    res = func(**kwargs)
+                except:
+                    handle_script_exception()
+                else:
+                    if res == False:
+                        return False
 
         for aid in thing.actionIds():
             if aid in self.scripts:
                 for func in self.scripts[aid]:
-                    res = func(**kwargs)
-                    if res == False:
-                        return False
+                    try:
+                        res = func(**kwargs)
+                    except:
+                        handle_script_exception()
+                    else:
+                        if res == False:
+                            return False
 
         return res
     
@@ -356,27 +395,7 @@ def handleModule(name):
     try:
         modules = __import__('%s.%s' % (config.dataDirectory, name), globals(), locals(), ["*"], 0)
     except:
-        (exc_type, exc_value, exc_traceback) = sys.exc_info()
-
-        #tb_list = traceback.extract_tb(exc_traceback)
-        #tb_list = traceback.format_list(tb_list)
-        
-        print("--------------------------")
-        # This may not be available.
-        try:
-            print(("EXCEPTION IN SCRIPT (%s):" % exc_value.filename))
-        except AttributeError:
-            print("EXCEPTION IN SCRIPT:")
-            
-        #for elt in tb_list[1:]:
-        #    print(elt)
-        #traceback.print_last()#exc_traceback)
-        traceback.print_exception(exc_type, exc_value, exc_traceback)
-        
-        
-        print("--------------------------")
-        
-        return
+        return handle_script_exception()
         
     paths = None
     try:
@@ -390,6 +409,22 @@ def handleModule(name):
 
         modPool.append([name, modules])
 
+def handle_script_exception():
+    (exc_type, exc_value, exc_traceback) = sys.exc_info()
+
+    print("--------------------------")
+    
+    # This may not be available.
+    try:
+        print(("EXCEPTION IN SCRIPT (%s):" % exc_value.filename))
+    except AttributeError:
+        print("EXCEPTION IN SCRIPT:")
+        
+    traceback.print_exception(exc_type, exc_value, exc_traceback)
+    
+    
+    print("--------------------------")
+    
 def importer():
     handleModule("scripts")
     handleModule("spells")
