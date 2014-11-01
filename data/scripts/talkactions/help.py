@@ -316,11 +316,10 @@ def testBoost(creature, **k):
     # Give a +1000 to health and maxhealth too for 20s
     creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
     
-@gen.coroutine
 def walkRandomStep(creature, callback):
     wait = creature.lastAction - time.time()
     if wait > 0:
-        call_later(wait+0.015, walkRandomStep, creature, callback) # slight delay
+        call_later(wait+0.050, walkRandomStep, creature, callback) # slight delay
         return
     steps = [0,1,2,3]
     random.shuffle(steps)
@@ -347,7 +346,6 @@ def walkRandomStep(creature, callback):
 def playerAI(creature, **k):
     creature.setSpeed(1500)
     #creature.raiseMessages = True
-    @gen.coroutine
     def _playerAI():
         if creature.data["health"] < 300:
             creature.modifyHealth(10000)
@@ -369,7 +367,7 @@ def playerAI(creature, **k):
                         creature.use(thing)
                         break
             
-        yield walkRandomStep(creature, _playerAI)
+        walkRandomStep(creature, _playerAI)
         
     _playerAI()
 

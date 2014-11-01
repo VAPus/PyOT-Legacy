@@ -811,8 +811,7 @@ class MonsterBrain(object):
         
     def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:
-            badDir = []
-
+            badDir = set()
         random.shuffle(steps)
         
         for step in steps:
@@ -833,7 +832,7 @@ class MonsterBrain(object):
             elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
                 continue
             
-            badDir.append(step)
+            badDir.add(step)
 
             # First verify the move.
             pos = monster.positionInDirection(step)
@@ -849,7 +848,9 @@ class MonsterBrain(object):
             else:
                 monster.move(step, stopIfLock=True, push=False)
                 
-            return
+            break
+            
+        monster.lastStep = time.time()
         
 brain = MonsterBrain()
 def genMonster(name, look, description=""):
