@@ -14,21 +14,21 @@ brainFeatures = {}
 def chance(procent):
     if procent == 100: return (lambda creature: True)
     elif procent == 0: return (lambda creature: False)
-    
+
     def gen(creature):
         if random.randint(0, 99) < procent:
             return True
         else:
             return False
     return gen
-    
+
 class Monster(Creature):
     def generateClientID(self):
         return 0x40000000 + uniqueId()
 
     def isMonster(self):
         return True
-        
+
     def __init__(self, base, position, cid=None):
         Creature.__init__(self, base.data.copy(), position, cid)
         self.base = base
@@ -64,19 +64,19 @@ class Monster(Creature):
 
     def setRespawn(self, state):
         self.respawn = state
-    
+
     def isSummon(self):
         if self.master:
             return True
         else:
             return False
-            
+
     def isSummonFor(self, creature):
         return self.master == creature
 
     def __repr__(self):
         return "<Monster (%s, %d, %s) at %s>" % (self.data["name"], self.clientId(), self.position, hex(id(self)))
-        
+
     def damageToBlock(self, dmg, type):
         if type == MELEE:
             return dmg - self.base.armor
@@ -96,19 +96,19 @@ class Monster(Creature):
             return dmg * self.base.death
         elif type == DROWN:
             return dmg * self.base.drown
-        
+
         # What, no match?
         return dmg
 
     def defaultSpeed(self):
         self.speed = float(self.base.speed)
-    
+
     def turnOffBrain(self):
         try:
             self.brainEvent.cancel()
         except:
             pass
-        
+
         self.brainEvent = None
     def onDeath(self):
         # Remove master summons
@@ -118,7 +118,7 @@ class Monster(Creature):
             self.master.activeSummons.remove(self)
 
         self.turnOffBrain()
-        
+
         # Remove summons
         if self.activeSummons:
             for summon in self.activeSummons:
@@ -128,13 +128,13 @@ class Monster(Creature):
 
         # Lose all conditions.
         self.loseAllConditions()
-                
+
         # Transform
         tile = map.getTile(self.position)
         lootMsg = []
         if self.base.data["corpse"]:
             corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
-            
+
             corpse.movable = False
             def _move_corpse():
                 corpse.movable = True
@@ -145,10 +145,10 @@ class Monster(Creature):
             if self.lastDamagers:
                 if self.getLastDamager().isPlayer():
                     corpse.owners = [self.getLastDamager()]
-            
+
                     def _clear_private_loot():
                         del corpse.owners
-                
+
                     # Callback to remove owner after config.privateLootFor seconds
                     call_later(config.privateLootFor, _clear_private_loot)
             if not isSummon and not self.lastDamagers or self.getLastDamager() != self.master:
@@ -156,7 +156,7 @@ class Monster(Creature):
                     maxSize = game.item.items[self.base.data["corpse"]]["containerSize"]
                 except:
                     # Monsters with loot MUST have a container with some size in it.
-                    if self.base.lootTable: 
+                    if self.base.lootTable:
                         print("[WARNING] Monster %s got a bad corpse" % self.name())
                     maxSize = 0
                 drops = []
@@ -168,14 +168,14 @@ class Monster(Creature):
                                     drops.insert(0, (config.stockLootBagId, None))
                                     maxSize += item.items[config.stockLootBagId]["containerSize"]
                                 else:
-                                    drops.append(loot)            
+                                    drops.append(loot)
                                 break
-                            else:        
+                            else:
                                 drops.append(loot)
-                            
+
                         elif len(loot) == 4:
                             drops.append((loot[0], None, loot[4]))
-                
+
                 ret = scriptsystem.get("loot").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), loot=drops, maxSize=maxSize)
                 if type(ret) == list:
                     drops = ret
@@ -187,7 +187,7 @@ class Monster(Creature):
                         ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
                         lootMsg.append(ritem.name)
                         ret = corpse.placeItemRecursive(ritem)
-                            
+
                     elif lenLoot == 3:
                         count = random.randint(1, loot[2]) * config.lootMaxRate
                         if count > 100:
@@ -201,7 +201,7 @@ class Monster(Creature):
                             ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                             lootMsg.append(ritem.name)
                             ret = corpse.placeItemRecursive(ritem)
-                                
+
                     elif lenLoot == 4:
                         count = random.randint(loot[4], loot[2]) * config.lootMaxRate
                         if count > 100:
@@ -211,12 +211,12 @@ class Monster(Creature):
                                 lootMsg.append(ritem.name)
                                 ret = corpse.placeItemRecursive(ritem)
                                 count -= depCount
-                                    
+
                         else:
                             ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                             lootMsg.append(ritem.name)
                             ret = corpse.placeItemRecursive(ritem)
-                                
+
 
                     if ret == None:
                         print("Warning: Monster '%s' extends all possible loot space" % self.data['name'])
@@ -224,30 +224,30 @@ class Monster(Creature):
 
         else:
             corpse = None
-            
+
         scriptsystem.get("death").run(creature2=self, creature=(self.getLastDamager() if self.lastDamagers else None), corpse=corpse)
         if self.alive or self.data["health"] > 0:
             print("[May bug] Death events brought us back to life?")
             return
-        
+
         # Remove bpth small and full splashes on the tile.
         for item in tile.getItems():
             if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                 tile.removeItem(item)
-        
+
         # Add full splash
         splash = Item(FULLSPLASH)
         splash.fluidSource = self.base.blood
-        
+
         if corpse:
             corpse.place(self.position)
         splash.place(self.position)
-        
+
         # Start decay
         if corpse:
             corpse.decay()
         splash.decay()
-        
+
         # Remove me. This also refresh the tile.
         self.remove()
 
@@ -256,7 +256,7 @@ class Monster(Creature):
                 self.getLastDamager().message(_l(self.getLastDamager(), "loot of %(who)s: %(loot)s") % {"who": self.data["name"].lower(), "loot": ', '.join(lootMsg)}, MSG_LOOT)
             else:
                 self.getLastDamager().message(_l(self.getLastDamager(), "loot of %s: nothing") % (self.data["name"]), MSG_LOOT)
-                
+
             # Experience split.
             attackerParty = self.getLastDamager().party()
             if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
@@ -264,7 +264,7 @@ class Monster(Creature):
                     if member.data["stamina"] or config.noStaminaNoExp == False:
                         exp = (self.base.experience / len(attackerParty.members)) * config.partyExperienceFactor
                         member.modifyExperience(exp * member.getExperienceRate())
-                        
+
                         if exp >= member.data["level"]:
                             member.soulGain()
             else:
@@ -273,7 +273,7 @@ class Monster(Creature):
 
                     if self.base.experience >= self.getLastDamager().data["level"]:
                         self.getLastDamager().soulGain()
-       
+
         # Begin respawn
         if self.respawn:
             self.position = self.spawnPosition
@@ -305,7 +305,7 @@ class Monster(Creature):
         if not self.target:
             # Null walkpatterns.
             self.walkPattern = None
-            
+
         _target = self.target
         if not targets:
             targets = getPlayers(self.position) # Get all creaturse in range
@@ -313,9 +313,9 @@ class Monster(Creature):
                 self.target = None
                 self.targetMode = 0
                 return
-                
+
         target = None
-        
+
         bestDist = 127
         for player in targets:
             # Can we target him, same floor
@@ -328,20 +328,20 @@ class Monster(Creature):
                     break
 
                 path = calculateWalkPattern(self, self.position, player.position, -1, True)
-                
+
                 if not path: continue
                 # Calc x+y distance, diagonal is honored too.
-                dist = len(path) 
+                dist = len(path)
                 if dist < bestDist:
                     # If it's smaller then the previous value
                     bestDist = dist
                     target = player
-        
+
         if _target == target:
             return # We already have this target
         elif target:
             ret = game.scriptsystem.get('target').run(creature2=self, creature=target, attack=True)
-            
+
             if ret == False:
                 return
             elif ret != None:
@@ -355,7 +355,7 @@ class Monster(Creature):
             self.target = None
             self.targetMode = 0
             return
-                    
+
         # When we reach our destination, can we target check
         def __walkComplete(x):
             if not x:
@@ -370,44 +370,44 @@ class Monster(Creature):
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
                     self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
-                        
+
         # XXX: Bug?
         if isinstance(self.target, list):
             try:
                 self.target = self.target.pop()
             except:
-                self.target = None 
+                self.target = None
                 return False
         # Begin autowalking
         if bestDist > 1:
             self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
-                    
+
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
-            if self.target == who:                       
+            if self.target == who:
                 if self.canTarget(self.target.position):
                     self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
                 else:
                     self.target = None
                     self.targetMode = 0
-                                    
+
                 if self.target:
                     # We shall be called again later
                     self.target.scripts["onNextStep"].append(__followCallback)
-                            
+
         self.target.scripts["onNextStep"].append(__followCallback)
         return True
-        
-        
+
+
     def verifyMove(self, tile):
         """ This function verify if the tile is walkable in a regular state (pathfinder etc)
             This function handle things like PZ.
         """
-        
+
         # Protected zone?
         if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
-            
+
         if not tile.things:
             return True
 
@@ -433,9 +433,9 @@ class Monster(Creature):
                     return 30
                 if not ok:
                     return False
-                       
+
         return True
-        
+
 class MonsterBase(object):
     def __init__(self, data, brain):
         self.data = data
@@ -444,40 +444,40 @@ class MonsterBase(object):
         self.scripts = {"onFollow":[], "onTargetLost":[]}
         self.summons = []
         self.maxSummon = 1
-        
+
         self.spawnTime = 60
-        
+
         self.speed = 100
         self.experience = 0
-        
+
         self.attackable = True
-        
+
         self.setBehavior()
         self.setImmunity()
         self.walkAround()
         self.bloodType()
         self.setTargetChance()
         self.setDefense()
-        
+
         self.meleeAttacks = []
         self.distanceAttacks = []
         self.spellAttacks = []
         self.defenceSpells = []
-        
+
         self.intervals = {}
         self.lootTable = []
-        
+
         self.walkable = True
         self.walkPer = config.monsterWalkPer
-        
+
         self.brainFeatures = "default"
         self.skull = 0
-        
+
         self.corpseAction = []
         self.prepared = False
         self._loot = None
-        
-        
+
+
     def spawn(self, position, place=True, spawnTime=None, spawnDelay=0.1, radius=5, radiusTo=None, monster=None, check=False):
         if spawnDelay:
             return call_later(spawnDelay, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
@@ -496,19 +496,19 @@ class MonsterBase(object):
             if not monster.alive:
                 monster.data = monster.base.data.copy()
                 monster.alive = True
-            
+
             if not monster.clientId() in allCreatures:
                 allCreatures[monster.clientId()] = monster
-                
+
             monster.lastDamagers.clear()
-            
+
             if place:
                 # Vertify that there are no spectators if check = True
-                if check and hasSpectators(position): 
+                if check and hasSpectators(position):
                     # If so, try again in 10s
                     call_later(10, self.spawn, position, place, spawnTime, 0, radius, radiusTo, monster, check)
                     return
-                    
+
                 elif tile.hasCreatures() and config.tryToSpawnCreaturesNextToEachother:
                     ok = False
                     for testx in (-1,0,1):
@@ -522,7 +522,7 @@ class MonsterBase(object):
                                 tile = position.getTile()
                                 if not tile:
                                     continue
-                                
+
                                 if not tile.hasCreatures():
                                     try:
                                         stackpos = map.getTile(position).placeCreature(monster)
@@ -531,7 +531,7 @@ class MonsterBase(object):
                                         pass
                                     break
                         else:
-                            
+
                             try:
                                 stackpos = map.getTile(position).placeCreature(monster)
                                 ok = True
@@ -551,10 +551,10 @@ class MonsterBase(object):
                 else:
                     print("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                     return
-                
+
             monster.spawnTime = spawnTime
             monster.radius = radius
-            
+
             if radius <= 1:
                 self.walkable = False
             if radiusTo:
@@ -566,24 +566,24 @@ class MonsterBase(object):
                 for player in getPlayers(position):
                     stream = player.packet()
                     stream.addTileCreature(position, stackpos, monster, player)
-                            
-                    stream.send(player.client) 
-                        
+
+                    stream.send(player.client)
+
             self.brain.beginThink(monster) # begin the heavy thought process!
-            
+
             return monster
-        
+
     def setHealth(self, health, healthmax=None):
         if not healthmax:
             healthmax = health
         self.data["health"] = health
         self.data["healthmax"] = healthmax
-        
+
         return self
 
     def defaultSpawnTime(self, spawnTime):
         self.spawnTime = spawnTime
-        
+
     def bloodType(self, color="blood"):
         self.blood = getattr(const, 'FLUID_'+color.upper())
 
@@ -595,7 +595,7 @@ class MonsterBase(object):
 
     def setAddons(self, addon):
         self.data["lookaddons"] = addon
-        
+
     def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
         self.armor = armor
         self.fire = fire
@@ -608,24 +608,25 @@ class MonsterBase(object):
         self.physical = physical
         if armor == -1:
             self.attackable = False
+
     def setTargetChance(self, chance=10):
         self.targetChance = chance
-    
+
     def maxSummons(self, max):
         self.maxSummon = max
-        
+
     def summon(self, monster=None, chance=10):
-        self.summons.append((monster, chance)) 
-        
+        self.summons.append((monster, chance))
+
     def setExperience(self, experience):
         self.experience = experience
-        
+
     def setSpeed(self, speed):
         self.speed = speed
 
     def regCorpseAction(self, action):
         self.corpseAction.append(action)
-        
+
     def setBehavior(self, summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
         self.summonable = summonable
         self.hostile = hostile
@@ -637,12 +638,12 @@ class MonsterBase(object):
         self.targetDistance = targetDistance
         self.runOnHealth = runOnHealth
         self.targetChange = targetChange
-        
+
     def walkAround(self, energy=0, fire=0, poison=0):
         self.ignoreEnergy = energy
         self.ignoreFire = fire
         self.ignorePoison = poison
-        
+
     def setImmunity(self, paralyze=1, invisible=1, lifedrain=1, drunk=1):
         self.paralyze = paralyze
         self.invisible = invisible
@@ -657,19 +658,19 @@ class MonsterBase(object):
 
     def setBrainFeatures(self, *argc):
         self.brainFeatures = argc
-        
+
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
     def setSkull(self, skull):
         self.skull = skull
-        
+
     def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=game.const.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
-        
+
     def regDistance(self, maxDamage, shooteffect, check=chance(10), interval=config.meleeAttackSpeed):
-        self.distanceAttacks.append([interval, maxDamage, shooteffect, check]) 
-        
+        self.distanceAttacks.append([interval, maxDamage, shooteffect, check])
+
     def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
         if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
             obj = spellName
@@ -678,18 +679,18 @@ class MonsterBase(object):
                 obj = spell.spells[spellName][0]
             except:
                 raise game.errors.SpellDoesNotExist(spellName)
-            
+
         elif isinstance(spellName, int):
             try:
                 obj = spell.targetRunes[spellName]
             except:
                 raise game.errors.RuneDoesNotExist(spellName)
-            
+
         if length:
             self.spellAttacks.append([interval, obj, check, range, (min, max, length)])
         else:
             self.spellAttacks.append([interval, obj, check, range, (min, max)])
-            
+
     def regSelfSpell(self, spellName, min, max, interval=2, check=chance(10), length=None):
         if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
             obj = spellName.func
@@ -697,21 +698,21 @@ class MonsterBase(object):
             obj = spell.spells[spellName][0]
         elif isinstance(spellName, int):
             obj = spell.targetRunes[spellName]
-            
+
         if length:
             self.defenceSpells.append([interval, obj, check, (min, max, length)])
         else:
             self.defenceSpells.append([interval, obj, check, (min, max)])
-        
+
     def loot(self, *argc):
         self._loot = argc
     def prepare(self):
         self.prepared = True
         if not self._loot:
             return
-        
+
         argc = self._loot
-        
+
         # Convert name to Id here
         if config.lootInAlphabeticalOrder:
             cache = []
@@ -724,10 +725,10 @@ class MonsterBase(object):
                     except:
                         print("ItemId %d not found in loot. Ignoring!" % loot[0])
                         continue
-                cache.append(loot)  
-                
-            cache.reverse() 
-            
+                cache.append(loot)
+
+            cache.reverse()
+
             for loot in cache[:]:
                 if type(loot[0]) == tuple:
                     loot = list(loot)
@@ -739,7 +740,7 @@ class MonsterBase(object):
                             loot[0].append(sid)
                         else:
                             print("Monster loot, no item with the name '%s' exists (in %s)" % (ritem, self.data["name"]))
-                        
+
                 else:
                     loot = list(loot)
                     sid = item.idByName(loot[0])
@@ -747,9 +748,9 @@ class MonsterBase(object):
                         loot[0] = sid
                     else:
                         print("Monster loot, no item with the name '%s' exists (in %s)" % (loot[0], self.data["name"]))
-                        
-                self.lootTable.append(loot)  
-            
+
+                self.lootTable.append(loot)
+
         else:
             for loot in argc:
                 if type(loot[0]) == tuple:
@@ -758,11 +759,11 @@ class MonsterBase(object):
                     loot[0] = []
                     for ritem in loots:
                         loot[0].append(item.idByName(ritem))
-                        
+
                 elif type(loot[0]) == str:
                     loot = list(loot)
                     loot[0] = item.idByName(loot[0])
-        
+
                 self.lootTable.append(loot)
         del self._loot
 class MonsterBrain(object):
@@ -771,34 +772,34 @@ class MonsterBrain(object):
             monster.brainEvent = call_later(0, self.handleThink, monster, check)
         else:
             raise Exception("Attempting to start a brain of a active monster!")
-        
+
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
         if not monster.alive or not monster.position.exists():
             monster.turnOffBrain()
             return # Stop looper
-        
+
         if monster.base.voiceslist and random.randint(0, 99) < 10: # 10%
             # Find a random text
             text = random.choice(monster.base.voiceslist)
-                
+
             # If text is uppercase, then yell it.
             if text.isupper():
                 monster.yell(text)
             else:
                 monster.say(text)
-                    
+
         feature = monster.base.brainFeatures
         #for feature in monster.base.brainFeatures:
         ret = brainFeatures[feature](monster)
-        
+
         if ret == False:
             monster.turnOffBrain()
             return
         elif ret == True:
             monster.brainEvent = call_later(1, self.handleThink, monster)
             return
-        
+
         # Are anyone watching?
         if not monster.target: # This have already been vertified!
             if check and not hasSpectators(monster.position, (9, 7)):
@@ -808,30 +809,30 @@ class MonsterBrain(object):
                 self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = call_later(1, self.handleThink, monster)
-        
+
     def walkRandomStep(self, monster, badDir=None, steps=[0,1,2,3]):
         if not badDir:
             badDir = set()
         random.shuffle(steps)
-        
+
         for step in steps:
             # Prevent checks in "bad" directions
             if step in badDir:
                 continue
-            
+
             # Prevent us from autowalking futher then radius steps from our spawn point
             if step == 0 and monster.radiusTo[1]-(monster.position.y-1) > monster.radius:
                 continue
-                
+
             elif step == 1 and (monster.position.x+1)-monster.radiusTo[0] > monster.radius:
                 continue
-                
+
             elif step == 2 and (monster.position.y+1)-monster.radiusTo[1] > monster.radius:
                 continue
-                
+
             elif step == 3 and monster.radiusTo[0]-(monster.position.x-1) > monster.radius:
                 continue
-            
+
             badDir.add(step)
 
             # First verify the move.
@@ -839,7 +840,7 @@ class MonsterBrain(object):
             tile = pos.getTile()
             if not tile or not monster.verifyMove(tile):
                 continue
-            
+
             if config.monsterNeverSkipWalks:
                 def _():
                     if len(badDir) < 4:
@@ -847,11 +848,11 @@ class MonsterBrain(object):
                 monster.move(step, failback=_, stopIfLock=True, push=False)
             else:
                 monster.move(step, stopIfLock=True, push=False)
-                
+
             break
-            
+
         monster.lastStep = time.time()
-        
+
 brain = MonsterBrain()
 def genMonster(name, look, description=""):
     # baseMonsters
@@ -872,7 +873,7 @@ def genMonster(name, look, description=""):
 
 def getMonster(name):
     return monsters.get(name)
-        
+
 def regBrainFeature(name, function):
     if not name in brainFeatures:
         brainFeatures[name] = function
