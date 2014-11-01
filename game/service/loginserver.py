@@ -206,6 +206,7 @@ class LoginProtocol(protocolbase.TibiaProtocol):
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
             pkg.raw(socket.inet_aton(ip if type(ip) == str else ip.decode('utf-8')))
+            pkg.length += 4
             pkg.uint16(port)
 
             if version >= 980:

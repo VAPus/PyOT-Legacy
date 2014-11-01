@@ -14,6 +14,7 @@ class Packet(base.BasePacket):
     # Magic Effect
     def magicEffect(self, pos, type):
         self.raw(pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type))
+        self.length += 7
 
 class Protocol(base.BaseProtocol):
     Packet = Packet

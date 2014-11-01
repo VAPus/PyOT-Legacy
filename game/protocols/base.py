@@ -54,10 +54,12 @@ class BasePacket(TibiaPacket):
     # Parameters is list(x,y,z)
     def position(self, position):
         self.raw(pack("<HHB", position.x, position.y, position.z))
+        self.length += 5
 
     # Magic Effect
     def magicEffect(self, pos, type):
         self.raw(pack("<BHHBB", 0x83, pos.x, pos.y, pos.z, type))
+        self.length += 7
 
     # Shoot
     def shoot(self, fromPos, toPos, type):
@@ -171,8 +173,10 @@ class BasePacket(TibiaPacket):
                     if creature.creatureType != 0 and creature.brainEvent:
                         if player.client.version >= 953:
                             self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
+                            self.length += 8
                         else:
                             self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                            self.length += 7
                     else:
                         self.creature(creature, True, creature.cid, player) # Not optimal!
             if creature.creatureType != 0 and not creature.brainEvent:

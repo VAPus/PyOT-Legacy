@@ -237,8 +237,7 @@ class CreatureMovement(object):
             self.autoWalk()
         elif callback:
             callback()
-        
-    @gen.coroutine
+
     def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, failback, push):
             return

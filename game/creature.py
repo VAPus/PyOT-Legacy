@@ -752,7 +752,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                     break
 
             if found:
-                self.teleport(doorPos)
+                self.teleport(doorPos, True)
                 return True
 
             # Try south
@@ -765,7 +765,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                     break
 
             if found:
-                self.teleport(doorPos)
+                self.teleport(doorPos, True)
                 return True
 
             # Try east
@@ -779,7 +779,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                     break
 
             if found:
-                self.teleport(doorPos)
+                self.teleport(doorPos, True)
                 return True
 
             # Try west
@@ -792,9 +792,10 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
                     break
 
             if found:
-                self.teleport(doorPos)
+                self.teleport(doorPos, True)
                 return True
 
+            print("Wtf?")
             return False # Not found
 
         except:

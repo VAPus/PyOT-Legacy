@@ -83,89 +83,99 @@ class TibiaPacketReader(object):
         return StackPosition(x, y, z, stackPos, instance)
 
 class TibiaPacket(object):
-    __slots__ = ('data', 'stream', 'raw')
+    __slots__ = ('data', 'raw', 'length')
     def __init__(self, header=None):
         self.data = [""]
-        self.stream = None
         self.raw = self.data.append
+        self.length = 0
         if header:
             self.uint8(header)
 
     def clear(self):
-        self.data = [""]
-        self.raw = self.data.append
+        self.data.clear()
+        self.data.append("")
+        self.length = 0
 
     # 8bit - 1byte, C type: char
     def uint8(self, data, pack = pack):
-        data = int(data)
         self.raw(pack("<B", data))
+        self.length += 1
+        
     def int8(self, data, pack=pack):
-        data = int(data)
         self.raw(pack("<b", data))
+        self.length += 1
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data, pack=pack):
-        data = int(data)
         self.raw(pack("<H", data))
+        self.length += 2
+        
     def int16(self, data, pack=pack):
-        data = int(data)
         self.raw(pack("<h", data))
+        self.length += 2
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data, pack=pack):
-        data = int(data)
         self.raw(pack("<I", data))
+        self.length += 4
+        
     def int32(self, data):
-        data = int(data)
         self.raw(pack("<i", data))
+        self.length += 4
+        
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        data = int(data)
         self.raw(pack("<Q", data))
+        self.length += 8
+        
     def int64(self, data):
         data = int(data)
         self.raw(pack("<q", data))
+        self.length += 8
 
     def double(self, data):
         self.uint8(3)
         self.uint32((round(data, 3) * 1000) + 0x7FFFFFFF)
 
     def string(self, string, pack=pack):
-        # HACK! Should be fixed before merge i hope. This gets a utf-8 that is NOT a unicode.
-        """try:
-            string = string.decode("utf-8").encode('iso8859-1')
-        except UnicodeDecodeError:
-            pass # From client or translated source
-        """
         length = len(string)
         self.uint16(length)
         self.raw(string.encode('iso8859-1'))
+        self.length += length
 
     def put(self, string):
-        self.raw(str(string))
+        string = str(string)
+        self.length += len(string)
+        self.raw(string)
 
-    def send(self, stream, pack=pack, len=len, adler32=adler32, encryptXTEA=encryptXTEA, sum=sum, map=map):
-        if not stream or len(self.data) < 2: return
+    def send(self, stream, pack=pack, adler32=adler32, encryptXTEA=encryptXTEA):
+        if not stream or not self.length:
+            # Failour, invalid packet, aka bad programming. Or connection out.
+            raise Exception("Explicit null?")
+            return
 
-        length = sum(map(len, self.data))
+        if not self.length:
+            raise Exception("Bad packet!");
+            
+        length = self.length
         self.data[0] = pack("<H", length)
-        #data = "%s%s" % (pack("<H", le(self.data)), ''.join(self.data))
+        length += 2
 
         if stream.xtea:
-            data = encryptXTEA(self.data, stream.xtea, length+2)
+            data = encryptXTEA(self.data, stream.xtea, length)
         else:
             data = b''.join(self.data)
 
-        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
-        self.data = None
+        stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
 
     #@inThread
     def sendto(self, list):
-        if not list or not self.data:
+        if not list or not self.length:
             return # Noone to send to
 
         length = sum(map(len, self.data))
         self.data[0] = pack("<H", length)
+        length += 2
 
         #data = "%s%s" % (pack("<H", len(self.data)), ''.join(self.data))
         for client in list:
@@ -173,10 +183,10 @@ class TibiaPacket(object):
                 continue
 
             if client.xtea:
-                data = encryptXTEA(self.data, client.xtea, length+2)
+                data = encryptXTEA(self.data, client.xtea, length)
             else:
                 data = b''.join(self.data)
-            client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
+            client.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
 
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):

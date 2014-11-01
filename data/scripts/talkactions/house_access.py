@@ -106,6 +106,7 @@ def subownerList(creature, **k):
 def guestListCheck(creature, thing, newTile, **k):
     try:
         house = getHouseById(newTile.houseId)
+        
         if not house:
             return True
         
@@ -113,6 +114,10 @@ def guestListCheck(creature, thing, newTile, **k):
             return True
 
         else:
+
+            if creature.position.getTile().houseId == newTile.houseId: # We are in a house? Relog -> access list changed.
+                if not creature.kickFromHouse(): # House without doors, don't kick and allow walking...
+                    return True
             return False
     except:
         return True # Not a house. Mapping bug.

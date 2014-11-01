@@ -126,6 +126,7 @@ class Packet(base.BasePacket):
                     # Bugged?
                     if creature.creatureType != 0 and creature.brainEvent:
                         self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                        self.length += 7
                     else:
                         self.creature(creature, True, creature.cid, player) # Not optimal!
 

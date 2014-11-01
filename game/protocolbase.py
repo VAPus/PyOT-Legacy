@@ -18,7 +18,6 @@ class TibiaProtocol:
         self.xtea = None
         self.onInit()
         self.data = []
-        self.expect = 0
         self.player = None
 
         # Register disconnect callback.
@@ -63,7 +62,7 @@ class TibiaProtocol:
         # Adler32:
         if config.checkAdler32:
             adler = packet.uint32()
-            calcAdler = adler32(packet.getData()) & 0xffffffff
+            calcAdler = adler32(packet.getData())
             if adler != calcAdler:
                 print("Adler32 missmatch, it's %s, should be: %s" % (calcAdler, adler))
                 self.transport.close()
