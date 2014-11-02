@@ -9,7 +9,7 @@ import json
 topitems = set()
 movable = set()
 
-parse = json.load(io.open("../data/items.json", 'r'))
+parse = json.load(io.open("../../data/items.json", 'r'))
 for item in parse:
     flags = str(item.get('flags', ''))
     if not flags: continue
@@ -390,7 +390,7 @@ class Map(object):
                             
                         # BROKEN?
                         # A second awalk to optimize (\x00\x00\x00|\x00\x00\x00| -> \x00\x00\0x02|)
-                        """ _output = []
+                        _output = []
                         count = 0
                         for code in output:
                             if code[0:2] == "\x00\x00" and code[3] == '|': count += 1
@@ -403,8 +403,9 @@ class Map(object):
                                 _output.append(code)
                         if count == 1:
                             _output.append("\x00\x00\x00|")
-                        
-                        output = _output"""
+                        elif count > 1:
+                            _output.append("\x00\x00" + chr(count) + '|')
+                        output = _output
                         if not output:
                             return None
                             
