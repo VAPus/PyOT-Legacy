@@ -658,4 +658,5 @@
         <action itemid="13538" event="script" value="other/taming.lua"/> <!-- bamboo leaves -->
         <action itemid="13539" event="script" value="other/taming.lua"/> <!-- golden fir cone -->
         <action itemid="13498" event="script" value="other/taming.lua"/> <!-- scorpion sceptre -->
+        <action itemid="8906-8909" event="script" value="rainbow.lua"/>
 </actions>

@@ -43,6 +43,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from xml.dom.minidom import parse
 
 import lrparsing
 from lrparsing import (
@@ -55,14 +56,16 @@ NO_WRAP = 2
 ##### PyOT conversion config. #####
 # Etc, function onUse -> @register('onUse', ???)
 function_name_to_register = {
-    "onUse" : 'use'
+    "onUse" : ('use', 'useWith')
 }
 # Arg rewrite
 function_arg_rewrite = {
     "item.uid" : 'item',
     "cid" : 'creature',
     "item" : 'thing',
-    "fromPosition" : 'position'
+    "fromPosition" : 'position',
+    "itemEx" : 'onThing',
+    'toPosition': 'onPosition'
 }
 
 # Unindexed values.
@@ -117,14 +120,8 @@ function_rewrite_to = {
     "doBroadcastMessage": ('broadcastMessage', 0, None, True),
     "getItemInfo": ('item.items[{0}]', 0, None, False),
     "getCreatureName": ('{0}.name()', 0, None, False),
-    "getPlayerLookDir": ('{0}.direction', 0, None, False),
-    "Player": ('{0}', 0, None, False),
-    "getConfigValue": ('config.{0}', 0, None, False),
-    "getItemWeight", ('{0}.weight()', 0, None, False),
-    "getItemParent", ('{0}.parent', 0, None, False),
-    "doSaveServer": ('saveAll', 0, None, True),
-    "getItemIdByName": ('idByName', 0, None, True),
-    "isContainer": ('{0}.container', 0, None, False),
+    
+    
 }
 
 # Etc, creature.position.magicEffect -> creature.magicEffect
@@ -135,6 +132,8 @@ function_simplefy = {
     }
 }
 
+# WITH (Global hack)
+USE_WITH = False
 
 #
 # The complete Lua52 grammar.
@@ -1244,11 +1243,10 @@ class Lua52Node(tuple):
         name = self.rhs[2]
         if self._nested_rule(prefix_exp, Lua52Grammar.T.name):
             if not function_args.compiled:
-                args = ('(?', '?)')
+                args = ('(?', prefix_exp.compiled, '?)')
             else:
-                args = ('(?', function_args.compiled, '?)')
-            
-            return (prefix_exp.compiled, '?.%s?' % name.token, args)
+                args = ('(?', prefix_exp.compiled, '?,', function_args.compiled, '?)')
+            return (prefix_exp.compiled, '?[%r]?' % name.token, args)
         if not function_args.compiled:
             args = '(m)'
         else:
@@ -1450,9 +1448,15 @@ class Lua52Node(tuple):
         function_body.data.scope.set_name(last_name)
         
         # PyOT register function.
-        # TODO: Actions.xml integration.
         if str(var[0]) in function_name_to_register:
-            pre_tag = "@register('%s', ???)\n" % (function_name_to_register[str(var[0])])
+            replace_with = function_name_to_register[str(var[0])]
+            if type(replace_with) == tuple:
+                if USE_WITH:
+                    replace_with = replace_with[1]
+                else:
+                    replace_with = replace_with[0]
+                    
+            pre_tag = "@register('%s', ___REGISTER_ON___)\n" % replace_with
             
             # Add in before function.
             # XXX: This might be unsafe.
@@ -2970,6 +2974,7 @@ def compile_lua52(lua52_source):
 
 
 def main(argv=sys.argv):
+    global USE_WITH
     i = 1
     if len(argv) == 2 and argv[1] == '--compile':
         pre_compiled_in = None
@@ -3002,8 +3007,37 @@ def main(argv=sys.argv):
         sys.stdout.write(compile_lua52(sys.stdin.read()))
     else:
         input_filename = argv[i]
+        
+        # Read actions.
+        dom = parse("actions.xml")
+        list = []
+        for element in dom.getElementsByTagName("action"):
+            if element.getAttribute("script").split("/")[-1] == input_filename or element.getAttribute("value").split("/")[-1] == input_filename:
+                uniqueid = element.getAttribute("uniqueid")
+                if uniqueid:
+                    list.append(str(uniqueid))
+                    USE_UNIQUE_ID = True
+                    continue
+                try:
+                    list.append(int(element.getAttribute("itemid")))
+                except:
+                    try:
+                        start, end = element.getAttribute("itemid").split("-")
+                        for i in range(int(start), int(end)+1):
+                            list.append(i)
+                    except:
+                        for i in range(int(element.getAttribute("fromid")), int(element.getAttribute("toid"))+1):
+                            list.append(i)
+
+
+        
         code = open(input_filename).read()
         # PyOT.
+        
+        # Check for use of indexEx or toposition.
+        if code.count("itemEx") > 2 or code.count("toposition") > 2:
+            USE_WITH = True
+            
         # Before processing regex patching here.
         # Dict based position to class.
         luaPosition = re.compile(r"{x=(?P<x>[^,}]+),([ \t]*)y=(?P<y>[^,}]+),([ \t]*)z=(?P<z>[^,}]+),([ \t]*)stackpos=(?P<stackpos>[^]}]+)}")
@@ -3023,8 +3057,14 @@ def main(argv=sys.argv):
         compiled = compiled.replace("65535", "0xFFFF")
         compiled = compiled.replace("db['executeQuery'](", "runOperation(")
         
+        # XXX: Move this to the proper level.
+        compiled = compiled.replace("itemEx", "onThing")
+        
         # Simplefy ms -> s convertion.
         compiled = compiled.replace(" * 1000 / 1000", "")
+        
+        # Properly apply list to @register.
+        compiled = compiled.replace("___REGISTER_ON___", repr(list))
         
         open(output_filename, "w").write(compiled)
         mode = stat.S_IMODE(os.stat(input_filename).st_mode)
