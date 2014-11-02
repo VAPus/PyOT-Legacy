@@ -775,7 +775,7 @@ class MonsterBrain(object):
 
     def handleThink(self, monster, check=True):
         # Are we alive? And placed on a live position
-        if not monster.alive or not monster.position.exists():
+        if not monster.alive: #or not monster.position.exists():
             monster.turnOffBrain()
             return # Stop looper
 
@@ -789,24 +789,25 @@ class MonsterBrain(object):
             else:
                 monster.say(text)
 
-        feature = monster.base.brainFeatures
-        #for feature in monster.base.brainFeatures:
-        ret = brainFeatures[feature](monster)
+        if monster.target or (check and hasZLevelSpectators(monster.position, (9,7))) or not check:
+            try:
+                ret = brainFeatures[monster.base.brainFeatures](monster)
+            except:
+                ret = False
+                handle_script_exception()
 
-        if ret == False:
-            monster.turnOffBrain()
-            return
-        elif ret == True:
-            monster.brainEvent = call_later(1, self.handleThink, monster)
-            return
-
-        # Are anyone watching?
-        if not monster.target: # This have already been vertified!
-            if check and not hasSpectators(monster.position, (9, 7)):
+            if ret == False:
                 monster.turnOffBrain()
                 return
-            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
-                self.walkRandomStep(monster) # Walk a random step
+            elif ret == True:
+                monster.brainEvent = call_later(1, self.handleThink, monster)
+                return
+        else:
+            # Are anyone watching?
+            monster.turnOffBrain()
+            return
+        if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+            self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = call_later(1, self.handleThink, monster)
 

@@ -33,7 +33,7 @@ saveGlobalStorage = False
 jsonFields = 'storage',
 pickleFields = 'objectStorage',
 groups = {}
-globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "fastPickler"]
+globalize = ["magicEffect", "summonCreature", "relocate", "transformItem", "placeItem", "calculateWalkPattern", "getCreatures", "getPlayers", "getSpectators", "placeInDepot", "townNameToId", "townIdToName", "getTibiaTime", "getLightLevel", "getPlayerIDByName", "positionInDirection", "updateTile", "saveAll", "teleportItem", "getPlayer", "townPosition", "broadcast", "loadPlayer", "loadPlayerById", "getHouseByPos", "moveItem", "mail", "hasSpectators", "hasZLevelSpectators", "fastPickler"]
 
 # Just a inner funny call
 def looper(function, time):
@@ -179,6 +179,13 @@ def hasSpectators(pos, radius=(8,6), ignore=()):
     """ Returns True if anyone can see the position, otherwise False. """
     for player in game.player.allPlayersObject:
         if player.canSee(pos, radius) and player not in ignore: return True
+
+    return False
+
+def hasZLevelSpectators(pos, radius=(8,6), ignore=()):
+    """ Returns True if anyone can see the position, otherwise False. """
+    for player in game.player.allPlayersObject:
+        if pos.z == player.position.z and player.canSee(pos, radius) and player not in ignore: return True
 
     return False
 

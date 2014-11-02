@@ -25,14 +25,6 @@ sys.modules['tornado.concurrent'] = game.hack_concurrent
 #### Import the tornado ####
 from tornado.tcpserver import *
 from tornado.ioloop import IOLoop
-import tornado.gen
-import time
-
-try:
-    import asyncio
-    IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
-except:
-    pass # Asyncio not found. Ow well, not a crysis.
     
 from service.loginserver import LoginFactory
 loginServer= LoginFactory()

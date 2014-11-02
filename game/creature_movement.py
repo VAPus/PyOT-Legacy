@@ -189,8 +189,8 @@ class CreatureMovement(object):
         if(pattern):
             self.walkPattern = pattern
         if delay:
-            if(self.action):
-                self.action.cancel()
+            if self.action:
+                remove_timeout(self.action)
             self.action = call_later(delay, self.handleAutoWalking, 0, callback)
         else:
             self.handleAutoWalking(0, callback)
