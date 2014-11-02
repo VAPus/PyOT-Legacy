@@ -16,7 +16,7 @@ for item in parse:
 
     id = item.get('id')
     
-    if isinstance(id, basestring) and '-' in id:
+    if isinstance(id, str) and '-' in id:
         start, end = map(int, id.split('-'))
         ids = set(range(start, end+1))
     else:
@@ -135,12 +135,6 @@ def iReplacer(old, new):
             old.append(i)
     return old
 
-# Python 3
-try:
-    xrange()
-except:
-    xrange = range
-    
 class Map(object):
     def __init__(self, xA, yA, ground=100, zs=16):
         self.levels = zs
@@ -153,9 +147,9 @@ class Map(object):
         self.flags = {}
         
         self.area = {}
-        """for x in xrange(0, xA+1):
+        """for x in range(0, xA+1):
             self.area[7].append([])
-            for y in xrange(0, yA+1):
+            for y in range(0, yA+1):
                 self.area[7][x].append([])
                 if ground == None:
                     self.area[7][x][y] = None
@@ -247,13 +241,13 @@ class Map(object):
         trippelNull = chr(0) * 3
         HiFormat = struct.Struct("<Hi")
         
-        for xA in xrange(areaXSize, toX):
-            for yA in xrange(areaYSize, toY):
+        for xA in range(areaXSize, toX):
+            for yA in range(areaYSize, toY):
                 
                 sector = {}
                 extras = []
                 
-                for xS in xrange(0, areas[0]):
+                for xS in range(0, areas[0]):
                     xPos = (xA*areas[0])+xS
 
                     if xPos > self.size[0]:
@@ -263,7 +257,7 @@ class Map(object):
                     if not areaX:
                         continue
                     
-                    for yS in xrange(0, areas[1]):
+                    for yS in range(0, areas[1]):
                         yPos = (yA*areas[1])+yS
 
                         if yPos > self.size[1]:
@@ -316,7 +310,7 @@ class Map(object):
                     output = []
                     nullRows = 0
                     
-                    for row in xrange(areas[1]):
+                    for row in range(areas[1]):
                         pos = (x+(xA*areas[0]),row+(yA*areas[1]),z)
                         y = xCom[row] if row in xCom else None
                         if y:
@@ -371,7 +365,7 @@ class Map(object):
                 # Level 2, X compare
                 def xComp(zCom, z):
                     output = []
-                    for row in xrange(areas[0]):
+                    for row in range(areas[0]):
                         t = yComp(zCom[row] if row in zCom else {}, z, row)
                         if t:
                             output.append(t)
@@ -471,9 +465,9 @@ class Area(object):
     def __init__(self, xA, yA, ground=100, level=7):
         self.level = level
         self.area = []
-        for x in xrange(0, xA+1):
+        for x in range(0, xA+1):
             self.area.append([])
-            for y in xrange(0, yA+1):
+            for y in range(0, yA+1):
                 if isinstance(ground, int):
                     self.area[x].append({level: [Item(ground)]})
                 else:

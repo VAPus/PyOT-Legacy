@@ -8,12 +8,6 @@ from generator import Map, Item, Tile, Spawn
 import time
 import io
 
-# Python 3
-try:
-    xrange()
-except:
-    xrange = range
-
 # Config
 # MUST BE A POWER OF TWO!!!
 SECTOR_SIZE = (32, 32)
