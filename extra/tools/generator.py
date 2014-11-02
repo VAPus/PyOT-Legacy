@@ -16,7 +16,7 @@ for item in parse:
 
     id = item.get('id')
     
-    if isinstance(id, str) and '-' in id:
+    if type(id) != int and '-' in id:
         start, end = map(int, id.split('-'))
         ids = set(range(start, end+1))
     else:
@@ -384,7 +384,7 @@ class Map(object):
                             
                         # BROKEN?
                         # A second awalk to optimize (\x00\x00\x00|\x00\x00\x00| -> \x00\x00\0x02|)
-                        _output = []
+                        """_output = []
                         count = 0
                         for code in output:
                             if code[0:2] == "\x00\x00" and code[3] == '|': count += 1
@@ -399,7 +399,7 @@ class Map(object):
                             _output.append("\x00\x00\x00|")
                         elif count > 1:
                             _output.append("\x00\x00" + chr(count) + '|')
-                        output = _output
+                        output = _output"""
                         if not output:
                             return None
                             

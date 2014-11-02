@@ -1,5 +1,5 @@
 class Position(object):
-    __slots__ = ('x', 'y', 'z', 'instanceId')
+    __slots__ = ('x', 'y', 'z', 'instanceId', 'hash')
     def __init__(self, x, y, z=7, instanceId=0):
         self.x = x
         self.y = y
@@ -14,8 +14,7 @@ class Position(object):
 
     def __hash__(self):
         """ Python3 requirement, override hash. """
-        # Just make it non hashable.
-        return None
+        return self.hash
 
     def copy(self):
         """ Return a copy of this position. """
@@ -24,6 +23,14 @@ class Position(object):
     def inRange(self, other, x, y, z=0):
         """ Is this position in x,y,z range from the other position? Returns True/False. """
         return ( self.instanceId == other.instanceId and abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y )
+
+    def __setattr__(self, key, value):
+        super(Position, self).__setattr__(key, value)
+        if key != "hash":
+            try:
+                self.rehash()
+            except:
+                pass
 
     # Support for the old behavior of list attributes.
     def __setitem__(self, key, value):
@@ -90,7 +97,10 @@ class Position(object):
 
     def exists(self):
         """ Check if this position exists (holds a tile) """
-        return (self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z) in game.map.knownMap
+        return self.hash in game.map.knownMap
+
+    def rehash(self):
+        self.hash = self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z
 
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):

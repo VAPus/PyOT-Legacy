@@ -56,7 +56,7 @@ newInstanceId = __uid().__next__
 def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
     # XXX: Store this sum in the Position itself, and kill the x,y,z sets. They are rarely accessed. Would give a slight speedup and memory improvement.
-    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
+    posSum = pos.hash
     try:
         return knownMap[posSum]
     except:
@@ -65,7 +65,7 @@ def getTile(pos, knownMap=knownMap):
 
 def getTileIfExist(pos, _knownMap=knownMap):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
-    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
+    posSum = pos.hash
     try:
         return _knownMap[posSum]
     except:
@@ -76,7 +76,7 @@ def setTile(pos, tile, knownMap = knownMap):
     x = pos.x
     y = pos.y
 
-    posSum = pos.instanceId << 40 | pos.x << 24 | pos.y << 8 | pos.z
+    posSum = pos.hash
 
     try:
         knownMap[posSum] = tile
