@@ -673,7 +673,10 @@ class BaseProtocol(object):
             else:
                 continue # We don't support them
 
-        player.autoWalk(walkPattern)
+        def fail(res):
+            if not res:
+                player.clearMove(direction)
+        player.autoWalk(walkPattern, fail)
 
     @packet(0x65)
     def handleWalkNorth(self, player, packet):
@@ -734,7 +737,8 @@ class BaseProtocol(object):
             player.targetMode = 0
 
         player.lastClientMove = direction
-        player.autoWalk(deque((direction,)))
+        if not player.move(direction, stopIfLock=True):
+            player.clearMove(direction)
 
     @packet(0x78)
     def handleMoveItem(self, player, packet):

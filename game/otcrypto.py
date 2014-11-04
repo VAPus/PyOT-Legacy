@@ -1,33 +1,35 @@
 import config
 from struct import pack, unpack
 import codecs
+import sys
 
 ffi = None
-try:
-    # Attempt to use CFFI for decrypt/encrypt XTEA.
-    import cffi
-    ffi = cffi.FFI()
-    ffi.cdef("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);
-    uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);""")
-    lib = ffi.verify("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
-    unsigned int i;
-    for (i=0; i < 32; i++) {
-        v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[63 - i];
-        v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[31 - i];
-    }
-    return (uint64_t)(v1) << 32 | v0;
-    }
-    uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
-    unsigned int i;
-    for (i=0; i < 32; i++) {
-        v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[i];
-        v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[32 + i];
-    }
-    return (uint64_t)(v1) << 32 | v0;
-}
-    """, extra_compile_args=["-Ofast", "-march=native"])
-except:
-    print("No CFFI")
+if sys.implementation.name != "pypy":
+    try:
+        # Attempt to use CFFI for decrypt/encrypt XTEA.
+        import cffi
+        ffi = cffi.FFI()
+        ffi.cdef("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);
+        uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);""")
+        lib = ffi.verify("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
+        unsigned int i;
+        for (i=0; i < 32; i++) {
+            v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[63 - i];
+            v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[31 - i];
+        }
+        return (uint64_t)(v1) << 32 | v0;
+        }
+        uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
+        unsigned int i;
+        for (i=0; i < 32; i++) {
+            v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[i];
+            v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[32 + i];
+        }
+        return (uint64_t)(v1) << 32 | v0;
+        }
+        """, extra_compile_args=["-Ofast", "-march=native"])
+    except:
+        print("No CFFI")
 
 if ffi and not lib:
     ffi = None

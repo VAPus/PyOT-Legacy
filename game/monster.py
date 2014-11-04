@@ -794,7 +794,7 @@ class MonsterBrain(object):
                 ret = brainFeatures[monster.base.brainFeatures](monster)
             except:
                 ret = False
-                handle_script_exception()
+                scriptsystem.handle_script_exception()
 
             if ret == False:
                 monster.turnOffBrain()

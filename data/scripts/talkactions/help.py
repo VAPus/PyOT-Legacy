@@ -325,17 +325,28 @@ def walkRandomStep(creature, callback):
     random.shuffle(steps)
     
     def intcallback():
+        creature.raiseMessages = True
         try:
             res = creature.move(steps.pop())
+        except MsgNotPossible:
+            res = False
         except:
-            # No where to go.
-            creature.teleport(Position(1000, 1000, 7), True)
+            creature.raiseMessages = False
+            call_later(1, callback)
+            return
+        creature.raiseMessages = False
+        if res == -1:
+            raise Exception("Shouldn't happen")
         if res == False:
             intcallback()
         else:
             callback()
     
-    res = creature.move(steps.pop())
+    creature.raiseMessages = True
+    try:
+        res = creature.move(steps.pop())
+    except MsgNotPossible:
+        res = False
     if res == False:
         intcallback()
     else:

@@ -2,6 +2,10 @@ import sys, signal
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
+# Check for good enough Python version. Use builtin path.
+if sys.implementation.name == "pypy" and sys.implementation.version.minor == 3:
+    sys.path.insert(2, "/usr/local/lib/python3.4/dist-packages")
+
 try:
     import config
 except ImportError:

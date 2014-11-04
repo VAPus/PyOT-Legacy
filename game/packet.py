@@ -2,14 +2,6 @@ from struct import unpack, pack
 from otcrypto import encryptXTEA
 from zlib import adler32
 
-"""
-from twisted.internet import reactor
-def inThread(f):
-    def func(*argc, **argw):
-        reactor.callInThread(f, *argc, **argw)
-    return func
-"""
-
 class TibiaPacketReader(object):
     __slots__ = ('pos', 'data')
     def __init__(self, data):
@@ -149,14 +141,6 @@ class TibiaPacket(object):
         self.raw(string)
 
     def send(self, stream, pack=pack, adler32=adler32, encryptXTEA=encryptXTEA):
-        if not stream or not self.length:
-            # Failour, invalid packet, aka bad programming. Or connection out.
-            raise Exception("Explicit null?")
-            return
-
-        if not self.length:
-            raise Exception("Bad packet!");
-            
         length = self.length
         self.data[0] = pack("<H", length)
         length += 2

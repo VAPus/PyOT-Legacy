@@ -22,7 +22,7 @@ for itemId in game.item.items:
 def floorchange(creature, thing, position, **k):
     # Check if we can do this
     if not config.monsterStairHops and not creature.isPlayer():
-        return
+        return False
 
     # Note this is the correct direction
     if thing.floorchange == "north":
@@ -61,6 +61,8 @@ def floorchange(creature, thing, position, **k):
         elif destThing.floorchange == "east":
             creature.move(WEST, level=1)
 
+    return False
+    
 @register('dropOnto', stairs)
 def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
     if not position: return # Place event.

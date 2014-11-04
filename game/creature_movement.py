@@ -176,7 +176,7 @@ class CreatureMovement(object):
         """ This function verify if the tile is walkable in a regular state (pathfinder etc) """
         return True
 
-    def clearMove(self, direction, failback):
+    def clearMove(self, direction, failback=None):
         self.cancelWalk(direction % 4)
         self.walkPattern = None
         if failback: call_later(0, failback)
@@ -233,25 +233,31 @@ class CreatureMovement(object):
 
         res = self.move(direction, level=level, stopIfLock=True)
         
-        if self.walkPattern:
+        if res and self.walkPattern:
             self.autoWalk()
         elif callback:
-            callback()
+            callback(res)
 
     def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):
         if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, failback, push):
-            return
+            return -1
 
         if not self.data["health"] or not self.canMove or not self.speed:
             return False
 
+        # Stairhop delay.
+        _time = time.time()
+        isPlayer = self.isPlayer()
+        if isPlayer and _time - self.lastStairHop < config.stairHopDelay:
+            return False
+            
         oldPosition = self.position.copy()
 
         # Drunk?
         if self.hasCondition(CONDITION_DRUNK):
             directions = [0,1,2,3,4,5,6,7,direction] # Double the odds of getting the correct direction.
             directions.remove(self.reverseDirection()) # From a reality perspective, you are rarely that drunk.
-            direction = random.choice([0,1,2,3,4,5,6,7,direction])
+            direction = random.choice(directions)
 
         # Recalculate position
         position = oldPosition.copy()
@@ -280,14 +286,13 @@ class CreatureMovement(object):
             
         # We don't walk out of the map!
         if position.x < 1 or position.y < 1 or position.x > game.map.mapInfo.width or position.y > game.map.mapInfo.height:
-            self.cancelWalk()
-            return
+            return False
 
         # New Tile
         newTile = getTile(position)
         
         if not newTile:
-            return self.clearMove(direction, failback)
+            return False
         
         # oldTile
         oldTile = getTile(oldPosition)
@@ -297,11 +302,11 @@ class CreatureMovement(object):
 
         val = game.scriptsystem.get("move").run(creature=self)
         if val == False:
-            return self.clearMove(direction, failback)
+            return False
         try:
             oldStackpos = oldTile.findStackpos(self)
         except:
-            return self.clearMove(direction, failback)
+            return False
 
         # Deal with walkOff
         for item in oldTile.getItems():
@@ -311,20 +316,20 @@ class CreatureMovement(object):
         for item in newTile.getItems():
             r = game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
-                return self.clearMove(direction, failback)
+                return False
         # PZ blocked?
         if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
-            return self.clearMove(direction, failback)
+            return False
 
         if newTile.ground.solid:
             self.notPossible()
-            return self.clearMove(direction, failback)
+            return False
 
         if newTile.things:
             for thing in newTile.things:
-                if not self.isPlayer() and isinstance(thing, Item) and thing.teleport:
-                    return self.clearMove(direction, failback)
+                if not isPlayer and isinstance(thing, Item) and thing.teleport:
+                    return False
                     
                 if thing.solid:
                     if level and isinstance(thing, Creature):
@@ -351,7 +356,7 @@ class CreatureMovement(object):
 
                     #self.turn(direction) # Fix me?
                     self.notPossible()
-                    return self.clearMove(direction, failback)
+                    return False
 
         _time = time.time()
         self.lastStep = _time
@@ -375,7 +380,7 @@ class CreatureMovement(object):
 
 
         # Send to Player
-        if self.isPlayer():
+        if isPlayer:
             # Mark for save
             self.saveData = True
 
@@ -423,7 +428,7 @@ class CreatureMovement(object):
                 if not level:
                     self.cancelTarget(stream)
                     self.target = None
-                if self.isPlayer() and self.mounted:
+                if isPlayer and self.mounted:
                     call_later(0, self.changeMountStatus, False) # This should be sent after the move is completed, I believe.
 
             elif not pzStatus and pzIcon:
@@ -511,10 +516,10 @@ class CreatureMovement(object):
             appear_event.run(creature=self, creature2=creature2)
 
         # Stairhop delay
-        if level and self.isPlayer():
+        if level and isPlayer:
             self.lastStairHop = _time
 
-        if self.isPlayer() and self.target and not self.canSee(self.target.position):
+        if isPlayer and self.target and not self.canSee(self.target.position):
             self.cancelTarget()
 
         return True

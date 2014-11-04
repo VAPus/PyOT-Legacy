@@ -917,7 +917,7 @@ def getHouseByPos(pos):
 # Speed pickler
 def fastPickler(obj):
     """ Just a allias for pickle.dumps with protocol highest protocol """
-    return pickle.dumps(obj, pickle.HIGHEST_PROTOCOL)
+    return pickle.dumps(obj, 3)
 
 @gen.coroutine
 def executeCode(code):
