@@ -602,7 +602,7 @@ class BaseProtocol(object):
     def handleLogout(self, player, packet):
         try:
             if player.prepareLogout():
-                player.client.transport.loseConnection()
+                player.client.loseConnection()
         except:
             pass # Sometimes the connection is already dead
 
@@ -1606,3 +1606,33 @@ class BaseProtocol(object):
         opcode = packet.uint8()
         buffer = packet.string()
         game.scriptsystem.get("extendedProtocol").run(opcode, player = player, opcode = opcode, buffer = buffer)        
+        
+    @packet(0xE0)
+    def handleWGRequestAssert(self, player, packet):
+        # XXX: Check the data to see if it's stealing...
+        type = packet.uint8()
+        id = packet.uint16()
+
+        with player.packet() as stream: 
+            stream.uint8(1)
+            stream.uint8(type)
+            stream.uint16(id)
+            if type == 0:
+                thing = game.item.sprites["item"][id]
+            elif type == 1:
+                thing =  game.item.sprites["outfit"][id]
+
+            # Width, height, phases. Itemtype, subtype, movetype, animate.
+            stream.uint8(thing[1][0])
+            stream.uint8(thing[1][1])
+            stream.uint8(thing[1][6])
+            stream.uint8(thing[1][7])
+            stream.uint8(thing[1][8])
+            stream.uint8(thing[1][9])
+            if type == 0:
+                serverId = game.item.sid(id)
+                stream.uint8(1 if serverId in game.item.items and game.item.items[serverId].get('flags', 0) & (1 << 24) else 0)
+            else:
+                stream.uint8(thing[1][12])
+
+            stream.string(thing[0])

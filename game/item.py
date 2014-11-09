@@ -8,14 +8,10 @@ import marshal
 import gc
 import xml.etree.cElementTree as ET
 from . import otjson as json
-
-try:
-    import io # Python 2.7+
-    _open = io.open
-except:
-    _open = open # Less than 2.7
+import pickle
 
 items = None
+sprites = {}
 
 ### Item ###
 class Item(object):
@@ -902,7 +898,7 @@ def idByName(name):
 
 def sid(cid):
     " Return the sid based on `cid` "
-    return cidToSid.get(sid, sid)
+    return cidToSid.get(sid, cid)
 
 def cid(sid):
     " Return the cid based on `sid` "
@@ -924,77 +920,27 @@ def loadItems():
     global items
     global idByNameCache
     global cidToSid
+    global sprites
 
     print("> > Loading items...")
 
     if config.itemCache:
         try:
-            with _open("%s/cache/items.cache" % config.dataDirectory, "rb") as f:
+            with open("%s/cache/items.cache" % config.dataDirectory, "rb") as f:
                 items, idByNameCache, cidToSid = marshal.loads(f.read())
             print("%d Items loaded (from cache)" % len(items))
             return
         except IOError:
             pass
-
+          
+    if config.webClient:
+        print("> > And sprites...")
+        with open(config.spriteFile, 'rb') as file:
+            sprites = pickle.loads(file.read())
     # Make three new values while we are loading
     loadItems = {}
     idNameCache = {}
     _cidToSid = {}
-
-    """tree = ET.parse("%s/items.xml" % config.dataDirectory)
-    flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
-    for item in tree.getroot():
-        _item = item.attrib
-
-        # Stupid elementtree thinks everything are strings....
-        # Would have used lxml, but what the heck, I can't benchmark the difference.
-        if "flags" in _item:
-            flags = _item["flags"]
-            try:
-                _item["flags"] = flagTree[flags]
-            except KeyError:
-                _item["flags"] = int(flags)
-        if "speed" in _item:
-            _item["speed"] = int(_item["speed"])
-        if "type" in _item:
-            _item["type"] = int(_item["type"])
-
-        if len(item):
-            for attr in item:
-                key = attr.tag
-                val = attr.get("value")
-                if key == "fluidSource":
-                    val = getattr(game.const, 'FLUID_%s' % val.upper())
-                elif key == "weaponType" and val not in ("ammunition", "wand"):
-                    _item["weaponSkillType"] = getattr(game.const, 'SKILL_%s' % val.upper())
-                elif key == 'shootType':
-                    val = getattr(game.const, 'ANIMATION_%s' % val.upper())
-                else:
-                    try:
-                        val = int(val)
-                    except:
-                        pass
-
-                _item[key] = val
-                attr.clear()
-
-
-        id = _item["id"]
-        if "-" in id:
-            start, end = map(int, id.split('-'))
-            for id in xrange(start, end+1):
-                loadItems[id] = _item
-        else:
-            id = int(id)
-            loadItems[id] = _item
-            try:
-                # XXX: Ranged items are usually ground stuff witch we never reference by name.
-                idNameCache[_item["name"].upper()] = id
-            except:
-                pass
-        del _item["id"]
-        item.clear()
-    """
 
     # JSON format.
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
@@ -1055,7 +1001,7 @@ def loadItems():
                 pass
 
     # Perform loading.
-    with _open(config.itemFile, 'r') as f:
+    with open(config.itemFile, 'r') as f:
         json.load(f, object_hook=_decoder)
 
     print("\n> > Items (%s) loaded..." % len(loadItems), end=' ')
@@ -1068,5 +1014,5 @@ def loadItems():
 
     # Cache
     if config.itemCache:
-        with _open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
+        with open("%s/cache/items.cache" % config.dataDirectory, "wb") as f:
             f.write(marshal.dumps((items, idByNameCache, cidToSid), 2))

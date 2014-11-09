@@ -66,10 +66,11 @@ class Packet(base.BasePacket):
             self.uint16(cid)
 
             #Client Charges enters here too(?)
-            if item.stackable:
-                self.uint8(item.count or 1)
-            elif item.type in (11, 12):
-                self.uint8(item.fluidSource or 0)
+            if not config.webClient:
+                if item.stackable:
+                    self.uint8(item.count or 1)
+                elif item.type in (11, 12):
+                    self.uint8(item.fluidSource or 0)
             
     def tileDescription(self, tile, player):
         count = 0

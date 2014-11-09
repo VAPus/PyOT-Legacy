@@ -348,7 +348,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
             stream.magicEffect(self.position, 0x03)
 
-        self.sendVipList()
+        #self.sendVipList()
 
         # Stamina loose
         if self.data["stamina"]:

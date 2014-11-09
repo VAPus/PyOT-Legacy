@@ -248,7 +248,7 @@ class CreatureMovement(object):
         # Stairhop delay.
         _time = time.time()
         isPlayer = self.isPlayer()
-        if isPlayer and _time - self.lastStairHop < config.stairHopDelay:
+        if isPlayer and _time - self.lastStairHop < config.stairHopDelay and level:
             return False
             
         oldPosition = self.position.copy()

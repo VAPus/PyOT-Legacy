@@ -11,6 +11,9 @@ webPort = 8080
 enableExtensionProtocol = True # Only works if loginserver and gameserver run on the same IP.
 enableWebProtocol = False
 
+webClient = False
+webClientPath = r"/wc"
+
 # Server ips, for the loginserver
 servers = {0 : ('localhost', "PyOT dev server")} # WORLD_ID -> (ip, name). If ip is 'auto', we'll automatically find the IP to the LOGINSERVER machine. This require internet access!
 
@@ -272,6 +275,7 @@ banTimeFormat = "%Y-%m-%d %H:%M:%S" # Expire messages.
 # Data directories.
 dataDirectory = "data" # Should point to a folder at the top level. Cannot be a subfolder!
 itemFile = "data/items.json" # Should point to a file under the top directory.
+spriteFile = "data/sprites"
 mapDirectory = "map" # Should point to a folder under the data directory. Cannot be a subfolder!
 
 # (WINDOWS ONLY)

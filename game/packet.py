@@ -77,7 +77,7 @@ class TibiaPacketReader(object):
 class TibiaPacket(object):
     __slots__ = ('data', 'raw', 'length')
     def __init__(self, header=None):
-        self.data = [""]
+        self.data = [b""]
         self.raw = self.data.append
         self.length = 0
         if header:
@@ -85,7 +85,7 @@ class TibiaPacket(object):
 
     def clear(self):
         self.data.clear()
-        self.data.append("")
+        self.data.append(b"")
         self.length = 0
 
     # 8bit - 1byte, C type: char
@@ -141,18 +141,20 @@ class TibiaPacket(object):
         self.raw(string)
 
     def send(self, stream, pack=pack, adler32=adler32, encryptXTEA=encryptXTEA):
-        length = self.length
-        self.data[0] = pack("<H", length)
-        length += 2
-
-        if stream.xtea:
-            data = encryptXTEA(self.data, stream.xtea, length)
+        if stream.webSocket == True:
+            stream.write_message(b''.join(self.data), True)
         else:
-            data = b''.join(self.data)
+            length = self.length
+            self.data[0] = pack("<H", length)
+            length += 2
 
-        stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
+            if stream.xtea:
+                data = encryptXTEA(self.data, stream.xtea, length)
+            else:
+                data = b''.join(self.data)
 
-    #@inThread
+            stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
+    
     def sendto(self, list):
         if not list or not self.length:
             return # Noone to send to
