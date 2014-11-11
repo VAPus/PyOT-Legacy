@@ -3,15 +3,15 @@ from tornado import gen
 
 class CreatureAttacks(object):
     def hitEffects(self):
-        if self.isPlayer() or self.base.blood == FLUID_BLOOD:
+        if self.isPlayer() or self.base._blood == FLUID_BLOOD:
             return COLOR_RED, EFFECT_DRAWBLOOD
-        elif self.base.blood == FLUID_SLIME:
+        elif self.base._blood == FLUID_SLIME:
             return COLOR_LIGHTGREEN, EFFECT_HITBYPOISON
-        elif self.base.blood == FLUID_ENERGY:
+        elif self.base._blood == FLUID_ENERGY:
             return COLOR_PURPLE, EFFECT_PURPLEENERGY
-        elif self.base.blood == FLUID_UNDEAD:
+        elif self.base._blood == FLUID_UNDEAD:
             return COLOR_GREY, EFFECT_HITAREA
-        elif self.base.blood == FLUID_FIRE:
+        elif self.base._blood == FLUID_FIRE:
             return COLOR_ORANGE, EFFECT_DRAWBLOOD
 
     def damageToBlock(self, dmg, type):
@@ -92,7 +92,7 @@ class CreatureAttacks(object):
             if self.isPlayer():
                 splash.fluidSource = FLUID_BLOOD
             else:
-                splash.fluidSource = self.base.blood
+                splash.fluidSource = self.base._blood
             if splash.fluidSource in (FLUID_BLOOD, FLUID_SLIME):
                 splash.place(self.position)
 
@@ -449,7 +449,7 @@ class PlayerAttacks(CreatureAttacks):
             self.attackTarget()
             
     def isAttackable(self, creature):
-        if creature.isMonster() and not creature.base.invisible and self.hasCondition(CONDITION_INVISIBLE):
+        if creature.isMonster() and not creature.base._invisible and self.hasCondition(CONDITION_INVISIBLE):
             return False
         return True
 
