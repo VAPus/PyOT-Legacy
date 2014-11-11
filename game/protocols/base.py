@@ -148,11 +148,11 @@ class BasePacket(TibiaPacket):
         top = tile.getTopItemCount()
         if top:
             for item in tile.things[:top]:  
-            self.item(item)
-            
-            count += 1
-            if count == 10:
-                return
+                self.item(item)
+                
+                count += 1
+                if count == 10:
+                    return
 
         creatures = tile.getCreatureCount()
         if creatures:

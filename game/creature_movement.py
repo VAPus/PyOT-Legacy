@@ -294,6 +294,10 @@ class CreatureMovement(object):
         if not newTile:
             return False
         
+        if newTile.ground.solid:
+            self.notPossible()
+            return False
+            
         # oldTile
         oldTile = getTile(oldPosition)
         if not oldTile:
@@ -317,13 +321,10 @@ class CreatureMovement(object):
             r = game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
                 return False
+                
         # PZ blocked?
         if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             self.lmessage("You are PZ blocked")
-            return False
-
-        if newTile.ground.solid:
-            self.notPossible()
             return False
 
         if newTile.things:
@@ -358,19 +359,12 @@ class CreatureMovement(object):
                     self.notPossible()
                     return False
 
-        _time = time.time()
         self.lastStep = _time
         delay = self.stepDuration(newTile.ground) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction = _time + delay
 
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
-
-        # Weird #112 issue. Hack fix.
-        if self in oldTile.things:
-            while True:
-                if self not in oldTile.things: break
-                oldTile.removeCreature(self)
 
         # Clear target if we change level
         if level:
@@ -455,11 +449,9 @@ class CreatureMovement(object):
                 continue
 
             canSeeNew = spectator in newPosCreatures
-            if canSeeNew:
-                assert spectator.canSee(position)
+
             canSeeOld = spectator in oldPosCreatures
-            if canSeeOld:
-                assert spectator.canSee(oldPosition)
+
             stream = spectator.packet()
 
             if not canSeeOld and canSeeNew:
