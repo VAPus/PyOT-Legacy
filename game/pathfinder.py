@@ -127,10 +127,10 @@ class AStar(object):
         self.result = _result
     
     def getNode(self, x, y):
-        point = x + (y << 16)
-        try:
+        point = x | (y << 16)
+        if point in self.nodes:
             return self.nodes[point]
-        except KeyError:
+        else:
             node = Node(x,y)
             self.nodes[point] = node
             return node
@@ -168,7 +168,7 @@ class AStar(object):
         # Inlined test for all the steps we might take.
         
         n = _getNode(x, y - 1)
-        if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + 10) < cost):
+        if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + 10) < cost):
             n.parent = node
             n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -179,7 +179,7 @@ class AStar(object):
             diagonalNorth = True
 
         n = _getNode(x - 1, y)
-        if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + 10) < cost):
+        if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + 10) < cost):
             n.parent = node
             n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -190,7 +190,7 @@ class AStar(object):
             diagonalWest = True
 
         n = _getNode(x + 1, y)
-        if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + 10) < cost):
+        if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + 10) < cost):
             n.parent = node
             n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -201,7 +201,7 @@ class AStar(object):
             diagonalEast = True
 
         n = _getNode(x, y + 1)
-        if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + 10) < cost):
+        if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + 10) < cost):
             n.parent = node
             n.cost = cost + 10
             #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -214,7 +214,7 @@ class AStar(object):
         if config.findDiagonalPaths:
             if diagonalNorth and diagonalWest:
                 n = _getNode(x - 1, y - 1)
-                if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                     n.parent = node
                     n.cost = cost + (10 * config.diagonalWalkCost)
                     #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -223,7 +223,7 @@ class AStar(object):
 
             if diagonalSouth and diagonalWest:
                 n = _getNode(x - 1, y + 1)
-                if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                     n.parent = node
                     n.cost = cost + (10 * config.diagonalWalkCost)
                     #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -231,7 +231,7 @@ class AStar(object):
                     _openNodes.add(n)   
             if diagonalNorth and diagonalEast:
                 n = _getNode(x + 1, y - 1)
-                if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                     n.parent = node
                     n.cost = cost + (10 * config.diagonalWalkCost)
                     #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)
@@ -239,7 +239,7 @@ class AStar(object):
                     _openNodes.add(n)  
             if diagonalSouth and diagonalEast:    
                 n = _getNode(x + 1, y + 1)
-                if n not in _closedNodes and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)) and (n not in _openNodes): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
+                if n not in _closedNodes and (n not in _openNodes) and ((ignoreFinal and n == self.final) or n.verify(self.z, self.instanceId, self.checkCreature)): # or (n.cost + (15 * config.diagonalWalkCost)) < cost):
                     n.parent = node
                     n.cost = cost + (10 * config.diagonalWalkCost)
                     #n.distance = abs(n.x - _final.x) + abs(n.y - _final.y)

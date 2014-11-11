@@ -65,7 +65,7 @@ if config.sqlModule == "mysql":
                     conn = None
 
                 if not conn:
-                    yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+                    yield gen.Task(ioloop.IOLoop.instance().add_timeout, time.time() + 0.05)
 
             future = conn.execute(*argc)
             try:
@@ -93,7 +93,7 @@ if config.sqlModule == "mysql":
                     conn = None
 
                 if not conn:
-                    yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+                    yield gen.Task(ioloop.IOLoop.instance().add_timeout, time.time() + 0.05)
 
             future = conn.query(*argc)
             try:
@@ -126,7 +126,7 @@ if config.sqlModule == "mysql":
                     conn = None
 
                 if not conn:
-                    yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+                    yield gen.Task(ioloop.IOLoop.instance().add_timeout, time.time() + 0.05)
 
             future = conn.query(*argc)
 
@@ -149,7 +149,7 @@ if config.sqlModule == "mysql":
                     conn = None
 
                 if not conn:
-                    yield gen.Task(IOLoop.instance().add_timeout, time.time() + 0.05)
+                    yield gen.Task(ioloop.IOLoop.instance().add_timeout, time.time() + 0.05)
 
             future = conn.execute_lastrowid(*argc)
 

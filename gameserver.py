@@ -1,4 +1,5 @@
 import sys, signal
+import time
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
@@ -26,10 +27,8 @@ import game.hack_concurrent
 #del sys.modules['tornado.concurrent']
 sys.modules['tornado.concurrent'] = game.hack_concurrent
 
-
 #### Import the tornado ####
 from tornado.tcpserver import *
-from tornado.ioloop import IOLoop
 import tornado.gen
 from service.gameserver import GameFactory
 import time
@@ -67,10 +66,10 @@ if config.enableWebProtocol:
 
 
 # Load the core stuff!
-IOLoop.instance().add_callback(game.loading.loader, startTime)
+tornado.ioloop.IOLoop.instance().add_callback(game.loading.loader, startTime)
 
 # Start reactor. This will call the above.
 signal.signal(signal.SIGINT, game.scriptsystem.shutdown)
 signal.signal(signal.SIGTERM, game.scriptsystem.shutdown)
-IOLoop.instance().start()
+tornado.ioloop.IOLoop.instance().start()
 

@@ -100,7 +100,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
 
 
                 # If cffi, cast this.
-                if otcrypto.ffi and False:
+                if otcrypto.ffi:
                     self.xtea = otcrypto.ffi.new("const uint32_t[]", self.xtea)
 
             ip = self.address

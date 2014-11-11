@@ -50,7 +50,7 @@ class Client:
         self.ready = True
         self.protocol = game.protocol.getProtocol(TEST_PROTOCOL)
         self.version = TEST_PROTOCOL
-        
+        self.webSocket = False        
     def sendPacket(self, format, *argc, **kwargs):
         import packet as p
         import otcrypto
@@ -273,6 +273,10 @@ class FrameworkTestGame(unittest.TestCase):
             self.client
         except:
             self.initializeClient()
+        else:
+            if self.client == None:
+                self.initializeClient()
+
         player = game.player.Player(self.client, data)
         game.player.allPlayers[name] = player
 
@@ -299,6 +303,7 @@ class FrameworkTestGame(unittest.TestCase):
             self.player = player
             self.client.packet = self.player.packet
             self.player._packet = self.client.protocol.Packet()
+            self.player._packet.stream = self.client
             self.client.player = player
             
         # Track it.

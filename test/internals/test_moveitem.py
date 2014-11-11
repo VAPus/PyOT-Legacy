@@ -227,9 +227,16 @@ class TestMoveItem(FrameworkTestGame):
         wolf1.modifyHealth(-1000)
         wolf2.modifyHealth(-1000)
 
+        # Make sure they are dead.
+        self.assertFalse(wolf1.alive)
+        self.assertFalse(wolf2.alive)
+
         # Get the corpses.
         corpse1 = position1.getTile().findItem(wolf.data["corpse"])
         corpse2 = position2.getTile().findItem(wolf.data["corpse"])
+
+        self.assertTrue(corpse1)
+        self.assertTrue(corpse2)
 
         # Open corpses.
         self.player.use(corpse1)

@@ -106,6 +106,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         except:
             self._packet = game.protocol.getProtocol(game.protocol.protocolsAvailable[-1]).Packet()
 
+        assert self.client is not None
         self._packet.stream = self.client
 
         # Extra icons
@@ -215,6 +216,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         return config.playerIsPushable
 
     def actionIds(self):
+        """ Creature and player action identifier for players, static """
         return ('creature', 'player') # Static actionID
 
     def __repr__(self):

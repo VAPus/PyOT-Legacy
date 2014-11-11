@@ -10,6 +10,7 @@ import sys
 import itertools
 import gc
 import importlib
+from itertools import islice
 
 try:
     mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
@@ -57,53 +58,41 @@ def getTile(pos, knownMap=knownMap):
     """ Returns the Tile on this position. """
     # XXX: Store this sum in the Position itself, and kill the x,y,z sets. They are rarely accessed. Would give a slight speedup and memory improvement.
     posSum = pos.hash
-    try:
+    
+    if posSum in knownMap:
         return knownMap[posSum]
-    except:
-        if loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
-            return knownMap.get(posSum)
+    elif loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
+        return knownMap[posSum] if posSum in knownMap else None
 
 def getTileIfExist(pos, _knownMap=knownMap):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
     posSum = pos.hash
-    try:
+    if posSum in knownMap:
         return _knownMap[posSum]
-    except:
+    else:
         return None
 
 def setTile(pos, tile, knownMap = knownMap):
     """ Set the tile on this position. """
-    x = pos.x
-    y = pos.y
-
     posSum = pos.hash
 
-    try:
-        knownMap[posSum] = tile
-        return True
-    except:
-        if loadTiles(x, y, pos.instanceId, (pos.instanceId, x >> sectorShiftX, y >> sectorShiftY)):
-            knownMap[posSum] = tile
-            return True
-        else:
-            return False
+    knownMap[posSum] = tile
+    return True
 
 def getTileConst(x,y,z,instanceId):
     """ Return the tile on this (unpacked) position. """
     posSum = instanceId << 40 | x << 24 | y << 8 | z
-    try:
+    if posSum in knownMap:
         return knownMap[posSum]
-    except:
-        if loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
-            return knownMap.get(posSum)
+    elif loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
+        return knownMap[posSum] if posSum in knownMap else None
 
 def getTileConst2(posSum, secSum, x, y, instanceId):
     """ Used by floorDescription """
-    try:
+    if posSum in knownMap:
         return knownMap[posSum]
-    except:
-        if loadTiles(x, y, instanceId, secSum):
-            return knownMap.get(posSum)
+    elif loadTiles(x, y, instanceId, secSum):
+        return knownMap[posSum] if posSum in knownMap else None
 
 def getHouseId(pos):
     """ Returns the houseId on this position, or False if none """
@@ -142,19 +131,30 @@ class Tile(object):
         self.ground = ground
 
         self.things = items or None
-
+          
+        # 64bit optimize. 8 first for flags, 12 bit for top count, 12 bit for creature count and 12 bit for bottom count. 
         self.flags = flags
+
+        if items and flags < 0xff: # No upper bits.
+            for thing in items:
+                if isinstance(thing, Creature):
+                    self.flags += 1 << 20
+                elif thing.ontop:
+                    self.flags += 1 << 8
+                else:
+                    self.flags += 1 << 32
 
     def getCreatureCount(self):
         """ Returns the number of creatures on this tile. """
-        if not self.things: return 0
+        """if not self.things: return 0
 
         count = 0
         for thing in self.things:
             if isinstance(thing, Creature):
                 count += 1
 
-        return count
+        return count"""
+        return (self.flags >> 20) & 0xfff
 
     def getItemCount(self):
         """ Returns the number of items (:class:`game.item.Item`) (minus the ground) on this tile. """
@@ -164,7 +164,7 @@ class Tile(object):
 
     def getTopItemCount(self):
         """ Return the number of ontop items (:class:`game.item.Item`) (minus the ground) on this tile. """
-        if not self.things: return 0
+        """if not self.things: return 0
 
         count = 0
         for thing in self.things:
@@ -173,11 +173,11 @@ class Tile(object):
             else:
                 break
 
-        return count
-
+        return count"""
+        return (self.flags >> 8) & 0xfff
     def getBottomItemCount(self):
         """ Return the number of non-ontop items (:class:`game.item.Item`) (minus the ground) on this tile. """
-        if not self.things: return 0
+        """if not self.things: return 0
 
         count = 0
         for thing in self.things[::-1]:
@@ -185,18 +185,19 @@ class Tile(object):
                 count += 1
             else:
                 break
-
-        return count
+        
+        return count"""
+        return (self.flags >> 32) & 0xfff
 
     def getFlags(self):
         """ Return the tile flags """
-        return self.flags or 0
+        return self.flags
 
     def setFlag(self, flag):
         """ Set a flag on the tile """
         flags = self.getFlags()
         if not flags & flag:
-            self.flags = flags + flag
+            self.flags = flags | flag
 
     def unsetFlag(self, flag):
         """ Unset a flag on the tile """
@@ -205,7 +206,7 @@ class Tile(object):
 
     def placeCreature(self, creature):
         """ Place a Creature (subclass of :class:`game.creature.Creature`) on the tile. """
-
+        self.flags += 1 << 20
         if not self.things:
             self.things = [creature]
             return 1
@@ -213,32 +214,38 @@ class Tile(object):
         pos = len(self.things) - self.getBottomItemCount()
 
         self.things.insert(pos, creature)
-
         return pos+1
 
     def removeCreature(self,creature):
         """ Remove a Creature (subclass of (:class:`game.creature.Creature`) on the tile. """
 
         self.things.remove(creature)
-
+        self.flags -= 1 << 20
     def placeItem(self, item):
         """ Place an Item (:class:`game.item.Item`) on the tile. This automatically deals with ontop etc. """
 
         assert isinstance(item, Item)
         if not self.things:
             self.things = [item]
+            if item.ontop:
+                self.flags += 1 << 8
+            else:
+                self.flags += 1 << 32
             return 1
 
         if item.ontop:
             pos = 0 #self.getTopItemCount()
             self.things.insert(pos, item)
+            self.flags += 1 << 8
         else:
             pos = self.getTopItemCount() + self.getCreatureCount() #len(self.things)
             self.things.insert(pos, item)
+            self.flags += 1 << 32
         return pos+1
 
     def placeItemEnd(self, item):
         """ Place an idea at the end of the item stack. This function should NOT usually be used with ontop items. """
+        self.flags += 1 << 32
         if not self.things:
             self.things = [item]
             return 1
@@ -248,10 +255,11 @@ class Tile(object):
 
     def bottomItems(self):
         """ Returns a list or tuple with bottom items. """
-        if not self.things: return ()
+        if not self.things: return
         bottomItems = self.getBottomItemCount()
+
         if not bottomItems:
-            return ()
+            return
 
         return self.things[len(self.things) - bottomItems:]
 
@@ -260,11 +268,7 @@ class Tile(object):
         yield self.ground
 
         if not self.things: return
-        for thing in self.things:
-            if isinstance(thing, Item) and thing.ontop:
-                yield thing
-            else:
-                break
+        yield from islice(self.things, None, self.getTopItemCount())
 
     def getItems(self):
         """ Returns an iterator over all items on this tile. """
@@ -282,21 +286,29 @@ class Tile(object):
         if not self.things:
             return
 
-        for thing in self.things:
-            if isinstance(thing, Creature):
-                yield thing
+        #for thing in self.things:
+        #    if isinstance(thing, Creature):
+        #        yield thing
+
+        creatureCount = self.getCreatureCount()
+        if creatureCount:
+            topCount = self.getTopItemCount()
+            return self.things[topCount:topCount+creatureCount]
+        
 
     def hasCreatures(self):
         """ Returns True if the tile holds any creatures (:class:`game.creature.Creature`). """
         if not self.things:
             return False
 
-        for thing in self.things:
+        """for thing in self.things:
             if isinstance(thing, Creature):
-                return True
+                return True"""
+        return self.getCreatureCount() > 0
 
     def topCreature(self):
         """ Returns the top (first) creature (subclass of :class:`game.creature.Creature`) on the tile. """
+        # XXX: This is actually a constant of things[topitemcount]
         if not self.things:
             return None
 
@@ -308,6 +320,10 @@ class Tile(object):
         """ Remove the `item` (:class:`game.item.Item`)  from the tile. """
         item.stopDecay()
         self.things.remove(item)
+        if item.ontop:
+            self.flags -= 1 << 8
+        else:
+            self.flags -= 1 << 32
 
     def removeItemWithId(self, itemId):
         """ Remove items with id equal `itemId` on this tile. """
@@ -360,7 +376,7 @@ class Tile(object):
         flags = self.flags
         if flags & TILEFLAGS_STACKED:
             flags -= TILEFLAGS_STACKED
-
+        flags -= self.getCreatureCount() << 20
         return Tile(self.ground.copy(), items, flags)
 
 class HouseTile(Tile):

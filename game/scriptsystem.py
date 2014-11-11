@@ -649,6 +649,9 @@ if config.enableWebProtocol:
     # To register web sites.
     def registerWeb(url):
         def _(cls):
-            Web.add_handlers('.*$', ((url, cls),))
+            try:
+                Web.add_handlers('.*$', ((url, cls),))
+            except:
+                print("Web not enabled!")
             return cls
         return _

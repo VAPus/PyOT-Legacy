@@ -114,7 +114,6 @@ class BasePacket(TibiaPacket):
     def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
         instanceId = player.position.instanceId
         base = instanceId << 40 | _z
-
         for x in range(_x + offset, _x + width + offset):
             baseX = base | x << 24
             secX = x >> game.map.sectorShiftX
@@ -139,59 +138,67 @@ class BasePacket(TibiaPacket):
 
     def tileDescription(self, tile, player):
         self.uint16(0)
-        count = 0
-
-        for item in tile.topItems():
+        self.item(tile.ground)
+        
+        if not tile.things:
+            return
+            
+        count = 1
+        
+        top = tile.getTopItemCount()
+        if top:
+            for item in tile.things[:top]:  
             self.item(item)
             
             count += 1
             if count == 10:
                 return
 
-        if not tile.things: return
+        creatures = tile.getCreatureCount()
+        if creatures:
+            for creature in tile.things[top:top+creatures]:
+                if creature.hasCondition(CONDITION_INVISIBLE):
+                    continue
+                known = False
+                removeKnown = 0
+                if player:
+                    known = creature in player.knownCreatures
 
-        for creature in tile.creatures():
-            if creature.hasCondition(CONDITION_INVISIBLE):
-                continue
-            known = False
-            removeKnown = 0
-            if player:
-                known = creature in player.knownCreatures
+                    if not known:
+                        if len(player.knownCreatures) > self.maxKnownCreatures:
+                            removeKnown = player.checkRemoveKnown()
+                            if not removeKnown:
+                                player.exit("Too many creatures in known list. Please relogin")
+                                return
+                        player.knownCreatures.add(creature)
+                        creature.knownBy.add(player)
 
-                if not known:
-                    if len(player.knownCreatures) > self.maxKnownCreatures:
-                        removeKnown = player.checkRemoveKnown()
-                        if not removeKnown:
-                            player.exit("Too many creatures in known list. Please relogin")
-                            return
-                    player.knownCreatures.add(creature)
-                    creature.knownBy.add(player)
-
-                    self.creature(creature, known, removeKnown, player)
-                else:
-                    # Bugged?
-                    if creature.creatureType != 0 and creature.brainEvent:
-                        if player.client.version >= 953:
-                            self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
-                            self.length += 8
-                        else:
-                            self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
-                            self.length += 7
+                        self.creature(creature, known, removeKnown, player)
                     else:
-                        self.creature(creature, True, creature.cid, player) # Not optimal!
-            if creature.creatureType != 0 and not creature.brainEvent:
-                creature.base.brain.beginThink(creature, False)
+                        # Bugged?
+                        if creature.creatureType != 0 and creature.brainEvent:
+                            if player.client.version >= 953:
+                                self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
+                                self.length += 8
+                            else:
+                                self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                                self.length += 7
+                        else:
+                            self.creature(creature, True, creature.cid, player) # Not optimal!
+                if creature.creatureType != 0 and not creature.brainEvent:
+                    creature.base.brain.beginThink(creature, False)
 
-            count += 1
-            if count == 10:
-                return
-
-        for item in tile.bottomItems():
-            self.item(item)
-            
-            count += 1
-            if count == 10:
-                return
+                count += 1
+                if count == 10:
+                    return
+        bottom = tile.getBottomItemCount()
+        if bottom:
+            for item in tile.things[len(tile.things) - bottom:]:
+                self.item(item)
+                
+                count += 1
+                if count == 10:
+                    return
 
     def exit(self, message):
         self.uint8(0x14)

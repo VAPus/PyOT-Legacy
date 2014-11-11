@@ -454,18 +454,20 @@ def saveAll(force=False):
                 for tile in game.map.houseTiles[houseId]:
                     _items = []
                     lastItem = None
-                    for item in tile.bottomItems():
-                        ic = item.count
-                        if not item.fromMap and (ic == None or ic > 0):
-                            if lastItem and lastItem.itemId == item.itemId and lastItem.stackable and lastItem.count < 100:
-                                    # Stack.
-                                    lCount = lastItem.count
-                                    lastItem.count = min(100, lCount + ic)
-                                    ic -= lastItem.count - lCount
-                                    item.count = ic
-                            if ic or ic == None:
-                                _items.append(item)
-                                lastItem = item
+                    bottom = tile.bottomItems()
+                    if bottom:
+                        for item in tile.bottomItems():
+                            ic = item.count
+                            if not item.fromMap and (ic == None or ic > 0):
+                                if lastItem and lastItem.itemId == item.itemId and lastItem.stackable and lastItem.count < 100:
+                                        # Stack.
+                                        lCount = lastItem.count
+                                        lastItem.count = min(100, lCount + ic)
+                                        ic -= lastItem.count - lCount
+                                        item.count = ic
+                                if ic or ic == None:
+                                    _items.append(item)
+                                    lastItem = item
                     _items.reverse()
                     items[tile.position] = _items
 

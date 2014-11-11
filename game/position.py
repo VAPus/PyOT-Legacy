@@ -100,6 +100,7 @@ class Position(object):
         return self.hash in game.map.knownMap
 
     def rehash(self):
+        """ Makes a new position hash. Used in map """
         self.hash = self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z
 
 class MultiPosition(Position):

@@ -169,6 +169,7 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         return self.creatureType # Used to indentify my "thing"
 
     def actionIds(self):
+        """ Pure creature identifier, mostly overridden. """
         return ('creature',) # Static actionID
 
     def generateClientID(self):

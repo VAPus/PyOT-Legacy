@@ -75,11 +75,12 @@ class TibiaPacketReader(object):
         return StackPosition(x, y, z, stackPos, instance)
 
 class TibiaPacket(object):
-    __slots__ = ('data', 'raw', 'length')
+    __slots__ = ('data', 'raw', 'length', 'stream')
     def __init__(self, header=None):
         self.data = [b""]
         self.raw = self.data.append
         self.length = 0
+        self.stream = None
         if header:
             self.uint8(header)
 

@@ -192,11 +192,11 @@ class Item(object):
     def __getattr__(self, name):
         if not "__" in name:
             _items = items[self.itemId]
-            try:
+            if name in self.attributes and "flags" in _items:
                 return _items['flags'] & self.attributes[name]
-            except:
-                return _items.get(name)
-
+            elif name in _items:
+                return _items[name]
+            return None
 
         raise AttributeError(name)
 
@@ -378,7 +378,7 @@ class Item(object):
             for item in tile.getItems():
                 dropOnto_event = game.scriptsystem.get('dropOnto')
                 if (dropOnto_event.run(thing=self, creature=self.creature, position=None, onPosition=position, onThing=item)) == False or \
-                   (dropOnto_event.run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False:
+                   (dropOnto_event.run(thing=item, creature=self.creature, position=None, onPosition=position, onThing=self)) == False: 
                     return False
 
             stackpos = tile.placeItem(self)
@@ -529,7 +529,7 @@ class Item(object):
         params = self.cleanParams()
 
         if self.executeDecay:
-            delay = round(self.executeDecay.getTime() - time.time(), 1)
+            delay = round(self.executeDecay.deadline - time.time(), 1)
             if delay > 0:
                 return (params, delay)
 

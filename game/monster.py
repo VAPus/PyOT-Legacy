@@ -52,6 +52,7 @@ class Monster(Creature):
         self.lastRetarget = 0
 
     def actionIds(self):
+        """ Monster, creature and monster name, action bindable ids """
         return ('creature', 'monster', self.data["name"]) # Static actionIDs
 
     def setMaster(self, creature):
@@ -230,7 +231,7 @@ class Monster(Creature):
             print("[May bug] Death events brought us back to life?")
             return
 
-        # Remove bpth small and full splashes on the tile.
+        # Remove both small and full splashes on the tile.
         for item in tile.getItems():
             if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
                 tile.removeItem(item)
@@ -240,8 +241,10 @@ class Monster(Creature):
         splash.fluidSource = self.base.blood
 
         if corpse:
-            corpse.place(self.position)
-        splash.place(self.position)
+            res = corpse.place(self.position) 
+            assert res
+        res = splash.place(self.position)
+        assert res
 
         # Start decay
         if corpse:

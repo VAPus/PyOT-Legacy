@@ -220,7 +220,7 @@ manaMultiplier = 1
 exhaust = 2
 
 # Auto Cython
-# Cython makes c code and compile it out of the python code which still keeping most of the python code compatible. DO NOT STACK WELL WITH tryPsyco!
+# Cython makes c code and compile it out of the python code which still keeping most of the python code compatible.
 tryCython = False
 
 # Item cache

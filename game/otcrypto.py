@@ -4,32 +4,34 @@ import codecs
 import sys
 
 ffi = None
-if sys.implementation.name != "pypy":
-    try:
-        # Attempt to use CFFI for decrypt/encrypt XTEA.
-        import cffi
-        ffi = cffi.FFI()
-        ffi.cdef("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);
-        uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]);""")
-        lib = ffi.verify("""uint64_t xtea_decrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
-        unsigned int i;
-        for (i=0; i < 32; i++) {
-            v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[63 - i];
-            v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[31 - i];
-        }
-        return (uint64_t)(v1) << 32 | v0;
-        }
-        uint64_t xtea_encrypt(uint32_t v0, uint32_t v1, uint32_t const key[64]) {
-        unsigned int i;
-        for (i=0; i < 32; i++) {
-            v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[i];
-            v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[32 + i];
-        }
-        return (uint64_t)(v1) << 32 | v0;
-        }
-        """, extra_compile_args=["-Ofast", "-march=native"])
-    except:
-        print("No CFFI")
+lib = None
+try:
+    # Attempt to use CFFI for decrypt/encrypt XTEA.
+    import cffi
+    ffi = cffi.FFI()
+    ffi.cdef("""uint64_t xtea_decrypt(uint64_t v, uint32_t const key[64]);
+    uint64_t xtea_encrypt(uint64_t v, uint32_t const key[64]);""")
+    lib = ffi.verify("""uint64_t xtea_decrypt(uint64_t v, uint32_t const key[64]) {
+    unsigned int i;
+    uint32_t v1 = v >> 32, v0 = v & 0xffffffff;
+    for (i=0; i < 32; i++) {
+        v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[63 - i];
+        v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[31 - i];
+    }
+    return (uint64_t)(v1) << 32 | v0;
+    }
+    uint64_t xtea_encrypt(uint64_t v, uint32_t const key[64]) {
+    unsigned int i;
+    uint32_t v1 = v >> 32, v0 = v & 0xffffffff; 
+    for (i=0; i < 32; i++) {
+        v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ key[i];
+        v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ key[32 + i];
+    }
+    return (uint64_t)(v1) << 32 | v0;
+    }
+    """, extra_compile_args=["-Ofast", "-march=native"])
+except:
+    print("No CFFI")
 
 if ffi and not lib:
     ffi = None
@@ -52,38 +54,32 @@ def decryptRSA(stream):
 
 if ffi:
     def decryptXTEA(stream, k):
-        length = len(stream) >> 2
-        bstr = "<%dL" % length
+        length = len(stream) >> 3
+        bstr = "<%dQ" % length
         packs = unpack(bstr, stream)
         repacks = []
 
-        for pos in range(0, length, 2):
-            v0 = packs[pos]
-            v1 = packs[pos+1]
-            res = lib.xtea_decrypt(v0, v1, k)
-            repacks.append(res)
+        for v in packs:
+            repacks.append(lib.xtea_decrypt(v, k))
 
-        return pack("<%dQ" % len(repacks), *repacks)
+        return pack(bstr, *repacks)
 
     def encryptXTEA(stream, k, length):
         pad = 8 - (length & 7)
         if pad:
             stream.append(b"\x33" * pad)
         length += pad
-        length >>= 2
+        length >>= 3
         stream = b''.join(stream)
-        bstr = "<%dL" % length
-
+        bstr = "<%dQ" % length
         packs = unpack(bstr, stream)
         repacks = []
 
-        for pos in range(0, length, 2):
-            v0 = packs[pos]
-            v1 = packs[pos+1]
-            repacks.append(lib.xtea_encrypt(v0, v1, k))
+        for v in packs:
+            repacks.append(lib.xtea_encrypt(v, k))
 
 
-        return pack("<%dQ" % len(repacks), *repacks)
+        return pack(bstr, *repacks)
 
 else:
     def decryptXTEA(stream, k):
