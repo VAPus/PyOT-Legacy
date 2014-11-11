@@ -74,8 +74,7 @@ class TibiaPacketReader(object):
         x,y,z, stackPos = unpack("<HHBB", self.data[self.pos - 6:self.pos])
         return StackPosition(x, y, z, stackPos, instance)
 
-class TibiaPacket(object):
-    __slots__ = ('data', 'raw', 'length', 'stream')
+class TibiaPacket:
     def __init__(self, header=None):
         self.data = [b""]
         self.raw = self.data.append
@@ -155,25 +154,6 @@ class TibiaPacket(object):
                 data = b''.join(self.data)
 
             stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
-    
-    def sendto(self, list):
-        if not list or not self.length:
-            return # Noone to send to
-
-        length = sum(map(len, self.data))
-        self.data[0] = pack("<H", length)
-        length += 2
-
-        #data = "%s%s" % (pack("<H", len(self.data)), ''.join(self.data))
-        for client in list:
-            if not client:
-                continue
-
-            if client.xtea:
-                data = encryptXTEA(self.data, client.xtea, length)
-            else:
-                data = b''.join(self.data)
-            client.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
 
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):

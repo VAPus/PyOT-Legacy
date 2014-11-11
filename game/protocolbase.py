@@ -39,7 +39,7 @@ class TibiaProtocol:
             pass # This might fail on windows.
             
         try:
-            self.transport.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            self.transport.set_nodelay(True)
         except:
             pass # This might fail on some systems too. Kernel params etc.
             
