@@ -97,6 +97,10 @@ class Monster(Creature):
             return dmg * self.base._death
         elif type == DROWN:
             return dmg * self.base._drown
+        elif type == LIFEDRAIN:
+            return dmg * self.base._manadrain
+        elif type == MANADRAIN:
+            return dmg * self.base._lifedrain
 
         # What, no match?
         return dmg
@@ -599,7 +603,7 @@ class MonsterBase(object):
     def addons(self, addon):
         self.data["lookaddons"] = addon
 
-    def defense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
+    def defense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1, lifedrain=1, manadrain=1):
         self._armor = armor
         self._fire = fire
         self._earth = earth
@@ -609,6 +613,8 @@ class MonsterBase(object):
         self._death = death
         self._drown = drown
         self._physical = physical
+        self._lifedrain = lifedrain
+        self._manadrain = manadrain
         if armor == -1:
             self._attackable = False
 
@@ -647,10 +653,9 @@ class MonsterBase(object):
         self._ignoreFire = fire
         self._ignorePoison = poison
 
-    def immunity(self, paralyze=1, invisible=1, lifedrain=1, drunk=1):
+    def immunity(self, paralyze=1, invisible=1, drunk=1):
         self._paralyze = paralyze
         self._invisible = invisible
-        self._lifedrain = lifedrain
         self._drunk = drunk
 
     def walkable(self, state):
