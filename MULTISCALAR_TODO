@@ -1,0 +1,17 @@
+Use the new features in Python 3.2.
+
+Stage ONE:
+- Move Packet.send to ProcessPoolExecutor. This allows us to do the rather heavy cryptography bits in seperate processes.
+
+Stage TWO:
+Start a manager login process. Login distribute game connections on different ports (and/or IPs!)
+Start a manager game process. This communicate connections to it's sub processes which handles per player actions, using
+- Use netutil.bind_sockets(PORT)
+- Have shared data, e.g, the map. Shared using multiprocessing.Manager
+- Call process.fork_processes()
+- Bind to global socket
+- Start reactor.
+- Spawn threads using concurrent.futures.ProcessPoolExecutor, to deal with cryptography.
+
+Stage THREE:
+Synchronize multiple game processes.
