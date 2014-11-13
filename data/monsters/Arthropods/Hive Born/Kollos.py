@@ -4,7 +4,7 @@ kollos.type("slime")
 kollos.defense(armor=50, fire=0.7, earth=0, energy=0.95, ice=1.05, holy=1, death=1.05, physical=1, drown=1)
 kollos.experience(2400)
 kollos.speed(300) #incorrect
-kollos.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+kollos.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 kollos.walkAround(energy=1, fire=0, poison=0)
 kollos.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 kollos.voices("Zopp!")

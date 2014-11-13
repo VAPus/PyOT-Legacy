@@ -6,7 +6,7 @@ Barbarian_Headsplitter.health(100)
 Barbarian_Headsplitter.experience(85)
 Barbarian_Headsplitter.speed(168) # correct
 Barbarian_Headsplitter.walkAround(1,1,1) # energy, fire, poison
-Barbarian_Headsplitter.behavior(summonable=0, hostile=1, illusionable=0, convinceable=450, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Barbarian_Headsplitter.behavior(summonable=0, hostile=True, illusionable=False, convinceable=450, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Barbarian_Headsplitter.voices("I will regain my honor with your blood!", "Surrender is not an option!", "It's you or me!", "Die! Die! Die!")
 Barbarian_Headsplitter.immunity(1,0,0) # paralyze, invisible, lifedrain
 Barbarian_Headsplitter.defense(7, fire=1.0, earth=1.1, energy=0.8, ice=0.5, holy=0.8, death=1.1, physical=1.0, drown=1.0)

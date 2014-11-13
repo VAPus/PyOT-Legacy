@@ -4,7 +4,7 @@ furious_troll.type("blood")
 furious_troll.defense(armor=13, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1.05, drown=1)
 furious_troll.experience(185)
 furious_troll.speed(195)#incorrect
-furious_troll.behavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+furious_troll.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 furious_troll.walkAround(energy=0, fire=0, poison=0)
 furious_troll.immunity(paralyze=0, invisible=1, lifedrain=0, drunk=0)
 furious_troll.voices("Slice! Slice!", "DIE!!!")

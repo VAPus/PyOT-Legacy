@@ -4,7 +4,7 @@ efreet.type("blood")
 efreet.defense(armor=27, fire=0.9, earth=0.9, energy=0.4, ice=1.05, holy=1.08, death=0.8, physical=1, drown=1)
 efreet.experience(410)#325?
 efreet.speed(170)
-efreet.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+efreet.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 efreet.walkAround(energy=1, fire=1, poison=1)
 efreet.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 efreet.summon("green djinn", 10)

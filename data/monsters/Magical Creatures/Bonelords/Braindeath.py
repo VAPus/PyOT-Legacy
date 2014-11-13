@@ -5,7 +5,7 @@ Braindeath.health(1225)
 Braindeath.experience(985)
 Braindeath.speed(200) # not correct
 Braindeath.walkAround(0,0,0) # energy, fire, poison
-Braindeath.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=4, runOnHealth=0)
+Braindeath.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=4, runOnHealth=0)
 Braindeath.voices("You have disturbed my thoughts!", "Let me turn you into smething more useful!", "Let me taste your brain!", "You will be punished!")
 Braindeath.immunity(1,1,1) # paralyze, invisible, lifedrain
 Braindeath.defense(13, fire=1.15, earth=0, energy=0.9, ice=0.8, holy=1.2, death=0.85, physical=0.85, drown=1.0)

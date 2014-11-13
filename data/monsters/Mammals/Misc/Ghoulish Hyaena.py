@@ -4,7 +4,7 @@ ghoulish_hyaena.type("blood")
 ghoulish_hyaena.defense(armor=22, fire=1, earth=0.3, energy=1, ice=1, holy=1, death=0, physical=1, drown=1)
 ghoulish_hyaena.experience(195)
 ghoulish_hyaena.speed(240)#unknown speed
-ghoulish_hyaena.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=30)
+ghoulish_hyaena.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=30)
 ghoulish_hyaena.walkAround(energy=0, fire=0, poison=0)
 ghoulish_hyaena.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 ghoulish_hyaena.voices("Grawrrr!!", "Hoouu!")

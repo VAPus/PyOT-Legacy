@@ -4,7 +4,7 @@ zombie.type("undead")
 zombie.defense(armor=22, fire=0.5, earth=0, energy=0, ice=0, holy=1, death=0, physical=1, drown=0)
 zombie.experience(280)
 zombie.speed(180)#incorrect speed?
-zombie.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+zombie.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 zombie.walkAround(energy=0, fire=1, poison=0)
 zombie.immunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 zombie.voices("Mst.... klll....", "Whrrrr... ssss.... mmm.... grrrrl", "Dnnnt... cmmm... clsrrr....", "Httt.... hmnnsss...")

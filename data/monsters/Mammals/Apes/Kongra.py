@@ -5,7 +5,7 @@ Kongra.health(340)
 Kongra.experience(115)
 Kongra.speed(184) # Correct
 Kongra.walkAround(1,1,1) # energy, fire, poison
-Kongra.behavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=10)
+Kongra.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=10)
 Kongra.voices("Ungh! Ungh!", "Hugah!", "Huaauaauaauaa!")
 Kongra.immunity(0,0,0) # paralyze, invisible, lifedrain
 Kongra.defense(20, fire=0.8, earth=0.9, energy=0.95, ice=1.15, holy=1.0, death=1.05, physical=1.0, drown=1.0)

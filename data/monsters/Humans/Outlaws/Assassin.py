@@ -7,7 +7,7 @@ Assassin.health(175)
 Assassin.experience(105)
 Assassin.speed(224) # correct
 Assassin.walkAround(1,1,1) # energy, fire, poison
-Assassin.behavior(summonable=0, hostile=1, illusionable=1, convinceable=450, pushable=0, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Assassin.behavior(summonable=0, hostile=True, illusionable=True, convinceable=450, pushable=False, pushItems=True, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Assassin.voices("You are on my deathlist!", "Die!", "Feel the hand of death!")
 Assassin.immunity(0,1,0) # paralyze, invisible, lifedrain
 Assassin.defense(22, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.25, drown=1.0)

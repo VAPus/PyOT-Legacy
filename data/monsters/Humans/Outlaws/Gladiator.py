@@ -6,7 +6,7 @@ Gladiator.health(185)
 Gladiator.experience(90)
 Gladiator.speed(200)
 Gladiator.walkAround(1,1,1) # energy, fire, poison
-Gladiator.behavior(summonable=0, hostile=1, illusionable=0, convinceable=470, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=18)
+Gladiator.behavior(summonable=0, hostile=True, illusionable=False, convinceable=470, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=18)
 Gladiator.voices("You are no match for me!", "Feel my prowess.", "Take this!")
 Gladiator.immunity(0,0,0) # paralyze, invisible, lifedrain
 Gladiator.defense(15, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.9, death=1.05, physical=0.95, drown=1.0)

@@ -6,7 +6,7 @@ Stalker.health(120)
 Stalker.experience(90)
 Stalker.speed(260) # Correct
 Stalker.walkAround(1,1,1) # energy, fire, poison
-Stalker.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Stalker.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Stalker.immunity(0,1,1) # paralyze, invisible, lifedrain
 Stalker.defense(0, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Stalker.regMelee(70)

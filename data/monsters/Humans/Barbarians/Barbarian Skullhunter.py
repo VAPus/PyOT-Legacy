@@ -6,7 +6,7 @@ Barbarian_Skullhunter.health(135)
 Barbarian_Skullhunter.experience(85)
 Barbarian_Skullhunter.speed(188) # Correct
 Barbarian_Skullhunter.walkAround(1,1,1) # energy, fire, poison
-Barbarian_Skullhunter.behavior(summonable=0, hostile=1, illusionable=0, convinceable=450, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+Barbarian_Skullhunter.behavior(summonable=0, hostile=True, illusionable=False, convinceable=450, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 Barbarian_Skullhunter.voices("You will become my trophy", "Fight harder, coward", "Show that you are a worthy opponent")
 Barbarian_Skullhunter.immunity(1,0,0) # paralyze, invisible, lifedrain
 Barbarian_Skullhunter.defense(9, fire=1.0, earth=1.1, energy=0.8, ice=0.5, holy=0.9, death=1.05, physical=0.9, drown=1.0)

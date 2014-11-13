@@ -7,7 +7,7 @@ Crazed_Beggar.health(100)
 Crazed_Beggar.experience(35)
 Crazed_Beggar.speed(134) # Correct
 Crazed_Beggar.walkAround(1,1,1) # energy, fire, poison
-Crazed_Beggar.behavior(summonable=300, hostile=1, illusionable=0, convinceable=300, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Crazed_Beggar.behavior(summonable=300, hostile=True, illusionable=False, convinceable=300, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Crazed_Beggar.voices("Hehehe!", "Raahhh!", "You are one of THEM! Die!", "Wanna buy roses??", "Make it stop!")
 Crazed_Beggar.immunity(0,0,0) # paralyze, invisible, lifedrain
 Crazed_Beggar.defense(4, fire=1.0, earth=1.1, energy=0.8, ice=1.0, holy=0.9, death=1.1, physical=0.9, drown=1.0)

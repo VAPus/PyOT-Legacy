@@ -5,7 +5,7 @@ Hyaena.health(60)
 Hyaena.experience(20)
 Hyaena.speed(196) #correct
 Hyaena.walkAround(1,1,1) # energy, fire, poison
-Hyaena.behavior(summonable=275, hostile=1, illusionable=1, convinceable=275, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=30)
+Hyaena.behavior(summonable=275, hostile=True, illusionable=True, convinceable=275, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=30)
 Hyaena.voices("Grrrrrr", "Hou hou hou!")
 Hyaena.immunity(0,0,0) # paralyze, invisible, lifedrain
 Hyaena.defense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)

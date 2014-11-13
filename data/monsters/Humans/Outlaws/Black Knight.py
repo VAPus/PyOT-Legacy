@@ -7,7 +7,7 @@ Black_Knight.health(1800)
 Black_Knight.experience(1600)
 Black_Knight.speed(200) # Incorrect
 Black_Knight.walkAround(0,0,0) # energy, fire, poison
-Black_Knight.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Black_Knight.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Black_Knight.voices("No prisoners!", "By Bolg's blood", "You're no match for me!", "NO MERCY!", "MINE!")
 Black_Knight.immunity(1,1,1) # paralyze, invisible, lifedrain
 Black_Knight.defense(100, fire=0.05, earth=0, energy=0.2, ice=0, holy=1.1, death=0.8, physical=0.8, drown=1.0)

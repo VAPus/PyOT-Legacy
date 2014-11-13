@@ -6,7 +6,7 @@ Bandit.health(245)
 Bandit.experience(65)
 Bandit.speed(180) # Correct
 Bandit.walkAround(1,1,1) # energy, fire, poison
-Bandit.behavior(summonable=450, hostile=1, illusionable=1, convinceable=450, pushable=1, pushItems=1, pushCreatures=0, targetDistance=1, runOnHealth=25)
+Bandit.behavior(summonable=450, hostile=True, illusionable=True, convinceable=450, pushable=True, pushItems=True, pushCreatures=False, targetDistance=1, runOnHealth=25)
 Bandit.voices("Hand me your purse!", "Your money or your life!")
 Bandit.immunity(0,0,0) # paralyze, invisible, lifedrain
 Bandit.defense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.1, drown=1.0)

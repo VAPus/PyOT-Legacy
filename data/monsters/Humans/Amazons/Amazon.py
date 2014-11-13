@@ -6,7 +6,7 @@ Amazon.health(110)
 Amazon.experience(60)
 Amazon.speed(172) # correct
 Amazon.walkAround(1,1,1) # energy, fire, poison
-Amazon.behavior(summonable=390, hostile=1, illusionable=1, convinceable=390, pushable=1, pushItems=1, pushCreatures=0, targetDistance=4, runOnHealth=10)
+Amazon.behavior(summonable=390, hostile=True, illusionable=True, convinceable=390, pushable=True, pushItems=True, pushCreatures=False, targetDistance=4, runOnHealth=10)
 Amazon.voices("Your head shall be mine!", "Your head will be mine!", "Yeee ha!")
 Amazon.immunity(0,0,0) # paralyze, invisible, lifedrain
 Amazon.defense(11, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.05, physical=1.05, drown=1.0)

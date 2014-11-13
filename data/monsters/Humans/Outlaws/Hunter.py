@@ -6,7 +6,7 @@ Hunter.health(150)
 Hunter.experience(150)
 Hunter.speed(210) # Correct
 Hunter.walkAround(1,1,1) # energy, fire, poison
-Hunter.behavior(summonable=0, hostile=1, illusionable=1, convinceable=530, pushable=0, pushItems=1, pushCreatures=0, targetDistance=4, runOnHealth=15)
+Hunter.behavior(summonable=0, hostile=True, illusionable=True, convinceable=530, pushable=False, pushItems=True, pushCreatures=False, targetDistance=4, runOnHealth=15)
 Hunter.voices("Guess who we are hunting!", "Guess who we're hunting, hahaha!", "Bullseye!", "You'll make a nice trophy!")
 Hunter.immunity(0,0,0) # paralyze, invisible, lifedrain
 Hunter.defense(9, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.8, death=1.0, physical=1.05, drown=1.0)

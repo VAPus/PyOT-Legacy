@@ -4,7 +4,7 @@ dreadbeast.type("undead")
 dreadbeast.defense(armor=2, fire=0.45, earth=0, energy=0.85, ice=0.65, holy=1.5, death=0, physical=0.7, drown=0.25)
 dreadbeast.experience(250)
 dreadbeast.speed(210)
-dreadbeast.behavior(summonable=0, hostile=1, illusionable=0, convinceable=800, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+dreadbeast.behavior(summonable=0, hostile=True, illusionable=False, convinceable=800, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 dreadbeast.walkAround(energy=0, fire=0, poison=0)
 dreadbeast.immunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 dreadbeast.regMelee(50)#+poison

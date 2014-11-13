@@ -5,7 +5,7 @@ Merlkin.health(235)
 Merlkin.experience(145)
 Merlkin.speed(194)
 Merlkin.walkAround(1,1,1) # energy, fire, poison
-Merlkin.behavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=0, targetDistance=4, runOnHealth=0)
+Merlkin.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pushable=False, pushItems=True, pushCreatures=False, targetDistance=4, runOnHealth=0)
 Merlkin.voices("Ugh! Ugh! Ugh!", "Holy banana!", "Chakka! Chakka!")
 Merlkin.immunity(0,1,0) # paralyze, invisible, lifedrain
 Merlkin.defense(18, fire=0.8, earth=1.0, energy=0.9, ice=1.15, holy=0.9, death=1.05, physical=1.0, drown=1.0)

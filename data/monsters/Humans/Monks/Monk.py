@@ -5,7 +5,7 @@ Monk.health(240)
 Monk.experience(200)
 Monk.speed(240) # Correct
 Monk.walkAround(1,1,1) # energy, fire, poison
-Monk.behavior(summonable=600, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+Monk.behavior(summonable=600, hostile=True, illusionable=True, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 Monk.voices("Repent Heretic!", "A prayer to the almighty one!", "I will punish the sinners!")
 Monk.immunity(0,1,0) # paralyze, invisible, lifedrain
 Monk.defense(27, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=0.5, death=0.5, physical=1.05, drown=1.0)

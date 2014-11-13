@@ -5,7 +5,7 @@ Stampor.health(1200)
 Stampor.experience(780)
 Stampor.speed(200) #incorrect
 Stampor.walkAround(1,1,1) # energy, fire, poison
-Stampor.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+Stampor.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 Stampor.voices("KRRRRRNG")
 Stampor.immunity(1,1,0) # paralyze, invisible, lifedrain
 Stampor.defense(20, fire=0.8, earth=1.0, energy=0.8, ice=0.9, holy=0.5, death=0.9, physical=1.0, drown=1.0) # not full correct

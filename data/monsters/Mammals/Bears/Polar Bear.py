@@ -5,7 +5,7 @@ Polar_Bear.health(85)
 Polar_Bear.experience(28)
 Polar_Bear.speed(156) #correct
 Polar_Bear.walkAround(1,1,1) # energy, fire, poison
-Polar_Bear.behavior(summonable=315, hostile=1, illusionable=1, convinceable=315, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=5)
+Polar_Bear.behavior(summonable=315, hostile=True, illusionable=True, convinceable=315, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=5)
 Polar_Bear.voices("GROARRR!")
 Polar_Bear.immunity(0,0,0) # paralyze, invisible, lifedrain
 Polar_Bear.defense(7, fire=0.9, earth=1.0, energy=1.05, ice=0.8, holy=1.0, death=1.1, physical=1.0, drown=1.0)

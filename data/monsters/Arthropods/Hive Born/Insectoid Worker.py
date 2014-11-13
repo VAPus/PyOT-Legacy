@@ -4,7 +4,7 @@ Insectoid_Worker.type("slime")
 Insectoid_Worker.defense(armor=15, fire=1.1, earth=0, energy=1.05, ice=1.05, holy=1, death=1, physical=0.95, drown=1)
 Insectoid_Worker.experience(650)
 Insectoid_Worker.speed(300) #unknown
-Insectoid_Worker.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+Insectoid_Worker.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 Insectoid_Worker.walkAround(energy=1, fire=1, poison=0)
 Insectoid_Worker.immunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 Insectoid_Worker.regMelee(110, condition=CountdownCondition(CONDITION_POISON, 8), conditionChance=100)

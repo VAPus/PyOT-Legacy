@@ -4,7 +4,7 @@ grave_guard.type("blood")
 grave_guard.defense(armor=37, fire=0, earth=1, energy=1, ice=1.1, holy=1.1, death=1, physical=1, drown=1)
 grave_guard.experience(485)
 grave_guard.speed(250)#unknown speed
-grave_guard.behavior(summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0)
+grave_guard.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0, pushable=False, pushItems=True, pushCreatures=True, targetDistance=1, runOnHealth=0)
 grave_guard.walkAround(energy=0, fire=0, poison=0)
 grave_guard.immunity(paralyze=0, invisible=1, lifedrain=0, drunk=1)
 grave_guard.regMelee(200)#unknown?
