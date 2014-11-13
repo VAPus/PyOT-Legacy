@@ -1,10 +1,10 @@
 northern_pike = genMonster("Northern Pike", (454, 0), "a northern pike")
-northern_pike.setHealth(95, healthmax=95)
-northern_pike.bloodType("blood")
-northern_pike.setDefense(armor=5, fire=0, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=0)
-northern_pike.setExperience(0)
-northern_pike.setSpeed(250) #?
-northern_pike.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=95)
+northern_pike.health(95, healthmax=95)
+northern_pike.type("blood")
+northern_pike.defense(armor=5, fire=0, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=0)
+northern_pike.experience(0)
+northern_pike.speed(250) #?
+northern_pike.behavior(summonable=0, hostile=1, illusionable=1, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=95)
 northern_pike.walkAround(energy=1, fire=0, poison=0)
-northern_pike.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
+northern_pike.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 northern_pike.regMelee(5)
