@@ -180,8 +180,8 @@ class Tile(list):
 
         pos = len(self) - self.getBottomItemCount()
 
-        self.insert(pos+1, creature)
-        return pos+1
+        self.insert(pos, creature)
+        return pos
 
     def removeCreature(self,creature):
         """ Remove a Creature (subclass of (:class:`game.creature.Creature`) on the tile. """
@@ -470,10 +470,10 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 else:
                     creature = l_getNPC(name)
                 if creature:
-                    creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
+                    call_later(1, creature.spawn, l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
                     print("Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name))
-
+                
             continue
 
         # Loop over the mapInfo.sectorSize[0] x rows
@@ -626,11 +626,11 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         else:
                             houseTiles[houseId] = [tile]
 
-                        """try:
+                        try:
                             for item in l_houseData[houseId].data["items"][ySum]:
                                 tile.placeItem(item)
                         except KeyError:
-                            pass"""
+                            pass
 
                         houseId = 0
                         thisSectorMap[ySum] = tile

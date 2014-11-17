@@ -141,6 +141,9 @@ class TibiaPacket:
         self.raw(string)
 
     def send(self, stream, pack=pack, adler32=adler32, encryptXTEA=encryptXTEA):
+        if not stream:
+            return
+            
         if stream.webSocket == True:
             stream.write_message(b''.join(self.data), True)
         else:

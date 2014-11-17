@@ -566,7 +566,6 @@ class MonsterBase(object):
                 for player in getPlayers(position):
                     stream = player.packet()
                     stream.addTileCreature(position, stackpos, monster, player)
-
                     stream.send(player.client)
 
             self.brain.beginThink(monster) # begin the heavy thought process!
