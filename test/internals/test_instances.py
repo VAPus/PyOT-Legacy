@@ -30,8 +30,8 @@ class TestInstances(FrameworkTestGame):
         status = item.place(position)
         self.assertTrue(status)
 
-        self.assertIn(item, position.getTile().things)
-        self.assertNotIn(item, (Position(1000, 1001, 7).getTile().things or []))
+        self.assertIn(item, position.getTile())
+        self.assertNotIn(item, (Position(1000, 1001, 7).getTile() or []))
     
 
     def test_can_notsee(self):
@@ -95,8 +95,8 @@ class TestInstances(FrameworkTestGame):
         
         self.assertTrue(self.player.canSee(iPosition))
         
-        self.assertIn(item, iPosition.getTile().things)
-        self.assertNotIn(item, (position.getTile().things or []))
+        self.assertIn(item, iPosition.getTile())
+        self.assertNotIn(item, (position.getTile() or []))
 
     
     def test_monster_spawn_pos(self):

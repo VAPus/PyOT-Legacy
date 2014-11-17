@@ -72,24 +72,23 @@ class Packet(base.BasePacket):
                 self.uint8(item.fluidSource or 0)
             
     def tileDescription(self, tile, player):
-        self.item(tile.ground)
-        
-        if not tile.things:
-            return
-            
-        count = 1
+        count = 0
         
         top = tile.getTopItemCount()
-        if top:
-            for item in tile.things[:top]:  
-                self.item(item)
-                count += 1
-                if count == 10:
-                    return
+        assert len(tile) >= top
+        assert top > 0
+        for item in tile[:top]:
+            assert isinstance(item, Item)
+            self.item(item)
+            count += 1
+            if count == 10:
+                return
         
         creatures = tile.getCreatureCount()
         if creatures:
-            for creature in tile.things[top:top+creatures]:
+            assert len(tile) >= top+creatures
+            for creature in tile[top:top+creatures]:
+                assert isinstance(creature, Creature)
                 if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
                     continue
 
@@ -124,11 +123,14 @@ class Packet(base.BasePacket):
                     return
         bottom = tile.getBottomItemCount()
         if bottom:
-            for item in tile.things[len(tile.things) - bottom:]:
+            for item in tile[len(tile) - bottom:]:
+                assert isinstance(item, Item)
                 self.item(item)
                 count += 1
                 if count == 10:
                     return
+        if player in tile:
+            print(tile, top, creatures, bottom)
             
     def creature(self, creature, known, removeKnown=0, player=None):
         if known:

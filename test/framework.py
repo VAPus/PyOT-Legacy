@@ -227,24 +227,21 @@ class FrameworkTestGame(unittest.TestCase):
             
         # Cleanup.
         tile = getTile(Position(1000, 1000, 7))
-        if tile.things:
-            for thing in tile.things[:]:
-                if isinstance(thing, Item) and not thing.fromMap:
-                    tile.removeItem(thing)
+        for thing in tile[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 1001, 7))
-        if tile.things:
-            for thing in tile.things[:]:
-                if isinstance(thing, Item) and not thing.fromMap:
-                    tile.removeItem(thing)
+        for thing in tile[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 999, 7))
-        if tile.things:
-            for thing in tile.things[:]:
-                if isinstance(thing, Item) and not thing.fromMap:
-                    tile.removeItem(thing)
+        for thing in tile[:]:
+            if isinstance(thing, Item) and not thing.fromMap:
+                tile.removeItem(thing)
                 
         # Clear instances.
         for instance in game.map.instances.copy():

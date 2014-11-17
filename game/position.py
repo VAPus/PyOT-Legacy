@@ -85,11 +85,11 @@ class Position(object):
         self.x, self.y, self.z, self.instanceId = data
         if self.instanceId is None:
             self.instanceId = 0
-    def __str__(self):
+    def __repr__(self):
         if not self.instanceId:
-            return "[%d, %d, %d]" % (self.x, self.y, self.z)
+            return "Position<%d, %d, %d>" % (self.x, self.y, self.z)
         else:
-            return "[%d, %d, %d - instance %d]" % (self.x, self.y, self.z, self.instanceId)
+            return "Position<%d, %d, %d - instance %d>" % (self.x, self.y, self.z, self.instanceId)
 
     def setStackpos(self, stack):
         """ Return a StackPosition with `stack` as the stack position and this as the x,y,z,instance position. """

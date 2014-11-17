@@ -21,10 +21,10 @@ class Node(object):
             self.tileTried = True
             tile = getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                if not tile.things:
-                    self.state = True
+                if False:
+                    self.state = True # Kill...
                 else:
-                    for thing in tile.things:
+                    for thing in tile:
                         if isinstance(thing, Item):
                             if thing.solid:
                                 self.state = False

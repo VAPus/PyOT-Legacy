@@ -123,7 +123,7 @@ class BasePacket(TibiaPacket):
 
                 tile = getTileConst2(baseY, (instanceId, secX, secY), x, y, instanceId)
 
-                if tile:
+                if tile != None:
                     if skip >= 0:
                         self.uint8(skip)
                         self.uint8(0xFF)
@@ -138,25 +138,20 @@ class BasePacket(TibiaPacket):
 
     def tileDescription(self, tile, player):
         self.uint16(0)
-        self.item(tile.ground)
-        
-        if not tile.things:
-            return
-            
-        count = 1
+
+        count = 0
         
         top = tile.getTopItemCount()
-        if top:
-            for item in tile.things[:top]:  
-                self.item(item)
-                
-                count += 1
-                if count == 10:
-                    return
+        for item in tile[:top]:  
+            self.item(item)
+            
+            count += 1
+            if count == 10:
+                return
 
         creatures = tile.getCreatureCount()
         if creatures:
-            for creature in tile.things[top:top+creatures]:
+            for creature in tile[top:top+creatures]:
                 if creature.hasCondition(CONDITION_INVISIBLE):
                     continue
                 known = False
@@ -193,7 +188,7 @@ class BasePacket(TibiaPacket):
                     return
         bottom = tile.getBottomItemCount()
         if bottom:
-            for item in tile.things[len(tile.things) - bottom:]:
+            for item in tile[len(tile) - bottom:]:
                 self.item(item)
                 
                 count += 1
@@ -891,7 +886,7 @@ class BaseProtocol(object):
         else:
             thing = player.findItem(stackPosition)
             if not thing or thing.cid != clientId:
-                for thing2 in game.map.getTile(position).things:
+                for thing2 in game.map.getTile(position):
                     if thing2.cid == clientId:
                         thing = thing2
                         break

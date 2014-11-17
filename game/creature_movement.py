@@ -47,7 +47,7 @@ class CreatureMovement(object):
         
         stackpos = placeCreature(self, position)
         if not stackpos:
-            raise game.errors.ImpossibleMove()
+            raise game.errors.ImpossibleMove(repr(position.getTile()))
         
         removeCreature(self, oldPosition)
         
@@ -293,10 +293,6 @@ class CreatureMovement(object):
         
         if not newTile:
             return False
-        
-        if newTile.ground.solid:
-            self.notPossible()
-            return False
             
         # oldTile
         oldTile = getTile(oldPosition)
@@ -307,17 +303,15 @@ class CreatureMovement(object):
         val = game.scriptsystem.get("move").run(creature=self)
         if val == False:
             return False
-        try:
-            oldStackpos = oldTile.findStackpos(self)
-        except:
-            return False
+
+        oldStackpos = oldTile.findStackpos(self)
 
         # Deal with walkOff
-        for item in oldTile.getItems():
+        for item in oldTile:
             game.scriptsystem.get('walkOff').run(thing=item, creature=self, position=oldPosition)
 
         # Deal with preWalkOn
-        for item in newTile.getItems():
+        for item in newTile:
             r = game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
             if r == False:
                 return False
@@ -327,40 +321,39 @@ class CreatureMovement(object):
             self.lmessage("You are PZ blocked")
             return False
 
-        if newTile.things:
-            for thing in newTile.things:
-                if not isPlayer and isinstance(thing, Item) and thing.teleport:
-                    return False
-                    
-                if thing.solid:
-                    if level and isinstance(thing, Creature):
-                        continue
+        for thing in newTile:
+            if not isPlayer and isinstance(thing, Item) and thing.teleport:
+                return False
+                
+            if thing.solid:
+                if level and isinstance(thing, Creature):
+                    continue
 
-                    # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
-                    if push and isinstance(thing, Monster) and self.isMonster() and self.base.pushCreatures and thing.base.pushable:
-                        # Push stuff here.
+                # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
+                if push and isinstance(thing, Monster) and self.isMonster() and self.base.pushCreatures and thing.base.pushable:
+                    # Push stuff here.
 
-                        # Clear up the creatures actions.
-                        thing.stopAction()
-                        thing.clearMove(direction, failback)
+                    # Clear up the creatures actions.
+                    thing.stopAction()
+                    thing.clearMove(direction, failback)
 
-                        if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
-                            # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
-                            break
-                        elif self.base.hostile and thing.isAttackable(self):
-                            # We can attack the creature.
-                            self.target = thing
-                            self.targetMode = 1
+                    if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
+                        # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
+                        break
+                    elif self.base.hostile and thing.isAttackable(self):
+                        # We can attack the creature.
+                        self.target = thing
+                        self.targetMode = 1
 
-                            # Deliver final blow.
-                            thing.onHit(self, -thing.data['healthmax'], PHYSICAL)
+                        # Deliver final blow.
+                        thing.onHit(self, -thing.data['healthmax'], PHYSICAL)
 
-                    #self.turn(direction) # Fix me?
-                    self.notPossible()
-                    return False
+                #self.turn(direction) # Fix me?
+                self.notPossible()
+                return False
 
         self.lastStep = _time
-        delay = self.stepDuration(newTile.ground) * (config.diagonalWalkCost if direction > 3 else 1)
+        delay = self.stepDuration(newTile[0]) * (config.diagonalWalkCost if direction > 3 else 1)
         self.lastAction = _time + delay
 
         newStackPos = newTile.placeCreature(self)

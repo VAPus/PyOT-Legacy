@@ -153,7 +153,7 @@ class TibiaPacket:
             else:
                 data = b''.join(self.data)
 
-            stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
+            stream.transport.write(b''.join((pack("<HI", len(data)+4, adler32(data)), data)))
 
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):

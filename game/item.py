@@ -132,11 +132,11 @@ class Item(object):
         except:
             pass
 
-        if not self in tile.things:
+        if not self in tile:
             return False # Not on this tile
 
         elif isinstance(pos, StackPosition):
-            for z in range(len(tile.things)+1):
+            for z in range(len(tile)+1):
                 if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
@@ -587,7 +587,7 @@ class Item(object):
             if toId:
                 if stackPos == 0:
                     # Hack.
-                    tile.ground = item
+                    tile[0] = item
                     newStackpos = 0
                 else:
                     newStackpos = tile.placeItem(item)

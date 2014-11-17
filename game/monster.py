@@ -411,10 +411,7 @@ class Monster(Creature):
         if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
 
-        if not tile.things:
-            return True
-
-        for thing in tile.things:
+        for thing in tile:
             if isinstance(thing, Item):
                 field = thing.field
                 if self.base.ignoreFire and field == 'fire':
