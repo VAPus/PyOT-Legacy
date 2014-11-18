@@ -1,6 +1,7 @@
 """A collection of functions that almost every other component requires"""
 from collections import deque
 from tornado import gen
+from tornado.gen import Return
 import time
 import game.map
 import config
@@ -551,11 +552,11 @@ def getPlayerIDByName(name):
     """
 
     try:
-        return game.player.allPlayers[name].data["id"]
-    except:
+        raise Return(game.player.allPlayers[name].data["id"])
+    except KeyError:
         d = yield sql.runQuery("SELECT `id` FROM `players` WHERE `name` = %s", (name))
         if d:
-            return d[0]['id']
+            raise Return(d[0]['id'])
         else:
             return
 
@@ -650,7 +651,7 @@ def placeInDepot(name, depotId, items):
             __inPlace(game.player.allPlayers[name].depot[depotId])
         except:
             game.player.allPlayers[name].depot[depotId] = items
-        return True
+        raise Return(True)
     else:
         result = yield sql.runQuery("SELECT `depot` FROM `players` WHERE `name` = %s", (name))
         if result:
@@ -661,16 +662,16 @@ def placeInDepot(name, depotId, items):
                 result[depotId] = items
             result = fastPickler(result)
             sql.runOperation("UPDATE `players` SET `depot` = %s", result)
-            return True
+            raise Return(True)
         else:
-            return False
+            raise Return(False)
 
 @gen.coroutine
 def loadPlayer(playerName):
     """ Load player with name `playerName`, return result. """
     try:
         # Quick load :p
-        return game.player.allPlayers[playerName]
+        raise Return(game.player.allPlayers[playerName])
     except KeyError:
         character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`name` = %s AND p.`world_id` = %s", playerName, config.worldId)
         if not character:
@@ -678,7 +679,7 @@ def loadPlayer(playerName):
         cd = character[0]
         deathlist.loadDeathList(cd['id'])
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
-        return game.player.allPlayers[playerName]
+        raise Return(game.player.allPlayers[playerName])
 
 @gen.coroutine
 def loadPlayerById(playerId):
@@ -686,7 +687,7 @@ def loadPlayerById(playerId):
     # Quick look
     for player in game.player.allPlayersObject:
         if player.data["id"] == playerId:
-            return player
+            raise Return(player)
 
     character = yield sql.runQuery("SELECT p.`id`,p.`name`,p.`world_id`,p.`group_id`,p.`account_id`,p.`vocation`,p.`health`,p.`mana`,p.`soul`,p.`manaspent`,p.`experience`,p.`posx`,p.`posy`,p.`posz`,p.`instanceId`,p.`sex`,p.`looktype`,p.`lookhead`,p.`lookbody`,p.`looklegs`,p.`lookfeet`,p.`lookaddons`,p.`lookmount`,p.`town_id`,p.`skull`,p.`stamina`, p.`storage`, p.`inventory`, p.`depot`, p.`conditions`, s.`fist`,s.`fist_tries`,s.`sword`,s.`sword_tries`,s.`club`,s.`club_tries`,s.`axe`,s.`axe_tries`,s.`distance`,s.`distance_tries`,s.`shield`,s.`shield_tries`,s.`fishing`, s.`fishing_tries`, (SELECT a.`language` FROM account AS `a` WHERE a.`id` = p.`account_id`) as `language`, g.`guild_id`, g.`guild_rank`, p.`balance` FROM `players` AS `p` LEFT JOIN player_skills AS `s` ON p.`id` = s.`player_id` LEFT JOIN player_guild AS `g` ON p.`id` = g.`player_id` WHERE p.`id` = %s AND p.`world_id` = %s", playerId, config.worldId)
     if not character:
@@ -694,7 +695,7 @@ def loadPlayerById(playerId):
     cd = character[0]
     deathlist.loadDeathList(cd['id'])
     game.player.allPlayers[cd['name']] = game.player.Player(None, cd)
-    return game.player.allPlayers[cd['name']]
+    raise Return(game.player.allPlayers[cd['name']])
 
 def moveItem(player, fromPosition, toPosition, count=0):
     """ Move item (or `count` number of items) from `fromPosition` to `toPosition` (may be Position in inventory of `player`, or a StackPosition). """
@@ -937,11 +938,11 @@ def executeCode(code):
 def _N():
 %s
 """ % '\n'.join(newcode))
-            return otjson.dumps((yield _N()))
+            raise Return(otjson.dumps((yield _N())))
         else:
             exec(code)
     except Exception as e:
-        return otjson.dumps(e.value)
+        raise Return(otjson.dumps(e.value))
     else:
         yield defer.maybeDeferred()
 

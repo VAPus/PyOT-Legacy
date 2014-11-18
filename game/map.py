@@ -470,7 +470,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                 else:
                     creature = l_getNPC(name)
                 if creature:
-                    call_later(1, creature.spawn, l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
+                    creature.spawn(l_Position(centerX+spawnX, centerY+spawnY, centerZ, instanceId), radius=centerRadius, spawnTime=spawnTime, radiusTo=centerPoint)
                 else:
                     print("Spawning of %s '%s' failed, it doesn't exist!" % ("Monster" if creatureType == 61 else "NPC", name))
                 

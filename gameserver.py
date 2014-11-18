@@ -1,10 +1,25 @@
 import sys, signal
 import time
+
+# Hack time.time. This is the heaviest call on Tornado...
+_time = time.time
+__time = _time()
+_counter = 0
+def _():
+     global _counter
+     global __time
+     _counter += 1
+     if _counter == 100:
+         _counter = 0
+         __time = _time()
+     return __time
+time.time = _
+
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
 # Check for good enough Python version. Use builtin path.
-if sys.implementation.name == "pypy" and sys.implementation.version.minor == 3:
+if '__pypy__' in sys.builtin_module_names:
     sys.path.insert(2, "/usr/local/lib/python3.4/dist-packages")
 
 try:

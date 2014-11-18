@@ -300,7 +300,7 @@ def readData(creature, text):
     msg = ""
     pos = Position(*map(int, text.split(',')))
     tile = pos.getTile()
-    for i in tile.things:
+    for i in tile:
         if isinstance(i, game.creature.Creature):
             msg += "Creature '%s'\n" % i.name()
         elif isinstance(i, game.item.Item):
@@ -365,10 +365,10 @@ def playerAI(creature, **k):
             # Try targeting
             for pos in creature.position.roundPoint(1):
                 tile = pos.getTile()
-                if not tile or not tile.things:
+                if not tile:
                     continue
                 
-                for thing in tile.things:
+                for thing in tile:
                     if isinstance(thing, game.monster.Monster):
                         creature.target = thing
                         creature.targetMode = 1

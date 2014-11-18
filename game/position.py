@@ -1,10 +1,11 @@
 class Position(object):
-    __slots__ = ('x', 'y', 'z', 'instanceId', 'hash')
+    __slots__ = ('x', 'y', 'z', 'instanceId', '_hash')
     def __init__(self, x, y, z=7, instanceId=0):
         self.x = x
         self.y = y
         self.z = z
         self.instanceId = instanceId
+        self._hash = 0
 
     def __eq__(self, other):
         return (self.x == other.x and self.y == other.y and self.z == other.z and self.instanceId == other.instanceId)
@@ -24,14 +25,11 @@ class Position(object):
         """ Is this position in x,y,z range from the other position? Returns True/False. """
         return ( self.instanceId == other.instanceId and abs(self.x-other.x) <= x and abs(self.y-other.y) <= y and abs(self.z-other.z) <= y )
 
-    def __setattr__(self, key, value):
-        super(Position, self).__setattr__(key, value)
-        if key != "hash":
-            try:
-                self.rehash()
-            except:
-                pass
-
+    @property
+    def hash(self):
+        if not self._hash:
+            self.rehash()
+        return self._hash
     # Support for the old behavior of list attributes.
     def __setitem__(self, key, value):
         # TODO: Kill!
@@ -97,11 +95,11 @@ class Position(object):
 
     def exists(self):
         """ Check if this position exists (holds a tile) """
-        return self.hash in game.map.knownMap
+        return self._hash in game.map.knownMap
 
     def rehash(self):
         """ Makes a new position hash. Used in map """
-        self.hash = self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z
+        self._hash = self.instanceId << 40 | self.x << 24 | self.y << 8 | self.z
 
 class MultiPosition(Position):
     def __init__(self, instanceId=0, *argc):
@@ -143,6 +141,7 @@ class StackPosition(Position):
         self.z = z
         self.stackpos = stackpos
         self.instanceId = instanceId
+        self._hash = 0
 
     # For savings
     def __getstate__(self):

@@ -1,6 +1,7 @@
 import builtins
 from tornado import gen, ioloop
 builtins.gen = gen
+builtins.Return = gen.Return
 from collections import deque
 import time
 import game.map

@@ -3,7 +3,7 @@ import builtins
 from tornado import gen, ioloop
 from collections import deque
 import random, sys
-
+from tornado.gen import Return
 
 builtins.PYOT_RUN_SQLOPERATIONS = True
 connections = None
@@ -111,8 +111,8 @@ if config.sqlModule == "mysql":
             # Put connection back
             connections.append(conn)
 
-            return res
-        return {}
+            raise Return(res)
+        raise Return({})
 
     @gen.coroutine
     def runQueryWithException(*argc):
@@ -134,8 +134,8 @@ if config.sqlModule == "mysql":
             # Put connection back
             connections.append(conn)
 
-            return future
-        return {}
+            raise Return(future)
+        raise Return({})
 
     @gen.coroutine
     def runOperationLastId(*argc):
@@ -163,8 +163,8 @@ if config.sqlModule == "mysql":
             # Put connection back
             connections.append(conn)
 
-            return res
-        return random.randint(1, 10000)
+            raise Return(res)
+        raise Return(random.randint(1, 10000))
 
 elif config.sqlModule == "tornado-mysql":
     from tornado_mysql import pools, cursors
@@ -178,7 +178,7 @@ elif config.sqlModule == "tornado-mysql":
             global connections
             connections = pools.Pool(dict(host=config.sqlHost, user=config.sqlUsername, passwd=config.sqlPassword, db=config.sqlDatabase, cursorclass=cursors.DictCursor, no_delay=True), max_idle_connections=config.sqlConnections)
             yield connections._get_conn()
-        return True
+        raise Return(True)
         
     def runOperation(*argc):
         ioloop.IOLoop.instance().add_callback(_runOperation, *argc)
@@ -212,8 +212,8 @@ elif config.sqlModule == "tornado-mysql":
             exc = future.exception()
 
 
-            return res.fetchall()
-        return {}
+            raise Return(res.fetchall())
+        raise Return({})
 
     @gen.coroutine
     def runQueryWithException(query, *argc):
@@ -222,8 +222,8 @@ elif config.sqlModule == "tornado-mysql":
 
             yield future
 
-            return future
-        return {}
+            raise Return(future)
+        raise Return({})
 
     @gen.coroutine
     def runOperationLastId(query, *argc):
@@ -240,8 +240,8 @@ elif config.sqlModule == "tornado-mysql":
             # Put connection back
             connections.append(conn)
 
-            return res.lastrowid
-        return random.randint(1, 10000)
+            raise Return(res.lastrowid)
+        raise Return(random.randint(1, 10000))
 else:
     raise ImportError("Unsupported sqlModule!");
 

@@ -84,8 +84,8 @@ class TibiaPacket:
             self.uint8(header)
 
     def clear(self):
-        self.data.clear()
-        self.data.append(b"")
+        self.data = [b""]
+        self.raw = self.data.append
         self.length = 0
 
     # 8bit - 1byte, C type: char

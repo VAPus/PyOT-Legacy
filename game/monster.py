@@ -398,7 +398,8 @@ class Monster(Creature):
                     # We shall be called again later
                     self.target.scripts["onNextStep"].append(__followCallback)
 
-        self.target.scripts["onNextStep"].append(__followCallback)
+        if self.target:
+            self.target.scripts["onNextStep"].append(__followCallback)
         return True
 
 
