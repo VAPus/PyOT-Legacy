@@ -78,7 +78,7 @@ class TestMoveItem(FrameworkTestGame):
         self.assertEqual(self.player.inventory[SLOT_AMMO], item)
         
         # And not on the ground?
-        self.assertFalse(item2 in self.player.position.getTile().things)
+        self.assertFalse(item2 in self.player.position.getTile())
         
         # Correct count?
         self.assertEqual(item.count, 100)
@@ -92,11 +92,11 @@ class TestMoveItem(FrameworkTestGame):
         # Move.
         self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH), 10))
 
-        things = self.player.position.getTile().things
+        things = self.player.position.getTile()
         self.assertNotIn(item, things)
         
         ok = False
-        for thing in self.player.positionInDirection(SOUTH).getTile().things:
+        for thing in self.player.positionInDirection(SOUTH).getTile():
             if thing.itemId == item.itemId:
                 ok = True
                 
@@ -126,11 +126,11 @@ class TestMoveItem(FrameworkTestGame):
         # Move.
         self.assertTrue(moveItem(self.player, item.position, self.player.positionInDirection(SOUTH)))
 
-        things = self.player.position.getTile().things
+        things = self.player.position.getTile()
         self.assertNotIn(item, things)
         
         ok = False
-        for thing in self.player.positionInDirection(SOUTH).getTile().things:
+        for thing in self.player.positionInDirection(SOUTH).getTile():
             if thing.itemId == item.itemId:
                 ok = True
                 
@@ -348,7 +348,7 @@ class TestMoveItem(FrameworkTestGame):
 
         relocate(Position(1000, 1001, 7), Position(1001, 1000, 7))
 
-        self.assertIn(coin, Position(1001, 1000, 7).getTile().things)
+        self.assertIn(coin, Position(1001, 1000, 7).getTile())
 
     def test_117_p9(self):
         " http://vapus.net/forum/project.php?issueid=117 "
@@ -437,5 +437,5 @@ class TestMoveItem(FrameworkTestGame):
         self.assertTrue(moveItem(self.player, gold2.position, gold1.position))
 
         self.assertEqual(gold1.count, 20)
-        self.assertNotIn(gold2, gold1.position.getTile().things)
+        self.assertNotIn(gold2, gold1.position.getTile())
     

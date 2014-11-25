@@ -200,6 +200,7 @@ def loader(timer):
     builtins.re = re
     builtins.spell = game.spell # Simplefy spell making
     builtins.Item = game.item.Item
+    builtins.makeItem = game.item.makeItem
     builtins.itemAttribute = game.item.attribute
     builtins.cid = game.item.cid
     builtins.idByName = game.item.idByName
@@ -343,6 +344,7 @@ def loader(timer):
 
     # Load map (if configurated to do so)
     if config.loadEntierMap:
+        config.performSectorUnload = False 
         print("> > Loading the entier map...", end=' ')
         begin = time.time()
         files = glob.glob('%s/%s/*.sec' % (config.dataDirectory, config.mapDirectory))
@@ -361,7 +363,7 @@ def loader(timer):
     def _charge(house):
             call_later(config.chargeRentEvery, game.functions.looper, lambda: game.scriptsystem.get("chargeRent").run(house=house))
 
-    for house in list(game.house.houseData.values()):
+    for house in game.house.houseData.values():
         if not house.rent or not house.owner: continue
 
         if house.paid < (timer - config.chargeRentEvery):

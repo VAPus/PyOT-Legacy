@@ -80,12 +80,13 @@ class BasePacket(TibiaPacket):
     def item(self, item, count=None):
         self.uint16(item.cid)
 
-        if item.stackable:
-            self.uint8(item.count or 1)
-        elif item.type in (11,12):
-            self.uint8(item.fluidSource or 0)
-        if item.animation:
-            self.uint8(0xFE)
+        if type(item) is Item:
+            if item.stackable:
+                self.uint8(item.count or 1)
+            elif item.type in (11,12):
+                self.uint8(item.fluidSource or 0)
+            if item.animation:
+                self.uint8(0xFE)
 
 
     # Map Description (the entier visible map)
@@ -111,30 +112,54 @@ class BasePacket(TibiaPacket):
             self.uint8(0xff)
 
     # Floor Description (the entier floor)
-    def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
-        instanceId = player.position.instanceId
-        base = instanceId << 40 | _z
-        for x in range(_x + offset, _x + width + offset):
-            baseX = base | x << 24
-            secX = x >> game.map.sectorShiftX
-            for y in range(_y + offset, _y + height + offset):
-                baseY = baseX | y << 8
-                secY = y >> game.map.sectorShiftY
 
-                tile = getTileConst2(baseY, (instanceId, secX, secY), x, y, instanceId)
+    if config.loadEntierMap:
+        # No need to construct the secSum.
+        def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
+            instanceId = player.position.instanceId
+            base = instanceId << 40 | _z
+            for x in range(_x + offset, _x + width + offset):
+                baseX = base | x << 24
+                for y in range(_y + offset, _y + height + offset):
+                    tile = getTileConst2(baseX | y << 8, None, x, y, instanceId)
 
-                if tile != None:
-                    if skip >= 0:
-                        self.uint8(skip)
-                        self.uint8(0xFF)
-                    skip = 0
-                    self.tileDescription(tile, player)
-                else:
-                    skip += 1
-                    if skip == 0xFF:
-                        self.uint16(0xffff)
-                        skip = -1
-        return skip
+                    if tile is not None:
+                        if skip >= 0:
+                            self.uint8(skip)
+                            self.uint8(0xFF)
+                        skip = 0
+                        self.tileDescription(tile, player)
+                    else:
+                        skip += 1
+                        if skip == 0xFF:
+                            self.uint16(0xffff)
+                            skip = -1
+            return skip
+    else:
+        def floorDescription(self, _x, _y, _z, width, height, offset, skip, player):
+            instanceId = player.position.instanceId
+            base = instanceId << 40 | _z
+            for x in range(_x + offset, _x + width + offset):
+                baseX = base | x << 24
+                secX = x >> game.map.sectorShiftX
+                for y in range(_y + offset, _y + height + offset):
+                    baseY = baseX | y << 8
+                    secY = y >> game.map.sectorShiftY
+
+                    tile = getTileConst2(baseY, (instanceId, secX, secY), x, y, instanceId)
+
+                    if tile is not None:
+                        if skip >= 0:
+                            self.uint8(skip)
+                            self.uint8(0xFF)
+                        skip = 0
+                        self.tileDescription(tile, player)
+                    else:
+                        skip += 1
+                        if skip == 0xFF:
+                            self.uint16(0xffff)
+                            skip = -1
+            return skip
 
     def tileDescription(self, tile, player):
         self.uint16(0)

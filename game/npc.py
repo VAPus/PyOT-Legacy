@@ -30,10 +30,12 @@ def Conversation(words, open, close=None):
             
     return Conv
 class NPC(Creature):
-    def generateClientID(self):
+    @staticmethod
+    def generateClientID():
         return 0x80000000 + uniqueId()
 
-    def isNPC(self):
+    @staticmethod
+    def isNPC():
         return True
         
     def __init__(self, base, position, cid=None):

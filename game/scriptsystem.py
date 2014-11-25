@@ -375,8 +375,7 @@ def shutdown(sig, frame):
     # Perform clean shutdown.
     io_loop = tornado.ioloop.IOLoop.instance()
  
-    deadline = time.time() + 3
- 
+    deadline = time.time() + 3 
     def stop_loop():
         now = time.time()
         try:

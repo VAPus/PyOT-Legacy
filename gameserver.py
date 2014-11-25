@@ -1,11 +1,11 @@
 import sys, signal
 import time
-
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
 # Check for good enough Python version. Use builtin path.
-if sys.implementation.name == "pypy" and sys.implementation.version.minor == 3:
+# XXX: Should be killed before release.
+if '__pypy__' in sys.builtin_module_names:
     sys.path.insert(2, "/usr/local/lib/python3.4/dist-packages")
 
 try:
@@ -35,7 +35,9 @@ import tornado.gen
 from service.gameserver import GameFactory
 import time
 import game.loading
-    
+import tornado.log
+tornado.log.enable_pretty_logging()
+
 startTime = time.time()
 # Game Server
 gameServer = GameFactory()

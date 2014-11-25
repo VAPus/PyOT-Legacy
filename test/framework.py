@@ -6,6 +6,7 @@ sys.path.insert(0, '..')
 sys.path.insert(1, 'game')
 sys.path.insert(2, '../game')
 import config
+config.loadEntierMap = False # Force false on this one.
 import packet
 import random
 import string
@@ -227,22 +228,22 @@ class FrameworkTestGame(unittest.TestCase):
             
         # Cleanup.
         tile = getTile(Position(1000, 1000, 7))
-        if tile.things:
-            for thing in tile.things[:]:
+        if tile and len(tile):
+            for thing in tile[:]:
                 if isinstance(thing, Item) and not thing.fromMap:
                     tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 1001, 7))
-        if tile.things:
-            for thing in tile.things[:]:
+        if tile and len(tile):
+            for thing in tile[:]:
                 if isinstance(thing, Item) and not thing.fromMap:
                     tile.removeItem(thing)
                 
         # Cleanup.
         tile = getTile(Position(1000, 999, 7))
-        if tile.things:
-            for thing in tile.things[:]:
+        if tile and len(tile):
+            for thing in tile[:]:
                 if isinstance(thing, Item) and not thing.fromMap:
                     tile.removeItem(thing)
                 

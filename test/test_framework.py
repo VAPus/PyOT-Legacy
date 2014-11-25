@@ -39,7 +39,7 @@ class TestVirtualPlayer(framework.FrameworkTestGame):
         self.assertTrue(getPlayer(self.player.data["name"]))
         
         # Are we placed?
-        self.assertTrue(self.player in self.player.position.getTile().things)
+        self.assertTrue(self.player in self.player.position.getTile())
         
         # cid lookup?
         self.assertTrue(self.player.cid in game.creature.allCreatures)

@@ -2,7 +2,7 @@ from test.framework import FrameworkTestGame
 
 class TestMap(FrameworkTestGame):
     def test_settile(self):
-        tile = game.map.Tile(Item(100), None)
+        tile = game.map.Tile([Item(100)])
         pos = Position(1001, 1000, 7)
         orgTile = pos.getTile()
 
@@ -22,7 +22,7 @@ class TestMap(FrameworkTestGame):
         self.assertNotEqual(orgTile, copy)
 
         self.assertEqual(orgTile.flags, copy.flags)
-        self.assertEqual(orgTile.ground.itemId, copy.ground.itemId)
+        self.assertEqual(orgTile[0].itemId, copy[0].itemId)
 
     def test_load(self):
         sectorSum = (0, 4, 1)

@@ -317,6 +317,16 @@ class CreatureMovement(object):
                 if val == False:
                     return False
                     
+        try:
+            oldStackpos = oldTile.findStackpos(self)
+        except:
+            return False # Not on Tile.
+
+        # PZ blocked?
+        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            self.lmessage("You are PZ blocked")
+            return False
+
         # Block movement, even if script stop us later.
         self.lastStep = _time
         delay = self.stepDuration(newTile[0]) * (config.diagonalWalkCost if direction > 3 else 1)
@@ -368,13 +378,6 @@ class CreatureMovement(object):
                     except:
                         print("%d (%s) got a invalid teledist (%s), remove it!" % (thing.itemId, thing, teledest))
                         del thing.teledest
-                    
-            
-        oldStackpos = oldTile.findStackpos(self)
-        # PZ blocked?
-        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
-            self.lmessage("You are PZ blocked")
-            return False
 
 
         newStackPos = newTile.placeCreature(self)

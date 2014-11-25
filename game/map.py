@@ -1,16 +1,12 @@
 from game.item import Item
 import game.item
 from . import scriptsystem
-from collections import deque
 import config
 import time
 import io
 import struct
 import sys
-import itertools
-import gc
 import importlib
-from itertools import islice
 
 try:
     mapInfo = importlib.import_module('%s.%s.info' % (config.dataDirectory, config.mapDirectory))
@@ -54,15 +50,24 @@ def __uid():
         yield idsTaken
 newInstanceId = __uid().__next__
 
-def getTile(pos, knownMap=knownMap):
-    """ Returns the Tile on this position. """
-    # XXX: Store this sum in the Position itself, and kill the x,y,z sets. They are rarely accessed. Would give a slight speedup and memory improvement.
-    posSum = pos.hash
+if config.loadEntierMap:
+    # We don't need to call loader.
+    def getTile(pos, knownMap=knownMap):
+        """ Returns the Tile on this position. """
+        posSum = pos.hash
+
+        if posSum in knownMap:
+            return knownMap[posSum]
+
+else:
+    def getTile(pos, knownMap=knownMap):
+        """ Returns the Tile on this position. """
+        posSum = pos.hash
     
-    if posSum in knownMap:
-        return knownMap[posSum]
-    elif loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
-        return knownMap[posSum] if posSum in knownMap else None
+        if posSum in knownMap:
+            return knownMap[posSum]
+        elif loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
+            return knownMap[posSum] if posSum in knownMap else None
 
 def getTileIfExist(pos, _knownMap=knownMap):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
@@ -87,12 +92,19 @@ def getTileConst(x,y,z,instanceId):
     elif loadTiles(x, y, instanceId, (instanceId, x >> sectorShiftX, y >> sectorShiftY)):
         return knownMap[posSum] if posSum in knownMap else None
 
-def getTileConst2(posSum, secSum, x, y, instanceId, knownMap = knownMap):
-    """ Used by floorDescription """
-    if posSum in knownMap:
-        return knownMap[posSum]
-    elif loadTiles(x, y, instanceId, secSum):
-        return knownMap[posSum] if posSum in knownMap else None
+if config.loadEntierMap:
+     # We don't have to do loading.
+     def getTileConst2(posSum, secSum, x, y, instanceId, knownMap = knownMap):
+        """ Used by floorDescription """
+        if posSum in knownMap:
+            return knownMap[posSum]
+else:
+    def getTileConst2(posSum, secSum, x, y, instanceId, knownMap = knownMap):
+        """ Used by floorDescription """
+        if posSum in knownMap:
+            return knownMap[posSum]
+        elif loadTiles(x, y, instanceId, secSum):
+             return knownMap[posSum] if posSum in knownMap else None
 
 def getHouseId(pos):
     """ Returns the houseId on this position, or False if none """
@@ -191,8 +203,6 @@ class Tile(list):
         
     def placeItem(self, item):
         """ Place an Item (:class:`game.item.Item`) on the tile. This automatically deals with ontop etc. """
-
-        assert isinstance(item, Item)
         if item.ontop:
             pos = 1 #self.getTopItemCount()
             self.insert(pos, item)
@@ -227,7 +237,7 @@ class Tile(list):
         """ Returns an iterator over all items on this tile. """
 
         for thing in self:
-            if isinstance(thing, Item):
+            if thing.isItem():
                 yield thing
 
     def creatures(self):
@@ -300,7 +310,7 @@ class Tile(list):
         """ Returns a copy of this tile. Used internally for unstacking. """
         items = []
         for item in self:
-            if isinstance(item, Item):
+            if item.isItem():
                 items.append(item.copy())
 
         flags = self.flags
@@ -417,7 +427,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
     # Bind them locally, this is suppose to make a small speedup as well, local things can be more optimized :)
     # Pypy gain nothing, but CPython does.
 
-    l_Item = game.item.Item
+    l_Item = game.item.makeItem
     l_Tile = Tile
     l_HouseTile = HouseTile
     l_Position = Position
@@ -564,11 +574,15 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                             try:
                                 items.append(l_dummyItems[itemId])
                             except KeyError:
-                                item = l_Item(itemId)
-                                item.tileStacked = True
-                                item.fromMap = True
-                                l_dummyItems[itemId] = item
-                                items.append(item)
+                                try:
+                                    item = l_Item(itemId)
+                                except KeyError:
+                                    pass # Item does not exist.
+                                else:
+                                    item.tileStacked = True
+                                    item.fromMap = True
+                                    l_dummyItems[itemId] = item
+                                    items.append(item)
 
 
 
@@ -636,6 +650,7 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         thisSectorMap[ySum] = tile
 
                     elif stackTiles:
+                        ok = False
                         for i in items:
                             if i.solid:
                                 ok = True
@@ -643,6 +658,9 @@ def loadSectorMap(code, instanceId, baseX, baseY):
                         if ok:
                             # Constantify items on stacked tiles. This needs some workarounds w/transform. But prevents random bug.
                             if items:
+                                hash = []
+                                for i in items:
+                                    hash = i.itemId 
                                 hash = tuple(items)
 
                             try:
@@ -687,7 +705,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
         return False
 
     if verbose:
-        print("Loading of %d.%d.sec took: %f" % (sectorX, sectorY, time.time() - t))
+        print("Loading of %d.%d.sec took: %fs" % (sectorX, sectorY, time.time() - t))
 
     if config.performSectorUnload:
         call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
@@ -723,7 +741,7 @@ def _unloadMap(sectorX, sectorY, instanceId):
     if _unloadCheck(sectorX, sectorY, instanceId):
         print("Unloading....")
         unload(sectorX, sectorY, instanceId)
-        print("Unloading took: %f" % (time.time() - t))
+        print("Unloading took: %fs" % (time.time() - t))
     else:
         call_later(config.performSectorUnloadEvery, _unloadMap, sectorX, sectorY, instanceId)
 

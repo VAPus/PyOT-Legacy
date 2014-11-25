@@ -23,10 +23,12 @@ def chance(procent):
     return gen
 
 class Monster(Creature):
-    def generateClientID(self):
+    @staticmethod
+    def generateClientID():
         return 0x40000000 + uniqueId()
 
-    def isMonster(self):
+    @staticmethod
+    def isMonster():
         return True
 
     def __init__(self, base, position, cid=None):

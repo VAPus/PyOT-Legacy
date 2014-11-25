@@ -1,16 +1,15 @@
 from . import sql
-from collections import deque, namedtuple
+from collections import deque
 import game.const
 import config
 import copy
 import time
 import marshal
-import gc
-import xml.etree.cElementTree as ET
+#import xml.etree.cElementTree as ET
 from . import otjson as json
 import pickle
 
-items = None
+items = {}
 sprites = {}
 stackable = {}
 attributes = {'solid':1, 'blockprojectile': 1 << 1, 'blockpath': 1 << 2, 'hasheight': 1 << 3, 'usable': 1 << 4, 'pickable': 1 << 5,
@@ -42,11 +41,9 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if sidFlags[itemId] & 128:
+        if itemId in stackableItems:
             if not count or count < 0:
                 count = 1
-            elif not isinstance(count, int):
-                raise Exception("Supplied count to Item() is not a number.")
 
             self.count = count
 
@@ -56,20 +53,23 @@ class Item(object):
         except KeyError:
             pass
 
-
-    def isPlayer(self):
+    @staticmethod
+    def isPlayer():
         " Return False "
         return False
 
-    def isNPC(self):
+    @staticmethod
+    def isNPC():
         " Returns False "
         return False
 
-    def isMonster(self):
+    @staticmethod
+    def isMonster():
         " Returns False "
         return False
 
-    def isItem(self):
+    @staticmethod
+    def isItem():
         " Returns True "
         return True
 
@@ -892,6 +892,25 @@ class Item(object):
             pass
         self.position = None
 
+# XXX: We may want to turn this into a __slots__ type object if init parameters is pure. And item is not changable.
+class StaticItem(Item):
+    """ Item without stacking, and fluidsource """
+    stackable = False
+    solid = False
+
+class SolidItem(Item):
+    """ Similar to StaticItem, expect solid is constant True """
+    stackable = False
+    solid = True
+
+def makeItem(itemId, count=1, actions=None, **kwargs):
+     if itemId in stackableItems or sidType[itemId] in (11, 12):
+          return Item(itemId, count, actions, **kwargs)
+     elif itemId in solidItems:
+          return SolidItem(itemId, count, actions, **kwargs)
+     else:
+          return StaticItem(itemId, count, actions, **kwargs)
+
 idByNameCache = {}
 def idByName(name):
     " Return the sid based on name. "
@@ -986,9 +1005,9 @@ def loadItems():
 
             for id in range(start, end+1):
                 if fixCid:
-                    _newItem = item.copy()
-                    _newItem['cid'] = bCid
-                    loadItems[id] = _newItem
+                    #_newItem = item.copy()
+                    #_newItem['cid'] = bCid
+                    loadItems[id] = item
                     _cidToSid[bCid] = id
                     sidToCid[id] = bCid
                     sidFlags[id] = flags
