@@ -37,17 +37,17 @@ class Monster(Creature):
         self.creatureType = 1
         self.spawnPosition = position.copy()
         self.lastStep = 0
-        self.speed = float(base.speed)
+        self.speed = float(base._speed)
         self.lastMelee = 0
         self.lastDistance = 0
-        self.walkPer = base.walkPer
+        self.walkPer = base._walkPer
         self.brainEvent = None
         self.spawnTime = None
         self.radius = 5
         self.master = None
         self.respawn = True
-        self.skull = base.skull # We make a copy of the int so we might set a skull in scripts later.
-        self.canWalk = base.walkable
+        self.skull = base._skull # We make a copy of the int so we might set a skull in scripts later.
+        self.canWalk = base._walkable
         self.intervals = {}
         self.defaultSpeakType = MSG_SPEAK_MONSTER_SAY
         self.defaultYellType = MSG_SPEAK_MONSTER_YELL
@@ -82,29 +82,33 @@ class Monster(Creature):
 
     def damageToBlock(self, dmg, type):
         if type == MELEE:
-            return dmg - self.base.armor
+            return dmg - self.base._armor
         elif type == PHYSICAL:
-            return dmg * self.base.physical
+            return dmg * self.base._physical
         elif type == FIRE:
-            return dmg * self.base.fire
+            return dmg * self.base._fire
         elif type == EARTH:
-            return dmg * self.base.earth
+            return dmg * self.base._earth
         elif type == ENERGY:
-            return dmg * self.base.energy
+            return dmg * self.base._energy
         elif type == ICE:
-            return dmg * self.base.ice
+            return dmg * self.base._ice
         elif type == HOLY:
-            return dmg * self.base.holy
+            return dmg * self.base._holy
         elif type == DEATH:
-            return dmg * self.base.death
+            return dmg * self.base._death
         elif type == DROWN:
-            return dmg * self.base.drown
+            return dmg * self.base._drown
+        elif type == LIFEDRAIN:
+            return dmg * self.base._lifedrain
+        elif type == MANADRAIN:
+            return dmg * self.base._manadrain
 
         # What, no match?
         return dmg
 
     def defaultSpeed(self):
-        self.speed = float(self.base.speed)
+        self.speed = float(self.base._speed)
 
     def turnOffBrain(self):
         try:
@@ -240,7 +244,7 @@ class Monster(Creature):
 
         # Add full splash
         splash = Item(FULLSPLASH)
-        splash.fluidSource = self.base.blood
+        splash.fluidSource = self.base._blood
 
         if corpse:
             res = corpse.place(self.position) 
@@ -267,16 +271,16 @@ class Monster(Creature):
             if attackerParty and attackerParty.shareExperience and attackerParty.checkShareExperience():
                 for member in attackerParty.members:
                     if member.data["stamina"] or config.noStaminaNoExp == False:
-                        exp = (self.base.experience / len(attackerParty.members)) * config.partyExperienceFactor
+                        exp = (self.base._experience / len(attackerParty.members)) * config.partyExperienceFactor
                         member.modifyExperience(exp * member.getExperienceRate())
 
                         if exp >= member.data["level"]:
                             member.soulGain()
             else:
                 if self.getLastDamager().data["stamina"] or config.noStaminaNoExp == False:
-                    self.getLastDamager().modifyExperience(self.base.experience *self.getLastDamager().getExperienceRate())
+                    self.getLastDamager().modifyExperience(self.base._experience *self.getLastDamager().getExperienceRate())
 
-                    if self.base.experience >= self.getLastDamager().data["level"]:
+                    if self.base._experience >= self.getLastDamager().data["level"]:
                         self.getLastDamager().soulGain()
 
         # Begin respawn
@@ -286,20 +290,20 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    call_later(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
+                    call_later(self.spawnTime, self.base._spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
                 else:
                     return
             else:
-                call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
+                call_later(self.base._spawnTime, self.base._spawn, self.spawnPosition, spawnDelay=0, check=False)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
 
     def isPushable(self, by):
-        return self.base.pushable
+        return self.base._pushable
 
     def isAttackable(self, by):
-        return self.base.attackable
+        return self.base._attackable
 
     def targetCheck(self, targets=None):
         _time = time.time()
@@ -369,12 +373,12 @@ class Monster(Creature):
                 self.targetMode = 0
                 return
             # Are we OK?
-            if self.distanceStepsTo(self.target.position) <= self.base.targetDistance:
+            if self.distanceStepsTo(self.target.position) <= self.base._targetDistance:
                 self.turnAgainst(self.target.position)
             else:
                 # Apperently not. Try walking again.
                 if self.canTarget(self.target.position) and not self.walkPattern:
-                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
+                    self.walk_to(self.target.position, -self.base._targetDistance, __walkComplete)
 
         # XXX: Bug?
         if isinstance(self.target, list):
@@ -385,13 +389,13 @@ class Monster(Creature):
                 return False
         # Begin autowalking
         if bestDist > 1:
-            self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
+            self.walk_to(self.target.position, -self.base._targetDistance, __walkComplete)
 
         # If the target moves, we need to recalculate, if he moves out of sight it will be caught in next brainThink
         def __followCallback(who):
             if self.target == who:
                 if self.canTarget(self.target.position):
-                    self.walk_to(self.target.position, -self.base.targetDistance, __walkComplete)
+                    self.walk_to(self.target.position, -self.base._targetDistance, __walkComplete)
                 else:
                     self.target = None
                     self.targetMode = 0
@@ -417,11 +421,11 @@ class Monster(Creature):
         for thing in tile:
             if isinstance(thing, Item):
                 field = thing.field
-                if self.base.ignoreFire and field == 'fire':
+                if self.base._ignoreFire and field == 'fire':
                     continue
-                elif self.base.ignorePoison and field == 'poison':
+                elif self.base._ignorePoison and field == 'poison':
                     continue
-                elif self.base.ignoreEnergy and field == 'energy':
+                elif self.base._ignoreEnergy and field == 'energy':
                     continue
                 elif field:
                     return False
@@ -432,7 +436,7 @@ class Monster(Creature):
 
             elif isinstance(thing, Creature):
                 ok = not thing.solid
-                if not ok and self.base.pushCreatures and isinstance(thing, Monster) and thing.base.pushable:
+                if not ok and self.base._pushCreatures and isinstance(thing, Monster) and thing.base._pushable:
                     return 30
                 if not ok:
                     return False
@@ -450,33 +454,33 @@ class MonsterBase(object):
 
         self.spawnTime = 60
 
-        self.speed = 100
-        self.experience = 0
+        self._speed = 100
+        self._experience = 0
 
-        self.attackable = True
+        self._attackable = True
 
-        self.setBehavior()
-        self.setImmunity()
+        self.behavior()
+        self.immunity()
         self.walkAround()
-        self.bloodType()
-        self.setTargetChance()
-        self.setDefense()
+        self.type()
+        self.targetChance()
+        self.defense()
 
         self.meleeAttacks = []
         self.distanceAttacks = []
         self.spellAttacks = []
         self.defenceSpells = []
 
-        self.intervals = {}
+        self._intervals = {}
         self.lootTable = []
 
-        self.walkable = True
-        self.walkPer = config.monsterWalkPer
+        self._walkable = True
+        self._walkPer = config.monsterWalkPer
 
         self.brainFeatures = "default"
-        self.skull = 0
+        self._skull = 0
 
-        self.corpseAction = []
+        self._corpseAction = []
         self.prepared = False
         self._loot = None
 
@@ -575,7 +579,7 @@ class MonsterBase(object):
 
             return monster
 
-    def setHealth(self, health, healthmax=None):
+    def health(self, health, healthmax=None):
         if not healthmax:
             healthmax = health
         self.data["health"] = health
@@ -584,35 +588,37 @@ class MonsterBase(object):
         return self
 
     def defaultSpawnTime(self, spawnTime):
-        self.spawnTime = spawnTime
+        self._spawnTime = spawnTime
 
-    def bloodType(self, color="blood"):
-        self.blood = getattr(const, 'FLUID_'+color.upper())
+    def type(self, color="blood"):
+        self._blood = getattr(const, 'FLUID_'+color.upper())
 
-    def setOutfit(self, lookhead, lookbody, looklegs, lookfeet):
+    def outfit(self, lookhead, lookbody, looklegs, lookfeet):
         self.data["lookhead"] = lookhead
         self.data["lookbody"] = lookbody
         self.data["looklegs"] = looklegs
         self.data["lookfeet"] = lookfeet
 
-    def setAddons(self, addon):
+    def addons(self, addon):
         self.data["lookaddons"] = addon
 
-    def setDefense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1):
-        self.armor = armor
-        self.fire = fire
-        self.earth = earth
-        self.energy = energy
-        self.ice = ice
-        self.holy = holy
-        self.death = death
-        self.drown = drown
-        self.physical = physical
+    def defense(self, armor=0, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1, lifedrain=1, manadrain=1):
+        self._armor = armor
+        self._fire = fire
+        self._earth = earth
+        self._energy = energy
+        self._ice = ice
+        self._holy = holy
+        self._death = death
+        self._drown = drown
+        self._physical = physical
+        self._lifedrain = lifedrain
+        self._manadrain = manadrain
         if armor == -1:
-            self.attackable = False
+            self._attackable = False
 
-    def setTargetChance(self, chance=10):
-        self.targetChance = chance
+    def targetChance(self, chance=10):
+        self._targetChance = chance
 
     def maxSummons(self, max):
         self.maxSummon = max
@@ -620,60 +626,60 @@ class MonsterBase(object):
     def summon(self, monster=None, chance=10):
         self.summons.append((monster, chance))
 
-    def setExperience(self, experience):
-        self.experience = experience
+    def experience(self, experience):
+        self._experience = experience
 
-    def setSpeed(self, speed):
-        self.speed = speed
+    def speed(self, speed):
+        self._speed = speed
 
-    def regCorpseAction(self, action):
-        self.corpseAction.append(action)
+    def corpseAction(self, action):
+        self._corpseAction.append(action)
 
-    def setBehavior(self, summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
-        self.summonable = summonable
-        self.hostile = hostile
-        self.illusionable = illusionable
-        self.convinceable = convinceable
-        self.pushable = pushable
-        self.pushItems = pushItems
-        self.pushCreatures = pushCreatures
-        self.targetDistance = targetDistance
-        self.runOnHealth = runOnHealth
-        self.targetChange = targetChange
+    def behavior(self, summonable=0, hostile=1, illusionable=0, convinceable=0, pushable=0, pushItems=1, pushCreatures=1, targetDistance=1, runOnHealth=0, targetChange=1):
+        self._summonable = summonable
+        self._hostile = hostile
+        self._illusionable = illusionable
+        self._convinceable = convinceable
+        self._pushable = pushable
+        self._pushItems = pushItems
+        self._pushCreatures = pushCreatures
+        self._targetDistance = targetDistance
+        self._runOnHealth = runOnHealth
+        self._targetChange = targetChange
 
     def walkAround(self, energy=0, fire=0, poison=0):
-        self.ignoreEnergy = energy
-        self.ignoreFire = fire
-        self.ignorePoison = poison
+        self._ignoreEnergy = energy
+        self._ignoreFire = fire
+        self._ignorePoison = poison
 
-    def setImmunity(self, paralyze=1, invisible=1, lifedrain=1, drunk=1):
-        self.paralyze = paralyze
-        self.invisible = invisible
-        self.lifedrain = lifedrain
-        self.drunk = drunk
+    def immunity(self, paralyze=1, invisible=1, drunk=1, lifedrain=1):
+        self._paralyze = paralyze
+        self._invisible = invisible
+        self._drunk = drunk
+        self._lifedrain = lifedrain # XXX: Kill, since this is part of immunity.
 
-    def setWalkable(self, state):
-        self.walkable = state
+    def walkable(self, state):
+        self._walkable = state
 
-    def setRandomWalkInterval(self, per):
-        self.walkPer = per
+    def randomWalkInterval(self, per):
+        self._walkPer = per
 
-    def setBrainFeatures(self, *argc):
-        self.brainFeatures = argc
+    def brainFeatures(self, *argc):
+        self._brainFeatures = argc
 
     def voices(self, *argc):
         self.voiceslist = tuple(argc)
 
-    def setSkull(self, skull):
-        self.skull = skull
+    def skull(self, skull):
+        self._skull = skull
 
-    def regMelee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=game.const.CONDITION_ADD):
+    def melee(self, maxDamage, check=lambda x: True, interval=config.meleeAttackSpeed, condition=None, conditionChance=0, conditionType=game.const.CONDITION_ADD):
         self.meleeAttacks.append([interval, check, maxDamage, condition, conditionChance, conditionType])
 
-    def regDistance(self, maxDamage, shooteffect, check=chance(10), interval=config.meleeAttackSpeed):
+    def distance(self, maxDamage, shooteffect, check=chance(10), interval=config.meleeAttackSpeed):
         self.distanceAttacks.append([interval, maxDamage, shooteffect, check])
 
-    def regTargetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
+    def targetSpell(self, spellName, min, max, interval=2, check=chance(10), range=7, length=None):
         if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
             obj = spellName
         elif isinstance(spellName, str):
@@ -693,7 +699,7 @@ class MonsterBase(object):
         else:
             self.spellAttacks.append([interval, obj, check, range, (min, max)])
 
-    def regSelfSpell(self, spellName, min, max, interval=2, check=chance(10), length=None):
+    def selfSpell(self, spellName, min, max, interval=2, check=chance(10), length=None):
         if isinstance(spellName, spell.Spell) or isinstance(spellName, spell.Rune):
             obj = spellName.func
         elif isinstance(spellName, str):
@@ -857,15 +863,14 @@ class MonsterBrain(object):
         monster.lastStep = time.time()
 
 brain = MonsterBrain()
-def genMonster(name, look, description=""):
+def genMonster(name, looktype, corpse=0, lookhead=0, lookfeet=0, lookbody=0, looklegs=0, lookaddons=0, description=""):
     # baseMonsters
-    if isinstance(look, tuple):
-        look, corpse = look
-    else:
+    if not corpse:
         corpse = idByName('dead %s' % name)
         if not corpse:
             corpse = idByName('slain %s' % name)
-    baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look, "corpse":corpse, "name":name, "description":description or "a %s." % name}, brain)
+   
+    baseMonster = MonsterBase({"lookhead":lookhead, "lookfeet":lookfeet, "lookbody":lookbody, "looklegs":looklegs, "lookaddons":lookaddons, "looktype":looktype, "corpse":corpse, "name":name, "description":description or inflect.a(name)}, brain)
     """try:
         baseMonster.regCorpseAction(look[2])
     except:

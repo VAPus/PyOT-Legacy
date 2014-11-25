@@ -1,13 +1,13 @@
 # Bad fixed
-crystal_wolf = genMonster("Crystal Wolf", (226, 6079), "a crystal wolf") # unkown yet
-crystal_wolf.setTargetChance(10)
-crystal_wolf.bloodType("blood")
-crystal_wolf.setHealth(750)
-crystal_wolf.setExperience(275)
-crystal_wolf.setSpeed(200) #incorrect
+crystal_wolf = genMonster("Crystal Wolf", 226, 6079) # unkown yet
+crystal_wolf.targetChance(10)
+crystal_wolf.type("blood")
+crystal_wolf.health(750)
+crystal_wolf.experience(275)
+crystal_wolf.speed(200) #incorrect
 crystal_wolf.walkAround(1,1,1) # energy, fire, poison
-crystal_wolf.setBehavior(summonable=0, hostile=1, illusionable=1, convinceable=305, pushable=0, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=0)
+crystal_wolf.behavior(summonable=0, hostile=True, illusionable=True, convinceable=305, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)
 crystal_wolf.voices("Raaaarrr!")
-crystal_wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
-crystal_wolf.setDefense(30, fire=1.1, earth=1.0, energy=1.0, ice=0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
-crystal_wolf.regMelee(80)#no idea
+crystal_wolf.immunity(0,0,0) # paralyze, invisible, lifedrain
+crystal_wolf.defense(30, fire=1.1, earth=1.0, energy=1.0, ice=0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
+crystal_wolf.melee(80)#no idea

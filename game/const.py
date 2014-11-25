@@ -252,7 +252,7 @@ FULLSPLASH = 2016
 FULLSPLASHES = (2016, 2017, 2018)
 
 # Damage types
-PHYSICAL = 0
+PHYSICAL = 0 #damage from physical spells, is reduce by physical percent only
 FIRE = 1
 EARTH = 2
 ENERGY = 3
@@ -260,9 +260,10 @@ ICE = 4
 HOLY = 5
 DEATH = 6
 DROWN = 7
-MELEE = 8
+MELEE = 8 #damage from a melee and distance weapoans?, is reduce by physical percent + armor/shielding
 DISTANCE = 9
-LIFEDRAIN = 10 #life drain not made
+LIFEDRAIN = 10
+MANADRAIN = 11
 
 # Monster attack types
 #MELEE = 0

@@ -340,7 +340,7 @@ class CreatureMovement(object):
                     continue
 
                 # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
-                if push and self.isMonster() and thing.isMonster() and self.base.pushCreatures and thing.base.pushable:
+                if push and self.isMonster() and thing.isMonster() and self.base.pushCreatures and thing.isPushable(self):
                     # Push stuff here.
 
                         # Clear up the creatures actions.
@@ -350,7 +350,7 @@ class CreatureMovement(object):
                         if thing.move(thing.reverseDirection(), stopIfLock=True, push=False):
                             # We "must" break here. Assume the tile is good since another creature is on it. Iterator might be invalid at this point.
                             break
-                        elif self.base.hostile and thing.isAttackable(self):
+                        elif self.base._hostile and thing.isAttackable(self):
                             # We can attack the creature.
                             self.target = thing
                             self.targetMode = 1

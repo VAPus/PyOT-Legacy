@@ -1,13 +1,13 @@
 Wolf = genMonster("Wolf", 27, "a wolf")
-Wolf.setTargetChance(0)
-Wolf.bloodType("blood")
-Wolf.setHealth(25)
-Wolf.setExperience(18)
-Wolf.setSpeed(164) #correct
+Wolf.targetChance(0)
+Wolf.type("blood")
+Wolf.health(25)
+Wolf.experience(18)
+Wolf.speed(164) #correct
 Wolf.walkAround(1,1,1) # energy, fire, poison
-Wolf.setBehavior(summonable=255, hostile=1, illusionable=1, convinceable=255, pushable=1, pushItems=0, pushCreatures=0, targetDistance=1, runOnHealth=8)
+Wolf.behavior(summonable=255, hostile=True, illusionable=True, convinceable=255, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=8)
 Wolf.voices("Yooooohhuuuu!", "Grrrrrrrr")
-Wolf.setImmunity(0,0,0) # paralyze, invisible, lifedrain
-Wolf.setDefense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.05, physical=1.0, drown=1.0)
+Wolf.immunity(0,0,0) # paralyze, invisible, lifedrain
+Wolf.defense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.05, physical=1.0, drown=1.0)
 Wolf.loot( ("meat", 67.5, 2), ("wolf paw", 1.0) )
-Wolf.regMelee(19)
+Wolf.melee(19)

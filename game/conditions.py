@@ -47,11 +47,11 @@ class Condition(object):
                 self.creature.removeCondition(CONDITION_HASTE)
             
         elif self.creature.isMonster():
-            if self.type == CONDITION_DRUNK and self.creature.base.drunk:
+            if self.type == CONDITION_DRUNK and self.creature.base._drunk:
                 self.stop()
-            elif self.type == CONDITION_PARALYZE and self.creature.base.paralyze:
+            elif self.type == CONDITION_PARALYZE and self.creature.base._paralyze:
                 self.stop()
-            elif self.type == CONDITION_INVISIBLE and self.creature.base.invisible:
+            elif self.type == CONDITION_INVISIBLE and self.creature.base._invisible:
                 self.stop()
 
         if self.type == CONDITION_PARALYZE:
