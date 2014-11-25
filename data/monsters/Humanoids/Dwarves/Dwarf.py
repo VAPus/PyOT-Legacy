@@ -1,4 +1,4 @@
-dwarf = genMonster("Dwarf", (69, 6007), "a dwarf")
+dwarf = genMonster("Dwarf", 69, 6007)
 dwarf.health(90, healthmax=90)
 dwarf.type("blood")
 dwarf.defense(armor=8, fire=0.95, earth=0.9, energy=1, ice=1, holy=1, death=1.05, physical=1, drown=1)
@@ -8,5 +8,5 @@ dwarf.behavior(summonable=320, hostile=True, illusionable=True, convinceable=320
 dwarf.walkAround(energy=0, fire=0, poison=0)
 dwarf.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 dwarf.voices("Hail Durin!")
-dwarf.regMelee(30)
+dwarf.melee(30)
 dwarf.loot( ("hatchet", 24.5), ("leather legs", 10.75), ("white mushroom", 49.0), (2148, 100, 8), ("studded armor", 6.75), ("axe", 16.25), ("letter", 7.5), ("pick", 10.0), ("copper shield", 10.25), ("iron ore", 0.0025, 3), ("dwarven ring", 0.25) )

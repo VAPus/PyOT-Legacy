@@ -1,4 +1,4 @@
-spectre = genMonster("Spectre", (235, 6348), "a spectre")
+spectre = genMonster("Spectre", 235, 6348)
 spectre.health(1350)
 spectre.type("undead")
 spectre.defense(armor=44, fire=1.08, earth=0, energy=1.08, ice=0.99, holy=1, death=0, physical=0.1, drown=0)
@@ -8,5 +8,5 @@ spectre.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0,
 spectre.walkAround(energy=1, fire=1, poison=0)
 spectre.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 spectre.voices("Revenge ... is so ... sweet.", "Life...force! Feed me your... lifeforce", "Mor... tals!")
-spectre.regMelee(270)
+spectre.melee(270)
 spectre.loot( ("shiny stone", 1.0), ("platinum coin", 14.0, 7), ("wand of cosmic energy", 10.0), ("soul orb", 6.5), ("demonic essence", 6.0, 3), ("silver brooch", 0.75), ("blank rune", 44.25, 2), (2148, 100, 297), ("white piece of cloth", 3.75), ("lyre", 10.5), ("great mana potion", 1.0), ("relic sword", 0.75), ("shadow sceptre", 0.25), ("death ring", 0.25), ("stealth ring", 0.25), ("demonbone amulet", 0.0025) )

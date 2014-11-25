@@ -1,4 +1,4 @@
-Vulcongra = genMonster("Vulcongra", (509, 16185), "a vulcongra") #mostly unknown
+Vulcongra = genMonster("Vulcongra", 509, 16185) #mostly unknown
 Vulcongra.health(1600)
 Vulcongra.type("blood")
 Vulcongra.defense(armor=45, fire=0, earth=0, energy=1, ice=1.15, holy=1, death=0.95 physical=1, drown=1.1)
@@ -8,4 +8,4 @@ Vulcongra.behavior(summonable=0, hostile=True, illusionable=False, convinceable=
 Vulcongra.walkAround(energy=0, fire=0, poison=0)
 Vulcongra.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Vulcongra.voices("Fuchah!", "Fuchah! Fuchah!", "Yag! Yag! Yag!")
-Vulcongra.regMelee(230)
+Vulcongra.melee(230)

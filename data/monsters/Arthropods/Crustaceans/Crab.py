@@ -1,5 +1,5 @@
-crab = genMonster("Crab", (112, 6039), "a crab")
-crab.setTargetChance(10)
+crab = genMonster("Crab", 112, 6039)
+crab.targetChance(10)
 crab.type("blood")
 crab.health(55)
 crab.experience(30)
@@ -10,4 +10,4 @@ crab.immunity(0,0,0) # paralyze, invisible, lifedrain
 crab.defense(31, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1.0, death=1.0, physical=1.0, drown=0)
 crab.loot( ("fish", 20.5), (2148, 100, 10), ("crab pincers", 19.25) )
 
-crab.regMelee(20)
+crab.melee(20)

@@ -69,6 +69,10 @@ class Item(object):
         return False
 
     @staticmethod
+    def isCreature():
+        return False
+
+    @staticmethod
     def isItem():
         " Returns True "
         return True

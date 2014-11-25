@@ -1,4 +1,4 @@
-dragon_lord = genMonster("Dragon Lord", (39, 5984), "a dragon lord")
+dragon_lord = genMonster("Dragon Lord", 39, 5984)
 dragon_lord.health(1900)
 dragon_lord.type("blood")
 dragon_lord.defense(armor=37, fire=0, earth=0.2, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
@@ -20,8 +20,8 @@ dlfbomb.area(AREA_CIRCLE3)
 dlfbomb.targetEffect(callback=spell.field(1492))
 dlfbomb.effects(area=EFFECT_HITBYFIRE, shoot=ANIMATION_FIRE) 
  
-dragon_lord.regMelee(220)
-dragon_lord.regTargetSpell("drag fbomb", 1, 1, check=chance(20))
-dragon_lord.regTargetSpell("drag fwave", 150, 250, check=chance(20))
-dragon_lord.regTargetSpell(2304, 100, 200, check=chance(20)) #gfb
-dragon_lord.regSelfSpell("Light Healing", 25, 55, check=chance(18))
+dragon_lord.melee(220)
+dragon_lord.targetSpell("drag fbomb", 1, 1, check=chance(20))
+dragon_lord.targetSpell("drag fwave", 150, 250, check=chance(20))
+dragon_lord.targetSpell(2304, 100, 200, check=chance(20)) #gfb
+dragon_lord.selfSpell("Light Healing", 25, 55, check=chance(18))

@@ -1,4 +1,4 @@
-crypt_shambler = genMonster("Crypt Shambler", (100, 6029), "a crypt shambler")
+crypt_shambler = genMonster("Crypt Shambler", 100, 6029)
 crypt_shambler.health(330)
 crypt_shambler.type("undead")
 crypt_shambler.defense(armor=33, fire=1, earth=0, energy=1, ice=1, holy=1.25, death=0, physical=1, drown=0)
@@ -8,5 +8,5 @@ crypt_shambler.behavior(summonable=0, hostile=True, illusionable=True, convincea
 crypt_shambler.walkAround(energy=1, fire=1, poison=0)
 crypt_shambler.immunity(paralyze=1, invisible=0, lifedrain=1, drunk=0)
 crypt_shambler.voices("Aaaaahhhh!", "Hoooohhh!", "Uhhhhhhh!", "Chhhhhhh!")
-crypt_shambler.regMelee(140)
+crypt_shambler.melee(140)
 crypt_shambler.loot( ("bone", 4.5), ("half-digested piece of meat", 4.75), (2148, 100, 55), (3976, 50.0, 10), ("two handed sword", 2.0), ("bone shield", 1.0), ("bone sword", 1.0), ("small diamond", 0.5), ("rotten meat", 1.75), ("iron helmet", 2.0), ("throwing star", 2.0, 3) )

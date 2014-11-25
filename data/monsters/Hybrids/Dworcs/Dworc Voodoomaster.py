@@ -1,4 +1,4 @@
-dworc_voodoomaster = genMonster("Dworc Voodoomaster", (214, 6055), "a dworc voodoomaster")
+dworc_voodoomaster = genMonster("Dworc Voodoomaster", 214, 6055)
 dworc_voodoomaster.health(80, healthmax=80)
 dworc_voodoomaster.type("blood")
 dworc_voodoomaster.defense(armor=2, fire=1.15, earth=0, energy=1, ice=1.1, holy=0.65, death=1.1, physical=1, drown=1)
@@ -8,5 +8,5 @@ dworc_voodoomaster.behavior(summonable=0, hostile=True, illusionable=True, convi
 dworc_voodoomaster.walkAround(energy=1, fire=1, poison=0)
 dworc_voodoomaster.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 dworc_voodoomaster.voices("Grow truk grrrrr.", "Brak brrretz!", "Prek tars, dekklep zurk.")
-dworc_voodoomaster.regMelee(20)
+dworc_voodoomaster.melee(20)
 dworc_voodoomaster.loot( (2148, 100, 17), ("bone", 5.5), ("torch", 5.75), ("leather armor", 9.75), ("big bone", 3.25), ("poison dagger", 1.25), ("skull", 4.0, 3), ("voodoo doll", 0.0025), ("tribal mask", 0.5), ("strange symbol", 0.5), ("health potion", 0.5) )

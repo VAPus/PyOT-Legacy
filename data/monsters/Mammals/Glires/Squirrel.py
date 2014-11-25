@@ -1,5 +1,5 @@
-Squirrel = genMonster("Squirrel", (274, 7628), "a squirrel")
-Squirrel.setTargetChance(0)
+Squirrel = genMonster("Squirrel", 274, 7628)
+Squirrel.targetChance(0)
 Squirrel.type("blood")
 Squirrel.health(20)
 Squirrel.experience(0)

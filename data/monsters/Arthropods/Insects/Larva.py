@@ -1,4 +1,4 @@
-larva = genMonster("Larva", (82, 6023), "a larva")
+larva = genMonster("Larva", 82, 6023)
 larva.health(70, healthmax=70)
 larva.type("slime")
 larva.defense(armor=4, fire=1.1, earth=0, energy=0.9, ice=1.05, holy=1, death=1, physical=1, drown=1)
@@ -9,4 +9,4 @@ larva.walkAround(energy=1, fire=1, poison=0)
 larva.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 larva.loot( ("meat", 14.25), (2148, 100, 15) )
 
-larva.regMelee(35, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)
+larva.melee(35, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)

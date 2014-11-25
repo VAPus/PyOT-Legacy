@@ -1,4 +1,4 @@
-undead_dragon = genMonster("Undead Dragon", (231, 6306), "an undead dragon")
+undead_dragon = genMonster("Undead Dragon", 231, 6306)
 undead_dragon.health(8350, healthmax=8350)
 undead_dragon.type("undead")
 undead_dragon.defense(armor=73, fire=0, earth=0, energy=1, ice=0.5, holy=1.25, death=0, physical=0.95, drown=1)
@@ -30,9 +30,9 @@ udcwave = spell.Spell("ud cwave", target=TARGET_AREA) #makes you cursed
 udcwave.area(AREA_WAVE8)
 udcwave.effects(area=EFFECT_SMOKE) #?
 
-undead_dragon.regMelee(480)
-undead_dragon.regSelfSpell("Light Healing", 200, 250, check=chance(18))
-undead_dragon.regTargetSpell("ud bbomb", 300, 400, check=chance(20))
-undead_dragon.regTargetSpell("ud pbomb", 100, 390, check=chance(20))
-undead_dragon.regTargetSpell("ud ldwave", 300, 700, check=chance(20))
-undead_dragon.regTargetSpell(2268, 25, 600, check=chance(20)) #sd
+undead_dragon.melee(480)
+undead_dragon.selfSpell("Light Healing", 200, 250, check=chance(18))
+undead_dragon.targetSpell("ud bbomb", 300, 400, check=chance(20))
+undead_dragon.targetSpell("ud pbomb", 100, 390, check=chance(20))
+undead_dragon.targetSpell("ud ldwave", 300, 700, check=chance(20))
+undead_dragon.targetSpell(2268, 25, 600, check=chance(20)) #sd

@@ -1,5 +1,5 @@
 
-haunted_treeling = genMonster("Haunted Treeling ", (310, 9867), "a haunted treeling")
+haunted_treeling = genMonster("Haunted Treeling ", 310, 9867)
 haunted_treeling.health(450)
 haunted_treeling.type("undead")
 haunted_treeling.defense(armor=22, fire=1.05, earth=0, energy=1, ice=0.9, holy=0.8, death=0.9, physical=1, drown=1)
@@ -9,5 +9,5 @@ haunted_treeling.behavior(summonable=0, hostile=True, illusionable=False, convin
 haunted_treeling.walkAround(energy=0, fire=0, poison=0)
 haunted_treeling.immunity(paralyze=1, invisible=0, lifedrain=1, drunk=1)
 haunted_treeling.voices("Knarrrz", "Huuhuuhuuuhuuaarrr", "Knorrrrrr")
-haunted_treeling.regMelee(150)
+haunted_treeling.melee(150)
 haunted_treeling.loot( (2148, 100, 95), ("wooden trash", 29.75), ("health potion", 5.0), ("white mushroom", 7.75, 2), ("orange mushroom", 2.0), ("red mushroom", 7.75), ("haunted piece of wood", 5.25), ("strong health potion", 1.25), ("small emerald", 0.5), ("dwarven ring", 0.5), ("bullseye potion", 0.0025) )

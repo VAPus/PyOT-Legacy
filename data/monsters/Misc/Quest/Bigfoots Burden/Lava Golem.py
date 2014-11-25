@@ -1,4 +1,4 @@
-Lava_Golem = genMonster("Lava Golem", (491, 15987), "a lava golem") #mostly unknown
+Lava_Golem = genMonster("Lava Golem", 491, 15987) #mostly unknown
 Lava_Golem.health(9000)
 Lava_Golem.type("blood")
 Lava_Golem.defense(armor=80, fire=0, earth=0, energy=0.7, ice=1.05, holy=1, death=0.55, physical=0.7, drown=1)
@@ -8,4 +8,4 @@ Lava_Golem.behavior(summonable=0, hostile=True, illusionable=False, convinceable
 Lava_Golem.walkAround(energy=0, fire=0, poison=0)
 Lava_Golem.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Lava_Golem.voices("Grrrrunt")
-Lava_Golem.regMelee(200)
+Lava_Golem.melee(200)

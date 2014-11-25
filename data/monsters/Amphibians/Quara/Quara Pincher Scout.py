@@ -1,4 +1,4 @@
-quara_pincher_scout = genMonster("Quara Pincher Scout", (77, 6063), "a quara pincher scout")
+quara_pincher_scout = genMonster("Quara Pincher Scout", 77, 6063)
 quara_pincher_scout.health(1800)
 quara_pincher_scout.type("blood")
 quara_pincher_scout.defense(armor=80, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
@@ -11,4 +11,4 @@ quara_pincher_scout.voices("Clank! Clank!", "Clap!", "Crrrk! Crrrk!")
 quara_pincher_scout.loot( ("plate armor", 4.75), ("halberd", 2.25), (12446, 9.25), (2148, 100, 149), ("fish fin", 0.75, 3), ("small ruby", 3.25, 2), ("life crystal", 1.0) )
 
 #Close Range Paralyze (lasts for 1-3 seconds).
-quara_pincher_scout.regMelee(240)
+quara_pincher_scout.melee(240)

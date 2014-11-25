@@ -1,5 +1,5 @@
-Pig = genMonster("Pig", (60, 6000), "a pig")
-Pig.setTargetChance(0)
+Pig = genMonster("Pig", 60, 6000)
+Pig.targetChance(0)
 Pig.type("blood")
 Pig.health(25)
 Pig.experience(0)

@@ -1,5 +1,5 @@
 #mostly unknown
-lizard_gate_guardian = genMonster("Lizard Gate Guardian", (343, 11278), "a lizard gate guardian")
+lizard_gate_guardian = genMonster("Lizard Gate Guardian", 343, 11278)
 lizard_gate_guardian.health(2955, healthmax=None)
 lizard_gate_guardian.type("blood")
 lizard_gate_guardian.defense(armor=2, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
@@ -10,5 +10,5 @@ lizard_gate_guardian.walkAround(energy=0, fire=0, poison=0)
 lizard_gate_guardian.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 lizard_gate_guardian.summon("Lizard Chosen", 25)
 lizard_gate_guardian.maxSummons(2)
-lizard_gate_guardian.regMelee(100)
+lizard_gate_guardian.melee(100)
 lizard_gate_guardian.loot( ("ultimate health potion", 75.0), (2148, 100, 135), ("lizard leather", 8.25) )

@@ -100,9 +100,9 @@ class Monster(Creature):
         elif type == DROWN:
             return dmg * self.base._drown
         elif type == LIFEDRAIN:
-            return dmg * self.base._manadrain
-        elif type == MANADRAIN:
             return dmg * self.base._lifedrain
+        elif type == MANADRAIN:
+            return dmg * self.base._manadrain
 
         # What, no match?
         return dmg
@@ -472,7 +472,7 @@ class MonsterBase(object):
         self.defenceSpells = []
 
         self._intervals = {}
-        self._lootTable = []
+        self.lootTable = []
 
         self._walkable = True
         self._walkPer = config.monsterWalkPer
@@ -481,7 +481,7 @@ class MonsterBase(object):
         self._skull = 0
 
         self._corpseAction = []
-        self._prepared = False
+        self.prepared = False
         self._loot = None
 
 
@@ -621,10 +621,10 @@ class MonsterBase(object):
         self._targetChance = chance
 
     def maxSummons(self, max):
-        self._maxSummon = max
+        self.maxSummon = max
 
     def summon(self, monster=None, chance=10):
-        self._summons.append((monster, chance))
+        self.summons.append((monster, chance))
 
     def experience(self, experience):
         self._experience = experience
@@ -652,10 +652,11 @@ class MonsterBase(object):
         self._ignoreFire = fire
         self._ignorePoison = poison
 
-    def immunity(self, paralyze=1, invisible=1, drunk=1):
+    def immunity(self, paralyze=1, invisible=1, drunk=1, lifedrain=1):
         self._paralyze = paralyze
         self._invisible = invisible
         self._drunk = drunk
+        self._lifedrain = lifedrain # XXX: Kill, since this is part of immunity.
 
     def walkable(self, state):
         self._walkable = state
@@ -869,7 +870,7 @@ def genMonster(name, looktype, corpse=0, lookhead=0, lookfeet=0, lookbody=0, loo
         if not corpse:
             corpse = idByName('slain %s' % name)
    
-    baseMonster = MonsterBase({"lookhead":lookhead, "lookfeet":lookfeet, "lookbody":lookbody, "looklegs":looklegs, "lookaddons":lookaddons, "looktype":look, "corpse":corpse, "name":name, "description":description or inflect.a(name)}, brain)
+    baseMonster = MonsterBase({"lookhead":lookhead, "lookfeet":lookfeet, "lookbody":lookbody, "looklegs":looklegs, "lookaddons":lookaddons, "looktype":looktype, "corpse":corpse, "name":name, "description":description or inflect.a(name)}, brain)
     """try:
         baseMonster.regCorpseAction(look[2])
     except:

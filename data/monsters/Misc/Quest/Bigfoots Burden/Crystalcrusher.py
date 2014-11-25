@@ -1,4 +1,4 @@
-crystalcrusher = genMonster("Crystalcrusher", (511, 18487), "a crystalcrusher")
+crystalcrusher = genMonster("Crystalcrusher", 511, 18487)
 crystalcrusher.health(570, healthmax=570)
 crystalcrusher.type("blood")
 crystalcrusher.defense(armor=35, fire=0.9, earth=0, energy=1.05, ice=1.05, holy=1, death=0.85, physical=1, drown=1)
@@ -8,4 +8,4 @@ crystalcrusher.behavior(summonable=0, hostile=True, illusionable=False, convince
 crystalcrusher.walkAround(energy=0, fire=1, poison=1)
 crystalcrusher.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 crystalcrusher.voices("Creak!")
-crystalcrusher.regMelee(160)
+crystalcrusher.melee(160)

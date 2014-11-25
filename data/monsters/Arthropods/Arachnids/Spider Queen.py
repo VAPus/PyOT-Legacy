@@ -1,4 +1,4 @@
-spider_queen = genMonster("Spider Queen", (219, 5995), "a spider queen")
+spider_queen = genMonster("Spider Queen", 219, 5995)
 spider_queen.health(225)
 spider_queen.type("slime")
 spider_queen.defense(-1)

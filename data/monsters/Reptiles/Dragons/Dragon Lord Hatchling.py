@@ -1,4 +1,4 @@
-dragon_lord_hatchling = genMonster("Dragon Lord Hatchling", (8, 5980), "a dragon lord hatchling")
+dragon_lord_hatchling = genMonster("Dragon Lord Hatchling", 8, 5980)
 dragon_lord_hatchling.health(750)
 dragon_lord_hatchling.type("blood")
 dragon_lord_hatchling.defense(armor=30, fire=0, earth=0.75, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)
@@ -15,9 +15,9 @@ dfwave.area(AREA_WAVE7)
 dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
-dragon_lord_hatchling.regMelee(90)
-dragon_lord_hatchling.regTargetSpell(2305, 55, 105, check=chance(20)) #firebomb
-dragon_lord_hatchling.regTargetSpell("drag fwave", 90, 125, check=chance(20))
-dragon_lord_hatchling.regTargetSpell(2304, 100, 200, check=chance(20)) #gfb
-dragon_lord_hatchling.regSelfSpell("Light Healing", 25, 55, check=chance(18))
+dragon_lord_hatchling.melee(90)
+dragon_lord_hatchling.targetSpell(2305, 55, 105, check=chance(20)) #firebomb
+dragon_lord_hatchling.targetSpell("drag fwave", 90, 125, check=chance(20))
+dragon_lord_hatchling.targetSpell(2304, 100, 200, check=chance(20)) #gfb
+dragon_lord_hatchling.selfSpell("Light Healing", 25, 55, check=chance(18))
 #shoot fireball too?

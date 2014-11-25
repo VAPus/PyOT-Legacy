@@ -462,7 +462,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                if isinstance(position, StackPosition):
+                if hasattr(position, "stackpos"):
                     thing = position.getThing()
                     if sid and thing and thing.itemId != sid:
                         raise Exception("Got request for a item at %s, but spritId mismatches (should be: %d, is: %s)" % (position, sid, thing.itemId))
@@ -496,7 +496,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         # Option 1, from the map:
         if position:
             if position.x != 0xFFFF:
-                if isinstance(position, StackPosition):
+                if hasattr(position, "stackpos"):
                     thing = position.getThing()
                     if isinstance(thing, game.item.Item):
                         return (0, thing, position.getTile())

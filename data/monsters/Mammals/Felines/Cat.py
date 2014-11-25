@@ -1,8 +1,8 @@
-cat = genMonster("Cat", (276, 7637), "a cat")
+cat = genMonster("Cat", 276, 7637)
 cat.type("blood")
 cat.health(20)
 cat.experience(0)
-cat.setTargetChance(10)
+cat.targetChance(10)
 cat.speed(124) #?
 cat.walkAround(1,1,1) # energy, fire, poison
 cat.behavior(summonable=220, hostile=True, illusionable=True, convinceable=220, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)

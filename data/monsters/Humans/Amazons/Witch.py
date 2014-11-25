@@ -1,5 +1,5 @@
 
-witch = genMonster("Witch", (54, 6081), "a witch")
+witch = genMonster("Witch", 54, 6081)
 witch.health(300)
 witch.type("blood")
 witch.defense(armor=8, fire=1, earth=0.8, energy=0, ice=1, holy=1, death=1.05, physical=1.05, drown=1)
@@ -9,5 +9,5 @@ witch.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pu
 witch.walkAround(energy=0, fire=1, poison=1)
 witch.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 witch.voices("Herba budinia ex!", "Horax Pokti!", "Hihihihi!")
-witch.regMelee(20)
+witch.melee(20)
 witch.loot( (2148, 100, 36), ("witch broom", 12.0), ("coat", 3.0), ("cookie", 100, 8), ("sickle", 7.5), ("garlic necklace", 4.5), ("silver dagger", 1.5), ("leather boots", 3.0), ("wolf tooth chain", 7.5), ("bag of apple slices", 3.0), ("star herb", 6.0), ("cape", 4.5), ("witch hat", 1.5) )

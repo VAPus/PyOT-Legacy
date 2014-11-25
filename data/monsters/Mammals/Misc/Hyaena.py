@@ -1,5 +1,5 @@
-Hyaena = genMonster("Hyaena", (94, 6026), "a hyaena")
-Hyaena.setTargetChance(10)
+Hyaena = genMonster("Hyaena", 94, 6026)
+Hyaena.targetChance(10)
 Hyaena.type("blood")
 Hyaena.health(60)
 Hyaena.experience(20)
@@ -10,4 +10,4 @@ Hyaena.voices("Grrrrrr", "Hou hou hou!")
 Hyaena.immunity(0,0,0) # paralyze, invisible, lifedrain
 Hyaena.defense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1.0)
 Hyaena.loot( (3976, 100, 3), ("meat", 39.25, 2) )
-Hyaena.regMelee(20)
+Hyaena.melee(20)

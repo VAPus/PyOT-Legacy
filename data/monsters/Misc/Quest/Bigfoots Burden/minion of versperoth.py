@@ -1,4 +1,4 @@
-minion of Versperoth = genMonster("Minion Of Versperoth ", (491, 15987), "a minion of versperoth ") #mostly unknown
+minion of Versperoth = genMonster("Minion Of Versperoth ", 491, 15987) #mostly unknown
 minion of Versperoth.health(9000)
 minion of Versperoth.type("blood")
 minion of Versperoth.defense(armor=80, fire=0, earth=0, energy=0.7, ice=1.05, holy=1, death=0.55, physical=0.7, drown=1)
@@ -8,4 +8,4 @@ minion of Versperoth.behavior(summonable=0, hostile=True, illusionable=False, co
 minion of Versperoth.walkAround(energy=0, fire=0, poison=0)
 minion of Versperoth.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 minion of Versperoth.voices("Grrrrunt")
-minion of Versperoth.regMelee(200)
+minion of Versperoth.melee(200)

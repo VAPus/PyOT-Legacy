@@ -1,4 +1,4 @@
-lancer_beetle = genMonster("Lancer Beetle", (348, 11375), "a lancer beetle")
+lancer_beetle = genMonster("Lancer Beetle", 348, 11375)
 lancer_beetle.health(400, healthmax=400)
 lancer_beetle.type("blood")
 lancer_beetle.defense(armor=37, fire=1, earth=0, energy=1, ice=1, holy=1, death=0.5, physical=1, drown=1)
@@ -8,5 +8,5 @@ lancer_beetle.behavior(summonable=0, hostile=True, illusionable=True, convinceab
 lancer_beetle.walkAround(energy=1, fire=1, poison=0)
 lancer_beetle.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 lancer_beetle.voices("Crump!")
-lancer_beetle.regMelee(115)
+lancer_beetle.melee(115)
 lancer_beetle.loot( (2148, 100, 129), ("lancer beetle shell", 15.5), ("poisonous slime", 8.25), ("lump of dirt", 3.75), ("small amethyst", 0.25), ("beetle necklace", 0.5) )

@@ -1,8 +1,8 @@
-black_sheep = genMonster("Black Sheep", (13, 5994), "a black sheep")
+black_sheep = genMonster("Black Sheep", 13, 5994)
 black_sheep.type("blood")
 black_sheep.health(20)
 black_sheep.experience(0)
-black_sheep.setTargetChance(10)
+black_sheep.targetChance(10)
 black_sheep.speed(200) # speed incorrect
 black_sheep.walkAround(1,1,1) # energy, fire, poison
 black_sheep.behavior(summonable=250, hostile=False, illusionable=True, convinceable=250, pushable=False, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=20)

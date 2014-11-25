@@ -1,4 +1,4 @@
-dragon_hatchling = genMonster("Dragon Hatchling", (271, 7621), "a dragon hatchling")
+dragon_hatchling = genMonster("Dragon Hatchling", 271, 7621)
 dragon_hatchling.health(380)
 dragon_hatchling.type("blood")
 dragon_hatchling.defense(armor=25, fire=0, earth=0.25, energy=1.05, ice=1.1, holy=1, death=1, physical=1, drown=1)
@@ -15,7 +15,7 @@ dfwave.area(AREA_WAVE8)
 dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
-dragon_hatchling.regMelee(55)
-dragon_hatchling.regTargetSpell("drag fwave", 60, 90, check=chance(20))
-dragon_hatchling.regSelfSpell("Light Healing", 25, 55, check=chance(18)) #how much?
-dragon_hatchling.regTargetSpell(2304, 30, 55, check=chance(20))
+dragon_hatchling.melee(55)
+dragon_hatchling.targetSpell("drag fwave", 60, 90, check=chance(20))
+dragon_hatchling.selfSpell("Light Healing", 25, 55, check=chance(18)) #how much?
+dragon_hatchling.targetSpell(2304, 30, 55, check=chance(20))

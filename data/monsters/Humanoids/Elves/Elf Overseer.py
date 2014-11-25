@@ -1,6 +1,6 @@
 #mostly unknown
-Elf_Overseer = genMonster("Elf Overseer", (159, 5980), "an elf overseer")
-Elf_Overseer.setOutfit(0, 150, 165, 10)
+Elf_Overseer = genMonster("Elf Overseer", 159, 5980)
+Elf_Overseer.outfit(0, 150, 165, 10)
 Elf_Overseer.health(500, healthmax=500)
 Elf_Overseer.type("blood")
 Elf_Overseer.defense(armor=18, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
@@ -10,4 +10,4 @@ Elf_Overseer.behavior(summonable=0, hostile=True, illusionable=False, convinceab
 Elf_Overseer.walkAround(energy=0, fire=0, poison=0)
 Elf_Overseer.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Elf_Overseer.voices("Do YOU want some more water, yes? YES?")
-Elf_Overseer.regMelee(75)
+Elf_Overseer.melee(75)

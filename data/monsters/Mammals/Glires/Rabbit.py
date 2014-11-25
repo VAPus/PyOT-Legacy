@@ -1,5 +1,5 @@
-Rabbit = genMonster("Rabbit", (74, 6017), "a rabbit")
-Rabbit.setTargetChance(0)
+Rabbit = genMonster("Rabbit", 74, 6017)
+Rabbit.targetChance(0)
 Rabbit.type("blood")
 Rabbit.health(15)
 Rabbit.experience(0)

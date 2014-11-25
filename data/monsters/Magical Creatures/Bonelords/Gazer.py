@@ -1,5 +1,5 @@
-Gazer = genMonster("Gazer", (226, 6079), "a Gazer")
-Gazer.setTargetChance(10)
+Gazer = genMonster("Gazer", 226, 6079)
+Gazer.targetChance(10)
 Gazer.type("blood")
 Gazer.health(120)
 Gazer.experience(90)
@@ -9,4 +9,4 @@ Gazer.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pu
 Gazer.voices("Mommy!?", "Buuuuhaaaahhaaaaa!", "We need mana!")
 Gazer.immunity(0,1,0) # paralyze, invisible, lifedrain
 Gazer.defense(4, fire=0.4, earth=0, energy=0.9, ice=0.8, holy=1.0, death=1.0, physical=1.0, drown=1.0)
-Gazer.regMelee(20)#ish~
+Gazer.melee(20)#ish~

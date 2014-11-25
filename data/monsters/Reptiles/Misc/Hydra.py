@@ -1,4 +1,4 @@
-hydra = genMonster("Hydra", (121, 6048), "a hydra")
+hydra = genMonster("Hydra", 121, 6048)
 hydra.health(2350)
 hydra.type("blood")
 hydra.defense(armor=29, fire=1, earth=0, energy=1.1, ice=0.5, holy=0.7, death=1, physical=1.05, drown=1)
@@ -21,8 +21,8 @@ hwwave.area(AREA_WAVE5)
 hwwave.element(ICE)
 hwwave.effects(area=EFFECT_WATERSPLASH) 
 
-hydra.regMelee(270)
-hydra.regTargetSpell("hydra ewave", 65, 320, check=chance(20))
-hydra.regTargetSpell("hydra wwave", 100, 250, check=chance(20))
-hydra.regTargetSpell("Ice Strike", 70, 155, check=chance(20)) #range? havent seen it past 4
-hydra.regSelfSpell("Light Healing", 260, 410, check=chance(20)) 
+hydra.melee(270)
+hydra.targetSpell("hydra ewave", 65, 320, check=chance(20))
+hydra.targetSpell("hydra wwave", 100, 250, check=chance(20))
+hydra.targetSpell("Ice Strike", 70, 155, check=chance(20)) #range? havent seen it past 4
+hydra.selfSpell("Light Healing", 260, 410, check=chance(20)) 

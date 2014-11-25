@@ -1,4 +1,4 @@
-Calamary = genMonster("Calamary", (8, 5980), "a calamary")
+Calamary = genMonster("Calamary", 8, 5980)
 Calamary.health(75)
 Calamary.type("blood") #?
 Calamary.defense(armor=10, fire=0, earth=0, energy=0, ice=1, holy=1, death=1, physical=1, drown=0)

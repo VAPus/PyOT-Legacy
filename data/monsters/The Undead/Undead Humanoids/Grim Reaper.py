@@ -1,4 +1,4 @@
-grim_reaper = genMonster("Grim Reaper", (300, 8955), "a grim reaper")
+grim_reaper = genMonster("Grim Reaper", 300, 8955)
 grim_reaper.health(3900)
 grim_reaper.type("undead")
 grim_reaper.defense(armor=42, fire=1.1, earth=0.6, energy=1.1, ice=0.35, holy=1.1, death=0.2, physical=0.8, drown=1)
@@ -8,5 +8,5 @@ grim_reaper.behavior(summonable=0, hostile=True, illusionable=False, convinceabl
 grim_reaper.walkAround(energy=1, fire=1, poison=0)
 grim_reaper.immunity(paralyze=1, invisible=1, lifedrain=0, drunk=0)
 grim_reaper.voices("Death!", "Come a little closer!", "The end is near!")
-grim_reaper.regMelee(813)
+grim_reaper.melee(813)
 grim_reaper.loot( ("mystical hourglass", 4.75), ("orichalcum pearl", 3.5, 4), ("nightmare blade", 0.75), ("great mana potion", 9.75), ("rusty armor", 3.25), (2162, 5.0), ("dark shield", 3.0), ("demonic essence", 11.25, 3), ("ultimate health potion", 10.0), ("scythe", 10.25), ("platinum coin", 12.75, 4), ("concentrated demonic blood", 35.0), (2148, 100, 271), ("underworld rod", 1.0), ("death ring", 0.25), ("skullcracker armor", 0.25), ("glacier kilt", 0.25) )

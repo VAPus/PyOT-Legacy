@@ -1,5 +1,5 @@
-Sheep = genMonster("Sheep", (14, 5991), "a sheep")
-Sheep.setTargetChance(0)
+Sheep = genMonster("Sheep", 14, 5991)
+Sheep.targetChance(0)
 Sheep.type("blood")
 Sheep.health(20)
 Sheep.experience(0)

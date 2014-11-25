@@ -1,5 +1,5 @@
 
-troll_champion = genMonster("Troll Champion", (281, 7926), "a troll champion")
+troll_champion = genMonster("Troll Champion", 281, 7926)
 troll_champion.health(75)
 troll_champion.type("blood")
 troll_champion.defense(armor=11, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
@@ -9,5 +9,5 @@ troll_champion.behavior(summonable=340, hostile=True, illusionable=True, convinc
 troll_champion.walkAround(energy=1, fire=1, poison=1)
 troll_champion.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 troll_champion.voices("Meee maity!", "Grrrr", "Whaaaz up!?", "Gruntz!", "Groar")
-troll_champion.regMelee(35)
+troll_champion.melee(35)
 troll_champion.loot( ("arrow", 11.75, 5), ("spear", 22.5), ("leather boots", 13.75), (2148, 100, 12), ("studded club", 3.5), ("meat", 10.75), ("wooden shield", 4.0), ("bunch of troll hair", 4.0), ("silver amulet", 0.5), ("trollroot", 0.5) )

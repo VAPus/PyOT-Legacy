@@ -1,4 +1,4 @@
-destroyer = genMonster("Destroyer", (236, 6320), "a Destroyer")
+destroyer = genMonster("Destroyer", 236, 6320)
 destroyer.health(3700, healthmax=3700)
 destroyer.type("blood")
 destroyer.defense(armor=37, fire=0.7, earth=0.8, energy=0, ice=1.15, holy=1.03, death=0.8, physical=0.8, drown=1)
@@ -8,5 +8,5 @@ destroyer.behavior(summonable=0, hostile=True, illusionable=False, convinceable=
 destroyer.walkAround(energy=0, fire=1, poison=1)
 destroyer.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 destroyer.voices("COME HERE AND DIE!", "Destructiooooon!", "It's a good day to destroy!")
-destroyer.regMelee(500)
+destroyer.melee(500)
 destroyer.loot( (2148, 100, 341), ("metal spike", 6.75), ("meat", 55.0), ("demonic essence", 19.0, 3), ("small amethyst", 11.25, 2), ("crowbar", 15.0), ("plate armor", 5.0), ("pick", 6.0), ("mind stone", 0.75), ("dark armor", 10.0), ("steel boots", 1.0), ("burst arrow", 71.25, 12), ("soul orb", 6.75), ("platinum coin", 8.0, 3), ("great health potion", 1.0), ("dreaded cleaver", 0.75), ("skull helmet", 0.0025), ("crystal necklace", 0.5), ("chaos mace", 1.0), ("giant sword", 1.5), ("death ring", 0.0025) )

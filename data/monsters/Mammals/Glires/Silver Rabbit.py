@@ -1,5 +1,5 @@
-Silver_Rabbit = genMonster("Silver Rabbit", (252, 7338), "a silver rabbit")
-Silver_Rabbit.setTargetChance(10)
+Silver_Rabbit = genMonster("Silver Rabbit", 252, 7338)
+Silver_Rabbit.targetChance(10)
 Silver_Rabbit.type("blood")
 Silver_Rabbit.health(15)
 Silver_Rabbit.experience(0)

@@ -1,4 +1,4 @@
-quara_hydromancer_scout = genMonster("Quara Hydromancer Scout", (47, 6066), "a quara hydromancer scout")
+quara_hydromancer_scout = genMonster("Quara Hydromancer Scout", 47, 6066)
 quara_hydromancer_scout.health(1100)
 quara_hydromancer_scout.type("blood")
 quara_hydromancer_scout.defense(armor=33, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
@@ -31,9 +31,9 @@ qhib.area(AREA_BEAM7) #7 or 4?
 qhib.element(ICE) #life drain
 qhib.effects(area=EFFECT_MAGIC_GREEN)
 
-quara_hydromancer_scout.regMelee(40, condition=CountdownCondition(CONDITION_POISON, 5), conditionChance=100)
-quara_hydromancer_scout.regSelfSpell("Light Healing", 25, 55, check=chance(20)) #strength?
-quara_hydromancer_scout.regTargetSpell(qhldb, 125, 250, check=chance(20))
-quara_hydromancer_scout.regTargetSpell(qhib, 1, 210, check=chance(20))
-quara_hydromancer_scout.regTargetSpell(qhld, 45, 170, check=chance(20))
-quara_hydromancer_scout.regTargetSpell(qhbberserk, 130, 165, check=chance(20))
+quara_hydromancer_scout.melee(40, condition=CountdownCondition(CONDITION_POISON, 5), conditionChance=100)
+quara_hydromancer_scout.selfSpell("Light Healing", 25, 55, check=chance(20)) #strength?
+quara_hydromancer_scout.targetSpell(qhldb, 125, 250, check=chance(20))
+quara_hydromancer_scout.targetSpell(qhib, 1, 210, check=chance(20))
+quara_hydromancer_scout.targetSpell(qhld, 45, 170, check=chance(20))
+quara_hydromancer_scout.targetSpell(qhbberserk, 130, 165, check=chance(20))

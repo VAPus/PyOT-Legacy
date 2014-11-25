@@ -1,4 +1,4 @@
-Orewalker = genMonster("Orewalker", (490, 15910), "a Orewalker") #mostly unknown
+Orewalker = genMonster("Orewalker", 490, 15910) #mostly unknown
 Orewalker.health(7200)
 Orewalker.type("blood")
 Orewalker.defense(armor=1, fire=0.35, earth=0, energy=1.05, ice=0.95, holy=1, death=0.75, physical=0.75, drown=0.95)
@@ -10,4 +10,4 @@ Orewalker.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Orewalker.summon("Orewalker", 10)
 Orewalker.maxSummons(0)
 Orewalker.voices(CLONK!")
-Orewalker.regMelee(350)
+Orewalker.melee(350)

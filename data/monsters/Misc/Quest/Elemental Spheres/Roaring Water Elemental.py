@@ -1,4 +1,4 @@
-roaring_water_elemental = genMonster("Roaring Water Elemental", (11, 8965), "a roaring water elemental")
+roaring_water_elemental = genMonster("Roaring Water Elemental", 11, 8965)
 roaring_water_elemental.health(1750, healthmax=1750)
 roaring_water_elemental.type("undead")
 roaring_water_elemental.defense(armor=50, fire=0, earth=0, energy=1, ice=0, holy=0.4, death=0.5, physical=0.3, drown=1)
@@ -8,5 +8,5 @@ roaring_water_elemental.behavior(summonable=0, hostile=True, illusionable=False,
 roaring_water_elemental.walkAround(energy=1, fire=0, poison=0)
 roaring_water_elemental.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 roaring_water_elemental.voices("BLUB BLUB", "SWASHHH")
-roaring_water_elemental.regMelee(230)
+roaring_water_elemental.melee(230)
 roaring_water_elemental.loot( (2148, 100, 168), (7632, 2.5), ("iced soil", 11.25), ("small sapphire", 7.5, 2), ("northwind rod", 0.75) )

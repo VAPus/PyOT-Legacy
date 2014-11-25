@@ -1,4 +1,4 @@
-gargoyle = genMonster("Gargoyle", (95, 6027), "a gargoyle")
+gargoyle = genMonster("Gargoyle", 95, 6027)
 gargoyle.health(250, healthmax=250)
 gargoyle.type("blood")
 gargoyle.defense(armor=29, fire=1.1, earth=0, energy=1, ice=1, holy=1, death=0.6, physical=0.8, drown=1)
@@ -8,5 +8,5 @@ gargoyle.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0,
 gargoyle.walkAround(energy=1, fire=1, poison=0)
 gargoyle.immunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 gargoyle.voices("Feel my claws, softskin.", "There is a stone in your shoe!", "Stone sweet stone.", "Harrrr harrrr!", "Chhhhhrrrrk!")
-gargoyle.regMelee(65)
+gargoyle.melee(65)
 gargoyle.loot( ("stone wing", 10.0), ("morning star", 1.0), ("battle shield", 1.5), (2148, 100, 30), (8838, 7.5, 2), ("small stone", 83.0, 10), ("dark armor", 0.25), ("club ring", 0.25), ("strawberry", 3.25, 5), ("shiny stone", 0.25), ("piece of marble rock", 0.5), ("wolf tooth chain", 0.25), ("steel helmet", 0.25) )

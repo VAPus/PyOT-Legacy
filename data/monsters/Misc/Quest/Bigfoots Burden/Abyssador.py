@@ -1,4 +1,4 @@
-Abyssador = genMonster("Abyssador", (495, 16067), "an abyssador")
+Abyssador = genMonster("Abyssador", 495, 16067)
 Abyssador.health(350000)
 Abyssador.type("blood")
 Abyssador.defense(armor=100, fire=0.85, earth=0, energy=0.85, ice=0.85, holy=1, death=0.85, physical=0.85, drown=0.85)
@@ -8,4 +8,4 @@ Abyssador.behavior(summonable=0, hostile=True, illusionable=False, convinceable=
 Abyssador.walkAround(energy=0, fire=0, poison=0)
 Abyssador.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Abyssador.voices("*** STEALTH ***", "*** TIME ***", "*** IMPORTANT ***", "*** BRAINS *** SMALL ***", "*** DEATH ***", "*** FIRE *** HOME *** VICTORY ***", "*** EXISTENCE *** FUTILE ***")
-Abyssador.regMelee(900)
+Abyssador.melee(900)

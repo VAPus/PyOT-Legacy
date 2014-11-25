@@ -1,5 +1,5 @@
 
-orc_berserker = genMonster("Orc Berserker", (8, 5980), "an orc berserker")
+orc_berserker = genMonster("Orc Berserker", 8, 5980)
 orc_berserker.health(210)
 orc_berserker.type("blood")
 orc_berserker.defense(armor=13, fire=1, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
@@ -9,5 +9,5 @@ orc_berserker.behavior(summonable=590, hostile=True, illusionable=True, convince
 orc_berserker.walkAround(energy=1, fire=1, poison=1)
 orc_berserker.immunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 orc_berserker.voices("KRAK ORRRRRRK!")
-orc_berserker.regMelee(200)
+orc_berserker.melee(200)
 orc_berserker.loot( ("orc leather", 4.0), ("hunting spear", 4.25), ("halberd", 6.5), ("orcish gear", 9.0), (2148, 100, 12), ("battle axe", 6.0), ("ham", 10.5), ("lamp", 0.75), ("orc tooth", 2.75), ("chain armor", 1.25) )

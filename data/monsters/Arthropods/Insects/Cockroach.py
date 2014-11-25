@@ -1,5 +1,5 @@
-cockroach = genMonster("Cockroach", (284, 8593), "a cockroach")
-cockroach.setTargetChance(0)
+cockroach = genMonster("Cockroach", 284, 8593)
+cockroach.targetChance(0)
 cockroach.type("slime")
 cockroach.health(1)
 cockroach.experience(0)

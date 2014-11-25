@@ -1,4 +1,4 @@
-chakoya_windcaller = genMonster("Chakoya Windcaller", (260, 7320), "a chakoya windcaller")
+chakoya_windcaller = genMonster("Chakoya Windcaller", 260, 7320)
 chakoya_windcaller.health(84, healthmax=84)
 chakoya_windcaller.type("blood")
 chakoya_windcaller.defense(armor=7, fire=0.5, earth=1, energy=1.15, ice=0, holy=0.8, death=1.08, physical=1, drown=1)
@@ -8,5 +8,5 @@ chakoya_windcaller.behavior(summonable=0, hostile=True, illusionable=False, conv
 chakoya_windcaller.walkAround(energy=1, fire=1, poison=1)
 chakoya_windcaller.immunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 chakoya_windcaller.voices("Siqsiq ji jusipa!", "Jagura taluka taqua!", "Mupi! Si siyoqua jinuma!", "Quatu nguraka!")
-chakoya_windcaller.regMelee(22)
+chakoya_windcaller.melee(22)
 chakoya_windcaller.loot( (2148, 100, 25), ("fish", 68.0, 3), ("brass helmet", 3.5), ("bone shield", 1.5) )

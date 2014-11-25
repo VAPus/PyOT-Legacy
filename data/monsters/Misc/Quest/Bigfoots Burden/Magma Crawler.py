@@ -1,4 +1,4 @@
-Magma_Crawler = genMonster("Magma Crawler", (492, 15991), "a magma crawler")
+Magma_Crawler = genMonster("Magma Crawler", 492, 15991)
 Magma_Crawler.health(4800)
 Magma_Crawler.type("blood")
 Magma_Crawler.defense(armor=50, fire=0, earth=0, energy=0.9, ice=0.95, holy=1, death=0.75, physical=0.95, drown=1)
@@ -8,4 +8,4 @@ Magma_Crawler.behavior(summonable=0, hostile=True, illusionable=False, convincea
 Magma_Crawler.walkAround(energy=0, fire=0, poison=0)
 Magma_Crawler.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Magma_Crawler.voices("Crrroak!")
-Magma_Crawler.regMelee(350)
+Magma_Crawler.melee(350)

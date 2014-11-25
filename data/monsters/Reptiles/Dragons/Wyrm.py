@@ -1,4 +1,4 @@
-wyrm = genMonster("Wyrm", (291, 8941), "a wyrm")
+wyrm = genMonster("Wyrm", 291, 8941)
 wyrm.health(1825)
 wyrm.type("blood")
 wyrm.defense(armor=39, fire=0.8, earth=0.75, energy=0, ice=1.05, holy=1, death=1.05, physical=1, drown=1)
@@ -28,10 +28,10 @@ wsb.effects(area=EFFECT_POFF)
 ws = spell.Spell("wyrm sound", target=TARGET_SELF) #no other effect
 ws.effects(caster=EFFECT_SOUND_YELLOW)
 
-wyrm.regMelee(235)
-wyrm.regSelfSpell("Light Healing", 100, 150, check=chance(18)) #not 
-wyrm.regTargetSpell("wyrm ewave", 130, 200, check=chance(5))
-wyrm.regTargetSpell("wyrm eberserk", 100, 220, check=chance(20))
-wyrm.regTargetSpell(2311, 100, 125, check=chance(10)) #hmm
-wyrm.regTargetSpell("wyrm somkebeam", 98, 145, check=chance(20))
-wyrm.regSelfSpell("wyrm sound", 1, 1, check=chance(10)) #not suppose to heal
+wyrm.melee(235)
+wyrm.selfSpell("Light Healing", 100, 150, check=chance(18)) #not 
+wyrm.targetSpell("wyrm ewave", 130, 200, check=chance(5))
+wyrm.targetSpell("wyrm eberserk", 100, 220, check=chance(20))
+wyrm.targetSpell(2311, 100, 125, check=chance(10)) #hmm
+wyrm.targetSpell("wyrm somkebeam", 98, 145, check=chance(20))
+wyrm.selfSpell("wyrm sound", 1, 1, check=chance(10)) #not suppose to heal

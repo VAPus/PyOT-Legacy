@@ -1,5 +1,5 @@
-Flamingo = genMonster("Flamingo", (212, 6054), "a flamingo")
-Flamingo.setTargetChance(10)
+Flamingo = genMonster("Flamingo", 212, 6054)
+Flamingo.targetChance(10)
 Flamingo.type("blood")
 Flamingo.health(25)
 Flamingo.experience(0)

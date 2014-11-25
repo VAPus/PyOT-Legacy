@@ -1,4 +1,4 @@
-hive_pore = genMonster("Hive Pore", (0, 5980), "a hive pore") #is the name visable? incorrect look no corpse?
+hive_pore = genMonster("Hive Pore", 0, 5980) #is the name visable? incorrect look no corpse?
 hive_pore.health(1, healthmax=1)
 hive_pore.type("slime")
 hive_pore.defense(armor=10, fire=0, earth=0, energy=0, ice=0, holy=0, death=0, physical=0, drown=0)

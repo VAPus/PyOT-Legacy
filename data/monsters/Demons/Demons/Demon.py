@@ -1,4 +1,4 @@
-demon = genMonster("Demon", (35, 5995), "a demon")
+demon = genMonster("Demon", 35, 5995)
 demon.health(8200)
 demon.type("blood")
 demon.defense(armor=48, fire=0, earth=0.6, energy=0.5, ice=1.12, holy=1.12, death=0.8, physical=0.75, drown=1)
@@ -27,11 +27,11 @@ dmd = spell.Spell("demon manadrain", target=TARGET_TARGETONLY)
 dmd.area(AREA_WAVE1)
 dmd.targetEffect(callback=spell.mana(1, 1, 0, 120))
  
-demon.regMelee(520)
-demon.regTargetSpell("Hells Core", 150, 250, check=chance(9)) #
-demon.regTargetSpell("demon geb", 300, 460, check=chance(9)) #
-demon.regTargetSpell("demon estrike", 210, 300, check=chance(9)) #
-demon.regTargetSpell("demon manadrain", 0, 120, check=chance(9)) #
-demon.regSelfSpell("Light Healing", 1, 250, check=chance(9)) #
-demon.regTargetSpell(2301, 1, 1, check=chance(9)) #use rune id
+demon.melee(520)
+demon.targetSpell("Hells Core", 150, 250, check=chance(9)) #
+demon.targetSpell("demon geb", 300, 460, check=chance(9)) #
+demon.targetSpell("demon estrike", 210, 300, check=chance(9)) #
+demon.targetSpell("demon manadrain", 0, 120, check=chance(9)) #
+demon.selfSpell("Light Healing", 1, 250, check=chance(9)) #
+demon.targetSpell(2301, 1, 1, check=chance(9)) #use rune id
 ##need to add haste spells

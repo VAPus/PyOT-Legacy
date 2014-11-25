@@ -1,4 +1,4 @@
-dragon = genMonster("Dragon", (34, 5973), "a dragon")
+dragon = genMonster("Dragon", 34, 5973)
 dragon.health(1000)
 dragon.type("blood")
 dragon.defense(armor=22, fire=0, earth=0.2, energy=0.8, ice=1.1, holy=1, death=1, physical=1, drown=1)
@@ -16,9 +16,9 @@ dfwave.area(AREA_WAVE8)
 dfwave.element(FIRE)
 dfwave.effects(area=EFFECT_HITBYFIRE)
  
-dragon.regMelee(120)
+dragon.melee(120)
 #arguements are (self, spellName, min, max, interval=2, check=chance(10), range=7, length=None)
 #im not sure if we are ever going to need length
-dragon.regTargetSpell("drag fwave", 100, 170, check=chance(100))
-dragon.regSelfSpell("Light Healing", 25, 55, check=chance(100))
-dragon.regTargetSpell(2304, 60, 110, check=chance(100)) #runes go by rune id and use regTargetSpell too. range isnt needed default is 7
+dragon.targetSpell("drag fwave", 100, 170, check=chance(100))
+dragon.selfSpell("Light Healing", 25, 55, check=chance(100))
+dragon.targetSpell(2304, 60, 110, check=chance(100)) #runes go by rune id and use regTargetSpell too. range isnt needed default is 7

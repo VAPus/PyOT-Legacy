@@ -1,5 +1,5 @@
-Husky = genMonster("Husky", (258, 7316), "a husky")
-Husky.setTargetChance(10)
+Husky = genMonster("Husky", 258, 7316)
+Husky.targetChance(10)
 Husky.type("blood")
 Husky.health(140)
 Husky.experience(0)

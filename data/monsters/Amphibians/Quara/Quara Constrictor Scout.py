@@ -1,4 +1,4 @@
-quara_constrictor_scout = genMonster("Quara Constrictor Scout", (46, 6065), "a quara constrictor scout")
+quara_constrictor_scout = genMonster("Quara Constrictor Scout", 46, 6065)
 quara_constrictor_scout.health(450)
 quara_constrictor_scout.type("blood")
 quara_constrictor_scout.defense(armor=15, fire=0, earth=1.1, energy=1.1, ice=0, holy=1, death=1, physical=1, drown=0)
@@ -15,5 +15,5 @@ qcslifedrain_berserk.area(AREA_SQUARE)
 qcslifedrain_berserk.element(LIFEDRAIN)
 qcslifedrain_berserk.effects(area=EFFECT_MAGIC_RED) #?
 
-quara_constrictor_scout.regMelee(130) #or more
-quara_constrictor_scout.regTargetSpell(qcslifedrain_berserk, 1, 80, check=chance(25))
+quara_constrictor_scout.melee(130) #or more
+quara_constrictor_scout.targetSpell(qcslifedrain_berserk, 1, 80, check=chance(25))

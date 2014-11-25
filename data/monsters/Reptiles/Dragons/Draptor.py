@@ -1,5 +1,5 @@
 #mostly unknown
-draptor = genMonster("Draptor", (8, 5980), "a draptor")
+draptor = genMonster("Draptor", 8, 5980)
 draptor.health(3000)
 draptor.type("blood")
 draptor.defense(armor=2, fire=1, earth=1, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)#
@@ -24,7 +24,7 @@ deb.effects(target=EFFECT_PURPLEENERGY, area=EFFECT_YELLOWENERGY)
 #plays a red music note when it hastes
 #energy hit. is it only does from close like a demon?
 
-draptor.regMelee(150)
-draptor.regSelfSpell("Light Healing", 100, 150, check=chance(18)) #unknown healing
-draptor.regTargetSpell("drap fwave", 130, 200, check=chance(5)) #unknown damage
-draptor.regTargetSpell("drap eberserk", 130, 200, check=chance(5)) #unknown damage
+draptor.melee(150)
+draptor.selfSpell("Light Healing", 100, 150, check=chance(18)) #unknown healing
+draptor.targetSpell("drap fwave", 130, 200, check=chance(5)) #unknown damage
+draptor.targetSpell("drap eberserk", 130, 200, check=chance(5)) #unknown damage

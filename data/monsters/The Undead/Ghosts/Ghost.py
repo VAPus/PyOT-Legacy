@@ -1,4 +1,4 @@
-ghost = genMonster("Ghost", (48, 5993), "a ghost")
+ghost = genMonster("Ghost", 48, 5993)
 ghost.health(150)
 ghost.type("undead")
 ghost.defense(armor=2, fire=1, earth=0, energy=1, ice=1, holy=1, death=0, physical=0, drown=0)
@@ -8,5 +8,5 @@ ghost.behavior(summonable=0, hostile=True, illusionable=True, convinceable=0, pu
 ghost.walkAround(energy=1, fire=1, poison=0)
 ghost.immunity(paralyze=1, invisible=0, lifedrain=0, drunk=0)
 ghost.voices("Huh!", "Shhhhhh", "Buuuuuh")
-ghost.regMelee(80)
+ghost.melee(80)
 ghost.loot( ("combat knife", 7.25), ("shadow herb", 15.0), ("morning star", 10.75), ("book", 1.5), ("white piece of cloth", 2.0, 3), ("cape", 9.25), ("ancient shield", 0.75), ("ghostly tissue", 1.75), ("stealth ring", 0.25) )

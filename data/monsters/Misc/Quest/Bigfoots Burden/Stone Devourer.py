@@ -1,4 +1,4 @@
-Stone_Devourer = genMonster("Stone Devourer", (486, 15864), "a stone devourer")
+Stone_Devourer = genMonster("Stone Devourer", 486, 15864)
 Stone_Devourer.health(4200)
 Stone_Devourer.type("undead")
 Stone_Devourer.defense(armor=65, fire=0, earth=0, energy=0.7, ice=0.7, holy=0.7, death=0.7, physical=0.9, drown=0.7)
@@ -8,4 +8,4 @@ Stone_Devourer.behavior(summonable=0, hostile=True, illusionable=False, convince
 Stone_Devourer.walkAround(energy=0, fire=0, poison=0)
 Stone_Devourer.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Stone_Devourer.voices("Rumble!")
-Stone_Devourer.regMelee(950)
+Stone_Devourer.melee(950)

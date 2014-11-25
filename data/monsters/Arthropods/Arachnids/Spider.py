@@ -1,4 +1,4 @@
-spider = genMonster("Spider", (30, 5961), "a spider")
+spider = genMonster("Spider", 30, 5961)
 spider.health(20)
 spider.type("slime")
 spider.defense(armor=2, fire=1.2, earth=1, energy=1, ice=1, holy=1, death=1, physical=1, drown=1)
@@ -9,4 +9,4 @@ spider.walkAround(energy=1, fire=1, poison=1)
 spider.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 spider.loot( (2148, 100, 5), (8859, 1.0) )
 
-spider.regMelee(25)
+spider.melee(25)

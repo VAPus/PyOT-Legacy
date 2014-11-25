@@ -1,4 +1,4 @@
-ghastly_dragon = genMonster("Ghastly Dragon", (351, 11362), "a ghastly dragon")
+ghastly_dragon = genMonster("Ghastly Dragon", 351, 11362)
 ghastly_dragon.health(7800)
 ghastly_dragon.type("undead")
 ghastly_dragon.defense(armor=33, fire=0.9, earth=0, energy=0.9, ice=0.5, holy=1.15, death=0, physical=1.1, drown=1)
@@ -25,7 +25,7 @@ gdld = spell.Spell("ghastly lifedrain", target=TARGET_TARGETONLY)
 gdld.element(PHYSICAL) #life drain
 gdld.effects(area=EFFECT_MAGIC_RED)
 
-ghastly_dragon.regMelee(650)
-ghastly_dragon.regTargetSpell("ghastly wwave", 50, 250, check=chance(20))
-ghastly_dragon.regTargetSpell("ghastly dball", 1, 180, check=chance(20))
-ghastly_dragon.regTargetSpell("ghastly lifedrain", 80, 228, check=chance(20))
+ghastly_dragon.melee(650)
+ghastly_dragon.targetSpell("ghastly wwave", 50, 250, check=chance(20))
+ghastly_dragon.targetSpell("ghastly dball", 1, 180, check=chance(20))
+ghastly_dragon.targetSpell("ghastly lifedrain", 80, 228, check=chance(20))

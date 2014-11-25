@@ -1,4 +1,4 @@
-fish = genMonster("Fish", (455, 2667), "a fish")
+fish = genMonster("Fish", 455, 2667)
 fish.health(25)
 fish.type("blood")
 fish.defense(armor=5, fire=0, earth=0, energy=1, ice=1, holy=1, death=1, physical=1, drown=0)

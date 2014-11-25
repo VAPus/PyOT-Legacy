@@ -1,4 +1,4 @@
-terramite = genMonster("Terramite", (346, 11347), "a terramite")
+terramite = genMonster("Terramite", 346, 11347)
 terramite.health(365)
 terramite.type("slime")
 terramite.defense(armor=15, fire=1.1, earth=0.8, energy=1.05, ice=1, holy=1, death=1, physical=0.95, drown=1)
@@ -8,5 +8,5 @@ terramite.behavior(summonable=505, hostile=True, illusionable=True, convinceable
 terramite.walkAround(energy=1, fire=1, poison=1)
 terramite.immunity(paralyze=1, invisible=1, lifedrain=0, drunk=1)
 terramite.voices("Zrp zrp!")
-terramite.regMelee(100)
+terramite.melee(100)
 terramite.loot( (2148, 100, 25), ("terramite legs", 8.5), ("terramite shell", 2.0), ("terramite eggs", 3.75) )

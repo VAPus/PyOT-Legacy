@@ -1,6 +1,6 @@
-bogl_frog = genMonster("Bog Frog", (226, 6079), "a bog frog") #corpse?
-bogl_frog.setOutfit(255, 255, 255, 255) #color
-bogl_frog.setTargetChance(10)
+bogl_frog = genMonster("Bog Frog", 226, 6079) #corpse?
+bogl_frog.outfit(255, 255, 255, 255) #color
+bogl_frog.targetChance(10)
 bogl_frog.type("blood")
 bogl_frog.health(25)
 bogl_frog.experience(0)

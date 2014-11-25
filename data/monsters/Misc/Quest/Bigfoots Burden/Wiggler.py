@@ -1,4 +1,4 @@
-Wiggler = genMonster("Wiggler", (510, 16193), "a wiggler")
+Wiggler = genMonster("Wiggler", 510, 16193)
 Wiggler.type("slime")
 Wiggler.defense(armor=40, fire=1.05, earth=0, energy=0.95, ice=1, holy=1, death=0.9, physical=1, drown=1)
 Wiggler.experience(900)
@@ -7,4 +7,4 @@ Wiggler.behavior(summonable=0, hostile=True, illusionable=False, convinceable=0,
 Wiggler.walkAround(energy=0, fire=0, poison=0)
 Wiggler.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Wiggler.voices("Zzzrp", "Crick! Crick!")
-Wiggler.regMelee(200, condition=CountdownCondition(CONDITION_POISON, 27), conditionChance=100)
+Wiggler.melee(200, condition=CountdownCondition(CONDITION_POISON, 27), conditionChance=100)

@@ -60,8 +60,8 @@ def defaultBrainFeaturePriority(monster):
                             return True # Until next brain tick
                 
                 # Summons
-                if len(monster.activeSummons) < monster.base._maxSummon:
-                    for summon in monster.base._summons:
+                if len(monster.activeSummons) < monster.base.maxSummon:
+                    for summon in monster.base.summons:
                         if random.randint(0, 99) < summon[1]:
                             try:
                                 creature = monster.summon(summon[0], monster.positionInDirection(random.randint(0,3)))

@@ -1,4 +1,4 @@
-serpent_spawn = genMonster("Serpent Spawn", (220, 4323), "a serpent spawn")
+serpent_spawn = genMonster("Serpent Spawn", 220, 4323)
 serpent_spawn.health(3000)
 serpent_spawn.type("slime")
 serpent_spawn.defense(armor=47, fire=1.1, earth=0, energy=1.1, ice=0.8, holy=1, death=1, physical=1, drown=1)
@@ -22,8 +22,8 @@ sspwave.area(AREA_WAVE8)
 sspwave.element(EARTH)
 sspwave.effects(area=EFFECT_POISONAREA) 
 
-serpent_spawn.regMelee(250)
-serpent_spawn.regSelfSpell("Light Healing", 250, 400, check=chance(20))
-serpent_spawn.regSelfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength
-serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=chance(20))
-serpent_spawn.regTargetSpell("ss musicbeam", 1, 500, check=chance(20))
+serpent_spawn.melee(250)
+serpent_spawn.selfSpell("Light Healing", 250, 400, check=chance(20))
+serpent_spawn.selfSpell("Haste", 360, 360, length=8, check=chance(9)) #strength
+serpent_spawn.targetSpell("ss musicbeam", 1, 500, check=chance(20))
+serpent_spawn.targetSpell("ss musicbeam", 1, 500, check=chance(20))

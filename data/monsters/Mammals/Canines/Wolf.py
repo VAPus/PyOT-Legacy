@@ -1,5 +1,5 @@
 Wolf = genMonster("Wolf", 27, "a wolf")
-Wolf.setTargetChance(0)
+Wolf.targetChance(0)
 Wolf.type("blood")
 Wolf.health(25)
 Wolf.experience(18)
@@ -10,4 +10,4 @@ Wolf.voices("Yooooohhuuuu!", "Grrrrrrrr")
 Wolf.immunity(0,0,0) # paralyze, invisible, lifedrain
 Wolf.defense(2, fire=1.0, earth=1.0, energy=1.0, ice=1.1, holy=0.9, death=1.05, physical=1.0, drown=1.0)
 Wolf.loot( ("meat", 67.5, 2), ("wolf paw", 1.0) )
-Wolf.regMelee(19)
+Wolf.melee(19)

@@ -1,4 +1,4 @@
-butterfly = genMonster("Butterfly", (227, 4994), "a butterfly")
+butterfly = genMonster("Butterfly", 227, 4994)
 butterfly.health(2)
 butterfly.type("slime")
 butterfly.defense(armor=2, fire=1.0, earth=1.0, energy=1.0, ice=1.0, holy=1.0, death=1.0, physical=1.0, drown=1)

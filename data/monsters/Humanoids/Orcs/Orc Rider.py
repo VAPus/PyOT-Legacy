@@ -1,5 +1,5 @@
 
-orc_rider = genMonster("Orc Rider", (4, 6010), "an orc rider")
+orc_rider = genMonster("Orc Rider", 4, 6010)
 orc_rider.health(180)
 orc_rider.type("blood")
 orc_rider.defense(armor=8, fire=1, earth=1.1, energy=0.8, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
@@ -9,5 +9,5 @@ orc_rider.behavior(summonable=0, hostile=True, illusionable=False, convinceable=
 orc_rider.walkAround(energy=0, fire=0, poison=0)
 orc_rider.immunity(paralyze=1, invisible=0, lifedrain=0, drunk=1)
 orc_rider.voices("Orc arga Huummmak!", "Grrrrrrr")
-orc_rider.regMelee(130)
+orc_rider.melee(130)
 orc_rider.loot( ("orcish axe", 6.75), ("warwolf fur", 10.75), ("meat", 27.0, 3), (2148, 100, 74), ("orc leather", 8.75), ("scale armor", 1.0), ("torch", 1.75), ("wolf tooth chain", 9.25), ("orc tooth", 2.5), ("battle shield", 0.75), ("obsidian lance", 0.75) )

@@ -1,4 +1,4 @@
-humongous_fungus = genMonster("Humongous Fungus", (488, 18382), "a humongous fungus")#mostly unkniown including corpse(may be right)
+humongous_fungus = genMonster("Humongous Fungus", 488, 18382)#mostly unkniown including corpse(may be right)
 humongous_fungus.health(3400, healthmax=3400)
 humongous_fungus.type("blood")
 humongous_fungus.defense(armor=40, fire=0.95, earth=0, energy=0.85, ice=0.85, holy=0.95, death=0.65, physical=1, drown=1)
@@ -8,4 +8,4 @@ humongous_fungus.behavior(summonable=0, hostile=True, illusionable=False, convin
 humongous_fungus.walkAround(energy=0, fire=0, poison=0)
 humongous_fungus.immunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 humongous_fungus.voices("Munch munch munch!")
-humongous_fungus.regMelee(330)
+humongous_fungus.melee(330)

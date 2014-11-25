@@ -1,5 +1,5 @@
-Dog = genMonster("Dog", (32, 5971), "a dog")
-Dog.setTargetChance(10)
+Dog = genMonster("Dog", 32, 5971)
+Dog.targetChance(10)
 Dog.type("blood")
 Dog.health(20)
 Dog.experience(0)

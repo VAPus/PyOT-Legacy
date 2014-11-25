@@ -1,4 +1,4 @@
-quara_constrictor = genMonster("Quara Constrictor", (46, 6065), "a quara constrictor")
+quara_constrictor = genMonster("Quara Constrictor", 46, 6065)
 quara_constrictor.health(450)
 quara_constrictor.type("undead")
 quara_constrictor.defense(armor=15, fire=0, earth=1.1, energy=1.25, ice=0, holy=1, death=1, physical=1, drown=0)
@@ -29,8 +29,8 @@ qciceball.area(AREA_CIRCLE3)
 qciceball.element(ICE)
 qciceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
 
-quara_constrictor.regMelee(150, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)
-quara_constrictor.regTargetSpell(qcldberk, 1, 80, check=chance(25))
-quara_constrictor.regTargetSpell(qciceball, 40, 70, check=chance(25)) 
-quara_constrictor.regTargetSpell(qcpberk, 1, 80, check=chance(25))
-quara_constrictor.regTargetSpell(cre, 1, 1, check=chance(10)) #not suppose to damage
+quara_constrictor.melee(150, condition=CountdownCondition(CONDITION_POISON, 1), conditionChance=100)
+quara_constrictor.targetSpell(qcldberk, 1, 80, check=chance(25))
+quara_constrictor.targetSpell(qciceball, 40, 70, check=chance(25)) 
+quara_constrictor.targetSpell(qcpberk, 1, 80, check=chance(25))
+quara_constrictor.targetSpell(cre, 1, 1, check=chance(10)) #not suppose to damage

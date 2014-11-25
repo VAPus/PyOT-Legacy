@@ -1,8 +1,8 @@
-chicken = genMonster("Chicken", (111, 6042), "a chicken")
+chicken = genMonster("Chicken", 111, 6042)
 chicken.type("blood")
 chicken.health(15)
 chicken.experience(0)
-chicken.setTargetChance(10)
+chicken.targetChance(10)
 chicken.speed(200) #Incorrect
 chicken.walkAround(1,1,1) # energy, fire, poison
 chicken.behavior(summonable=220, hostile=True, illusionable=True, convinceable=220, pushable=True, pushItems=False, pushCreatures=False, targetDistance=1, runOnHealth=0)

@@ -1,4 +1,4 @@
-troll = genMonster("Troll", (15, 5960), "a troll")
+troll = genMonster("Troll", 15, 5960)
 troll.health(50)
 troll.type("blood")
 troll.defense(armor=6, fire=1, earth=1.1, energy=0.85, ice=1, holy=0.9, death=1.1, physical=1, drown=1)
@@ -8,5 +8,5 @@ troll.behavior(summonable=290, hostile=True, illusionable=True, convinceable=290
 troll.walkAround(energy=1, fire=1, poison=1)
 troll.immunity(paralyze=0, invisible=0, lifedrain=0, drunk=0)
 troll.voices("Hmmm, bugs", "Hmmm, dogs", "Grrr", "Groar", "Gruntz!")
-troll.regMelee(15)
+troll.melee(15)
 troll.loot( ("spear", 13.5), ("rope", 8.75), (2148, 100, 12), ("meat", 15.25), ("wooden shield", 10.5), ("hand axe", 17.25), ("leather helmet", 12.0), ("leather boots", 10.0), ("studded club", 4.75), ("bunch of troll hair", 0.75), ("silver amulet", 0.0025) )
