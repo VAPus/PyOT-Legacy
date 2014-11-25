@@ -23,6 +23,8 @@ class GameProtocol(protocolbase.TibiaProtocol):
         self.protocol = None
         self.ready = False
         self.version = 0
+        self.firstConnection = 0
+        self.ping = 0
 
     def onConnect(self):
         pkg = TibiaPacket()
@@ -30,6 +32,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
         pkg.uint32(0xFFFFFFFF) # Used for?
         pkg.uint8(0xFF) # Used for?
         pkg.send(self)
+        self.firstConnection = time.time()
 
     def exitWithError(self, message):
         packet = TibiaPacket(0x14)
@@ -59,6 +62,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.OSType = packet.uint16() # os type
             version = packet.uint16() # Version int
 
+            # Calculate ping.
+            self.ping = time.time() - self.firstConnection
+            print("Ping: ", self.ping * 1000, "ms")
             if version >= 972:
                 version = packet.uint32()
                 packet.uint8() # Client type.

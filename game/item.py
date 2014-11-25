@@ -12,23 +12,24 @@ import pickle
 
 items = None
 sprites = {}
-
-### Item ###
-class Item(object):
-    attributes = {'solid':1, 'blockprojectile': 1 << 1, 'blockpath': 1 << 2, 'hasheight': 1 << 3, 'usable': 1 << 4, 'pickable': 1 << 5,
+stackable = {}
+attributes = {'solid':1, 'blockprojectile': 1 << 1, 'blockpath': 1 << 2, 'hasheight': 1 << 3, 'usable': 1 << 4, 'pickable': 1 << 5,
                   'movable': 1 << 6, 'stackable': 1 << 7, 'fcd': 1 << 8, 'fcn': 1 << 9, 'fce': 1 << 10, 'fcs': 1 << 11, 'fcw': 1 << 12,
                   'ontop': 1 << 13, 'readable': 1 << 14,'rotatable': 1 << 15, 'hangable': 1 << 16, 'vertical': 1 << 17, 'horizontal': 1 << 18,
                   'cannotdecay': 1 << 19, 'allowdistread': 1 << 20, '_unused': 1 << 21, 'clientcharges': 1 << 22, 'lookthrough': 1 << 23,
                   'animation': 1 << 24}
+sidFlags = {}
+sidToCid = {}
+stackableItems = set()
+solidItems = set()
+sidType = {}
+### Item ###
+class Item(object):
+    
 
     def __init__(self, itemId, count=1, actions=None, **kwargs):
         #itemId = 106
-        attr = items.get(itemId)
-        if not attr:
-            print("ItemId %d doesn't exist!" % itemId)
-            itemId = 100
-            attr = items[100]
-
+        attr = items[itemId]
         self.itemId = itemId
 
         if actions:
@@ -41,7 +42,7 @@ class Item(object):
             for k in kwargs:
                 self.__setattr__(k, kwargs[k])
 
-        if attr.get('flags', 0) & 128:
+        if sidFlags[itemId] & 128:
             if not count or count < 0:
                 count = 1
             elif not isinstance(count, int):
@@ -132,11 +133,11 @@ class Item(object):
         except:
             pass
 
-        if not self in tile.things:
+        if not self in tile:
             return False # Not on this tile
 
         elif isinstance(pos, StackPosition):
-            for z in range(len(tile.things)+1):
+            for z in range(len(tile)+1):
                 if tile.getThing(z) == self:
                     pos.stackpos = z
                     return pos
@@ -180,21 +181,32 @@ class Item(object):
         self.actions.remove(name)
 
     @property
-    def type(self):
+    def type(self, _sidType = sidType):
         " Returns the type attribute. This is readonly. "
-        return items[self.itemId].get("type", 0)
+        return _sidType[self.itemId]
 
     @property
-    def cid(self):
+    def cid(self, _sidToCid = sidToCid):
         " Returns the cid attribute. This is readonly. "
-        return items[self.itemId].get('cid', self.itemId)
-
+        return _sidToCid[self.itemId]
+        
+    @property
+    def solid(self, _solidItems = solidItems):
+        " Returns the cid attribute. This is readonly. "
+        return self.itemId in _solidItems
+        
+    @property
+    def stackable(self, _stackableItems = stackableItems):
+        " Returns the cid attribute. This is readonly. "
+        return self.itemId in _stackableItems
+        
     def __getattr__(self, name):
         if not "__" in name:
+            
+            if name in attributes:
+                return sidFlags[self.itemId] & attributes[name]
             _items = items[self.itemId]
-            if name in self.attributes and "flags" in _items:
-                return _items['flags'] & self.attributes[name]
-            elif name in _items:
+            if name in _items:
                 return _items[name]
             return None
 
@@ -587,7 +599,7 @@ class Item(object):
             if toId:
                 if stackPos == 0:
                     # Hack.
-                    tile.ground = item
+                    tile[0] = item
                     newStackpos = 0
                 else:
                     newStackpos = tile.placeItem(item)
@@ -921,7 +933,7 @@ def loadItems():
     global idByNameCache
     global cidToSid
     global sprites
-
+    
     print("> > Loading items...")
 
     if config.itemCache:
@@ -945,10 +957,10 @@ def loadItems():
     # JSON format.
     flagTree = {'s':1, 'b':3, 't':8192, 'ts':8193, 'tb':8195, 'm':64, 'p':96}
     def _decoder(item):
-        flags = item.get('flags')
+        flags = item.get('flags', 0)
         if flags and not isinstance(flags, int):
             item['flags'] = flagTree[flags]
-
+            flags = item['flags']
         if 'shootType' in item:
             item['shootType'] = getattr(game.const, 'ANIMATION_%s' % item['shootType'].upper())
 
@@ -962,7 +974,7 @@ def loadItems():
 
         id = item['id']
         cid = item.get('cid')
-
+        
         del item['id']
         if not isinstance(id, int):
             start, end = map(int, id.split('-'))
@@ -978,9 +990,23 @@ def loadItems():
                     _newItem['cid'] = bCid
                     loadItems[id] = _newItem
                     _cidToSid[bCid] = id
+                    sidToCid[id] = bCid
+                    sidFlags[id] = flags
+                    sidType[id] = item.get("type")
+                    if flags & 1:
+                        solidItems.add(id)
+                    if flags & (1 << 7):
+                        stackableItems.add(id)
                     bCid += 1
                 else:
                     loadItems[id] = item
+                    sidToCid[id] = cid or id
+                    sidFlags[id] = flags
+                    sidType[id] = item.get("type")
+                    if flags & 1:
+                        solidItems.add(id)
+                    if flags & (1 << 7):
+                        stackableItems.add(id)
 
             try:
                 name = item["name"].upper()
@@ -991,6 +1017,13 @@ def loadItems():
 
         else:
             loadItems[id] = item
+            sidToCid[id] = cid or id
+            sidFlags[id] = flags
+            sidType[id] = item.get("type")
+            if flags & 1:
+                solidItems.add(id)
+            if flags & (1 << 7):
+                stackableItems.add(id)
             if cid != id:
                 _cidToSid[cid] = id
             try:

@@ -18,9 +18,8 @@ class TibiaProtocol:
         self.gotFirst = False
         self.xtea = None
         self.onInit()
-        self.data = []
         self.player = None
-
+        
         # Register disconnect callback.
         self.transport.set_close_callback(self.connectionLost)
 

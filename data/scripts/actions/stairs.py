@@ -13,6 +13,8 @@ sewers=435, 7750, 430
 stairs = set()
 ladders = set()
 
+ramps = set()
+
 for itemId in game.item.items:
     if 'floorchange' in game.item.items[itemId]:
         stairs.add(itemId)
@@ -26,16 +28,16 @@ def floorchange(creature, thing, position, **k):
 
     # Note this is the correct direction
     if thing.floorchange == "north":
-        creature.move(NORTH, level=-1)
+        creature.move(NORTH, level=-1, ignorestairhop=True)
         
     elif thing.floorchange == "south":
-        creature.move(SOUTH, level=-1)
+        creature.move(SOUTH, level=-1, ignorestairhop=True)
         
     elif thing.floorchange == "east":
-        creature.move(EAST, level=-1)
+        creature.move(EAST, level=-1, ignorestairhop=True)
         
     elif thing.floorchange == "west":
-        creature.move(WEST, level=-1)
+        creature.move(WEST, level=-1, ignorestairhop=True)
         
     elif thing.floorchange == "down":  
         # This is a reverse direction, get the tile under it, then all four sides checked depending on it
@@ -53,15 +55,15 @@ def floorchange(creature, thing, position, **k):
             #creature.move(NORTH)
         # Note: It's the reverse direction
         elif destThing.floorchange == "north":
-            creature.move(SOUTH, level=1)
+            creature.move(SOUTH, level=1, ignorestairhop=True)
         elif destThing.floorchange == "south":
-            creature.move(NORTH, level=1)
+            creature.move(NORTH, level=1, ignorestairhop=True)
         elif destThing.floorchange == "west":
-            creature.move(EAST, level=1)
+            creature.move(EAST, level=1, ignorestairhop=True)
         elif destThing.floorchange == "east":
-            creature.move(WEST, level=1)
+            creature.move(WEST, level=1, ignorestairhop=True)
 
-    return False
+    return True
     
 @register('dropOnto', stairs)
 def itemFloorChange(creature, thing, position, onPosition, onThing, **k):
@@ -135,7 +137,7 @@ def floorup(creature, thing, position, **k):
             
 # Ramps    
 if not config.monsterStairHops:
-    @register("preWalkOn", stairs)
+    @register("walkOn", stairs|ramps)
     def verifyRampWalk(creature, **k):
         # Check if we can walk on ramps
         if not creature.isPlayer():

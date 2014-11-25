@@ -1,6 +1,16 @@
-from struct import unpack, pack
+from struct import unpack, pack, Struct
 from otcrypto import encryptXTEA
 from zlib import adler32
+from position import StackPosition, Position
+import config
+
+uint8Prebuild = [b""] * 256
+for n in range(256):
+    uint8Prebuild[n] = pack("<B", n) 
+
+pack_uint16 = Struct("<H").pack
+pack_uint32 = Struct("<I").pack
+pack_header = Struct("<HI").pack
 
 class TibiaPacketReader(object):
     __slots__ = ('pos', 'data')
@@ -89,8 +99,8 @@ class TibiaPacket:
         self.length = 0
 
     # 8bit - 1byte, C type: char
-    def uint8(self, data, pack = pack):
-        self.raw(pack("<B", data))
+    def uint8(self, data, pack = uint8Prebuild):
+        self.raw(pack[data])
         self.length += 1
         
     def int8(self, data, pack=pack):
@@ -98,8 +108,8 @@ class TibiaPacket:
         self.length += 1
 
     # 16bit - 2bytes, C type: short
-    def uint16(self, data, pack=pack):
-        self.raw(pack("<H", data))
+    def uint16(self, data, pack=pack_uint16):
+        self.raw(pack(data))
         self.length += 2
         
     def int16(self, data, pack=pack):
@@ -107,8 +117,8 @@ class TibiaPacket:
         self.length += 2
 
     # 32bit - 4bytes, C type: int
-    def uint32(self, data, pack=pack):
-        self.raw(pack("<I", data))
+    def uint32(self, data, pack=pack_uint32):
+        self.raw(pack(data))
         self.length += 4
         
     def int32(self, data):
@@ -140,20 +150,36 @@ class TibiaPacket:
         self.length += len(string)
         self.raw(string)
 
-    def send(self, stream, pack=pack, adler32=adler32, encryptXTEA=encryptXTEA):
-        if stream.webSocket == True:
-            stream.write_message(b''.join(self.data), True)
+    if config.lagPolicy == 1:
+        def send(self, stream):
+            call_later(config.lagTarget, self._send, stream, self.data, self.length)
+    elif config.lagPolicy == 2:
+        def send(self, stream):
+            delay = config.lagTarget - stream.ping
+            if delay <= 0.01: # Rounding error.
+                self._send(stream, self.data, self.length)
+            else:
+                call_later(delay, self._send, stream, self.data, self.length)
+    else:
+        def send(self, stream):
+            self._send(stream, self.data, self.length)
+
+    # The send process.
+    def _send(self, stream, data, length, pack_length=pack_uint16, pack_header = pack_header, adler32=adler32, encryptXTEA=encryptXTEA):
+        if not stream:
+            return
+            
+        if stream.webSocket is True:
+            stream.write_message(b''.join(data), True)
         else:
-            length = self.length
-            self.data[0] = pack("<H", length)
+            data[0] = pack_length(length)
             length += 2
 
             if stream.xtea:
-                data = encryptXTEA(self.data, stream.xtea, length)
+                data = encryptXTEA(data, stream.xtea, length)
             else:
-                data = b''.join(self.data)
-
-            stream.transport.write(pack("<HI", len(data)+4, adler32(data))+data)
+                data = b''.join(data)
+            stream.transport.write(b''.join((pack_header(len(data)+4, adler32(data)), data)))
 
     # For use with with statement. Easier :)
     def __exit__(self, type, value, traceback):

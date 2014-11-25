@@ -123,7 +123,7 @@ class BasePacket(TibiaPacket):
 
                 tile = getTileConst2(baseY, (instanceId, secX, secY), x, y, instanceId)
 
-                if tile:
+                if tile != None:
                     if skip >= 0:
                         self.uint8(skip)
                         self.uint8(0xFF)
@@ -138,31 +138,19 @@ class BasePacket(TibiaPacket):
 
     def tileDescription(self, tile, player):
         self.uint16(0)
-        self.item(tile.ground)
-        
-        if not tile.things:
-            return
-            
-        count = 1
-        
-        top = tile.getTopItemCount()
-        if top:
-            for item in tile.things[:top]:  
-                self.item(item)
-                
-                count += 1
-                if count == 10:
-                    return
 
-        creatures = tile.getCreatureCount()
-        if creatures:
-            for creature in tile.things[top:top+creatures]:
-                if creature.hasCondition(CONDITION_INVISIBLE):
+        count = 0
+
+        for thing in tile:  
+            if thing.isItem():
+                self.item(thing)
+            else:
+                if thing.hasCondition(CONDITION_INVISIBLE):
                     continue
                 known = False
                 removeKnown = 0
                 if player:
-                    known = creature in player.knownCreatures
+                    known = thing in player.knownCreatures
 
                     if not known:
                         if len(player.knownCreatures) > self.maxKnownCreatures:
@@ -170,35 +158,26 @@ class BasePacket(TibiaPacket):
                             if not removeKnown:
                                 player.exit("Too many creatures in known list. Please relogin")
                                 return
-                        player.knownCreatures.add(creature)
-                        creature.knownBy.add(player)
+                        player.knownCreatures.add(thing)
+                        thing.knownBy.add(player)
 
-                        self.creature(creature, known, removeKnown, player)
+                        self.creature(thing, known, removeKnown, player)
                     else:
                         # Bugged?
-                        if creature.creatureType != 0 and creature.brainEvent:
+                        if thing.creatureType != 0 and thing.brainEvent:
                             if player.client.version >= 953:
-                                self.raw(pack("<HIBB", 99, creature.clientId(), creature.direction, creature.solid))
+                                self.raw(pack("<HIBB", 99, thing.clientId(), thing.direction, thing.solid))
                                 self.length += 8
                             else:
-                                self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                                self.raw(pack("<HIB", 99, thing.clientId(), thing.direction))
                                 self.length += 7
                         else:
-                            self.creature(creature, True, creature.cid, player) # Not optimal!
-                if creature.creatureType != 0 and not creature.brainEvent:
-                    creature.base.brain.beginThink(creature, False)
-
-                count += 1
-                if count == 10:
-                    return
-        bottom = tile.getBottomItemCount()
-        if bottom:
-            for item in tile.things[len(tile.things) - bottom:]:
-                self.item(item)
-                
-                count += 1
-                if count == 10:
-                    return
+                            self.creature(thing, True, thing.cid, player) # Not optimal!
+                if thing.creatureType != 0 and not thing.brainEvent:
+                    thing.base.brain.beginThink(thing, False)
+            count += 1
+            if count == 10:
+                return
 
     def exit(self, message):
         self.uint8(0x14)
@@ -578,7 +557,8 @@ def packet(opcode):
 
 class BaseProtocol(object):
     Packet = BasePacket
-    def handle(self, player, packet):
+
+    def _handle(self, player, packet):
         packetType = packet.uint8()
 
         if not player.alive:
@@ -601,6 +581,19 @@ class BaseProtocol(object):
             #print(("Unhandled packet (type = {0}, length: {1}, content = {2})".format(hex(packetType), len(packet.data), ' '.join( map(str, list(map(hex, list(map(ord, packet.getData())))))) )))
             #self.transport.loseConnection()
 
+
+    if config.lagPolicy == 1:
+        def handle(self, player, packet):
+            call_later(config.lagTarget, self._handle, player, packet)
+    elif config.lagPolicy == 2:
+        def handle(self, player, packet):
+            delay = config.lagTarget - player.client.ping
+            if delay <= 1: # Rounding error.
+                self._handle(player, packet)
+            else:
+                call_later(config.lagTarget, self._handle, player, packet)
+    else:
+        handle = _handle
 
     def const(self, key):
         return getattr(game.const, key)
@@ -891,7 +884,7 @@ class BaseProtocol(object):
         else:
             thing = player.findItem(stackPosition)
             if not thing or thing.cid != clientId:
-                for thing2 in game.map.getTile(position).things:
+                for thing2 in game.map.getTile(position):
                     if thing2.cid == clientId:
                         thing = thing2
                         break

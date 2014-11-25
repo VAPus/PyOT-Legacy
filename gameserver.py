@@ -1,5 +1,6 @@
 import sys, signal
 import time
+
 sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
@@ -18,7 +19,8 @@ if config.tryCython:
     try:
         import pyximport
         pyximport.install(pyimport = True)
-    except:
+    except ImportError:
+        print("Cython failed")
         pass # No cython / old cython
 
 # Fix log machinery by replacing tornado.concurrent.
@@ -66,10 +68,10 @@ if config.enableWebProtocol:
 
 
 # Load the core stuff!
-tornado.ioloop.IOLoop.instance().add_callback(game.loading.loader, startTime)
+IOLoop.instance().add_callback(game.loading.loader, startTime)
 
 # Start reactor. This will call the above.
 signal.signal(signal.SIGINT, game.scriptsystem.shutdown)
 signal.signal(signal.SIGTERM, game.scriptsystem.shutdown)
-tornado.ioloop.IOLoop.instance().start()
+IOLoop.instance().start()
 

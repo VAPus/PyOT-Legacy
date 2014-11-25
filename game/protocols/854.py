@@ -72,63 +72,40 @@ class Packet(base.BasePacket):
                 self.uint8(item.fluidSource or 0)
             
     def tileDescription(self, tile, player):
-        self.item(tile.ground)
-        
-        if not tile.things:
-            return
-            
-        count = 1
-        
-        top = tile.getTopItemCount()
-        if top:
-            for item in tile.things[:top]:  
-                self.item(item)
-                count += 1
-                if count == 10:
-                    return
-        
-        creatures = tile.getCreatureCount()
-        if creatures:
-            for creature in tile.things[top:top+creatures]:
-                if creature.isMonster() and creature.hasCondition(CONDITION_INVISIBLE):
+        count = 0
+        for thing in tile:
+            if thing.isItem():
+                self.item(thing)
+            else:
+                if thing.hasCondition(CONDITION_INVISIBLE):
                     continue
-
                 known = False
                 removeKnown = 0
                 if player:
-                    known = creature in player.knownCreatures
-                        
+                    known = thing in player.knownCreatures
+
                     if not known:
                         if len(player.knownCreatures) > self.maxKnownCreatures:
                             removeKnown = player.checkRemoveKnown()
                             if not removeKnown:
                                 player.exit("Too many creatures in known list. Please relogin")
                                 return
-                        player.knownCreatures.add(creature)
-                        creature.knownBy.add(player)
-                        
-                        self.creature(creature, known, removeKnown, player)
+                        player.knownCreatures.add(thing)
+                        thing.knownBy.add(player)
+
+                        self.creature(thing, known, removeKnown, player)
                     else:
                         # Bugged?
-                        if creature.creatureType != 0 and creature.brainEvent:
-                            self.raw(pack("<HIB", 99, creature.clientId(), creature.direction))
+                        if thing.creatureType != 0 and thing.brainEvent:
+                            self.raw(pack("<HIB", 99, thing.clientId(), thing.direction))
                             self.length += 7
                         else:
-                            self.creature(creature, True, creature.cid, player) # Not optimal!
-                    
-                if creature.creatureType != 0 and not creature.brainEvent:
-                    creature.base.brain.beginThink(creature, False)
-                        
-                count += 1
-                if count == 10:
-                    return
-        bottom = tile.getBottomItemCount()
-        if bottom:
-            for item in tile.things[len(tile.things) - bottom:]:
-                self.item(item)
-                count += 1
-                if count == 10:
-                    return
+                            self.creature(thing, True, thing.cid, player) # Not optimal!
+                if thing.creatureType != 0 and not thing.brainEvent:
+                    thing.base.brain.beginThink(thing, False)
+            count += 1
+            if count == 10:
+                return
             
     def creature(self, creature, known, removeKnown=0, player=None):
         if known:

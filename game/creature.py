@@ -142,6 +142,9 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def isItem(self):
         return False
 
+    def isCreature(self):
+        return True
+
     def isPushable(self, by):
         return False
 

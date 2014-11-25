@@ -238,17 +238,25 @@ class CreatureMovement(object):
         elif callback:
             callback(res)
 
-    def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True):
-        if not self.alive or not self.actionLock(self.move, direction, spectators, level, stopIfLock, failback, push):
+    def move(self, direction, spectators=None, level=0, stopIfLock=False, failback=None, push=True, ignorestairhop=False):
+        if not self.alive:
             return -1
-
-        if not self.data["health"] or not self.canMove or not self.speed:
+        elif not self.data["health"] or not self.canMove or not self.speed:
             return False
 
-        # Stairhop delay.
         _time = time.time()
+        
+        # Don't use actionLock (TODO: Kill?) because we might get False, which would prevent us from moving later.
+        if self.lastAction > _time:
+            if not stopIfLock:
+                call_later(self.lastAction - _time, self.move, direction, spectators, level, stopIfLock, failback, push, ignorestairhop)
+            return False
+
+         
+
+        # Stairhop delay.
         isPlayer = self.isPlayer()
-        if isPlayer and _time - self.lastStairHop < config.stairHopDelay and level:
+        if not ignorestairhop and isPlayer and _time - self.lastStairHop < config.stairHopDelay and level:
             return False
             
         oldPosition = self.position.copy()
@@ -293,52 +301,37 @@ class CreatureMovement(object):
         
         if not newTile:
             return False
-        
-        if newTile.ground.solid:
-            self.notPossible()
-            return False
-            
         # oldTile
         oldTile = getTile(oldPosition)
-        if not oldTile:
-            # This always raise
-            raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
 
         val = game.scriptsystem.get("move").run(creature=self)
         if val == False:
             return False
-        try:
-            oldStackpos = oldTile.findStackpos(self)
-        except:
-            return False
+
 
         # Deal with walkOff
-        for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').run(thing=item, creature=self, position=oldPosition)
-
-        # Deal with preWalkOn
-        for item in newTile.getItems():
-            r = game.scriptsystem.get('preWalkOn').run(thing=item, creature=self, oldTile=oldTile, newTile=newTile, position=position)
-            if r == False:
-                return False
-                
-        # PZ blocked?
-        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
-            self.lmessage("You are PZ blocked")
-            return False
-
-        if newTile.things:
-            for thing in newTile.things:
-                if not isPlayer and isinstance(thing, Item) and thing.teleport:
+        walkOffEvent = game.scriptsystem.get('walkOff')
+        for item in oldTile:
+            if item.isItem():
+                val = walkOffEvent.run(thing=item, creature=self, position=oldPosition)
+                if val == False:
                     return False
                     
-                if thing.solid:
-                    if level and isinstance(thing, Creature):
-                        continue
+        # Block movement, even if script stop us later.
+        self.lastStep = _time
+        delay = self.stepDuration(newTile[0]) * (config.diagonalWalkCost if direction > 3 else 1)
+        self.lastAction = _time + delay
+        
+        # Deal with walkOn
+        walkOnEvent = game.scriptsystem.get('walkOn')
+        for thing in newTile:
+            if thing.solid:
+                if level and not thing.isCreature():
+                    continue
 
-                    # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
-                    if push and isinstance(thing, Monster) and self.isMonster() and self.base.pushCreatures and thing.base.pushable:
-                        # Push stuff here.
+                # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
+                if push and self.isMonster() and thing.isMonster() and self.base.pushCreatures and thing.base.pushable:
+                    # Push stuff here.
 
                         # Clear up the creatures actions.
                         thing.stopAction()
@@ -354,14 +347,35 @@ class CreatureMovement(object):
 
                             # Deliver final blow.
                             thing.onHit(self, -thing.data['healthmax'], PHYSICAL)
-
-                    #self.turn(direction) # Fix me?
-                    self.notPossible()
+                #self.turn(direction) # Fix me?
+                self.notPossible()
+                return False
+                
+            if thing.isItem():
+                # Script.
+                r = walkOnEvent.run(thing=thing, creature=self, position=position, fromPosition=oldPosition)
+                if r == False:
                     return False
+                
+                # Prevent monsters from moving on teleports.
+                teledest = thing.teledest
+                if teledest:
+                    if not isPlayer:
+                        return False
+                    try:
+                        self.teleport(Position(teledest[0], teledest[1], teledest[2]), self.position.instanceId)
+                        self.magicEffect(EFFECT_TELEPORT)
+                    except:
+                        print("%d (%s) got a invalid teledist (%s), remove it!" % (thing.itemId, thing, teledest))
+                        del thing.teledest
+                    
+            
+        oldStackpos = oldTile.findStackpos(self)
+        # PZ blocked?
+        if (self.hasCondition(CONDITION_PZBLOCK) or self.getSkull() in SKULL_JUSTIFIED) and newTile.getFlags() & TILEFLAGS_PROTECTIONZONE:
+            self.lmessage("You are PZ blocked")
+            return False
 
-        self.lastStep = _time
-        delay = self.stepDuration(newTile.ground) * (config.diagonalWalkCost if direction > 3 else 1)
-        self.lastAction = _time + delay
 
         newStackPos = newTile.placeCreature(self)
         oldTile.removeCreature(self)
@@ -443,39 +457,36 @@ class CreatureMovement(object):
         spectators = oldPosCreatures|newPosCreatures
         invisible = self.isMonster() and self.hasCondition(CONDITION_INVISIBLE)
 
-        for spectator in spectators:
-            # Make packet
-            if not spectator.client or invisible:
-                continue
+        if not invisible:
+            for spectator in spectators:
+                canSeeNew = spectator in newPosCreatures
 
-            canSeeNew = spectator in newPosCreatures
+                canSeeOld = spectator in oldPosCreatures
 
-            canSeeOld = spectator in oldPosCreatures
+                stream = spectator.packet()
 
-            stream = spectator.packet()
+                if not canSeeOld and canSeeNew:
+                    stream.addTileCreature(position, newStackPos, self, spectator, resend=True)
 
-            if not canSeeOld and canSeeNew:
-                stream.addTileCreature(position, newStackPos, self, spectator, resend=True)
-
-            elif canSeeOld and not canSeeNew:
-                stream.removeTileItem(oldPosition, oldStackpos)
-                """spectator.knownCreatures.remove(self)
-                self.knownBy.remove(spectator)"""
-
-            elif canSeeOld and canSeeNew:
-                if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
-
-                    stream.uint8(0x6D)
-                    stream.position(oldPosition)
-                    stream.uint8(oldStackpos)
-                    stream.position(position)
-
-                else:
+                elif canSeeOld and not canSeeNew:
                     stream.removeTileItem(oldPosition, oldStackpos)
-                    spectator.knownCreatures.remove(self)
-                    self.knownBy.remove(spectator)
-                    stream.addTileCreature(position, newStackPos, self, spectator)
-            stream.send(spectator.client)
+                    """spectator.knownCreatures.remove(self)
+                    self.knownBy.remove(spectator)"""
+
+                elif canSeeOld and canSeeNew:
+                    if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+
+                        stream.uint8(0x6D)
+                        stream.position(oldPosition)
+                        stream.uint8(oldStackpos)
+                        stream.position(position)
+
+                    else:
+                        stream.removeTileItem(oldPosition, oldStackpos)
+                        spectator.knownCreatures.remove(self)
+                        self.knownBy.remove(spectator)
+                        stream.addTileCreature(position, newStackPos, self, spectator)
+                stream.send(spectator.client)
 
         if self.scripts["onNextStep"]:
             scripts = self.scripts["onNextStep"][:]
@@ -483,27 +494,16 @@ class CreatureMovement(object):
             for script in scripts:
                 script(self)
 
-        # Deal with walkOn
-        for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(thing=item, creature=self, position=position, fromPosition=oldPosition)
-            if item.teledest:
-                try:
-                    self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2]), self.position.instanceId)
-                    self.magicEffect(EFFECT_TELEPORT)
-                except:
-                    print("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
-                    del item.teledest
-
         # Deal with appear and disappear. Ahh the power of sets :)
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
+        disappear_event = game.scriptsystem.get('disappear')
         for creature2 in disappearFrom:
-            disappear_event = game.scriptsystem.get('disappear')
             disappear_event.run(creature=creature2, creature2=self)
             disappear_event.run(creature=self, creature2=creature2)
-
+            
+        appear_event = game.scriptsystem.get('appear')
         for creature2 in appearTo:
-            appear_event = game.scriptsystem.get('appear')
             appear_event.run(creature=creature2, creature2=self)
             appear_event.run(creature=self, creature2=creature2)
 

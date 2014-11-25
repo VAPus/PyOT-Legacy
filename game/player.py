@@ -190,10 +190,13 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
         #del self.data["storage"]
 
         if self.data["conditions"]:
-            self.conditions = pickle.loads(self.data["conditions"])
-            for x in self.conditions.copy():
-                self.conditions[x].start(self)
-
+            try:
+                self.conditions = pickle.loads(self.data["conditions"])
+                for x in self.conditions.copy():
+                    self.conditions[x].start(self)
+            except ImportError:
+                pass # pypy and cpython pickle might be cross compatible.
+                
         # Storage states
         self.saveStorage = False
         self.saveInventory = False

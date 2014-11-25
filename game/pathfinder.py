@@ -21,10 +21,10 @@ class Node(object):
             self.tileTried = True
             tile = getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                if not tile.things:
-                    self.state = True
+                if False:
+                    self.state = True # Kill...
                 else:
-                    for thing in tile.things:
+                    for thing in tile:
                         if isinstance(thing, Item):
                             if thing.solid:
                                 self.state = False
@@ -47,9 +47,9 @@ class Node(object):
             
     
 class AStar(object):
-    
+    nodes = {}
     def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal):
-        self.nodes = {}
+        
         self.openNodes = set()
         self.closedNodes = set() 
         self.final = self.getNode(xGoal, yGoal)

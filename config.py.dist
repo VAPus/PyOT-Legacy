@@ -319,6 +319,12 @@ pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor(
 # pathfinder cache?
 pathfinderCache = True
 
+# Introduce lag.
+# This might be used to emulate a bit of delay for incoming, and outgoing packets.
+# The original idea was to create complete fairness. One guy with 10ms ping and one guy with 150ms will get the packets at the same time.
+lagPolicy = 0 # No lag.
+lagTarget = 100 # In ms. This is the goal if lagPolicy is 2, and the added delay if lagPolicy = 0.
+
 # This formula is too complex to put into a lambda
 def levelFromExpFormula(y): # y = experience
     l1 = ((3 ** 0.5)*(((243*(y**2))-(48600*y)+3680000) ** 0.5)+(27*y)-2700) ** (1.0/3)
