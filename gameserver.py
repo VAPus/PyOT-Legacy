@@ -4,7 +4,8 @@ sys.path.insert(0, '.')
 sys.path.insert(1, 'game')
 
 # Check for good enough Python version. Use builtin path.
-if sys.implementation.name == "pypy" and sys.implementation.version.minor == 3:
+# XXX: Should be killed before release.
+if '__pypy__' in sys.builtin_module_names:
     sys.path.insert(2, "/usr/local/lib/python3.4/dist-packages")
 
 try:
@@ -18,7 +19,8 @@ if config.tryCython:
     try:
         import pyximport
         pyximport.install(pyimport = True)
-    except:
+    except ImportError:
+        print("Cython failed")
         pass # No cython / old cython
 
 # Fix log machinery by replacing tornado.concurrent.
@@ -33,7 +35,9 @@ import tornado.gen
 from service.gameserver import GameFactory
 import time
 import game.loading
-    
+import tornado.log
+tornado.log.enable_pretty_logging()
+
 startTime = time.time()
 # Game Server
 gameServer = GameFactory()
@@ -66,10 +70,10 @@ if config.enableWebProtocol:
 
 
 # Load the core stuff!
-tornado.ioloop.IOLoop.instance().add_callback(game.loading.loader, startTime)
+IOLoop.instance().add_callback(game.loading.loader, startTime)
 
 # Start reactor. This will call the above.
 signal.signal(signal.SIGINT, game.scriptsystem.shutdown)
 signal.signal(signal.SIGTERM, game.scriptsystem.shutdown)
-tornado.ioloop.IOLoop.instance().start()
+IOLoop.instance().start()
 

@@ -102,10 +102,11 @@ def subownerList(creature, **k):
     return False
 
 # Is he allowed to enter the house?
-@registerFirst("preWalkOn", b"houseDoor")
-def guestListCheck(creature, thing, newTile, **k):
+@registerFirst("walkOn", b"houseDoor")
+def guestListCheck(creature, thing, position, **k):
     try:
-        house = getHouseById(newTile.houseId)
+        houseId = position.getTile().houseId
+        house = getHouseById(houseId)
         
         if not house:
             return True
@@ -115,7 +116,7 @@ def guestListCheck(creature, thing, newTile, **k):
 
         else:
 
-            if creature.position.getTile().houseId == newTile.houseId: # We are in a house? Relog -> access list changed.
+            if creature.position.getTile().houseId == houseId: # We are in a house? Relog -> access list changed.
                 if not creature.kickFromHouse(): # House without doors, don't kick and allow walking...
                     return True
             return False
@@ -147,7 +148,7 @@ def kickFromHouse(creature, text, **k):
         creature.kickFromHouse()
         return
 
-    house = getHouseById(getTile(position).houseId)
+    house = getHouseById(getTile(creature.position).houseId)
     if not house:
         return
     elif house.isSubOwner(creature) or creature.data["id"] == house.owner:

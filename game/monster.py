@@ -23,10 +23,12 @@ def chance(procent):
     return gen
 
 class Monster(Creature):
-    def generateClientID(self):
+    @staticmethod
+    def generateClientID():
         return 0x40000000 + uniqueId()
 
-    def isMonster(self):
+    @staticmethod
+    def isMonster():
         return True
 
     def __init__(self, base, position, cid=None):
@@ -402,7 +404,8 @@ class Monster(Creature):
                     # We shall be called again later
                     self.target.scripts["onNextStep"].append(__followCallback)
 
-        self.target.scripts["onNextStep"].append(__followCallback)
+        if self.target:
+            self.target.scripts["onNextStep"].append(__followCallback)
         return True
 
 
@@ -415,10 +418,7 @@ class Monster(Creature):
         if tile.getFlags() & TILEFLAGS_PROTECTIONZONE:
             return False
 
-        if not tile.things:
-            return True
-
-        for thing in tile.things:
+        for thing in tile:
             if isinstance(thing, Item):
                 field = thing.field
                 if self.base._ignoreFire and field == 'fire':
@@ -573,7 +573,6 @@ class MonsterBase(object):
                 for player in getPlayers(position):
                     stream = player.packet()
                     stream.addTileCreature(position, stackpos, monster, player)
-
                     stream.send(player.client)
 
             self.brain.beginThink(monster) # begin the heavy thought process!

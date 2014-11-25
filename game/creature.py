@@ -29,6 +29,7 @@ allCreatures = {}
 allCreaturesObject = allCreatures.values()
 
 class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
+    itemId = 99
     def __init__(self, data, position, cid=None):
         self.data = data
         self.creatureType = 0
@@ -92,10 +93,6 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
         # Spells.
         self.spellTargets = [] # A temp value. Used by spells.
 
-    @property
-    def itemId(self):
-        return 99
-
     def actionLock(self, *argc, **kwargs):
         _time = time.time()
         if self.lastAction > _time:
@@ -130,17 +127,25 @@ class Creature(CreatureTalking, CreatureMovement, CreatureAttacks):
     def registerAll(self, event, func, **kwargs):
         game.scriptsystem.register(event, self.thingId(), func, **kwargs)
 
-    def isPlayer(self):
+    @staticmethod
+    def isPlayer():
         return False
 
-    def isNPC(self):
+    @staticmethod
+    def isNPC():
         return False
 
-    def isMonster(self):
+    @staticmethod
+    def isMonster():
         return False
 
-    def isItem(self):
+    @staticmethod
+    def isItem():
         return False
+
+    @staticmethod
+    def isCreature():
+        return True
 
     def isPushable(self, by):
         return False

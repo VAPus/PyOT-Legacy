@@ -21,10 +21,10 @@ class Node(object):
             self.tileTried = True
             tile = getTileConst(self.x, self.y, z, instanceId)
             if tile:
-                if not tile.things:
-                    self.state = True
+                if False:
+                    self.state = True # Kill...
                 else:
-                    for thing in tile.things:
+                    for thing in tile:
                         if isinstance(thing, Item):
                             if thing.solid:
                                 self.state = False
@@ -47,9 +47,12 @@ class Node(object):
             
     
 class AStar(object):
-    
+    nodes = {}
     def __init__(self, checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ignoreFinal):
-        self.nodes = {}
+        # Clear nodes.
+        for node in self.nodes:
+            self.nodes[node].parent = None
+
         self.openNodes = set()
         self.closedNodes = set() 
         self.final = self.getNode(xGoal, yGoal)
@@ -286,4 +289,4 @@ def findPath(checkCreature, zStart, xStart, yStart, xGoal, yGoal, instanceId, ig
 def clear():
     # Clear the cache entries.
     RouteCache.clear()
-    
+    AStar.nodes.clear()

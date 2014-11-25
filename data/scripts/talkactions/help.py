@@ -300,7 +300,7 @@ def readData(creature, text):
     msg = ""
     pos = Position(*map(int, text.split(',')))
     tile = pos.getTile()
-    for i in tile.things:
+    for i in tile:
         if isinstance(i, game.creature.Creature):
             msg += "Creature '%s'\n" % i.name()
         elif isinstance(i, game.item.Item):
@@ -316,48 +316,40 @@ def testBoost(creature, **k):
     # Give a +1000 to health and maxhealth too for 20s
     creature.condition(Boost(["health", "healthmax"], [1000, 1000], 20))
     
-def walkRandomStep(creature, callback):
+def walkRandomStep(creature, callback, delay):
+    # Happens if a script trigger a move
     wait = creature.lastAction - time.time()
     if wait > 0:
-        call_later(wait+0.050, walkRandomStep, creature, callback) # slight delay
+        call_later(0.1, walkRandomStep, creature, callback, delay)
         return
+        
     steps = [0,1,2,3]
     random.shuffle(steps)
     
-    def intcallback():
-        creature.raiseMessages = True
-        try:
-            res = creature.move(steps.pop())
-        except MsgNotPossible:
-            res = False
-        except:
-            creature.raiseMessages = False
-            call_later(1, callback)
-            return
-        creature.raiseMessages = False
-        if res == -1:
-            raise Exception("Shouldn't happen")
-        if res == False:
-            intcallback()
-        else:
-            callback()
-    
     creature.raiseMessages = True
-    try:
-        res = creature.move(steps.pop())
-    except MsgNotPossible:
-        res = False
-    if res == False:
-        intcallback()
+    res = False
+    for step in steps:
+        try:
+            res = creature.move(step)
+        except MsgNotPossible:
+            pass
+        if res == True:
+            break
+    creature.raiseMessages = False
+    if res:
+        call_later(creature.lastAction - creature.lastStep + delay, callback, delay)
     else:
-        callback()
+        call_later(0.1 + delay, callback, delay)
 
 @register("talkaction", "aime")
 @access("DEVELOPER")
-def playerAI(creature, **k):
+def playerAI(creature, text):
+    delay = 0
+    if " " in text:
+        delay = int(text.split(" ")[1]) / 1000.0
     creature.setSpeed(1500)
     #creature.raiseMessages = True
-    def _playerAI():
+    def _playerAI(delay):
         if creature.data["health"] < 300:
             creature.modifyHealth(10000)
         
@@ -365,10 +357,10 @@ def playerAI(creature, **k):
             # Try targeting
             for pos in creature.position.roundPoint(1):
                 tile = pos.getTile()
-                if not tile or not tile.things:
+                if not tile or not len(tile):
                     continue
                 
-                for thing in tile.things:
+                for thing in tile:
                     if isinstance(thing, game.monster.Monster):
                         creature.target = thing
                         creature.targetMode = 1
@@ -378,9 +370,9 @@ def playerAI(creature, **k):
                         creature.use(thing)
                         break
             
-        walkRandomStep(creature, _playerAI)
+        walkRandomStep(creature, _playerAI, delay)
         
-    _playerAI()
+    _playerAI(delay)
 
 @register("talkaction", "market")
 @access("DEVELOPER")

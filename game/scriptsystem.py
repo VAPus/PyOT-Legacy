@@ -136,7 +136,7 @@ class RegexTriggerScripts(TriggerScripts):
 
             for func in spectre[0]:
                 try:
-                    res = func(**kwargs)
+                    res = func(**args)
                 except:
                     handle_script_exception()
                 else:
@@ -317,7 +317,6 @@ globalScripts["rotate"] = ThingScripts()
 globalScripts["stack"] = ThingScripts(('creature', 'thing', 'position', 'onThing', 'onPosition', 'count'))
 globalScripts["walkOn"] = ThingScripts(('creature', 'thing', 'position', 'fromPosition'))
 globalScripts["walkOff"] = ThingScripts(('creature', 'thing', 'position'))
-globalScripts["preWalkOn"] = ThingScripts(('creature', 'thing', 'position', 'oldTile', 'newTile'))
 globalScripts["postLoadSector"] = TriggerScripts(('sector', 'instanceId'))
 globalScripts["lookAt"] = ThingScripts(('creature', 'thing', 'position'))
 globalScripts["lookAtTrade"] = ThingScripts()
@@ -376,8 +375,7 @@ def shutdown(sig, frame):
     # Perform clean shutdown.
     io_loop = tornado.ioloop.IOLoop.instance()
  
-    deadline = time.time() + 3
- 
+    deadline = time.time() + 3 
     def stop_loop():
         now = time.time()
         try:
@@ -622,9 +620,9 @@ def access(*groupFlags, **kwargs):
             else:
                 vars = "**k"
         """
-        def inner(**k):
+        def inner(*a, **k):
             if k['creature'].isPlayer() and k['creature'].hasGroupFlags(*groupFlags):
-                return f(**k)
+                return f(*a, **k)
         return inner
     return _wrapper
 
