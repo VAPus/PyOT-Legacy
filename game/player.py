@@ -1493,7 +1493,7 @@ class Player(PlayerTalking, PlayerAttacks, Creature): # Creature last.
 
     def onDeath(self):
         try:
-            lastAttacker = self.getLastDamager()
+            lastAttacker = self.getLastDamage().creature
             lastDmgIsPlayer = lastAttacker.isPlayer()
         except:
             lastAttacker = self

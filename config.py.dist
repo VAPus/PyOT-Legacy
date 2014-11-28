@@ -97,8 +97,11 @@ playerCanChangeColor = True
 playerCanWearAllOutfits = False
 playerCanUseAllMounts = False
 
-# PvP
+# Attacks
 trackHits = 40 # How many hits are we suppose to track? This is important for both assists and experience splitting.
+trackHitsTime = 60 # Time period before death for attack to be tracked.
+
+# PvP
 globalProtectionZone = False # True = optional PvP. Scripts might change a players attackability. This set a global protection zone and override protectedZones = False.
 skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
 protectedZones = True # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.

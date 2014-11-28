@@ -52,7 +52,7 @@ newInstanceId = __uid().__next__
 
 if config.loadEntierMap:
     # We don't need to call loader.
-    def getTile(pos, knownMap=knownMap):
+    def getTile(pos):
         """ Returns the Tile on this position. """
         posSum = pos.hash
 
@@ -60,7 +60,7 @@ if config.loadEntierMap:
             return knownMap[posSum]
 
 else:
-    def getTile(pos, knownMap=knownMap):
+    def getTile(pos):
         """ Returns the Tile on this position. """
         posSum = pos.hash
     
@@ -69,15 +69,15 @@ else:
         elif loadTiles(pos.x, pos.y, pos.instanceId, (pos.instanceId, pos.x >> sectorShiftX, pos.y >> sectorShiftY)):
             return knownMap[posSum] if posSum in knownMap else None
 
-def getTileIfExist(pos, _knownMap=knownMap):
+def getTileIfExist(pos):
     """ Returns the Tile on this position, but doesn't load non-existing tiles. """
     posSum = pos.hash
-    if posSum in _knownMap:
-        return _knownMap[posSum]
+    if posSum in knownMap:
+        return knownMap[posSum]
     else:
         return None
 
-def setTile(pos, tile, knownMap = knownMap):
+def setTile(pos, tile):
     """ Set the tile on this position. """
     posSum = pos.hash
 
@@ -94,12 +94,12 @@ def getTileConst(x,y,z,instanceId):
 
 if config.loadEntierMap:
      # We don't have to do loading.
-     def getTileConst2(posSum, secSum, x, y, instanceId, knownMap = knownMap):
+     def getTileConst2(posSum, secSum, x, y, instanceId):
         """ Used by floorDescription """
         if posSum in knownMap:
             return knownMap[posSum]
 else:
-    def getTileConst2(posSum, secSum, x, y, instanceId, knownMap = knownMap):
+    def getTileConst2(posSum, secSum, x, y, instanceId):
         """ Used by floorDescription """
         if posSum in knownMap:
             return knownMap[posSum]

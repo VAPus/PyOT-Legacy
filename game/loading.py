@@ -35,6 +35,7 @@ import game.player, game.creature, game.npc, game.monster, game.spell, game.part
 import game.conditions
 import game.market
 from . import inflect
+import game.hit
 
 try:
     import pickle as pickle
@@ -275,6 +276,9 @@ def loader(timer):
     # JSON
     builtins.json = otjson
 
+    # Hits.
+    builtins.Hit = game.hit.Hit
+    
     # Web
     if config.enableWebProtocol:
         import tornado.web

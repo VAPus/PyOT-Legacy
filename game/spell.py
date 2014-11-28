@@ -205,9 +205,9 @@ def mana(mlvlMin, mlvlMax, constantMin, constantMax, lvlMin=5, lvlMax=5):
         mana = -random.randint(minDmg, maxDmg)
 
         if mana < 0:
-            target.addDamager(caster)
+            target.addDamage(caster, mana, MANADRAIN)
         elif mana > 0:
-            target.addSupporter(caster)
+            target.addSupporter(caster, mana, MANADRAIN)
 
         target.modifyMana(mana)
         
@@ -344,7 +344,7 @@ class Spell(object):
                 added = False
                 if health:
                     if health < 0:
-                        target.addDamager(caster)
+                        target.addDamage(caster)
                         added = True
                     elif not added:
                         target.addSupporter(caster)
