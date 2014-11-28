@@ -290,11 +290,11 @@ class Monster(Creature):
             self.targetMode = 0
             if self.spawnTime != 0:
                 if self.spawnTime:
-                    call_later(self.spawnTime, self.base._spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
+                    call_later(self.spawnTime, self.base.spawn, self.spawnPosition, spawnTime = self.spawnTime, spawnDelay=0, check=False)
                 else:
                     return
             else:
-                call_later(self.base._spawnTime, self.base._spawn, self.spawnPosition, spawnDelay=0, check=False)
+                call_later(self.base.spawnTime, self.base.spawn, self.spawnPosition, spawnDelay=0, check=False)
 
     def description(self):
         return "You see %s" % self.base.data["description"]
