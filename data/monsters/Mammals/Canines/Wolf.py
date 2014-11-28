@@ -1,4 +1,4 @@
-Wolf = genMonster("Wolf", 27, "a wolf")
+Wolf = genMonster("Wolf", 27)
 Wolf.targetChance(0)
 Wolf.type("blood")
 Wolf.health(25)
