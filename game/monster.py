@@ -140,7 +140,7 @@ class Monster(Creature):
         tile = map.getTile(self.position)
         lootMsg = []
         if self.base.data["corpse"]:
-            corpse = game.item.Item(self.base.data["corpse"], actions=self.base.corpseAction)
+            corpse = game.item.Item(self.base.data["corpse"], actions=self.base._corpseAction)
 
             corpse.movable = False
             def _move_corpse():
