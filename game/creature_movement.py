@@ -340,7 +340,7 @@ class CreatureMovement(object):
                     continue
 
                 # Monsters might push. This should probably be a preWalkOn event, but well. Consider this a todo for v1.1 or something.
-                if push and self.isMonster() and thing.isMonster() and self.base.pushCreatures and thing.isPushable(self):
+                if push and self.isMonster() and thing.isMonster() and self.base._pushCreatures and thing.isPushable(self):
                     # Push stuff here.
 
                         # Clear up the creatures actions.

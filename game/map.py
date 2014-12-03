@@ -3,7 +3,6 @@ import game.item
 from . import scriptsystem
 import config
 import time
-import io
 import struct
 import sys
 import importlib
@@ -695,7 +694,7 @@ def load(sectorX, sectorY, instanceId, sectorSum, verbose=True):
 
     # Attempt to load a sector file
     try:
-        with io.open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances.get(instanceId, ''), sectorX, sectorY), "rb") as f:
+        with open("%s/%s/%s%d.%d.sec" % (config.dataDirectory, config.mapDirectory, instances.get(instanceId, ''), sectorX, sectorY), "rb") as f:
             map = loadSectorMap(f.read(), instanceId, sectorX << sectorShiftX, sectorY << sectorShiftY)
             knownMap.update(map)
         sectors.add(sectorSum)
